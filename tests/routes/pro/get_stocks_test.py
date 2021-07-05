@@ -26,7 +26,7 @@ class Returns200Test:
             beginningDatetime=now,
             bookingLimitDatetime=now,
         )
-        bookings_factories.BookingFactory(stock=stock)
+        bookings_factories.BookingFactory.create_batch(3, stock=stock)
         offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
         client = TestClient(app.test_client()).with_auth(email=pro.email)
 
@@ -60,7 +60,7 @@ class Returns200Test:
                     "activationCodesExpirationDatetime": None,
                     "beginningDatetime": "2020-10-15T00:00:00Z",
                     "bookingLimitDatetime": "2020-10-15T00:00:00Z",
-                    "bookingsQuantity": 1,
+                    "bookingsQuantity": 3,
                     "dateCreated": "2020-10-15T00:00:00Z",
                     "dateModified": "2020-10-15T00:00:00Z",
                     "id": humanize(stock.id),
@@ -115,16 +115,18 @@ class Returns200Test:
         }
 
     @freeze_time("2019-10-15 00:00:00")
-    def test_returns_a_thing_stock_with_activation_codes(self, app):
+    def test_returns_a_thing_stock_with_activation_codes(self, app, assert_num_queries):
         # Given
         now = datetime.utcnow()
         pro = users_factories.UserFactory(isBeneficiary=False)
-        stock = offers_factories.ThingStockFactory(
+        offer = offers_factories.OfferFactory(url="url.com")
+        stock, _ = offers_factories.ThingStockFactory.create_batch(
+            2,
             dateCreated=now,
             dateModified=now,
             dateModifiedAtLastProvider=now,
             bookingLimitDatetime=now,
-            offer__url="url.com",
+            offer=offer,
         )
         offers_factories.ActivationCodeFactory(stock=stock, code="ABC", expirationDate=datetime(2022, 10, 15))
         offers_factories.ActivationCodeFactory(stock=stock, code="DEF", expirationDate=datetime(2022, 10, 15))
@@ -133,29 +135,45 @@ class Returns200Test:
         client = TestClient(app.test_client()).with_auth(email=pro.email)
 
         # When
-        response = client.get(f"/offers/{humanize(stock.offer.id)}/stocks")
+        stock_id = stock.offer.id
+        n_query_select_user = 1
+        n_query_insert_session = 1
+        n_query_savepoint = 1
+        n_query_select_offerer = 1
+        n_query_select_user_by_id = 1
+        n_query_exist_user_offerer = 1
+        n_query_select_stock = 1
+        n_query_select_activation_code = 2  # 1 query per stock
+
+        with assert_num_queries(
+            n_query_select_user
+            + n_query_insert_session
+            + n_query_savepoint
+            + n_query_select_offerer
+            + n_query_select_user_by_id
+            + n_query_exist_user_offerer
+            + n_query_select_stock
+            + n_query_select_activation_code
+        ):
+            response = client.get(f"/offers/{humanize(stock_id)}/stocks")
 
         # Then
         assert response.status_code == 200
         assert stock_on_other_offer.id not in [stock["id"] for stock in response.json["stocks"]]
-        assert response.json == {
-            "stocks": [
-                {
-                    "hasActivationCodes": True,
-                    "activationCodesExpirationDatetime": "2022-10-15T00:00:00Z",
-                    "beginningDatetime": None,
-                    "bookingLimitDatetime": "2019-10-15T00:00:00Z",
-                    "bookingsQuantity": 0,
-                    "dateCreated": "2019-10-15T00:00:00Z",
-                    "dateModified": "2019-10-15T00:00:00Z",
-                    "id": humanize(stock.id),
-                    "isEventDeletable": True,
-                    "isEventExpired": False,
-                    "offerId": humanize(stock.offer.id),
-                    "price": 10.0,
-                    "quantity": 1000,
-                }
-            ],
+        assert response.json["stocks"][0] == {
+            "hasActivationCodes": True,
+            "activationCodesExpirationDatetime": "2022-10-15T00:00:00Z",
+            "beginningDatetime": None,
+            "bookingLimitDatetime": "2019-10-15T00:00:00Z",
+            "bookingsQuantity": 0,
+            "dateCreated": "2019-10-15T00:00:00Z",
+            "dateModified": "2019-10-15T00:00:00Z",
+            "id": humanize(stock.id),
+            "isEventDeletable": True,
+            "isEventExpired": False,
+            "offerId": humanize(stock.offer.id),
+            "price": 10.0,
+            "quantity": 1000,
         }
 
     def test_does_not_return_soft_deleted_stock(self, app):

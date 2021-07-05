@@ -175,7 +175,6 @@ def get_stocks_for_offers(offer_ids: list[int]) -> list[Stock]:
 def get_stocks_for_offer(offer_id: int) -> list[Stock]:
     return (
         Stock.query.options(joinedload(Stock.offer).load_only(Offer.url))
-        .options(joinedload(Stock.activationCodes))
         .filter(Stock.offerId == offer_id)
         .filter(Stock.isSoftDeleted.is_(False))
         .all()
