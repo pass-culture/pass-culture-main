@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const paths = require('./paths')
+const { name, version } = require('../package.json')
 
 delete require.cache[require.resolve('./paths')]
 
@@ -81,6 +82,8 @@ function getClientEnvironment(publicUrl) {
         TYPEFORM_URL_CULTURAL_PRACTICES_POLL: process.env.TYPEFORM_URL_CULTURAL_PRACTICES_POLL,
         UNIVERSAL_LINK: process.env.UNIVERSAL_LINK,
         URL_FOR_MAINTENANCE: process.env.URL_FOR_MAINTENANCE,
+        NAME: name,
+        VERSION: version,
       }
     )
   // Stringify all values so we can feed into Webpack DefinePlugin
