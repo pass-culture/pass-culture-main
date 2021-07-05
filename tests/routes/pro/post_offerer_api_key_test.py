@@ -11,7 +11,7 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-def test_generate_api_key(client):
+def test_api_key_journey(client):
     booking = BookingFactory()
     user_offerer = UserOffererFactory(offerer=booking.stock.offer.venue.managingOfferer)
 
@@ -33,6 +33,11 @@ def test_generate_api_key(client):
     )
     assert response.status_code == 200
 
+    # test user can delete the generated api key
+    response = TestClient(client).with_auth(user_offerer.user.email).delete(f"/offerers/api_keys/{saved_key.prefix}")
+    assert response.status_code == 204
+    assert ApiKey.query.count() == 0
+
 
 @pytest.mark.usefixtures("db_session")
 def test_maximal_api_key_reached(client):
@@ -50,3 +55,22 @@ def test_maximal_api_key_reached(client):
     assert response.status_code == 400
     assert response.json["api_key_count_max"] == "Le nombre de clés maximal a été atteint"
     assert ApiKey.query.count() == 5
+
+
+@pytest.mark.usefixtures("db_session")
+def test_delete_api_key_not_found(client):
+    user_offerer = UserOffererFactory()
+
+    response = TestClient(client).with_auth(user_offerer.user.email).delete("/offerers/api_keys/wrong-prefix")
+
+    assert response.status_code == 404
+
+
+@pytest.mark.usefixtures("db_session")
+def test_delete_api_key_not_allowed(client):
+    user_offerer = UserOffererFactory()
+    api_key = ApiKeyFactory()
+
+    response = TestClient(client).with_auth(user_offerer.user.email).delete(f"/offerers/api_keys/{api_key.prefix}")
+
+    assert response.status_code == 403

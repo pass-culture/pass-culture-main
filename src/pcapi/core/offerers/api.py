@@ -8,6 +8,7 @@ from pcapi.core import search
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueType
+from pcapi.core.users.models import User
 from pcapi.domain.iris import link_valid_venue_to_irises
 from pcapi.models.db import db
 from pcapi.repository import repository
@@ -16,6 +17,7 @@ from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 
 from . import validation
 from .exceptions import ApiKeyCountMaxReached
+from .exceptions import ApiKeyDeletionDenied
 from .exceptions import ApiKeyPrefixGenerationError
 
 
@@ -148,3 +150,12 @@ def _create_prefix(env: str, prefix_identifier: str) -> str:
 
 def _encode_clear_secret(secret: str) -> bytes:
     return secret.encode("utf-8")
+
+
+def delete_api_key_by_user(user: User, api_key_prefix: str) -> None:
+    api_key = ApiKey.query.filter_by(prefix=api_key_prefix).one()
+
+    if not user.has_access(api_key.offererId):
+        raise ApiKeyDeletionDenied()
+
+    db.session.delete(api_key)

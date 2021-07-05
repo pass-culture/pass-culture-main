@@ -4,3 +4,7 @@ class ApiKeyCountMaxReached(Exception):
 
 class ApiKeyPrefixGenerationError(Exception):
     pass
+
+
+class ApiKeyDeletionDenied(Exception):
+    pass

@@ -4,10 +4,13 @@ from flask import jsonify
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
+from sqlalchemy.orm import exc as orm_exc
 
 from pcapi.core.offerers.api import create_digital_venue
+from pcapi.core.offerers.api import delete_api_key_by_user
 from pcapi.core.offerers.api import generate_and_save_api_key
 from pcapi.core.offerers.exceptions import ApiKeyCountMaxReached
+from pcapi.core.offerers.exceptions import ApiKeyDeletionDenied
 from pcapi.core.offerers.exceptions import ApiKeyPrefixGenerationError
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import get_all_offerers_for_user
@@ -17,6 +20,7 @@ from pcapi.infrastructure.container import list_offerers_for_pro_user
 from pcapi.models import ApiErrors
 from pcapi.models import UserOfferer
 from pcapi.repository import repository
+from pcapi.repository import transaction
 from pcapi.repository.offerer_queries import find_by_siren
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.offerers_serialize import GenerateOffererApiKeyResponse
@@ -124,6 +128,19 @@ def generate_api_key_route(offerer_id: str) -> GenerateOffererApiKeyResponse:
         raise ApiErrors({"api_key": "Could not generate api key"})
 
     return GenerateOffererApiKeyResponse(apiKey=clear_key)
+
+
+@private_api.route("/offerers/api_keys/<api_key_prefix>", methods=["DELETE"])
+@login_required
+@spectree_serialize(on_success_status=204)
+def delete_api_key(api_key_prefix: str):
+    with transaction():
+        try:
+            delete_api_key_by_user(current_user, api_key_prefix)
+        except orm_exc.NoResultFound:
+            raise ApiErrors({"prefix": "not found"}, 404)
+        except ApiKeyDeletionDenied:
+            raise ApiErrors({"api_key": "deletion forbidden"}, 403)
 
 
 # @debt api-migration
