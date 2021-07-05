@@ -7,13 +7,6 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
-from pcapi.model_creators.generic_creators import create_bank_information
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_payment
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.models import ThingType
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
@@ -39,22 +32,20 @@ class GenerateNewPaymentsTest:
         # Given
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        paying_stock = create_stock_from_offer(offer)
-        free_stock = create_stock_from_offer(offer, price=0)
-        user = users_factories.UserFactory()
-        booking1 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True, date_used=before_cutoff)
-        booking2 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True, date_used=before_cutoff)
-        booking3 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True, date_used=before_cutoff)
-        booking4 = create_booking(user=user, stock=free_stock, venue=venue, is_used=True, date_used=before_cutoff)
-        create_booking(user=user, stock=paying_stock, venue=venue, is_used=True, date_used=cutoff)
 
-        payment1 = create_payment(booking2, offerer, 10, payment_message_name="ABCD123")
+        user = users_factories.UserFactory(email="user@example.com")
+        offerer = offers_factories.OffererFactory()
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
+        paying_stock = offers_factories.ThingStockFactory(offer=offer)
+        free_stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        bookings_factories.BookingFactory(user=user, stock=paying_stock, isUsed=True, dateUsed=before_cutoff)
+        bookings_factories.BookingFactory(user=user, stock=paying_stock, isUsed=True, dateUsed=before_cutoff)
+        bookings_factories.BookingFactory(user=user, stock=free_stock, isUsed=True, dateUsed=before_cutoff)
+        bookings_factories.BookingFactory(user=user, stock=free_stock, isUsed=True, dateUsed=before_cutoff)
+        bookings_factories.BookingFactory(user=user, stock=paying_stock, isUsed=True, dateUsed=cutoff)
 
-        repository.save(payment1)
-        repository.save(booking1, booking3, booking4)
+        payment_message = payments_factories.PaymentMessageFactory(name="ABCD123")
+        payments_factories.PaymentFactory(paymentMessage=payment_message)
 
         initial_payment_count = Payment.query.count()
 
@@ -79,25 +70,23 @@ class GenerateNewPaymentsTest:
         # Given
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
-        offerer1 = create_offerer(siren="123456789")
-        offerer2 = create_offerer(siren="987654321")
-        repository.save(offerer1)
-        bank_information = create_bank_information(
-            bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1
-        )
-        venue1 = create_venue(offerer1, siret="12345678912345")
-        venue2 = create_venue(offerer2, siret="98765432154321")
-        offer1 = create_offer_with_thing_product(venue1)
-        offer2 = create_offer_with_thing_product(venue2)
-        paying_stock1 = create_stock_from_offer(offer1)
-        paying_stock2 = create_stock_from_offer(offer2)
-        free_stock1 = create_stock_from_offer(offer1, price=0)
-        user = users_factories.UserFactory()
-        booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff)
-        booking2 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff)
-        booking3 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, date_used=before_cutoff)
-        booking4 = create_booking(user=user, stock=free_stock1, venue=venue1, is_used=True, date_used=before_cutoff)
-        repository.save(booking1, booking2, booking3, booking4, bank_information)
+
+        user = users_factories.UserFactory(email="user@example.com")
+        offerer1 = offers_factories.OffererFactory(siren="123456789")
+        offerer2 = offers_factories.OffererFactory(siren="987654321")
+        offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
+        venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
+        venue2 = offers_factories.VenueFactory(managingOfferer=offerer2, siret="98765432154321")
+        offer1 = offers_factories.ThingOfferFactory(venue=venue1)
+        offer2 = offers_factories.ThingOfferFactory(venue=venue2)
+
+        paying_stock1 = offers_factories.ThingStockFactory(offer=offer1)
+        paying_stock2 = offers_factories.ThingStockFactory(offer=offer2)
+        free_stock1 = offers_factories.ThingStockFactory(offer=offer1, price=0)
+        bookings_factories.BookingFactory(user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff)
+        bookings_factories.BookingFactory(user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff)
+        bookings_factories.BookingFactory(user=user, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff)
+        bookings_factories.BookingFactory(user=user, stock=free_stock1, isUsed=True, dateUsed=before_cutoff)
 
         # When
         generate_new_payments(cutoff, batch_date=datetime.datetime.now())
@@ -111,33 +100,34 @@ class GenerateNewPaymentsTest:
         # Given
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
-        offerer1 = create_offerer(siren="123456789")
-        repository.save(offerer1)
-        bank_information = create_bank_information(
-            bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1
-        )
-        venue1 = create_venue(offerer1, siret="12345678912345")
-        venue2 = create_venue(offerer1, siret="98765432154321")
-        venue3 = create_venue(offerer1, siret="98123432154321")
-        offer1 = create_offer_with_thing_product(venue1)
-        offer2 = create_offer_with_thing_product(venue2)
-        offer3 = create_offer_with_thing_product(venue3)
-        paying_stock1 = create_stock_from_offer(offer1, price=10000)
-        paying_stock2 = create_stock_from_offer(offer2, price=10000)
-        paying_stock3 = create_stock_from_offer(offer3, price=10000)
-        user = users_factories.UserFactory()
+
+        user = users_factories.UserFactory(email="user@example.com")
+        offerer1 = offers_factories.OffererFactory(siren="123456789")
+        offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
+        venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
+        venue2 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="98765432154321")
+        venue3 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="98123432154321")
+        offer1 = offers_factories.ThingOfferFactory(venue=venue1)
+        offer2 = offers_factories.ThingOfferFactory(venue=venue2)
+        offer3 = offers_factories.ThingOfferFactory(venue=venue3)
+
+        paying_stock1 = offers_factories.ThingStockFactory(offer=offer1, price=10000)
+        paying_stock2 = offers_factories.ThingStockFactory(offer=offer2, price=10000)
+        paying_stock3 = offers_factories.ThingStockFactory(offer=offer3, price=10000)
+        offers_factories.ThingStockFactory(offer=offer1, price=0)
+
         user.deposit.amount = 50000
         repository.save(user.deposit)
-        booking1 = create_booking(
-            user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff, quantity=1
+
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        booking2 = create_booking(
-            user=user, stock=paying_stock2, venue=venue2, is_used=True, date_used=before_cutoff, quantity=1
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        booking3 = create_booking(
-            user=user, stock=paying_stock3, venue=venue3, is_used=True, date_used=before_cutoff, quantity=1
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        repository.save(booking1, booking2, booking3, bank_information)
 
         # When
         generate_new_payments(cutoff, batch_date=datetime.datetime.now())
@@ -153,33 +143,34 @@ class GenerateNewPaymentsTest:
         # Given
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
-        offerer1 = create_offerer(siren="123456789")
-        repository.save(offerer1)
-        bank_information = create_bank_information(
-            bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1
-        )
-        venue1 = create_venue(offerer1, siret="12345678912345")
-        venue2 = create_venue(offerer1, siret="98765432154321")
-        venue3 = create_venue(offerer1, siret="98123432154321")
-        offer1 = create_offer_with_thing_product(venue1)
-        offer2 = create_offer_with_thing_product(venue2)
-        offer3 = create_offer_with_thing_product(venue3)
-        paying_stock1 = create_stock_from_offer(offer1, price=10000)
-        paying_stock2 = create_stock_from_offer(offer2, price=10000)
-        paying_stock3 = create_stock_from_offer(offer3, price=30000)
-        user = users_factories.UserFactory()
+
+        user = users_factories.UserFactory(email="user@example.com")
+        offerer1 = offers_factories.OffererFactory(siren="123456789")
+        offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
+        venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
+        venue2 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="98765432154321")
+        venue3 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="98123432154321")
+        offer1 = offers_factories.ThingOfferFactory(venue=venue1)
+        offer2 = offers_factories.ThingOfferFactory(venue=venue2)
+        offer3 = offers_factories.ThingOfferFactory(venue=venue3)
+
+        paying_stock1 = offers_factories.ThingStockFactory(offer=offer1, price=10000)
+        paying_stock2 = offers_factories.ThingStockFactory(offer=offer2, price=10000)
+        paying_stock3 = offers_factories.ThingStockFactory(offer=offer3, price=30000)
+        offers_factories.ThingStockFactory(offer=offer1, price=0)
+
         user.deposit.amount = 50000
         repository.save(user.deposit)
-        booking1 = create_booking(
-            user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff, quantity=1
+
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        booking2 = create_booking(
-            user=user, stock=paying_stock2, venue=venue2, is_used=True, date_used=before_cutoff, quantity=1
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        booking3 = create_booking(
-            user=user, stock=paying_stock3, venue=venue3, is_used=True, date_used=before_cutoff, quantity=1
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        repository.save(booking1, booking2, booking3, bank_information)
 
         # When
         generate_new_payments(cutoff, batch_date=datetime.datetime.now())
@@ -195,27 +186,29 @@ class GenerateNewPaymentsTest:
         # Given
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
-        offerer1 = create_offerer(siren="123456789")
-        repository.save(offerer1)
-        bank_information = create_bank_information(
-            bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1
-        )
-        venue1 = create_venue(offerer1, siret="12345678912345")
-        venue2 = create_venue(offerer1, siret="98765432154321")
-        offer1 = create_offer_with_thing_product(venue1, thing_type=ThingType.LIVRE_EDITION, url=None)
-        offer2 = create_offer_with_thing_product(venue2, thing_type=ThingType.LIVRE_EDITION, url=None)
-        paying_stock1 = create_stock_from_offer(offer1, price=10000)
-        paying_stock2 = create_stock_from_offer(offer2, price=19990)
-        user = users_factories.UserFactory()
+
+        user = users_factories.UserFactory(email="user@example.com")
+        offerer1 = offers_factories.OffererFactory(siren="123456789")
+        offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
+        venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
+        venue2 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="98765432154321")
+        offer1 = offers_factories.ThingOfferFactory(venue=venue1)
+        offer2 = offers_factories.ThingOfferFactory(venue=venue2)
+
+        paying_stock1 = offers_factories.ThingStockFactory(offer=offer1, price=10000)
+        paying_stock2 = offers_factories.ThingStockFactory(offer=offer2, price=19990)
+
+        offers_factories.ThingStockFactory(offer=offer1, price=0)
+
         user.deposit.amount = 50000
         repository.save(user.deposit)
-        booking1 = create_booking(
-            user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff, quantity=1
+
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        booking2 = create_booking(
-            user=user, stock=paying_stock2, venue=venue2, is_used=True, date_used=before_cutoff, quantity=1
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        repository.save(booking1, booking2, bank_information)
 
         # When
         generate_new_payments(cutoff, batch_date=datetime.datetime.now())
@@ -231,33 +224,34 @@ class GenerateNewPaymentsTest:
         # Given
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
-        offerer1 = create_offerer(siren="123456789")
-        repository.save(offerer1)
-        bank_information = create_bank_information(
-            bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1
-        )
-        venue1 = create_venue(offerer1, siret="12345678912345")
-        venue2 = create_venue(offerer1, siret="98765432154321")
-        venue3 = create_venue(offerer1, siret="98123432154321")
-        offer1 = create_offer_with_thing_product(venue1, thing_type=ThingType.LIVRE_EDITION, url=None)
-        offer2 = create_offer_with_thing_product(venue2, thing_type=ThingType.LIVRE_EDITION, url=None)
-        offer3 = create_offer_with_thing_product(venue3, thing_type=ThingType.LIVRE_EDITION, url=None)
-        paying_stock1 = create_stock_from_offer(offer1, price=10000)
-        paying_stock2 = create_stock_from_offer(offer2, price=10000)
-        paying_stock3 = create_stock_from_offer(offer3, price=30000)
-        user = users_factories.UserFactory()
+
+        user = users_factories.UserFactory(email="user@example.com")
+        offerer1 = offers_factories.OffererFactory(siren="123456789")
+        offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
+        venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
+        venue2 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="98765432154321")
+        venue3 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="98123432154321")
+        offer1 = offers_factories.ThingOfferFactory(venue=venue1)
+        offer2 = offers_factories.ThingOfferFactory(venue=venue2)
+        offer3 = offers_factories.ThingOfferFactory(venue=venue3)
+
+        paying_stock1 = offers_factories.ThingStockFactory(offer=offer1, price=10000)
+        paying_stock2 = offers_factories.ThingStockFactory(offer=offer2, price=10000)
+        paying_stock3 = offers_factories.ThingStockFactory(offer=offer3, price=30000)
+        offers_factories.ThingStockFactory(offer=offer1, price=0)
+
         user.deposit.amount = 50000
         repository.save(user.deposit)
-        booking1 = create_booking(
-            user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff, quantity=1
+
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        booking2 = create_booking(
-            user=user, stock=paying_stock2, venue=venue2, is_used=True, date_used=before_cutoff, quantity=1
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        booking3 = create_booking(
-            user=user, stock=paying_stock3, venue=venue3, is_used=True, date_used=before_cutoff, quantity=1
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        repository.save(booking1, booking2, booking3, bank_information)
 
         # When
         generate_new_payments(cutoff, batch_date=datetime.datetime.now())
@@ -273,33 +267,37 @@ class GenerateNewPaymentsTest:
         # Given
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
-        offerer1 = create_offerer(siren="123456789")
-        repository.save(offerer1)
-        bank_information = create_bank_information(
-            bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1
+
+        user = users_factories.UserFactory(email="user@example.com")
+        offerer1 = offers_factories.OffererFactory(siren="123456789")
+        offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
+        venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
+        venue2 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="98765432154321")
+        venue3 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="98123432154321")
+        product = offers_factories.ThingProductFactory(
+            type=str(ThingType.LIVRE_EDITION),
         )
-        venue1 = create_venue(offerer1, siret="12345678912345")
-        venue2 = create_venue(offerer1, siret="98765432154321")
-        venue3 = create_venue(offerer1, siret="98123432154321")
-        offer1 = create_offer_with_thing_product(venue1, thing_type=ThingType.LIVRE_EDITION, url=None)
-        offer2 = create_offer_with_thing_product(venue2, thing_type=ThingType.LIVRE_EDITION, url=None)
-        offer3 = create_offer_with_thing_product(venue3, thing_type=ThingType.LIVRE_EDITION, url=None)
-        paying_stock1 = create_stock_from_offer(offer1, price=10000)
-        paying_stock2 = create_stock_from_offer(offer2, price=10000)
-        paying_stock3 = create_stock_from_offer(offer3, price=50000)
-        user = users_factories.UserFactory()
+        offer1 = offers_factories.ThingOfferFactory(venue=venue1, product=product)
+        offer2 = offers_factories.ThingOfferFactory(venue=venue2, product=product)
+        offer3 = offers_factories.ThingOfferFactory(venue=venue3, product=product)
+
+        paying_stock1 = offers_factories.ThingStockFactory(offer=offer1, price=10000)
+        paying_stock2 = offers_factories.ThingStockFactory(offer=offer2, price=10000)
+        paying_stock3 = offers_factories.ThingStockFactory(offer=offer3, price=50000)
+        offers_factories.ThingStockFactory(offer=offer1, price=0)
+
         user.deposit.amount = 80000
         repository.save(user.deposit)
-        booking1 = create_booking(
-            user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff, quantity=1
+
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        booking2 = create_booking(
-            user=user, stock=paying_stock2, venue=venue2, is_used=True, date_used=before_cutoff, quantity=1
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        booking3 = create_booking(
-            user=user, stock=paying_stock3, venue=venue3, is_used=True, date_used=before_cutoff, quantity=1
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        repository.save(booking1, booking2, booking3, bank_information)
 
         # When
         generate_new_payments(cutoff, batch_date=datetime.datetime.now())
@@ -315,33 +313,37 @@ class GenerateNewPaymentsTest:
         # Given
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
-        offerer1 = create_offerer(siren="123456789")
-        repository.save(offerer1)
-        bank_information = create_bank_information(
-            bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1
+
+        user = users_factories.UserFactory(email="user@example.com")
+        offerer1 = offers_factories.OffererFactory(siren="123456789")
+        offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
+        venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
+        venue2 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="98765432154321")
+        venue3 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="98123432154321")
+        product = offers_factories.ThingProductFactory(
+            type=str(ThingType.LIVRE_EDITION),
         )
-        venue1 = create_venue(offerer1, siret="12345678912345")
-        venue2 = create_venue(offerer1, siret="98765432154321")
-        venue3 = create_venue(offerer1, siret="98123432154321")
-        offer1 = create_offer_with_thing_product(venue1, thing_type=ThingType.LIVRE_EDITION, url=None)
-        offer2 = create_offer_with_thing_product(venue2, thing_type=ThingType.LIVRE_EDITION, url=None)
-        offer3 = create_offer_with_thing_product(venue3, thing_type=ThingType.LIVRE_EDITION, url=None)
-        paying_stock1 = create_stock_from_offer(offer1, price=10000)
-        paying_stock2 = create_stock_from_offer(offer2, price=10000)
-        paying_stock3 = create_stock_from_offer(offer3, price=100000)
-        user = users_factories.UserFactory()
+        offer1 = offers_factories.ThingOfferFactory(venue=venue1, product=product)
+        offer2 = offers_factories.ThingOfferFactory(venue=venue2, product=product)
+        offer3 = offers_factories.ThingOfferFactory(venue=venue3, product=product)
+
+        paying_stock1 = offers_factories.ThingStockFactory(offer=offer1, price=10000)
+        paying_stock2 = offers_factories.ThingStockFactory(offer=offer2, price=10000)
+        paying_stock3 = offers_factories.ThingStockFactory(offer=offer3, price=100000)
+        offers_factories.ThingStockFactory(offer=offer1, price=0)
+
         user.deposit.amount = 120000
         repository.save(user.deposit)
-        booking1 = create_booking(
-            user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff, quantity=1
+
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        booking2 = create_booking(
-            user=user, stock=paying_stock2, venue=venue2, is_used=True, date_used=before_cutoff, quantity=1
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        booking3 = create_booking(
-            user=user, stock=paying_stock3, venue=venue3, is_used=True, date_used=before_cutoff, quantity=1
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
-        repository.save(booking1, booking2, booking3, bank_information)
 
         # When
         generate_new_payments(cutoff, batch_date=datetime.datetime.now())

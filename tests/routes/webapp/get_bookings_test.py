@@ -2,14 +2,11 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
-from pcapi.repository import repository
+from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.offers.factories import ThingOfferFactory
+from pcapi.core.offers.factories import ThingStockFactory
+from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.users.factories import UserFactory
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
@@ -23,19 +20,16 @@ class Returns200Test:
         self, qr_code_is_active, app
     ):
         # Given
-        user1 = create_user(email="user1+plus@example.com")
-        user2 = create_user(email="user2+plus@example.com")
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, price=0)
-        offer2 = create_offer_with_thing_product(venue)
-        stock2 = create_stock(offer=offer2, price=0)
-        booking1 = create_booking(user=user1, stock=stock, token="ABCDEF", venue=venue)
-        booking2 = create_booking(user=user2, stock=stock, token="GHIJK", venue=venue)
-        booking3 = create_booking(user=user1, stock=stock2, token="BBBBB", venue=venue)
-
-        repository.save(booking1, booking2, booking3)
+        user1 = UserFactory(email="user1+plus@example.com")
+        user2 = UserFactory(email="user2+plus@example.com")
+        venue = VenueFactory(latitude=None, longitude=None)
+        offer = ThingOfferFactory(venue=venue)
+        offer2 = ThingOfferFactory()
+        stock = ThingStockFactory(offer=offer, price=0, quantity=None)
+        stock2 = ThingStockFactory(offer=offer2, price=0)
+        booking1 = BookingFactory(user=user1, stock=stock, token="ABCDEF")
+        BookingFactory(user=user2, stock=stock, token="GHIJK")
+        booking3 = BookingFactory(user=user1, stock=stock2, token="BBBBB")
 
         # When
         response = TestClient(app.test_client()).with_auth(user1.email).get("/bookings")
@@ -66,16 +60,16 @@ class Returns200Test:
                 "id": humanize(stock.id),
                 "isEventExpired": False,
                 "offer": {
-                    "description": None,
+                    "description": offer.description,
                     "durationMinutes": None,
-                    "extraData": {"author": "Test Author"},
+                    "extraData": offer.extraData,
                     "id": humanize(offer.id),
                     "isBookable": True,
                     "isDigital": False,
                     "isDuo": False,
                     "isEvent": False,
                     "isNational": False,
-                    "name": "Test Book",
+                    "name": offer.product.name,
                     "offerType": {
                         "appLabel": "Film",
                         "canExpire": True,
@@ -110,14 +104,14 @@ class Returns200Test:
                     ],
                     "thumbUrl": None,
                     "venue": {
-                        "address": "123 rue de Paris",
-                        "city": "Montreuil",
-                        "departementCode": "93",
+                        "address": venue.address,
+                        "city": venue.city,
+                        "departementCode": venue.departementCode,
                         "id": humanize(venue.id),
                         "latitude": None,
                         "longitude": None,
-                        "name": "La petite librairie",
-                        "postalCode": "93100",
+                        "name": venue.name,
+                        "postalCode": venue.postalCode,
                     },
                     "venueId": humanize(venue.id),
                     "withdrawalDetails": None,
@@ -134,19 +128,16 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_bookings_and_qr_code_feature_is_active(self, qr_code_is_active, app):
         # Given
-        user1 = create_user(email="user1+plus@example.com")
-        user2 = create_user(email="user2+plus@example.com")
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=offer, price=0)
-        offer2 = create_offer_with_thing_product(venue)
-        stock2 = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=offer2, price=0)
-        booking1 = create_booking(user=user1, stock=stock, venue=venue, token="ABCDEF")
-        booking2 = create_booking(user=user2, stock=stock, venue=venue, token="GHIJK")
-        booking3 = create_booking(user=user1, stock=stock2, venue=venue, token="BBBBB")
-
-        repository.save(booking1, booking2, booking3)
+        user1 = UserFactory(email="user1+plus@example.com")
+        user2 = UserFactory(email="user2+plus@example.com")
+        venue = VenueFactory(latitude=None, longitude=None)
+        offer = ThingOfferFactory(venue=venue)
+        offer2 = ThingOfferFactory()
+        stock = ThingStockFactory(offer=offer, price=0, quantity=None)
+        stock2 = ThingStockFactory(offer=offer2, price=0)
+        BookingFactory(user=user1, stock=stock, token="ABCDEF")
+        BookingFactory(user=user2, stock=stock, token="GHIJK")
+        BookingFactory(user=user1, stock=stock2, token="BBBBB")
 
         # When
         response = TestClient(app.test_client()).with_auth(user1.email).get("/bookings")

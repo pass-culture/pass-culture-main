@@ -62,6 +62,8 @@ def test_too_many_bookings_postgresql_exception():
         booking2 = models.Booking()
         booking2.user = users_factories.UserFactory()
         booking2.stock = booking1.stock
+        booking2.offerer = booking1.stock.offer.venue.managingOfferer
+        booking2.venue = booking1.stock.offer.venue
         booking2.quantity = 1
         booking2.amount = booking1.stock.price
         booking2.token = "123456"

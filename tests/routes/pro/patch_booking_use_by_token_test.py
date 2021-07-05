@@ -14,7 +14,6 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.models import Booking
-from pcapi.models import EventType
 from pcapi.repository import repository
 from pcapi.utils.token import random_token
 
@@ -27,7 +26,7 @@ API_KEY_VALUE = random_token(64)
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
     class WithApiKeyAuthTest:
-        def when_api_key_is_provided_and_rights_and_regular_offer(self, app):
+        def test_when_api_key_is_provided_and_rights_and_regular_offer(self, app):
             booking = BookingFactory(token="ABCDEF")
             offerer = booking.stock.offer.venue.managingOfferer
             ApiKeyFactory(offerer=offerer)
@@ -45,7 +44,7 @@ class Returns204Test:
             booking = Booking.query.one()
             assert booking.isUsed
 
-        def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
+        def test_expect_booking_to_be_used_with_non_standard_origin_header(self, app):
             booking = BookingFactory(token="ABCDEF")
             offerer = booking.stock.offer.venue.managingOfferer
             ApiKeyFactory(offerer=offerer)
@@ -64,7 +63,7 @@ class Returns204Test:
             assert booking.isUsed
 
     class WithBasicAuthTest:
-        def when_user_is_logged_in_and_regular_offer(self, app):
+        def test_when_user_is_logged_in_and_regular_offer(self, app):
             booking = BookingFactory(token="ABCDEF")
             pro_user = UserFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
@@ -77,7 +76,7 @@ class Returns204Test:
             booking = Booking.query.one()
             assert booking.isUsed
 
-        def when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, app):
+        def test_when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, app):
             booking = BookingFactory(token="ABCDEF")
             pro_user = UserFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
@@ -93,7 +92,7 @@ class Returns204Test:
 
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
-    def when_user_not_logged_in_and_doesnt_give_api_key(self, app):
+    def test_when_user_not_logged_in_and_doesnt_give_api_key(self, app):
         # Given
         user = create_user(email="user@example.com")
         offerer = create_offerer()
@@ -111,7 +110,7 @@ class Returns401Test:
         assert response.status_code == 401
 
     @pytest.mark.usefixtures("db_session")
-    def when_user_not_logged_in_and_not_existing_api_key_given(self, app):
+    def test_when_user_not_logged_in_and_not_existing_api_key_given(self, app):
         # Given
         user = create_user(email="user@example.com")
         pro_user = create_user(email="pro@example.com")
@@ -136,18 +135,13 @@ class Returns401Test:
 class Returns403Test:
     class WithApiKeyAuthTest:
         @pytest.mark.usefixtures("db_session")
-        def when_api_key_given_not_related_to_booking_offerer(self, app):
+        def test_when_api_key_given_not_related_to_booking_offerer(self, app):
             # Given
-            user = create_user(email="user@example.com")
-            pro_user = create_user(email="pro@example.com")
-            offerer = create_offerer()
-            offerer2 = create_offerer(siren="987654321")
-            user_offerer = create_user_offerer(pro_user, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.CINEMA)
-            booking = create_booking(user=user, stock=stock, venue=venue)
-
-            repository.save(pro_user, booking, user_offerer, offerer2)
+            user = UserFactory(email="user@example.com")
+            offerer2 = offers_factories.OffererFactory(siren="987654321")
+            offer = offers_factories.EventOfferFactory(type="EventType.CINEMA")
+            stock = offers_factories.EventStockFactory(offer=offer, price=0)
+            booking = BookingFactory(user=user, stock=stock)
 
             ApiKeyFactory(offerer=offerer2)
 
@@ -164,7 +158,7 @@ class Returns403Test:
             assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
         @pytest.mark.usefixtures("db_session")
-        def when_api_key_is_provided_and_booking_has_been_cancelled_already(self, app):
+        def test_when_api_key_is_provided_and_booking_has_been_cancelled_already(self, app):
             # Given
             user = create_user()
             pro_user = create_user(email="pro@example.com")
@@ -186,7 +180,7 @@ class Returns403Test:
 
     class WithBasicAuthTest:
         @pytest.mark.usefixtures("db_session")
-        def when_user_is_not_attached_to_linked_offerer(self, app):
+        def test_when_user_is_not_attached_to_linked_offerer(self, app):
             # Given
             user = create_user()
             pro_user = create_user(email="pro@example.com")
@@ -207,7 +201,7 @@ class Returns403Test:
             assert Booking.query.get(booking_id).isUsed is False
 
         @pytest.mark.usefixtures("db_session")
-        def when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
+        def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
             # Given
             admin = UserFactory(isAdmin=True)
             booking = BookingFactory(isCancelled=True)
@@ -224,7 +218,7 @@ class Returns403Test:
 
 class Returns404Test:
     @pytest.mark.usefixtures("db_session")
-    def when_booking_is_not_provided_at_all(self, app):
+    def test_when_booking_is_not_provided_at_all(self, app):
         # Given
         user = create_user(email="user@example.com")
         offerer = create_offerer()
@@ -243,7 +237,7 @@ class Returns404Test:
 
     class WithApiKeyAuthTest:
         @pytest.mark.usefixtures("db_session")
-        def when_api_key_is_provided_and_booking_does_not_exist(self, app):
+        def test_when_api_key_is_provided_and_booking_does_not_exist(self, app):
             # Given
             user = create_user()
             offerer = create_offerer()
@@ -268,7 +262,7 @@ class Returns404Test:
 
     class WithBasicAuthTest:
         @pytest.mark.usefixtures("db_session")
-        def when_user_is_logged_in_and_booking_does_not_exist(self, app):
+        def test_when_user_is_logged_in_and_booking_does_not_exist(self, app):
             # Given
             user = create_user()
             pro_user = create_user(email="pro@example.com")

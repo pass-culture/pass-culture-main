@@ -11,22 +11,14 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import find_by_pro_user_id
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.payments.factories import PaymentFactory
+from pcapi.core.payments.factories import PaymentStatusFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
-from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_stock_from_offer
-from pcapi.model_creators.specific_creators import create_stock_with_event_offer
-from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models import Booking
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
@@ -48,15 +40,12 @@ ONE_WEEK_FROM_NOW = NOW + timedelta(weeks=1)
 @pytest.mark.usefixtures("db_session")
 def test_find_all_ongoing_bookings(app):
     # Given
-    offerer = create_offerer()
-    repository.save(offerer)
-    venue = create_venue(offerer)
-    stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
-    user = create_user()
-    cancelled_booking = create_booking(user=user, stock=stock, is_cancelled=True)
-    validated_booking = create_booking(user=user, stock=stock, is_used=True)
-    ongoing_booking = create_booking(user=user, stock=stock, is_cancelled=False, is_used=False)
-    repository.save(ongoing_booking, validated_booking, cancelled_booking)
+    user = users_factories.UserFactory()
+    offer = offers_factories.ThingOfferFactory(isActive=True, url="http://url.com", product__thumbCount=1)
+    stock = offers_factories.ThingStockFactory(offer=offer, price=0, quantity=10)
+    bookings_factories.BookingFactory(user=user, stock=stock, isCancelled=True)
+    bookings_factories.BookingFactory(user=user, stock=stock, isUsed=True)
+    ongoing_booking = bookings_factories.BookingFactory(user=user, stock=stock, isCancelled=False, isUsed=False)
 
     # When
     all_ongoing_bookings = booking_repository.find_ongoing_bookings_by_stock(stock.id)
@@ -68,15 +57,11 @@ def test_find_all_ongoing_bookings(app):
 @pytest.mark.usefixtures("db_session")
 def test_find_not_cancelled_bookings_by_stock(app):
     # Given
-    offerer = create_offerer()
-    repository.save(offerer)
-    venue = create_venue(offerer)
-    stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
-    user = create_user()
-    cancelled_booking = create_booking(user=user, stock=stock, is_cancelled=True)
-    validated_booking = create_booking(user=user, stock=stock, is_used=True)
-    not_cancelled_booking = create_booking(user=user, stock=stock, is_cancelled=False, is_used=False)
-    repository.save(not_cancelled_booking, validated_booking, cancelled_booking)
+    user = users_factories.UserFactory()
+    stock = offers_factories.ThingStockFactory(price=0)
+    bookings_factories.BookingFactory(user=user, stock=stock, isCancelled=True)
+    validated_booking = bookings_factories.BookingFactory(user=user, stock=stock, isUsed=True)
+    not_cancelled_booking = bookings_factories.BookingFactory(user=user, stock=stock, isUsed=False, isCancelled=False)
 
     # When
     all_not_cancelled_bookings = booking_repository.find_not_cancelled_bookings_by_stock(stock)
@@ -92,47 +77,37 @@ class FindPaymentEligibleBookingsForVenueTest:
         cutoff = datetime.now()
         before_cutoff = cutoff - timedelta(days=1)
         beneficiary = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory(siren="123456789")
 
-        offerer = create_offerer(siren="123456789")
-        venue = create_venue(offerer, siret=f"{offerer.siren}12345")
-        past_event_stock = create_stock_with_event_offer(
-            offerer=offerer, venue=venue, beginning_datetime=TWO_DAYS_AGO, booking_limit_datetime=THREE_DAYS_AGO
+        venue = offers_factories.VenueFactory(managingOfferer=offerer, siret=f"{offerer.siren}12345")
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        past_event_stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=TWO_DAYS_AGO, bookingLimitDatetime=THREE_DAYS_AGO
         )
-        future_event_stock = create_stock_with_event_offer(
-            offerer=offerer, venue=venue, beginning_datetime=ONE_WEEK_FROM_NOW
-        )
-        past_event_booking = create_booking(
-            user=beneficiary,
-            is_used=True,
-            date_used=before_cutoff,
-            stock=past_event_stock,
-            venue=venue,
-            date_created=YESTERDAY,
-        )
-        future_event_booking = create_booking(
-            user=beneficiary, is_used=True, date_used=before_cutoff, stock=future_event_stock, venue=venue
-        )
-        thing_booking = create_booking(
-            user=beneficiary, is_used=True, date_used=before_cutoff, venue=venue, date_created=NOW
+        future_event_stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=ONE_WEEK_FROM_NOW)
+
+        past_event_booking = bookings_factories.BookingFactory(
+            user=beneficiary, stock=past_event_stock, dateUsed=before_cutoff, dateCreated=YESTERDAY, isUsed=True
         )
 
-        another_offerer = create_offerer(siren="987654321")
-        another_venue = create_venue(another_offerer, siret=f"{another_offerer.siren}12345")
-        another_thing_booking = create_booking(
-            user=beneficiary, is_used=True, date_used=before_cutoff, venue=another_venue
-        )
-        another_past_event_stock = create_stock_with_event_offer(
-            offerer=another_offerer,
-            venue=another_venue,
-            beginning_datetime=TWO_DAYS_AGO,
-            booking_limit_datetime=THREE_DAYS_AGO,
-        )
-        another_past_event_booking = create_booking(
-            user=beneficiary, is_used=True, date_used=before_cutoff, stock=another_past_event_stock, venue=venue
+        future_event_booking = bookings_factories.BookingFactory(
+            user=beneficiary, stock=future_event_stock, dateUsed=before_cutoff, dateCreated=YESTERDAY, isUsed=True
         )
 
-        repository.save(
-            past_event_booking, future_event_booking, thing_booking, another_thing_booking, another_past_event_booking
+        offer_thing = offers_factories.ThingOfferFactory(venue=venue)
+        stock_thing = offers_factories.ThingStockFactory(offer=offer_thing)
+        thing_booking = bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock_thing, dateUsed=before_cutoff, dateCreated=NOW, isUsed=True
+        )
+
+        another_offerer = offers_factories.OffererFactory(siren="987654321")
+        another_venue = offers_factories.VenueFactory(managingOfferer=offerer, siret=f"{another_offerer.siren}12345")
+        another_offer = offers_factories.ThingOfferFactory(venue=another_venue)
+        another_past_event_stock = offers_factories.ThingStockFactory(
+            offer=another_offer, beginningDatetime=TWO_DAYS_AGO, bookingLimitDatetime=THREE_DAYS_AGO
+        )
+        bookings_factories.BookingFactory(
+            user=beneficiary, stock=another_past_event_stock, dateUsed=before_cutoff, dateCreated=NOW, isUsed=True
         )
 
         # When
@@ -161,12 +136,12 @@ class FindByTest:
         @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_is_known(self, app: fixture):
             # given
-            user = create_user()
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user=user, stock=stock)
-            repository.save(booking)
+            user = users_factories.UserFactory()
+            offerer = offers_factories.OffererFactory()
+            offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+            stock = offers_factories.ThingStockFactory(price=0)
+            booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
             # when
             result = booking_repository.find_by(booking.token)
@@ -177,12 +152,12 @@ class FindByTest:
         @pytest.mark.usefixtures("db_session")
         def test_raises_an_exception_if_token_is_unknown(self, app: fixture):
             # given
-            user = create_user()
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user=user, stock=stock)
-            repository.save(booking)
+            user = users_factories.UserFactory()
+            offerer = offers_factories.OffererFactory()
+            offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+            stock = offers_factories.ThingStockFactory(price=0)
+            bookings_factories.BookingFactory(user=user, stock=stock)
 
             # when
             with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
@@ -195,12 +170,12 @@ class FindByTest:
         @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_and_email_are_known(self, app: fixture):
             # given
-            user = create_user(email="user@example.com")
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user=user, stock=stock)
-            repository.save(booking)
+            user = users_factories.UserFactory(email="user@example.com")
+            offerer = offers_factories.OffererFactory()
+            offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+            stock = offers_factories.ThingStockFactory(price=0)
+            booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
             # when
             result = booking_repository.find_by(booking.token, email="user@example.com")
@@ -211,12 +186,12 @@ class FindByTest:
         @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_is_known_and_email_is_known_case_insensitively(self, app: fixture):
             # given
-            user = create_user(email="USer@eXAMple.COm")
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user=user, stock=stock)
-            repository.save(booking)
+            user = users_factories.UserFactory(email="USer@eXAMple.COm")
+            offerer = offers_factories.OffererFactory()
+            offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+            stock = offers_factories.ThingStockFactory(price=0)
+            booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
             # when
             result = booking_repository.find_by(booking.token, email="USER@example.COM")
@@ -227,12 +202,12 @@ class FindByTest:
         @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_is_known_and_email_is_known_with_trailing_spaces(self, app: fixture):
             # given
-            user = create_user(email="user@example.com")
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user=user, stock=stock)
-            repository.save(booking)
+            user = users_factories.UserFactory(email="user@example.com")
+            offerer = offers_factories.OffererFactory()
+            offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+            stock = offers_factories.ThingStockFactory(price=0)
+            booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
             # when
             result = booking_repository.find_by(booking.token, email="   user@example.com  ")
@@ -243,12 +218,12 @@ class FindByTest:
         @pytest.mark.usefixtures("db_session")
         def test_raises_an_exception_if_token_is_known_but_email_is_unknown(self, app: fixture):
             # given
-            user = create_user(email="user@example.com")
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user=user, stock=stock)
-            repository.save(booking)
+            user = users_factories.UserFactory(email="user@example.com")
+            offerer = offers_factories.OffererFactory()
+            offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+            stock = offers_factories.ThingStockFactory(price=0)
+            booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
             # when
             with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
@@ -261,12 +236,12 @@ class FindByTest:
         @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_and_email_and_offer_id_for_thing_are_known(self, app: fixture):
             # given
-            user = create_user(email="user@example.com")
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user=user, stock=stock)
-            repository.save(booking)
+            user = users_factories.UserFactory(email="user@example.com")
+            offerer = offers_factories.OffererFactory()
+            offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+            stock = offers_factories.ThingStockFactory(price=0)
+            booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
             # when
             result = booking_repository.find_by(booking.token, email="user@example.com", offer_id=stock.offer.id)
@@ -277,12 +252,12 @@ class FindByTest:
         @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_and_email_and_offer_id_for_event_are_known(self, app: fixture):
             # given
-            user = create_user(email="user@example.com")
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0)
-            booking = create_booking(user=user, stock=stock, venue=venue)
-            repository.save(booking)
+            user = users_factories.UserFactory(email="user@example.com")
+            offerer = offers_factories.OffererFactory()
+            offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+            stock = offers_factories.ThingStockFactory(price=0)
+            booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
             # when
             result = booking_repository.find_by(booking.token, email="user@example.com", offer_id=stock.offer.id)
@@ -293,12 +268,12 @@ class FindByTest:
         @pytest.mark.usefixtures("db_session")
         def test_returns_booking_if_token_and_email_are_known_but_offer_id_is_unknown(self, app: fixture):
             # given
-            user = create_user(email="user@example.com")
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue, price=0)
-            booking = create_booking(user=user, stock=stock)
-            repository.save(booking)
+            user = users_factories.UserFactory(email="user@example.com")
+            offerer = offers_factories.OffererFactory()
+            offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+            stock = offers_factories.ThingStockFactory(price=0)
+            booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
             # when
             with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
@@ -312,14 +287,15 @@ class SaveBookingTest:
     @pytest.mark.usefixtures("db_session")
     def test_saves_booking_when_enough_stocks_after_cancellation(self, app: fixture):
         # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, price=0, quantity=1)
-        user_cancelled = create_user(email="cancelled@example.com")
-        user_booked = create_user(email="booked@example.com")
-        cancelled_booking = create_booking(user=user_cancelled, stock=stock, is_cancelled=True)
-        repository.save(cancelled_booking)
+        user = users_factories.UserFactory(email="user@example.com")
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        stock = offers_factories.ThingStockFactory(price=0, quantity=1)
+        user_cancelled = users_factories.UserFactory(email="cancelled@example.com")
+        user_booked = users_factories.UserFactory(email="booked@example.com")
+
+        bookings_factories.BookingFactory(user=user_cancelled, stock=stock, isCancelled=True)
         booking = create_booking(user=user_booked, stock=stock, is_cancelled=False)
 
         # When
@@ -332,15 +308,16 @@ class SaveBookingTest:
     @pytest.mark.usefixtures("db_session")
     def test_raises_too_many_bookings_error_when_not_enough_stocks(self, app: fixture):
         # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, price=0, quantity=1)
-        user1 = create_user(email="cancelled@example.com")
-        user2 = create_user(email="booked@example.com")
-        booking1 = create_booking(user=user1, stock=stock, is_cancelled=False)
-        repository.save(booking1)
-        booking2 = create_booking(user=user2, stock=stock, is_cancelled=False)
+        user = users_factories.UserFactory(email="user@example.com")
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        stock = offers_factories.ThingStockFactory(price=0, quantity=1)
+        user_cancelled = users_factories.UserFactory(email="cancelled@example.com")
+        user_booked = users_factories.UserFactory(email="booked@example.com")
+
+        bookings_factories.BookingFactory(user=user_cancelled, stock=stock, isCancelled=False)
+        booking2 = create_booking(user=user_booked, stock=stock, is_cancelled=False)
 
         # When
         with pytest.raises(ApiErrors) as api_errors:
@@ -412,17 +389,19 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
         # Given
-        beneficiary = users_factories.UserFactory(email="beneficiary@example.com", firstName="Ron", lastName="Weasley")
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer, idx=15)
-        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, name="Harry Potter")
+        beneficiary = users_factories.UserFactory(email="beneficiary@example.com", firstName="Ron", lastName="Weasley")
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
-        booking = create_booking(
-            user=beneficiary, stock=stock, date_created=booking_date, token="ABCDEF", is_used=True, amount=12
+        bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, dateCreated=booking_date, token="ABCDEF", isUsed=True, amount=12
         )
-        repository.save(user_offerer, booking)
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
@@ -452,15 +431,16 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
         # Given
-        beneficiary = users_factories.UserFactory()
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user=beneficiary, stock=stock, quantity=2)
-        repository.save(user_offerer, booking)
+        beneficiary = users_factories.UserFactory(email="beneficiary@example.com", firstName="Ron", lastName="Weasley")
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
@@ -473,18 +453,21 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_reimbursed_when_a_payment_was_sent(self, app: fixture):
         # Given
-        beneficiary = users_factories.UserFactory(email="beneficiary@example.com", firstName="Ron", lastName="Weasley")
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, name="Harry Potter")
+        beneficiary = users_factories.UserFactory(email="beneficiary@example.com", firstName="Ron", lastName="Weasley")
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = create_booking(
-            user=beneficiary, stock=stock, date_created=yesterday, token="ABCDEF", is_cancelled=True
+        booking = bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCDEF", isCancelled=True
         )
-        payment = create_payment(booking=booking, offerer=offerer, status=TransactionStatus.SENT)
-        repository.save(user_offerer, payment)
+        payment = PaymentFactory(booking=booking)
+        PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT)
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
@@ -507,17 +490,19 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture):
         # Given
-        beneficiary = users_factories.UserFactory(email="beneficiary@example.com", firstName="Ron", lastName="Weasley")
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer, idx="15")
-        stock = create_stock_with_event_offer(
-            offerer=offerer, venue=venue, price=0, beginning_datetime=datetime.utcnow() + timedelta(hours=98)
+        beneficiary = users_factories.UserFactory(email="beneficiary@example.com", firstName="Ron", lastName="Weasley")
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(
+            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
         )
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token="ABCDEF")
-        repository.save(user_offerer, booking)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCDEF")
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
@@ -548,15 +533,21 @@ class FindByProUserIdTest:
         self, app: fixture
     ):
         # Given
-        beneficiary = users_factories.UserFactory(email="beneficiary@example.com")
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer, idx="15")
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
+        beneficiary = users_factories.UserFactory(email="beneficiary@example.com", firstName="Ron", lastName="Weasley")
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(
+            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+        )
         more_than_two_days_ago = datetime.utcnow() - timedelta(days=3)
-        booking = create_booking(user=beneficiary, stock=stock, date_created=more_than_two_days_ago, token="ABCDEF")
-        repository.save(user_offerer, booking)
+        bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, dateCreated=more_than_two_days_ago, token="ABCDEF"
+        )
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
@@ -569,26 +560,30 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_payment_date_when_booking_has_been_reimbursed(self, app: fixture):
         # Given
-        beneficiary = users_factories.UserFactory()
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer, idx="15")
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=5)
+        beneficiary = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.EventProductFactory(name="Harry Potter")
+        offer = offers_factories.EventOfferFactory(venue=venue, product=product)
+        stock = offers_factories.EventStockFactory(offer=offer, price=5)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = create_booking(
+        booking = bookings_factories.BookingFactory(
             user=beneficiary,
             stock=stock,
-            date_created=yesterday,
+            dateCreated=yesterday,
             token="ABCDEF",
+            isUsed=True,
+            dateUsed=yesterday,
             amount=5,
-            is_used=True,
-            date_used=yesterday,
         )
+
         payment = create_payment(
             booking=booking, offerer=offerer, amount=5, status=TransactionStatus.SENT, status_date=yesterday
         )
-        repository.save(user_offerer, payment)
+        repository.save(payment, payment)
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
@@ -604,24 +599,26 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app: fixture):
         # Given
-        beneficiary = users_factories.UserFactory()
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer, idx="15")
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=5)
+        beneficiary = users_factories.UserFactory(email="beneficiary@example.com", firstName="Ron", lastName="Weasley")
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=5)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = create_booking(
+        bookings_factories.BookingFactory(
             user=beneficiary,
             stock=stock,
-            date_created=yesterday,
+            dateCreated=yesterday,
             token="ABCDEF",
             amount=5,
-            is_used=True,
-            date_used=yesterday,
-            is_cancelled=True,
+            isUsed=True,
+            dateUsed=yesterday,
+            isCancelled=True,
         )
-        repository.save(user_offerer, booking)
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
@@ -637,24 +634,26 @@ class FindByProUserIdTest:
         self, app: fixture
     ):
         # Given
-        beneficiary = users_factories.UserFactory()
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer, idx="15")
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=5)
+        beneficiary = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.EventProductFactory()
+        offer = offers_factories.EventOfferFactory(venue=venue, product=product)
+        stock = offers_factories.EventStockFactory(offer=offer, price=5)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = create_booking(
+        bookings_factories.BookingFactory(
             user=beneficiary,
             stock=stock,
-            date_created=yesterday,
+            dateCreated=yesterday,
             token="ABCDEF",
             amount=5,
-            is_used=True,
-            date_used=yesterday,
-            is_cancelled=False,
+            isUsed=True,
+            dateUsed=yesterday,
+            isCancelled=False,
         )
-        repository.save(user_offerer, booking)
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
@@ -671,22 +670,25 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app: fixture):
         # Given
-        beneficiary = users_factories.UserFactory()
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, price=0)
+        beneficiary = users_factories.UserFactory(email="beneficiary@example.com", firstName="Ron", lastName="Weasley")
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         today = datetime.utcnow()
-        booking = create_booking(user=beneficiary, stock=stock, token="ABCD", date_created=today)
-        offerer2 = create_offerer(siren="8765432")
-        user_offerer2 = create_user_offerer(user, offerer2)
-        venue2 = create_venue(offerer2, siret="8765432098765")
-        offer2 = create_offer_with_thing_product(venue2)
-        stock2 = create_stock(offer=offer2, price=0)
-        booking2 = create_booking(user=beneficiary, stock=stock2, token="FGHI", date_created=today)
-        repository.save(user_offerer, user_offerer2, booking, booking2)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
+
+        offerer2 = offers_factories.OffererFactory(siren="8765432")
+        offers_factories.UserOffererFactory(user=user, offerer=offerer2)
+
+        venue2 = offers_factories.VenueFactory(managingOfferer=offerer, siret="8765432098765")
+        offer2 = offers_factories.ThingOfferFactory(venue=venue2)
+        stock2 = offers_factories.ThingStockFactory(offer=offer2, price=0)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
@@ -697,18 +699,18 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_from_first_page(self, app: fixture):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com")
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
+        beneficiary = users_factories.UserFactory(email="beneficiary@example.com")
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
 
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.EventOfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(offer=offer, price=0)
         today = datetime.utcnow()
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = create_booking(user=beneficiary, stock=stock, token="ABCD", date_created=yesterday)
-        booking2 = create_booking(user=beneficiary, stock=stock, token="FGHI", date_created=today)
-        repository.save(user_offerer, booking, booking2)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCD")
+        booking2 = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id, page=1, per_page_limit=1)
@@ -723,18 +725,19 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_from_second_page_without_page_count(self, app: fixture):
         # Given
-        beneficiary = users_factories.UserFactory()
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
+        beneficiary = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.EventOfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(offer=offer, price=0)
 
         today = datetime.utcnow()
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = create_booking(user=beneficiary, stock=stock, token="ABCD", date_created=yesterday)
-        booking2 = create_booking(user=beneficiary, stock=stock, token="FGHI", date_created=today)
-        repository.save(user_offerer, booking, booking2)
+        booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock, token="ABCD", dateCreated=yesterday)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock, token="FGHI", dateCreated=today)
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id, page=2, per_page_limit=1)
@@ -749,15 +752,16 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
         # Given
-        beneficiary = users_factories.UserFactory()
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer, validation_token="token")
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user=beneficiary, stock=stock)
-        repository.save(user_offerer, booking)
+        beneficiary = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offers_factories.UserOffererFactory(user=user, offerer=offerer, validationToken="token")
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
@@ -768,17 +772,16 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app: fixture):
         # Given
-        beneficiary = users_factories.UserFactory()
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, is_duo=True)
-        stock = create_stock(beginning_datetime=datetime.utcnow(), offer=offer, price=0)
+        beneficiary = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
 
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.EventOfferFactory(venue=venue, isDuo=True)
+        stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.utcnow())
         today = datetime.utcnow()
-        booking = create_booking(idx=2, user=beneficiary, stock=stock, token="FGHI", date_created=today)
-        repository.save(user_offerer, booking)
+        booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id, page=1, per_page_limit=4)
@@ -793,17 +796,18 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app: fixture):
         # Given
-        beneficiary = users_factories.UserFactory()
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, is_duo=True)
-        stock = create_stock(beginning_datetime=datetime.utcnow(), offer=offer, price=0)
+        beneficiary = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
 
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.EventOfferFactory(venue=venue, isDuo=True)
+        stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.utcnow())
         today = datetime.utcnow()
-        booking = create_booking(idx=2, user=beneficiary, stock=stock, token="FGHI", date_created=today, quantity=2)
-        repository.save(user_offerer, booking)
+        booking = bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, dateCreated=today, token="FGHI", quantity=2
+        )
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id, page=1, per_page_limit=4)
@@ -819,15 +823,19 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
         # Given
-        beneficiary = users_factories.UserFactory()
         user = users_factories.UserFactory()
-        offerer = create_offerer(postal_code="97300")
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer, idx=15, is_virtual=True, siret=None)
-        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, name="Harry Potter")
+        beneficiary = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
-        booking = create_booking(user=beneficiary, stock=stock, date_created=booking_date, token="ABCDEF", is_used=True)
-        repository.save(user_offerer, booking)
+        bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, dateCreated=booking_date, token="ABCDEF", isUsed=True
+        )
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
@@ -840,18 +848,19 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_isbn_when_information_is_available(self, app: fixture):
         # Given
-        beneficiary = users_factories.UserFactory()
         user = users_factories.UserFactory()
-        offerer = create_offerer(postal_code="97300")
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer, idx=15, is_virtual=True, siret=None)
-        offer = create_offer_with_thing_product(
-            thing_name="Harry Potter", venue=venue, extra_data=dict({"isbn": "9876543234"})
-        )
-        stock = create_stock(offer=offer, price=0)
+        beneficiary = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
-        booking = create_booking(user=beneficiary, stock=stock, date_created=booking_date, token="ABCDEF", is_used=True)
-        repository.save(user_offerer, booking)
+        bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, dateCreated=booking_date, token="ABCDEF", isUsed=True
+        )
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
@@ -864,43 +873,46 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_venue_name_when_public_name_is_not_provided(self, app):
         # Given
-        beneficiary = users_factories.UserFactory()
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
+        beneficiary = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
 
-        venue_for_event = create_venue(offerer, idx=17, name="Lieu pour un événement", siret="11816909600069")
-        offer_for_event = create_offer_with_event_product(
-            event_name="Shutter Island",
-            venue=venue_for_event,
+        venue_for_event = offers_factories.VenueFactory(
+            managingOfferer=offerer, name="Lieu pour un événement", siret="11816909600069"
         )
-        stock_for_event = create_stock(offer=offer_for_event, price=0)
-        booking_for_event = create_booking(
-            user=beneficiary, stock=stock_for_event, date_created=datetime(2020, 1, 3), token="BBBBBB", is_used=True
-        )
-        venue_for_book = create_venue(offerer, idx=15, name="Lieu pour un livre", siret="41816609600069")
-        offer_for_book = create_offer_with_thing_product(
-            thing_name="Harry Potter", venue=venue_for_book, extra_data=dict({"isbn": "9876543234"})
-        )
-        stock_for_book = create_stock(offer=offer_for_book, price=0)
-        booking_for_book = create_booking(
-            user=beneficiary, stock=stock_for_book, date_created=datetime(2020, 1, 2), token="AAAAAA", is_used=True
+        product = offers_factories.EventProductFactory(name="Shutter Island")
+        offer_for_event = offers_factories.EventOfferFactory(venue=venue_for_event, product=product)
+        stock_for_event = offers_factories.EventStockFactory(offer=offer_for_event, price=0)
+        bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock_for_event, dateCreated=datetime(2020, 1, 3), token="BBBBBB", isUsed=True
         )
 
-        venue_for_thing = create_venue(
-            offerer, idx=16, name="Lieu pour un bien qui n'est pas un livre", siret="83994784300018"
+        venue_for_book = offers_factories.VenueFactory(
+            managingOfferer=offerer, name="Lieu pour un livre", siret="41816609600069"
         )
-        stock_for_thing = create_stock_with_thing_offer(
-            offerer=offerer, venue=venue_for_thing, price=0, name="Harry Potter"
+        product_book = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer_for_book = offers_factories.ThingOfferFactory(
+            venue=venue_for_book, product=product_book, extraData=dict({"isbn": "9876543234"})
         )
-        booking_for_thing = create_booking(
+        stock_for_book = offers_factories.ThingStockFactory(offer=offer_for_book, price=0)
+        bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock_for_book, dateCreated=datetime(2020, 1, 2), token="AAAAAA", isUsed=True
+        )
+
+        venue_for_thing = offers_factories.VenueFactory(
+            managingOfferer=offerer, name="Lieu pour un bien qui n'est pas un livre", siret="83994784300018"
+        )
+        product_thing = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer_for_thing = offers_factories.ThingOfferFactory(venue=venue_for_thing, product=product_thing)
+        stock_for_thing = offers_factories.ThingStockFactory(offer=offer_for_thing, price=0)
+        bookings_factories.BookingFactory(
             user=beneficiary,
             stock=stock_for_thing,
-            date_created=(datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)),
+            dateCreated=(datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)),
             token="ABCDEF",
-            is_used=True,
+            isUsed=True,
         )
-        repository.save(user_offerer, booking_for_thing, booking_for_book, booking_for_event)
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
@@ -913,51 +925,49 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_venue_public_name_when_public_name_is_provided(self, app):
         # Given
-        beneficiary = users_factories.UserFactory()
         user = users_factories.UserFactory()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
+        beneficiary = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
 
-        venue_for_event = create_venue(
-            offerer, idx=17, name="Opéra paris", public_name="Super Opéra de Paris", siret="11816909600069"
+        venue_for_event = offers_factories.VenueFactory(
+            managingOfferer=offerer, name="Opéra paris", publicName="Super Opéra de Paris", siret="11816909600069"
         )
-        offer_for_event = create_offer_with_event_product(
-            event_name="Shutter Island",
-            venue=venue_for_event,
-        )
-        stock_for_event = create_stock(offer=offer_for_event, price=0)
-        booking_for_event = create_booking(
-            user=beneficiary, stock=stock_for_event, date_created=datetime(2020, 1, 3), token="BBBBBB", is_used=True
-        )
-        venue_for_book = create_venue(
-            offerer, idx=15, name="Lieu pour un livre", public_name="Librairie Châtelet", siret="41816609600069"
-        )
-        offer_for_book = create_offer_with_thing_product(
-            thing_name="Harry Potter", venue=venue_for_book, extra_data=dict({"isbn": "9876543234"})
-        )
-        stock_for_book = create_stock(offer=offer_for_book, price=0)
-        booking_for_book = create_booking(
-            user=beneficiary, stock=stock_for_book, date_created=datetime(2020, 1, 2), token="AAAAAA", is_used=True
+        product = offers_factories.EventProductFactory(name="Shutter Island")
+        offer_for_event = offers_factories.EventOfferFactory(venue=venue_for_event, product=product)
+        stock_for_event = offers_factories.EventStockFactory(offer=offer_for_event, price=0)
+        bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock_for_event, dateCreated=datetime(2020, 1, 3), token="BBBBBB", isUsed=True
         )
 
-        venue_for_thing = create_venue(
-            offerer,
-            idx=16,
+        venue_for_book = offers_factories.VenueFactory(
+            managingOfferer=offerer, name="Lieu pour un livre", publicName="Librairie Châtelet", siret="41816609600069"
+        )
+        product_book = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer_for_book = offers_factories.ThingOfferFactory(
+            venue=venue_for_book, product=product_book, extraData=dict({"isbn": "9876543234"})
+        )
+        stock_for_book = offers_factories.ThingStockFactory(offer=offer_for_book, price=0)
+        bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock_for_book, dateCreated=datetime(2020, 1, 2), token="AAAAAA", isUsed=True
+        )
+
+        venue_for_thing = offers_factories.VenueFactory(
+            managingOfferer=offerer,
             name="Lieu pour un bien qui n'est pas un livre",
-            public_name="Guitar Center",
+            publicName="Guitar Center",
             siret="83994784300018",
         )
-        stock_for_thing = create_stock_with_thing_offer(
-            offerer=offerer, venue=venue_for_thing, price=0, name="Harry Potter"
-        )
-        booking_for_thing = create_booking(
+        product_thing = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer_for_thing = offers_factories.ThingOfferFactory(venue=venue_for_thing, product=product_thing)
+        stock_for_thing = offers_factories.ThingStockFactory(offer=offer_for_thing, price=0)
+        bookings_factories.BookingFactory(
             user=beneficiary,
             stock=stock_for_thing,
-            date_created=(datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)),
+            dateCreated=(datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)),
             token="ABCDEF",
-            is_used=True,
+            isUsed=True,
         )
-        repository.save(user_offerer, booking_for_thing, booking_for_book, booking_for_event)
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)

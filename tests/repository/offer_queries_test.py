@@ -1,6 +1,12 @@
 import pytest
 from sqlalchemy import func
 
+from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.offers.factories import ThingOfferFactory
+from pcapi.core.offers.factories import ThingProductFactory
+from pcapi.core.offers.factories import ThingStockFactory
+from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.users.factories import UserFactory
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
@@ -44,11 +50,7 @@ class QueryOfferWithRemainingStocksTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_0_offer_when_there_is_no_stock(self, app):
         # Given
-        thing = create_product_with_thing_type()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue=venue, product=thing)
-        repository.save(offer)
+        ThingOfferFactory()
 
         # When
         offers_count = Offer.query.join(Stock).count()
@@ -59,18 +61,14 @@ class QueryOfferWithRemainingStocksTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_1_offer_when_all_available_stock_is_not_booked(self, app):
         # Given
-        thing = create_product_with_thing_type()
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue=venue, product=thing)
-        stock = create_stock_from_offer(offer, price=0, quantity=4)
-        booking_1 = create_booking(user=user, stock=stock, quantity=2)
-        booking_2 = create_booking(user=user, stock=stock, quantity=1)
-        repository.save(stock, booking_1, booking_2)
-        bookings_quantity = _build_bookings_quantity_subquery()
+        user = UserFactory()
+        offer = ThingOfferFactory()
+        stock = ThingStockFactory(offer=offer, price=0, quantity=4)
+        BookingFactory(user=user, stock=stock, quantity=2)
+        BookingFactory(user=user, stock=stock, quantity=1)
 
         # When
+        bookings_quantity = _build_bookings_quantity_subquery()
         offers_count = (
             Offer.query.join(Stock)
             .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)
@@ -84,18 +82,14 @@ class QueryOfferWithRemainingStocksTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_0_offer_when_all_available_stock_is_booked(self, app):
         # Given
-        thing = create_product_with_thing_type()
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue=venue, product=thing)
-        stock = create_stock_from_offer(offer, price=0, quantity=3)
-        booking_1 = create_booking(user=user, stock=stock, quantity=2)
-        booking_2 = create_booking(user=user, stock=stock, quantity=1)
-        repository.save(stock, booking_1, booking_2)
-        bookings_quantity = _build_bookings_quantity_subquery()
+        user = UserFactory()
+        offer = ThingOfferFactory()
+        stock = ThingStockFactory(offer=offer, price=0, quantity=3)
+        BookingFactory(user=user, stock=stock, quantity=2)
+        BookingFactory(user=user, stock=stock, quantity=1)
 
         # When
+        bookings_quantity = _build_bookings_quantity_subquery()
         offers_count = (
             Offer.query.join(Stock)
             .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)
@@ -109,17 +103,15 @@ class QueryOfferWithRemainingStocksTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_1_offer_when_booking_was_cancelled(self, app):
         # Given
-        user = create_user()
-        product = create_product_with_thing_type(thing_name="Lire un livre", is_national=True)
-        offerer = create_offerer()
-        venue = create_venue(offerer, postal_code="34000", departement_code="34")
-        offer = create_offer_with_thing_product(venue=venue, product=product)
-        stock = create_stock_from_offer(offer, quantity=2)
-        booking = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
-        repository.save(booking)
-        bookings_quantity = _build_bookings_quantity_subquery()
+        user = UserFactory()
+        product = ThingProductFactory(name="Lire un livre", isNational=True)
+        venue = VenueFactory(postalCode="34000", departementCode="34")
+        offer = ThingOfferFactory(product=product, venue=venue)
+        stock = ThingStockFactory(offer=offer, price=0, quantity=2)
+        BookingFactory(user=user, stock=stock, quantity=2, isCancelled=True)
 
         # When
+        bookings_quantity = _build_bookings_quantity_subquery()
         offers_count = (
             Offer.query.join(Stock)
             .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)
@@ -133,18 +125,16 @@ class QueryOfferWithRemainingStocksTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_0_offer_when_there_is_no_remaining_stock(self):
         # Given
-        product = create_product_with_thing_type(thing_name="Lire un livre", is_national=True)
-        offerer = create_offerer()
-        venue = create_venue(offerer, postal_code="34000", departement_code="34")
-        offer = create_offer_with_thing_product(venue=venue, product=product)
-        stock = create_stock_from_offer(offer, price=0, quantity=2)
-        user = create_user()
-        booking1 = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
-        booking2 = create_booking(user=user, stock=stock, quantity=2, venue=venue)
-        repository.save(booking1, booking2)
-        bookings_quantity = _build_bookings_quantity_subquery()
+        user = UserFactory()
+        product = ThingProductFactory(name="Lire un livre", isNational=True)
+        venue = VenueFactory(postalCode="34000", departementCode="34")
+        offer = ThingOfferFactory(product=product, venue=venue)
+        stock = ThingStockFactory(offer=offer, price=0, quantity=2)
+        BookingFactory(user=user, stock=stock, quantity=2, isCancelled=True)
+        BookingFactory(user=user, stock=stock, quantity=2)
 
         # When
+        bookings_quantity = _build_bookings_quantity_subquery()
         offers_count = (
             Offer.query.join(Stock)
             .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)

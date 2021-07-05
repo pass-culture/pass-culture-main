@@ -3,7 +3,14 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.offers.factories import OffererFactory
+from pcapi.core.offers.factories import ThingOfferFactory
+from pcapi.core.offers.factories import ThingProductFactory
+from pcapi.core.offers.factories import ThingStockFactory
+from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.users.factories import UserFactory
 from pcapi.local_providers import TiteLiveThings
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -17,6 +24,7 @@ from pcapi.models import BookFormat
 from pcapi.models import LocalProviderEvent
 from pcapi.models import Offer
 from pcapi.models import Product
+from pcapi.models import ThingType
 from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import repository
 
@@ -493,20 +501,20 @@ class TiteliveThingsTest:
 
         titelive_provider = activate_provider("TiteLiveThings")
         repository.save(titelive_provider)
-        product = create_product_with_thing_type(
-            id_at_providers="9782895026310",
-            thing_name="Presse papier",
-            date_modified_at_last_provider=datetime(2001, 1, 1),
-            last_provider_id=titelive_provider.id,
-        )
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, product=product, is_active=True)
-        stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user=user, stock=stock)
 
-        repository.save(product, offer, booking)
+        user = UserFactory(email="user@example.net")
+        offerer = OffererFactory(siren="123456789")
+        venue = VenueFactory(managingOfferer=offerer)
+        product = ThingProductFactory(
+            idAtProviders="9782895026310",
+            name="Presse papier",
+            type=str(ThingType.LIVRE_EDITION),
+            dateModifiedAtLastProvider=datetime(2001, 1, 1),
+            lastProviderId=titelive_provider.id,
+        )
+        offer = ThingOfferFactory(product=product, venue=venue, isActive=True)
+        stock = ThingStockFactory(offer=offer, price=0)
+        BookingFactory(user=user, stock=stock)
 
         titelive_things = TiteLiveThings()
 

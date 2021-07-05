@@ -13,7 +13,7 @@ from tests.conftest import TestClient
 
 class Returns404Test:
     @pytest.mark.usefixtures("db_session")
-    def when_user_offerer_does_not_exist(self, app):
+    def test_when_user_offerer_does_not_exist(self, app):
         # Given
         pro = users_factories.UserFactory(isBeneficiary=False)
         invalid_id = 12
@@ -28,7 +28,7 @@ class Returns404Test:
 
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
-    def when_user_has_rights_on_offerer(self, app):
+    def test_when_user_has_rights_on_offerer(self, app):
         # given
 
         pro = users_factories.UserFactory(isBeneficiary=False)

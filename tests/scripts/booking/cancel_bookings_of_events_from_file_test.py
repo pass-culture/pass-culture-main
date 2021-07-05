@@ -2,44 +2,44 @@ from datetime import datetime
 
 import pytest
 
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.offers.factories import OffererFactory
+from pcapi.core.offers.factories import ThingOfferFactory
+from pcapi.core.offers.factories import ThingStockFactory
+from pcapi.core.offers.factories import VenueFactory
 import pcapi.core.users.factories as users_factories
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.repository import repository
 from pcapi.scripts.booking.cancel_bookings_of_events_from_file import _cancel_bookings_of_offers_from_rows
 
 
 @pytest.mark.usefixtures("db_session")
 class CancelBookingsOfEventsFromFileTest:
     def test_cancel_bookings_of_offers_from_rows(self):
-        beneficiary = users_factories.UserFactory()
-        offerer_to_cancel = create_offerer(name="Librairie les petits parapluies gris", siren="123456789")
-        offerer_to_not_cancel = create_offerer(name="L'amicale du club de combat", siren="987654321")
-        venue_to_cancel = create_venue(offerer=offerer_to_cancel, siret="12345678912345")
-        venue_to_not_cancel = create_venue(offerer=offerer_to_not_cancel, siret="54321987654321")
-        offer_to_cancel = create_offer_with_event_product(
-            venue=venue_to_cancel, event_name="Dédicace de la Joie des Visiteurs"
+        beneficiary = users_factories.UserFactory(email="user@example.net")
+
+        offerer_to_cancel = OffererFactory(name="Librairie les petits parapluies gris", siren="123456789")
+        offerer_to_not_cancel = OffererFactory(name="L'amicale du club de combat", siren="987654321")
+
+        venue_to_cancel = VenueFactory(managingOfferer=offerer_to_cancel, siret="12345678912345")
+        venue_to_not_cancel = VenueFactory(managingOfferer=offerer_to_not_cancel, siret="54321987654321")
+
+        offer_to_cancel = ThingOfferFactory(venue=venue_to_cancel)
+        offer_to_not_cancel = ThingOfferFactory(venue=venue_to_not_cancel)
+
+        stock_to_cancel = ThingStockFactory(offer=offer_to_cancel)
+        stock_to_not_cancel = ThingStockFactory(offer=offer_to_not_cancel)
+
+        self.booking_to_cancel = BookingFactory(
+            user=beneficiary, stock=stock_to_cancel, isUsed=True, dateUsed=datetime.utcnow()
         )
-        offer_to_not_cancel = create_offer_with_event_product(
-            venue=venue_to_not_cancel, event_name="Règle numéro une, ne pas du club de combat"
-        )
-        stock_to_cancel = create_stock(offer=offer_to_cancel)
-        stock_to_not_cancel = create_stock(offer=offer_to_not_cancel)
-        self.booking_to_cancel = create_booking(
-            stock=stock_to_cancel, user=beneficiary, is_used=True, date_used=datetime.utcnow()
-        )
-        self.booking_to_not_cancel = create_booking(stock=stock_to_not_cancel, user=beneficiary)
-        self.booking_2QLYYA_not_to_cancel = create_booking(stock=stock_to_cancel, user=beneficiary, token="2QLYYA")
-        self.booking_BMTUME_not_to_cancel = create_booking(stock=stock_to_cancel, user=beneficiary, token="BMTUME")
-        self.booking_LUJ9AM_not_to_cancel = create_booking(stock=stock_to_cancel, user=beneficiary, token="LUJ9AM")
-        self.booking_DA8YLU_not_to_cancel = create_booking(stock=stock_to_cancel, user=beneficiary, token="DA8YLU")
-        self.booking_Q46YHM_not_to_cancel = create_booking(stock=stock_to_cancel, user=beneficiary, token="Q46YHM")
-        repository.save(self.booking_to_cancel, self.booking_to_not_cancel)
+        self.booking_to_not_cancel = BookingFactory(user=beneficiary, stock=stock_to_not_cancel)
+
+        self.booking_2QLYYA_not_to_cancel = BookingFactory(user=beneficiary, stock=stock_to_cancel, token="2QLYYA")
+        self.booking_BMTUME_not_to_cancel = BookingFactory(user=beneficiary, stock=stock_to_cancel, token="BMTUME")
+        self.booking_LUJ9AM_not_to_cancel = BookingFactory(user=beneficiary, stock=stock_to_cancel, token="LUJ9AM")
+        self.booking_DA8YLU_not_to_cancel = BookingFactory(user=beneficiary, stock=stock_to_cancel, token="DA8YLU")
+        self.booking_Q46YHM_not_to_cancel = BookingFactory(user=beneficiary, stock=stock_to_cancel, token="Q46YHM")
 
         self.csv_rows = [
             [

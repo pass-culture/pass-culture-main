@@ -1,12 +1,11 @@
 import pytest
 
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.repository import repository
+from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.offers.factories import OffererFactory
+from pcapi.core.offers.factories import ThingOfferFactory
+from pcapi.core.offers.factories import ThingProductFactory
+from pcapi.core.offers.factories import ThingStockFactory
+from pcapi.core.users.factories import UserFactory
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
@@ -15,15 +14,25 @@ from tests.conftest import TestClient
 
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
-    def expect_booking_to_have_completed_url(self, app):
+    def test_expect_booking_to_have_completed_url(self, app):
         # Given
-        user = create_user(email="user@example.com")
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, url="https://host/path/{token}?offerId={offerId}&email={email}")
-        stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user=user, stock=stock, token="ABCDEF", venue=venue)
-        repository.save(booking)
+        user = UserFactory(email="user@example.com")
+        offerer = OffererFactory()
+        product = ThingProductFactory()
+        offer = ThingOfferFactory(
+            url="https://host/path/{token}?offerId={offerId}&email={email}",
+            audioDisabilityCompliant=None,
+            bookingEmail="booking@example.net",
+            extraData={"author": "Test Author"},
+            mediaUrls=["test/urls"],
+            mentalDisabilityCompliant=None,
+            motorDisabilityCompliant=None,
+            name="Test Book",
+            venue__managingOfferer=offerer,
+            product=product,
+        )
+        stock = ThingStockFactory(offer=offer, price=0, quantity=None)
+        booking = BookingFactory(user=user, stock=stock, token="ABCDEF")
 
         # When
         response = TestClient(app.test_client()).with_auth(user.email).get("/bookings/" + humanize(booking.id))
@@ -69,7 +78,7 @@ class Returns200Test:
                     "dateCreated": format_into_utc_date(offer.dateCreated),
                     "dateModifiedAtLastProvider": format_into_utc_date(offer.dateModifiedAtLastProvider),
                     "subcategoryId": None,
-                    "description": None,
+                    "description": product.description,
                     "durationMinutes": None,
                     "externalTicketOfficeUrl": None,
                     "extraData": {"author": "Test Author"},
@@ -132,32 +141,32 @@ class Returns200Test:
                     "url": "https://host/path/{token}?offerId={offerId}&email={email}",
                     "validation": "APPROVED",
                     "venue": {
-                        "address": "123 rue de Paris",
+                        "address": "1 boulevard Poissonnière",
                         "bookingEmail": None,
-                        "city": "Montreuil",
+                        "city": "Paris",
                         "comment": None,
-                        "dateCreated": format_into_utc_date(venue.dateCreated),
-                        "dateModifiedAtLastProvider": format_into_utc_date(venue.dateModifiedAtLastProvider),
-                        "departementCode": "93",
+                        "dateCreated": format_into_utc_date(offer.venue.dateCreated),
+                        "dateModifiedAtLastProvider": format_into_utc_date(offer.venue.dateModifiedAtLastProvider),
+                        "departementCode": "75",
                         "fieldsUpdated": [],
-                        "id": humanize(venue.id),
+                        "id": humanize(offer.venue.id),
                         "idAtProviders": None,
                         "isPermanent": True,
                         "isVirtual": False,
                         "lastProviderId": None,
-                        "latitude": None,
-                        "longitude": None,
-                        "managingOffererId": humanize(offerer.id),
-                        "name": "La petite librairie",
-                        "postalCode": "93100",
-                        "publicName": None,
-                        "siret": "12345678912345",
+                        "latitude": 48.87004,
+                        "longitude": 2.3785,
+                        "managingOffererId": humanize(offer.venue.managingOffererId),
+                        "name": offer.venue.name,
+                        "postalCode": "75000",
+                        "publicName": offer.venue.publicName,
+                        "siret": offer.venue.siret,
                         "thumbCount": 0,
                         "venueLabelId": None,
                         "venueTypeId": None,
                     },
-                    "venueId": humanize(venue.id),
-                    "visualDisabilityCompliant": None,
+                    "venueId": humanize(offer.venue.id),
+                    "visualDisabilityCompliant": False,
                     "withdrawalDetails": None,
                 },
                 "offerId": humanize(offer.id),

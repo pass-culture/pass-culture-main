@@ -3,8 +3,11 @@ from datetime import timedelta
 
 import pytest
 
-from pcapi.core.bookings import factories
+from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
+from pcapi.core.offers.factories import ThingOfferFactory
+from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import (
@@ -13,36 +16,25 @@ from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_s
 from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import (
     _get_stocks_information,
 )
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
 
 class BeneficiaryBookingsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
-    def should_return_beneficiary_bookings_with_expected_information(self, app):
+    def test_should_return_beneficiary_bookings_with_expected_information(self, app):
         # Given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, url="http://url.com", thumb_count=1)
-        stock = create_stock(offer=offer, price=0)
-        booking = create_booking(
+        user = UserFactory()
+        offer = ThingOfferFactory(isActive=True, url="http://url.com", product__thumbCount=1)
+        stock = ThingStockFactory(offer=offer, price=0, quantity=10)
+        booking = BookingFactory(
             user=user,
             stock=stock,
             token="ABCDEF",
-            date_created=datetime(2020, 4, 22, 0, 0),
-            date_used=datetime(2020, 5, 5, 0, 0),
-            is_used=True,
+            dateCreated=datetime(2020, 4, 22, 0, 0),
+            dateUsed=datetime(2020, 5, 5, 0, 0),
+            isUsed=True,
             quantity=2,
         )
-        repository.save(booking)
 
         # When
         result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=user.id)
@@ -62,28 +54,27 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert expected_booking.stockId == stock.id
         assert expected_booking.token == booking.token
         assert expected_booking.userId == user.id
-        assert expected_booking.offerId == offer.id
-        assert expected_booking.name == offer.name
-        assert expected_booking.type == offer.type
-        assert expected_booking.url == offer.url
+        assert expected_booking.offerId == stock.offer.id
+        assert expected_booking.name == stock.offer.name
+        assert expected_booking.type == stock.offer.type
+        assert expected_booking.url == stock.offer.url
         assert expected_booking.email == user.email
         assert expected_booking.beginningDatetime == stock.beginningDatetime
-        assert expected_booking.venueId == venue.id
-        assert expected_booking.departementCode == venue.departementCode
-        assert expected_booking.thumb_url == f"http://localhost/storage/thumbs/products/{humanize(offer.productId)}"
+        assert expected_booking.venueId == stock.offer.venue.id
+        assert expected_booking.departementCode == stock.offer.venue.departementCode
+        assert (
+            expected_booking.thumb_url == f"http://localhost/storage/thumbs/products/{humanize(stock.offer.productId)}"
+        )
 
     @pytest.mark.usefixtures("db_session")
-    def should_return_bookings_by_beneficiary_id(self, app):
+    def test_should_return_bookings_by_beneficiary_id(self, app):
         # Given
         user1 = UserFactory()
         user2 = UserFactory()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer)
-        booking1 = create_booking(user=user1, stock=stock)
-        booking2 = create_booking(user=user2, stock=stock)
-        repository.save(booking1, booking2)
+        offer = EventOfferFactory()
+        stock = EventStockFactory(offer=offer)
+        booking1 = BookingFactory(user=user1, stock=stock)
+        BookingFactory(user=user2, stock=stock)
 
         # When
         result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=user1.id)
@@ -93,21 +84,18 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert result.bookings[0].id == booking1.id
 
     @pytest.mark.usefixtures("db_session")
-    def should_not_return_activation_bookings(self, app):
+    def test_should_not_return_activation_bookings(self, app):
         # Given
         user = UserFactory()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer1 = create_offer_with_event_product(venue, event_type="ThingType.ACTIVATION")
-        offer2 = create_offer_with_event_product(venue, event_type="EventType.ACTIVATION")
-        offer3 = create_offer_with_event_product(venue, event_type="ThingType.ANY")
-        stock1 = create_stock(offer=offer1)
-        stock2 = create_stock(offer=offer2)
-        stock3 = create_stock(offer=offer3)
-        booking1 = create_booking(user=user, stock=stock1)
-        booking2 = create_booking(user=user, stock=stock2)
-        booking3 = create_booking(user=user, stock=stock3)
-        repository.save(booking1, booking2, booking3)
+        offer1 = EventOfferFactory(type="ThingType.ACTIVATION")
+        offer2 = EventOfferFactory(type="ThingType.ACTIVATION")
+        offer3 = EventOfferFactory(type="ThingType.ANY")
+        stock1 = EventStockFactory(offer=offer1)
+        stock2 = EventStockFactory(offer=offer2)
+        stock3 = EventStockFactory(offer=offer3)
+        BookingFactory(user=user, stock=stock1)
+        BookingFactory(user=user, stock=stock2)
+        booking3 = BookingFactory(user=user, stock=stock3)
 
         # When
         result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=user.id)
@@ -117,19 +105,16 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert result.bookings[0].id == booking3.id
 
     @pytest.mark.usefixtures("db_session")
-    def should_return_only_most_recent_booking_when_two_cancelled_on_same_stock(self, app):
+    def test_should_return_only_most_recent_booking_when_two_cancelled_on_same_stock(self, app):
         # Given
         now = datetime.utcnow()
         two_days_ago = now - timedelta(days=2)
         three_days_ago = now - timedelta(days=3)
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer)
-        booking1 = create_booking(user=user, date_created=two_days_ago, is_cancelled=True, stock=stock)
-        booking2 = create_booking(user=user, date_created=three_days_ago, is_cancelled=True, stock=stock)
-        repository.save(booking1, booking2)
+        user = UserFactory()
+        offer = EventOfferFactory()
+        stock = EventStockFactory(offer=offer)
+        booking1 = BookingFactory(user=user, stock=stock, dateCreated=two_days_ago, isCancelled=True)
+        BookingFactory(user=user, stock=stock, dateCreated=three_days_ago, isCancelled=True)
 
         # When
         result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=user.id)
@@ -139,7 +124,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert result.bookings[0].id == booking1.id
 
     @pytest.mark.usefixtures("db_session")
-    def should_return_bookings(self, app):
+    def test_should_return_bookings(self, app):
         # Given
         now = datetime.utcnow()
         two_days = now + timedelta(days=2, hours=10)
@@ -148,21 +133,21 @@ class BeneficiaryBookingsSQLRepositoryTest:
 
         user = UserFactory()
 
-        booking1 = factories.BookingFactory(
+        booking1 = BookingFactory(
             user=user,
             stock=EventStockFactory(
                 beginningDatetime=three_days,
                 bookingLimitDatetime=now,
             ),
         )
-        booking2 = factories.BookingFactory(
+        booking2 = BookingFactory(
             user=user,
             stock=EventStockFactory(
                 beginningDatetime=two_days,
                 bookingLimitDatetime=now,
             ),
         )
-        booking3 = factories.BookingFactory(
+        booking3 = BookingFactory(
             user=user,
             stock=EventStockFactory(
                 beginningDatetime=two_days_bis,
@@ -180,29 +165,25 @@ class BeneficiaryBookingsSQLRepositoryTest:
 
 class GetStocksInformationTest:
     @pytest.mark.usefixtures("db_session")
-    def should_return_get_stocks_information(self, app):
+    def test_should_return_get_stocks_information(self, app):
         # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, url="http://url.com")
-        stock1 = create_stock(
-            beginning_datetime=datetime(2020, 3, 5),
-            booking_limit_datetime=datetime(2020, 1, 6),
-            date_created=datetime(2020, 1, 4),
-            date_modified=datetime(2020, 1, 7),
+        offer = ThingOfferFactory(url="http://url.com")
+        stock1 = ThingStockFactory(
+            beginningDatetime=datetime(2020, 3, 5),
+            bookingLimitDatetime=datetime(2020, 1, 6),
+            dateCreated=datetime(2020, 1, 4),
+            dateModified=datetime(2020, 1, 7),
             offer=offer,
             price=0,
         )
-        stock2 = create_stock(
-            beginning_datetime=datetime(2020, 4, 5),
-            booking_limit_datetime=datetime(2020, 2, 6),
-            date_created=datetime(2020, 2, 4),
-            date_modified=datetime(2020, 2, 7),
+        stock2 = ThingStockFactory(
+            beginningDatetime=datetime(2020, 4, 5),
+            bookingLimitDatetime=datetime(2020, 2, 6),
+            dateCreated=datetime(2020, 2, 4),
+            dateModified=datetime(2020, 2, 7),
             offer=offer,
             price=12,
         )
-
-        repository.save(stock1, stock2)
 
         # When
         results = _get_stocks_information(offers_ids=[offer.id])
@@ -215,7 +196,7 @@ class GetStocksInformationTest:
                 datetime(2020, 1, 6, 0, 0),
                 datetime(2020, 1, 7, 0, 0),
                 offer.id,
-                None,
+                1000,
                 0.00,
                 stock1.id,
                 False,
@@ -227,7 +208,7 @@ class GetStocksInformationTest:
                 datetime(2020, 2, 6, 0, 0),
                 datetime(2020, 2, 7, 0, 0),
                 offer.id,
-                None,
+                1000,
                 12.00,
                 stock2.id,
                 False,

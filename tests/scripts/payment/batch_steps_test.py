@@ -10,18 +10,10 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import override_settings
-from pcapi.model_creators.generic_creators import create_bank_information
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_payment
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_stock_from_offer
+from pcapi.core.users.factories import UserFactory
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.repository import repository
 from pcapi.scripts.payment.batch_steps import get_venues_to_reimburse
 from pcapi.scripts.payment.batch_steps import send_payments_details
 from pcapi.scripts.payment.batch_steps import send_payments_report
@@ -297,20 +289,22 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
         self,
     ):
         # Given
-        offerer = create_offerer(name="first offerer")
-        user = create_user()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, price=0)
-        booking = create_booking(user=user, stock=stock)
-        bank_information = create_bank_information(
-            offerer=offerer, iban="FR7611808009101234567890147", bic="CCBPFRPPVER"
+        user = UserFactory(email="user@example.com")
+        offerer = offers_factories.OffererFactory(name="first offerer")
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        offers_factories.BankInformationFactory(offerer=offerer, iban="FR7611808009101234567890147", bic="CCBPFRPPVER")
+        not_processable_payment = payments_factories.PaymentFactory(
+            booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
         )
-        not_processable_payment = create_payment(
-            booking, offerer, 10, status=TransactionStatus.NOT_PROCESSABLE, iban=None, bic=None
+        payments_factories.PaymentStatusFactory(
+            payment=not_processable_payment, status=TransactionStatus.NOT_PROCESSABLE
         )
-        sent_payment = create_payment(booking, offerer, 10, status=TransactionStatus.SENT)
-        repository.save(bank_information, not_processable_payment, sent_payment)
+
+        sent_payment = payments_factories.PaymentFactory(booking=booking, amount=10)
+        payments_factories.PaymentStatusFactory(payment=sent_payment, status=TransactionStatus.SENT)
+
         new_batch_date = datetime.datetime.now()
 
         # When
@@ -328,20 +322,22 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_set_not_processable_payments_to_retry_when_bank_information_status_is_not_accepted(self):
         # Given
-        offerer = create_offerer(name="first offerer")
-        user = create_user()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, price=0)
-        booking = create_booking(user=user, stock=stock)
-        bank_information = create_bank_information(
+        user = UserFactory(email="user@example.com")
+        offerer = offers_factories.OffererFactory(name="first offerer")
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        offers_factories.BankInformationFactory(
             offerer=offerer, iban=None, bic=None, status=BankInformationStatus.DRAFT
         )
-        not_processable_payment = create_payment(
-            booking, offerer, 10, status=TransactionStatus.NOT_PROCESSABLE, iban=None, bic=None
+        not_processable_payment = payments_factories.PaymentFactory(booking=booking, amount=10, iban=None, bic=None)
+        payments_factories.PaymentStatusFactory(
+            payment=not_processable_payment, status=TransactionStatus.NOT_PROCESSABLE
         )
-        sent_payment = create_payment(booking, offerer, 10, status=TransactionStatus.SENT)
-        repository.save(bank_information, not_processable_payment, sent_payment)
+
+        sent_payment = payments_factories.PaymentFactory(booking=booking, amount=10)
+        payments_factories.PaymentStatusFactory(payment=sent_payment, status=TransactionStatus.SENT)
+
         new_batch_date = datetime.datetime.now()
 
         # When
@@ -362,24 +358,22 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
         self,
     ):
         # Given
-        offerer = create_offerer(name="first offerer")
-        user = create_user()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, price=0)
-        booking = create_booking(user=user, stock=stock)
-        bank_information = create_bank_information(
-            venue=venue,
-            iban="FR7611808009101234567890147",
-            bic="CCBPFRPPVER",
+        user = UserFactory(email="user@example.com")
+        offerer = offers_factories.OffererFactory(name="first offerer")
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        offers_factories.BankInformationFactory(offerer=offerer, iban="FR7611808009101234567890147", bic="CCBPFRPPVER")
+        not_processable_payment = payments_factories.PaymentFactory(booking=booking, amount=10, iban=None, bic=None)
+        payments_factories.PaymentStatusFactory(
+            payment=not_processable_payment, status=TransactionStatus.NOT_PROCESSABLE
         )
-        not_processable_payment = create_payment(
-            booking, offerer, 10, status=TransactionStatus.NOT_PROCESSABLE, iban=None, bic=None
+
+        sent_payment = payments_factories.PaymentFactory(
+            booking=booking, amount=10, iban="FR7630007000111234567890144", bic="BDFEFR2LCCB"
         )
-        sent_payment = create_payment(
-            booking, offerer, 10, status=TransactionStatus.SENT, iban="FR7630007000111234567890144", bic="BDFEFR2LCCB"
-        )
-        repository.save(bank_information, not_processable_payment, sent_payment)
+        payments_factories.PaymentStatusFactory(payment=sent_payment, status=TransactionStatus.SENT)
+
         new_batch_date = datetime.datetime.now()
 
         # When

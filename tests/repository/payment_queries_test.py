@@ -7,14 +7,9 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as factories
 import pcapi.core.users.factories as users_factories
-from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
 from pcapi.model_creators.generic_creators import create_payment_message
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
@@ -78,15 +73,14 @@ class FindNotProcessableWithBankInformationTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_payments_to_retry_if_no_bank_information(self, app):
         # Given
-        offerer = create_offerer()
         user = users_factories.UserFactory()
-        venue = create_venue(offerer)
-        stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
-        booking = create_booking(user=user, stock=stock)
-        not_processable_payment = create_payment(
-            booking, offerer, 10, status=TransactionStatus.NOT_PROCESSABLE, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
-        )
-        repository.save(not_processable_payment)
+        product = offers_factories.ThingProductFactory(name="Lire un livre", isNational=True)
+        venue = offers_factories.VenueFactory(postalCode="34000", departementCode="34")
+        offer = offers_factories.ThingOfferFactory(product=product, venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0, quantity=2)
+        booking = bookings_factories.BookingFactory(user=user, stock=stock, quantity=2, isCancelled=True)
+        payment = factories.PaymentFactory(booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555")
+        factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.NOT_PROCESSABLE)
 
         # When
         payments_to_retry = payment_queries.find_not_processable_with_bank_information()
@@ -99,16 +93,20 @@ class FindNotProcessableWithBankInformationTest:
         self, app
     ):
         # Given
-        offerer = create_offerer()
         user = users_factories.UserFactory()
-        venue = create_venue(offerer)
-        stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
-        booking = create_booking(user=user, stock=stock)
-        not_processable_payment = create_payment(
-            booking, offerer, 10, status=TransactionStatus.NOT_PROCESSABLE, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
+        user_offerer = offers_factories.UserOffererFactory(user=user)
+        product = offers_factories.ThingProductFactory(name="Lire un livre", isNational=True)
+        venue = offers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, postalCode="34000", departementCode="34"
         )
-        bank_information = create_bank_information(offerer=offerer)
-        repository.save(not_processable_payment, bank_information)
+        offer = offers_factories.ThingOfferFactory(product=product, venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        not_processable_payment = factories.PaymentFactory(
+            booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
+        )
+        factories.PaymentStatusFactory(payment=not_processable_payment, status=TransactionStatus.NOT_PROCESSABLE)
+        offers_factories.BankInformationFactory(offerer=user_offerer.offerer)
 
         # When
         payments_to_retry = payment_queries.find_not_processable_with_bank_information()
@@ -121,20 +119,23 @@ class FindNotProcessableWithBankInformationTest:
         self, app
     ):
         # Given
-        offerer = create_offerer()
         user = users_factories.UserFactory()
-        venue = create_venue(offerer)
-        stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
-        booking = create_booking(user=user, stock=stock)
-        not_processable_payment = create_payment(
-            booking, offerer, 10, status=TransactionStatus.NOT_PROCESSABLE, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
+        user_offerer = offers_factories.UserOffererFactory(user=user)
+        product = offers_factories.ThingProductFactory(name="Lire un livre", isNational=True)
+        venue = offers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, postalCode="34000", departementCode="34"
         )
-        bank_information = create_bank_information(offerer=offerer)
-        repository.save(not_processable_payment, bank_information)
-        not_processable_payment.setStatus(TransactionStatus.SENT)
-        repository.save(not_processable_payment)
+        offer = offers_factories.ThingOfferFactory(product=product, venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        not_processable_payment = factories.PaymentFactory(
+            booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
+        )
+        factories.PaymentStatusFactory(payment=not_processable_payment, status=TransactionStatus.NOT_PROCESSABLE)
+        offers_factories.BankInformationFactory(offerer=user_offerer.offerer)
 
         # When
+        not_processable_payment.setStatus(TransactionStatus.SENT)
         payments_to_retry = payment_queries.find_not_processable_with_bank_information()
 
         # Then
@@ -143,16 +144,22 @@ class FindNotProcessableWithBankInformationTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_payment_to_retry_if_bank_information_status_is_not_accepted(self, app):
         # Given
-        offerer = create_offerer()
         user = users_factories.UserFactory()
-        venue = create_venue(offerer)
-        stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
-        booking = create_booking(user=user, stock=stock)
-        not_processable_payment = create_payment(
-            booking, offerer, 10, status=TransactionStatus.NOT_PROCESSABLE, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
+        user_offerer = offers_factories.UserOffererFactory(user=user)
+        product = offers_factories.ThingProductFactory(name="Lire un livre", isNational=True)
+        venue = offers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, postalCode="34000", departementCode="34"
         )
-        bank_information = create_bank_information(venue=venue, iban=None, bic=None, status=BankInformationStatus.DRAFT)
-        repository.save(not_processable_payment, bank_information)
+        offer = offers_factories.ThingOfferFactory(product=product, venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        not_processable_payment = factories.PaymentFactory(
+            booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
+        )
+        factories.PaymentStatusFactory(payment=not_processable_payment, status=TransactionStatus.NOT_PROCESSABLE)
+        offers_factories.BankInformationFactory(
+            offerer=user_offerer.offerer, iban=None, bic=None, status=BankInformationStatus.DRAFT
+        )
 
         # When
         payments_to_retry = payment_queries.find_not_processable_with_bank_information()
@@ -165,16 +172,20 @@ class FindNotProcessableWithBankInformationTest:
         self, app
     ):
         # Given
-        offerer = create_offerer()
         user = users_factories.UserFactory()
-        venue = create_venue(offerer)
-        stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
-        booking = create_booking(user=user, stock=stock)
-        not_processable_payment = create_payment(
-            booking, offerer, 10, status=TransactionStatus.NOT_PROCESSABLE, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
+        user_offerer = offers_factories.UserOffererFactory(user=user)
+        product = offers_factories.ThingProductFactory(name="Lire un livre", isNational=True)
+        venue = offers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, postalCode="34000", departementCode="34"
         )
-        bank_information = create_bank_information(venue=venue)
-        repository.save(not_processable_payment, bank_information)
+        offer = offers_factories.ThingOfferFactory(product=product, venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        not_processable_payment = factories.PaymentFactory(
+            booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
+        )
+        factories.PaymentStatusFactory(payment=not_processable_payment, status=TransactionStatus.NOT_PROCESSABLE)
+        offers_factories.BankInformationFactory(offerer=user_offerer.offerer)
 
         # When
         payments_to_retry = payment_queries.find_not_processable_with_bank_information()
