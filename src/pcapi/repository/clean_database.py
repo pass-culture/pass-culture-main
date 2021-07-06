@@ -97,6 +97,15 @@ def clean_all_database(*args, **kwargs):
     EducationalDeposit.query.delete()
     EducationalInstitution.query.delete()
     EducationalYear.query.delete()
+
+    # Dans le cadre du projet EAC, notre partenaire Adage requête notre api sur le endpoint get_pre_bookings.
+    # Ils récupèrent les pré-réservations EAC liées à un utilisateur EAC et stockent les ids en base.
+    # Dans la phase de développement, ils se connectent sur notre environnement testing et récupèrent des données issues donc de nos sandbox.
+    # Nous avons besoin que les ids soient fixes. Pour ce faire, il faut que la séquence d'ids sur les EducationalBookings recommence à 1 à chaque
+    # nouvelle génération de la sandbox sur testing. C'est la raison de la commande ci-dessous.
+    # A noter qu'en local la question ne se pose pas car l'instance de base de données est détruite puis reconstruite. L'id recommence donc nécessairement à 1
+    db.session.execute("SELECT setval('educational_booking_id_seq', 1, FALSE)")
+
     db.session.commit()
     install_features()
     install_local_providers()
