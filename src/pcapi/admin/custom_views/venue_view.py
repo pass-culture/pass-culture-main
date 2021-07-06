@@ -8,6 +8,8 @@ from sqlalchemy.orm import query
 from wtforms import Form
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.core import search
+from pcapi.core.offerers.api import VENUE_ALGOLIA_INDEXED_FIELDS
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
 
@@ -92,9 +94,19 @@ class VenueView(BaseAdminView):
         has_siret_changed = new_venue_form.siret.data != venue.siret
         old_siret = venue.siret
 
+        has_indexed_attribute_changed = any(
+            (
+                hasattr(new_venue_form, field) and getattr(new_venue_form, field).data != getattr(venue, field)
+                for field in VENUE_ALGOLIA_INDEXED_FIELDS
+            )
+        )
+
         super().update_model(new_venue_form, venue)
 
         if has_siret_changed and old_siret:
             update_offer_and_stock_id_at_providers(venue, old_siret)
+
+        if has_indexed_attribute_changed:
+            search.async_index_venue_ids([venue.id])
 
         return True
