@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { RECOMMENDATION_ENDPOINT, RECOMMENDATION_TOKEN } from '../../../../utils/config'
 
 import { fetchAlgoliaHits } from '../../../../vendor/algolia/algolia'
+import { fetchHits as fetchAppSearchHits } from '../../../../vendor/search/search'
 
 export const useHomeRecommendedHits = (recommendationModule, geolocation, userId, useAppSearch) => {
   const recommendedIds = useRecommendedOfferIds(recommendationModule, geolocation, userId)
@@ -32,14 +33,11 @@ const useRecommendedHits = (ids, useAppSearch) => {
 
   useEffect(() => {
     if (ids.length > 0) {
-      if (useAppSearch) {
-        // TODO(antoinewg) Fetch using app search
-      } else {
-        fetchAlgoliaHits(ids).then(({ results }) => {
-          const hitsWithCover = results.filter(hit => hit && hit.offer && !!hit.offer.thumbUrl)
-          setRecommendedHits(hitsWithCover)
-        })
-      }
+      const fetchHits = useAppSearch ? fetchAppSearchHits : fetchAlgoliaHits
+      fetchHits(ids).then(({ results }) => {
+        const hitsWithCover = results.filter(hit => hit && hit.offer && !!hit.offer.thumbUrl)
+        setRecommendedHits(hitsWithCover)
+      })
     }
   }, [ids, useAppSearch])
 
