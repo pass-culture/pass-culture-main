@@ -54,25 +54,15 @@ const BankInformation = ({ offerer }) => (
           </span>
         </div>
       </Fragment>
-    ) : offerer.demarchesSimplifieesApplicationId ? (
-      <Banner
-        href={`https://www.demarches-simplifiees.fr/dossiers/${offerer.demarchesSimplifieesApplicationId}`}
-        linkTitle="Accéder au dossier"
-      >
-        {'Votre dossier est en cours pour cette structure'}
-      </Banner>
     ) : (
-      <Fragment>
-        <p className="bi-subtitle">
-          {'Aucune coordonnée bancaire renseignée'}
-        </p>
+      offerer.demarchesSimplifieesApplicationId && (
         <Banner
-          href={DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL}
-          linkTitle="Renseignez les coordonnées bancaires de la structure"
+          href={`https://www.demarches-simplifiees.fr/dossiers/${offerer.demarchesSimplifieesApplicationId}`}
+          linkTitle="Accéder au dossier"
         >
-          {'Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles'}
+          {'Votre dossier est en cours pour cette structure'}
         </Banner>
-      </Fragment>
+      )
     )}
     <Banner
       href="https://aide.passculture.app/fr/articles/5096833-calendrier-des-prochains-remboursements"

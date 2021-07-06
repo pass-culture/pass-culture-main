@@ -26,8 +26,8 @@ jest.mock('react-router-dom', () => ({
 }))
 
 jest.mock('utils/config', () => ({
-  DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL:
-    'link/to/offerer/demarchesSimplifiees/procedure',
+  DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL:
+    'link/to/venue/demarchesSimplifiees/procedure',
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
@@ -211,16 +211,6 @@ describe('offererDetails', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display first offerer bank information', async () => {
-    await renderHomePage()
-    const showButton = screen.getByRole('button', { name: 'Afficher' })
-    fireEvent.click(showButton)
-
-    const selectedOfferer = firstOffererByAlphabeticalOrder
-    expect(screen.getByText(selectedOfferer.iban)).toBeInTheDocument()
-    expect(screen.getByText(selectedOfferer.bic)).toBeInTheDocument()
-  })
-
   it('should display offerer venues informations', async () => {
     await renderHomePage()
     const showButton = screen.getByRole('button', { name: 'Afficher' })
@@ -336,11 +326,6 @@ describe('offererDetails', () => {
       ).toBeInTheDocument()
     })
 
-    it('should change displayed bank information', async () => {
-      expect(screen.getByText(newSelectedOfferer.iban)).toBeInTheDocument()
-      expect(screen.getByText(newSelectedOfferer.bic)).toBeInTheDocument()
-    })
-
     it('should display new offerer venues informations', async () => {
       const virtualVenueTitle = screen.getByText('Offres numériques')
       expect(virtualVenueTitle).toBeInTheDocument()
@@ -377,32 +362,32 @@ describe('offererDetails', () => {
     })
   })
 
-  describe("when offerer doesn't have bank informations", () => {
-    it('should display add information link and bank informations warning', async () => {
+  describe('when offerer have bank informations', () => {
+    it('should display bank file warning when bank informations are DRAFT or REJECTED', async () => {
+      // Given
       baseOfferers = [
         {
           ...firstOffererByAlphabeticalOrder,
           bic: '',
           iban: '',
+          demarchesSimplifieesApplicationId: 12345,
         },
       ]
       pcapi.getOffererWithVenueStats.mockResolvedValue(baseOfferers[0])
-      await renderHomePage()
 
+      // When
+      await renderHomePage()
       const showButton = screen.getByRole('button', { name: 'Afficher' })
       fireEvent.click(showButton)
-      const link = screen.getByRole('link', {
-        name: 'Renseignez les coordonnées bancaires de la structure',
-      })
-      expect(link).toBeInTheDocument()
-      const warningIcons = screen.getAllByAltText('Informations bancaires manquantes')
-      let nbWarningIcons = 0
-      nbWarningIcons += 1 // in offerers header
-      nbWarningIcons += 1 // in bank account card title
-      expect(warningIcons).toHaveLength(nbWarningIcons)
-    })
 
-    it('should display bank warning if virtual venue has offers and no bank informations', async () => {
+      // Then
+      const link = screen.getByRole('link', { name: 'Voir le dossier' })
+      expect(link).toBeInTheDocument()
+    })
+  })
+
+  describe("when offerer doesn't have bank informations", () => {
+    it('should display bank warning if offerer has physical venue without bank informations', async () => {
       // Given
       baseOfferers = [
         {
@@ -410,15 +395,21 @@ describe('offererDetails', () => {
           bic: '',
           iban: '',
           demarchesSimplifieesApplicationId: '',
-          managedVenues: [virtualVenue],
+          managedVenues: [virtualVenue, { ...physicalVenue, iban: '', bic: '' }],
         },
       ]
       pcapi.getOffererWithVenueStats.mockResolvedValue(baseOfferers[0])
 
       // When
       await renderHomePage()
+      const showButton = screen.getByRole('button', { name: 'Afficher' })
+      fireEvent.click(showButton)
 
       // Then
+      const link = screen.getByRole('link', {
+        name: 'Renseignez les coordonnées bancaires',
+      })
+      expect(link).toBeInTheDocument()
       const warningIcons = screen.getAllByAltText('Informations bancaires manquantes')
       let nbWarningIcons = 0
       nbWarningIcons += 1 // in offerers header
@@ -451,25 +442,6 @@ describe('offererDetails', () => {
       pcapi.getOffererWithVenueStats.mockResolvedValue(firstOffererByAlphabeticalOrder)
       await renderHomePage()
 
-      const warningIcons = await screen.queryByAltText('Informations bancaires manquantes')
-      expect(warningIcons).not.toBeInTheDocument()
-    })
-
-    it('should display file information for pending registration', async () => {
-      baseOfferers = [
-        {
-          ...firstOffererByAlphabeticalOrder,
-          bic: '',
-          iban: '',
-          demarchesSimplifieesApplicationId: 'demarchesSimplifieesApplication_fake_id',
-        },
-      ]
-      pcapi.getOffererWithVenueStats.mockResolvedValue(baseOfferers[0])
-      await renderHomePage()
-
-      const showButton = screen.getByRole('button', { name: 'Afficher' })
-      fireEvent.click(showButton)
-      expect(screen.getByRole('link', { name: 'Voir le dossier' })).toBeInTheDocument()
       const warningIcons = await screen.queryByAltText('Informations bancaires manquantes')
       expect(warningIcons).not.toBeInTheDocument()
     })
@@ -677,8 +649,19 @@ describe('offererDetails', () => {
     })
 
     it('should allow user to view offerer informations', async () => {
+      // Given
+      const offerer = {
+        ...firstOffererByAlphabeticalOrder,
+        iban: '',
+        bic: '',
+        managedVenues: [{ ...physicalVenue, iban: '', bic: '' }],
+      }
+      pcapi.getOffererWithVenueStats.mockResolvedValue(offerer)
+
       // When
       await renderHomePage()
+      const showButton = screen.getByRole('button', { name: 'Afficher' })
+      fireEvent.click(showButton)
 
       // Then
       expect(screen.getByText('Informations pratiques')).toBeInTheDocument()

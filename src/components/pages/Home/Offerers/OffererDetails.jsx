@@ -17,6 +17,11 @@ const hasBankInformations = offererOrVenue =>
     (offererOrVenue.iban && offererOrVenue.bic) || offererOrVenue.demarchesSimplifieesApplicationId
   )
 
+const hasRejectedOrDraftBankInformation = offererOrVenue =>
+  Boolean(
+    offererOrVenue.demarchesSimplifieesApplicationId && !offererOrVenue.iban && !offererOrVenue.bic
+  )
+
 const OffererDetails = ({
   handleChangeOfferer,
   hasPhysicalVenues,
@@ -35,14 +40,14 @@ const OffererDetails = ({
   const hasMissingBankInformations = useMemo(() => {
     if (!selectedOfferer || hasBankInformations(selectedOfferer)) return false
 
-    const hasMissingDataForPhysicalVenues = selectedOfferer.managedVenues
+    return selectedOfferer.managedVenues
       .filter(venue => !venue.isVirtual)
       .some(venue => !hasBankInformations(venue))
-    const virtualVenue = selectedOfferer.managedVenues.find(venue => venue.isVirtual)
-    const hasMissingDataForVirtualVenue =
-      !virtualVenue || (virtualVenue.nOffers > 0 && !hasBankInformations(virtualVenue))
+  }, [selectedOfferer])
 
-    return hasMissingDataForPhysicalVenues || hasMissingDataForVirtualVenue
+  const hasRejectedOrDraftOffererBankInformations = useMemo(() => {
+    if (!selectedOfferer) return false
+    return hasRejectedOrDraftBankInformation(selectedOfferer)
   }, [selectedOfferer])
 
   return (
@@ -143,20 +148,24 @@ const OffererDetails = ({
                         </span>
                         <address className="od-address">
                           {selectedOfferer.address}
-                          <br />
+                          {hasMissingBankInformations && <br />}
                           {`${selectedOfferer.postalCode} ${selectedOfferer.city}`}
                         </address>
                       </li>
                     </ul>
                   </div>
                 </div>
-
-                <div className="h-card-col">
-                  <BankInformations
-                    hasMissingBankInformations={hasMissingBankInformations}
-                    offerer={selectedOfferer}
-                  />
-                </div>
+                {(hasMissingBankInformations || hasRejectedOrDraftOffererBankInformations) && (
+                  <div className="h-card-col">
+                    <BankInformations
+                      hasMissingBankInformations={hasMissingBankInformations}
+                      hasRejectedOrDraftOffererBankInformations={
+                        hasRejectedOrDraftOffererBankInformations
+                      }
+                      offerer={selectedOfferer}
+                    />
+                  </div>
+                )}
               </div>
             )}
           </>

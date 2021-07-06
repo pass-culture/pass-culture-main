@@ -3,9 +3,13 @@ import React from 'react'
 
 import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
-import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
+import { DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
-const BankInformations = ({ offerer, hasMissingBankInformations }) => {
+const BankInformations = ({
+  offerer,
+  hasMissingBankInformations,
+  hasRejectedOrDraftOffererBankInformations,
+}) => {
   return (
     <>
       <h3 className="h-card-secondary-title">
@@ -20,34 +24,7 @@ const BankInformations = ({ offerer, hasMissingBankInformations }) => {
       </h3>
 
       <div className="h-card-content">
-        {offerer.iban && offerer.bic ? (
-          <>
-            <p>
-              {
-                'Les coordonnées bancaires ci-dessous seront attribuées à tous les lieux sans coordonnées bancaires propres.'
-              }
-            </p>
-            <ul className="h-description-list">
-              <li className="h-dl-row">
-                <span className="h-dl-title">
-                  {'IBAN :'}
-                </span>
-                <span className="h-dl-description">
-                  {offerer.iban}
-                </span>
-              </li>
-
-              <li className="h-dl-row">
-                <span className="h-dl-title">
-                  {'BIC :'}
-                </span>
-                <span className="h-dl-description">
-                  {offerer.bic}
-                </span>
-              </li>
-            </ul>
-          </>
-        ) : offerer.demarchesSimplifieesApplicationId ? (
+        {hasRejectedOrDraftOffererBankInformations ? (
           <Banner
             href={`https://www.demarches-simplifiees.fr/dossiers/${offerer.demarchesSimplifieesApplicationId}`}
             linkTitle="Voir le dossier"
@@ -56,10 +33,12 @@ const BankInformations = ({ offerer, hasMissingBankInformations }) => {
           </Banner>
         ) : (
           <Banner
-            href={DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL}
-            linkTitle="Renseignez les coordonnées bancaires de la structure"
+            href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
+            linkTitle="Renseignez les coordonnées bancaires"
           >
-            {'Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles'}
+            {
+              'Certains de vos lieux ne sont pas rattachés à des coordonnées bancaires. Pour percevoir les remboursements liés aux offres postées dans ces lieux, renseignez les coordonnées bancaires.'
+            }
           </Banner>
         )}
       </div>
@@ -69,6 +48,7 @@ const BankInformations = ({ offerer, hasMissingBankInformations }) => {
 
 BankInformations.propTypes = {
   hasMissingBankInformations: PropTypes.bool.isRequired,
+  hasRejectedOrDraftOffererBankInformations: PropTypes.bool.isRequired,
   offerer: PropTypes.shape({
     iban: PropTypes.string,
     bic: PropTypes.string,

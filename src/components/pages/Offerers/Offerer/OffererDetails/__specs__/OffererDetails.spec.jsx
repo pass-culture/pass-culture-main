@@ -24,10 +24,10 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
   })
 
   describe('render', () => {
-    it('should render a bank instructions block', () => {
+    it('should render a bank instructions block if they are already provided', () => {
       // given
-      props.offerer.bic = null
-      props.offerer.iban = null
+      props.offerer.bic = 'FR7630001001111111111111111'
+      props.offerer.iban = 'QS111111111'
 
       // when
       const wrapper = shallow(<OffererDetails {...props} />)

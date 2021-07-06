@@ -21,30 +21,6 @@ const expectReimbursementBannerToBePresent = wrapper => {
 }
 
 describe('src | Offerer | BankInformation', () => {
-  it('should render instruction block when banking information are not provided', () => {
-    // Given
-    const offererWithoutBankInformation = new Offerer({
-      id: 'AA',
-      name: 'fake offerer name',
-      address: 'fake address',
-      bic: null,
-      iban: null,
-    })
-
-    // when
-    const wrapper = shallow(<BankInformation offerer={offererWithoutBankInformation} />)
-
-    // then
-    expect(wrapper.find('Banner').first().props()).toStrictEqual({
-      type: 'attention',
-      children: 'Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles',
-      linkTitle: 'Renseignez les coordonnées bancaires de la structure',
-      href: 'link/to/offerer/demarchesSimplifiees/procedure',
-      icon: 'ico-external-site',
-    })
-    expectReimbursementBannerToBePresent(wrapper)
-  })
-
   it('should render instruction block when BIC and IBAN are provided', () => {
     // given
     const offererWithBankInformation = new Offerer({

@@ -52,6 +52,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName, venueStats }) => {
 
   const isVenueV2Enabled = useActiveFeature('ENABLE_NEW_VENUE_PAGES')
 
+  const showVenueLink = `/structures/${offererId}/lieux/${id}`
   let editVenueLink = `/structures/${offererId}/lieux/${id}`
   if (!isVenueV2Enabled) {
     editVenueLink += '?modification'
@@ -67,12 +68,17 @@ const Venue = ({ id, isVirtual, name, offererId, publicName, venueStats }) => {
                 className="h-card-title-ico"
                 svg={isVirtual ? 'ico-screen-play' : 'ico-box'}
               />
-              <span
-                className="title-text"
-                title={publicName || name}
+              <Link
+                className="tertiary-link"
+                to={showVenueLink}
               >
-                {publicName || name}
-              </span>
+                <span
+                  className="title-text"
+                  title={publicName || name}
+                >
+                  {publicName || name}
+                </span>
+              </Link>
             </h3>
             {!isVirtual && (
               <Link

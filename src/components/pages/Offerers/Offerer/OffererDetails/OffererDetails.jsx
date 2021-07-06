@@ -65,7 +65,7 @@ class OffererDetails extends PureComponent {
             </span>
           </div>
         </div>
-        <BankInformation offerer={offerer} />
+        {offerer.areBankInformationProvided && <BankInformation offerer={offerer} />}
         <ApiKey
           maxAllowedApiKeys={offerer.apiKey.maxAllowed}
           offererId={offerer.id}
