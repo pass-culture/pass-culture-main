@@ -97,7 +97,7 @@ def create_industrial_educational_bookings() -> None:
             EducationalBookingFactory(
                 user=educational_test_user,
                 educationalBooking__educationalInstitution=educational_institution,
-                educationalBooking__educationalYear=educational_current_year,
+                educationalBooking__educationalYear=educational_next_year,
                 status=BookingStatus.PENDING,
                 stock=next_year_stock,
             )
