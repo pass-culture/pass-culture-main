@@ -32,7 +32,7 @@ LOG_LEVEL = int(os.environ.get("LOG_LEVEL", LOG_LEVEL_INFO))
 
 
 # Default backends
-if IS_PROD:
+if IS_PROD or IS_INTEGRATION:
     if IS_PROD:
         _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
     elif IS_INTEGRATION:
