@@ -50,6 +50,8 @@ function getClientEnvironment(publicUrl) {
         APP_NATIVE_DYNAMIC_LINK: process.env.APP_NATIVE_DYNAMIC_LINK,
         ANDROID_APP_ID: process.env.ANDROID_APP_ID,
         ANDROID_APPLICATION_ID: process.env.ANDROID_APPLICATION_ID,
+        APP_SEARCH_ENDPOINT: process.env.APP_SEARCH_ENDPOINT,
+        APP_SEARCH_KEY: process.env.APP_SEARCH_KEY,
         BATCH_API_KEY: process.env.BATCH_API_KEY,
         BATCH_IS_ENABLED: process.env.BATCH_IS_ENABLED,
         BATCH_AUTH_KEY: process.env.BATCH_AUTH_KEY,
