@@ -29,7 +29,10 @@ def create_industrial_educational_bookings() -> None:
     now = datetime.datetime.now()
 
     educational_test_user = UserFactory(
-        email="compte.test@education.gouv.fr", roles=[UserRole.INSTITUTIONAL_PROJECT_REDACTOR], civility="Mme"
+        email="compte.test@education.gouv.fr",
+        isBeneficiary=False,
+        roles=[UserRole.INSTITUTIONAL_PROJECT_REDACTOR],
+        civility="Mme",
     )
 
     stocks = [
