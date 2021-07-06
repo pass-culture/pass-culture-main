@@ -33,30 +33,6 @@ class Returns202Test:
         offerer = Offerer.query.filter_by(id=offerer.id).first()
         assert offerer.isValidated is True
 
-    @patch("pcapi.routes.pro.validate.link_valid_venue_to_irises")
-    @pytest.mark.usefixtures("db_session")
-    def expect_link_venue_to_iris_if_valid_to_have_been_called_for_every_venue(
-        self, mocked_link_venue_to_iris_if_valid, app
-    ):
-        # Given
-        offerer_token = secrets.token_urlsafe(20)
-        offerer = create_offerer(validation_token=offerer_token)
-        create_venue(offerer)
-        create_venue(offerer, siret=f"{offerer.siren}65371")
-        create_venue(offerer, is_virtual=True, siret=None)
-        user = create_user()
-        admin = create_user_offerer(user, offerer)
-        repository.save(admin)
-
-        # When
-        response = TestClient(app.test_client()).get(
-            f"/validate/offerer/{offerer_token}", headers={"origin": "http://localhost:3000"}
-        )
-
-        # Then
-        assert response.status_code == 202
-        assert mocked_link_venue_to_iris_if_valid.call_count == 3
-
     @patch("pcapi.core.search.async_index_venue_ids")
     @pytest.mark.usefixtures("db_session")
     def expect_offerer_managed_venues_to_be_reindexed(self, mocked_async_index_venue_ids, app):

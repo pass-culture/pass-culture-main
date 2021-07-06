@@ -12,7 +12,6 @@ from pcapi.core.users.models import Favorite
 from pcapi.models import AllocineVenueProvider
 from pcapi.models import AllocineVenueProviderPriceRule
 from pcapi.models import BankInformation
-from pcapi.models import IrisVenues
 from pcapi.models import OfferCriterion
 from pcapi.models import Product
 from pcapi.models import UserOfferer
@@ -67,10 +66,6 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         VenueProvider.venueId == Venue.id, Venue.managingOffererId == offerer_id
     ).delete(synchronize_session=False)
 
-    deleted_iris_venue_count = IrisVenues.query.filter(
-        IrisVenues.venueId == Venue.id, Venue.managingOffererId == offerer_id
-    ).delete(synchronize_session=False)
-
     deleted_bank_informations_count = 0
     deleted_bank_informations_count += BankInformation.query.filter(
         BankInformation.venueId == Venue.id, Venue.managingOffererId == offerer_id
@@ -105,7 +100,6 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
             "deleted_bank_informations_count": deleted_bank_informations_count,
             "deleted_product_count": deleted_product_count,
             "deleted_venues_count": deleted_venues_count,
-            "deleted_iris_venue_count": deleted_iris_venue_count,
             "deleted_venue_providers_count": deleted_venue_providers_count,
             "deleted_allocine_venue_providers_count": deleted_allocine_venue_providers_count,
             "deleted_offers_count": deleted_offers_count,

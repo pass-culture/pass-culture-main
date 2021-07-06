@@ -9,10 +9,8 @@ from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueType
 from pcapi.core.users.models import User
-from pcapi.domain.iris import link_valid_venue_to_irises
 from pcapi.models.db import db
 from pcapi.repository import repository
-from pcapi.repository.iris_venues_queries import delete_venue_from_iris_venues
 from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 
 from . import validation
@@ -75,12 +73,7 @@ def update_venue(
     validation.check_venue_edition(modifications, venue)
     venue.populate_from_dict(modifications)
 
-    if not venue.isVirtual:
-        delete_venue_from_iris_venues(venue.id)
-
     repository.save(venue)
-
-    link_valid_venue_to_irises(venue)
 
     indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)
 
@@ -96,8 +89,6 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
     venue.populate_from_dict(data)
 
     repository.save(venue)
-
-    link_valid_venue_to_irises(venue=venue)
 
     return venue
 

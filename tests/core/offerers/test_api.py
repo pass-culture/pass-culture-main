@@ -148,41 +148,6 @@ class EditVenueTest:
         assert error.value.errors["latitude"] == ["La latitude doit être comprise entre -90.0 et +90.0"]
         assert error.value.errors["longitude"] == ["Format incorrect"]
 
-    @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.offerers.api.delete_venue_from_iris_venues")
-    @patch("pcapi.core.offerers.api.link_valid_venue_to_irises")
-    def test_edit_physical_venue_iris_process(
-        self, mock_link_venue_to_iris_if_valid, mock_delete_venue_from_iris_venues, app
-    ) -> None:
-        # Given
-        venue = offers_factories.VenueFactory(
-            isVirtual=False,
-        )
-
-        # when
-        venue_coordinates = {"latitude": 2, "longitude": 48}
-        updated_venue = offerers_api.update_venue(venue, **venue_coordinates)
-
-        # Then
-        mock_delete_venue_from_iris_venues.assert_called_once_with(updated_venue.id)
-        mock_link_venue_to_iris_if_valid.assert_called_once_with(updated_venue)
-
-    @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.offerers.api.delete_venue_from_iris_venues")
-    def test_edit_virtual_venue_iris_process(self, mock_delete_venue_from_iris_venues, app) -> None:
-        # Given
-        venue = offers_factories.VenueFactory(
-            siret=None,
-            isVirtual=True,
-        )
-
-        # when
-        venue_coordinates = {"latitude": 2, "longitude": 48}
-        offerers_api.update_venue(venue, **venue_coordinates)
-
-        # Then
-        mock_delete_venue_from_iris_venues.assert_not_called()
-
 
 @pytest.mark.usefixtures("db_session")
 class ApiKeyTest:

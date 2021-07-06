@@ -3,7 +3,6 @@ def install_scripts():
     import pcapi.scripts.algolia_indexing.commands
     import pcapi.scripts.clean_database
     import pcapi.scripts.install_data
-    import pcapi.scripts.iris.commands
     import pcapi.scripts.offerer.commands
     import pcapi.scripts.payment.banishment_command
     import pcapi.scripts.payment.generate_payments

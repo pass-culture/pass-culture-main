@@ -17,8 +17,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurre
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_products import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_stocks import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_iris import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_iris_venues import create_industrial_iris_venues
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_config import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
@@ -91,10 +89,6 @@ def save_industrial_sandbox() -> None:
     create_industrial_activation_offers()
 
     create_industrial_algolia_indexed_objects()
-
-    create_industrial_iris(FILE_PATH)
-
-    create_industrial_iris_venues()
 
     create_venue_labels()
 

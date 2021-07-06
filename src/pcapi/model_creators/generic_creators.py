@@ -5,9 +5,6 @@ from hashlib import sha256
 from typing import Optional
 from typing import Union
 
-from geoalchemy2.shape import from_shape
-from shapely.geometry import Polygon
-
 from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.offerers.models import Offerer
@@ -30,8 +27,6 @@ from pcapi.models import Booking
 from pcapi.models import Criterion
 from pcapi.models import Favorite
 from pcapi.models import ImportStatus
-from pcapi.models import IrisFrance
-from pcapi.models import IrisVenues
 from pcapi.models import Offer
 from pcapi.models import Payment
 from pcapi.models import PaymentMessage
@@ -43,8 +38,6 @@ from pcapi.models import UserOfferer
 from pcapi.models import Venue
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.scripts.iris.import_iris import WGS_SPATIAL_REFERENCE_IDENTIFIER
-from pcapi.scripts.iris.import_iris import create_centroid_from_polygon
 from pcapi.utils.token import random_token
 
 
@@ -580,18 +573,3 @@ def create_payment_status(
     payment_status.status = status
     payment_status.date = date
     return payment_status
-
-
-def create_iris(polygon: Polygon, iris_code: str = "123456789") -> IrisFrance:
-    iris = IrisFrance()
-    iris.centroid = from_shape(create_centroid_from_polygon(polygon), srid=WGS_SPATIAL_REFERENCE_IDENTIFIER)
-    iris.irisCode = iris_code
-    iris.shape = from_shape(polygon, srid=WGS_SPATIAL_REFERENCE_IDENTIFIER)
-    return iris
-
-
-def create_iris_venue(iris: IrisFrance, venue: Venue) -> IrisVenues:
-    iris_venue = IrisVenues()
-    iris_venue.venue = venue
-    iris_venue.iris = iris
-    return iris_venue

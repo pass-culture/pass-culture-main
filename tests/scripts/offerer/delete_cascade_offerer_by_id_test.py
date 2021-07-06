@@ -1,5 +1,4 @@
 import pytest
-from shapely.geometry import Polygon
 
 from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 import pcapi.core.bookings.factories as bookings_factories
@@ -16,20 +15,15 @@ from pcapi.core.offers.models import Stock
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
-from pcapi.model_creators.generic_creators import create_iris
-from pcapi.model_creators.generic_creators import create_iris_venue
 from pcapi.models import AllocineVenueProvider
 from pcapi.models import AllocineVenueProviderPriceRule
 from pcapi.models import BankInformation
 from pcapi.models import Criterion
-from pcapi.models import IrisFrance
-from pcapi.models import IrisVenues
 from pcapi.models import OfferCriterion
 from pcapi.models import Product
 from pcapi.models import Provider
 from pcapi.models import UserOfferer
 from pcapi.models import VenueProvider
-from pcapi.repository import repository
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
 
 
@@ -150,29 +144,6 @@ def test_delete_cascade_offerer_should_remove_bank_informations_of_managed_venue
     assert Offerer.query.count() == 0
     assert Venue.query.count() == 0
     assert BankInformation.query.count() == 1
-
-
-@pytest.mark.usefixtures("db_session")
-def test_delete_cascade_offerer_should_remove_iris_of_managed_venue():
-    # Given
-    venue = offers_factories.VenueFactory()
-    other_venue = offers_factories.VenueFactory()
-    offerer_to_delete = venue.managingOfferer
-
-    polygon = Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)])
-    iris = create_iris(polygon)
-    iris_venue = create_iris_venue(iris, venue)
-    other_iris_venue = create_iris_venue(iris, other_venue)
-    repository.save(iris_venue, other_iris_venue)
-
-    # When
-    delete_cascade_offerer_by_id(offerer_to_delete.id)
-
-    # Then
-    assert Offerer.query.count() == 1
-    assert Venue.query.count() == 1
-    assert IrisVenues.query.count() == 1
-    assert IrisFrance.query.count() == 1
 
 
 @pytest.mark.usefixtures("db_session")
