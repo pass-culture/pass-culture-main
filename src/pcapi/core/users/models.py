@@ -124,6 +124,8 @@ class UserRole(enum.Enum):
     BENEFICIARY = "BENEFICIARY"
     INSTITUTIONAL_PROJECT_REDACTOR = "INSTITUTIONAL_PROJECT_REDACTOR"
     PRO = "PRO"
+    # TODO(bcalvez) : remove this role as soon as we get a proper identification mecanism in F.A.
+    JOUVE = "JOUVE"
 
 
 @dataclass

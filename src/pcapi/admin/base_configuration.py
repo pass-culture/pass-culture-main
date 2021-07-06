@@ -8,6 +8,8 @@ from flask_admin.helpers import get_form_data
 from flask_login import current_user
 from werkzeug.utils import redirect
 
+import pcapi.core.users.models as users_models
+
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +38,14 @@ class BaseAdminMixin:
         form_class = self.get_edit_form()
         return form_class(get_form_data(), obj=obj)
 
+    def is_accessible(self) -> bool:
+        # TODO: remove when we have a clean way to get groups from google.
+        # This is a hackish way to filter from a user role which is weak : we do want a way
+        # to add permissions based on groups and sync'ed from our google IDP, and not developp a way to do it here.
+        if current_user.is_authenticated and users_models.UserRole.JOUVE in current_user.roles:
+            return False
+        return is_accessible()
+
 
 class BaseAdminView(BaseAdminMixin, ModelView):
     page_size = 25
@@ -44,9 +54,6 @@ class BaseAdminView(BaseAdminMixin, ModelView):
     can_edit = False
     can_delete = False
     form_base_class = SecureForm
-
-    def is_accessible(self) -> bool:
-        return is_accessible()
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("admin.index"))
@@ -66,9 +73,6 @@ class BaseAdminView(BaseAdminMixin, ModelView):
 
 
 class BaseCustomAdminView(BaseAdminMixin, BaseView):
-    def is_accessible(self) -> bool:
-        return is_accessible()
-
     def check_super_admins(self) -> bool:
         # `current_user` may be None, here, because this function
         # is (also) called when admin views are registered and

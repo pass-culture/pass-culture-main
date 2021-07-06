@@ -104,6 +104,9 @@ class FraudView(base_configuration.BaseAdminView):
         )
         return formatters
 
+    def is_accessible(self) -> bool:
+        return flask_login.current_user.is_authenticated and flask_login.current_user.isAdmin
+
     def get_query(self):
         return users_models.User.query.filter(
             (users_models.User.beneficiaryFraudChecks.any()) | (users_models.User.beneficiaryFraudResult.has())
