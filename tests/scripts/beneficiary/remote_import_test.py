@@ -16,12 +16,10 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import User
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import ApiErrors
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
 import pcapi.notifications.push.testing as push_testing
-from pcapi.repository import repository
 from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.beneficiary.remote_import import parse_beneficiary_information
 
@@ -383,7 +381,7 @@ class ProcessBeneficiaryApplicationTest:
         # given
         information = fraud_factories.DemarchesSimplifieesContentFactory(application_id=123)
 
-        create_beneficiary_from_application.return_value = create_user()
+        create_beneficiary_from_application.return_value = users_factories.UserFactory.build(isBeneficiary=True)
 
         # when
         remote_import.process_beneficiary_application(
@@ -435,8 +433,7 @@ class ProcessBeneficiaryApplicationTest:
             civility="Mme",
             activity="Étudiant",
         )
-        existing_user = create_user(date_of_birth=datetime(2000, 5, 1), first_name="Jane", last_name="Doe")
-        repository.save(existing_user)
+        users_factories.UserFactory(dateOfBirth=datetime(2000, 5, 1), firstName="Jane", lastName="Doe")
 
         # when
         remote_import.process_beneficiary_application(
@@ -467,8 +464,7 @@ class ProcessBeneficiaryApplicationTest:
             civility="Mme",
             activity="Étudiant",
         )
-        existing_user = create_user(date_of_birth=datetime(2000, 5, 1), first_name="Jane", last_name="Doe")
-        repository.save(existing_user)
+        users_factories.UserFactory(dateOfBirth=datetime(2000, 5, 1), firstName="Jane", lastName="Doe")
         retry_ids = [123]
 
         # when
@@ -497,7 +493,10 @@ class ProcessBeneficiaryApplicationTest:
             civility="Mme",
             activity="Étudiant",
         )
-        mock_get_beneficiary_duplicates.return_value = [create_user(idx=11), create_user(idx=22)]
+        mock_get_beneficiary_duplicates.return_value = [
+            users_factories.UserFactory.build(id=11),
+            users_factories.UserFactory.build(id=22),
+        ]
 
         # when
         remote_import.process_beneficiary_application(
@@ -755,11 +754,13 @@ class RunIntegrationTest:
 
         # Create a user that has validated its email and phone number, meaning it
         # should become beneficiary.
-        user = create_user(
-            idx=4, email=self.EMAIL, is_beneficiary=False, is_email_validated=True, date_of_birth=date_of_birth
+        user = users_factories.UserFactory(
+            email=self.EMAIL,
+            isBeneficiary=False,
+            isEmailValidated=True,
+            dateOfBirth=date_of_birth,
+            phoneValidationStatus=None,
         )
-        user.phoneValidationStatus = None
-        repository.save(user)
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
         get_application_details.side_effect = self._get_details
 
@@ -814,11 +815,13 @@ class RunIntegrationTest:
 
         # Create a user that has validated its email and phone number, meaning it
         # should become beneficiary.
-        user = create_user(
-            idx=4, email=self.EMAIL, is_beneficiary=False, is_email_validated=True, date_of_birth=date_of_birth
+        user = users_factories.UserFactory(
+            email=self.EMAIL,
+            isBeneficiary=False,
+            isEmailValidated=True,
+            dateOfBirth=date_of_birth,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
         )
-        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
-        repository.save(user)
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
         get_application_details.side_effect = self._get_details
 
@@ -914,16 +917,14 @@ class RunIntegrationTest:
     def test_import_with_existing_id_card(
         self, get_application_details, get_closed_application_ids_for_demarche_simplifiee, mocker
     ):
-        user = create_user(
-            idx=4,
+        user = users_factories.UserFactory(
             email=self.EMAIL,
-            is_beneficiary=False,
-            is_email_validated=True,
-            date_of_birth=self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S"),
+            isBeneficiary=False,
+            isEmailValidated=True,
+            dateOfBirth=self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S"),
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            idPieceNumber="121314",
         )
-        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
-        user.idPieceNumber = "121314"
-        repository.save(user)
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
         get_application_details.side_effect = self._get_details
 
