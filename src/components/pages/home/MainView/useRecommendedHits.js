@@ -4,8 +4,12 @@ import { RECOMMENDATION_ENDPOINT, RECOMMENDATION_TOKEN } from '../../../../utils
 import { fetchAlgoliaHits } from '../../../../vendor/algolia/algolia'
 
 export const useHomeRecommendedHits = (recommendationModule, geolocation, userId) => {
+  const recommendedIds = useRecommendedOfferIds(recommendationModule, geolocation, userId)
+  return useRecommendedHits(recommendedIds || [])
+}
+
+const useRecommendedOfferIds = (recommendationModule, geolocation, userId) => {
   const [offerIds, setOfferIds] = useState([])
-  const [recommendedHits, setRecommendedHits] = useState([])
 
   useEffect(() => {
     if (recommendationModule) {
@@ -20,14 +24,20 @@ export const useHomeRecommendedHits = (recommendationModule, geolocation, userId
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recommendationModule, userId])
 
+  return offerIds
+}
+
+const useRecommendedHits = ids => {
+  const [recommendedHits, setRecommendedHits] = useState([])
+
   useEffect(() => {
-    if (offerIds.length > 0) {
-      fetchAlgoliaHits(offerIds).then(({ results }) => {
+    if (ids.length > 0) {
+      fetchAlgoliaHits(ids).then(({ results }) => {
         const hitsWithCover = results.filter(hit => hit && hit.offer && !!hit.offer.thumbUrl)
         setRecommendedHits(hitsWithCover)
       })
     }
-  }, [offerIds])
+  }, [ids])
 
   return recommendedHits
 }
