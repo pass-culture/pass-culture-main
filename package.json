@@ -7,6 +7,7 @@
     "node": ">=12 <13"
   },
   "dependencies": {
+    "@elastic/app-search-javascript": "^7.13.1",
     "@sentry/browser": "^5.27.3",
     "@sentry/tracing": "^5.27.3",
     "@typeform/embed": "0.22.1",
