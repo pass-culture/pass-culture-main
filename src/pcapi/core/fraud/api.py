@@ -79,6 +79,7 @@ def on_identity_fraud_check_result(
     fraud_items = []
 
     fraud_items.append(_duplicate_user_fraud_item(jouve_content))
+    fraud_items.append(_validate_id_piece_number_format_fraud_item(jouve_content.bodyPieceNumber))
     fraud_items.append(_duplicate_id_piece_number_fraud_item(jouve_content))
     fraud_items.extend(_id_check_fraud_items(jouve_content))
 
@@ -103,6 +104,16 @@ def on_identity_fraud_check_result(
     )
 
     repository.save(fraud_result)
+
+
+def _validate_id_piece_number_format_fraud_item(id_piece_number):
+    if not id_piece_number.strip():
+        return models.FraudItem(status=models.FraudStatus.SUSPICIOUS, detail="La Piece d'identité est vide")
+    if not re.match(r"^\w{9,10}|\w{12}$", id_piece_number):
+        return models.FraudItem(
+            status=models.FraudStatus.SUSPICIOUS, detail="Le format de la pièce d'identité n'est pas valide"
+        )
+    return models.FraudItem(status=models.FraudStatus.OK, detail=None)
 
 
 def _duplicate_user_fraud_item(jouve_content: models.JouveContent) -> models.FraudItem:

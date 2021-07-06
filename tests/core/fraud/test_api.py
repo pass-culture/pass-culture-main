@@ -132,6 +132,29 @@ class JouveFraudCheckTest:
 
         assert item_found
 
+    @pytest.mark.parametrize(
+        "id_piece_number",
+        [
+            "I III1",
+            "I I 1JII 11IB I E",
+            "",
+        ],
+    )
+    def test_jouve_id_piece_number_wrong_format(self, id_piece_number):
+        item = fraud_api._validate_id_piece_number_format_fraud_item(id_piece_number)
+        assert item.status == fraud_models.FraudStatus.SUSPICIOUS
+
+    @pytest.mark.parametrize(
+        "id_piece_number",
+        [
+            "321070751234",
+            "090435303687",
+        ],
+    )
+    def test_jouve_id_piece_number_valid_format(self, id_piece_number):
+        item = fraud_api._validate_id_piece_number_format_fraud_item(id_piece_number)
+        assert item.status == fraud_models.FraudStatus.OK
+
     def test_on_identity_fraud_check_result_retry(self):
         user = UserFactory(isBeneficiary=False)
         content = fraud_factories.JouveContentFactory(
