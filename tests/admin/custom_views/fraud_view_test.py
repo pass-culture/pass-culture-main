@@ -6,6 +6,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
+import pcapi.models
 
 
 @pytest.mark.usefixtures("db_session")
@@ -137,3 +138,45 @@ class BeneficiaryFraudValidationViewTest:
         jouve_content = fraud_models.JouveContent(**check.resultContent)
         assert user.firstName == jouve_content.firstName
         assert user.lastName == jouve_content.lastName
+
+
+@pytest.mark.usefixtures("db_session")
+class JouveUpdateIDPieceNumberTest:
+    def setup_method(self, method):
+        self.jouve_user = users_factories.UserFactory(isAdmin=True, roles=[users_models.UserRole.JOUVE])
+
+    def test_update_beneficiary_id_piece_number(self, client):
+        user = users_factories.UserFactory(isAdmin=False, isBeneficiary=False)
+        content = fraud_factories.JouveContentFactory(
+            birthLocationCtrl="OK",
+            bodyBirthDateCtrl="OK",
+            bodyBirthDateLevel=100,
+            bodyFirstnameCtrl="OK",
+            bodyFirstnameLevel=100,
+            bodyNameLevel=100,
+            bodyNameCtrl="OK",
+            bodyPieceNumber="wrong-id-piece-number",
+            bodyPieceNumberCtrl="KO",  # ensure we correctly update this field later in the test
+            bodyPieceNumberLevel=100,
+            creatorCtrl="OK",
+            initialSizeCtrl="OK",
+        )
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.JOUVE, resultContent=content
+        )
+        fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.SUSPICIOUS)
+
+        client.with_auth(self.jouve_user.email)
+        response = client.post(
+            f"/pc/back-office/beneficiary_fraud/update/beneficiary/id_piece_number/{user.id}",
+            form={"id_piece_number": "123123123123"},
+        )
+
+        assert response.status_code == 302
+
+        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
+        assert fraud_check.resultContent["bodyPieceNumberCtrl"] == "OK"
+        assert fraud_check.resultContent["bodyPieceNumber"] == "123123123123"
+        assert user.isBeneficiary
+        assert len(user.beneficiaryImports) == 1
+        assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED

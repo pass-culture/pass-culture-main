@@ -66,7 +66,7 @@ def admin_update_identity_fraud_check_result(
 def on_identity_fraud_check_result(
     user: User,
     beneficiary_fraud_check: models.BeneficiaryFraudCheck,
-):
+) -> models.BeneficiaryFraudResult:
     if user.isBeneficiary:
         raise exceptions.UserAlreadyBeneficiary()
     if not user.isEmailValidated:
@@ -104,6 +104,7 @@ def on_identity_fraud_check_result(
     )
 
     repository.save(fraud_result)
+    return fraud_result
 
 
 def _validate_id_piece_number_format_fraud_item(id_piece_number):

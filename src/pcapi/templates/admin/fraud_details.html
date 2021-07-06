@@ -42,13 +42,56 @@
   </div>
 </div>
 
+<div class="modal fade" id="userIdPieceNumberUpdate" tabindex="-1" role="dialog" aria-labelledby="userIdPieceNumberUpdateTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="userIdPieceNumberUpdateTitle">Validation de l'utilisateur {{ model.firstName}} {{model.lastName}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" action="{{ url_for('beneficiary_fraud.update_beneficiary_id_piece_number', user_id=model.id)}}">
+      <div class="modal-body">
+          <div class="form-group row">
+            <label for="id_piece_number" class="col-4 col-form-label">N° de carte d'identité</label>
+            <div class="col-8">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">
+                    <i class="fa fa-address-card"></i>
+                  </div>
+                </div>
+                <input id="id_piece_number" name="id_piece_number" type="text" class="form-control">
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+        <button name="submit" type="submit" class="btn btn-primary">Valider</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
 <div class="row">
   <div class="col">
-    <h3>Utilisateur</h3>{% if not model.beneficiaryFraudReview and current_user.is_super_user() %}
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userValidationModal">
-      Soumettre une revue manuelle
-    </button>
-    {% endif %}
+  {% if not model.beneficiaryFraudReview and current_user.is_super_user() %}
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userValidationModal">
+    Soumettre une revue manuelle
+  </button>
+  {% endif %}
+  {% if "JOUVE" in current_user.roles or current_user.is_super_user() %}
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userIdPieceNumberUpdate">
+    Mettre à jour la pièce d'identité
+  </button>
+  {% endif %}
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <h3>Utilisateur</h3>
     <table class="table">
     <tr>
       <th scope="row">Id</th>

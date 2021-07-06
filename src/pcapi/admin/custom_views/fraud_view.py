@@ -8,10 +8,12 @@ import wtforms
 import wtforms.validators
 
 from pcapi.admin import base_configuration
+from pcapi.connectors.beneficiaries import jouve_backend
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
+import pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository as beneficiary_repository
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 
@@ -59,6 +61,15 @@ class FraudReviewForm(wtforms.Form):
     review = wtforms.SelectField(
         choices=[(item.name, item.value) for item in fraud_models.FraudReviewStatus],
         validators=[wtforms.validators.DataRequired()],
+    )
+
+
+class IDPieceNumberForm(wtforms.Form):
+    class Meta:
+        locales = ["fr"]
+
+    id_piece_number = wtforms.StringField(
+        validators=[wtforms.validators.DataRequired(), wtforms.validators.Length(min=8, max=12)]
     )
 
 
@@ -150,4 +161,39 @@ class FraudView(base_configuration.BaseAdminView):
         users_api.update_user_information_from_external_source(user, fraud_api.get_source_data(user))
         users_api.activate_beneficiary(user, "fraud_validation")
         flask.flash(f"Une revue manuelle ajoutée pour le bénéficiaire {user.firstName} {user.lastName}")
+        return flask.redirect(flask.url_for(".details_view", id=user_id))
+
+    @flask_admin.expose("/update/beneficiary/id_piece_number/<user_id>", methods=["POST"])
+    def update_beneficiary_id_piece_number(self, user_id):
+        if not self.check_super_admins() or not users_models.UserRole.JOUVE in flask_login.current_user.roles:
+            flask.flash("Vous n'avez pas les droits suffisant pour activer ce bénéficiaire", "error")
+            return flask.redirect(flask.url_for(".details_view", id=user_id))
+
+        form = IDPieceNumberForm(flask.request.form)
+        if not form.validate():
+            errors = "<br>".join(f"{field}: {error[0]}" for field, error in form.errors.items())
+            flask.flash(Markup(f"Erreurs lors de la validation du formulaire: <br> {errors}"), "error")
+            return flask.redirect(flask.url_for(".details_view", id=user_id))
+
+        user = users_models.User.query.get(user_id)
+        if not user:
+            flask.flash("Cet utilisateur n'existe pas", "error")
+            return flask.redirect(flask.url_for(".index_view"))
+        if user.isBeneficiary:
+            flask.flash(f"L'utilisateur {user.id} {user.firstName} {user.lastName} est déjà bénéficiaire")
+            return flask.redirect(flask.url_for(".details_view", id=user_id))
+        fraud_check = fraud_api.admin_update_identity_fraud_check_result(user, form.data["id_piece_number"])
+        if not fraud_check:
+            flask.flash("Aucune vérification Jouve disponible", "error")
+            return flask.redirect(flask.url_for(".details_view", id=user_id))
+        db.session.refresh(user)
+        fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
+        if fraud_result.status == fraud_models.FraudStatus.OK:
+            # todo : cleanup to use fraud validation journey v2
+            pre_subscription = jouve_backend.get_subscription_from_content(
+                fraud_models.JouveContent(**fraud_check.resultContent)
+            )
+            beneficiary_repository.BeneficiarySQLRepository.save(pre_subscription, user)
+
+        flask.flash(f"N° de pièce d'identitée modifiée sur le bénéficiaire {user.firstName} {user.lastName}")
         return flask.redirect(flask.url_for(".details_view", id=user_id))
