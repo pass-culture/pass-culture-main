@@ -94,17 +94,17 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
     user = factory.SubFactory(users_factories.UserFactory)
     type = factory.LazyAttribute(lambda o: random.choice(list(models.FraudCheckType)))
     thirdPartyId = factory.Sequence("ThirdPartyIdentifier-{0}".format)
+    resultContent = factory.SubFactory(JouveContentFactory)
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         """Override the default ``_create`` with our custom call."""
-
         factory_class = FRAUD_CHECK_TYPE_MODEL_ASSOCIATION.get(kwargs["type"])
         content = {}
         if factory_class:
             content = factory_class()
-
-        kwargs["resultContent"] = content
+        if not isinstance(kwargs["resultContent"], factory_class._meta.get_model_class()):
+            kwargs["resultContent"] = content
 
         return super()._create(model_class, *args, **kwargs)
 

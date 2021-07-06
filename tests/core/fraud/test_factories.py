@@ -8,10 +8,20 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class FactoriesTest:
-    def test_content_(self):
-        instance = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.USER_PROFILING)
-        assert isinstance(instance.resultContent, dict)
+    @pytest.mark.parametrize(
+        "check_type,instance_type",
+        [
+            (fraud_models.FraudCheckType.USER_PROFILING, fraud_models.UserProfilingFraudData),
+            (fraud_models.FraudCheckType.JOUVE, fraud_models.JouveContent),
+        ],
+    )
+    def test_database_serialization(self, check_type, instance_type):
+        instance = fraud_factories.BeneficiaryFraudCheckFactory(type=check_type)
+        instance_type(**instance.resultContent)
 
-    def test_database_serialization(self):
-        instance = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.USER_PROFILING)
-        fraud_models.UserProfilingFraudData(**instance.resultContent)
+    def test_database_overwrite(self):
+        content = fraud_factories.JouveContentFactory()
+        instance = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.JOUVE, resultContent=content
+        )
+        assert instance.resultContent == content.dict()

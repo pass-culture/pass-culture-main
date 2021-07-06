@@ -1,6 +1,7 @@
 import logging
-from typing import List
+import re
 from typing import Optional
+from typing import Union
 
 from sqlalchemy import func
 
@@ -40,7 +41,32 @@ def on_jouve_result(user: User, jouve_content: models.JouveContent):
     on_identity_fraud_check_result(user, fraud_check)
 
 
-def on_identity_fraud_check_result(user: User, beneficiary_fraud_check: models.BeneficiaryFraudCheck):
+def admin_update_identity_fraud_check_result(
+    user: User, id_piece_number: str
+) -> Union[models.BeneficiaryFraudCheck, None]:
+    fraud_check = (
+        models.BeneficiaryFraudCheck.query.filter(
+            models.BeneficiaryFraudCheck.userId == user.id,
+            models.BeneficiaryFraudCheck.type == models.FraudCheckType.JOUVE,
+        )
+        .order_by(models.BeneficiaryFraudCheck.dateCreated.desc())
+        .first()
+    )
+    if not fraud_check:
+        return None
+    content = models.JouveContent(**fraud_check.resultContent)
+    content.bodyPieceNumber = id_piece_number
+    content.bodyPieceNumberCtrl = "OK"
+    content.bodyPieceNumberLevel = 100
+    fraud_check.resultContent = content.dict()
+    repository.save(fraud_check)
+    return fraud_check
+
+
+def on_identity_fraud_check_result(
+    user: User,
+    beneficiary_fraud_check: models.BeneficiaryFraudCheck,
+):
     if user.isBeneficiary:
         raise exceptions.UserAlreadyBeneficiary()
     if not user.isEmailValidated:
@@ -63,13 +89,19 @@ def on_identity_fraud_check_result(user: User, beneficiary_fraud_check: models.B
     else:
         status = models.FraudStatus.SUSPICIOUS
 
-    fraud_result = models.BeneficiaryFraudResult(
-        user=user,
-        status=status,
-        reason=" ; ".join(
-            fraud_item.detail for fraud_item in fraud_items if fraud_item.status != models.FraudStatus.OK
-        ),
+    if user.beneficiaryFraudResult:
+        fraud_result = user.beneficiaryFraudResult
+        fraud_result.status = status
+
+    else:
+        fraud_result = models.BeneficiaryFraudResult(
+            userId=user.id,
+            status=status,
+        )
+    fraud_result.reason = " ; ".join(
+        fraud_item.detail for fraud_item in fraud_items if fraud_item.status != models.FraudStatus.OK
     )
+
     repository.save(fraud_result)
 
 
@@ -97,7 +129,7 @@ def _duplicate_id_piece_number_fraud_item(jouve_content: models.JouveContent) ->
     )
 
 
-def _id_check_fraud_items(content: models.JouveContent) -> List[models.FraudItem]:
+def _id_check_fraud_items(content: models.JouveContent) -> list[models.FraudItem]:
     if not FeatureToggle.ENABLE_IDCHECK_FRAUD_CONTROLS.is_active():
         return []
 
