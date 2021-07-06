@@ -3,9 +3,9 @@ import { RECOMMENDATION_ENDPOINT, RECOMMENDATION_TOKEN } from '../../../../utils
 
 import { fetchAlgoliaHits } from '../../../../vendor/algolia/algolia'
 
-export const useHomeRecommendedHits = (recommendationModule, geolocation, userId) => {
+export const useHomeRecommendedHits = (recommendationModule, geolocation, userId, useAppSearch) => {
   const recommendedIds = useRecommendedOfferIds(recommendationModule, geolocation, userId)
-  return useRecommendedHits(recommendedIds || [])
+  return useRecommendedHits(recommendedIds || [], useAppSearch)
 }
 
 const useRecommendedOfferIds = (recommendationModule, geolocation, userId) => {
@@ -27,17 +27,21 @@ const useRecommendedOfferIds = (recommendationModule, geolocation, userId) => {
   return offerIds
 }
 
-const useRecommendedHits = ids => {
+const useRecommendedHits = (ids, useAppSearch) => {
   const [recommendedHits, setRecommendedHits] = useState([])
 
   useEffect(() => {
     if (ids.length > 0) {
-      fetchAlgoliaHits(ids).then(({ results }) => {
-        const hitsWithCover = results.filter(hit => hit && hit.offer && !!hit.offer.thumbUrl)
-        setRecommendedHits(hitsWithCover)
-      })
+      if (useAppSearch) {
+        // TODO(antoinewg) Fetch using app search
+      } else {
+        fetchAlgoliaHits(ids).then(({ results }) => {
+          const hitsWithCover = results.filter(hit => hit && hit.offer && !!hit.offer.thumbUrl)
+          setRecommendedHits(hitsWithCover)
+        })
+      }
     }
-  }, [ids])
+  }, [ids, useAppSearch])
 
   return recommendedHits
 }

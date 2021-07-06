@@ -12,6 +12,7 @@ describe('home container', () => {
       // Given
       const state = {
         currentUser: new User(),
+        data: { features: [] },
         geolocation: { latitude: 5.98374, longitude: 5.23984 },
       }
 
@@ -21,6 +22,37 @@ describe('home container', () => {
       // Then
       expect(props.user).toStrictEqual(state.currentUser)
       expect(props.geolocation).toStrictEqual(state.geolocation)
+      expect(props.useAppSearch).toBe(false)
+    })
+
+    it('should return useAppSearch=True if the feature is enabled', () => {
+      // Given
+      const state = {
+        currentUser: new User(),
+        data: { features: [{ isActive: true, nameKey: 'USE_APP_SEARCH_ON_WEBAPP' }] },
+        geolocation: { latitude: 5.98374, longitude: 5.23984 },
+      }
+
+      // When
+      const props = mapStateToProps(state)
+
+      // Then
+      expect(props.useAppSearch).toBe(true)
+    })
+
+    it('should return useAppSearch=True if the feature is disabled', () => {
+      // Given
+      const state = {
+        currentUser: new User(),
+        data: { features: [{ isActive: false, nameKey: 'USE_APP_SEARCH_ON_WEBAPP' }] },
+        geolocation: { latitude: 5.98374, longitude: 5.23984 },
+      }
+
+      // When
+      const props = mapStateToProps(state)
+
+      // Then
+      expect(props.useAppSearch).toBe(false)
     })
   })
 

@@ -7,10 +7,13 @@ import { selectUserGeolocation } from '../../../redux/selectors/geolocationSelec
 import { updateCurrentUser } from '../../../redux/actions/currentUser'
 import Home from './Home'
 import withGeolocationTracking from '../../../tracking/withGeolocationTracking'
+import { FEATURES } from '../../router/selectors/features'
+import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'
 
 export const mapStateToProps = state => ({
   geolocation: selectUserGeolocation(state),
   user: selectCurrentUser(state),
+  useAppSearch: !selectIsFeatureDisabled(state, FEATURES.USE_APP_SEARCH_ON_WEBAPP),
 })
 
 export const mapDispatchToProps = () => ({ updateCurrentUser })

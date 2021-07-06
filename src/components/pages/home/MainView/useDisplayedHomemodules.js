@@ -3,7 +3,7 @@ import useHomeAlgoliaModules from './useHomeAlgoliaModules'
 import useHomepageModules from './useHomepageModules'
 import { useHomeRecommendedHits } from './useRecommendedHits'
 
-const useDisplayedHomemodules = (history, geolocation, userId) => {
+const useDisplayedHomemodules = (history, geolocation, userId, useAppSearch) => {
   // 1. Get the list of modules from contentful
   const homepageModules = useHomepageModules(history)
   const { modules } = homepageModules
@@ -14,7 +14,12 @@ const useDisplayedHomemodules = (history, geolocation, userId) => {
 
   // 3. Get the offers for the recommended hits
   const recommendationModule = getRecommendationModule(modules)
-  const recommendedHits = useHomeRecommendedHits(recommendationModule, geolocation, userId)
+  const recommendedHits = useHomeRecommendedHits(
+    recommendationModule,
+    geolocation,
+    userId,
+    useAppSearch
+  )
 
   // 4. Reconcile the three and filter the modules that will eventually be displayed
   const displayedModules = getModulesToDisplay(modules, algoliaMapping, recommendedHits)

@@ -21,6 +21,7 @@ const Home = ({
   trackRecommendationModuleSeen,
   trackSeeMoreHasBeenClicked,
   updateCurrentUser,
+  useAppSearch,
   user,
 }) => {
   const geolocationRef = useRef(geolocation)
@@ -30,7 +31,7 @@ const Home = ({
     isLoading,
     algoliaMapping,
     recommendedHits,
-  } = useDisplayedHomemodules(history, geolocationRef.current, dehumanizeId(user.id))
+  } = useDisplayedHomemodules(history, geolocationRef.current, dehumanizeId(user.id), useAppSearch)
 
   useEffect(() => {
     campaignTracker.home()
@@ -91,6 +92,7 @@ Home.propTypes = {
   trackRecommendationModuleSeen: PropTypes.func.isRequired,
   trackSeeMoreHasBeenClicked: PropTypes.func.isRequired,
   updateCurrentUser: PropTypes.func.isRequired,
+  useAppSearch: PropTypes.bool.isRequired,
   user: PropTypes.shape(User).isRequired,
 }
 
