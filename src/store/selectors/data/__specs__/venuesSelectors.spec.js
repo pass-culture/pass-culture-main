@@ -1,6 +1,5 @@
 import {
   selectVenues,
-  selectVenuesByOffererIdAndOfferType,
   selectPhysicalVenuesByOffererId,
   selectVenueById,
   selectVenuesByOffererId,
@@ -26,92 +25,6 @@ describe('src | selectors | data | venuesSelectors', () => {
           data: {},
         }
         expect(selectVenues(store)).toStrictEqual([])
-      })
-    })
-  })
-
-  describe('selectVenuesByOfferIdAndOfferType', () => {
-    describe('with no filters', () => {
-      it('should return all venues', () => {
-        const store = {
-          data: {
-            venues: [
-              { id: 'AE', managingOffererId: 'ZZ', isVirtual: true },
-              { id: 'B4', managingOffererId: 'AA', isVirtual: true },
-              { id: 'AF', managingOffererId: 'ZZ', isVirtual: false },
-              { id: 'ER', managingOffererId: 'AA', isVirtual: false },
-            ],
-          },
-        }
-        expect(selectVenuesByOffererIdAndOfferType(store)).toStrictEqual([
-          { id: 'AE', managingOffererId: 'ZZ', isVirtual: true },
-          { id: 'B4', managingOffererId: 'AA', isVirtual: true },
-          { id: 'AF', managingOffererId: 'ZZ', isVirtual: false },
-          { id: 'ER', managingOffererId: 'AA', isVirtual: false },
-        ])
-      })
-    })
-
-    describe('with optionalOffererId filter', () => {
-      it('should filter venues accordingly', () => {
-        const store = {
-          data: {
-            venues: [
-              { id: 'AE', managingOffererId: 'ZZ', isVirtual: true },
-              { id: 'B4', managingOffererId: 'AA', isVirtual: true },
-              { id: 'AF', managingOffererId: 'ZZ', isVirtual: false },
-              { id: 'ER', managingOffererId: 'AA', isVirtual: false },
-            ],
-          },
-        }
-        const optionalOffererId = 'ZZ'
-
-        expect(selectVenuesByOffererIdAndOfferType(store, optionalOffererId)).toStrictEqual([
-          { id: 'AE', managingOffererId: 'ZZ', isVirtual: true },
-          { id: 'AF', managingOffererId: 'ZZ', isVirtual: false },
-        ])
-      })
-    })
-
-    describe('with optionalOfferType offlineOnly filter', () => {
-      it('should filter venues accordingly', () => {
-        const store = {
-          data: {
-            venues: [
-              { id: 'AE', managingOffererId: 'ZZ', isVirtual: true },
-              { id: 'B4', managingOffererId: 'AA', isVirtual: true },
-              { id: 'AF', managingOffererId: 'ZZ', isVirtual: false },
-              { id: 'ER', managingOffererId: 'AA', isVirtual: false },
-            ],
-          },
-        }
-        const optionalOffererId = 'ZZ'
-        const optionalOfferType = { offlineOnly: true }
-
-        expect(
-          selectVenuesByOffererIdAndOfferType(store, optionalOffererId, optionalOfferType)
-        ).toStrictEqual([{ id: 'AF', managingOffererId: 'ZZ', isVirtual: false }])
-      })
-    })
-
-    describe('with optionalOfferType onlineOnly filter', () => {
-      it('should filter venues accordingly', () => {
-        const store = {
-          data: {
-            venues: [
-              { id: 'AE', managingOffererId: 'ZZ', isVirtual: true },
-              { id: 'B4', managingOffererId: 'AA', isVirtual: true },
-              { id: 'AF', managingOffererId: 'ZZ', isVirtual: false },
-              { id: 'ER', managingOffererId: 'AA', isVirtual: false },
-            ],
-          },
-        }
-        const optionalOffererId = 'ZZ'
-        const optionalOfferType = { onlineOnly: true }
-
-        expect(
-          selectVenuesByOffererIdAndOfferType(store, optionalOffererId, optionalOfferType)
-        ).toStrictEqual([{ id: 'AE', managingOffererId: 'ZZ', isVirtual: true }])
       })
     })
   })
