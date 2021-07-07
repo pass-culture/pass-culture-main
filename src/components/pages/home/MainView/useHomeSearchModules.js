@@ -5,7 +5,7 @@ import { parseAlgoliaParameters } from './domain/parseAlgoliaParameters'
 import Offers from './domain/ValueObjects/Offers'
 import OffersWithCover from './domain/ValueObjects/OffersWithCover'
 
-const useHomeAlgoliaModules = (offerModules, geolocation) => {
+const useHomeSearchModules = (offerModules, geolocation) => {
   const [algoliaMapping, setAlgoliaMapping] = useState({})
   const [isError, setIsError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -48,4 +48,4 @@ const useHomeAlgoliaModules = (offerModules, geolocation) => {
   }
 }
 
-export default useHomeAlgoliaModules
+export default useHomeSearchModules
