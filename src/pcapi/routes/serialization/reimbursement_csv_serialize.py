@@ -7,6 +7,10 @@ from pcapi.repository.reimbursement_queries import find_sent_offerer_payments
 from pcapi.utils.date import MONTHS_IN_FRENCH
 
 
+def format_number_as_french(num):
+    return str(num).replace(".", ",")
+
+
 class ReimbursementDetails:
     CSV_HEADER = [
         "Année",
@@ -67,13 +71,15 @@ class ReimbursementDetails:
             self.user_first_name = payment_info.user_firstName
             self.booking_token = payment_info.booking_token
             self.booking_used_date = payment_info.booking_dateUsed
-            self.booking_total_amount = payment_info.booking_amount * payment_info.booking_quantity
+            self.booking_total_amount = format_number_as_french(
+                payment_info.booking_amount * payment_info.booking_quantity
+            )
             if payment_info.reimbursement_rate:
                 reimbursement_rate = f"{int(payment_info.reimbursement_rate * 100)}%"
             else:
                 reimbursement_rate = ""
             self.reimbursement_rate = reimbursement_rate
-            self.reimbursed_amount = payment_info.amount
+            self.reimbursed_amount = format_number_as_french(payment_info.amount)
             self.status = human_friendly_status
 
     def as_csv_row(self):

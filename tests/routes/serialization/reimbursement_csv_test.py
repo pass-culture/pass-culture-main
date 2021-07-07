@@ -41,9 +41,9 @@ class ReimbursementDetailsTest:
         assert raw_csv[9] == "Jeanne"
         assert raw_csv[10] == payment.booking.token
         assert raw_csv[11] == payment.booking.dateUsed
-        assert raw_csv[12] == payment.booking.total_amount
+        assert raw_csv[12] == "21,00"
         assert raw_csv[13] == f"{int(payment.reimbursementRate * 100)}%"
-        assert raw_csv[14] == payment.amount
+        assert raw_csv[14] == "21,00"
         assert raw_csv[15] == "Remboursement envoyé"
 
     @pytest.mark.usefixtures("db_session")
@@ -130,7 +130,7 @@ def test_generate_reimbursement_details_csv():
     )
     assert (
         rows[1]
-        == '"2019";"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"iban-1234";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"";21.00;"100%";21.00;"Remboursement envoyé"'
+        == '"2019";"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"iban-1234";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"";"21,00";"100%";"21,00";"Remboursement envoyé"'
     )
 
 
