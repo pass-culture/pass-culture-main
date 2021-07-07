@@ -30,7 +30,7 @@ InputError.defaultProps = {
 }
 
 InputError.propTypes = {
-  children: PropTypes.shape().isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
   name: PropTypes.string,
 }
 
