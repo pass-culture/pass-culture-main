@@ -23,6 +23,8 @@ import {
   EXTRA_DATA_FIELDS,
   MANDATORY_FIELDS,
   TEXT_INPUT_DEFAULT_VALUE,
+  PLATFORM,
+  NOT_REIMBURSED,
 } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
 import { ReactComponent as AudioDisabilitySvg } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/assets/audio-disability.svg'
 import { ReactComponent as MentalDisabilitySvg } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/assets/mental-disability.svg'
@@ -206,9 +208,9 @@ const OfferForm = ({
     function filterVenueOptionsForSelectedType() {
       let venuesToShow = venues
 
-      if (offerSubCategory?.onlineOfflinePlatform === 'ONLINE') {
+      if (offerSubCategory?.onlineOfflinePlatform === PLATFORM.ONLINE) {
         venuesToShow = venuesToShow.filter(venue => venue.isVirtual)
-      } else if (offerSubCategory?.onlineOfflinePlatform === 'OFFLINE') {
+      } else if (offerSubCategory?.onlineOfflinePlatform === PLATFORM.OFFLINE) {
         venuesToShow = venuesToShow.filter(venue => !venue.isVirtual)
       }
 
@@ -257,7 +259,7 @@ const OfferForm = ({
     function setBookingEmail() {
       if (!initialValues.bookingEmail) {
         if (
-          (offerSubCategory && offerSubCategory.onlineOfflinePlatform === 'ONLINE') ||
+          (offerSubCategory && offerSubCategory.onlineOfflinePlatform === PLATFORM.ONLINE) ||
           venue?.isVirtual
         ) {
           handleFormUpdate({ bookingEmail: userEmail })
@@ -447,7 +449,7 @@ const OfferForm = ({
   )
 
   const displayNoRefundWarning =
-    offerSubCategory && offerSubCategory.reimbursementRule === 'NOT_REIMBURSED'
+    offerSubCategory && offerSubCategory.reimbursementRule === NOT_REIMBURSED
 
   const getErrorMessage = fieldName => {
     return fieldName in formErrors ? formErrors[fieldName] : null
@@ -482,7 +484,9 @@ const OfferForm = ({
   }
 
   const isTypeOfflineButOnlyVirtualVenues =
-    offerSubCategory && offerSubCategory.onlineOfflinePlatform === 'OFFLINE' && areAllVenuesVirtual
+    offerSubCategory &&
+    offerSubCategory.onlineOfflinePlatform === PLATFORM.OFFLINE &&
+    areAllVenuesVirtual
 
   if (isLoading) {
     return <Spinner />
