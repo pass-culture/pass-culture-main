@@ -179,7 +179,14 @@ def send_transactions(
     )
     logger.info("[BATCH][PAYMENTS] Recipients of email : %s", recipients)
 
-    send_payment_message_email(xml_file, venues_csv, checksum, recipients)
+    venues_csv_path = _save_file_on_disk("venues", venues_csv, "csv")
+    xml_path = _save_file_on_disk("banque_de_france", xml_file, "csv")
+    if not send_payment_message_email(xml_file, venues_csv, checksum, recipients):
+        logger.info(
+            "[BATCH][PAYMENTS] Could not send payment message email. Files have been stored at %s and %s",
+            venues_csv_path,
+            xml_path,
+        )
     logger.info("[BATCH][PAYMENTS] Updating status of payments to UNDER_REVIEW")
     payments_api.bulk_create_payment_statuses(payment_query, TransactionStatus.UNDER_REVIEW, detail=None)
 
@@ -196,11 +203,11 @@ def send_payments_details(payment_query, recipients: list[str]) -> None:
     csv = generate_payment_details_csv(payment_query)
     logger.info("[BATCH][PAYMENTS] Sending CSV details of %s payments", count)
     logger.info("[BATCH][PAYMENTS] Recipients of email : %s", recipients)
+    path = _save_file_on_disk("payments_details", csv, "csv")
     if not send_payment_details_email(csv, recipients):
         # FIXME (dbaty, 2021-06-16): we are likely to end up here
         # because the attachment is now over Mailjet's 15Mb limit.
         # This is an ugly quick fix.
-        path = _save_file_on_disk("payments_details", csv)
         logger.info("[BATCH][PAYMENTS] Could not send payment details email. CSV file has been stored at %s", path)
 
 
@@ -218,9 +225,9 @@ def send_wallet_balances(recipients: list[str]) -> None:
         logger.exception("[BATCH][PAYMENTS] Error while sending users wallet balances email to MailJet: %s", exception)
 
 
-def _save_file_on_disk(filename_prefix: str, content: str) -> pathlib.Path:
+def _save_file_on_disk(filename_prefix: str, content: str, extension: str) -> pathlib.Path:
     dt = datetime.now().strftime("%Y%m%d_%H%M%S")
-    path = pathlib.Path(tempfile.gettempdir()) / f"{filename_prefix}_{dt}.csv"
+    path = pathlib.Path(tempfile.gettempdir()) / f"{filename_prefix}_{dt}.{extension}"
     path.write_text(content, encoding="utf-8")
     return path
 
@@ -240,11 +247,11 @@ def send_payments_report(batch_date: datetime, recipients: list[str]) -> None:
 
     n_payments_by_status = payment_queries.get_payment_count_by_status(batch_date)
 
+    path = _save_file_on_disk("payments_not_processable", not_processable_csv, "csv")
     if not send_payments_report_emails(not_processable_csv, n_payments_by_status, recipients):
         # FIXME (dbaty, 2021-06-16): we are likely to end up here
         # because the attachment is now over Mailjet's 15Mb limit.
         # This is an ugly quick fix.
-        path = _save_file_on_disk("payments_not_processable", not_processable_csv)
         logger.info("[BATCH][PAYMENTS] Could not send payment reports email. CSV file has been stored at %s", path)
 
 

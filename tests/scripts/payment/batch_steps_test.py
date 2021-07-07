@@ -1,6 +1,4 @@
 import datetime
-import pathlib
-import tempfile
 
 from lxml.etree import DocumentInvalid
 import pytest
@@ -186,27 +184,6 @@ def test_send_payments_details_sends_a_csv_attachment():
 
 
 @pytest.mark.usefixtures("db_session")
-@override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.testing.FailingBackend")
-def test_send_payments_details_fallbacks_to_stored_csv_on_mail_error():
-    iban = "CF13QSDFGH456789"
-    bic = "AZERTY9Q666"
-    payments_factories.PaymentFactory(iban=iban, bic=bic, recipientName="Testé")
-
-    # FIXME (dbaty, 2021-06-16): this is ugly and I know it. (Quick
-    # naive idea: write a context manager with a try/finally that
-    # mocks `tempfile.getttempdir()` with a custom, new directory, and
-    # clean it up on exit).
-    tmp_dir = pathlib.Path(tempfile.gettempdir())
-    files = set(tmp_dir.glob("payments_details_*.csv"))
-    send_payments_details(Payment.query, ["test@example.com"])
-    new_files = set(tmp_dir.glob("payments_details_*.csv")) - files
-    assert len(new_files) == 1
-    new_file = new_files.pop()
-    header = new_file.read_text().splitlines()[0]
-    assert header.startswith('"Libellé fournisseur","Raison sociale de la structure","SIREN"')
-
-
-@pytest.mark.usefixtures("db_session")
 def test_send_payment_details_does_not_send_anything_if_all_payment_have_error_status():
     send_payments_details(Payment.query, ["comptable@test.com"])
     assert not mails_testing.outbox
@@ -255,26 +232,6 @@ def test_send_payments_report_sends_one_csv_attachment_if_some_payments_are_not_
     assert len(mails_testing.outbox) == 1
     assert len(mails_testing.outbox[0].sent_data["Attachments"]) == 1
     assert mails_testing.outbox[0].sent_data["Attachments"][0]["ContentType"] == "text/csv"
-
-
-@pytest.mark.usefixtures("db_session")
-@override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.testing.FailingBackend")
-def test_send_payments_report_fallbacks_to_stored_csv_on_mail_error():
-    batch_date = datetime.datetime.now()
-    payments_factories.PaymentStatusFactory(status=TransactionStatus.NOT_PROCESSABLE, payment__batchDate=batch_date)
-
-    # FIXME (dbaty, 2021-06-16): this is ugly and I know it. (Quick
-    # naive idea: write a context manager with a try/finally that
-    # mocks `tempfile.getttempdir()` with a custom, new directory, and
-    # clean it up on exit).
-    tmp_dir = pathlib.Path(tempfile.gettempdir())
-    files = set(tmp_dir.glob("payments_not_processable_*.csv"))
-    send_payments_report(batch_date, ["recipient@example.com"])
-    new_files = set(tmp_dir.glob("payments_not_processable_*.csv")) - files
-    assert len(new_files) == 1
-    new_file = new_files.pop()
-    header = new_file.read_text().splitlines()[0]
-    assert header.startswith('"Libellé fournisseur","Raison sociale de la structure","SIREN"')
 
 
 class SetNotProcessablePaymentsWithBankInformationToRetryTest:
