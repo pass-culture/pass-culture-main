@@ -31,39 +31,32 @@ def generate_and_send_payments(cutoff_date: datetime.datetime, batch_date: datet
         (TransactionStatus.PENDING, TransactionStatus.ERROR, TransactionStatus.RETRY), batch_date
     )
 
-    try:
-        logger.info("[BATCH][PAYMENTS] STEP 3 : send transactions")
-        send_transactions(
-            payments_to_send,
-            batch_date,
-            settings.PASS_CULTURE_IBAN,
-            settings.PASS_CULTURE_BIC,
-            settings.PASS_CULTURE_REMITTANCE_CODE,
-            settings.TRANSACTIONS_RECIPIENTS,
-        )
-    except Exception as e:  # pylint: disable=broad-except
-        logger.exception("[BATCH][PAYMENTS] STEP 3: %s", e)
-    else:
-        # We cannot use `payments_to_send` anymore because
-        # `send_transactions()` updates the status of the payments, so
-        # the query would not yield any result anymore.
-        del payments_to_send
+    logger.info("[BATCH][PAYMENTS] STEP 3 : send transactions")
+    send_transactions(
+        payments_to_send,
+        batch_date,
+        settings.PASS_CULTURE_IBAN,
+        settings.PASS_CULTURE_BIC,
+        settings.PASS_CULTURE_REMITTANCE_CODE,
+        settings.TRANSACTIONS_RECIPIENTS,
+    )
+    # `send_transactions()` updates the status of the payments. Thus,
+    # `payments_to_send` must not be used anymore since the query
+    # would not yield any result anymore.
+    del payments_to_send
 
-    try:
-        logger.info("[BATCH][PAYMENTS] STEP 4 : send payments report")
-        send_payments_report(batch_date, settings.PAYMENTS_REPORT_RECIPIENTS)
-    except Exception as e:  # pylint: disable=broad-except
-        logger.exception("[BATCH][PAYMENTS] STEP 4: %s", e)
+    logger.info("[BATCH][PAYMENTS] STEP 4 : send payments report")
+    send_payments_report(batch_date, settings.PAYMENTS_REPORT_RECIPIENTS)
 
     # Recreate `payments_to_send` query, after `send_transactions()`
     # has updated the status of all payments.
     payments_to_send = payment_queries.get_payments_by_status([TransactionStatus.UNDER_REVIEW], batch_date)
-    try:
-        logger.info("[BATCH][PAYMENTS] STEP 5 : send payments details")
-        send_payments_details(payments_to_send, settings.PAYMENTS_DETAILS_RECIPIENTS)
-    except Exception as e:  # pylint: disable=broad-except
-        logger.exception("[BATCH][PAYMENTS] STEP 5: %s", e)
+    logger.info("[BATCH][PAYMENTS] STEP 5 : send payments details")
+    send_payments_details(payments_to_send, settings.PAYMENTS_DETAILS_RECIPIENTS)
 
+    # This is the only place where we want to catch errors, since it's
+    # not really related to payment data (and can easily be executed
+    # manually).
     try:
         logger.info("[BATCH][PAYMENTS] STEP 6 : send wallet balances")
         send_wallet_balances(settings.WALLET_BALANCES_RECIPIENTS)

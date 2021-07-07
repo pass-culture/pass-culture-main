@@ -6,8 +6,6 @@ import tempfile
 from typing import Iterable
 from typing import Optional
 
-from lxml.etree import DocumentInvalid
-
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.offerers.models import Venue
@@ -156,18 +154,11 @@ def send_transactions(
 
     logger.info("[BATCH][PAYMENTS] Payment message name : %s", message_name)
 
-    try:
-        validate_message_file_structure(xml_file)
-    except DocumentInvalid as exception:
-        # FIXME (dbaty, 2021-05-31): what is the point of updating the
-        # status? If the XML file is not valid, we surely want to fix
-        # the problem and run the payment script again with the same
-        # batch date. This will be quicker and clearer if the script
-        # does not have to change the status again.
-        payments_api.bulk_create_payment_statuses(
-            payment_query, TransactionStatus.NOT_PROCESSABLE, detail=str(exception)
-        )
-        raise
+    # The following may raise a DocumentInvalid exception. This is
+    # usually because the data is incorrect. In that case, let the
+    # exception bubble up and stop the calling function so that we can
+    # fix the data and run the function again.
+    validate_message_file_structure(xml_file)
 
     checksum = hashlib.sha256(xml_file.encode("utf-8")).digest()
     message = PaymentMessage(name=message_name, checksum=checksum)
@@ -188,20 +179,9 @@ def send_transactions(
     )
     logger.info("[BATCH][PAYMENTS] Recipients of email : %s", recipients)
 
-    # FIXME (dbaty, 2021-05-31): what is the point of going further in
-    # the payment script if we fail to send this e-mail? All payments
-    # will be set to ERROR and send_payment_details will not send
-    # anything. We should rather raise an error (and we should not
-    # update the payment status to error) and let the operator re-run
-    # the script with the same batch date.
-    if send_payment_message_email(xml_file, venues_csv, checksum, recipients):
-        status = TransactionStatus.UNDER_REVIEW
-        detail = None
-    else:
-        status = TransactionStatus.ERROR
-        detail = "Erreur d'envoi à MailJet"
-    logger.info("[BATCH][PAYMENTS] Updating status of payments to %s", status)
-    payments_api.bulk_create_payment_statuses(payment_query, status, detail)
+    send_payment_message_email(xml_file, venues_csv, checksum, recipients)
+    logger.info("[BATCH][PAYMENTS] Updating status of payments to UNDER_REVIEW")
+    payments_api.bulk_create_payment_statuses(payment_query, TransactionStatus.UNDER_REVIEW, detail=None)
 
 
 def send_payments_details(payment_query, recipients: list[str]) -> None:

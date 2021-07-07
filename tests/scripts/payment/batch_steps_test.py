@@ -114,7 +114,7 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
 
 
 @pytest.mark.usefixtures("db_session")
-def test_send_transactions_set_status_to_sent_if_email_was_sent_properly():
+def test_send_transactions_set_status_to_under_review():
     # given
     iban = "CF13QSDFGH456789"
     bic = "AZERTY9Q666"
@@ -135,7 +135,7 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly():
 
 @pytest.mark.usefixtures("db_session")
 @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.testing.FailingBackend")
-def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sent_properly():
+def test_send_transactions_set_status_to_under_review_even_on_email_error():
     # given
     iban = "CF13QSDFGH456789"
     bic = "AZERTY9Q666"
@@ -150,26 +150,20 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
     payments = Payment.query.all()
     for payment in payments:
         assert len(payment.statuses) == 2
-        assert payment.currentStatus.status == TransactionStatus.ERROR
-        assert payment.currentStatus.detail == "Erreur d'envoi à MailJet"
+        assert payment.currentStatus.status == TransactionStatus.UNDER_REVIEW
 
 
 @pytest.mark.usefixtures("db_session")
-def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_status_with_a_cause():
+def test_send_transactions_with_malformed_iban():
     # given
     batch_date = datetime.datetime.now()
     payments_factories.PaymentFactory(iban="CF  13QSDFGH45 qbc //", batchDate=batch_date)
 
     # when
-    with pytest.raises(DocumentInvalid):
+    with pytest.raises(DocumentInvalid) as exc:
         send_transactions(Payment.query, batch_date, "BD12AZERTY123456", "AZERTY9Q666", "0000", ["comptable@test.com"])
-
-    # then
-    payment = Payment.query.one()
-    assert len(payment.statuses) == 2
-    assert payment.currentStatus.status == TransactionStatus.NOT_PROCESSABLE
-    assert (
-        payment.currentStatus.detail == "Element '{urn:iso:std:iso:20022:tech:xsd:pain.001.001.03}IBAN': "
+    assert str(exc.value) == (
+        "Element '{urn:iso:std:iso:20022:tech:xsd:pain.001.001.03}IBAN': "
         "[facet 'pattern'] The value 'CF  13QSDFGH45 qbc //' is not accepted "
         "by the pattern '[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}'., line 76"
     )
