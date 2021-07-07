@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import Spinner from 'components/layout/Spinner'
 import {
@@ -11,7 +12,6 @@ import {
   EDITED_OFFER_READ_ONLY_FIELDS,
 } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 import OfferForm from './OfferForm'
 
@@ -25,6 +25,7 @@ const computeNoDisabilityComplianceValue = offer => {
 
   const unknownDisabilityCompliance = disabilityCompliantValues.includes(null)
   const hasDisabilityCompliance = disabilityCompliantValues.includes(true)
+
   if (unknownDisabilityCompliance || hasDisabilityCompliance) {
     return false
   }
@@ -42,38 +43,39 @@ const OfferEdition = ({
   offersSearchFilters,
   onSubmit,
   setFormValues,
-  setPreviewOfferType,
+  setPreviewOfferCategory,
   setShowThumbnailForm,
   showErrorNotification,
   submitErrors,
   userEmail,
 }) => {
   const [isLoading, setIsLoading] = useState(true)
-  const [types, setTypes] = useState([])
+  const { subCategories } = useSelector(state => state.offers.categories)
   const [readOnlyFields, setReadOnlyFields] = useState([])
   const [initialValues, setInitialValues] = useState([])
 
-  useEffect(function retrieveDataOnMount() {
-    pcapi.loadTypes().then(receivedTypes => setTypes(receivedTypes))
-  }, [])
-
-  const computeInitialValues = offer => {
-    const initialValues = Object.keys(DEFAULT_FORM_VALUES).reduce((acc, field) => {
-      if (field in offer && offer[field] !== null) {
-        return { ...acc, [field]: offer[field] }
-      } else if (offer.extraData && field in offer.extraData) {
-        return { ...acc, [field]: offer.extraData[field] }
-      }
-      return { ...acc, [field]: DEFAULT_FORM_VALUES[field] }
-    }, {})
-
-    initialValues.offererId = offer.venue.managingOffererId
-    initialValues.noDisabilityCompliant = computeNoDisabilityComplianceValue(offer)
-
-    return initialValues
-  }
-
   useEffect(() => {
+    const computeInitialValues = offer => {
+      const initialValues = Object.keys(DEFAULT_FORM_VALUES).reduce((acc, field) => {
+        if (field in offer && offer[field] !== null) {
+          return { ...acc, [field]: offer[field] }
+        } else if (offer.extraData && field in offer.extraData) {
+          return { ...acc, [field]: offer.extraData[field] }
+        }
+        return { ...acc, [field]: DEFAULT_FORM_VALUES[field] }
+      }, {})
+
+      initialValues.categoryId = subCategories.find(
+        subCategory => subCategory.id === offer.subcategoryId
+      ).categoryId
+
+      initialValues.subcategoryId = offer.subcategoryId
+      initialValues.offererId = offer.venue.managingOffererId
+      initialValues.noDisabilityCompliant = computeNoDisabilityComplianceValue(offer)
+
+      return initialValues
+    }
+
     const computeReadOnlyFields = offer => {
       if (isDisabled) {
         return Object.keys(DEFAULT_FORM_VALUES).filter(() => true)
@@ -86,12 +88,14 @@ const OfferEdition = ({
       }
     }
 
-    const initialValues = computeInitialValues(offer)
-    const readOnlyFields = computeReadOnlyFields(offer)
-    setInitialValues(initialValues)
-    setReadOnlyFields(readOnlyFields)
-    setIsLoading(false)
-  }, [isDisabled, offer, setIsLoading])
+    if (subCategories) {
+      const initialValues = computeInitialValues(offer)
+      const readOnlyFields = computeReadOnlyFields(offer)
+      setInitialValues(initialValues)
+      setReadOnlyFields(readOnlyFields)
+      setIsLoading(false)
+    }
+  }, [isDisabled, offer, setIsLoading, subCategories])
 
   let providerName = null
   if (isSynchronizedOffer(offer)) {
@@ -118,11 +122,10 @@ const OfferEdition = ({
       providerName={providerName}
       readOnlyFields={readOnlyFields}
       setFormValues={setFormValues}
-      setPreviewOfferType={setPreviewOfferType}
+      setPreviewOfferCategory={setPreviewOfferCategory}
       setShowThumbnailForm={setShowThumbnailForm}
       showErrorNotification={showErrorNotification}
       submitErrors={submitErrors}
-      types={types}
       userEmail={userEmail}
       venues={[offer.venue]}
     />
@@ -155,7 +158,7 @@ OfferEdition.propTypes = {
   }).isRequired,
   onSubmit: PropTypes.func.isRequired,
   setFormValues: PropTypes.func.isRequired,
-  setPreviewOfferType: PropTypes.func.isRequired,
+  setPreviewOfferCategory: PropTypes.func.isRequired,
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submitErrors: PropTypes.shape().isRequired,

@@ -9,12 +9,12 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 const PREVIEW_TEXT_MAX_LENGTH = 300
 
-const OfferPreview = ({ formValues, offerType }) => {
+const OfferPreview = ({ formValues, offerSubCategory }) => {
   const [venue, setVenue] = useState(null)
 
   const buildPreviewText = previewText => {
     if (previewText.trim().length > PREVIEW_TEXT_MAX_LENGTH) {
-      return previewText.substr(0, PREVIEW_TEXT_MAX_LENGTH) + '...'
+      return `${previewText.substr(0, PREVIEW_TEXT_MAX_LENGTH)}...`
     }
     return previewText
   }
@@ -27,9 +27,9 @@ const OfferPreview = ({ formValues, offerType }) => {
       : setVenue(null)
   }, [formValues.venueId])
 
-  const isDuoEnabled = useMemo(() => offerType && offerType.type === 'Event' && formValues.isDuo, [
+  const isDuoEnabled = useMemo(() => offerSubCategory?.isEvent && formValues.isDuo, [
     formValues.isDuo,
-    offerType,
+    offerSubCategory,
   ])
 
   return (
@@ -98,12 +98,12 @@ const OfferPreview = ({ formValues, offerType }) => {
 }
 
 OfferPreview.defaultProps = {
-  offerType: {},
+  offerSubCategory: {},
 }
 
 OfferPreview.propTypes = {
   formValues: PropTypes.shape().isRequired,
-  offerType: PropTypes.shape(),
+  offerSubCategory: PropTypes.shape(),
 }
 
 export default OfferPreview

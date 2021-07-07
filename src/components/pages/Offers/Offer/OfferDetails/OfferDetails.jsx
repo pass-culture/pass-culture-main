@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
@@ -10,6 +11,7 @@ import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferS
 import OfferThumbnail from 'components/pages/Offers/Offer/OfferDetails/OfferThumbnail/OfferThumbnail'
 import OfferPreviewLink from 'components/pages/Offers/Offer/OfferPreviewLink/OfferPreviewLink'
 import * as pcapi from 'repository/pcapi/pcapi'
+import { loadCategories } from 'store/offers/thunks'
 
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 
@@ -25,18 +27,21 @@ const OfferDetails = ({
   trackEditOffer,
   userEmail,
 }) => {
+  const dispatch = useDispatch()
   const initialValues = {}
   const queryParams = queryParamsFromOfferer(location)
+
   if (queryParams.structure !== '') {
     initialValues.offererId = queryParams.structure
   }
+
   if (queryParams.lieu !== '') {
     initialValues.venueId = queryParams.lieu
   }
 
   const formInitialValues = useRef(initialValues)
   const [formValues, setFormValues] = useState({})
-  const [offerType, setOfferType] = useState({})
+  const [offerSubCategory, setOfferSubCategory] = useState({})
   const [formErrors, setFormErrors] = useState({})
   const [showThumbnailForm, setShowThumbnailForm] = useState(false)
   const [thumbnailInfo, setThumbnailInfo] = useState({})
@@ -78,7 +83,6 @@ const OfferDetails = ({
   const handleSubmitOffer = useCallback(
     async offerValues => {
       setIsSubmitLoading(true)
-
       try {
         if (offer) {
           await pcapi.updateOffer(offer.id, offerValues)
@@ -141,6 +145,10 @@ const OfferDetails = ({
   const offerStatus = offer?.status
   const isDisabled = offerStatus ? isOfferDisabled(offerStatus) : false
 
+  useEffect(() => {
+    dispatch(loadCategories())
+  }, [dispatch])
+
   return (
     <>
       <PageTitle title="Détails de l'offre" />
@@ -158,7 +166,7 @@ const OfferDetails = ({
                 offer={offer}
                 onSubmit={handleSubmitOffer}
                 setFormValues={setFormValues}
-                setPreviewOfferType={setOfferType}
+                setPreviewOfferCategory={setOfferSubCategory}
                 setShowThumbnailForm={setShowThumbnailForm}
                 showErrorNotification={showErrorNotification}
                 submitErrors={formErrors}
@@ -173,7 +181,7 @@ const OfferDetails = ({
               isUserAdmin={isUserAdmin}
               onSubmit={handleSubmitOffer}
               setFormValues={setFormValues}
-              setPreviewOfferType={setOfferType}
+              setPreviewOfferCategory={setOfferSubCategory}
               setShowThumbnailForm={setShowThumbnailForm}
               showErrorNotification={showErrorNotification}
               submitErrors={formErrors}
@@ -195,7 +203,7 @@ const OfferDetails = ({
               />
               <OfferPreview
                 formValues={formValues}
-                offerType={offerType}
+                offerSubCategory={offerSubCategory}
               />
             </div>
             {offer ? (
