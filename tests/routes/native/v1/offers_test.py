@@ -349,6 +349,40 @@ class ReportOfferTest:
         assert email.sent_data["Vars"]["user_id"] == user.id
         assert email.sent_data["Vars"]["offer_id"] == offer.id
 
+    def test_report_offer_with_custom_reason(self, app):
+        user, test_client = create_user_and_test_client(app)
+        offer = OfferFactory()
+
+        # expected queries:
+        #   * get user
+        #   * get offer
+        #   * insert report
+        #   * release savepoint
+        #
+        #   * reload user
+        #   * reload offer
+        #   * insert email into db
+        #   * release savepoint
+        with assert_num_queries(8):
+            data = {"reason": "OTHER", "customReason": "saynul"}
+            response = test_client.post(f"/native/v1/offer/{offer.id}/report", json=data)
+            assert response.status_code == 204
+
+        assert OfferReport.query.count() == 1
+        report = OfferReport.query.first()
+
+        assert report.user == user
+        assert report.offer == offer
+
+        assert len(mails_testing.outbox) == 1
+
+        email = mails_testing.outbox[0]
+        assert email.sent_data["To"] == settings.SUPPORT_EMAIL_ADDRESS
+        assert email.sent_data["Vars"]["user_id"] == user.id
+        assert email.sent_data["Vars"]["offer_id"] == offer.id
+        assert "saynul" in email.sent_data["Vars"]["reason"]
+        assert "offer_url" in email.sent_data["Vars"]
+
     def test_report_offer_twice(self, app):
         user, test_client = create_user_and_test_client(app)
         offer = OfferFactory()

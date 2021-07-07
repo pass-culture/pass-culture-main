@@ -808,4 +808,4 @@ def report_offer(user: User, offer: Offer, reason: str, custom_reason: Optional[
             raise ReportMalformed() from error
         raise
 
-    offer_report_emails.send_report_notification(user, offer, reason)
+    offer_report_emails.send_report_notification(user, offer, reason, custom_reason)
