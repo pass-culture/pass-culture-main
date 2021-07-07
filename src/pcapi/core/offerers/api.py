@@ -22,7 +22,7 @@ from .exceptions import ApiKeyPrefixGenerationError
 
 
 UNCHANGED = object()
-VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "city"]
+VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "postalCode", "city", "latitude", "longitude"]
 API_KEY_SEPARATOR = "_"
 
 
