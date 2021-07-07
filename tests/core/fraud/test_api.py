@@ -5,6 +5,7 @@ import pytest
 
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.factories as fraud_factories
+import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
 from pcapi.core.fraud.models import BeneficiaryFraudResult
 from pcapi.core.fraud.models import FraudCheckType
@@ -32,7 +33,7 @@ class JouveFraudCheckTest:
         "bodyBirthDate": "06 06 2002",
         "bodyBirthDateCtrl": "OK",
         "bodyBirthDateLevel": "100",
-        "bodyFirstnameCtrl": "",
+        "bodyFirstnameCtrl": "OK",
         "bodyFirstnameLevel": "100",
         "bodyName": "DUPO",
         "bodyNameCtrl": "OK",
@@ -49,8 +50,8 @@ class JouveFraudCheckTest:
         "gender": "M",
         "id": application_id,
         "initial": "",
-        "initialNumberCtrl": "",
-        "initialSizeCtrl": "",
+        "initialNumberCtrl": "OK",
+        "initialSizeCtrl": "OK",
         "lastName": "DUPO",
         "phoneNumber": "",
         "postalCode": "",
@@ -58,7 +59,7 @@ class JouveFraudCheckTest:
         "posteCodeCtrl": "OK",
         "registrationDate": "10/06/2021 21:00",
         "serviceCode": "1",
-        "serviceCodeCtrl": "",
+        "serviceCodeCtrl": "OK",
     }
 
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
@@ -116,6 +117,20 @@ class JouveFraudCheckTest:
 
         db.session.refresh(user)
         assert not user.isBeneficiary
+
+    @pytest.mark.parametrize(
+        "jouve_field", ["birthLocationCtrl", "bodyBirthDateCtrl", "bodyFirstnameCtrl", "bodyNameCtrl"]
+    )
+    @pytest.mark.parametrize("wrong_possible_value", ["NOT_APPLICABLE", "KO", ""])
+    def test_id_check_fraud_items_wrong_values_are_supiscious(self, jouve_field, wrong_possible_value):
+        jouve_content = fraud_factories.JouveContentFactory(**{jouve_field: wrong_possible_value})
+        item_found = False
+        for item in fraud_api._id_check_fraud_items(jouve_content):
+            if item.detail == f"Le champ {jouve_field} est {wrong_possible_value}":
+                assert item.status == fraud_models.FraudStatus.SUSPICIOUS
+                item_found = True
+
+        assert item_found
 
     # TODO(xordoquy): make fraud fields configurable and reactivate this test
     # @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")

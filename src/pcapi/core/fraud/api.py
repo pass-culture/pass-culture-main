@@ -121,7 +121,13 @@ def _id_check_fraud_items(content: models.JouveContent) -> List[models.FraudItem
 
 
 def _get_boolean_id_fraud_item(value: Optional[str], key: str, is_strict_ko: bool) -> models.FraudItem:
-    is_valid = value.upper() != "KO" if value else True
+    is_valid = None
+    if key == "creatorCtrl" and value == "NOT_APPLICABLE":
+        is_valid = True
+    elif value in ("NOT_APPLICABLE", "KO", ""):
+        is_valid = False
+    else:
+        is_valid = value.upper() != "KO" if value else True
     if is_valid:
         status = models.FraudStatus.OK
     elif is_strict_ko:
