@@ -28,7 +28,7 @@ jest.mock('repository/pcapi/pcapiClient', () => ({
     delete: jest.fn(),
     get: jest.fn().mockResolvedValue({}),
     patch: jest.fn(),
-    post: jest.fn(),
+    post: jest.fn().mockResolvedValue({}),
     postWithFormData: jest.fn(),
   },
 }))
@@ -186,9 +186,9 @@ describe('pcapi', () => {
   })
 
   describe('generateOffererApiKey', () => {
-    it('should post an api key', () => {
+    it('should post an api key', async () => {
       // When
-      generateOffererApiKey('3F')
+      await generateOffererApiKey('3F')
 
       // Then
       expect(client.post).toHaveBeenCalledWith('/offerers/3F/api_keys', {})
@@ -362,7 +362,7 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith(
-        '/bookings/pro?page=1&bookingPeriodBeginningDate=2020-08-13T00%3A00%3A00Z&bookingPeriodEndingDate=2020-09-12T00%3A00%3A00Z'
+        '/bookings/pro?page=1&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12'
       )
     })
 
@@ -379,7 +379,7 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith(
-        '/bookings/pro?page=1&bookingPeriodBeginningDate=2020-08-13T00%3A00%3A00Z&bookingPeriodEndingDate=2020-09-12T00%3A00%3A00Z'
+        '/bookings/pro?page=1&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12'
       )
     })
 
@@ -398,7 +398,7 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith(
-        '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z&bookingPeriodBeginningDate=2020-07-08T00%3A00%3A00Z&bookingPeriodEndingDate=2020-09-04T00%3A00%3A00Z'
+        '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z&bookingPeriodBeginningDate=2020-07-08&bookingPeriodEndingDate=2020-09-04'
       )
     })
 
@@ -415,7 +415,7 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith(
-        '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z&bookingPeriodBeginningDate=2020-08-13T00%3A00%3A00Z&bookingPeriodEndingDate=2020-09-12T00%3A00%3A00Z'
+        '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12'
       )
     })
   })

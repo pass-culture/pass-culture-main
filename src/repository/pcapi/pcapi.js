@@ -1,10 +1,7 @@
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
-import {
-  ALL_OFFERERS,
-  DEFAULT_SEARCH_FILTERS,
-} from 'components/pages/Offers/Offers/_constants'
+import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
-import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
+import { FORMAT_ISO_DATE_ONLY, formatBrowserTimezonedDateAsUTC } from 'utils/date'
 import { stringify } from 'utils/query-string'
 
 export const loadFeatures = async () => {
@@ -261,8 +258,14 @@ export const loadFilteredBookingsRecap = async ({
   if (eventDate !== DEFAULT_PRE_FILTERS.offerEventDate) {
     params.eventDate = formatBrowserTimezonedDateAsUTC(eventDate)
   }
-  params.bookingPeriodBeginningDate = formatBrowserTimezonedDateAsUTC(bookingPeriodBeginningDate)
-  params.bookingPeriodEndingDate = formatBrowserTimezonedDateAsUTC(bookingPeriodEndingDate)
+  params.bookingPeriodBeginningDate = formatBrowserTimezonedDateAsUTC(
+    bookingPeriodBeginningDate,
+    FORMAT_ISO_DATE_ONLY
+  )
+  params.bookingPeriodEndingDate = formatBrowserTimezonedDateAsUTC(
+    bookingPeriodEndingDate,
+    FORMAT_ISO_DATE_ONLY
+  )
 
   const queryParams = stringify(params)
   return client.get(`/bookings/pro?${queryParams}`)
