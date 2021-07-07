@@ -78,14 +78,6 @@ BEGIN
 END; $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION pg_temp.anonymize_iban_field(
- json_data JSONB)
- RETURNS JSONB as $$
-BEGIN
-  RETURN pg_temp.anonymize_json_field(json_data::jsonb, 'iban', 'FR7630001007941234567890185');
-END; $$
-LANGUAGE plpgsql;
-
 CREATE OR REPLACE FUNCTION pg_temp.anonymize_email_field(
  json_data JSONB)
  RETURNS JSONB as $$
@@ -184,9 +176,6 @@ SELECT pg_temp.disable_activity_trigger('venue_provider');
 
 UPDATE offerer SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
 
-UPDATE bank_information SET "iban" = pg_temp.generate_random_between(999999999,100000000)::text WHERE "iban" is not null;
-UPDATE bank_information SET "bic" = pg_temp.generate_random_between(999999999,100000000)::text WHERE "bic" is not null;
-
 UPDATE booking SET "token" = pg_temp.generate_booking_token_from_id("id") WHERE "token" is not null;
 
 UPDATE payment SET "iban" = 'FR7630001007941234567890185' WHERE "iban" is not null;
@@ -205,9 +194,6 @@ UPDATE "user" SET "validationToken" = substring(md5(random()::text),1 , 27) WHER
 UPDATE "user" SET "resetPasswordToken" = substring(md5(random()::text),1 , 10) WHERE "resetPasswordToken" is not null;
 
 UPDATE user_offerer SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
-
-UPDATE bank_information SET "iban" = 'FR7630001007941234567890185' WHERE "iban" is not null;
-UPDATE bank_information SET "bic" = 'BDFEFR2L'  WHERE "bic" is not null;
 
 UPDATE venue SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
 
