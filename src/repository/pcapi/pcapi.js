@@ -169,6 +169,13 @@ export const loadTypes = () => {
 }
 
 //
+// categories
+//
+export const loadCategories = () => {
+  return client.get('/offers/categories')
+}
+
+//
 // stocks
 //
 export const loadStocks = offerId => {

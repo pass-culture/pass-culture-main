@@ -1,7 +1,7 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 import { setMediations, setStocks, setVenues } from 'store/reducers/data'
 
-import { setOffers } from './actions'
+import { setOffers, setCategories } from './actions'
 
 export const loadOffer = offerId => {
   return dispatch => {
@@ -13,13 +13,24 @@ export const loadOffer = offerId => {
 
 export const loadOffers = filters => {
   return dispatch => {
-    return pcapi
-      .loadFilteredOffers(filters)
-      .then(offersRecap => {
-        dispatch(setOffersRecap(offersRecap))
+    return pcapi.loadFilteredOffers(filters).then(offersRecap => {
+      dispatch(setOffersRecap(offersRecap))
 
-        return offersRecap.length
-      })
+      return offersRecap.length
+    })
+  }
+}
+
+export const loadCategories = () => {
+  return async dispatch => {
+    return pcapi.loadCategories().then(({ categories, subcategories }) => {
+      dispatch(
+        setCategories({
+          categories,
+          subCategories: subcategories,
+        })
+      )
+    })
   }
 }
 
