@@ -9,7 +9,7 @@ const useDisplayedHomemodules = (history, geolocation, userId, useAppSearch) => 
   const { modules } = homepageModules
 
   // 2. Get the hits and nbHits for each algolia module
-  const algoliaModules = useHomeSearchModules(modules, geolocation)
+  const algoliaModules = useHomeSearchModules(modules, geolocation, useAppSearch)
   const { algoliaMapping } = algoliaModules
 
   // 3. Get the offers for the recommended hits

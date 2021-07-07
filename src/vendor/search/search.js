@@ -1,4 +1,5 @@
 import { buildAlgoliaHit } from './buildAlgoliaHit'
+import { buildQueryOptions } from './buildQueryOptions'
 import { client } from './client'
 import { AppSearchFields, RESULT_FIELDS } from './constants'
 
@@ -11,5 +12,15 @@ export const fetchHits = ids => {
 
   return client.search('', options).then(response => ({
     results: response.results.map(buildAlgoliaHit),
+  }))
+}
+
+// Used for contentful modules on homepage
+export const fetchHomeSearch = parameters => {
+  const options = buildQueryOptions(parameters)
+
+  return client.search('', options).then(({ results, info }) => ({
+    hits: results.map(buildAlgoliaHit),
+    nbHits: info.meta.page.total_results,
   }))
 }
