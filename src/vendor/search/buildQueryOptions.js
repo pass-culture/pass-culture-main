@@ -1,14 +1,13 @@
 import { RESULT_FIELDS } from './constants'
+import { buildFacetFilters } from './filters/buildFacetFilters'
 
-// eslint-disable-next-line no-unused-vars
-export const buildQueryOptions = params => {
-  // TODO(antoinewg) use params to build the search options
-  return {
-    result_fields: RESULT_FIELDS,
-    filters: {},
-    page: {
-      current: 1,
-      size: params.hitsPerPage || 20,
-    },
-  }
-}
+export const buildQueryOptions = params => ({
+  result_fields: RESULT_FIELDS,
+  filters: {
+    all: [...buildFacetFilters(params)],
+  },
+  page: {
+    current: 1,
+    size: params.hitsPerPage || 20,
+  },
+})
