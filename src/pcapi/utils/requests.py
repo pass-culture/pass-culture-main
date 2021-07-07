@@ -82,5 +82,6 @@ class Session(_SessionMixin, requests.Session):
         safe_adapter = HTTPAdapter(max_retries=safe_retry_strategy)
         unsafe_adapter = HTTPAdapter(max_retries=unsafe_retry_strategy)
         self.mount("https://www.demarches-simplifiees.fr", safe_adapter)
-        self.mount(settings.JOUVE_API_DOMAIN, safe_adapter)
+        if settings.JOUVE_API_DOMAIN:
+            self.mount(settings.JOUVE_API_DOMAIN, safe_adapter)
         self.mount("https://api.mailjet.com", unsafe_adapter)
