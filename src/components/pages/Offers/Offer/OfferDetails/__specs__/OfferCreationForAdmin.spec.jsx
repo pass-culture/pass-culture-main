@@ -18,7 +18,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getValidatedOfferersNames: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   getVenue: jest.fn(),
-  loadTypes: jest.fn(),
+  loadCategories: jest.fn(),
 }))
 
 const renderOffers = async (props, store, queryParams = null) => {
@@ -39,7 +39,7 @@ const renderOffers = async (props, store, queryParams = null) => {
 }
 
 describe('offerDetails - Creation - admin user', () => {
-  let types
+  let categories
   let offerer
   let props
   let store
@@ -47,20 +47,40 @@ describe('offerDetails - Creation - admin user', () => {
 
   beforeEach(() => {
     store = configureTestStore({ data: { users: [{ publicName: 'François', isAdmin: true }] } })
+
     props = {
       setShowThumbnailForm: jest.fn(),
     }
-    types = [
-      {
-        conditionalFields: ['author', 'visa', 'stageDirector'],
-        offlineOnly: true,
-        onlineOnly: false,
-        proLabel: 'Cinéma - projections et autres évènements',
-        type: 'Event',
-        value: 'EventType.CINEMA',
-      },
-    ]
+
+    categories = {
+      categories: [
+        {
+          id: 'ID',
+          name: 'Musique',
+          proLabel: 'Musique',
+          appLabel: 'Musique',
+        },
+      ],
+      subcategories: [
+        {
+          id: 'ID',
+          name: 'Musique SubCat 1',
+          categoryId: 'ID',
+          isEvent: false,
+          isDigital: false,
+          isDigitalDeposit: false,
+          isPhysicalDeposit: true,
+          proLabel: 'Musique SubCat 1',
+          appLabel: 'Musique SubCat 1',
+          conditionalFields: ['author', 'musicType', 'performer'],
+          canExpire: true,
+          canBeDuo: false,
+        },
+      ],
+    }
+
     const offererId = 'BA'
+
     venues = [
       {
         id: 'AB',
@@ -70,12 +90,14 @@ describe('offerDetails - Creation - admin user', () => {
         offererName: 'La structure',
       },
     ]
+
     offerer = {
       id: offererId,
       name: 'La structure',
       managedVenues: venues,
     }
-    pcapi.loadTypes.mockResolvedValue(types)
+
+    pcapi.loadCategories.mockResolvedValue(categories)
     pcapi.getOfferer.mockResolvedValue(offerer)
     pcapi.getVenue.mockReturnValue(Promise.resolve())
     jest.spyOn(window, 'scrollTo').mockImplementation()
@@ -104,7 +126,8 @@ describe('offerDetails - Creation - admin user', () => {
         await renderOffers(props, store, `?structure=${offerer.id}`)
 
         // When
-        await setOfferValues({ type: 'EventType.CINEMA' })
+        await setOfferValues({ categoryId: 'ID' })
+        await setOfferValues({ subcategoryId: 'ID' })
 
         // Then
         expect(screen.getByDisplayValue(offerer.name)).toBeInTheDocument()
@@ -120,7 +143,8 @@ describe('offerDetails - Creation - admin user', () => {
         )
 
         // When
-        await setOfferValues({ type: 'EventType.CINEMA' })
+        await setOfferValues({ categoryId: 'ID' })
+        await setOfferValues({ subcategoryId: 'ID' })
 
         // Then
         expect(screen.getByDisplayValue(venues[0].name)).toBeInTheDocument()

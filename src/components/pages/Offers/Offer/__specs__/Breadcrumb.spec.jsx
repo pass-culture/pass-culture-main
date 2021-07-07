@@ -8,7 +8,8 @@ import {
   getFakeApiVenuesForOfferer,
   loadFakeApiOffer,
   loadFakeApiStocks,
-  loadFakeApiTypes,
+  loadFakeApiCategories,
+  loadFakeApiVenue,
 } from 'utils/fakeApi'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
@@ -18,7 +19,7 @@ describe('offer step', () => {
       // Given
       const offerer = offererFactory()
       const venue = venueFactory()
-      loadFakeApiTypes()
+      loadFakeApiCategories()
       getFakeApiUserValidatedOfferersNames(offerer)
       getFakeApiVenuesForOfferer(venue)
 
@@ -26,7 +27,7 @@ describe('offer step', () => {
       await renderOffer({ pathname: '/offres/creation' })
 
       // Then
-      const detailTab = screen.getByText("Détail de l'offre")
+      const detailTab = await screen.findByText("Détail de l'offre")
       expect(detailTab).toBeInTheDocument()
       expect(detailTab).not.toHaveAttribute('href')
       expect(detailTab.closest('.bc-step')).toHaveClass('active')
@@ -42,15 +43,17 @@ describe('offer step', () => {
   describe('in edition mode', () => {
     it('should display breadcrumb whithout "Confirmation" tab', async () => {
       // Given
-      const offer = offerFactory()
+      const offer = offerFactory({ subcategoryId: 'LIVRE_PAPIER' })
       loadFakeApiOffer(offer)
-      loadFakeApiTypes()
+      const venue = venueFactory()
+      loadFakeApiVenue(venue)
+      loadFakeApiCategories()
 
       // When
       await renderOffer({ pathname: `/offres/${offer.id}/edition` })
 
       // Then
-      const detailTab = screen.getByText("Détail de l'offre", { selector: 'a' })
+      const detailTab = await screen.findByText("Détail de l'offre", { selector: 'a' })
       expect(detailTab).toBeInTheDocument()
       expect(detailTab.closest('.bc-step')).toHaveClass('active')
       expect(screen.getByText('Stock et prix', { selector: 'a' })).toBeInTheDocument()
@@ -63,7 +66,7 @@ describe('stocks step', () => {
   describe('in creation mode', () => {
     it('should display breadcrumb without link', async () => {
       // Given
-      const offer = offerFactory({ status: 'DRAFT' })
+      const offer = offerFactory({ status: 'DRAFT', subcategoryId: 'LIVRE_PAPIER' })
       loadFakeApiOffer(offer)
       loadFakeApiStocks([])
 
@@ -71,7 +74,7 @@ describe('stocks step', () => {
       await renderOffer({ pathname: `/offres/${offer.id}/stocks` })
 
       // Then
-      const detailTab = screen.getByText("Détail de l'offre")
+      const detailTab = await screen.findByText("Détail de l'offre")
       expect(detailTab).toBeInTheDocument()
       expect(detailTab).not.toHaveAttribute('href')
       const stockTab = queryByTextTrimHtml(screen, 'Stock et prix', {
@@ -91,7 +94,7 @@ describe('stocks step', () => {
     it('should display breadcrumb without "Confirmation" tab', async () => {
       // Given
       const stock = stockFactory()
-      const offer = offerFactory({ status: 'ACTIVE' })
+      const offer = offerFactory({ status: 'ACTIVE', subcategoryId: 'LIVRE_PAPIER' })
       loadFakeApiOffer(offer)
       loadFakeApiStocks([stock])
 
@@ -99,7 +102,8 @@ describe('stocks step', () => {
       await renderOffer({ pathname: `/offres/${offer.id}/stocks` })
 
       // Then
-      expect(screen.getByText("Détail de l'offre", { selector: 'a' })).toBeInTheDocument()
+      const detailTab = await screen.findByText("Détail de l'offre", { selector: 'a' })
+      expect(detailTab).toBeInTheDocument()
       const stockTab = screen.getByText('Stock et prix', { selector: 'a' })
       expect(stockTab).toBeInTheDocument()
       expect(stockTab.closest('.bc-step')).toHaveClass('active')
@@ -112,14 +116,18 @@ describe('confirmation step', () => {
   describe('in creation mode', () => {
     it('should display breadcrumb without link', async () => {
       // Given
-      const offer = offerFactory({ name: 'mon offer', status: 'DRAFT' })
+      const offer = offerFactory({
+        name: 'mon offer',
+        status: 'DRAFT',
+        subcategoryId: 'LIVRE_PAPIER',
+      })
       loadFakeApiOffer(offer)
 
       // When
       await renderOffer({ pathname: `/offres/${offer.id}/confirmation` })
 
       // Then
-      const detailTab = screen.getByText("Détail de l'offre")
+      const detailTab = await screen.findByText("Détail de l'offre")
       expect(detailTab).toBeInTheDocument()
       expect(detailTab).not.toHaveAttribute('href')
       const stockTab = screen.getByText('Stock et prix')

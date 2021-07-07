@@ -17,8 +17,8 @@ export const fieldLabels = {
   noDisabilityCompliant: { label: 'Non accessible', exact: true },
   isNational: { label: 'Rayonnement national', exact: true },
   name: { label: "Titre de l'offre", exact: false },
-  musicSubType: { label: 'Sous genre', exact: false },
   musicType: { label: 'Genre musical', exact: false },
+  musicSubType: { label: 'Sous genre', exact: false },
   offererId: { label: 'Structure', exact: true },
   performer: { label: 'Interprète', exact: false },
   receiveNotificationEmails: { label: 'Être notifié par email des réservations', exact: true },
@@ -26,7 +26,8 @@ export const fieldLabels = {
   showType: { label: 'Type de spectacle', exact: false },
   stageDirector: { label: 'Metteur en scène', exact: false },
   speaker: { label: 'Intervenant', exact: false },
-  type: { label: 'Type', exact: true },
+  categoryId: { label: 'Catégorie', exact: true },
+  subcategoryId: { label: 'Sous-catégorie', exact: true },
   url: { label: 'URL d’accès à l’offre', exact: false },
   venueId: { label: 'Lieu', exact: true },
   visa: { label: 'Visa d’exploitation', exact: false },
@@ -55,10 +56,12 @@ export const setOfferValues = values => {
     'visualDisabilityCompliant',
     'receiveNotificationEmails',
   ]
+
   const setFormValueForField = (field, value) => {
     let input
     const { label, exact } = fieldLabels[field]
     input = screen.getByLabelText(label, { exact })
+
     if (checkboxes.includes(field)) {
       userEvent.click(input)
     } else if (field === 'durationMinutes') {

@@ -1,6 +1,5 @@
-import { within } from '@testing-library/dom'
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -9,10 +8,10 @@ import { MemoryRouter, Route } from 'react-router'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
+import { loadFakeApiCategories } from 'utils/fakeApi'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import OfferLayoutContainer from '../../OfferLayoutContainer'
-import { DEFAULT_FORM_VALUES } from '../OfferForm/_constants'
 
 import {
   fieldLabels,
@@ -25,6 +24,7 @@ import {
 Element.prototype.scrollIntoView = () => {}
 
 jest.mock('repository/pcapi/pcapi', () => ({
+  ...jest.requireActual('repository/pcapi/pcapi'),
   createOffer: jest.fn(),
   getUserValidatedOfferersNames: jest.fn(),
   getVenue: jest.fn(),
@@ -57,7 +57,6 @@ const renderOffers = async (props, store, queryParams = null) => {
 }
 
 describe('offerDetails - Creation - pro user', () => {
-  let types
   let offerers
   let props
   let store
@@ -82,66 +81,9 @@ describe('offerDetails - Creation - pro user', () => {
     props = {
       setShowThumbnailForm: jest.fn(),
     }
-    types = [
-      {
-        conditionalFields: ['author', 'visa', 'stageDirector'],
-        offlineOnly: true,
-        onlineOnly: false,
-        proLabel: 'Cinéma - projections et autres évènements',
-        type: 'Event',
-        value: 'EventType.CINEMA',
-      },
-      {
-        conditionalFields: ['author', 'musicType', 'performer', 'durationMinutes'],
-        offlineOnly: false,
-        onlineOnly: false,
-        proLabel: 'Musique - concerts, festivals',
-        type: 'Event',
-        value: 'EventType.MUSIQUE',
-      },
-      {
-        conditionalFields: ['author', 'showType', 'stageDirector', 'performer'],
-        offlineOnly: true,
-        onlineOnly: false,
-        proLabel: 'Spectacle vivant',
-        type: 'Event',
-        value: 'EventType.SPECTACLE_VIVANT',
-      },
-      {
-        conditionalFields: [],
-        offlineOnly: false,
-        onlineOnly: true,
-        proLabel: 'Presse en ligne - abonnements',
-        type: 'Thing',
-        value: 'ThingType.PRESSE_ABO',
-      },
-      {
-        conditionalFields: ['author', 'isbn'],
-        offlineOnly: false,
-        onlineOnly: false,
-        proLabel: 'Livres papier ou numérique, abonnements lecture',
-        type: 'Thing',
-        value: 'ThingType.LIVRE_EDITION',
-      },
-      {
-        conditionalFields: [],
-        offlineOnly: false,
-        onlineOnly: true,
-        proLabel: 'Cinéma - vente à distance',
-        type: 'Thing',
-        value: 'ThingType.CINEMA_CARD',
-      },
-      {
-        conditionalFields: ['speaker'],
-        offlineOnly: true,
-        onlineOnly: false,
-        proLabel: 'Conférences, rencontres et découverte des métiers',
-        type: 'Event',
-        value: 'EventType.CONFERENCE_DEBAT_DEDICACE',
-      },
-    ]
     const offerer1Id = 'BA'
     const offerer2Id = 'BAC'
+
     offerers = [
       {
         id: offerer1Id,
@@ -152,6 +94,7 @@ describe('offerDetails - Creation - pro user', () => {
         name: "L'autre structure",
       },
     ]
+
     venues = [
       {
         id: 'AB',
@@ -185,21 +128,21 @@ describe('offerDetails - Creation - pro user', () => {
         publicName: "Le nom d'usage de l'autre autre lieu",
       },
     ]
-    pcapi.loadTypes.mockResolvedValue(types)
+
     pcapi.getUserValidatedOfferersNames.mockResolvedValue(offerers)
     pcapi.getVenuesForOfferer.mockResolvedValue(venues)
     pcapi.getVenue.mockReturnValue(Promise.resolve())
     pcapi.createOffer.mockResolvedValue({})
+    loadFakeApiCategories()
     jest.spyOn(window, 'scrollTo').mockImplementation()
   })
 
   describe('render when creating a new offer as pro user', () => {
-    it('should get types from API', async () => {
+    it('should get categories from API', async () => {
       // When
       await renderOffers(props, store)
-
       // Then
-      expect(pcapi.loadTypes).toHaveBeenCalledTimes(1)
+      expect(pcapi.loadCategories).toHaveBeenCalledTimes(1)
     })
 
     it("should get user's offerer from API", async () => {
@@ -267,7 +210,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
+          await setOfferValues({ categoryId: 'LIVRE' })
+          await setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
 
           // Then
           expect(
@@ -287,7 +231,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // Then
           expect(
@@ -296,11 +241,11 @@ describe('offerDetails - Creation - pro user', () => {
             )
           ).not.toBeInTheDocument()
           expect(screen.queryByRole('link', { name: '+ Ajouter un lieu' })).not.toBeInTheDocument()
-          expect(screen.getByLabelText('Type de spectacle')).toBeInTheDocument()
+          expect(screen.getByLabelText('Genre musical')).toBeInTheDocument()
         })
       })
 
-      describe('when selecting digital type', () => {
+      describe('when selecting ONLINE category', () => {
         it('should not inform user about venue creation if only virtual venue', async () => {
           // Given
           venues = [
@@ -330,7 +275,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'ThingType.CINEMA_CARD' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
 
           // Then
           expect(
@@ -354,7 +300,10 @@ describe('offerDetails - Creation - pro user', () => {
           ]
           pcapi.getVenuesForOfferer.mockResolvedValue(venues)
           await renderOffers(props, store)
-          await setOfferValues({ type: 'ThingType.CINEMA_CARD' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
+
+          await screen.findByText('Être notifié par email des réservations')
 
           // When
           await setOfferValues({ receiveNotificationEmails: true })
@@ -366,7 +315,7 @@ describe('offerDetails - Creation - pro user', () => {
         })
       })
 
-      describe('when selecting physical or digital type', () => {
+      describe('when selecting ONLINE_OR_OFFLINE category', () => {
         it('should not inform user about venue creation if only virtual venue', async () => {
           // Given
           venues = [
@@ -382,7 +331,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
+          await setOfferValues({ categoryId: 'MUSEE' })
+          await setOfferValues({ subcategoryId: 'VISITE_GUIDEE' })
 
           // Then
           expect(
@@ -399,7 +349,8 @@ describe('offerDetails - Creation - pro user', () => {
         await renderOffers(props, store)
 
         // When
-        await setOfferValues({ type: 'EventType.CINEMA' })
+        await setOfferValues({ categoryId: 'CINEMA' })
+        await setOfferValues({ subcategoryId: 'SEANCE_CINE' })
 
         // Then
         expect(screen.getByText('Ajouter une image', { selector: 'button' })).toBeInTheDocument()
@@ -409,7 +360,8 @@ describe('offerDetails - Creation - pro user', () => {
         it('should display title when input is filled', async () => {
           // given
           await renderOffers(props, store)
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'CINEMA' })
+          await setOfferValues({ subcategoryId: 'SEANCE_CINE' })
 
           // when
           const titleInput = await screen.findByLabelText("Titre de l'offre", { exact: false })
@@ -422,7 +374,8 @@ describe('offerDetails - Creation - pro user', () => {
         it('should display description when input is filled', async () => {
           // given
           await renderOffers(props, store)
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'CINEMA' })
+          await setOfferValues({ subcategoryId: 'SEANCE_CINE' })
 
           // when
           const descriptionInput = await screen.findByLabelText('Description', { exact: false })
@@ -435,7 +388,8 @@ describe('offerDetails - Creation - pro user', () => {
         it('should display terms of withdrawal when input is filled', async () => {
           // given
           await renderOffers(props, store)
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'CINEMA' })
+          await setOfferValues({ subcategoryId: 'SEANCE_CINE' })
 
           // when
           const withdrawalInput = await screen.findByLabelText('Informations de retrait', {
@@ -449,7 +403,8 @@ describe('offerDetails - Creation - pro user', () => {
 
         it("should display disabled 'isDuo' icone for offers that aren't event", async () => {
           await renderOffers(props, store)
-          await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
+          await setOfferValues({ categoryId: 'LIVRE' })
+          await setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
           const disabledisDuoBox = screen.queryByText('À deux !', {
             selector: '.op-option.disabled .op-option-text',
           })
@@ -464,8 +419,9 @@ describe('offerDetails - Creation - pro user', () => {
               const offererWithMultipleVenues = offerers[1]
               const physicalVenue = venues[1]
               pcapi.getVenue.mockResolvedValue(physicalVenue)
+              await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+              await setOfferValues({ subcategoryId: 'CONCERT' })
               await setOfferValues({
-                type: 'EventType.CINEMA',
                 offererId: offererWithMultipleVenues.id,
               })
 
@@ -486,8 +442,9 @@ describe('offerDetails - Creation - pro user', () => {
               const physicalVenue = venues[1]
               physicalVenue.publicName = 'Le petit nom du lieu'
               pcapi.getVenue.mockResolvedValue(physicalVenue)
+              await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+              await setOfferValues({ subcategoryId: 'CONCERT' })
               await setOfferValues({
-                type: 'EventType.CINEMA',
                 offererId: offererWithMultipleVenues.id,
               })
 
@@ -510,8 +467,9 @@ describe('offerDetails - Creation - pro user', () => {
               const offererWithMultipleVenues = offerers[1]
               const physicalVenue = venues[1]
               pcapi.getVenue.mockResolvedValue(physicalVenue)
+              await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+              await setOfferValues({ subcategoryId: 'CONCERT' })
               await setOfferValues({
-                type: 'EventType.CINEMA',
                 offererId: offererWithMultipleVenues.id,
               })
 
@@ -534,8 +492,9 @@ describe('offerDetails - Creation - pro user', () => {
               physicalVenue.postalCode = '75002'
               physicalVenue.city = 'Paris'
               pcapi.getVenue.mockResolvedValue(physicalVenue)
+              await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+              await setOfferValues({ subcategoryId: 'CONCERT' })
               await setOfferValues({
-                type: 'EventType.CINEMA',
                 offererId: offererWithMultipleVenues.id,
               })
 
@@ -556,8 +515,9 @@ describe('offerDetails - Creation - pro user', () => {
               const offererWithMultipleVenues = offerers[1]
               const virtualVenue = venues[2]
               pcapi.getVenue.mockResolvedValue(virtualVenue)
+              await setOfferValues({ categoryId: 'JEU' })
+              await setOfferValues({ subcategoryId: 'RENCONTRE_JEU' })
               await setOfferValues({
-                type: 'ThingType.CINEMA_CARD',
                 offererId: offererWithMultipleVenues.id,
               })
 
@@ -578,8 +538,9 @@ describe('offerDetails - Creation - pro user', () => {
               await renderOffers(props, store)
               const offererWithMultipleVenues = offerers[1]
               const physicalVenue = venues[1]
+              await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+              await setOfferValues({ subcategoryId: 'CONCERT' })
               await setOfferValues({
-                type: 'EventType.CINEMA',
                 offererId: offererWithMultipleVenues.id,
               })
 
@@ -602,7 +563,8 @@ describe('offerDetails - Creation - pro user', () => {
         await renderOffers(props, store)
 
         // When
-        await setOfferValues({ type: 'EventType.CINEMA' })
+        await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+        await setOfferValues({ subcategoryId: 'CONCERT' })
 
         // Then
         expect(
@@ -621,7 +583,8 @@ describe('offerDetails - Creation - pro user', () => {
       it('should display email notification input when asking to receive booking emails', async () => {
         // Given
         await renderOffers(props, store)
-        await setOfferValues({ type: 'EventType.MUSIQUE' })
+        await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+        await setOfferValues({ subcategoryId: 'CONCERT' })
 
         // When
         await setOfferValues({ receiveNotificationEmails: true })
@@ -636,7 +599,8 @@ describe('offerDetails - Creation - pro user', () => {
         await renderOffers(props, store)
 
         // When
-        await setOfferValues({ type: 'EventType.MUSIQUE' })
+        await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+        await setOfferValues({ subcategoryId: 'CONCERT' })
 
         // Then
         const externalTicketOfficeUrlInput = await getOfferInputForField('externalTicketOfficeUrl')
@@ -649,7 +613,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // Then
           expect(
@@ -664,7 +629,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // Then
           expect(await getOfferInputForField('visualDisabilityCompliant')).not.toBeChecked()
@@ -680,7 +646,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // Then
           expect(screen.queryByLabelText('Structure')).toBeInTheDocument()
@@ -694,7 +661,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store, `?structure=${offerers[0].id}`)
 
           // When
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // Then
           expect(screen.getByDisplayValue(offerers[0].name)).toBeInTheDocument()
@@ -709,7 +677,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // Then
           expect(screen.getByDisplayValue(offerers[0].name)).toBeInTheDocument()
@@ -724,7 +693,8 @@ describe('offerDetails - Creation - pro user', () => {
           )
 
           // When
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // Then
           expect(screen.getByDisplayValue(venues[0].name)).toBeInTheDocument()
@@ -736,7 +706,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // Then
           expect(screen.getByDisplayValue(venues[0].name)).toBeInTheDocument()
@@ -747,7 +718,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
+          await setOfferValues({ categoryId: 'MEDIA' })
+          await setOfferValues({ subcategoryId: 'ABO_PRESSE_EN_LIGNE' })
 
           // Then
           expect(screen.queryByText(venues[0].name)).not.toBeInTheDocument()
@@ -760,7 +732,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // Then
           expect(screen.getByText(venues[0].name)).toBeInTheDocument()
@@ -773,7 +746,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'EventType.MUSIQUE' })
+          await setOfferValues({ categoryId: 'JEU' })
+          await setOfferValues({ subcategoryId: 'RENCONTRE_JEU' })
 
           // Then
           expect(screen.getByText(venues[0].name)).toBeInTheDocument()
@@ -784,7 +758,8 @@ describe('offerDetails - Creation - pro user', () => {
         it('should only display venues of selected offerer', async () => {
           // Given
           await renderOffers(props, store)
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // When
           await setOfferValues({ offererId: offerers[0].id })
@@ -798,7 +773,8 @@ describe('offerDetails - Creation - pro user', () => {
         it('should display all venues when unselecting offerer', async () => {
           // Given
           await renderOffers(props, store)
-          await setOfferValues({ type: 'EventType.MUSIQUE' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'FESTIVAL_MUSIQUE' })
           await setOfferValues({ offererId: offerers[0].id })
 
           // When
@@ -813,7 +789,8 @@ describe('offerDetails - Creation - pro user', () => {
         it('should select offerer of selected venue', async () => {
           // Given
           await renderOffers(props, store)
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // When
           await setOfferValues({ venueId: venues[0].id })
@@ -849,7 +826,8 @@ describe('offerDetails - Creation - pro user', () => {
           ]
           pcapi.getVenuesForOfferer.mockResolvedValue(venues)
           await renderOffers(props, store)
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // When
           await setOfferValues({ offererId: offerers[0].id })
@@ -891,7 +869,8 @@ describe('offerDetails - Creation - pro user', () => {
           ]
           pcapi.getVenuesForOfferer.mockResolvedValue(venues)
           await renderOffers(props, store, `?structure=${offerers[1].id}`)
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // When
           await setOfferValues({ offererId: offerers[0].id })
@@ -918,13 +897,15 @@ describe('offerDetails - Creation - pro user', () => {
             },
           ])
           await renderOffers(props, store)
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // When
-          await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
 
           // Then
-          expect(screen.getByLabelText('Lieu')).toBeInTheDocument()
+          await waitFor(() => expect(screen.getByLabelText('Lieu')).toBeInTheDocument())
           const venueIdError = queryInputErrorForField('venueId')
           expect(venueIdError).toBeNull()
         })
@@ -942,7 +923,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'EventType.MUSIQUE' })
+          await setOfferValues({ categoryId: 'JEU' })
+          await setOfferValues({ subcategoryId: 'RENCONTRE_JEU' })
 
           // Then
           expect(screen.getByText(venues[0].name)).toBeInTheDocument()
@@ -960,7 +942,8 @@ describe('offerDetails - Creation - pro user', () => {
             await renderOffers(props, store)
 
             // When
-            await setOfferValues({ type: 'EventType.MUSIQUE' })
+            await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+            await setOfferValues({ subcategoryId: 'CONCERT' })
 
             // Then
             const musicTypeInput = await getOfferInputForField('musicType')
@@ -970,7 +953,8 @@ describe('offerDetails - Creation - pro user', () => {
           it('should display a music subtype selection when a musicType is selected', async () => {
             // Given
             await renderOffers(props, store)
-            await setOfferValues({ type: 'EventType.MUSIQUE' })
+            await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+            await setOfferValues({ subcategoryId: 'CONCERT' })
 
             // When
             await setOfferValues({ musicType: '501' })
@@ -983,11 +967,13 @@ describe('offerDetails - Creation - pro user', () => {
           it('should not display a music type selection when changing to an offer type wihtout "musicType" conditional field', async () => {
             // Given
             await renderOffers(props, store)
-            await setOfferValues({ type: 'EventType.MUSIQUE' })
+            await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+            await setOfferValues({ subcategoryId: 'CONCERT' })
             await screen.findByLabelText('Genre musical', { exact: false })
 
             // When
-            await setOfferValues({ type: 'EventType.CINEMA' })
+            await setOfferValues({ categoryId: 'LIVRE' })
+            await setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
 
             // Then
             expect(
@@ -998,12 +984,14 @@ describe('offerDetails - Creation - pro user', () => {
           it('should not display a music subtype selection when a musicType is not selected and a showType was selected before', async () => {
             // Given
             await renderOffers(props, store)
-            await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
+            await setOfferValues({ categoryId: 'SPECTACLE' })
+            await setOfferValues({ subcategoryId: 'SPECTACLE_REPRESENTATION' })
             await setOfferValues({ showType: '1300' })
             await setOfferValues({ showSubType: '1307' })
 
             // When
-            await setOfferValues({ type: 'EventType.MUSIQUE' })
+            await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+            await setOfferValues({ subcategoryId: 'CONCERT' })
 
             // Then
             expect(screen.queryByLabelText('Sous genre', { exact: false })).not.toBeInTheDocument()
@@ -1016,7 +1004,8 @@ describe('offerDetails - Creation - pro user', () => {
             await renderOffers(props, store)
 
             // When
-            await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
+            await setOfferValues({ categoryId: 'SPECTACLE' })
+            await setOfferValues({ subcategoryId: 'SPECTACLE_REPRESENTATION' })
 
             // Then
             const showTypeInput = await getOfferInputForField('showType')
@@ -1028,7 +1017,8 @@ describe('offerDetails - Creation - pro user', () => {
             await renderOffers(props, store)
 
             // When
-            await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
+            await setOfferValues({ categoryId: 'SPECTACLE' })
+            await setOfferValues({ subcategoryId: 'SPECTACLE_REPRESENTATION' })
             await setOfferValues({ showType: '1300' })
 
             // Then
@@ -1043,7 +1033,8 @@ describe('offerDetails - Creation - pro user', () => {
             await renderOffers(props, store)
 
             // When
-            await setOfferValues({ type: 'EventType.CONFERENCE_DEBAT_DEDICACE' })
+            await setOfferValues({ categoryId: 'CONFERENCE' })
+            await setOfferValues({ subcategoryId: 'RENCONTRE' })
 
             // Then
             const speakerInput = await getOfferInputForField('speaker')
@@ -1057,7 +1048,8 @@ describe('offerDetails - Creation - pro user', () => {
             await renderOffers(props, store)
 
             // When
-            await setOfferValues({ type: 'EventType.CINEMA' })
+            await setOfferValues({ categoryId: 'CINEMA' })
+            await setOfferValues({ subcategoryId: 'SEANCE_CINE' })
 
             // Then
             const authorInput = await getOfferInputForField('author')
@@ -1071,7 +1063,8 @@ describe('offerDetails - Creation - pro user', () => {
             await renderOffers(props, store)
 
             // When
-            await setOfferValues({ type: 'EventType.CINEMA' })
+            await setOfferValues({ categoryId: 'CINEMA' })
+            await setOfferValues({ subcategoryId: 'SEANCE_CINE' })
 
             // Then
             const visaInput = await getOfferInputForField('visa')
@@ -1085,7 +1078,8 @@ describe('offerDetails - Creation - pro user', () => {
             await renderOffers(props, store)
 
             // When
-            await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
+            await setOfferValues({ categoryId: 'LIVRE' })
+            await setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
 
             // Then
             const isbnInput = await getOfferInputForField('isbn')
@@ -1099,7 +1093,8 @@ describe('offerDetails - Creation - pro user', () => {
             await renderOffers(props, store)
 
             // When
-            await setOfferValues({ type: 'EventType.CINEMA' })
+            await setOfferValues({ categoryId: 'CINEMA' })
+            await setOfferValues({ subcategoryId: 'SEANCE_CINE' })
 
             // Then
             const stageDirectorInput = await getOfferInputForField('stageDirector')
@@ -1113,7 +1108,8 @@ describe('offerDetails - Creation - pro user', () => {
             await renderOffers(props, store)
 
             // When
-            await setOfferValues({ type: 'EventType.MUSIQUE' })
+            await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+            await setOfferValues({ subcategoryId: 'CONCERT' })
 
             // Then
             const performerInput = await getOfferInputForField('performer')
@@ -1126,7 +1122,10 @@ describe('offerDetails - Creation - pro user', () => {
         it('should display a text input "url"', async () => {
           // Given
           await renderOffers(props, store)
-          await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
+
+          // When
+          await setOfferValues({ categoryId: 'MEDIA' })
+          await setOfferValues({ subcategoryId: 'ABO_PRESSE_EN_LIGNE' })
 
           // When
           await setOfferValues({ venueId: venues[2].id })
@@ -1139,7 +1138,8 @@ describe('offerDetails - Creation - pro user', () => {
         it('should display refundable banner when offer type is online only', async () => {
           // Given
           await renderOffers(props, store)
-          await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
+          await setOfferValues({ categoryId: 'MEDIA' })
+          await setOfferValues({ subcategoryId: 'ABO_PRESSE_EN_LIGNE' })
 
           // When
           await setOfferValues({ venueId: venues[2].id })
@@ -1152,31 +1152,22 @@ describe('offerDetails - Creation - pro user', () => {
           ).toBeInTheDocument()
         })
 
-        it('should remove refundable banner after deselecting the venue', async () => {
+        it('should remove refundable banner after selecting a refundable category', async () => {
           // Given
           await renderOffers(props, store)
-          await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
-          await setOfferValues({ venueId: venues[2].id })
 
-          // When
-          await setOfferValues({ venueId: DEFAULT_FORM_VALUES.venueId })
+          await setOfferValues({ categoryId: 'MEDIA' })
+          await setOfferValues({ subcategoryId: 'ABO_PRESSE_EN_LIGNE' })
 
-          // Then
           expect(
             screen.queryByText(
               "Cette offre numérique ne fera pas l'objet d'un remboursement. Pour plus d'informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
             )
-          ).not.toBeInTheDocument()
-        })
-
-        it('should remove refundable banner after selecting a refundable offer type', async () => {
-          // Given
-          await renderOffers(props, store)
-          await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
-          await setOfferValues({ venueId: venues[2].id })
+          ).toBeInTheDocument()
 
           // When
-          await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
+          await setOfferValues({ categoryId: 'SPECTACLE' })
+          await setOfferValues({ subcategoryId: 'SPECTACLE_REPRESENTATION' })
 
           // Then
           expect(
@@ -1189,7 +1180,8 @@ describe('offerDetails - Creation - pro user', () => {
         it('should display refundable banner when offer type is online and offline', async () => {
           // Given
           await renderOffers(props, store)
-          await setOfferValues({ type: 'EventType.MUSIQUE' })
+          await setOfferValues({ categoryId: 'FILM' })
+          await setOfferValues({ subcategoryId: 'VOD' })
 
           // When
           await setOfferValues({ venueId: venues[2].id })
@@ -1202,10 +1194,11 @@ describe('offerDetails - Creation - pro user', () => {
           ).toBeInTheDocument()
         })
 
-        it('should not display refundable banner when offer type is ThingType.LIVRE_EDITION', async () => {
+        it('should not display refundable banner when offer category is Livres / livre papier', async () => {
           // Given
           await renderOffers(props, store)
-          await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
+          await setOfferValues({ categoryId: 'LIVRE' })
+          await setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
 
           // When
           await setOfferValues({ venueId: venues[2].id })
@@ -1221,7 +1214,8 @@ describe('offerDetails - Creation - pro user', () => {
         it('should not display refundable banner when offer type is ThingType.CINEMA_CARD', async () => {
           // Given
           await renderOffers(props, store)
-          await setOfferValues({ type: 'ThingType.CINEMA_CARD' })
+          await setOfferValues({ categoryId: 'CINEMA' })
+          await setOfferValues({ subcategoryId: 'CARTE_CINE_MULTISEANCES' })
 
           // When
           await setOfferValues({ venueId: venues[2].id })
@@ -1237,7 +1231,8 @@ describe('offerDetails - Creation - pro user', () => {
         it('should not remind withdrawal modalities', async () => {
           // Given
           await renderOffers(props, store)
-          await setOfferValues({ type: 'ThingType.CINEMA_CARD' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // When
           await setOfferValues({ venueId: venues[2].id })
@@ -1249,16 +1244,15 @@ describe('offerDetails - Creation - pro user', () => {
           expect(withdrawalModalitiesReminder).not.toBeInTheDocument()
         })
 
-        it("should pre-fill booking notification email field with user's email when offer type is offline", async () => {
+        it("should pre-fill booking notification email field with user's email when category is ONLINE_OR_OFFLINE", async () => {
           // Given
           await renderOffers(props, store)
-          await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
+          await setOfferValues({ categoryId: 'MUSEE' })
+          await setOfferValues({ subcategoryId: 'VISITE_GUIDEE' })
           await setOfferValues({ receiveNotificationEmails: true })
 
           // When
-          await act(async () => {
-            await setOfferValues({ venueId: venues[2].id })
-          })
+          await setOfferValues({ venueId: venues[2].id })
 
           // Then
           expect(screen.getByLabelText('Email auquel envoyer les notifications :').value).toBe(
@@ -1273,7 +1267,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'EventType.MUSIQUE' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // Then
           const durationInput = await getOfferInputForField('durationMinutes')
@@ -1285,7 +1280,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'EventType.MUSIQUE' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // Then
           const duoInput = await getOfferInputForField('isDuo')
@@ -1298,7 +1294,8 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'EventType.MUSIQUE' })
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
 
           // Then
           const withdrawalModalitiesReminder = screen.queryByText(
@@ -1314,7 +1311,9 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'ThingType.LIVRE_EDITION', venueId: venues[0].id })
+          await setOfferValues({ categoryId: 'LIVRE' })
+          await setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
+          await setOfferValues({ venueId: venues[0].id })
 
           // Then
           const informationsPratiquesSection = within(
@@ -1326,20 +1325,22 @@ describe('offerDetails - Creation - pro user', () => {
           expect(withdrawalModalitiesReminder).toBeInTheDocument()
         })
 
-        it("should pre-fill booking notification email field with venue's email", async () => {
+        it('should pre-fill booking notification email field with venue’s email', async () => {
           // Given
           await renderOffers(props, store)
-          await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
-          await setOfferValues({ receiveNotificationEmails: true })
+          await setOfferValues({ categoryId: 'LIVRE' })
+          await setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
 
           // When
-          await act(async () => {
-            await setOfferValues({ venueId: venues[0].id })
-          })
+          await setOfferValues({ offererId: offerers[0].id })
+          await setOfferValues({ venueId: venues[0].id })
+          await setOfferValues({ receiveNotificationEmails: true })
 
           // Then
-          expect(screen.getByLabelText('Email auquel envoyer les notifications :').value).toBe(
-            'lieu@example.com'
+          await waitFor(() =>
+            expect(screen.getByLabelText('Email auquel envoyer les notifications :').value).toBe(
+              venues[0].bookingEmail
+            )
           )
         })
       })
@@ -1347,7 +1348,8 @@ describe('offerDetails - Creation - pro user', () => {
       it('should initialize empty disabilityCompliance', async () => {
         // Given
         await renderOffers(props, store)
-        await setOfferValues({ type: 'ThingType.LIVRE_EDITION', venueId: venues[0].id })
+        await setOfferValues({ categoryId: 'LIVRE' })
+        await setOfferValues({ subcategoryId: 'LIVRE_PAPIER', venueId: venues[0].id })
 
         // Then
         const audioDisabilityCompliantCheckbox = screen.getByLabelText(
@@ -1424,7 +1426,7 @@ describe('offerDetails - Creation - pro user', () => {
         motorDisabilityCompliant: true,
         visualDisabilityCompliant: true,
         externalTicketOfficeUrl: 'http://example.net',
-        type: 'EventType.MUSIQUE',
+        subcategoryId: 'CONCERT',
         extraData: {
           musicType: '501',
           musicSubType: '502',
@@ -1436,8 +1438,10 @@ describe('offerDetails - Creation - pro user', () => {
 
       await renderOffers(props, store)
 
-      await setOfferValues({ type: offerValues.type })
+      await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+      await setOfferValues({ subcategoryId: 'CONCERT' })
       await setOfferValues(offerValues)
+
       const createdOffer = {
         ...offerValues,
         id: 'CREATED',
@@ -1445,6 +1449,7 @@ describe('offerDetails - Creation - pro user', () => {
         venue: venues[0],
         status: 'ACTIVE',
       }
+
       pcapi.createOffer.mockResolvedValue(createdOffer)
       const submitButton = screen.getByText('Étape suivante')
 
@@ -1464,8 +1469,9 @@ describe('offerDetails - Creation - pro user', () => {
       // Given
       const offerValues = {
         name: 'Ma petite offre',
-        type: 'EventType.MUSIQUE',
-        venueId: venues[0].id,
+        subcategoryId: 'LIVESTREAM_MUSIQUE',
+        venueId: venues[2].id,
+        url: 'http://www.url.com',
         audioDisabilityCompliant: false,
         visualDisabilityCompliant: true,
         motorDisabilityCompliant: false,
@@ -1474,7 +1480,8 @@ describe('offerDetails - Creation - pro user', () => {
 
       await renderOffers(props, store)
 
-      await setOfferValues({ type: offerValues.type })
+      await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+      await setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
       await setOfferValues(offerValues)
 
       // When
@@ -1493,15 +1500,14 @@ describe('offerDetails - Creation - pro user', () => {
       const offerValues = {
         name: 'Ma petite offre',
         description: 'Pas si petite que ça',
-        durationMinutes: '1:30',
-        type: 'EventType.MUSIQUE',
+        subcategoryId: 'LIVESTREAM_MUSIQUE',
         extraData: {
           musicType: '501',
           musicSubType: '502',
           performer: 'TEST PERFORMER NAME',
         },
-        venueId: venues[0].id,
-        isDuo: false,
+        venueId: venues[2].id,
+        url: 'http://www.url.com',
         withdrawalDetails: 'À venir chercher sur place.',
         audioDisabilityCompliant: false,
         visualDisabilityCompliant: true,
@@ -1520,23 +1526,25 @@ describe('offerDetails - Creation - pro user', () => {
       await renderOffers(props, store)
       pcapi.loadOffer.mockResolvedValue(createdOffer)
 
-      await setOfferValues({ type: offerValues.type })
+      await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+      await setOfferValues({ subcategoryId: offerValues.subcategoryId })
       await setOfferValues(offerValues)
 
       // When
-      await act(async () => {
-        await fireEvent.click(screen.getByText('Étape suivante'))
-      })
+      fireEvent.click(screen.getByText('Étape suivante'))
 
       // Then
+      await waitFor(() =>
+        expect(screen.getByRole('heading', { name: 'Stock et prix', level: 3 })).toBeInTheDocument()
+      )
       expect(screen.getByRole('heading', { name: 'Nouvelle offre', level: 1 })).toBeInTheDocument()
-      expect(screen.getByRole('heading', { name: 'Stock et prix', level: 3 })).toBeInTheDocument()
     })
 
     it('should show errors for mandatory fields', async () => {
       // Given
       await renderOffers(props, store)
-      await setOfferValues({ type: 'EventType.MUSIQUE' })
+      await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+      await setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
 
       // When
       userEvent.click(screen.getByText('Étape suivante'))
@@ -1578,7 +1586,8 @@ describe('offerDetails - Creation - pro user', () => {
     it('should show an error notification when form is not valid', async () => {
       // Given
       await renderOffers(props, store)
-      await setOfferValues({ type: 'EventType.MUSIQUE' })
+      await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+      await setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
 
       // When
       userEvent.click(screen.getByText('Étape suivante'))
@@ -1593,7 +1602,8 @@ describe('offerDetails - Creation - pro user', () => {
     it('should show error for email notification input when asking to receive booking emails and no email was provided', async () => {
       // Given
       await renderOffers(props, store)
-      await setOfferValues({ type: 'EventType.MUSIQUE' })
+      await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+      await setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
       await setOfferValues({ receiveNotificationEmails: true })
 
       // When
@@ -1608,7 +1618,8 @@ describe('offerDetails - Creation - pro user', () => {
     it('should show error for isbn input when creating offer of type livre edition', async () => {
       // Given
       await renderOffers(props, store)
-      await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
+      await setOfferValues({ categoryId: 'LIVRE' })
+      await setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
       await setOfferValues({ receiveNotificationEmails: true })
 
       // When
@@ -1625,15 +1636,13 @@ describe('offerDetails - Creation - pro user', () => {
       const offerValues = {
         name: 'Ce nom serait-il invalide ?',
         description: 'Pas si petite que ça',
-        durationMinutes: '1:30',
-        type: 'EventType.MUSIQUE',
+        subcategoryId: 'CONCERT',
         extraData: {
           musicType: '501',
           musicSubType: '502',
           performer: 'TEST PERFORMER NAME',
         },
         venueId: venues[0].id,
-        isDuo: false,
         withdrawalDetails: 'À venir chercher sur place.',
         audioDisabilityCompliant: false,
         visualDisabilityCompliant: true,
@@ -1644,7 +1653,8 @@ describe('offerDetails - Creation - pro user', () => {
       pcapi.createOffer.mockRejectedValue({ errors: { name: "Ce nom n'est pas valide" } })
       await renderOffers(props, store)
 
-      await setOfferValues({ type: offerValues.type })
+      await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+      await setOfferValues({ subcategoryId: 'CONCERT' })
       await setOfferValues(offerValues)
 
       // When
@@ -1663,7 +1673,6 @@ describe('offerDetails - Creation - pro user', () => {
       // Given
       const offerValues = {
         name: 'Les misérables',
-        type: 'ThingType.LIVRE_EDITION',
         extraData: {
           isbn: '0123456789123',
         },
@@ -1679,18 +1688,18 @@ describe('offerDetails - Creation - pro user', () => {
       })
       await renderOffers(props, store)
 
-      await setOfferValues({ type: offerValues.type })
+      await setOfferValues({ categoryId: 'LIVRE' })
+      await setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
       await setOfferValues(offerValues)
 
       // When
-      await userEvent.click(screen.getByText('Étape suivante'))
+      userEvent.click(screen.getByText('Étape suivante'))
 
-      // Then
       const errorNotification = await screen.findByText(
         'Une ou plusieurs erreurs sont présentes dans le formulaire'
       )
       expect(errorNotification).toBeInTheDocument()
-
+      // Then
       const isbnError = queryByTextTrimHtml(
         screen,
         'Ce produit n’est pas éligible au pass Culture. Veuillez consulter nos conditions générales d’utilisation',
@@ -1705,9 +1714,7 @@ describe('offerDetails - Creation - pro user', () => {
       // Given
       const offerValues = {
         name: 'Ma petite offre',
-        type: 'EventType.MUSIQUE',
         venueId: venues[0].id,
-        isDuo: false,
         audioDisabilityCompliant: false,
         visualDisabilityCompliant: true,
         motorDisabilityCompliant: false,
@@ -1718,30 +1725,36 @@ describe('offerDetails - Creation - pro user', () => {
       pcapi.postThumbnail.mockRejectedValue({
         errors: { errors: ['Utilisez une image plus grande (supérieure à 400px par 400px)'] },
       })
-      const createdOffer = { ...offerValues, id: 'AA', stocks: [], venue: venues[0] }
+      const createdOffer = {
+        ...offerValues,
+        venueId: venues[0].id,
+        id: 'AA',
+        stocks: [],
+        venue: venues[0],
+      }
       pcapi.createOffer.mockResolvedValue(createdOffer)
       await renderOffers(props, store)
       pcapi.loadOffer.mockResolvedValue(createdOffer)
 
-      await setOfferValues({ type: offerValues.type })
+      await setOfferValues({ categoryId: 'CINEMA' })
+      await setOfferValues({ subcategoryId: 'CARTE_CINE_MULTISEANCES' })
+
       await setOfferValues(offerValues)
 
       // When
       fireEvent.click(screen.getByText('Étape suivante'))
 
       // Then
-      const addThumbnail = await screen.queryByText('Ajouter une image')
-      expect(addThumbnail).toBeInTheDocument()
+      waitFor(() => expect(screen.getByText('Ajouter une image')).toBeInTheDocument())
+      const errorNotification = await screen.findByText(
+        'Une ou plusieurs erreurs sont présentes dans le formulaire'
+      )
+      expect(errorNotification).toBeInTheDocument()
 
       const thumbnailUploadError = await screen.findByText(
         "L'image n'a pas pu être ajoutée. Veuillez réessayer."
       )
       expect(thumbnailUploadError).toBeInTheDocument()
-
-      const errorNotification = await screen.findByText(
-        'Une ou plusieurs erreurs sont présentes dans le formulaire'
-      )
-      expect(errorNotification).toBeInTheDocument()
     })
   })
 
@@ -1756,6 +1769,82 @@ describe('offerDetails - Creation - pro user', () => {
       // Then
       const e = screen.getByText('Voulez-vous quitter la création d’offre ?')
       expect(e).toBeInTheDocument()
+    })
+  })
+
+  describe('when I arrive on offer Creation', () => {
+    it('should display dropdown with categories', async () => {
+      // When
+      await renderOffers(props, store)
+
+      // Then
+      expect(
+        screen.getByText('Musée, patrimoine, architecture, arts visuels ou contemporains', {
+          selector: 'option',
+        })
+      ).toBeInTheDocument()
+    })
+
+    it('should display dropdown with sub categories belonging to its category', async () => {
+      // Given
+      await renderOffers(props, store)
+
+      // When
+      setOfferValues({ categoryId: 'FILM' })
+
+      // Then
+      expect(
+        screen.getByText('Support physique (DVD, Bluray...)', { selector: 'option' })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByText('Carte cinéma illimité', { selector: 'option' })
+      ).not.toBeInTheDocument()
+      expect(screen.getByLabelText('Sous-catégorie')).toBeInTheDocument()
+      expect(screen.queryByText('Informations artistiques')).not.toBeInTheDocument()
+    })
+
+    it('should display information artistique when sub category is set', async () => {
+      // Given
+      await renderOffers(props, store)
+
+      // When
+      setOfferValues({ categoryId: 'FILM' })
+      setOfferValues({ subcategoryId: 'SUPPORT_PHYSIQUE_FILM' })
+
+      // Then
+      expect(screen.getByText('Informations artistiques')).toBeInTheDocument()
+    })
+
+    it('should display musicType and musicSubType dropdown when I select right category', async () => {
+      // Given
+      await renderOffers(props, store)
+
+      // When
+      setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+      setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
+
+      // Then
+      expect(screen.getByText('Genre musical')).toBeInTheDocument()
+
+      setOfferValues({ musicType: '501' })
+
+      expect(screen.getByText('Sous genre')).toBeInTheDocument()
+    })
+
+    it('should display showType dropdown when I select right category', async () => {
+      // Given
+      await renderOffers(props, store)
+
+      // When
+      setOfferValues({ categoryId: 'SPECTACLE' })
+      setOfferValues({ subcategoryId: 'SPECTACLE_REPRESENTATION' })
+
+      // Then
+      expect(screen.getByText('Type de spectacle')).toBeInTheDocument()
+
+      setOfferValues({ showType: '100' })
+
+      expect(screen.getByText('Sous type')).toBeInTheDocument()
     })
   })
 })

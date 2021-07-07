@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -26,8 +26,8 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
   getVenue: jest.fn(),
   loadOffer: jest.fn(),
+  loadCategories: jest.fn(),
   loadStocks: jest.fn(),
-  loadTypes: jest.fn(),
   postThumbnail: jest.fn(),
   updateOffer: jest.fn(),
 }))
@@ -62,39 +62,14 @@ describe('offerDetails - Edition', () => {
   let venueManagingOfferer
   let props
   let store
-  let types
   let editedOfferVenue
+  let categories
 
   beforeEach(() => {
     store = configureTestStore({
       data: { users: [{ publicName: 'François', isAdmin: false, email: 'francois@example.com' }] },
     })
-    types = [
-      {
-        conditionalFields: [],
-        offlineOnly: false,
-        onlineOnly: true,
-        proLabel: 'Presse en ligne - abonnements',
-        type: 'Thing',
-        value: 'ThingType.PRESSE_ABO',
-      },
-      {
-        conditionalFields: ['author', 'isbn'],
-        offlineOnly: false,
-        onlineOnly: false,
-        proLabel: 'Livres papier ou numérique, abonnements lecture',
-        type: 'Thing',
-        value: 'ThingType.LIVRE_EDITION',
-      },
-      {
-        conditionalFields: ['author'],
-        offlineOnly: false,
-        onlineOnly: true,
-        proLabel: 'Livres audio numériques',
-        type: 'Thing',
-        value: 'ThingType.LIVRE_AUDIO',
-      },
-    ]
+
     venueManagingOfferer = {
       id: 'BA',
       name: 'La structure',
@@ -112,8 +87,8 @@ describe('offerDetails - Edition', () => {
 
     editedOffer = {
       id: 'ABC12',
+      subcategoryId: 'ID',
       name: 'My edited offer',
-      type: 'ThingType.LIVRE_EDITION',
       venue: editedOfferVenue,
       thumbUrl: null,
       description: 'My edited description',
@@ -123,11 +98,39 @@ describe('offerDetails - Edition', () => {
         isbn: '1234567890123',
       },
     }
+
+    categories = {
+      categories: [
+        {
+          id: 'ID',
+          name: 'Musique',
+          proLabel: 'Musique',
+          appLabel: 'Musique',
+        },
+      ],
+      subcategories: [
+        {
+          id: 'ID',
+          name: 'Musique SubCat 1',
+          categoryId: 'ID',
+          isEvent: false,
+          isDigital: false,
+          isDigitalDeposit: false,
+          isPhysicalDeposit: true,
+          proLabel: 'Musique SubCat 1',
+          appLabel: 'Musique SubCat 1',
+          conditionalFields: ['author', 'musicType', 'performer'],
+          canExpire: true,
+          canBeDuo: false,
+        },
+      ],
+    }
+
     props = {
       setShowThumbnailForm: jest.fn(),
     }
     pcapi.loadOffer.mockResolvedValue(editedOffer)
-    pcapi.loadTypes.mockResolvedValue(types)
+    pcapi.loadCategories.mockResolvedValue(categories)
     pcapi.getVenue.mockReturnValue(Promise.resolve())
     pcapi.loadStocks.mockReturnValue(Promise.resolve({ stocks: [] }))
   })
@@ -144,8 +147,8 @@ describe('offerDetails - Edition', () => {
         beforeEach(async () => {
           const editedOffer = {
             id: 'ABC12',
+            subcategoryId: 'ID',
             name: 'My edited offer',
-            type: 'ThingType.LIVRE_EDITION',
             venue: editedOfferVenue,
             thumbUrl: null,
             audioDisabilityCompliant: null,
@@ -158,45 +161,24 @@ describe('offerDetails - Edition', () => {
 
           // When
           await renderOffers(props, store)
-
-          audioDisabilityCompliantCheckbox = screen.getByLabelText(
-            fieldLabels.audioDisabilityCompliant.label,
-            {
-              exact: fieldLabels.audioDisabilityCompliant.exact,
-            }
-          )
-          mentalDisabilityCompliantCheckbox = screen.getByLabelText(
-            fieldLabels.mentalDisabilityCompliant.label,
-            {
-              exact: fieldLabels.mentalDisabilityCompliant.exact,
-            }
-          )
-          motorDisabilityCompliantCheckbox = screen.getByLabelText(
-            fieldLabels.motorDisabilityCompliant.label,
-            {
-              exact: fieldLabels.motorDisabilityCompliant.exact,
-            }
-          )
-          visualDisabilityCompliantCheckbox = screen.getByLabelText(
-            fieldLabels.visualDisabilityCompliant.label,
-            {
-              exact: fieldLabels.visualDisabilityCompliant.exact,
-            }
-          )
-          noDisabilityCompliantCheckbox = screen.getByLabelText(
-            fieldLabels.noDisabilityCompliant.label,
-            {
-              exact: fieldLabels.noDisabilityCompliant.exact,
-            }
-          )
         })
 
         it('should not have checked values', async () => {
-          expect(audioDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(mentalDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(motorDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(visualDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(noDisabilityCompliantCheckbox).not.toBeChecked()
+          const uncheckedDisabilityFields = [
+            'audioDisabilityCompliant',
+            'mentalDisabilityCompliant',
+            'motorDisabilityCompliant',
+            'visualDisabilityCompliant',
+            'visualDisabilityCompliant',
+            'noDisabilityCompliant',
+          ]
+
+          uncheckedDisabilityFields.forEach(label => {
+            const input = screen.getByLabelText(fieldLabels[label].label, {
+              exact: fieldLabels[label].exact,
+            })
+            expect(input).not.toBeChecked()
+          })
         })
 
         it('should display error when submitting empty values', async () => {
@@ -235,8 +217,8 @@ describe('offerDetails - Edition', () => {
         beforeEach(async () => {
           const editedOffer = {
             id: 'ABC12',
+            subcategoryId: 'ID',
             name: 'My edited offer',
-            type: 'ThingType.LIVRE_EDITION',
             venue: editedOfferVenue,
             thumbUrl: null,
             audioDisabilityCompliant: true,
@@ -249,57 +231,61 @@ describe('offerDetails - Edition', () => {
 
           // When
           await renderOffers(props, store)
+        })
 
-          audioDisabilityCompliantCheckbox = screen.getByLabelText(
-            fieldLabels.audioDisabilityCompliant.label,
-            {
-              exact: fieldLabels.audioDisabilityCompliant.exact,
-            }
-          )
-          mentalDisabilityCompliantCheckbox = screen.getByLabelText(
-            fieldLabels.mentalDisabilityCompliant.label,
-            {
-              exact: fieldLabels.mentalDisabilityCompliant.exact,
-            }
-          )
-          motorDisabilityCompliantCheckbox = screen.getByLabelText(
-            fieldLabels.motorDisabilityCompliant.label,
-            {
-              exact: fieldLabels.motorDisabilityCompliant.exact,
-            }
-          )
-          visualDisabilityCompliantCheckbox = screen.getByLabelText(
-            fieldLabels.visualDisabilityCompliant.label,
-            {
-              exact: fieldLabels.visualDisabilityCompliant.exact,
-            }
-          )
-          noDisabilityCompliantCheckbox = screen.getByLabelText(
+        it('should initialize noDisabilityCompliant unchecked and others checked', async () => {
+          const uncheckedDisabilityFields = [
+            'audioDisabilityCompliant',
+            'mentalDisabilityCompliant',
+            'motorDisabilityCompliant',
+            'visualDisabilityCompliant',
+            'visualDisabilityCompliant',
+          ]
+
+          uncheckedDisabilityFields.forEach(label => {
+            const input = screen.getByLabelText(fieldLabels[label].label, {
+              exact: fieldLabels[label].exact,
+            })
+            expect(input).toBeChecked()
+          })
+
+          const noDisabilityCompliantCheckBox = screen.getByLabelText(
             fieldLabels.noDisabilityCompliant.label,
             {
               exact: fieldLabels.noDisabilityCompliant.exact,
             }
           )
-        })
 
-        it('should initialize noDisabilityCompliant unchecked and others checked', async () => {
-          expect(noDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(audioDisabilityCompliantCheckbox).toBeChecked()
-          expect(mentalDisabilityCompliantCheckbox).toBeChecked()
-          expect(motorDisabilityCompliantCheckbox).toBeChecked()
-          expect(visualDisabilityCompliantCheckbox).toBeChecked()
+          expect(noDisabilityCompliantCheckBox).not.toBeChecked()
         })
 
         it('should uncheck all when noDisabilityCompliant is checked', async () => {
           // When
-          userEvent.click(noDisabilityCompliantCheckbox)
+          const noDisabilityCompliantCheckBox = screen.getByLabelText(
+            fieldLabels.noDisabilityCompliant.label,
+            {
+              exact: fieldLabels.noDisabilityCompliant.exact,
+            }
+          )
+
+          userEvent.click(noDisabilityCompliantCheckBox)
 
           // Then
-          expect(noDisabilityCompliantCheckbox).toBeChecked()
-          expect(audioDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(mentalDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(motorDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(visualDisabilityCompliantCheckbox).not.toBeChecked()
+          expect(noDisabilityCompliantCheckBox).toBeChecked()
+
+          const checkedDisabilityFields = [
+            'audioDisabilityCompliant',
+            'mentalDisabilityCompliant',
+            'motorDisabilityCompliant',
+            'visualDisabilityCompliant',
+            'visualDisabilityCompliant',
+          ]
+          checkedDisabilityFields.forEach(label => {
+            const input = screen.getByLabelText(fieldLabels[label].label, {
+              exact: fieldLabels[label].exact,
+            })
+            expect(input).not.toBeChecked()
+          })
         })
       })
 
@@ -307,8 +293,8 @@ describe('offerDetails - Edition', () => {
         beforeEach(async () => {
           const editedOffer = {
             id: 'ABC12',
+            subcategoryId: 'ID',
             name: 'My edited offer',
-            type: 'ThingType.LIVRE_EDITION',
             venue: editedOfferVenue,
             thumbUrl: null,
             audioDisabilityCompliant: false,
@@ -494,7 +480,7 @@ describe('offerDetails - Edition', () => {
       })
 
       describe('when fraud detection', () => {
-        let fullConditionalFieldsType = {}
+        let fullConditionalFieldsCategoryResponse = {}
         const fieldNames = { ...fieldLabels }
         delete fieldNames.isNational
         delete fieldNames.showSubType
@@ -510,7 +496,6 @@ describe('offerDetails - Edition', () => {
             mentalDisabilityCompliant: true,
             motorDisabilityCompliant: true,
             visualDisabilityCompliant: true,
-            type: 'EventType.FULL_CONDITIONAL_FIELDS',
             url: 'http://example.net',
             extraData: {
               author: 'Mr Offer Author',
@@ -523,19 +508,24 @@ describe('offerDetails - Edition', () => {
               visa: 'Courtesy of visa',
             },
           }
-          fullConditionalFieldsType = {
-            conditionalFields: [
-              'author',
-              'isbn',
-              'musicType',
-              'performer',
-              'speaker',
-              'stageDirector',
-              'visa',
+
+          fullConditionalFieldsCategoryResponse = {
+            ...categories,
+            subcategories: [
+              {
+                ...categories.subcategories[0],
+                isEvent: true,
+                conditionalFields: [
+                  'author',
+                  'isbn',
+                  'musicType',
+                  'performer',
+                  'speaker',
+                  'stageDirector',
+                  'visa',
+                ],
+              },
             ],
-            proLabel: 'Musique - concerts, festivals',
-            type: 'Event',
-            value: 'EventType.FULL_CONDITIONAL_FIELDS',
           }
         })
 
@@ -544,7 +534,7 @@ describe('offerDetails - Edition', () => {
           editedOffer.status = 'REJECTED'
           editedOffer.isActive = false
           pcapi.loadOffer.mockResolvedValue(editedOffer)
-          pcapi.loadTypes.mockResolvedValue([fullConditionalFieldsType])
+          pcapi.loadCategories.mockResolvedValue(fullConditionalFieldsCategoryResponse)
 
           // when
           await renderOffers({}, store)
@@ -572,7 +562,7 @@ describe('offerDetails - Edition', () => {
           editedOffer.status = 'PENDING'
           editedOffer.isActive = true
           pcapi.loadOffer.mockResolvedValue(editedOffer)
-          pcapi.loadTypes.mockResolvedValue([fullConditionalFieldsType])
+          pcapi.loadCategories.mockResolvedValue(fullConditionalFieldsCategoryResponse)
 
           // when
           await renderOffers({}, store)
@@ -615,6 +605,7 @@ describe('offerDetails - Edition', () => {
       editedOfferVenue.isVirtual = true
       const editedOffer = {
         id: 'ABC12',
+        subcategoryId: 'ID',
         bookingEmail: 'booking@example.net',
         description: 'Offer description',
         durationMinutes: 90,
@@ -625,7 +616,6 @@ describe('offerDetails - Edition', () => {
         motorDisabilityCompliant: true,
         visualDisabilityCompliant: true,
         name: 'My edited offer',
-        type: 'EventType.FULL_CONDITIONAL_FIELDS',
         url: 'http://example.net',
         venue: editedOfferVenue,
         venueId: editedOfferVenue.id,
@@ -643,32 +633,37 @@ describe('offerDetails - Edition', () => {
         },
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
-      const fullConditionalFieldsType = {
-        conditionalFields: [
-          'author',
-          'musicType',
-          'performer',
-          'isbn',
-          'stageDirector',
-          'speaker',
-          'visa',
+
+      const fullConditionalFieldsCategoryResponse = {
+        ...categories,
+        subcategories: [
+          {
+            ...categories.subcategories[0],
+            isEvent: true,
+            conditionalFields: [
+              'author',
+              'isbn',
+              'musicType',
+              'performer',
+              'speaker',
+              'stageDirector',
+              'visa',
+            ],
+          },
         ],
-        offlineOnly: false,
-        onlineOnly: false,
-        proLabel: 'Musique - concerts, festivals',
-        type: 'Event',
-        value: 'EventType.FULL_CONDITIONAL_FIELDS',
       }
-      pcapi.loadTypes.mockResolvedValue([fullConditionalFieldsType])
+
+      pcapi.loadCategories.mockResolvedValue(fullConditionalFieldsCategoryResponse)
 
       // When
       await renderOffers(props, store)
 
       // Then
-      const typeInput = screen.getByLabelText(fieldLabels.type.label, {
-        exact: fieldLabels.type.exact,
+      const categoryInput = screen.getByLabelText(fieldLabels.categoryId.label, {
+        exact: fieldLabels.categoryId.exact,
       })
-      expect(typeInput).toHaveValue(fullConditionalFieldsType.value)
+      expect(categoryInput).toHaveValue(categories.subcategories[0].categoryId.toString())
+
       const musicSubTypeInput = screen.getByLabelText(fieldLabels.musicSubType.label, {
         exact: fieldLabels.musicSubType.exact,
       })
@@ -780,8 +775,8 @@ describe('offerDetails - Edition', () => {
       editedOfferVenue.isVirtual = true
       const editedOffer = {
         id: 'ABC12',
+        subcategoryId: 'ID',
         name: 'My edited offer',
-        type: 'EventType.FULL_CONDITIONAL_FIELDS',
         description: 'Offer description',
         venue: editedOfferVenue,
         venueId: editedOfferVenue.id,
@@ -796,138 +791,70 @@ describe('offerDetails - Edition', () => {
         status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
-      types.push({
-        conditionalFields: [
-          'author',
-          'musicType',
-          'performer',
-          'isbn',
-          'stageDirector',
-          'speaker',
-          'visa',
+
+      const fullConditionalFieldsCategoryResponse = {
+        ...categories,
+        subcategories: [
+          {
+            ...categories.subcategories[0],
+            isEvent: true,
+            conditionalFields: [
+              'author',
+              'isbn',
+              'musicType',
+              'showType',
+              'performer',
+              'speaker',
+              'stageDirector',
+              'visa',
+            ],
+          },
         ],
-        offlineOnly: false,
-        onlineOnly: false,
-        proLabel: 'Musique - concerts, festivals',
-        type: 'Event',
-        value: 'EventType.FULL_CONDITIONAL_FIELDS',
-      })
-      pcapi.loadTypes.mockResolvedValue(types)
+      }
+
+      pcapi.loadCategories.mockResolvedValue(fullConditionalFieldsCategoryResponse)
 
       // When
       await renderOffers(props, store)
 
       // Then
       // Edition read only fields
-      const typeInput = screen.getByLabelText(fieldLabels.type.label, {
-        exact: fieldLabels.type.exact,
+      const disabledFields = ['categoryId', 'musicSubType', 'musicType', 'offererId', 'venueId']
+
+      disabledFields.forEach(label => {
+        const input = screen.getByLabelText(fieldLabels[label].label, {
+          exact: fieldLabels[label].exact,
+        })
+        expect(input).toBeDisabled()
       })
-      expect(typeInput).toBeDisabled()
-      const musicSubTypeInput = screen.getByLabelText(fieldLabels.musicSubType.label, {
-        exact: fieldLabels.musicSubType.exact,
-      })
-      expect(musicSubTypeInput).toBeDisabled()
-      const musicTypeInput = screen.getByLabelText(fieldLabels.musicType.label, {
-        exact: fieldLabels.musicType.exact,
-      })
-      expect(musicTypeInput).toBeDisabled()
-      const offererIdInput = screen.getByLabelText(fieldLabels.offererId.label, {
-        exact: fieldLabels.offererId.exact,
-      })
-      expect(offererIdInput).toBeDisabled()
-      const venueIdInput = screen.getByLabelText(fieldLabels.venueId.label, {
-        exact: fieldLabels.venueId.exact,
-      })
-      expect(venueIdInput).toBeDisabled()
 
       // Editable fields
-      const authorInput = screen.getByLabelText(fieldLabels.author.label, {
-        exact: fieldLabels.author.exact,
+      const editableFields = [
+        'author',
+        'bookingEmail',
+        'description',
+        'durationMinutes',
+        'isbn',
+        'isDuo',
+        'name',
+        'performer',
+        'stageDirector',
+        'speaker',
+        'externalTicketOfficeUrl',
+        'url',
+        'visa',
+        'withdrawalDetails',
+        'audioDisabilityCompliant',
+        'motorDisabilityCompliant',
+        'visualDisabilityCompliant',
+      ]
+
+      editableFields.forEach(label => {
+        const input = screen.getByLabelText(fieldLabels[label].label, {
+          exact: fieldLabels[label].exact,
+        })
+        expect(input).toBeEnabled()
       })
-      expect(authorInput).toBeEnabled()
-      const bookingEmailInput = screen.getByLabelText(fieldLabels.bookingEmail.label, {
-        exact: fieldLabels.bookingEmail.exact,
-      })
-      expect(bookingEmailInput).toBeEnabled()
-      const descriptionInput = screen.getByLabelText(fieldLabels.description.label, {
-        exact: fieldLabels.description.exact,
-      })
-      expect(descriptionInput).toBeEnabled()
-      const durationMinutesInput = screen.getByLabelText(fieldLabels.durationMinutes.label, {
-        exact: fieldLabels.durationMinutes.exact,
-      })
-      expect(durationMinutesInput).toBeEnabled()
-      const isbnInput = screen.getByLabelText(fieldLabels.isbn.label, {
-        exact: fieldLabels.isbn.exact,
-      })
-      expect(isbnInput).toBeEnabled()
-      const isDuoInput = screen.getByLabelText(fieldLabels.isDuo.label, {
-        exact: fieldLabels.isDuo.exact,
-      })
-      expect(isDuoInput).toBeEnabled()
-      const nameInput = screen.getByLabelText(fieldLabels.name.label, {
-        exact: fieldLabels.name.exact,
-      })
-      expect(nameInput).toBeEnabled()
-      const performerInput = screen.getByLabelText(fieldLabels.performer.label, {
-        exact: fieldLabels.performer.exact,
-      })
-      expect(performerInput).toBeEnabled()
-      const stageDirectorInput = screen.getByLabelText(fieldLabels.stageDirector.label, {
-        exact: fieldLabels.stageDirector.exact,
-      })
-      expect(stageDirectorInput).toBeEnabled()
-      const speakerInput = screen.getByLabelText(fieldLabels.speaker.label, {
-        exact: fieldLabels.speaker.exact,
-      })
-      expect(speakerInput).toBeEnabled()
-      const externalTicketOfficeUrlInput = screen.getByLabelText(
-        fieldLabels.externalTicketOfficeUrl.label,
-        {
-          exact: fieldLabels.externalTicketOfficeUrl.exact,
-        }
-      )
-      expect(externalTicketOfficeUrlInput).toBeEnabled()
-      const urlInput = screen.getByLabelText(fieldLabels.url.label, {
-        exact: fieldLabels.url.exact,
-      })
-      expect(urlInput).toBeEnabled()
-      const visaInput = screen.getByLabelText(fieldLabels.visa.label, {
-        exact: fieldLabels.visa.exact,
-      })
-      expect(visaInput).toBeEnabled()
-      const withdrawalDetailsInput = screen.getByLabelText(fieldLabels.withdrawalDetails.label, {
-        exact: fieldLabels.withdrawalDetails.exact,
-      })
-      expect(withdrawalDetailsInput).toBeEnabled()
-      const audioDisabilityCompliant = screen.getByLabelText(
-        fieldLabels.audioDisabilityCompliant.label,
-        {
-          exact: fieldLabels.audioDisabilityCompliant.exact,
-        }
-      )
-      expect(audioDisabilityCompliant).toBeEnabled()
-      const mentalDisabilityCompliant = screen.getByLabelText(
-        fieldLabels.mentalDisabilityCompliant.label,
-        {
-          exact: fieldLabels.mentalDisabilityCompliant.exact,
-        }
-      )
-      expect(mentalDisabilityCompliant).toBeEnabled()
-      const motorDisabilityCompliant = screen.getByLabelText(
-        fieldLabels.motorDisabilityCompliant.label,
-        {
-          exact: fieldLabels.motorDisabilityCompliant.exact,
-        }
-      )
-      expect(motorDisabilityCompliant).toBeEnabled()
-      const visualDisabilityCompliant = screen.getByLabelText(
-        fieldLabels.visualDisabilityCompliant.label,
-        {
-          exact: fieldLabels.visualDisabilityCompliant.exact,
-        }
-      )
-      expect(visualDisabilityCompliant).toBeEnabled()
     })
 
     it("should display venue's publicName instead of name if exists", async () => {
@@ -948,8 +875,8 @@ describe('offerDetails - Edition', () => {
         // Given
         const editedOffer = {
           id: 'ABC12',
+          subcategoryId: 'ID',
           name: 'My synchronized offer',
-          type: 'ThingType.LIVRE_EDITION',
           showType: 400,
           showSubType: 401,
           description: 'Offer description',
@@ -985,8 +912,8 @@ describe('offerDetails - Edition', () => {
         editedOfferVenue.isVirtual = true
         const editedOffer = {
           id: 'ABC12',
+          subcategoryId: 'ID',
           name: 'My edited offer',
-          type: 'EventType.FULL_CONDITIONAL_FIELDS',
           showType: 400,
           showSubType: 401,
           description: 'Offer description',
@@ -1002,63 +929,25 @@ describe('offerDetails - Edition', () => {
           status: 'ACTIVE',
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
-        types.push({
-          conditionalFields: [
-            'author',
-            'showType',
-            'performer',
-            'isbn',
-            'stageDirector',
-            'speaker',
-            'visa',
-          ],
-          offlineOnly: false,
-          onlineOnly: false,
-          proLabel: 'Musique - concerts, festivals',
-          type: 'Event',
-          value: 'EventType.FULL_CONDITIONAL_FIELDS',
-        })
-        pcapi.loadTypes.mockResolvedValue(types)
 
-        // When
+        // when
         await renderOffers(props, store)
 
-        // Then
-        const audioDisabilityCompliant = screen.getByLabelText(
-          fieldLabels.audioDisabilityCompliant.label,
-          {
-            exact: fieldLabels.audioDisabilityCompliant.exact,
-          }
-        )
-        expect(audioDisabilityCompliant).toBeEnabled()
-        const mentalDisabilityCompliant = screen.getByLabelText(
-          fieldLabels.mentalDisabilityCompliant.label,
-          {
-            exact: fieldLabels.mentalDisabilityCompliant.exact,
-          }
-        )
-        expect(mentalDisabilityCompliant).toBeEnabled()
-        const motorDisabilityCompliant = screen.getByLabelText(
-          fieldLabels.motorDisabilityCompliant.label,
-          {
-            exact: fieldLabels.motorDisabilityCompliant.exact,
-          }
-        )
-        expect(motorDisabilityCompliant).toBeEnabled()
-        const visualDisabilityCompliant = screen.getByLabelText(
-          fieldLabels.visualDisabilityCompliant.label,
-          {
-            exact: fieldLabels.visualDisabilityCompliant.exact,
-          }
-        )
-        expect(visualDisabilityCompliant).toBeEnabled()
-        const externalTicketOfficeUrlInput = screen.getByLabelText(
-          fieldLabels.externalTicketOfficeUrl.label,
-          {
-            exact: fieldLabels.externalTicketOfficeUrl.exact,
-          }
-        )
-        expect(externalTicketOfficeUrlInput).toBeEnabled()
+        const editableFields = [
+          'mentalDisabilityCompliant',
+          'externalTicketOfficeUrl',
+          'audioDisabilityCompliant',
+          'motorDisabilityCompliant',
+          'visualDisabilityCompliant',
+        ]
+
+        // then
+        editableFields.forEach(label => {
+          const input = screen.getByLabelText(fieldLabels[label].label, {
+            exact: fieldLabels[label].exact,
+          })
+          expect(input).toBeEnabled()
+        })
       })
 
       it('should not allow any other edition', async () => {
@@ -1066,10 +955,10 @@ describe('offerDetails - Edition', () => {
         editedOfferVenue.isVirtual = true
         const editedOffer = {
           id: 'ABC12',
+          subcategoryId: 'ID',
           name: 'My edited offer',
-          type: 'EventType.FULL_CONDITIONAL_FIELDS',
-          showType: 400,
-          showSubType: 401,
+          showType: '400',
+          showSubType: '401',
           description: 'Offer description',
           venue: editedOfferVenue,
           venueId: editedOfferVenue.id,
@@ -1083,115 +972,70 @@ describe('offerDetails - Edition', () => {
           status: 'ACTIVE',
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
-        types.push({
-          conditionalFields: [
-            'author',
-            'showType',
-            'performer',
-            'isbn',
-            'stageDirector',
-            'speaker',
-            'visa',
+
+        const fullConditionalFieldsCategoryResponse = {
+          ...categories,
+          subcategories: [
+            {
+              ...categories.subcategories[0],
+              isEvent: true,
+              conditionalFields: [
+                'author',
+                'showType',
+                'performer',
+                'isbn',
+                'stageDirector',
+                'speaker',
+                'visa',
+              ],
+            },
           ],
-          offlineOnly: false,
-          onlineOnly: false,
-          proLabel: 'Musique - concerts, festivals',
-          type: 'Event',
-          value: 'EventType.FULL_CONDITIONAL_FIELDS',
-        })
-        pcapi.loadTypes.mockResolvedValue(types)
+        }
+
+        pcapi.loadCategories.mockResolvedValue(fullConditionalFieldsCategoryResponse)
 
         // When
         await renderOffers(props, store)
 
         // Then
-        const typeInput = screen.getByLabelText(fieldLabels.type.label, {
-          exact: fieldLabels.type.exact,
+        // Edition read only fields
+        const disabledFields = [
+          'categoryId',
+          'subcategoryId',
+          'showType',
+          'showSubType',
+          'offererId',
+          'author',
+          'bookingEmail',
+          'receiveNotificationEmails',
+          'description',
+          'durationMinutes',
+          'isbn',
+          'isDuo',
+          'name',
+          'performer',
+          'stageDirector',
+          'speaker',
+          'url',
+          'venueId',
+          'visa',
+          'withdrawalDetails',
+        ]
+
+        disabledFields.forEach(label => {
+          const input = screen.getByLabelText(fieldLabels[label].label, {
+            exact: fieldLabels[label].exact,
+          })
+          expect(input).toBeDisabled()
         })
-        expect(typeInput).toBeDisabled()
-        const showSubTypeInput = screen.getByLabelText(fieldLabels.showSubType.label, {
-          exact: fieldLabels.showSubType.exact,
-        })
-        expect(showSubTypeInput).toBeDisabled()
-        const showTypeInput = screen.getByLabelText(fieldLabels.showType.label, {
-          exact: fieldLabels.showType.exact,
-        })
-        expect(showTypeInput).toBeDisabled()
-        const offererIdInput = screen.getByLabelText(fieldLabels.offererId.label, {
-          exact: fieldLabels.offererId.exact,
-        })
-        expect(offererIdInput).toBeDisabled()
-        const authorInput = screen.getByLabelText(fieldLabels.author.label, {
-          exact: fieldLabels.author.exact,
-        })
-        expect(authorInput).toBeDisabled()
-        const bookingEmailInput = screen.getByLabelText(fieldLabels.bookingEmail.label, {
-          exact: fieldLabels.bookingEmail.exact,
-        })
-        expect(bookingEmailInput).toBeDisabled()
-        const receiveNotificationEmailsCheckbox = screen.getByLabelText(
-          fieldLabels.receiveNotificationEmails.label,
-          {
-            exact: fieldLabels.bookingEmail.exact,
-          }
-        )
-        expect(receiveNotificationEmailsCheckbox).toBeDisabled()
-        const descriptionInput = screen.getByLabelText(fieldLabels.description.label, {
-          exact: fieldLabels.description.exact,
-        })
-        expect(descriptionInput).toBeDisabled()
-        const durationMinutesInput = screen.getByLabelText(fieldLabels.durationMinutes.label, {
-          exact: fieldLabels.durationMinutes.exact,
-        })
-        expect(durationMinutesInput).toBeDisabled()
-        const isbnInput = screen.getByLabelText(fieldLabels.isbn.label, {
-          exact: fieldLabels.isbn.exact,
-        })
-        expect(isbnInput).toBeDisabled()
-        const isDuoInput = screen.getByLabelText(fieldLabels.isDuo.label, {
-          exact: fieldLabels.isDuo.exact,
-        })
-        expect(isDuoInput).toBeDisabled()
-        const nameInput = screen.getByLabelText(fieldLabels.name.label, {
-          exact: fieldLabels.name.exact,
-        })
-        expect(nameInput).toBeDisabled()
-        const performerInput = screen.getByLabelText(fieldLabels.performer.label, {
-          exact: fieldLabels.performer.exact,
-        })
-        expect(performerInput).toBeDisabled()
-        const stageDirectorInput = screen.getByLabelText(fieldLabels.stageDirector.label, {
-          exact: fieldLabels.stageDirector.exact,
-        })
-        expect(stageDirectorInput).toBeDisabled()
-        const speakerInput = screen.getByLabelText(fieldLabels.speaker.label, {
-          exact: fieldLabels.speaker.exact,
-        })
-        expect(speakerInput).toBeDisabled()
-        const urlInput = screen.getByLabelText(fieldLabels.url.label, {
-          exact: fieldLabels.url.exact,
-        })
-        expect(urlInput).toBeDisabled()
-        const venueIdInput = screen.getByLabelText(fieldLabels.venueId.label, {
-          exact: fieldLabels.venueId.exact,
-        })
-        expect(venueIdInput).toBeDisabled()
-        const visaInput = screen.getByLabelText(fieldLabels.visa.label, {
-          exact: fieldLabels.visa.exact,
-        })
-        expect(visaInput).toBeDisabled()
-        const withdrawalDetailsInput = screen.getByLabelText(fieldLabels.withdrawalDetails.label, {
-          exact: fieldLabels.withdrawalDetails.exact,
-        })
-        expect(withdrawalDetailsInput).toBeDisabled()
       })
 
       it('should allow edition of "isDuo" for "Allociné" offers', async () => {
         // Given
         const editedOffer = {
           id: 'ABC12',
+          subcategoryId: 'ID',
           name: 'My edited offer',
-          type: 'EventType.CINEMA',
           showType: 400,
           showSubType: 401,
           description: 'Offer description',
@@ -1206,16 +1050,20 @@ describe('offerDetails - Edition', () => {
           },
           status: 'ACTIVE',
         }
+
         pcapi.loadOffer.mockResolvedValue(editedOffer)
-        const cinemaType = {
-          conditionalFields: ['author', 'visa', 'stageDirector'],
-          offlineOnly: true,
-          onlineOnly: false,
-          proLabel: 'Cinéma - projections et autres évènements',
-          type: 'Event',
-          value: 'EventType.CINEMA',
+
+        const fullConditionalFieldsCategoryResponse = {
+          ...categories,
+          subcategories: [
+            {
+              ...categories.subcategories[0],
+              isEvent: true,
+            },
+          ],
         }
-        pcapi.loadTypes.mockResolvedValue([cinemaType])
+
+        pcapi.loadCategories.mockResolvedValue(fullConditionalFieldsCategoryResponse)
 
         // When
         await renderOffers(props, store)
@@ -1233,8 +1081,8 @@ describe('offerDetails - Edition', () => {
         // given
         const editedOffer = {
           id: 'ABC12',
+          subcategoryId: 'ID',
           name: 'My edited offer',
-          type: 'ThingType.LIVRE_EDITION',
           description: 'Offer description',
           venueId: editedOfferVenue.id,
           venue: editedOfferVenue,
@@ -1269,7 +1117,7 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
       const editValues = {
         name: 'My edited offer',
-        type: 'ThingType.PRESSE_ABO',
+        subcategoryId: 'ID',
         description: 'Offer description edited',
         withdrawalDetails: 'Offer withdrawal details edited',
         audioDisabilityCompliant: true,
@@ -1279,19 +1127,24 @@ describe('offerDetails - Edition', () => {
       }
 
       // When
-      await setOfferValues({ type: editValues.type })
+      await setOfferValues({ subcategoryId: editValues.subcategoryId })
       await setOfferValues(editValues)
       const newEditedOffer = { ...editedOffer, ...editValues }
       pcapi.loadOffer.mockResolvedValue(newEditedOffer)
-      await fireEvent.click(screen.getByText('Enregistrer'))
-
-      await fireEvent.click(screen.getByText('Stock et prix'))
-      await fireEvent.click(await screen.findByText("Détail de l'offre"))
+      fireEvent.click(screen.getByText('Enregistrer'))
+      fireEvent.click(screen.getByText('Stock et prix'))
+      fireEvent.click(await screen.findByText("Détail de l'offre"))
 
       // Then
       expect(await getOfferInputForField('name')).toHaveTextContent(editValues.name)
-      const expectedTypeValue = types.find(t => t.value === editValues.type).proLabel
-      expect(await getOfferInputForField('type')).toHaveTextContent(expectedTypeValue)
+
+      const expectedSubCategoryValue = categories.subcategories.find(
+        subCat => subCat.id.toString() === editValues.subcategoryId
+      ).proLabel
+      expect(await getOfferInputForField('subcategoryId')).toHaveTextContent(
+        expectedSubCategoryValue
+      )
+
       expect(await getOfferInputForField('description')).toHaveTextContent(editValues.description)
       expect(await getOfferInputForField('withdrawalDetails')).toHaveTextContent(
         editValues.withdrawalDetails
@@ -1306,8 +1159,8 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        subcategoryId: 'ID',
         name: 'My edited offer',
-        type: 'ThingType.LIVRE_EDITION',
         description: 'Offer description',
         venueId: editedOfferVenue.id,
         venue: editedOfferVenue,
@@ -1329,12 +1182,14 @@ describe('offerDetails - Edition', () => {
       userEvent.click(screen.getByText('Enregistrer'))
 
       // Then
-      expect(pcapi.updateOffer).toHaveBeenCalledWith(
-        editedOffer.id,
-        expect.not.objectContaining({
-          venueId: expect.anything(),
-          type: expect.anything(),
-        })
+      await waitFor(() =>
+        expect(pcapi.updateOffer).toHaveBeenCalledWith(
+          editedOffer.id,
+          expect.not.objectContaining({
+            venueId: expect.anything(),
+            type: expect.anything(),
+          })
+        )
       )
     })
 
@@ -1342,8 +1197,8 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        subcategoryId: 'ID',
         name: 'My edited offer',
-        type: 'ThingType.LIVRE_EDITION',
         description: 'Offer description',
         venueId: editedOfferVenue.id,
         venue: editedOfferVenue,
@@ -1375,8 +1230,8 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        subcategoryId: 'ID',
         name: 'My edited offer',
-        type: 'EventType.CINEMA',
         description: 'Offer description',
         venueId: editedOfferVenue.id,
         venue: editedOfferVenue,
@@ -1394,16 +1249,21 @@ describe('offerDetails - Edition', () => {
         },
         status: 'ACTIVE',
       }
+
       pcapi.loadOffer.mockResolvedValue(editedOffer)
-      const cinemaType = {
-        conditionalFields: ['author', 'visa', 'stageDirector'],
-        offlineOnly: true,
-        onlineOnly: false,
-        proLabel: 'Cinéma - projections et autres évènements',
-        type: 'Event',
-        value: 'EventType.CINEMA',
+
+      const cinema = {
+        ...categories,
+        subcategories: [
+          {
+            ...categories.subcategories[0],
+            isEvent: true,
+            conditionalFields: ['author', 'visa', 'stageDirector'],
+          },
+        ],
       }
-      pcapi.loadTypes.mockResolvedValue([cinemaType])
+
+      pcapi.loadCategories.mockResolvedValue(cinema)
 
       await renderOffers(props, store)
 
@@ -1411,14 +1271,16 @@ describe('offerDetails - Edition', () => {
       userEvent.click(screen.getByText('Enregistrer'))
 
       // Then
-      expect(pcapi.updateOffer).toHaveBeenCalledWith(
-        editedOffer.id,
-        expect.objectContaining({
-          audioDisabilityCompliant: false,
-          visualDisabilityCompliant: true,
-          motorDisabilityCompliant: false,
-          mentalDisabilityCompliant: false,
-        })
+      await waitFor(() =>
+        expect(pcapi.updateOffer).toHaveBeenCalledWith(
+          editedOffer.id,
+          expect.objectContaining({
+            audioDisabilityCompliant: false,
+            visualDisabilityCompliant: true,
+            motorDisabilityCompliant: false,
+            mentalDisabilityCompliant: false,
+          })
+        )
       )
     })
 
@@ -1426,8 +1288,8 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        subcategoryId: 'ID',
         name: 'My edited offer',
-        type: 'EventType.CINEMA',
         description: 'Offer description',
         venueId: editedOfferVenue.id,
         venue: editedOfferVenue,
@@ -1442,15 +1304,6 @@ describe('offerDetails - Edition', () => {
         status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
-      const cinemaType = {
-        conditionalFields: ['author', 'visa', 'stageDirector'],
-        offlineOnly: true,
-        onlineOnly: false,
-        proLabel: 'Cinéma - projections et autres évènements',
-        type: 'Event',
-        value: 'EventType.CINEMA',
-      }
-      pcapi.loadTypes.mockResolvedValue([cinemaType])
 
       await renderOffers(props, store)
 
@@ -1458,11 +1311,13 @@ describe('offerDetails - Edition', () => {
       userEvent.click(screen.getByText('Enregistrer'))
 
       // Then
-      expect(pcapi.updateOffer).toHaveBeenCalledWith(
-        editedOffer.id,
-        expect.not.objectContaining({
-          extraData: null,
-        })
+      await waitFor(() =>
+        expect(pcapi.updateOffer).toHaveBeenCalledWith(
+          editedOffer.id,
+          expect.not.objectContaining({
+            extraData: null,
+          })
+        )
       )
     })
 
@@ -1470,8 +1325,8 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        subcategoryId: 'ID',
         name: 'My edited offer',
-        type: 'ThingType.LIVRE_AUDIO',
         description: 'Offer description',
         venueId: editedOfferVenue.id,
         venue: editedOfferVenue,
@@ -1494,11 +1349,13 @@ describe('offerDetails - Edition', () => {
 
       // Then
       userEvent.click(screen.getByText('Enregistrer'))
-      expect(pcapi.updateOffer).toHaveBeenCalledWith(
-        editedOffer.id,
-        expect.objectContaining({
-          extraData: null,
-        })
+      await waitFor(() =>
+        expect(pcapi.updateOffer).toHaveBeenCalledWith(
+          editedOffer.id,
+          expect.objectContaining({
+            extraData: null,
+          })
+        )
       )
     })
 
@@ -1506,8 +1363,8 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        subcategoryId: 'ID',
         name: 'My edited offer',
-        type: 'ThingType.LIVRE_EDITION',
         description: 'Offer description',
         venueId: editedOfferVenue.id,
         venue: editedOfferVenue,
@@ -1524,6 +1381,19 @@ describe('offerDetails - Edition', () => {
         status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
+
+      const category = {
+        ...categories,
+        subcategories: [
+          {
+            ...categories.subcategories[0],
+            conditionalFields: ['author', 'isbn'],
+          },
+        ],
+      }
+
+      pcapi.loadCategories.mockResolvedValue(category)
+
       await renderOffers(props, store)
 
       // When
@@ -1531,11 +1401,14 @@ describe('offerDetails - Edition', () => {
 
       // Then
       userEvent.click(screen.getByText('Enregistrer'))
-      expect(pcapi.updateOffer).toHaveBeenCalledWith(
-        editedOffer.id,
-        expect.objectContaining({
-          extraData: { isbn: editedOffer.extraData.isbn },
-        })
+
+      await waitFor(() =>
+        expect(pcapi.updateOffer).toHaveBeenCalledWith(
+          editedOffer.id,
+          expect.objectContaining({
+            extraData: { isbn: editedOffer.extraData.isbn },
+          })
+        )
       )
     })
 
@@ -1543,8 +1416,8 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        subcategoryId: 'ID',
         name: 'My edited offer',
-        type: 'ThingType.LIVRE_EDITION',
         description: 'Offer description',
         venueId: editedOfferVenue.id,
         venue: editedOfferVenue,
@@ -1567,11 +1440,13 @@ describe('offerDetails - Edition', () => {
       userEvent.click(screen.getByText('Enregistrer'))
 
       // Then
-      expect(pcapi.updateOffer).toHaveBeenCalledWith(
-        editedOffer.id,
-        expect.objectContaining({
-          bookingEmail: null,
-        })
+      await waitFor(() =>
+        expect(pcapi.updateOffer).toHaveBeenCalledWith(
+          editedOffer.id,
+          expect.objectContaining({
+            bookingEmail: null,
+          })
+        )
       )
     })
 
@@ -1579,8 +1454,8 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        subcategoryId: 'ID',
         name: 'My edited offer',
-        type: 'ThingType.PRESSE_ABO',
         description: 'Offer description',
         venueId: editedOfferVenue.id,
         venue: editedOfferVenue,
@@ -1610,8 +1485,8 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        subcategoryId: 'ID',
         name: 'My edited offer',
-        type: 'ThingType.LIVRE_EDITION',
         description: 'Offer description',
         venueId: editedOfferVenue.id,
         venue: editedOfferVenue,
@@ -1678,8 +1553,8 @@ describe('offerDetails - Edition', () => {
 
       const editedOffer = {
         id: 'ABC12',
+        subcategoryId: 'ID',
         name: 'My edited offer',
-        type: 'ThingType.LIVRE_EDITION',
         description: 'Offer description',
         venueId: editedOfferVenue.id,
         venue: editedOfferVenue,
@@ -1711,8 +1586,8 @@ describe('offerDetails - Edition', () => {
       })
       const editedOffer = {
         id: 'ABC12',
+        subcategoryId: 'ID',
         name: 'My edited offer',
-        type: 'ThingType.PRESSE_ABO',
         description: 'Offer description',
         venueId: editedOfferVenue.id,
         venue: editedOfferVenue,
