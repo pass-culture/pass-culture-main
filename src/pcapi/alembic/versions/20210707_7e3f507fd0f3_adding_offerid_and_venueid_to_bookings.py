@@ -1,8 +1,8 @@
 """Adding offerId and venueId to bookings
 
-Revision ID: d9f2a9027e7d
-Revises: bb84cb0e65c2
-Create Date: 2021-07-05 14:06:42.365681
+Revision ID: 7e3f507fd0f3
+Revises: 02c37d39e46c
+Create Date: 2021-07-07 09:52:27.288673
 
 """
 from alembic import op
@@ -13,8 +13,8 @@ from pcapi import settings
 
 
 # revision identifiers, used by Alembic.
-revision = "d9f2a9027e7d"
-down_revision = "bb84cb0e65c2"
+revision = "7e3f507fd0f3"
+down_revision = "02c37d39e46c"
 branch_labels = None
 depends_on = None
 
