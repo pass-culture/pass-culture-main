@@ -144,3 +144,23 @@ class JouveBackendTest:
         assert str(api_jouve_exception.value.message) == "Error getting API jouve GetJeuneByID"
         assert api_jouve_exception.value.route == "/REST/vault/extensionmethod/VEM_GetJeuneByID"
         assert api_jouve_exception.value.status_code == 500
+
+    @pytest.mark.parametrize(
+        "jouve_field", ["birthLocationCtrl", "bodyBirthDateCtrl", "bodyFirstnameCtrl", "bodyNameCtrl"]
+    )
+    @pytest.mark.parametrize("wrong_possible_value", ["NOT_APPLICABLE", "KO"])
+    @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
+    def test_jouve_response_with_wrong_values_are_supiscious(self, _get_raw_content, jouve_field, wrong_possible_value):
+        response_data = get_application_by_detail_response()
+        response_data[jouve_field] = wrong_possible_value
+        _get_raw_content.return_value = response_data
+
+        jouve_content = get_application_content("fake-application-id")
+        pre_subscription = get_subscription_from_content(jouve_content)
+        item_found = False
+        for item in pre_subscription.fraud_fields["non_blocking_controls"]:
+            if item.key == jouve_field:
+                assert item.valid == False
+                item_found = True
+
+        assert item_found

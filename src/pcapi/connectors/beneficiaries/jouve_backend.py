@@ -116,8 +116,18 @@ class FraudDetectionItem:
         return f"{self.key}: {self.value} - {self.valid}"
 
 
-def get_boolean_fraud_detection_item(value: Optional[str], key: str) -> FraudDetectionItem:
-    valid = value.upper() != "KO" if value else True
+def get_boolean_fraud_detection_item(
+    value: Optional[str], key: str, allow_empty=True, allow_not_applicable=False
+) -> FraudDetectionItem:
+    if allow_empty and not value:
+        valid = True
+    elif allow_not_applicable and value == "NOT_APPLICABLE":
+        valid = True
+    elif value is None or value.upper() in ("NOT_APPLICABLE", "KO", ""):
+        valid = False
+    else:
+        valid = True
+
     return FraudDetectionItem(key=key, value=value, valid=valid)
 
 
@@ -149,7 +159,7 @@ def get_fraud_fields(content: dict) -> dict:
             get_boolean_fraud_detection_item(content.bodyNameCtrl, "bodyNameCtrl"),
             get_boolean_fraud_detection_item(content.bodyPieceNumberCtrl, "bodyPieceNumberCtrl"),
             get_threshold_fraud_detection_item(content.bodyPieceNumberLevel, "bodyPieceNumberLevel", 50),
-            get_boolean_fraud_detection_item(content.creatorCtrl, "creatorCtrl"),
+            get_boolean_fraud_detection_item(content.creatorCtrl, "creatorCtrl", allow_not_applicable=True),
             get_boolean_fraud_detection_item(content.initialNumberCtrl, "initialNumberCtrl"),
             get_boolean_fraud_detection_item(content.initialSizeCtrl, "initialSizeCtrl"),
         ],
