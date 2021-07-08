@@ -31,6 +31,7 @@
     .item {
       align-items: center;
       background-color: $grey-light;
+      border-radius: 4px;
       display: flex;
       justify-content: space-between;
       padding: rem(12px) rem(16px);

@@ -92,7 +92,7 @@ const ApiKey = ({ savedApiKeys, maxAllowedApiKeys, offererId, showNotification }
                 {newKey}
               </span>
               <button
-                className="secondary-button action"
+                className="primary-button action"
                 onClick={copyKey(newKey)}
                 type="button"
               >
