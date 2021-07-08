@@ -221,3 +221,76 @@ def get_source_data(user: User) -> models.JouveContent:
         .first()
     )
     return mapped_class[fraud_check_type.type](**fraud_check_type.resultContent)
+
+
+def upsert_suspicious_fraud_result(user: User, reason: str) -> models.BeneficiaryFraudResult:
+    """
+    If the user has no fraud result: create one suspicious fraud result with
+    the given reason. If it already has one: update the result's reason.
+    """
+    fraud_result = models.BeneficiaryFraudResult.query.filter_by(userId=user.id).one_or_none()
+
+    if not fraud_result:
+        fraud_result = models.BeneficiaryFraudResult(user=user, status=models.FraudStatus.SUSPICIOUS, reason=reason)
+    else:
+        fraud_result.reason = f"{fraud_result.reason} ; {reason}"
+
+    repository.save(fraud_result)
+    return fraud_result
+
+
+def create_internal_review_fraud_check(
+    user: User, fraud_check_data: models.InternalReviewFraudData
+) -> models.BeneficiaryFraudCheck:
+    fraud_check = models.BeneficiaryFraudCheck(
+        user=user,
+        type=models.FraudCheckType.INTERNAL_REVIEW,
+        thirdPartyId=f"PC-{user.id}",
+        resultContent=fraud_check_data,
+    )
+
+    repository.save(fraud_check)
+    return fraud_check
+
+
+def handle_phone_already_exists(user: User, phone_number: str) -> models.BeneficiaryFraudCheck:
+    orig_user_id = User.query.filter(User.phoneNumber == phone_number, User.is_phone_validated).one().id
+    reason = f"Le numéro est déjà utilisé par l'utilisateur {orig_user_id}"
+    fraud_check_data = models.InternalReviewFraudData(
+        source=models.InternalReviewSource.PHONE_ALREADY_EXISTS, message=reason, phone_number=phone_number
+    )
+
+    return create_internal_review_fraud_check(user, fraud_check_data)
+
+
+def handle_blacklisted_sms_recipient(user: User, phone_number: str) -> models.BeneficiaryFraudCheck:
+    reason = "Le numéro saisi est interdit"
+    fraud_check_data = models.InternalReviewFraudData(
+        source=models.InternalReviewSource.BLACKLISTED_PHONE_NUMBER, message=reason, phone_number=phone_number
+    )
+
+    return create_internal_review_fraud_check(user, fraud_check_data)
+
+
+def handle_sms_sending_limit_reached(user: User) -> models.BeneficiaryFraudResult:
+    reason = "Le nombre maximum de sms envoyés est atteint"
+    fraud_check_data = models.InternalReviewFraudData(
+        source=models.InternalReviewSource.SMS_SENDING_LIMIT_REACHED,
+        message=reason,
+        phone_number=user.phoneNumber,
+    )
+
+    create_internal_review_fraud_check(user, fraud_check_data)
+    return upsert_suspicious_fraud_result(user, reason)
+
+
+def handle_phone_validation_attempts_limit_reached(user: User, attempts_count: int) -> models.BeneficiaryFraudResult:
+    reason = f"Le nombre maximum de tentatives de validation est atteint: {attempts_count}"
+    fraud_check_data = models.InternalReviewFraudData(
+        source=models.InternalReviewSource.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED,
+        message=reason,
+        phone_number=user.phoneNumber,
+    )
+
+    create_internal_review_fraud_check(user, fraud_check_data)
+    return upsert_suspicious_fraud_result(user, reason)

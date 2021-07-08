@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from dataclasses import asdict
 from datetime import date
 from datetime import datetime
@@ -7,6 +8,7 @@ from enum import Enum
 import logging
 import random
 import secrets
+import typing
 from typing import Optional
 from typing import Tuple
 
@@ -26,6 +28,7 @@ from pcapi.connectors.beneficiaries.id_check_middleware import ask_for_identity_
 from pcapi.core import mails
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 import pcapi.core.bookings.repository as bookings_repository
+import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.payments.api as payment_api
 from pcapi.core.users.external import update_external_user
@@ -672,17 +675,15 @@ def set_pro_tuto_as_seen(user: User) -> None:
     repository.save(user)
 
 
-def change_user_phone_number(user: User, phone_number: str):
+def change_user_phone_number(user: User, phone_number: str) -> None:
     _check_phone_number_validation_is_authorized(user)
 
-    formatted_phone_number = get_legit_phone_number(phone_number)
-    if not formatted_phone_number:
-        raise exceptions.InvalidPhoneNumber(phone_number)
+    phone_data = ParsedPhoneNumber(phone_number)
+    with fraud_manager(user=user, phone_number=phone_data.phone_number):
+        check_phone_number_is_legit(phone_data.phone_number, phone_data.country_code)
+        check_phone_number_not_used(phone_data.phone_number)
 
-    if does_validated_phone_exist(formatted_phone_number):
-        raise exceptions.PhoneAlreadyExists()
-
-    user.phoneNumber = formatted_phone_number
+    user.phoneNumber = phone_data.phone_number
     Token.query.filter(Token.user == user, Token.type == TokenType.PHONE_VALIDATION).delete()
     repository.save(user)
 
@@ -690,17 +691,16 @@ def change_user_phone_number(user: User, phone_number: str):
 def send_phone_validation_code(user: User) -> None:
     _check_phone_number_validation_is_authorized(user)
 
-    formatted_phone_number = get_legit_phone_number(user.phoneNumber)
-    if not formatted_phone_number:
-        raise exceptions.InvalidPhoneNumber(user.phoneNumber)
-
-    if not is_SMS_sending_allowed(app.redis_client, user):
-        raise exceptions.SMSSendingLimitReached()
+    phone_data = ParsedPhoneNumber(user.phoneNumber)
+    with fraud_manager(user=user, phone_number=phone_data.phone_number):
+        check_phone_number_is_legit(phone_data.phone_number, phone_data.country_code)
+        check_phone_number_not_used(phone_data.phone_number)
+        check_sms_sending_is_allowed(user)
 
     phone_validation_token = create_phone_validation_token(user)
     content = f"{phone_validation_token.value} est ton code de confirmation pass Culture"
 
-    if not send_transactional_sms(formatted_phone_number, content):
+    if not send_transactional_sms(phone_data.phone_number, content):
         raise exceptions.PhoneVerificationCodeSendingException()
 
     update_sent_SMS_counter(app.redis_client, user)
@@ -708,11 +708,11 @@ def send_phone_validation_code(user: User) -> None:
 
 def validate_phone_number(user: User, code: str) -> None:
     _check_phone_number_validation_is_authorized(user)
-    _check_and_update_phone_validation_attempts(app.redis_client, user)
 
-    phone_number = get_legit_phone_number(user.phoneNumber)
-    if not phone_number:
-        raise exceptions.InvalidPhoneNumber(user.phoneNumber)
+    phone_data = ParsedPhoneNumber(user.phoneNumber)
+    with fraud_manager(user=user, phone_number=phone_data.phone_number):
+        check_phone_number_is_legit(phone_data.phone_number, phone_data.country_code)
+        check_and_update_phone_validation_attempts(app.redis_client, user)
 
     token = Token.query.filter(
         Token.user == user, Token.value == code, Token.type == TokenType.PHONE_VALIDATION
@@ -726,30 +726,20 @@ def validate_phone_number(user: User, code: str) -> None:
 
     db.session.delete(token)
 
-    if does_validated_phone_exist(phone_number):
-        raise exceptions.InvalidPhoneNumber(user.phoneNumber)
+    # not wrapped inside a fraud_manager because we don't need to add any fraud
+    # log in case this check raises an exception at this point
+    check_phone_number_not_used(phone_data.phone_number)
 
     user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
     repository.save(user)
 
 
-def get_legit_phone_number(phone_number: Optional[str]) -> Optional[str]:
-    try:
-        parsed_phone_number = parse_phone_number(phone_number)
-        formatted_phone_number = get_formatted_phone_number(parsed_phone_number)
-    except exceptions.InvalidPhoneNumber:
-        return None
+def check_phone_number_is_legit(phone_number: str, country_code: str) -> None:
+    if phone_number in settings.BLACKLISTED_SMS_RECIPIENTS:
+        raise exceptions.BlacklistedPhoneNumber(phone_number)
 
-    if is_phone_number_legit(formatted_phone_number, parsed_phone_number.country_code):
-        return formatted_phone_number
-    return None
-
-
-def is_phone_number_legit(phone_number: str, country_code) -> bool:
-    return (
-        phone_number not in settings.BLACKLISTED_SMS_RECIPIENTS
-        and country_code in constants.WHITELISTED_COUNTRY_PHONE_CODES
-    )
+    if country_code not in constants.WHITELISTED_COUNTRY_PHONE_CODES:
+        raise exceptions.InvalidCountryCode(country_code)
 
 
 def _check_phone_number_validation_is_authorized(user: User) -> None:
@@ -763,7 +753,7 @@ def _check_phone_number_validation_is_authorized(user: User) -> None:
         raise exceptions.UserAlreadyBeneficiary()
 
 
-def _check_and_update_phone_validation_attempts(redis: Redis, user: User) -> None:
+def check_and_update_phone_validation_attempts(redis: Redis, user: User) -> None:
     phone_validation_attempts_key = f"phone_validation_attempts_user_{user.id}"
     phone_validation_attempts = redis.get(phone_validation_attempts_key)
 
@@ -773,11 +763,21 @@ def _check_and_update_phone_validation_attempts(redis: Redis, user: User) -> Non
             user.id,
             extra={"attempts_count": int(phone_validation_attempts)},
         )
-        raise exceptions.PhoneValidationAttemptsLimitReached()
+        raise exceptions.PhoneValidationAttemptsLimitReached(int(phone_validation_attempts))
 
     count = redis.incr(phone_validation_attempts_key)
     if count == 1:
         redis.expire(phone_validation_attempts_key, settings.PHONE_VALIDATION_ATTEMPTS_TTL)
+
+
+def check_phone_number_not_used(phone_number: str) -> None:
+    if does_validated_phone_exist(phone_number):
+        raise exceptions.PhoneAlreadyExists(phone_number)
+
+
+def check_sms_sending_is_allowed(user: User) -> None:
+    if not is_SMS_sending_allowed(app.redis_client, user):
+        raise exceptions.SMSSendingLimitReached()
 
 
 def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryValidationStep]:
@@ -849,3 +849,28 @@ def verify_identity_document_informations(image_storage_path: str) -> None:
     if not valid:
         user_emails.send_document_verification_error_email(email, code)
     delete_object(image_storage_path)
+
+
+class ParsedPhoneNumber:
+    def __init__(self, base_phone_number: str):
+        self.parsed_phone_number = parse_phone_number(base_phone_number)
+        self.phone_number = get_formatted_phone_number(self.parsed_phone_number)
+        self.country_code = self.parsed_phone_number.country_code
+
+
+@contextmanager
+def fraud_manager(user: User, phone_number: str) -> typing.Generator:
+    try:
+        yield
+    except exceptions.BlacklistedPhoneNumber:
+        fraud_api.handle_blacklisted_sms_recipient(user, phone_number)
+        raise
+    except exceptions.PhoneAlreadyExists:
+        fraud_api.handle_phone_already_exists(user, phone_number)
+        raise
+    except exceptions.SMSSendingLimitReached:
+        fraud_api.handle_sms_sending_limit_reached(user)
+        raise
+    except exceptions.PhoneValidationAttemptsLimitReached as error:
+        fraud_api.handle_phone_validation_attempts_limit_reached(user, error.attempts)
+        raise

@@ -39,7 +39,9 @@ class SMSSendingLimitReached(PhoneVerificationException):
 
 
 class PhoneValidationAttemptsLimitReached(PhoneVerificationException):
-    pass
+    def __init__(self, attempts: int):
+        self.attempts = attempts
+        super().__init__()
 
 
 class PhoneAlreadyExists(PhoneVerificationException):
@@ -83,6 +85,14 @@ class BeneficiaryImportMissingException(Exception):
 
 
 class InvalidPhoneNumber(PhoneVerificationException):
+    pass
+
+
+class BlacklistedPhoneNumber(InvalidPhoneNumber):
+    pass
+
+
+class InvalidCountryCode(InvalidPhoneNumber):
     pass
 
 

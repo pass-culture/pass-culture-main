@@ -17,6 +17,7 @@ class FraudCheckType(enum.Enum):
     JOUVE = "jouve"
     USER_PROFILING = "user_profiling"
     DMS = "dms"
+    INTERNAL_REVIEW = "internal_review"
 
 
 class FraudStatus(enum.Enum):
@@ -114,6 +115,19 @@ class UserProfilingFraudData(pydantic.BaseModel):
     tmx_summary_reason_code: typing.Optional[typing.List[str]]
     summary_risk_score: int
     unknown_session: typing.Optional[str]
+
+
+class InternalReviewSource(enum.Enum):
+    SMS_SENDING_LIMIT_REACHED = "sms_sending_limit_reached"
+    PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED = "phone_validation_attempts_limit_reached"
+    PHONE_ALREADY_EXISTS = "phone_already_exists"
+    BLACKLISTED_PHONE_NUMBER = "blacklisted_phone_number"
+
+
+class InternalReviewFraudData(pydantic.BaseModel):
+    source: InternalReviewSource
+    message: str
+    phone_number: str
 
 
 class BeneficiaryFraudCheck(PcObject, Model):

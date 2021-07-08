@@ -17,6 +17,7 @@ from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import InstitutionalProjectRedactorNotFoundException
 from pcapi.connectors.serialization.api_adage_serializers import InstitutionalProjectRedactorResponse
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
 from pcapi.core.fraud.models import FraudCheckType
 import pcapi.core.mails.testing as mails_testing
@@ -998,6 +999,24 @@ class SendPhoneValidationCodeTest:
         assert response.status_code == 400
         assert response.json["code"] == "TOO_MANY_SMS_SENT"
 
+        # check that a fraud check has been created
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            userId=user.id, type=fraud_models.FraudCheckType.INTERNAL_REVIEW, thirdPartyId=f"PC-{user.id}"
+        ).one_or_none()
+
+        assert fraud_check is not None
+
+        content = fraud_check.resultContent
+        expected_reason = "Le nombre maximum de sms envoyés est atteint"
+        assert content["source"] == fraud_models.InternalReviewSource.SMS_SENDING_LIMIT_REACHED.value
+        assert content["message"] == expected_reason
+        assert content["phone_number"] == "+33601020304"
+
+        # check that a fraud result has also been created
+        assert user.beneficiaryFraudResult
+        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.SUSPICIOUS
+        assert user.beneficiaryFraudResult.reason == expected_reason
+
     def test_send_phone_validation_code_already_beneficiary(self, app):
         user = users_factories.UserFactory(
             isEmailValidated=True, isBeneficiary=True, phoneNumber="+33601020304", roles=[UserRole.BENEFICIARY]
@@ -1065,7 +1084,7 @@ class SendPhoneValidationCodeTest:
         assert user.phoneNumber == "+33102030405"
 
     def test_send_phone_validation_code_for_new_validated_duplicated_phone_number(self, app):
-        users_factories.UserFactory(
+        orig_user = users_factories.UserFactory(
             isEmailValidated=True,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
             isBeneficiary=False,
@@ -1088,6 +1107,18 @@ class SendPhoneValidationCodeTest:
         db.session.refresh(user)
         assert user.phoneNumber == "+33601020304"
         assert response.json == {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}
+
+        # check that a fraud check has been created
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            userId=user.id, type=fraud_models.FraudCheckType.INTERNAL_REVIEW, thirdPartyId=f"PC-{user.id}"
+        ).one_or_none()
+
+        assert fraud_check is not None
+
+        content = fraud_check.resultContent
+        assert content["source"] == fraud_models.InternalReviewSource.PHONE_ALREADY_EXISTS.value
+        assert content["message"] == f"Le numéro est déjà utilisé par l'utilisateur {orig_user.id}"
+        assert content["phone_number"] == "+33102030405"
 
     @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33607080900"})
     def test_update_phone_number_with_blocked_phone_number(self, app):
@@ -1176,6 +1207,18 @@ class SendPhoneValidationCodeTest:
         db.session.refresh(user)
         assert user.phoneNumber == "+33601020304"
 
+        # check that a fraud check has been created
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            userId=user.id, type=fraud_models.FraudCheckType.INTERNAL_REVIEW, thirdPartyId=f"PC-{user.id}"
+        ).one_or_none()
+
+        assert fraud_check is not None
+
+        content = fraud_check.resultContent
+        assert content["source"] == fraud_models.InternalReviewSource.BLACKLISTED_PHONE_NUMBER.value
+        assert content["message"] == "Le numéro saisi est interdit"
+        assert content["phone_number"] == "+33601020304"
+
 
 class ValidatePhoneNumberTest:
     def test_validate_phone_number(self, app):
@@ -1236,11 +1279,31 @@ class ValidatePhoneNumberTest:
 
         assert response.status_code == 400
         assert response.json["message"] == "Le nombre de tentatives maximal est dépassé"
+        assert response.json["code"] == "TOO_MANY_VALIDATION_ATTEMPTS"
 
         db.session.refresh(user)
         assert not user.is_phone_validated
 
-        assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 1
+        attempts_count = int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}"))
+        assert attempts_count == 1
+
+        # check that a fraud check has been created
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            userId=user.id, type=fraud_models.FraudCheckType.INTERNAL_REVIEW, thirdPartyId=f"PC-{user.id}"
+        ).one_or_none()
+
+        assert fraud_check is not None
+
+        expected_reason = f"Le nombre maximum de tentatives de validation est atteint: {attempts_count}"
+        content = fraud_check.resultContent
+        assert content["source"] == fraud_models.InternalReviewSource.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED.value
+        assert content["message"] == expected_reason
+        assert content["phone_number"] == "+33607080900"
+
+        # check that a fraud result has also been created
+        assert user.beneficiaryFraudResult
+        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.SUSPICIOUS
+        assert user.beneficiaryFraudResult.reason == expected_reason
 
     def test_wrong_code(self, app):
         user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="+33607080900", roles=[])
