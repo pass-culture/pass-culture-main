@@ -45,7 +45,8 @@
         "if",
         "include",
         "mixin",
-        "return"
+        "return",
+        "use"
       ]
     }],
     "order/properties-alphabetical-order": true
