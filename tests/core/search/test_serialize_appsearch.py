@@ -42,6 +42,7 @@ def test_serialize():
         "description": "Un livre qu'il est bien pour le lire",
         "is_digital": 0,
         "is_duo": 0,
+        "is_educational": 0,
         "is_event": 0,
         "is_thing": 1,
         "isbn": "2221001648",

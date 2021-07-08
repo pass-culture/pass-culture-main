@@ -139,6 +139,7 @@ class OffersTest:
             "isExpired": False,
             "isSoldOut": False,
             "isDuo": True,
+            "isEducational": False,
             "isDigital": False,
             "isReleased": True,
             "name": "l'offre du siècle",
@@ -161,7 +162,7 @@ class OffersTest:
     def test_get_thing_offer(self, app):
         product = ProductFactory(thumbCount=1)
         offer_type = ThingType.MUSEES_PATRIMOINE_ABO
-        offer = OfferFactory(type=str(offer_type), product=product)
+        offer = OfferFactory(type=str(offer_type), product=product, isEducational=True)
         ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
@@ -176,6 +177,7 @@ class OffersTest:
             "label": "Musée, arts visuels et patrimoine",
             "name": "VISITE",
         }
+        assert response.json["isEducational"]
         assert not response.json["isExpired"]
 
     def test_get_digital_offer_with_available_activation_and_no_expiration_date(self, app):

@@ -233,6 +233,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "isbn": isbn,
                 "isDigital": offer.isDigital,
                 "isDuo": offer.isDuo,
+                "isEducational": offer.isEducational,
                 "isEvent": offer.isEvent,
                 "isThing": offer.isThing,
                 "label": offer.offerType["appLabel"],

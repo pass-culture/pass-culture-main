@@ -43,13 +43,17 @@ def create_industrial_educational_bookings() -> None:
             offer__durationMinutes=60,
             offer__withdrawalDetails="Des détails sur comment récupérer l'offre",
             offer__description="Une description multi-lignes.\nOù il est notamment question du nombre d'élèves.\nNbr d'élèves max: 50",
+            offer__isEducational=True,
         ),
-        EventStockFactory(quantity=100, price=800, beginningDatetime=now + datetime.timedelta(days=18)),
+        EventStockFactory(
+            quantity=100, price=800, beginningDatetime=now + datetime.timedelta(days=18), offer__isEducational=True
+        ),
         EventStockFactory(
             quantity=100,
             price=1200,
             beginningDatetime=now + datetime.timedelta(days=15),
             offer__venue__postalCode="97400",
+            offer__isEducational=True,
         ),
     ]
     for stock in stocks:

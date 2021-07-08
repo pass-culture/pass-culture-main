@@ -224,7 +224,7 @@ class AppSearchBackend(base.SearchBackend):
             # Since we don't fake geoloc on App Search => we don't need it
             "is_digital": int(offer.isDigital),
             "is_duo": int(offer.isDuo),
-            "is_educational": False,
+            "is_educational": int(offer.isEducational),
             "is_event": int(offer.isEvent),
             "is_thing": int(offer.isThing),
             "isbn": isbn,

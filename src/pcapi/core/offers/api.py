@@ -166,6 +166,7 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
     offer.mentalDisabilityCompliant = offer_data.mental_disability_compliant
     offer.motorDisabilityCompliant = offer_data.motor_disability_compliant
     offer.visualDisabilityCompliant = offer_data.visual_disability_compliant
+    offer.isEducational = offer_data.is_educational
     offer.validation = OfferValidationStatus.DRAFT
 
     repository.save(offer)

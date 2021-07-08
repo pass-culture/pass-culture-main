@@ -209,6 +209,7 @@ class OfferResponse(BaseModel):
     isSoldOut: bool
     isDigital: bool
     isDuo: bool
+    isEducational: bool
     name: str
     category: OfferCategoryResponse
     stocks: list[OfferStockResponse]

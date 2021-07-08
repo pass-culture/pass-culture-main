@@ -344,6 +344,8 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
         nullable=True,
     )
 
+    isEducational = Column(Boolean, server_default=false(), default=False, nullable=False)
+
     # FIXME(fseguin, 2021-06-02): make this non-nullable when all offers have a subcategory
     subcategoryId = Column(BigInteger, ForeignKey("offer_subcategory.id"), index=True)
 

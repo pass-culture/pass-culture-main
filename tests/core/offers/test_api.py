@@ -867,6 +867,27 @@ class CreateOfferTest:
 
         assert offer.type == str(offer_type.EventType.ACTIVATION)
 
+    def test_create_educational_offer(self):
+        venue = factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user_offerer = factories.UserOffererFactory(offerer=offerer)
+        user = user_offerer.user
+
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            name="A pretty good offer",
+            type=str(offer_type.EventType.CINEMA),
+            externalTicketOfficeUrl="http://example.net",
+            isEducational=True,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+        )
+        offer = api.create_offer(data, user)
+
+        assert offer.isEducational
+
     def test_fail_if_unknown_venue(self):
         user = users_factories.UserFactory()
         data = offers_serialize.PostOfferBodyModel(

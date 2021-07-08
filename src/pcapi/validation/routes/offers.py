@@ -32,3 +32,10 @@ def check_offer_isbn_is_valid(isbn: str):
         api_errors = ApiErrors()
         api_errors.add_error("isbn", "Format d’ISBN incorrect. Exemple de format correct : 9782020427852")
         raise api_errors
+
+
+def check_offer_not_duo_and_educational(is_duo: bool, is_educational: bool):
+    if is_duo and is_educational:
+        api_errors = ApiErrors()
+        api_errors.add_error("educational", "An offer cannot be both 'duo' and 'educational'")
+        raise api_errors

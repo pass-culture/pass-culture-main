@@ -91,6 +91,7 @@ class Returns200Test:
                     "isBookable": True,
                     "isDigital": True,
                     "isDuo": False,
+                    "isEducational": False,
                     "isEvent": False,
                     "isNational": False,
                     "lastProviderId": None,

@@ -22,6 +22,7 @@ from pcapi.utils.date import DateTimes
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_isbn_is_valid
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
+from pcapi.validation.routes.offers import check_offer_not_duo_and_educational
 from pcapi.validation.routes.offers import check_offer_type_is_valid
 
 
@@ -42,6 +43,7 @@ class PostOfferBodyModel(BaseModel):
     duration_minutes: Optional[int]
     is_national: Optional[bool]
     is_duo: Optional[bool]
+    is_educational: Optional[bool]
     # TODO (schable, 2021-01-14): remove the default value for the 4 following accessibility fields
     #  when new offer creation will be activated in pro app (current offer creation does not send those fields)
     audio_disability_compliant: bool = False
@@ -64,6 +66,11 @@ class PostOfferBodyModel(BaseModel):
     def validate_type(cls, type_field, values):  # pylint: disable=no-self-argument
         if not values["product_id"]:
             check_offer_type_is_valid(type_field)
+        return type_field
+
+    @validator("is_educational", pre=True)
+    def validate_educational(cls, type_field, values):  # pylint: disable=no-self-argument
+        check_offer_not_duo_and_educational(values["is_duo"], type_field)
         return type_field
 
     @validator("extra_data", pre=True)
@@ -437,6 +444,7 @@ class GetOfferResponseModel(BaseModel):
     isDigital: bool
     isDuo: bool
     isEditable: bool
+    isEducational: bool
     isEvent: bool
     isNational: bool
     isThing: bool
