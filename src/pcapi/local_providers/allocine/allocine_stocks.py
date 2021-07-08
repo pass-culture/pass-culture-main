@@ -110,20 +110,32 @@ class AllocineStocks(LocalProvider):
         if isinstance(pc_object, Stock):
             self.fill_stock_attributes(pc_object)
 
+    def update_from_movie_information(self, obj: Union[Offer, Product], movie_information: dict):
+        if "description" in self.movie_information:
+            obj.description = movie_information["description"]
+        if "duration" in self.movie_information:
+            obj.durationMinutes = movie_information["duration"]
+        if not obj.extraData:
+            obj.extraData = {}
+        for field in (
+            "visa",
+            "stageDirector",
+            "genres",
+            "type",
+            "companies",
+            "releaseDate",
+            "countries",
+            "cast",
+        ):
+            if field in movie_information:
+                obj.extraData[field] = movie_information[field]
+
     def fill_product_attributes(self, allocine_product: Product):
         allocine_product.name = self.movie_information["title"]
         allocine_product.type = str(EventType.CINEMA)
         allocine_product.thumbCount = 0
-        if "description" in self.movie_information:
-            allocine_product.description = self.movie_information["description"]
-        if "duration" in self.movie_information:
-            allocine_product.durationMinutes = self.movie_information["duration"]
-        if not allocine_product.extraData:
-            allocine_product.extraData = {}
-        if "visa" in self.movie_information:
-            allocine_product.extraData["visa"] = self.movie_information["visa"]
-        if "stageDirector" in self.movie_information:
-            allocine_product.extraData["stageDirector"] = self.movie_information["stageDirector"]
+
+        self.update_from_movie_information(allocine_product, self.movie_information)
 
         is_new_product_to_insert = allocine_product.id is None
 
@@ -134,12 +146,8 @@ class AllocineStocks(LocalProvider):
     def fill_offer_attributes(self, allocine_offer: Offer) -> None:
         allocine_offer.venueId = self.venue.id
         allocine_offer.bookingEmail = self.venue.bookingEmail
-        if "description" in self.movie_information:
-            allocine_offer.description = self.movie_information["description"]
-        if "duration" in self.movie_information:
-            allocine_offer.durationMinutes = self.movie_information["duration"]
-        if not allocine_offer.extraData:
-            allocine_offer.extraData = {}
+
+        self.update_from_movie_information(allocine_offer, self.movie_information)
 
         allocine_offer.extraData["theater"] = {
             "allocine_movie_id": self.movie_information["internal_id"],
@@ -231,12 +239,20 @@ def retrieve_movie_information(raw_movie_information: dict) -> dict:
     parsed_movie_information["id"] = raw_movie_information["id"]
     parsed_movie_information["title"] = raw_movie_information["title"]
     parsed_movie_information["internal_id"] = raw_movie_information["internalId"]
+    parsed_movie_information["genres"] = raw_movie_information["genres"]
+    parsed_movie_information["type"] = raw_movie_information["type"]
+    parsed_movie_information["companies"] = raw_movie_information["companies"]
+
     try:
         parsed_movie_information["description"] = _build_description(raw_movie_information)
         parsed_movie_information["duration"] = _parse_movie_duration(raw_movie_information["runtime"])
         parsed_movie_information["poster_url"] = _format_poster_url(raw_movie_information["poster"]["url"])
         parsed_movie_information["stageDirector"] = _build_stage_director_full_name(raw_movie_information)
         parsed_movie_information["visa"] = _get_operating_visa(raw_movie_information)
+        parsed_movie_information["releaseDate"] = _get_release_date(raw_movie_information)
+        parsed_movie_information["countries"] = _build_countries_list(raw_movie_information)
+        parsed_movie_information["cast"] = _build_cast_list(raw_movie_information)
+
     except (TypeError, KeyError, IndexError):
         pass
 
@@ -298,7 +314,7 @@ def _build_stage_director_full_name(movie_info: dict) -> str:
     return f"{stage_director_first_name} {stage_director_last_name}"
 
 
-def _parse_movie_duration(duration: str) -> Optional[int]:
+def _parse_movie_duration(duration: Optional[str]) -> Optional[int]:
     if not duration:
         return None
     hours_minutes = "([0-9]+)H([0-9]+)"
@@ -340,3 +356,24 @@ def _build_showtime_uuid(showtime_details: dict) -> str:
 
 def _build_stock_uuid(movie_information: dict, venue: Venue, showtime_details: dict) -> str:
     return f"{_build_movie_uuid(movie_information, venue)}#{_build_showtime_uuid(showtime_details)}"
+
+
+def _build_countries_list(movie_info: dict) -> list[str]:
+    return [country["name"] for country in movie_info["countries"]]
+
+
+def _build_cast_list(movie_info: dict) -> list[Optional[str]]:
+    cast_list = []
+    edges = movie_info["cast"]["edges"]
+    for edge in edges:
+        actor = edge["node"]["actor"]
+        first_name = actor.get("firstName", "") if actor else ""
+        last_name = actor.get("lastName", "") if actor else ""
+        full_name = f"{first_name} {last_name}".strip()
+        if full_name:
+            cast_list.append(full_name)
+    return cast_list
+
+
+def _get_release_date(movie_info: dict) -> str:
+    return movie_info["releases"][0]["releaseDate"]["date"]

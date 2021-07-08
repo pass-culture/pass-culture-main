@@ -1,3 +1,4 @@
+import copy
 from datetime import datetime
 
 import pytest
@@ -10,6 +11,105 @@ from pcapi.local_providers.allocine.allocine_stocks import _get_showtimes_uuid_b
 from pcapi.local_providers.allocine.allocine_stocks import _parse_movie_duration
 from pcapi.local_providers.allocine.allocine_stocks import retrieve_movie_information
 from pcapi.local_providers.allocine.allocine_stocks import retrieve_showtime_information
+
+
+MOVIE_INFO = {
+    "node": {
+        "movie": {
+            "id": "TW92aWU6MjY4Njgw",
+            "internalId": 268680,
+            "backlink": {
+                "url": "http://www.allocine.fr/film/fichefilm_gen_cfilm=268680.html",
+                "label": "Tous les détails du film sur AlloCiné",
+            },
+            "data": {"eidr": None, "productionYear": 2021},
+            "title": "Tom et Jerry",
+            "originalTitle": "Tom & Jerry",
+            "type": "FEATURE_FILM",
+            "runtime": "PT1H41M0S",
+            "poster": {"url": "https://fr.web.img2.acsta.net/pictures/20/12/28/10/09/5991258.jpg"},
+            "synopsis": "Lorsque Jerry s'installe dans le plus bel hôtel de New York la veille du mariage"
+            " du siècle, Kayla, la wedding planneuse, n'a d'autre choix que d'embaucher Tom"
+            " pour se débarrasser de l'intrus.",
+            "releases": [
+                {
+                    "name": "Released",
+                    "releaseDate": {"date": "2021-05-19"},
+                    "data": {
+                        "tech": {"auto_update_info": "Imported from AC_INT.dbo.EntityRelease from id [318469]"},
+                        "visa_number": "154510",
+                    },
+                }
+            ],
+            "credits": {
+                "edges": [
+                    {
+                        "node": {
+                            "person": {"firstName": "Tim", "lastName": "Story"},
+                            "position": {"name": "DIRECTOR"},
+                        }
+                    }
+                ]
+            },
+            "cast": {
+                "backlink": {
+                    "url": "http://www.allocine.fr/film/fichefilm-268680/casting/",
+                    "label": "Casting complet du film sur AlloCiné",
+                },
+                "edges": [
+                    {
+                        "node": {
+                            "actor": {"firstName": "Chloë Grace", "lastName": "Moretz"},
+                            "role": "Kayla",
+                        }
+                    },
+                    {"node": {"actor": None, "role": "Tom/Jerry"}},
+                    {
+                        "node": {
+                            "actor": {"firstName": "Michael", "lastName": "Peña"},
+                            "role": "Terence",
+                        }
+                    },
+                ],
+            },
+            "countries": [{"name": "USA", "alpha3": "USA"}],
+            "genres": ["ANIMATION", "COMEDY", "FAMILY"],
+            "companies": [
+                {
+                    "activity": "Distribution",
+                    "company": {"name": "Warner Bros. France"},
+                },
+                {"activity": "Production", "company": {"name": "The Story Company"}},
+            ],
+        },
+        "showtimes": [
+            {
+                "startsAt": "2021-07-09T17:00:00",
+                "diffusionVersion": "DUBBED",
+                "projection": ["DIGITAL"],
+                "experience": None,
+            },
+            {
+                "startsAt": "2021-07-10T17:00:00",
+                "diffusionVersion": "DUBBED",
+                "projection": ["DIGITAL"],
+                "experience": None,
+            },
+            {
+                "startsAt": "2021-07-11T18:00:00",
+                "diffusionVersion": "DUBBED",
+                "projection": ["DIGITAL"],
+                "experience": None,
+            },
+            {
+                "startsAt": "2021-07-12T17:00:00",
+                "diffusionVersion": "DUBBED",
+                "projection": ["DIGITAL"],
+                "experience": None,
+            },
+        ],
+    }
+}
 
 
 class ParseMovieDurationTest:
@@ -37,148 +137,49 @@ class ParseMovieDurationTest:
 class RetrieveMovieInformationTest:
     def test_should_retrieve_information_from_wanted_json_nodes(self):
         # Given
-        movie_information = {
-            "node": {
-                "movie": {
-                    "id": "TW92aWU6Mzc4MzI=",
-                    "internalId": 37832,
-                    "backlink": {
-                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                    },
-                    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                    "title": "Les Contes de la m\u00e8re poule",
-                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                    "runtime": "PT1H50M0S",
-                    "poster": {
-                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                    },
-                    "synopsis": "synopsis du film",
-                    "releases": [
-                        {
-                            "name": "Released",
-                            "releaseDate": {"date": "2001-10-03"},
-                            "data": {"visa_number": "2009993528"},
-                        }
-                    ],
-                    "credits": {
-                        "edges": [
-                            {
-                                "node": {
-                                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                    "position": {"name": "DIRECTOR"},
-                                }
-                            }
-                        ]
-                    },
-                    "cast": {
-                        "backlink": {
-                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                            "label": "Casting complet du film sur AlloCin\u00e9",
-                        },
-                        "edges": [],
-                    },
-                    "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                    "genres": ["ANIMATION", "FAMILY"],
-                    "companies": [],
-                },
-                "showtimes": [
-                    {
-                        "startsAt": "2019-10-29T10:30:00",
-                        "diffusionVersion": "DUBBED",
-                        "projection": ["DIGITAL"],
-                        "experience": None,
-                    }
-                ],
-            }
-        }
+        movie_information = MOVIE_INFO
 
         # When
         movie_parsed_information = retrieve_movie_information(movie_information["node"]["movie"])
 
         # Then
         assert movie_parsed_information == {
-            "id": "TW92aWU6Mzc4MzI=",
-            "title": "Les Contes de la mère poule",
-            "description": "synopsis du film\n"
-            "Tous les détails du film sur AlloCiné: http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html",
-            "visa": "2009993528",
-            "stageDirector": "Farkhondeh Torabi",
-            "duration": 110,
-            "poster_url": "https://fr.web.img6.acsta.net/medias/nmedia/00/02/32/64/69215979_af.jpg",
-            "internal_id": 37832,
+            "id": "TW92aWU6MjY4Njgw",
+            "title": "Tom et Jerry",
+            "internal_id": 268680,
+            "genres": ["ANIMATION", "COMEDY", "FAMILY"],
+            "type": "FEATURE_FILM",
+            "cast": ["Chloë Grace Moretz", "Michael Peña"],
+            "companies": [
+                {"activity": "Distribution", "company": {"name": "Warner Bros. France"}},
+                {"activity": "Production", "company": {"name": "The Story Company"}},
+            ],
+            "description": "Lorsque Jerry s'installe dans le plus bel hôtel de New York la veille du mariage du siècle, Kayla, la wedding planneuse, n'a d'autre choix que d'embaucher Tom pour se débarrasser de l'intrus.\nTous les détails du film sur AlloCiné: http://www.allocine.fr/film/fichefilm_gen_cfilm=268680.html",
+            "duration": 101,
+            "poster_url": "https://fr.web.img2.acsta.net/pictures/20/12/28/10/09/5991258.jpg",
+            "stageDirector": "Tim Story",
+            "visa": "154510",
+            "releaseDate": "2021-05-19",
+            "countries": ["USA"],
         }
 
-    def test_should_not_add_operating_visa_and_stageDirector_keys_when_nodes_are_missing(self):
+    def test_should_not_add_operating_visa_and_stage_director_keys_when_nodes_are_missing(self):
         # Given
-        movie_information = {
-            "node": {
-                "movie": {
-                    "id": "TW92aWU6Mzc4MzI=",
-                    "internalId": 37832,
-                    "backlink": {
-                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                    },
-                    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                    "title": "Les Contes de la m\u00e8re poule",
-                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                    "runtime": "PT1H50M0S",
-                    "poster": {
-                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                    },
-                    "synopsis": "synopsis du film",
-                    "releases": [{"name": "Released", "releaseDate": {"date": "2019-11-20"}, "data": []}],
-                    "credits": {"edges": []},
-                    "cast": {
-                        "backlink": {
-                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                            "label": "Casting complet du film sur AlloCin\u00e9",
-                        },
-                        "edges": [],
-                    },
-                    "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                    "genres": ["ANIMATION", "FAMILY"],
-                    "companies": [],
-                },
-                "showtimes": [
-                    {
-                        "startsAt": "2019-10-29T10:30:00",
-                        "diffusionVersion": "DUBBED",
-                        "projection": ["DIGITAL"],
-                        "experience": None,
-                    }
-                ],
-            }
-        }
+        movie_information = copy.deepcopy(MOVIE_INFO)
+        del movie_information["node"]["movie"]["releases"][0]["data"]["visa_number"]
+        movie_information["node"]["movie"]["credits"]["edges"] = []
 
         # When
         movie_parsed_information = retrieve_movie_information(movie_information["node"]["movie"])
 
         # Then
-        assert movie_parsed_information == {
-            "id": "TW92aWU6Mzc4MzI=",
-            "title": "Les Contes de la mère poule",
-            "description": "synopsis du film\n"
-            "Tous les détails du film sur AlloCiné: http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html",
-            "duration": 110,
-            "poster_url": "https://fr.web.img6.acsta.net/medias/nmedia/00/02/32/64/69215979_af.jpg",
-            "internal_id": 37832,
-        }
+        assert "visa" not in movie_parsed_information.keys()
+        assert "stageDirector" not in movie_parsed_information.keys()
 
     def test_should_raise_key_error_exception_when_missing_required_keys_in_movie_information(self):
         # Given
-        movie_information = {
-            "node": {
-                "movie": {
-                    "id": "TW92aWU6Mzc4MzI=",
-                    "backlink": {
-                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                    },
-                }
-            }
-        }
+        movie_information = copy.deepcopy(MOVIE_INFO)
+        del movie_information["node"]["movie"]["title"]
 
         # When
         with pytest.raises(KeyError):
@@ -186,26 +187,8 @@ class RetrieveMovieInformationTest:
 
     def test_should_return_empty_value_when_missing_poster_information(self):
         # Given
-        movie_information = {
-            "node": {
-                "movie": {
-                    "id": "TW92aWU6Mzc4MzI=",
-                    "backlink": {
-                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                    },
-                    "internalId": 37832,
-                    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                    "title": "Les Contes de la m\u00e8re poule",
-                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                    "runtime": "PT1H50M0S",
-                    "poster": None,
-                    "synopsis": "synopsis du film",
-                    "credits": {"edges": []},
-                    "releases": [{"name": "Released", "releaseDate": {"date": "2019-11-20"}, "data": []}],
-                }
-            }
-        }
+        movie_information = copy.deepcopy(MOVIE_INFO)
+        del movie_information["node"]["movie"]["poster"]["url"]
 
         # When
         movie_parsed_information = retrieve_movie_information(movie_information["node"]["movie"])
@@ -213,34 +196,10 @@ class RetrieveMovieInformationTest:
         # Then
         assert "poster_url" not in movie_parsed_information
 
-    def test_should_create_product_and_new_offer_with_missing_person_in_credits(self):
+    def test_should_create_product_and_new_offer_with_none_person_in_credits(self):
         # Given
-        movie_information = {
-            "node": {
-                "movie": {
-                    "id": "TW92aWU6Mzc4MzI=",
-                    "backlink": {
-                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                    },
-                    "internalId": 37832,
-                    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                    "title": "Les Contes de la m\u00e8re poule",
-                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                    "runtime": "PT1H50M0S",
-                    "poster": None,
-                    "synopsis": "synopsis du film",
-                    "credits": {
-                        "edges": [
-                            {
-                                "person": None,
-                            }
-                        ]
-                    },
-                    "releases": [{"name": "Released", "releaseDate": {"date": "2019-11-20"}, "data": []}],
-                }
-            }
-        }
+        movie_information = copy.deepcopy(MOVIE_INFO)
+        movie_information["node"]["movie"]["credits"]["edges"][0]["node"]["person"] = None
 
         # When
         movie_parsed_information = retrieve_movie_information(movie_information["node"]["movie"])

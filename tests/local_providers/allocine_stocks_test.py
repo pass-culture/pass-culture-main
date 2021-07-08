@@ -1,3 +1,4 @@
+import copy
 from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
@@ -21,6 +22,70 @@ from pcapi.models import Stock
 from pcapi.repository import repository
 import pcapi.sandboxes
 from pcapi.utils.human_ids import humanize
+
+
+MOVIE_INFO = {
+    "id": "TW92aWU6Mzc4MzI=",
+    "type": "FEATURE_FILM",
+    "internalId": 37832,
+    "backlink": {
+        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
+    },
+    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
+    "title": "Les Contes de la m\u00e8re poule",
+    "originalTitle": "Les Contes de la m\u00e8re poule",
+    "runtime": "PT0H46M0S",
+    "poster": {"url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"},
+    "synopsis": "synopsis du film",
+    "releases": [
+        {
+            "name": "Released",
+            "releaseDate": {"date": "2001-10-03"},
+            "data": {"visa_number": "2009993528"},
+        }
+    ],
+    "credits": {
+        "edges": [
+            {
+                "node": {
+                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
+                    "position": {"name": "DIRECTOR"},
+                }
+            }
+        ]
+    },
+    "cast": {
+        "backlink": {
+            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
+            "label": "Casting complet du film sur AlloCin\u00e9",
+        },
+        "edges": [
+            {
+                "node": {
+                    "actor": {"firstName": "Chloë Grace", "lastName": "Moretz"},
+                    "role": "Kayla",
+                }
+            },
+            {"node": {"actor": None, "role": "Tom/Jerry"}},
+            {
+                "node": {
+                    "actor": {"firstName": "Michael", "lastName": "Peña"},
+                    "role": "Terence",
+                }
+            },
+        ],
+    },
+    "countries": [{"name": "Iran", "alpha3": "IRN"}],
+    "genres": ["ANIMATION", "FAMILY"],
+    "companies": [
+        {
+            "activity": "Distribution",
+            "company": {"name": "Warner Bros. France"},
+        },
+        {"activity": "Production", "company": {"name": "The Story Company"}},
+    ],
+}
 
 
 class AllocineStocksTest:
@@ -60,50 +125,7 @@ class AllocineStocksTest:
                 [
                     {
                         "node": {
-                            "movie": {
-                                "id": "TW92aWU6Mzc4MzI=",
-                                "type": "FEATURE_FILM",
-                                "internalId": 37832,
-                                "backlink": {
-                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                    "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                                },
-                                "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                                "title": "Les Contes de la m\u00e8re poule",
-                                "originalTitle": "Les Contes de la m\u00e8re poule",
-                                "runtime": "PT0H46M0S",
-                                "poster": {
-                                    "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                                },
-                                "synopsis": "synopsis du film",
-                                "releases": [
-                                    {
-                                        "name": "Released",
-                                        "releaseDate": {"date": "2001-10-03"},
-                                        "data": {"visa_number": "2009993528"},
-                                    }
-                                ],
-                                "credits": {
-                                    "edges": [
-                                        {
-                                            "node": {
-                                                "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                                "position": {"name": "DIRECTOR"},
-                                            }
-                                        }
-                                    ]
-                                },
-                                "cast": {
-                                    "backlink": {
-                                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                        "label": "Casting complet du film sur AlloCin\u00e9",
-                                    },
-                                    "edges": [],
-                                },
-                                "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                                "genres": ["ANIMATION", "FAMILY"],
-                                "companies": [],
-                            },
+                            "movie": MOVIE_INFO,
                             "showtimes": [
                                 {
                                     "startsAt": "2019-10-29T10:30:00",
@@ -169,50 +191,7 @@ class UpdateObjectsTest:
             [
                 {
                     "node": {
-                        "movie": {
-                            "id": "TW92aWU6Mzc4MzI=",
-                            "type": "FEATURE_FILM",
-                            "internalId": 37832,
-                            "backlink": {
-                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                            },
-                            "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                            "title": "Les Contes de la m\u00e8re poule",
-                            "originalTitle": "Les Contes de la m\u00e8re poule",
-                            "runtime": "PT0H46M0S",
-                            "poster": {
-                                "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                            },
-                            "synopsis": "synopsis du film",
-                            "releases": [
-                                {
-                                    "name": "Released",
-                                    "releaseDate": {"date": "2001-10-03"},
-                                    "data": {"visa_number": "2009993528"},
-                                }
-                            ],
-                            "credits": {
-                                "edges": [
-                                    {
-                                        "node": {
-                                            "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                            "position": {"name": "DIRECTOR"},
-                                        }
-                                    }
-                                ]
-                            },
-                            "cast": {
-                                "backlink": {
-                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                    "label": "Casting complet du film sur AlloCin\u00e9",
-                                },
-                                "edges": [],
-                            },
-                            "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                            "genres": ["ANIMATION", "FAMILY"],
-                            "companies": [],
-                        },
+                        "movie": MOVIE_INFO,
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
@@ -249,8 +228,21 @@ class UpdateObjectsTest:
             " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
         )
         assert created_offer.durationMinutes == 46
-        assert created_offer.extraData["visa"] == "2009993528"
-        assert created_offer.extraData["stageDirector"] == "Farkhondeh Torabi"
+        assert created_offer.extraData == {
+            "visa": "2009993528",
+            "stageDirector": "Farkhondeh Torabi",
+            "theater": {"allocine_movie_id": 37832, "allocine_room_id": "PXXXXX"},
+            "genres": ["ANIMATION", "FAMILY"],
+            "type": "FEATURE_FILM",
+            "companies": [
+                {"activity": "Distribution", "company": {"name": "Warner Bros. France"}},
+                {"activity": "Production", "company": {"name": "The Story Company"}},
+            ],
+            "releaseDate": "2001-10-03",
+            "countries": ["Iran"],
+            "cast": ["Chloë Grace Moretz", "Michael Peña"],
+        }
+
         assert not created_offer.isDuo
         assert created_offer.name == "Les Contes de la mère poule - VF"
         assert created_offer.product == created_product
@@ -261,8 +253,20 @@ class UpdateObjectsTest:
             " http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html"
         )
         assert created_product.durationMinutes == 46
-        assert created_product.extraData["visa"] == "2009993528"
-        assert created_product.extraData["stageDirector"] == "Farkhondeh Torabi"
+        assert created_product.extraData == {
+            "visa": "2009993528",
+            "stageDirector": "Farkhondeh Torabi",
+            "genres": ["ANIMATION", "FAMILY"],
+            "type": "FEATURE_FILM",
+            "companies": [
+                {"activity": "Distribution", "company": {"name": "Warner Bros. France"}},
+                {"activity": "Production", "company": {"name": "The Story Company"}},
+            ],
+            "releaseDate": "2001-10-03",
+            "countries": ["Iran"],
+            "cast": ["Chloë Grace Moretz", "Michael Peña"],
+        }
+
         assert created_product.name == "Les Contes de la mère poule"
         assert created_product.type == str(EventType.CINEMA)
 
@@ -278,50 +282,7 @@ class UpdateObjectsTest:
             [
                 {
                     "node": {
-                        "movie": {
-                            "id": "TW92aWU6Mzc4MzI=",
-                            "type": "FEATURE_FILM",
-                            "internalId": 37832,
-                            "backlink": {
-                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                            },
-                            "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                            "title": "Les Contes de la m\u00e8re poule",
-                            "originalTitle": "Les Contes de la m\u00e8re poule",
-                            "runtime": "PT0H46M0S",
-                            "poster": {
-                                "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                            },
-                            "synopsis": "synopsis du film",
-                            "releases": [
-                                {
-                                    "name": "Released",
-                                    "releaseDate": {"date": "2001-10-03"},
-                                    "data": {"visa_number": "2009993528"},
-                                }
-                            ],
-                            "credits": {
-                                "edges": [
-                                    {
-                                        "node": {
-                                            "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                            "position": {"name": "DIRECTOR"},
-                                        }
-                                    }
-                                ]
-                            },
-                            "cast": {
-                                "backlink": {
-                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                    "label": "Casting complet du film sur AlloCin\u00e9",
-                                },
-                                "edges": [],
-                            },
-                            "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                            "genres": ["ANIMATION", "FAMILY"],
-                            "companies": [],
-                        },
+                        "movie": MOVIE_INFO,
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
@@ -414,50 +375,7 @@ class UpdateObjectsTest:
             [
                 {
                     "node": {
-                        "movie": {
-                            "id": "TW92aWU6Mzc4MzI=",
-                            "type": "FEATURE_FILM",
-                            "internalId": 37832,
-                            "backlink": {
-                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                            },
-                            "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                            "title": "Les Contes de la m\u00e8re poule",
-                            "originalTitle": "Les Contes de la m\u00e8re poule",
-                            "runtime": "PT0H46M0S",
-                            "poster": {
-                                "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                            },
-                            "synopsis": "synopsis du film",
-                            "releases": [
-                                {
-                                    "name": "Released",
-                                    "releaseDate": {"date": "2001-10-03"},
-                                    "data": {"visa_number": "2009993528"},
-                                }
-                            ],
-                            "credits": {
-                                "edges": [
-                                    {
-                                        "node": {
-                                            "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                            "position": {"name": "DIRECTOR"},
-                                        }
-                                    }
-                                ]
-                            },
-                            "cast": {
-                                "backlink": {
-                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                    "label": "Casting complet du film sur AlloCin\u00e9",
-                                },
-                                "edges": [],
-                            },
-                            "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                            "genres": ["ANIMATION", "FAMILY"],
-                            "companies": [],
-                        },
+                        "movie": MOVIE_INFO,
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
@@ -511,50 +429,7 @@ class UpdateObjectsTest:
             [
                 {
                     "node": {
-                        "movie": {
-                            "id": "TW92aWU6Mzc4MzI=",
-                            "type": "FEATURE_FILM",
-                            "internalId": 37832,
-                            "backlink": {
-                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                            },
-                            "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                            "title": "Les Contes de la m\u00e8re poule",
-                            "originalTitle": "Les Contes de la m\u00e8re poule",
-                            "runtime": "PT1H50M0S",
-                            "poster": {
-                                "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                            },
-                            "synopsis": "synopsis du film",
-                            "releases": [
-                                {
-                                    "name": "Released",
-                                    "releaseDate": {"date": "2001-10-03"},
-                                    "data": {"visa_number": "2009993528"},
-                                }
-                            ],
-                            "credits": {
-                                "edges": [
-                                    {
-                                        "node": {
-                                            "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                            "position": {"name": "DIRECTOR"},
-                                        }
-                                    }
-                                ]
-                            },
-                            "cast": {
-                                "backlink": {
-                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                    "label": "Casting complet du film sur AlloCin\u00e9",
-                                },
-                                "edges": [],
-                            },
-                            "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                            "genres": ["ANIMATION", "FAMILY"],
-                            "companies": [],
-                        },
+                        "movie": MOVIE_INFO,
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
@@ -617,9 +492,9 @@ class UpdateObjectsTest:
         existing_product = Product.query.one()
 
         assert len(existing_offers) == 2
-        assert existing_offers[0].durationMinutes == 110
-        assert existing_offers[1].durationMinutes == 110
-        assert existing_product.durationMinutes == 110
+        assert existing_offers[0].durationMinutes == 46
+        assert existing_offers[1].durationMinutes == 46
+        assert existing_product.durationMinutes == 46
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
@@ -633,50 +508,7 @@ class UpdateObjectsTest:
             [
                 {
                     "node": {
-                        "movie": {
-                            "id": "TW92aWU6Mzc4MzI=",
-                            "type": "FEATURE_FILM",
-                            "internalId": 37832,
-                            "backlink": {
-                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                            },
-                            "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                            "title": "Les Contes de la m\u00e8re poule",
-                            "originalTitle": "Les Contes de la m\u00e8re poule",
-                            "runtime": "PT1H50M0S",
-                            "poster": {
-                                "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                            },
-                            "synopsis": "synopsis du film",
-                            "releases": [
-                                {
-                                    "name": "Released",
-                                    "releaseDate": {"date": "2001-10-03"},
-                                    "data": {"visa_number": "2009993528"},
-                                }
-                            ],
-                            "credits": {
-                                "edges": [
-                                    {
-                                        "node": {
-                                            "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                            "position": {"name": "DIRECTOR"},
-                                        }
-                                    }
-                                ]
-                            },
-                            "cast": {
-                                "backlink": {
-                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                    "label": "Casting complet du film sur AlloCin\u00e9",
-                                },
-                                "edges": [],
-                            },
-                            "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                            "genres": ["ANIMATION", "FAMILY"],
-                            "companies": [],
-                        },
+                        "movie": MOVIE_INFO,
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
@@ -715,7 +547,7 @@ class UpdateObjectsTest:
         created_offer = Offer.query.one()
         existing_product = Product.query.one()
 
-        assert existing_product.durationMinutes == 110
+        assert existing_product.durationMinutes == 46
         assert created_offer.type == str(EventType.CINEMA)
         assert created_offer.name == "Les Contes de la mère poule - VF"
 
@@ -731,35 +563,7 @@ class UpdateObjectsTest:
             [
                 {
                     "node": {
-                        "movie": {
-                            "id": "TW92aWU6Mzc4MzI=",
-                            "type": "FEATURE_FILM",
-                            "internalId": 37832,
-                            "backlink": {
-                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                            },
-                            "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                            "title": "Les Contes de la m\u00e8re poule",
-                            "originalTitle": "Les Contes de la m\u00e8re poule",
-                            "runtime": "PT1H50M0S",
-                            "poster": {
-                                "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                            },
-                            "synopsis": "synopsis du film",
-                            "releases": [{"name": "Released", "releaseDate": {"date": "2001-10-03"}, "data": []}],
-                            "credits": {"edges": []},
-                            "cast": {
-                                "backlink": {
-                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                    "label": "Casting complet du film sur AlloCin\u00e9",
-                                },
-                                "edges": [],
-                            },
-                            "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                            "genres": ["ANIMATION", "FAMILY"],
-                            "companies": [],
-                        },
+                        "movie": MOVIE_INFO,
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
@@ -791,9 +595,35 @@ class UpdateObjectsTest:
         created_offer = Offer.query.one()
         created_product = Product.query.one()
 
-        assert created_product.durationMinutes == 110
-        assert created_product.extraData == {}
-        assert created_offer.extraData == {"theater": {"allocine_movie_id": 37832, "allocine_room_id": "P12345"}}
+        assert created_product.durationMinutes == 46
+        assert created_product.extraData == {
+            "visa": "2009993528",
+            "stageDirector": "Farkhondeh Torabi",
+            "genres": ["ANIMATION", "FAMILY"],
+            "type": "FEATURE_FILM",
+            "companies": [
+                {"activity": "Distribution", "company": {"name": "Warner Bros. France"}},
+                {"activity": "Production", "company": {"name": "The Story Company"}},
+            ],
+            "releaseDate": "2001-10-03",
+            "countries": ["Iran"],
+            "cast": ["Chloë Grace Moretz", "Michael Peña"],
+        }
+        assert created_offer.extraData == {
+            "visa": "2009993528",
+            "stageDirector": "Farkhondeh Torabi",
+            "theater": {"allocine_movie_id": 37832, "allocine_room_id": "P12345"},
+            "genres": ["ANIMATION", "FAMILY"],
+            "type": "FEATURE_FILM",
+            "companies": [
+                {"activity": "Distribution", "company": {"name": "Warner Bros. France"}},
+                {"activity": "Production", "company": {"name": "The Story Company"}},
+            ],
+            "releaseDate": "2001-10-03",
+            "countries": ["Iran"],
+            "cast": ["Chloë Grace Moretz", "Michael Peña"],
+        }
+
         assert created_offer.type == str(EventType.CINEMA)
         assert created_offer.name == "Les Contes de la mère poule - VF"
 
@@ -805,35 +635,14 @@ class UpdateObjectsTest:
         self, mock_call_allocine_api, mock_api_poster
     ):
         # Given
+        movie_information = copy.deepcopy(MOVIE_INFO)
+        del movie_information["title"]
+
         mock_call_allocine_api.return_value = iter(
             [
                 {
                     "node": {
-                        "movie": {
-                            "id": "TW92aWU6Mzc4MzI=",
-                            "type": "FEATURE_FILM",
-                            "internalId": 37832,
-                            "backlink": None,
-                            "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                            "originalTitle": "Les Contes de la m\u00e8re poule",
-                            "runtime": "PT1H50M0S",
-                            "poster": {
-                                "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                            },
-                            "synopsis": "synopsis du film",
-                            "releases": [{"name": "Released", "releaseDate": {"date": "2001-10-03"}, "data": []}],
-                            "credits": None,
-                            "cast": {
-                                "backlink": {
-                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                    "label": "Casting complet du film sur AlloCin\u00e9",
-                                },
-                                "edges": [],
-                            },
-                            "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                            "genres": ["ANIMATION", "FAMILY"],
-                            "companies": [],
-                        },
+                        "movie": movie_information,
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
@@ -877,35 +686,7 @@ class UpdateObjectsTest:
             [
                 {
                     "node": {
-                        "movie": {
-                            "id": "TW92aWU6Mzc4MzI=",
-                            "type": "FEATURE_FILM",
-                            "internalId": 37832,
-                            "backlink": {
-                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                            },
-                            "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                            "title": "Zombieland: Double Tap",
-                            "originalTitle": "Zombieland: Double Tap",
-                            "runtime": "PT1H50M0S",
-                            "poster": {
-                                "url": r"https:\/\/fr.web.img5.acsta.net\/pictures\/19\/08\/14\/10\/54\/4737391.jpg"
-                            },
-                            "synopsis": "synopsis du film",
-                            "releases": [{"name": "Released", "releaseDate": {"date": "2001-10-03"}, "data": []}],
-                            "credits": {"edges": []},
-                            "cast": {
-                                "backlink": {
-                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                    "label": "Casting complet du film sur AlloCin\u00e9",
-                                },
-                                "edges": [],
-                            },
-                            "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                            "genres": ["ANIMATION", "FAMILY"],
-                            "companies": [],
-                        },
+                        "movie": MOVIE_INFO,
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
@@ -963,50 +744,7 @@ class UpdateObjectsTest:
             [
                 {
                     "node": {
-                        "movie": {
-                            "id": "TW92aWU6Mzc4MzI=",
-                            "type": "FEATURE_FILM",
-                            "internalId": 37832,
-                            "backlink": {
-                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                            },
-                            "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                            "title": "Zombieland: Double Tap",
-                            "originalTitle": "Zombieland: Double Tap",
-                            "runtime": "PT1H50M0S",
-                            "poster": {
-                                "url": r"https:\/\/fr.web.img5.acsta.net\/pictures\/19\/08\/14\/10\/54\/4737391.jpg"
-                            },
-                            "synopsis": "synopsis du film",
-                            "releases": [
-                                {
-                                    "name": "Released",
-                                    "releaseDate": {"date": "2001-10-03"},
-                                    "data": {"visa_number": "2009993528"},
-                                }
-                            ],
-                            "credits": {
-                                "edges": [
-                                    {
-                                        "node": {
-                                            "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                            "position": {"name": "DIRECTOR"},
-                                        }
-                                    }
-                                ]
-                            },
-                            "cast": {
-                                "backlink": {
-                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                    "label": "Casting complet du film sur AlloCin\u00e9",
-                                },
-                                "edges": [],
-                            },
-                            "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                            "genres": ["ANIMATION", "FAMILY"],
-                            "companies": [],
-                        },
+                        "movie": MOVIE_INFO,
                         "showtimes": [
                             {
                                 "startsAt": "2019-10-29T10:30:00",
@@ -1062,50 +800,7 @@ class UpdateObjectsTest:
             [
                 {
                     "node": {
-                        "movie": {
-                            "id": "TW92aWU6Mzc4MzI=",
-                            "type": "FEATURE_FILM",
-                            "internalId": 37832,
-                            "backlink": {
-                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                            },
-                            "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                            "title": "Les Contes de la m\u00e8re poule",
-                            "originalTitle": "Les Contes de la m\u00e8re poule",
-                            "runtime": None,
-                            "poster": {
-                                "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                            },
-                            "synopsis": "synopsis du film",
-                            "releases": [
-                                {
-                                    "name": "Released",
-                                    "releaseDate": {"date": "2001-10-03"},
-                                    "data": {"visa_number": "2009993528"},
-                                }
-                            ],
-                            "credits": {
-                                "edges": [
-                                    {
-                                        "node": {
-                                            "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                            "position": {"name": "DIRECTOR"},
-                                        }
-                                    }
-                                ]
-                            },
-                            "cast": {
-                                "backlink": {
-                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                    "label": "Casting complet du film sur AlloCin\u00e9",
-                                },
-                                "edges": [],
-                            },
-                            "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                            "genres": ["ANIMATION", "FAMILY"],
-                            "companies": [],
-                        },
+                        "movie": MOVIE_INFO,
                         "showtimes": [
                             {
                                 "startsAt": "2019-12-03T10:00:00",
@@ -1187,50 +882,7 @@ class UpdateObjectsTest:
             [
                 {
                     "node": {
-                        "movie": {
-                            "id": "TW92aWU6Mzc4MzI=",
-                            "type": "FEATURE_FILM",
-                            "internalId": 37832,
-                            "backlink": {
-                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                            },
-                            "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                            "title": "Les Contes de la m\u00e8re poule",
-                            "originalTitle": "Les Contes de la m\u00e8re poule",
-                            "runtime": "PT1H50M0S",
-                            "poster": {
-                                "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                            },
-                            "synopsis": "synopsis du film",
-                            "releases": [
-                                {
-                                    "name": "Released",
-                                    "releaseDate": {"date": "2001-10-03"},
-                                    "data": {"visa_number": "2009993528"},
-                                }
-                            ],
-                            "credits": {
-                                "edges": [
-                                    {
-                                        "node": {
-                                            "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                            "position": {"name": "DIRECTOR"},
-                                        }
-                                    }
-                                ]
-                            },
-                            "cast": {
-                                "backlink": {
-                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                    "label": "Casting complet du film sur AlloCin\u00e9",
-                                },
-                                "edges": [],
-                            },
-                            "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                            "genres": ["ANIMATION", "FAMILY"],
-                            "companies": [],
-                        },
+                        "movie": MOVIE_INFO,
                         "showtimes": [
                             {
                                 "startsAt": "2019-12-03T10:00:00",
@@ -1302,7 +954,7 @@ class UpdateObjectsTest:
         assert vo_offer.name == "Les Contes de la mère poule - VO"
         assert vf_offer.name == "Les Contes de la mère poule - VF"
 
-        assert vo_offer.durationMinutes == 110
+        assert vo_offer.durationMinutes == 46
 
         assert first_stock.offerId == vf_offer.id
         assert first_stock.quantity is None
@@ -1335,50 +987,7 @@ class UpdateObjectsTest:
                     [
                         {
                             "node": {
-                                "movie": {
-                                    "id": "TW92aWU6Mzc4MzI=",
-                                    "type": "FEATURE_FILM",
-                                    "internalId": 37832,
-                                    "backlink": {
-                                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                                    },
-                                    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                                    "title": "Les Contes de la m\u00e8re poule",
-                                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                                    "runtime": "PT1H50M0S",
-                                    "poster": {
-                                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                                    },
-                                    "synopsis": "synopsis du film",
-                                    "releases": [
-                                        {
-                                            "name": "Released",
-                                            "releaseDate": {"date": "2001-10-03"},
-                                            "data": {"visa_number": "2009993528"},
-                                        }
-                                    ],
-                                    "credits": {
-                                        "edges": [
-                                            {
-                                                "node": {
-                                                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                                    "position": {"name": "DIRECTOR"},
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    "cast": {
-                                        "backlink": {
-                                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                            "label": "Casting complet du film sur AlloCin\u00e9",
-                                        },
-                                        "edges": [],
-                                    },
-                                    "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                                    "genres": ["ANIMATION", "FAMILY"],
-                                    "companies": [],
-                                },
+                                "movie": MOVIE_INFO,
                                 "showtimes": [
                                     {
                                         "startsAt": "2019-12-03T10:00:00",
@@ -1401,50 +1010,7 @@ class UpdateObjectsTest:
                     [
                         {
                             "node": {
-                                "movie": {
-                                    "id": "TW92aWU6Mzc4MzI=",
-                                    "type": "FEATURE_FILM",
-                                    "internalId": 37832,
-                                    "backlink": {
-                                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                                    },
-                                    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                                    "title": "Les Contes de la m\u00e8re poule",
-                                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                                    "runtime": "PT1H50M0S",
-                                    "poster": {
-                                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                                    },
-                                    "synopsis": "synopsis du film",
-                                    "releases": [
-                                        {
-                                            "name": "Released",
-                                            "releaseDate": {"date": "2001-10-03"},
-                                            "data": {"visa_number": "2009993528"},
-                                        }
-                                    ],
-                                    "credits": {
-                                        "edges": [
-                                            {
-                                                "node": {
-                                                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                                    "position": {"name": "DIRECTOR"},
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    "cast": {
-                                        "backlink": {
-                                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                            "label": "Casting complet du film sur AlloCin\u00e9",
-                                        },
-                                        "edges": [],
-                                    },
-                                    "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                                    "genres": ["ANIMATION", "FAMILY"],
-                                    "companies": [],
-                                },
+                                "movie": MOVIE_INFO,
                                 "showtimes": [
                                     {
                                         "startsAt": "2019-12-04T18:00:00",
@@ -1505,50 +1071,7 @@ class UpdateObjectsTest:
             allocine_api_response = [
                 {
                     "node": {
-                        "movie": {
-                            "id": "TW92aWU6Mzc4MzI=",
-                            "type": "FEATURE_FILM",
-                            "internalId": 37832,
-                            "backlink": {
-                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                            },
-                            "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                            "title": "Les Contes de la m\u00e8re poule",
-                            "originalTitle": "Les Contes de la m\u00e8re poule",
-                            "runtime": "PT1H50M0S",
-                            "poster": {
-                                "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                            },
-                            "synopsis": "synopsis du film",
-                            "releases": [
-                                {
-                                    "name": "Released",
-                                    "releaseDate": {"date": "2001-10-03"},
-                                    "data": {"visa_number": "2009993528"},
-                                }
-                            ],
-                            "credits": {
-                                "edges": [
-                                    {
-                                        "node": {
-                                            "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                            "position": {"name": "DIRECTOR"},
-                                        }
-                                    }
-                                ]
-                            },
-                            "cast": {
-                                "backlink": {
-                                    "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                    "label": "Casting complet du film sur AlloCin\u00e9",
-                                },
-                                "edges": [],
-                            },
-                            "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                            "genres": ["ANIMATION", "FAMILY"],
-                            "companies": [],
-                        },
+                        "movie": MOVIE_INFO,
                         "showtimes": [
                             {
                                 "startsAt": "2019-12-03T10:00:00",
@@ -1616,50 +1139,7 @@ class UpdateObjectsTest:
                     [
                         {
                             "node": {
-                                "movie": {
-                                    "id": "TW92aWU6Mzc4MzI=",
-                                    "type": "FEATURE_FILM",
-                                    "internalId": 37832,
-                                    "backlink": {
-                                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                                    },
-                                    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                                    "title": "Les Contes de la m\u00e8re poule",
-                                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                                    "runtime": "PT1H50M0S",
-                                    "poster": {
-                                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                                    },
-                                    "synopsis": "synopsis du film",
-                                    "releases": [
-                                        {
-                                            "name": "Released",
-                                            "releaseDate": {"date": "2001-10-03"},
-                                            "data": {"visa_number": "2009993528"},
-                                        }
-                                    ],
-                                    "credits": {
-                                        "edges": [
-                                            {
-                                                "node": {
-                                                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                                    "position": {"name": "DIRECTOR"},
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    "cast": {
-                                        "backlink": {
-                                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                            "label": "Casting complet du film sur AlloCin\u00e9",
-                                        },
-                                        "edges": [],
-                                    },
-                                    "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                                    "genres": ["ANIMATION", "FAMILY"],
-                                    "companies": [],
-                                },
+                                "movie": MOVIE_INFO,
                                 "showtimes": [
                                     {
                                         "startsAt": "2019-12-03T10:00:00",
@@ -1682,50 +1162,7 @@ class UpdateObjectsTest:
                     [
                         {
                             "node": {
-                                "movie": {
-                                    "id": "TW92aWU6Mzc4MzI=",
-                                    "type": "FEATURE_FILM",
-                                    "internalId": 37832,
-                                    "backlink": {
-                                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                                    },
-                                    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                                    "title": "Les Contes de la m\u00e8re poule",
-                                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                                    "runtime": "PT1H50M0S",
-                                    "poster": {
-                                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                                    },
-                                    "synopsis": "synopsis du film",
-                                    "releases": [
-                                        {
-                                            "name": "Released",
-                                            "releaseDate": {"date": "2001-10-03"},
-                                            "data": {"visa_number": "2009993528"},
-                                        }
-                                    ],
-                                    "credits": {
-                                        "edges": [
-                                            {
-                                                "node": {
-                                                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                                    "position": {"name": "DIRECTOR"},
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    "cast": {
-                                        "backlink": {
-                                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                            "label": "Casting complet du film sur AlloCin\u00e9",
-                                        },
-                                        "edges": [],
-                                    },
-                                    "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                                    "genres": ["ANIMATION", "FAMILY"],
-                                    "companies": [],
-                                },
+                                "movie": MOVIE_INFO,
                                 "showtimes": [
                                     {
                                         "startsAt": "2019-12-03T10:00:00",
@@ -1800,50 +1237,7 @@ class UpdateObjectsTest:
                     [
                         {
                             "node": {
-                                "movie": {
-                                    "id": "TW92aWU6Mzc4MzI=",
-                                    "type": "FEATURE_FILM",
-                                    "internalId": 37832,
-                                    "backlink": {
-                                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                                    },
-                                    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                                    "title": "Les Contes de la m\u00e8re poule",
-                                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                                    "runtime": "PT1H50M0S",
-                                    "poster": {
-                                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                                    },
-                                    "synopsis": "synopsis du film",
-                                    "releases": [
-                                        {
-                                            "name": "Released",
-                                            "releaseDate": {"date": "2001-10-03"},
-                                            "data": {"visa_number": "2009993528"},
-                                        }
-                                    ],
-                                    "credits": {
-                                        "edges": [
-                                            {
-                                                "node": {
-                                                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                                    "position": {"name": "DIRECTOR"},
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    "cast": {
-                                        "backlink": {
-                                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                            "label": "Casting complet du film sur AlloCin\u00e9",
-                                        },
-                                        "edges": [],
-                                    },
-                                    "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                                    "genres": ["ANIMATION", "FAMILY"],
-                                    "companies": [],
-                                },
+                                "movie": MOVIE_INFO,
                                 "showtimes": [
                                     {
                                         "startsAt": "2019-12-03T10:00:00",
@@ -1866,50 +1260,7 @@ class UpdateObjectsTest:
                     [
                         {
                             "node": {
-                                "movie": {
-                                    "id": "TW92aWU6Mzc4MzI=",
-                                    "type": "FEATURE_FILM",
-                                    "internalId": 37832,
-                                    "backlink": {
-                                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                                    },
-                                    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                                    "title": "Les Contes de la m\u00e8re poule",
-                                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                                    "runtime": "PT1H50M0S",
-                                    "poster": {
-                                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                                    },
-                                    "synopsis": "synopsis du film",
-                                    "releases": [
-                                        {
-                                            "name": "Released",
-                                            "releaseDate": {"date": "2001-10-03"},
-                                            "data": {"visa_number": "2009993528"},
-                                        }
-                                    ],
-                                    "credits": {
-                                        "edges": [
-                                            {
-                                                "node": {
-                                                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                                    "position": {"name": "DIRECTOR"},
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    "cast": {
-                                        "backlink": {
-                                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                            "label": "Casting complet du film sur AlloCin\u00e9",
-                                        },
-                                        "edges": [],
-                                    },
-                                    "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                                    "genres": ["ANIMATION", "FAMILY"],
-                                    "companies": [],
-                                },
+                                "movie": MOVIE_INFO,
                                 "showtimes": [
                                     {
                                         "startsAt": "2019-12-03T10:00:00",
@@ -1970,50 +1321,7 @@ class UpdateObjectsTest:
                     [
                         {
                             "node": {
-                                "movie": {
-                                    "id": "TW92aWU6Mzc4MzI=",
-                                    "type": "FEATURE_FILM",
-                                    "internalId": 37832,
-                                    "backlink": {
-                                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                                    },
-                                    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                                    "title": "Les Contes de la m\u00e8re poule",
-                                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                                    "runtime": "PT1H50M0S",
-                                    "poster": {
-                                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                                    },
-                                    "synopsis": "synopsis du film",
-                                    "releases": [
-                                        {
-                                            "name": "Released",
-                                            "releaseDate": {"date": "2001-10-03"},
-                                            "data": {"visa_number": "2009993528"},
-                                        }
-                                    ],
-                                    "credits": {
-                                        "edges": [
-                                            {
-                                                "node": {
-                                                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                                    "position": {"name": "DIRECTOR"},
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    "cast": {
-                                        "backlink": {
-                                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                            "label": "Casting complet du film sur AlloCin\u00e9",
-                                        },
-                                        "edges": [],
-                                    },
-                                    "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                                    "genres": ["ANIMATION", "FAMILY"],
-                                    "companies": [],
-                                },
+                                "movie": MOVIE_INFO,
                                 "showtimes": [
                                     {
                                         "startsAt": "2019-12-03T10:00:00",
@@ -2030,50 +1338,7 @@ class UpdateObjectsTest:
                     [
                         {
                             "node": {
-                                "movie": {
-                                    "id": "TW92aWU6Mzc4MzI=",
-                                    "type": "FEATURE_FILM",
-                                    "internalId": 37832,
-                                    "backlink": {
-                                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                                    },
-                                    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                                    "title": "Les Contes de la m\u00e8re poule",
-                                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                                    "runtime": "PT1H50M0S",
-                                    "poster": {
-                                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                                    },
-                                    "synopsis": "synopsis du film",
-                                    "releases": [
-                                        {
-                                            "name": "Released",
-                                            "releaseDate": {"date": "2001-10-03"},
-                                            "data": {"visa_number": "2009993528"},
-                                        }
-                                    ],
-                                    "credits": {
-                                        "edges": [
-                                            {
-                                                "node": {
-                                                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                                    "position": {"name": "DIRECTOR"},
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    "cast": {
-                                        "backlink": {
-                                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                            "label": "Casting complet du film sur AlloCin\u00e9",
-                                        },
-                                        "edges": [],
-                                    },
-                                    "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                                    "genres": ["ANIMATION", "FAMILY"],
-                                    "companies": [],
-                                },
+                                "movie": MOVIE_INFO,
                                 "showtimes": [
                                     {
                                         "startsAt": "2019-12-03T10:00:00",
@@ -2124,49 +1389,7 @@ class UpdateObjectsTest:
                     [
                         {
                             "node": {
-                                "movie": {
-                                    "id": "TW92aWU6Mzc4MzI=",
-                                    "internalId": 37832,
-                                    "backlink": {
-                                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                                    },
-                                    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                                    "title": "Les Contes de la m\u00e8re poule",
-                                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                                    "runtime": "PT1H50M0S",
-                                    "poster": {
-                                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                                    },
-                                    "synopsis": "synopsis du film",
-                                    "releases": [
-                                        {
-                                            "name": "Released",
-                                            "releaseDate": {"date": "2001-10-03"},
-                                            "data": {"visa_number": "2009993528"},
-                                        }
-                                    ],
-                                    "credits": {
-                                        "edges": [
-                                            {
-                                                "node": {
-                                                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                                    "position": {"name": "DIRECTOR"},
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    "cast": {
-                                        "backlink": {
-                                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                            "label": "Casting complet du film sur AlloCin\u00e9",
-                                        },
-                                        "edges": [],
-                                    },
-                                    "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                                    "genres": ["ANIMATION", "FAMILY"],
-                                    "companies": [],
-                                },
+                                "movie": MOVIE_INFO,
                                 "showtimes": [
                                     {
                                         "startsAt": "2019-12-03T10:00:00",
@@ -2189,49 +1412,7 @@ class UpdateObjectsTest:
                     [
                         {
                             "node": {
-                                "movie": {
-                                    "id": "TW92aWU6Mzc4MzI=",
-                                    "internalId": 37832,
-                                    "backlink": {
-                                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                                    },
-                                    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                                    "title": "Les Contes de la m\u00e8re poule",
-                                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                                    "runtime": "PT1H50M0S",
-                                    "poster": {
-                                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                                    },
-                                    "synopsis": "synopsis du film",
-                                    "releases": [
-                                        {
-                                            "name": "Released",
-                                            "releaseDate": {"date": "2001-10-03"},
-                                            "data": {"visa_number": "2009993528"},
-                                        }
-                                    ],
-                                    "credits": {
-                                        "edges": [
-                                            {
-                                                "node": {
-                                                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                                    "position": {"name": "DIRECTOR"},
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    "cast": {
-                                        "backlink": {
-                                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                            "label": "Casting complet du film sur AlloCin\u00e9",
-                                        },
-                                        "edges": [],
-                                    },
-                                    "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                                    "genres": ["ANIMATION", "FAMILY"],
-                                    "companies": [],
-                                },
+                                "movie": MOVIE_INFO,
                                 "showtimes": [
                                     {
                                         "startsAt": "2019-12-03T10:00:00",
@@ -2284,49 +1465,7 @@ class UpdateObjectsTest:
                     [
                         {
                             "node": {
-                                "movie": {
-                                    "id": "TW92aWU6Mzc4MzI=",
-                                    "internalId": 37832,
-                                    "backlink": {
-                                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
-                                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9",
-                                    },
-                                    "data": {"eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E", "productionYear": 2001},
-                                    "title": "Les Contes de la m\u00e8re poule",
-                                    "originalTitle": "Les Contes de la m\u00e8re poule",
-                                    "runtime": "PT1H50M0S",
-                                    "poster": {
-                                        "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
-                                    },
-                                    "synopsis": "synopsis du film",
-                                    "releases": [
-                                        {
-                                            "name": "Released",
-                                            "releaseDate": {"date": "2001-10-03"},
-                                            "data": {"visa_number": "2009993528"},
-                                        }
-                                    ],
-                                    "credits": {
-                                        "edges": [
-                                            {
-                                                "node": {
-                                                    "person": {"firstName": "Farkhondeh", "lastName": "Torabi"},
-                                                    "position": {"name": "DIRECTOR"},
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    "cast": {
-                                        "backlink": {
-                                            "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
-                                            "label": "Casting complet du film sur AlloCin\u00e9",
-                                        },
-                                        "edges": [],
-                                    },
-                                    "countries": [{"name": "Iran", "alpha3": "IRN"}],
-                                    "genres": ["ANIMATION", "FAMILY"],
-                                    "companies": [],
-                                },
+                                "movie": MOVIE_INFO,
                                 "showtimes": [
                                     {
                                         "startsAt": "2019-12-03T10:00:00",
