@@ -36,6 +36,7 @@ SCHEMA = {
     "description": "text",
     "is_digital": "number",
     "is_duo": "number",
+    "is_educational": "number",
     "is_event": "number",
     "is_thing": "number",
     "isbn": "text",
@@ -223,6 +224,7 @@ class AppSearchBackend(base.SearchBackend):
             # Since we don't fake geoloc on App Search => we don't need it
             "is_digital": int(offer.isDigital),
             "is_duo": int(offer.isDuo),
+            "is_educational": False,
             "is_event": int(offer.isEvent),
             "is_thing": int(offer.isThing),
             "isbn": isbn,
