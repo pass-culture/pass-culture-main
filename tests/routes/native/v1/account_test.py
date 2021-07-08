@@ -472,6 +472,7 @@ class InstitutionalProjectRedactorAccountCreationTest:
             == f"{institutional_project_redactor_adage_response.first_name} {institutional_project_redactor_adage_response.last_name}"
         )
         assert saved_user.has_institutional_project_redactor_role
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3027506
 
     @patch("pcapi.core.users.api.get_institutional_project_redactor_by_email")
     def test_account_creation_with_existing_email(self, get_institutional_project_redactor_by_email_stub, app):
@@ -493,6 +494,7 @@ class InstitutionalProjectRedactorAccountCreationTest:
 
         saved_users = User.query.all()
         assert len(saved_users) == 1
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1838526
 
     @patch("pcapi.core.users.api.get_institutional_project_redactor_by_email")
     def test_invalid_adage_email_creation(self, get_institutional_project_redactor_by_email_stub, app):
@@ -509,6 +511,7 @@ class InstitutionalProjectRedactorAccountCreationTest:
 
         assert response.status_code == 204, response.json
         assert User.query.first() is None
+        assert len(mails_testing.outbox) == 0
 
     @patch("pcapi.core.users.api.get_institutional_project_redactor_by_email")
     def test_when_adage_is_unavailable(self, get_institutional_project_redactor_by_email_stub, app):
@@ -527,6 +530,7 @@ class InstitutionalProjectRedactorAccountCreationTest:
 
         assert response.status_code == 503, response.json
         assert User.query.first() is None
+        assert len(mails_testing.outbox) == 0
 
 
 class AccountCreationBeforeGrandOpeningTest:

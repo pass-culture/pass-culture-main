@@ -18,6 +18,7 @@ from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import User
+from pcapi.core.users.utils import sanitize_email
 from pcapi.models import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
@@ -137,8 +138,15 @@ def create_institutional_project_redactor_account(body: serializers.Institutiona
             email=body.email,
             password=body.password,
         )
+
     except exceptions.UserAlreadyExistsException:
         logger.info("Cette adresse mail est déjà utilisée")
+        try:
+            user = find_user_by_email(sanitize_email(body.email))
+            api.request_password_reset(user)
+        except exceptions.EmailNotSent:
+            raise ApiErrors({"email": ["L'email n'a pas pu être envoyé"]})
+
     except InstitutionalProjectRedactorNotFoundException:
         logger.info("Cette adresse mail n'est pas une adresse mail académique reconnue")
     except AdageException as exception:

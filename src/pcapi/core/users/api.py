@@ -625,9 +625,17 @@ def create_institutional_project_redactor(email: str, password: str) -> User:
     )
     new_institutional_project_redactor.setPassword(password)
     new_institutional_project_redactor.add_institutional_project_redactor_role()
+
+    request_email_confirmation_redactor(new_institutional_project_redactor)
+
     repository.save(new_institutional_project_redactor)
 
     return new_institutional_project_redactor
+
+
+def request_email_confirmation_redactor(redactor: User) -> None:
+    token = create_email_validation_token(redactor)
+    user_emails.send_activation_email_to_redactor(redactor, token=token)
 
 
 def _generate_user_offerer_when_existing_offerer(new_user: User, offerer: Offerer) -> UserOfferer:
