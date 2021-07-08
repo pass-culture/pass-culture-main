@@ -14,15 +14,6 @@ import pcapi.core.users.models as users_models
 logger = logging.getLogger(__name__)
 
 
-def is_accessible() -> bool:
-    authorized = current_user.is_authenticated and current_user.isAdmin
-
-    if not authorized:
-        logger.warning("[ADMIN] Tentative d'accès non autorisé à l'interface d'administation par %s", current_user)
-
-    return authorized
-
-
 class BaseAdminMixin:
     # We need to override `create_form()` and `edit_form()`, otherwise
     # Flask-Admin loads the form classes from its cache, which is
@@ -44,7 +35,11 @@ class BaseAdminMixin:
         # to add permissions based on groups and sync'ed from our google IDP, and not developp a way to do it here.
         if current_user.is_authenticated and users_models.UserRole.JOUVE in current_user.roles:
             return False
-        return is_accessible()
+        authorized = current_user.is_authenticated and current_user.isAdmin
+        if not authorized:
+            logger.warning("[ADMIN] Tentative d'accès non autorisé à l'interface d'administation par %s", current_user)
+
+        return authorized
 
 
 class BaseAdminView(BaseAdminMixin, ModelView):
