@@ -103,7 +103,7 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
         content = {}
         if factory_class:
             content = factory_class()
-        if not isinstance(kwargs["resultContent"], factory_class._meta.get_model_class()):
+        if factory_class and not isinstance(kwargs["resultContent"], factory_class._meta.get_model_class()):
             kwargs["resultContent"] = content
 
         return super()._create(model_class, *args, **kwargs)
