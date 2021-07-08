@@ -34,7 +34,7 @@ JOUVE_CONTENT = {
     "bodyFirstnameLevel": 100,
     "bodyNameLevel": 80,
     "bodyNameCtrl": "OK",
-    "bodyPieceNumber": "id-piece-number",
+    "bodyPieceNumber": "140767100016",
     "bodyPieceNumberCtrl": "OK",
     "bodyPieceNumberLevel": 100,
     "city": "Paris",
@@ -196,7 +196,7 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
         "address": "",
         "city": "",
         "gender": "M",
-        "bodyPieceNumber": "id-piece-number",
+        "bodyPieceNumber": "140767100016",
         "birthDateTxt": "25/10/2003",
         "postalCode": "",
         "phoneNumber": "0102030405",
@@ -444,7 +444,7 @@ def test_id_piece_number_no_duplicate(
     app,
 ):
     # Given
-    ID_PIECE_NUMBER = "id-piece-number"
+    ID_PIECE_NUMBER = "140767100016"
     subscribing_user = UserFactory(
         isBeneficiary=False,
         dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
@@ -474,7 +474,7 @@ def test_id_piece_number_duplicate(
     app,
 ):
     # Given
-    ID_PIECE_NUMBER = "duplicated-id-piece-number"
+    ID_PIECE_NUMBER = "140767100016"
     subscribing_user = UserFactory(
         isBeneficiary=False,
         dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
@@ -493,3 +493,79 @@ def test_id_piece_number_duplicate(
     assert not subscribing_user.isBeneficiary
 
     assert len(mails_testing.outbox) == 0
+
+
+@patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
+@pytest.mark.parametrize("wrong_piece_number", ["NOT_APPLICABLE", "KO", ""])
+@pytest.mark.usefixtures("db_session")
+def test_id_piece_number_invalid(mocked_get_content, wrong_piece_number):
+    subscribing_user = UserFactory(
+        isBeneficiary=False,
+        dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
+        email=BASE_JOUVE_CONTENT["email"],
+    )
+    UserFactory(idPieceNumber=wrong_piece_number)
+    mocked_get_content.return_value = BASE_JOUVE_CONTENT | {"bodyPieceNumberCtrl": wrong_piece_number}
+
+    # When
+    create_beneficiary_from_application.execute(BASE_APPLICATION_ID)
+
+    # Then
+    assert len(subscribing_user.beneficiaryImports) == 0
+
+    assert len(mails_testing.outbox) == 1
+    assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2905960
+    assert mails_testing.outbox[0].sent_data["Mj-campaign"] == "dossier-en-analyse"
+
+
+@patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
+@pytest.mark.parametrize("wrong_piece_number", ["NOT_APPLICABLE", "KO", ""])
+@pytest.mark.usefixtures("db_session")
+def test_id_piece_number_wrong_return_control(mocked_get_content, wrong_piece_number):
+    subscribing_user = UserFactory(
+        isBeneficiary=False,
+        dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
+        email=BASE_JOUVE_CONTENT["email"],
+    )
+    UserFactory(idPieceNumber=wrong_piece_number)
+    mocked_get_content.return_value = BASE_JOUVE_CONTENT | {"bodyPieceNumberCtrl": wrong_piece_number}
+
+    # When
+    create_beneficiary_from_application.execute(BASE_APPLICATION_ID)
+
+    # Then
+    assert len(subscribing_user.beneficiaryImports) == 0
+
+    assert len(mails_testing.outbox) == 1
+    assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2905960
+    assert mails_testing.outbox[0].sent_data["Mj-campaign"] == "dossier-en-analyse"
+
+
+@patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
+@pytest.mark.parametrize(
+    "id_piece_number",
+    [
+        "I III1",
+        "I I 1JII 11IB I E",
+        "",
+    ],
+)
+@pytest.mark.usefixtures("db_session")
+def test_id_piece_number_wrong_format(mocked_get_content, id_piece_number):
+    subscribing_user = UserFactory(
+        isBeneficiary=False,
+        dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
+        email=BASE_JOUVE_CONTENT["email"],
+    )
+    UserFactory(idPieceNumber=id_piece_number)
+    mocked_get_content.return_value = BASE_JOUVE_CONTENT | {"bodyPieceNumber": id_piece_number}
+
+    # When
+    create_beneficiary_from_application.execute(BASE_APPLICATION_ID)
+
+    # Then
+    assert len(subscribing_user.beneficiaryImports) == 0
+
+    assert len(mails_testing.outbox) == 1
+    assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2905960
+    assert mails_testing.outbox[0].sent_data["Mj-campaign"] == "dossier-en-analyse"

@@ -1,4 +1,5 @@
 from datetime import datetime
+import re
 from typing import Optional
 
 from pcapi.core.users.models import User
@@ -6,6 +7,7 @@ from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription impo
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import IdPieceNumberDuplicate
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import SuspiciousFraudDetected
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository.user_queries import find_beneficiary_by_civility
 from pcapi.repository.user_queries import find_user_by_email
@@ -85,9 +87,20 @@ def _check_not_a_duplicate(beneficiary_pre_subscription: BeneficiaryPreSubscript
         raise BeneficiaryIsADuplicate(f"User with id {duplicates[0].id} is a duplicate.")
 
 
+def _check_id_piece_number_format(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
+    if not re.match(r"^\w{9,10}|\w{12}$", beneficiary_pre_subscription.id_piece_number):
+        raise SuspiciousFraudDetected(f"id piece number n°{beneficiary_pre_subscription.id_piece_number} is invalid")
+
+
 def _check_id_piece_number_is_unique(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
     if not FeatureToggle.ENABLE_IDCHECK_FRAUD_CONTROLS.is_active():
         return
+
+    if beneficiary_pre_subscription.fraud_fields:
+        fraud_controls = {x.key: x for x in beneficiary_pre_subscription.fraud_fields["non_blocking_controls"]}
+        id_fraud_control = fraud_controls.get("bodyPieceNumberCtrl")
+        if not id_fraud_control and not id_fraud_control.valid:
+            return
     if User.query.filter(User.idPieceNumber == beneficiary_pre_subscription.id_piece_number).count() > 0:
         raise IdPieceNumberDuplicate(f"id piece number n°{beneficiary_pre_subscription.id_piece_number} already taken")
 
@@ -99,5 +112,6 @@ def validate(beneficiary_pre_subscription: BeneficiaryPreSubscription, preexisti
     else:
         if preexisting_account.isBeneficiary or not preexisting_account.isEmailValidated:
             raise BeneficiaryIsADuplicate(f"Email {beneficiary_pre_subscription.email} is already taken.")
+    _check_id_piece_number_format(beneficiary_pre_subscription)
     _check_not_a_duplicate(beneficiary_pre_subscription)
     _check_id_piece_number_is_unique(beneficiary_pre_subscription)

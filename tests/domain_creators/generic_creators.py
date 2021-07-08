@@ -25,7 +25,7 @@ def create_domain_beneficiary_pre_subcription(
     phone_number: str = "0123456789",
     source: str = "jouve",
     source_id: str = None,
-    id_piece_number: str = "id-piece-number",
+    id_piece_number: str = "140767100016",
 ) -> BeneficiaryPreSubscription:
     return BeneficiaryPreSubscription(
         address=address,

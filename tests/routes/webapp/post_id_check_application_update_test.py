@@ -27,7 +27,7 @@ JOUVE_CONTENT = {
     "bodyFirstnameLevel": 100,
     "bodyNameLevel": 80,
     "bodyNameCtrl": "OK",
-    "bodyPieceNumber": "id-piece-number",
+    "bodyPieceNumber": "140767100016",
     "bodyPieceNumberCtrl": "OK",
     "bodyPieceNumberLevel": 100,
     "city": "Paris",
