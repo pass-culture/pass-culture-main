@@ -2,10 +2,13 @@ import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
+import * as reduxSagaData from 'redux-saga-data'
 
+import * as pcapi from 'repository/pcapi/pcapi'
 import * as notificationReducer from 'store/reducers/notificationReducer'
 import { configureTestStore } from 'store/testUtils'
 import { failToGenerateOffererApiKey, generateFakeOffererApiKey } from 'utils/fakeApi'
+import { offererNormalizer } from 'utils/normalizers'
 
 import ApiKey from '../ApiKeyContainer'
 
@@ -104,5 +107,23 @@ describe('src | Offerer | ApiKey', () => {
         text: "Une erreur s'est produite, veuillez réessayer",
       })
     )
+  })
+
+  it('should delete a key', async () => {
+    await renderApiKey()
+    const deleteSpy = jest.spyOn(pcapi, 'deleteOffererApiKey').mockReturnValue(null)
+    const requestDataSpy = jest.spyOn(reduxSagaData, 'requestData')
+
+    // when
+    fireEvent.click(screen.getByText('supprimer'))
+
+    // then
+    expect(deleteSpy).toHaveBeenCalledWith('key-prefix1')
+    await waitFor(() => {
+      expect(requestDataSpy).toHaveBeenCalledWith({
+        apiPath: '/offerers/AE',
+        normalizer: offererNormalizer,
+      })
+    })
   })
 })

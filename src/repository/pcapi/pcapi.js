@@ -112,6 +112,10 @@ export const generateOffererApiKey = async offererId => {
   return client.post(`/offerers/${offererId}/api_keys`, {}).then(response => response.apiKey)
 }
 
+export const deleteOffererApiKey = async apiKey => {
+  return client.delete(`/offerers/api_keys/${apiKey}`)
+}
+
 export const getUserValidatedOfferersNames = () => {
   return client
     .get('/offerers/names?validated_for_user=true')

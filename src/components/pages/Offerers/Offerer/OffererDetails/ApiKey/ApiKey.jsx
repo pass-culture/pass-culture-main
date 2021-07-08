@@ -2,11 +2,18 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import Banner from 'components/layout/Banner/Banner'
+import Icon from 'components/layout/Icon'
 import { ReactComponent as SpinnerIcon } from 'components/layout/SubmitButton/assets/loader.svg'
-import { generateOffererApiKey } from 'repository/pcapi/pcapi'
+import { deleteOffererApiKey, generateOffererApiKey } from 'repository/pcapi/pcapi'
 import { ENV_WORDING } from 'utils/config'
 
-const ApiKey = ({ savedApiKeys, maxAllowedApiKeys, offererId, showNotification }) => {
+const ApiKey = ({
+  savedApiKeys,
+  maxAllowedApiKeys,
+  offererId,
+  showNotification,
+  loadOffererById,
+}) => {
   const [newlyGeneratedKeys, setNewGeneratedKeys] = useState([])
   const [isGeneratingKey, setIsGeneratingKey] = useState(false)
 
@@ -25,6 +32,18 @@ const ApiKey = ({ savedApiKeys, maxAllowedApiKeys, offererId, showNotification }
       setIsGeneratingKey(false)
     }
   }, [offererId, showNotification])
+
+  const deleteApiKey = useCallback(
+    savedApiKey => async () => {
+      try {
+        await deleteOffererApiKey(savedApiKey)
+        loadOffererById(offererId)
+      } catch (e) {
+        showNotification('error', "Une erreur s'est produite, veuillez réessayer")
+      }
+    },
+    [showNotification, loadOffererById, offererId]
+  )
 
   const copyKey = apiKeyToCopy => async () => {
     try {
@@ -79,6 +98,16 @@ const ApiKey = ({ savedApiKeys, maxAllowedApiKeys, offererId, showNotification }
                 {savedApiKey}
                 {'********'}
               </span>
+              <button
+                className="action  tertiary-button with-icon"
+                onClick={deleteApiKey(savedApiKey)}
+                type="button"
+              >
+                <Icon svg="ico-trash" />
+                <span>
+                  {'supprimer'}
+                </span>
+              </button>
             </div>
           )
         })}
@@ -123,6 +152,7 @@ const ApiKey = ({ savedApiKeys, maxAllowedApiKeys, offererId, showNotification }
   )
 }
 ApiKey.propTypes = {
+  loadOffererById: PropTypes.func.isRequired,
   maxAllowedApiKeys: PropTypes.number.isRequired,
   offererId: PropTypes.string.isRequired,
   savedApiKeys: PropTypes.arrayOf(PropTypes.string).isRequired,
