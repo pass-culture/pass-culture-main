@@ -8,17 +8,16 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.payments import factories as payments_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.repository.reimbursement_queries import find_sent_offerer_payments
+from pcapi.repository.reimbursement_queries import find_all_offerer_payments
 
 
 class FindAllOffererPaymentsTest:
     @pytest.mark.usefixtures("db_session")
-    def test_should_not_return_one_payment_info_with_error_status(self, app):
+    def test_should_return_one_payment_info_with_error_status(self, app):
         # Given
         stock = offers_factories.ThingStockFactory(price=10)
-        booking = bookings_factories.BookingFactory(
-            stock=stock, isUsed=True, dateUsed=datetime.utcnow(), token="ABCDEF"
-        )
+        now = datetime.utcnow()
+        booking = bookings_factories.BookingFactory(stock=stock, isUsed=True, dateUsed=now, token="ABCDEF")
         payment = payments_factories.PaymentFactory(
             booking=booking, transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019"
         )
@@ -27,10 +26,29 @@ class FindAllOffererPaymentsTest:
         )
 
         # When
-        payments = find_sent_offerer_payments(stock.offer.venue.managingOfferer.id)
+        payments = find_all_offerer_payments(stock.offer.venue.managingOfferer.id)
 
         # Then
-        assert len(payments) == 0
+        assert len(payments) == 1
+        assert payments[0] == (
+            "Doux",
+            "Jeanne",
+            "ABCDEF",
+            now,
+            1,
+            Decimal("10.00"),
+            stock.offer.name,
+            "1 boulevard Poissonnière",
+            stock.offer.venue.name,
+            stock.offer.venue.siret,
+            "1 boulevard Poissonnière",
+            Decimal("10.00"),
+            Decimal("1.00"),
+            "CF13QSDFGH456789",
+            "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
+            TransactionStatus.ERROR,
+            "Iban non fourni",
+        )
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_payment_info_with_sent_status(self, app):
@@ -61,7 +79,7 @@ class FindAllOffererPaymentsTest:
         payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT, detail="All good")
 
         # When
-        payments = find_sent_offerer_payments(stock.offer.venue.managingOfferer.id)
+        payments = find_all_offerer_payments(stock.offer.venue.managingOfferer.id)
 
         # Then
         assert len(payments) == 1
@@ -126,7 +144,7 @@ class FindAllOffererPaymentsTest:
         )
 
         # When
-        payments = find_sent_offerer_payments(stock.offer.venue.managingOfferer.id)
+        payments = find_all_offerer_payments(stock.offer.venue.managingOfferer.id)
 
         # Then
         assert len(payments) == 2
