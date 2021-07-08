@@ -39,6 +39,7 @@ def before_handler(
         "value_error.url.host": 'L\'URL doit terminer par une extension (ex. ".fr")',
         "value_error.email": "Le format d'email est incorrect.",
         "value_error.number.not_gt": "Saisissez un nombre supérieur à {limit_value}",
+        "value_error.number.not_ge": "Saisissez un nombre supérieur ou égal à {limit_value}",
     }
 
     if pydantic_error and pydantic_error.errors():

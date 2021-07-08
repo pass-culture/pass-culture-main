@@ -41,7 +41,7 @@ nltk==3.5
 pandas!=1.1.5
 pgcli==2.2.0
 Pillow>=8.1.1
-pydantic[email]==1.7.3
+pydantic[email]==1.8.2
 PyJWT==1.7.1
 pylint==2.8.3
 pylint-strict-informational

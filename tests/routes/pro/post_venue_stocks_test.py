@@ -24,7 +24,10 @@ def test_accepts_request(mock_synchronize_stocks, app):
     test_client = TestClient(app.test_client())
     test_client.auth_header = {"Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}"}
 
-    response = test_client.post("/v2/venue/3/stocks", json={"stocks": [{"ref": "123456789", "available": 4}]})
+    response = test_client.post(
+        "/v2/venue/3/stocks",
+        json={"stocks": [{"ref": "123456789", "available": 4}, {"ref": "1234567890", "available": 0}]},
+    )
 
     assert response.status_code == 204
     mock_synchronize_stocks.assert_called_once_with(
@@ -35,7 +38,14 @@ def test_accepts_request(mock_synchronize_stocks, app):
                 "stocks_provider_reference": "123456789@3",
                 "available_quantity": 4,
                 "price": None,
-            }
+            },
+            {
+                "products_provider_reference": "1234567890",
+                "offers_provider_reference": "1234567890@3",
+                "stocks_provider_reference": "1234567890@3",
+                "available_quantity": 0,
+                "price": None,
+            },
         ],
         venue,
     )
@@ -140,5 +150,5 @@ def test_returns_comprehensive_errors(mock_synchronize_stocks, app):
     assert response2.json["stocks.1.available"] == ["Ce champ est obligatoire"]
     assert response2.json["stocks.1.ref"] == ["Ce champ est obligatoire"]
     assert response2.json["stocks.2.available"] == ["Saisissez un nombre valide"]
-    assert response2.json["stocks.3.available"] == ["Saisissez un nombre supérieur à 0"]
+    assert response2.json["stocks.3.available"] == ["Saisissez un nombre supérieur ou égal à 0"]
     mock_synchronize_stocks.assert_not_called()

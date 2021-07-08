@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import condecimal
 from pydantic import validator
-from pydantic.types import PositiveInt
+from pydantic.types import NonNegativeInt
 
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Stock
@@ -115,7 +115,7 @@ class UpdateVenueStockBodyModel(BaseModel):
     """Available stock quantity for a book"""
 
     ref: str = Field(title="ISBN", description="Format: EAN13")
-    available: PositiveInt
+    available: NonNegativeInt
     price: condecimal(decimal_places=2) = Field(
         None, description="(Optionnel) Prix en Euros avec 2 décimales possibles"
     )
