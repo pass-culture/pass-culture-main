@@ -22,7 +22,7 @@ class GetBatchesTest:
         assert list(batches[3].order_by(users_models.User.id)) == [users[6], users[7]]
         assert list(batches[4].order_by(users_models.User.id)) == [users[8], users[9]]
         assert list(batches[5].order_by(users_models.User.id)) == [users[10]]
-        assert list(itertools.chain.from_iterable(batches)) == users
+        assert sorted(list(itertools.chain.from_iterable(batches)), key=lambda x: x.id) == users
 
     def test_empty(self):
         batches = db_utils.get_batches(users_models.User.query, users_models.User.id, 10)
