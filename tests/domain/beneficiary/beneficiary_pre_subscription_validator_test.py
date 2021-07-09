@@ -3,12 +3,11 @@ from datetime import datetime
 import pytest
 
 from pcapi.core.testing import override_features
+import pcapi.core.users.factories as users_factories
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import validate
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.repository import repository
 
 from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
 
@@ -30,8 +29,7 @@ def test_should_not_raise_exception_for_valid_beneficiary(app):
 def test_raises_if_email_already_taken_by_beneficiary(app):
     # Given
     email = "email@example.org"
-    existing_user = create_user(email=email)
-    repository.save(existing_user)
+    existing_user = users_factories.UserFactory(email=email)
 
     beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(email=email)
 
@@ -46,8 +44,7 @@ def test_raises_if_email_already_taken_by_beneficiary(app):
 @pytest.mark.usefixtures("db_session")
 def test_validates_for_non_beneficiary_with_same_mail(app):
     email = "email@example.org"
-    existing_user = create_user(email=email, is_beneficiary=False, is_email_validated=True)
-    repository.save(existing_user)
+    existing_user = users_factories.UserFactory(email=email, isBeneficiary=False, isEmailValidated=True)
 
     beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(email=email)
 
@@ -58,8 +55,7 @@ def test_validates_for_non_beneficiary_with_same_mail(app):
 @pytest.mark.usefixtures("db_session")
 def test_doesnt_raise_if_email_not_taken(app):
     # Given
-    existing_user = create_user(email="email@example.org")
-    repository.save(existing_user)
+    users_factories.UserFactory(email="email@example.org")
 
     beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(email="different.email@example.org")
 
@@ -77,8 +73,7 @@ def test_raises_if_duplicate(app):
     first_name = "John"
     last_name = "Doe"
     date_of_birth = datetime(1993, 2, 2)
-    existing_user = create_user(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth)
-    repository.save(existing_user)
+    existing_user = users_factories.UserFactory(firstName=first_name, lastName=last_name, dateOfBirth=date_of_birth)
 
     beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(
         first_name=first_name, last_name=last_name, date_of_birth=date_of_birth
@@ -98,14 +93,11 @@ def test_doesnt_raise_if_no_exact_duplicate(app):
     first_name = "John"
     last_name = "Doe"
     date_of_birth = datetime(1993, 2, 2)
-    existing_user1 = create_user(first_name="Joe", last_name=last_name, date_of_birth=date_of_birth, email="e1@ex.org")
-    existing_user2 = create_user(
-        first_name=first_name, last_name="Trump", date_of_birth=date_of_birth, email="e2@ex.org"
+    users_factories.UserFactory(firstName="Joe", lastName=last_name, dateOfBirth=date_of_birth, email="e1@ex.org")
+    users_factories.UserFactory(firstName=first_name, lastName="Trump", dateOfBirth=date_of_birth, email="e2@ex.org")
+    users_factories.UserFactory(
+        firstName=first_name, lastName=last_name, dateOfBirth=datetime(1992, 2, 2), email="e3@ex.org"
     )
-    existing_user3 = create_user(
-        first_name=first_name, last_name=last_name, date_of_birth=datetime(1992, 2, 2), email="e3@ex.org"
-    )
-    repository.save(existing_user1, existing_user2, existing_user3)
 
     beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(
         first_name=first_name, last_name=last_name, date_of_birth=date_of_birth
