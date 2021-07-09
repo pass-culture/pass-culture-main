@@ -119,18 +119,24 @@ class FraudView(base_configuration.BaseAdminView):
         return flask_login.current_user.is_authenticated and flask_login.current_user.isAdmin
 
     def get_query(self):
-        return users_models.User.query.filter(
-            (users_models.User.beneficiaryFraudChecks.any()) | (users_models.User.beneficiaryFraudResult.has())
-        ).options(
+        filters = users_models.User.beneficiaryFraudChecks.any() | users_models.User.beneficiaryFraudResult.has()
+        if users_models.UserRole.JOUVE in flask_login.current_user.roles:
+            filters = users_models.User.beneficiaryFraudChecks.any(type=fraud_models.FraudCheckType.JOUVE)
+
+        query = users_models.User.query.filter(filters).options(
             sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudChecks),
             sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudResult),
             sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudReview),
         )
+        return query
 
     def get_count_query(self):
-        return db.session.query(sqlalchemy.func.count(users_models.User.id)).filter(
-            (users_models.User.beneficiaryFraudChecks.any()) | (users_models.User.beneficiaryFraudResult.has())
-        )
+        filters = users_models.User.beneficiaryFraudChecks.any() | users_models.User.beneficiaryFraudResult.has()
+        if users_models.UserRole.JOUVE in flask_login.current_user.roles:
+            filters = users_models.User.beneficiaryFraudChecks.any(type=fraud_models.FraudCheckType.JOUVE)
+
+        query = db.session.query(sqlalchemy.func.count(users_models.User.id)).filter(filters)
+        return query
 
     @flask_admin.expose("/validate/beneficiary/<user_id>", methods=["POST"])
     def validate_beneficiary(self, user_id):

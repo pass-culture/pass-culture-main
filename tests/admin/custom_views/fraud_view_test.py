@@ -180,3 +180,14 @@ class JouveUpdateIDPieceNumberTest:
         assert user.isBeneficiary
         assert len(user.beneficiaryImports) == 1
         assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
+
+    def test_jouve_specific_query_filter(self, client):
+        jouve_admin = users_factories.UserFactory(
+            isAdmin=True, isBeneficiary=False, roles=[users_models.UserRole.JOUVE]
+        )
+        client.with_auth(jouve_admin.email)
+
+        fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.JOUVE)
+        fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.DMS)
+        response = client.get("/pc/back-office/beneficiary_fraud")
+        assert "<ul><li>dms</li></ul>" not in response.data.decode()
