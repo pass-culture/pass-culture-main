@@ -36,19 +36,19 @@ class Subcategory:
     id: str
     category_id: str
     matching_type: str
+    pro_label: str
     app_label: str
     search_group: str
     is_event: bool
-    pro_label: str
     conditional_fields: list[str]
     can_expire: bool
     # the booking amount will be substracted from physical cap
     is_physical_deposit: bool
-    reimbursement_rule: str
-    can_be_duo: bool
-    online_offline_platform: str
     # the booking amount will be substracted from digital cap
     is_digital_deposit: bool
+    online_offline_platform: str
+    reimbursement_rule: str
+    can_be_duo: bool
     # used by pc pro to build dropdown of subcategories during offer creation
     is_selectable: bool = True
 
