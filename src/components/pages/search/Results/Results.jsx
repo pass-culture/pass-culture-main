@@ -530,11 +530,7 @@ class Results extends PureComponent {
                 history={history}
                 initialFilters={filters}
                 match={match}
-                offers={{
-                  hits: results,
-                  nbHits: resultsCount,
-                  nbPages: totalPagesNumber,
-                }}
+                nbHits={resultsCount}
                 parse={parse}
                 place={place}
                 showFailModal={this.showFailModal}
@@ -567,13 +563,7 @@ Results.defaultProps = {
 
 Results.propTypes = {
   criteria: PropTypes.shape({
-    categories: PropTypes.arrayOf(
-      PropTypes.shape({
-        label: PropTypes.string,
-        icon: PropTypes.string,
-        facetFilter: PropTypes.string,
-      })
-    ),
+    categories: PropTypes.arrayOf(PropTypes.string),
     searchAround: PropTypes.shape({
       everywhere: PropTypes.bool,
       place: PropTypes.bool,

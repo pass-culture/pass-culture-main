@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 import SwipeableViews from 'react-swipeable-views'
+import { SearchHit } from '../../../search/Results/ResultsList/ResultsList'
 
 import { PANE_LAYOUT } from '../domain/layout'
 import RecommendationPane from '../domain/ValueObjects/RecommendationPane'
@@ -100,7 +101,7 @@ const RecommendationModule = props => {
 
 RecommendationModule.propTypes = {
   historyPush: PropTypes.func.isRequired,
-  hits: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  hits: PropTypes.arrayOf(PropTypes.shape(SearchHit)).isRequired,
   module: PropTypes.instanceOf(RecommendationPane).isRequired,
   row: PropTypes.number.isRequired,
   trackAllTilesSeen: PropTypes.func.isRequired,

@@ -219,9 +219,7 @@ export class Filters extends PureComponent {
   }
 
   buildNumberOfResults = () => {
-    const {
-      offers: { nbHits },
-    } = this.props
+    const { nbHits } = this.props
 
     if (nbHits === 0) {
       return 'Aucun résultat'
@@ -571,9 +569,6 @@ export class Filters extends PureComponent {
   }
 
   render() {
-    const {
-      offers: { nbHits },
-    } = this.props
     const { areCategoriesVisible, filters, place } = this.state
     const {
       aroundRadius,
@@ -589,7 +584,7 @@ export class Filters extends PureComponent {
       searchAround,
       timeRange,
     } = filters
-    const { history, match, userGeolocation } = this.props
+    const { history, match, nbHits, userGeolocation } = this.props
     const { location } = history
     const { search = '' } = location
     const numberOfOfferTypesSelected = this.getNumberOfSelectedFilters(offerTypes)
@@ -982,7 +977,7 @@ Filters.propTypes = {
     timeRange: PropTypes.arrayOf(PropTypes.number),
   }),
   match: PropTypes.shape().isRequired,
-  offers: PropTypes.shape().isRequired,
+  nbHits: PropTypes.number.isRequired,
   parse: PropTypes.func.isRequired,
   place: PropTypes.shape({
     geolocation: PropTypes.shape({

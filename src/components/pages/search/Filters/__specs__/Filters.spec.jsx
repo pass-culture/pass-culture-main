@@ -85,11 +85,7 @@ describe('components | Filters', () => {
       match: {
         params: {},
       },
-      offers: {
-        hits: [],
-        nbHits: 0,
-        nbPages: 0,
-      },
+      nbHits: 0,
       place: null,
       parse: jest.fn(),
       showFailModal: jest.fn(),
@@ -306,7 +302,7 @@ describe('components | Filters', () => {
       it('should display the number of results on the display results button', () => {
         // given
         props.history.location.pathname = '/recherche/filtres'
-        props.offers.nbHits = 10
+        props.nbHits = 10
 
         // when
         const wrapper = shallow(<Filters {...props} />)
@@ -319,7 +315,7 @@ describe('components | Filters', () => {
       it('should display "999+" on the display results button when number of results exceeds 999', () => {
         // given
         props.history.location.pathname = '/recherche/filtres'
-        props.offers.nbHits = 1000
+        props.nbHits = 1000
 
         // when
         const wrapper = shallow(<Filters {...props} />)

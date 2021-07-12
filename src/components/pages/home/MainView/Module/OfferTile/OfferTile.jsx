@@ -8,6 +8,7 @@ import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
 import getThumbUrl from '../../../../../../utils/getThumbUrl'
 import { PANE_LAYOUT } from '../../domain/layout'
 import { formatToReadableString } from '../../../../../../utils/strings/formatToReadableString'
+import { SearchHit } from '../../../../search/Results/ResultsList/ResultsList'
 
 export const noOp = () => false
 
@@ -78,7 +79,7 @@ OfferTile.defaultProps = {
 
 OfferTile.propTypes = {
   historyPush: PropTypes.func.isRequired,
-  hit: PropTypes.shape().isRequired,
+  hit: PropTypes.shape(SearchHit).isRequired,
   isSwitching: PropTypes.bool.isRequired,
   layout: PropTypes.string,
   moduleName: PropTypes.string.isRequired,

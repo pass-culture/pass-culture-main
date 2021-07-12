@@ -14,7 +14,6 @@ jest.mock('../../../../../../../utils/config', () => ({
   OBJECT_STORAGE_URL: 'http://storage_path',
 }))
 
-
 describe('src | components | OfferTile', () => {
   let props
   let history
@@ -39,6 +38,7 @@ describe('src | components | OfferTile', () => {
           name: 'Librairie kléber',
           publicName: null,
         },
+        objectID: '12',
       },
       moduleName: 'Nom du module',
       isSwitching: false,

@@ -3,6 +3,7 @@ import Cover from '../Cover/Cover'
 import React from 'react'
 import OfferTile from '../OfferTile/OfferTile'
 import SeeMore from '../SeeMore/SeeMore'
+import { SearchHit } from '../../../../search/Results/ResultsList/ResultsList'
 
 const TwoItems = ({
   historyPush,
@@ -85,7 +86,7 @@ TwoItems.propTypes = {
   parsedParameters: PropTypes.shape().isRequired,
   row: PropTypes.number.isRequired,
   tile: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.string, PropTypes.bool, PropTypes.shape()])
+    PropTypes.oneOfType([PropTypes.string, PropTypes.bool, PropTypes.shape(SearchHit)])
   ).isRequired,
   trackClickSeeMore: PropTypes.func,
   trackConsultOffer: PropTypes.func.isRequired,

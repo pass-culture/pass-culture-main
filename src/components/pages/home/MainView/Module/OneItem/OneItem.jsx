@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import { SearchHit } from '../../../../search/Results/ResultsList/ResultsList'
 
 import Cover from '../Cover/Cover'
 import OfferTile from '../OfferTile/OfferTile'
@@ -59,7 +60,8 @@ OneItem.propTypes = {
   moduleName: PropTypes.string.isRequired,
   parsedParameters: PropTypes.shape().isRequired,
   row: PropTypes.number.isRequired,
-  tile: PropTypes.oneOfType([PropTypes.string, PropTypes.bool, PropTypes.shape()]).isRequired,
+  tile: PropTypes.oneOfType([PropTypes.string, PropTypes.bool, PropTypes.shape(SearchHit)])
+    .isRequired,
   trackClickSeeMore: PropTypes.func,
   trackConsultOffer: PropTypes.func.isRequired,
 }

@@ -1675,6 +1675,7 @@ describe('components | Results', () => {
         new Promise(resolve => {
           resolve({
             hits: [],
+            nbHits: 0,
           })
         })
       )
@@ -2261,7 +2262,7 @@ describe('components | Results', () => {
         timeRange: [8, 24],
       })
       expect(filters.prop('match')).toStrictEqual(props.match)
-      expect(filters.prop('offers')).toStrictEqual({ hits: [], nbHits: 0, nbPages: 0 })
+      expect(filters.prop('nbHits')).toStrictEqual(0)
       expect(filters.prop('place')).toStrictEqual(props.place)
       expect(filters.prop('parse')).toStrictEqual(props.parse)
       expect(filters.prop('showFailModal')).toStrictEqual(expect.any(Function))

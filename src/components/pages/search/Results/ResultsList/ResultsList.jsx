@@ -46,9 +46,34 @@ export const ResultsList = ({
   )
 }
 
+export const SearchHit = {
+  offer: PropTypes.shape({
+    dates: PropTypes.arrayOf(PropTypes.number),
+    id: PropTypes.string,
+    isDigital: PropTypes.bool,
+    isDuo: PropTypes.bool,
+    isEvent: PropTypes.bool,
+    label: PropTypes.string,
+    name: PropTypes.string,
+    prices: PropTypes.arrayOf(PropTypes.number),
+    thumbUrl: PropTypes.string,
+  }),
+  _geoloc: PropTypes.shape({
+    lat: PropTypes.number,
+    lng: PropTypes.number,
+  }),
+  venue: PropTypes.shape({
+    departmentCode: PropTypes.string,
+    name: PropTypes.string,
+    publicName: PropTypes.string,
+  }),
+  objectID: PropTypes.string.isRequired,
+}
+
 ResultsList.defaultProps = {
   search: '',
 }
+
 ResultsList.propTypes = {
   currentPage: PropTypes.number.isRequired,
   geolocation: PropTypes.shape({
@@ -57,27 +82,7 @@ ResultsList.propTypes = {
   }).isRequired,
   isLoading: PropTypes.bool.isRequired,
   loadMore: PropTypes.func.isRequired,
-  results: PropTypes.arrayOf(
-    PropTypes.shape({
-      _geoloc: PropTypes.shape({
-        lat: PropTypes.number,
-        lng: PropTypes.number,
-      }),
-      offer: PropTypes.shape({
-        dates: PropTypes.arrayOf(PropTypes.number),
-        departementCode: PropTypes.string,
-        id: PropTypes.string,
-        isDuo: PropTypes.bool,
-        label: PropTypes.string,
-        name: PropTypes.string,
-        prices: PropTypes.arrayOf(PropTypes.number),
-        priceMin: PropTypes.number,
-        priceMax: PropTypes.number,
-        thumbUrl: PropTypes.string,
-      }),
-      objectID: PropTypes.string,
-    })
-  ).isRequired,
+  results: PropTypes.arrayOf(PropTypes.shape(SearchHit)).isRequired,
   resultsCount: PropTypes.number.isRequired,
   search: PropTypes.string,
   totalPagesNumber: PropTypes.number.isRequired,

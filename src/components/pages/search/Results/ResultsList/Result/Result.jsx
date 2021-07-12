@@ -7,6 +7,7 @@ import { getHumanizeRelativeDistance } from '../../../../../../utils/geolocation
 import getThumbUrl from '../../../../../../utils/getThumbUrl'
 import { formatResultPrice } from '../../../../../../utils/price'
 import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
+import { SearchHit } from '../ResultsList'
 
 const Result = ({ result, geolocation, search }) => {
   const { _geoloc = {}, objectID, offer, venue } = result
@@ -83,31 +84,7 @@ Result.propTypes = {
     latitude: PropTypes.number,
     longitude: PropTypes.number,
   }),
-  result: PropTypes.shape({
-    _geoloc: PropTypes.shape({
-      lat: PropTypes.number,
-      lng: PropTypes.number,
-    }),
-    offer: PropTypes.shape({
-      dates: PropTypes.arrayOf(PropTypes.number),
-      id: PropTypes.string,
-      isDigital: PropTypes.bool,
-      isDuo: PropTypes.bool,
-      label: PropTypes.string,
-      name: PropTypes.string,
-      prices: PropTypes.arrayOf(PropTypes.number),
-      priceMin: PropTypes.number,
-      priceMax: PropTypes.number,
-      thumbUrl: PropTypes.string,
-    }),
-    venue: PropTypes.shape({
-      city: PropTypes.string,
-      departementCode: PropTypes.string,
-      name: PropTypes.string,
-      publicName: PropTypes.string,
-    }),
-    objectID: PropTypes.string,
-  }),
+  result: PropTypes.shape(SearchHit),
   search: PropTypes.string,
 }
 
