@@ -76,6 +76,7 @@ def update_beneficiary_mandatory_information(user: User, body: serializers.Benef
         city=body.city,
         postal_code=body.postal_code,
         activity=body.activity,
+        phone_number=body.phone,
     )
     update_user_attributes_job.delay(user.id)
 

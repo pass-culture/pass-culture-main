@@ -1399,6 +1399,7 @@ class UpdateBeneficiaryInformationTest:
             postalCode=None,
             activity=None,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneNumber="+33609080706",
             roles=[],
         )
 
@@ -1425,6 +1426,7 @@ class UpdateBeneficiaryInformationTest:
         assert user.city == "Uneville"
         assert user.postalCode == "77000"
         assert user.activity == "Lycéen"
+        assert user.phoneNumber == "+33609080706"
 
         assert user.isBeneficiary
         assert user.has_beneficiary_role
@@ -1466,6 +1468,7 @@ class UpdateBeneficiaryInformationTest:
             "city": "Uneville",
             "postalCode": "77000",
             "activity": "Lycéen",
+            "phone": "0601020304",
         }
 
         response = test_client.patch("/native/v1/beneficiary_information", profile_data)
@@ -1477,6 +1480,7 @@ class UpdateBeneficiaryInformationTest:
         assert user.city == "Uneville"
         assert user.postalCode == "77000"
         assert user.activity == "Lycéen"
+        assert user.phoneNumber == "0601020304"
 
         assert user.isBeneficiary
         assert user.has_beneficiary_role

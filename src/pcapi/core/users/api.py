@@ -224,23 +224,21 @@ def validate_phone_number_and_activate_user(user: User, code: str) -> User:
 
 
 def update_beneficiary_mandatory_information(
-    user: User,
-    address: str,
-    city: str,
-    postal_code: str,
-    activity: str,
+    user: User, address: str, city: str, postal_code: str, activity: str, phone_number: Optional[str] = None
 ) -> None:
+    update_payload = {
+        "address": address,
+        "city": city,
+        "postalCode": postal_code,
+        "departementCode": PostalCode(postal_code).get_departement_code(),
+        "activity": activity,
+        "hasCompletedIdCheck": True,
+    }
+    if not user.phoneNumber and phone_number:
+        update_payload["phoneNumber"] = phone_number
+
     with transaction():
-        User.query.filter(User.id == user.id).update(
-            {
-                "address": address,
-                "city": city,
-                "postalCode": postal_code,
-                "departementCode": PostalCode(postal_code).get_departement_code(),
-                "activity": activity,
-                "hasCompletedIdCheck": True,
-            }
-        )
+        User.query.filter(User.id == user.id).update(update_payload)
     db.session.refresh(user)
 
     if not steps_to_become_beneficiary(user):

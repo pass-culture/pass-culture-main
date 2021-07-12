@@ -182,10 +182,11 @@ class UserProfileUpdateRequest(BaseModel):
 
 
 class BeneficiaryInformationUpdateRequest(BaseModel):
+    activity: ActivityEnum
     address: Optional[str]
     city: str
+    phone: Optional[str]
     postal_code: str
-    activity: ActivityEnum
 
     class Config:
         use_enum_values = True
