@@ -97,40 +97,27 @@ def run(
             continue
 
         if not is_already_imported(information.application_id):
-            process_beneficiary_application(
-                information=information,
-                error_messages=error_messages,
-                new_beneficiaries=new_beneficiaries,
-                retry_ids=retry_ids,
-                procedure_id=procedure_id,
-                preexisting_account=user,
+            duplicate_users = get_beneficiary_duplicates(
+                first_name=information.first_name,
+                last_name=information.last_name,
+                date_of_birth=information.birth_date,
             )
+
+            if duplicate_users and information.application_id not in retry_ids:
+                _process_duplication(duplicate_users, error_messages, information, procedure_id)
+
+            else:
+                process_beneficiary_application(
+                    error_messages=error_messages,
+                    information=information,
+                    new_beneficiaries=new_beneficiaries,
+                    procedure_id=procedure_id,
+                    preexisting_account=user,
+                )
 
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées - Procedure %s", procedure_id
     )
-
-
-def process_beneficiary_application(
-    information: dict,
-    error_messages: list[str],
-    new_beneficiaries: list[User],
-    retry_ids: list[int],
-    procedure_id: int,
-    preexisting_account: Optional[User] = None,
-) -> None:
-    duplicate_users = get_beneficiary_duplicates(
-        first_name=information.first_name,
-        last_name=information.last_name,
-        date_of_birth=information.birth_date,
-    )
-
-    if not duplicate_users or information.application_id in retry_ids:
-        _process_creation(
-            error_messages, information, new_beneficiaries, procedure_id, preexisting_account=preexisting_account
-        )
-    else:
-        _process_duplication(duplicate_users, error_messages, information, procedure_id)
 
 
 def parse_beneficiary_information(application_detail: dict) -> fraud_models.DemarchesSimplifieesContent:
@@ -167,9 +154,9 @@ def parse_beneficiary_information(application_detail: dict) -> fraud_models.Dema
     return fraud_models.DemarchesSimplifieesContent(**information)
 
 
-def _process_creation(
+def process_beneficiary_application(
     error_messages: list[str],
-    information: dict,
+    information: fraud_models.DemarchesSimplifieesContent,
     new_beneficiaries: list[User],
     procedure_id: int,
     preexisting_account: Optional[User] = None,

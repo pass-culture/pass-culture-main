@@ -285,6 +285,7 @@ class RunTest:
 
         # then
         process_beneficiary_application.assert_called_with(
+            error_messages=[],
             information=fraud_models.DemarchesSimplifieesContent(
                 last_name="Doe",
                 first_name="John",
@@ -298,9 +299,7 @@ class RunTest:
                 address="35 Rue Saint Denis 93130 Noisy-le-Sec",
                 postal_code="67200",
             ),
-            error_messages=[],
             new_beneficiaries=[],
-            retry_ids=[],
             procedure_id=6712558,
             preexisting_account=False,
         )
@@ -329,7 +328,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # when
         remote_import.process_beneficiary_application(
-            information, error_messages=[], new_beneficiaries=[], retry_ids=[], procedure_id=123456
+            error_messages=[], information=information, new_beneficiaries=[], procedure_id=123456
         )
 
         # then
@@ -362,7 +361,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # when
         remote_import.process_beneficiary_application(
-            information, error_messages=[], new_beneficiaries=[], retry_ids=[], procedure_id=123456
+            error_messages=[], information=information, new_beneficiaries=[], procedure_id=123456
         )
 
         # then
@@ -385,7 +384,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # when
         remote_import.process_beneficiary_application(
-            information, error_messages=[], new_beneficiaries=[], retry_ids=[], procedure_id=123456
+            error_messages=[], information=information, new_beneficiaries=[], procedure_id=123456
         )
 
         # then
@@ -407,7 +406,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # when
         remote_import.process_beneficiary_application(
-            information, error_messages, new_beneficiaries, retry_ids=[], procedure_id=123456
+            error_messages, information, new_beneficiaries, procedure_id=123456
         )
 
         # then
@@ -415,99 +414,6 @@ class ProcessBeneficiaryApplicationTest:
         assert len(push_testing.requests) == 0
         assert error_messages == ['{\n  "postalCode": [\n    "baaaaad value"\n  ]\n}']
         assert not new_beneficiaries
-
-    @patch("pcapi.scripts.beneficiary.remote_import.repository")
-    @patch("pcapi.scripts.beneficiary.remote_import.send_activation_email")
-    @pytest.mark.usefixtures("db_session")
-    def test_beneficiary_is_not_created_if_duplicates_are_found(self, send_activation_email, mock_repository, app):
-        # given
-        information = fraud_factories.DemarchesSimplifieesContentFactory(
-            department="93",
-            last_name="Doe",
-            first_name="Jane",
-            birth_date=datetime(2000, 5, 1),
-            email="jane.doe@example.com",
-            phone="0612345678",
-            postal_code="93130",
-            application_id=123,
-            civility="Mme",
-            activity="Étudiant",
-        )
-        users_factories.UserFactory(dateOfBirth=datetime(2000, 5, 1), firstName="Jane", lastName="Doe")
-
-        # when
-        remote_import.process_beneficiary_application(
-            information, error_messages=[], new_beneficiaries=[], retry_ids=[], procedure_id=123456
-        )
-
-        # then
-        send_activation_email.assert_not_called()
-        assert len(push_testing.requests) == 0
-        mock_repository.save.assert_not_called()
-        beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
-        assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
-
-    @patch("pcapi.scripts.beneficiary.remote_import.send_activation_email")
-    @pytest.mark.usefixtures("db_session")
-    def test_beneficiary_is_created_if_duplicates_are_found_but_id_is_in_retry_list(self, send_activation_email, app):
-        # given
-        information = fraud_factories.DemarchesSimplifieesContentFactory(
-            department="93",
-            last_name="Doe",
-            first_name="Jane",
-            birth_date=datetime(2000, 5, 1),
-            email="jane.doe@example.com",
-            phone="0612345678",
-            postal_code="93130",
-            address="11 Rue du Test",
-            application_id=123,
-            civility="Mme",
-            activity="Étudiant",
-        )
-        users_factories.UserFactory(dateOfBirth=datetime(2000, 5, 1), firstName="Jane", lastName="Doe")
-        retry_ids = [123]
-
-        # when
-        remote_import.process_beneficiary_application(
-            information, error_messages=[], new_beneficiaries=[], retry_ids=retry_ids, procedure_id=123456
-        )
-
-        # then
-        send_activation_email.assert_called()
-        beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
-        assert beneficiary_import.currentStatus == ImportStatus.CREATED
-
-    @patch("pcapi.scripts.beneficiary.remote_import.get_beneficiary_duplicates")
-    @pytest.mark.usefixtures("db_session")
-    def test_an_import_status_is_saved_if_beneficiary_is_a_duplicate(self, mock_get_beneficiary_duplicates, app):
-        # given
-        information = fraud_factories.DemarchesSimplifieesContentFactory(
-            department="93",
-            last_name="Doe",
-            first_name="Jane",
-            birth_date=datetime(2000, 5, 1),
-            email="jane.doe@example.com",
-            phone="0612345678",
-            postal_code="93130",
-            application_id=123,
-            civility="Mme",
-            activity="Étudiant",
-        )
-        mock_get_beneficiary_duplicates.return_value = [
-            users_factories.UserFactory.build(id=11),
-            users_factories.UserFactory.build(id=22),
-        ]
-
-        # when
-        remote_import.process_beneficiary_application(
-            information, error_messages=[], new_beneficiaries=[], retry_ids=[], procedure_id=123456
-        )
-
-        # then
-        beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
-        assert beneficiary_import.applicationId == 123
-        assert beneficiary_import.detail == "Utilisateur en doublon : 11, 22"
 
 
 class ParseBeneficiaryInformationTest:
@@ -1001,3 +907,94 @@ class RunIntegrationTest:
 
         assert len(push_testing.requests) == 1
         assert push_testing.requests[0]["attribute_values"]["u.is_beneficiary"]
+
+    @patch("pcapi.scripts.beneficiary.remote_import.send_activation_email")
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch(
+        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+    )
+    @patch("pcapi.scripts.beneficiary.remote_import.parse_beneficiary_information")
+    def test_beneficiary_is_not_created_if_duplicates_are_found(
+        self,
+        parse_beneficiary_info,
+        get_closed_application_ids_for_dms,
+        get_applications_details,
+        send_activation_email,
+    ):
+        # given
+        information = fraud_factories.DemarchesSimplifieesContentFactory(
+            department="93",
+            last_name="Doe",
+            first_name="Jane",
+            birth_date=datetime(2000, 5, 1),
+            email="jane.doe@example.com",
+            phone="0612345678",
+            postal_code="93130",
+            application_id=123,
+            civility="M",
+            activity="Étudiant",
+        )
+        parse_beneficiary_info.return_value = information
+        get_closed_application_ids_for_dms.return_value = [information.application_id]
+        users_factories.UserFactory(dateOfBirth=datetime(2000, 5, 1), firstName="Jane", lastName="Doe")
+
+        # when
+        remote_import.run(
+            ONE_WEEK_AGO,
+            procedure_id=6712558,
+        )
+
+        # then
+        send_activation_email.assert_not_called()
+        assert len(push_testing.requests) == 0
+
+        beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
+        assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
+
+    @patch("pcapi.scripts.beneficiary.remote_import.send_activation_email")
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch(
+        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+    )
+    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.remote_import.parse_beneficiary_information")
+    def test_beneficiary_is_created_if_duplicates_are_found_but_id_is_in_retry_list(
+        self,
+        parse_beneficiary_info,
+        find_applications_ids_to_retryretry_ids,
+        get_closed_application_ids_for_dms,
+        get_applications_details,
+        send_activation_email,
+    ):
+        # given
+        information = fraud_factories.DemarchesSimplifieesContentFactory(
+            department="93",
+            last_name="Doe",
+            first_name="Jane",
+            birth_date=datetime(2000, 5, 1),
+            email="jane.doe@example.com",
+            phone="0612345678",
+            postal_code="93130",
+            address="11 Rue du Test",
+            application_id=123,
+            civility="Mme",
+            activity="Étudiant",
+        )
+        users_factories.UserFactory(
+            email="unexistant@example.com", dateOfBirth=datetime(2000, 5, 1), firstName="Jane", lastName="Doe"
+        )
+        find_applications_ids_to_retryretry_ids.return_value = [123]
+        parse_beneficiary_info.return_value = information
+        # beware to not add this application twice
+        get_closed_application_ids_for_dms.return_value = []
+
+        # when
+        remote_import.run(
+            ONE_WEEK_AGO,
+            procedure_id=6712558,
+        )
+
+        # then
+        send_activation_email.assert_called()
+        beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
+        assert beneficiary_import.currentStatus == ImportStatus.CREATED
