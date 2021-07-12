@@ -4,6 +4,9 @@ import { AppSearchFields, TRUE } from './constants'
 export const buildAlgoliaHit = searchHit => {
   const dates = searchHit.getRaw(AppSearchFields.dates).map(ts => +ts)
   const prices = searchHit.getRaw(AppSearchFields.prices).map(p => +p / 100)
+  const priceMax = Math.max(...prices)
+  const priceMin = Math.min(...prices)
+
   const geoloc = searchHit.getRaw(AppSearchFields.venue_position)
   const [lat, lng] = (geoloc || ',').split(',')
 
@@ -16,7 +19,8 @@ export const buildAlgoliaHit = searchHit => {
       isEvent: +searchHit.getRaw(AppSearchFields.is_event) === TRUE,
       label: searchHit.getRaw(AppSearchFields.label),
       name: searchHit.getRaw(AppSearchFields.name),
-      prices,
+      priceMax,
+      priceMin,
       thumbUrl: searchHit.getRaw(AppSearchFields.thumb_url),
     },
     _geoloc: {

@@ -10,10 +10,10 @@ const getPriceRangeFromStocks = stocks => {
 
   if (pricesForAvailableStocks.length === 0) return []
 
-  const minimum_price = Math.min(...pricesForAvailableStocks)
-  const maximum_price = Math.max(...pricesForAvailableStocks)
+  const minimumPrice = Math.min(...pricesForAvailableStocks)
+  const maximumPrice = Math.max(...pricesForAvailableStocks)
 
-  return unique([minimum_price, maximum_price])
+  return unique([minimumPrice, maximumPrice])
 }
 
 export default getPriceRangeFromStocks

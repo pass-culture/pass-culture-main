@@ -55,7 +55,8 @@ export const SearchHit = {
     isEvent: PropTypes.bool,
     label: PropTypes.string,
     name: PropTypes.string,
-    prices: PropTypes.arrayOf(PropTypes.number),
+    priceMin: PropTypes.number,
+    priceMax: PropTypes.number,
     thumbUrl: PropTypes.string,
   }),
   _geoloc: PropTypes.shape({
