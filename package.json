@@ -46,7 +46,7 @@
     "react-router-dom": "^5.1.2",
     "react-sizes": "^2.0.0",
     "react-smartbanner": "^5.1.4",
-    "react-swipeable-views": "^0.13.9",
+    "react-swipeable-views": "^0.14.0",
     "react-toastify": "^5.4.0",
     "react-tracking": "^7.2.1",
     "react-transition-group": "4.3.0",
