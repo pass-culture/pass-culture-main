@@ -311,6 +311,13 @@ def dms_fraud_check(
 
 
 def on_dms_fraud_check_result(user: User, beneficiary_fraud_check: models.BeneficiaryFraudCheck):
+    if user.isBeneficiary:
+        raise exceptions.UserAlreadyBeneficiary()
+    if not user.isEmailValidated:
+        raise exceptions.UserEmailNotValidated()
+    if FeatureToggle.FORCE_PHONE_VALIDATION.is_active() and not user.is_phone_validated:
+        raise exceptions.UserPhoneNotValidated()
+
     dms_content = models.DemarchesSimplifieesContent(**beneficiary_fraud_check.resultContent)
 
     fraud_items = []

@@ -863,6 +863,50 @@ class RunIntegrationTest:
         "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
     )
     @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    def test_import_with_existing_id_card_with_existing_applicant(
+        self, get_application_details, get_closed_application_ids_for_demarche_simplifiee, mocker
+    ):
+        applicant = users_factories.UserFactory(email=self.EMAIL, isBeneficiary=False)
+        beneficiary = users_factories.UserFactory(
+            isBeneficiary=True,
+            isEmailValidated=True,
+            dateOfBirth=self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S"),
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            idPieceNumber="121314",
+        )
+        get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
+        get_application_details.side_effect = self._get_details
+
+        # when
+        process_mock = mocker.patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
+        remote_import.run(
+            ONE_WEEK_AGO,
+            procedure_id=6712558,
+        )
+
+        # then
+        assert process_mock.call_count == 0
+        assert BeneficiaryImport.query.count() == 1
+        fraud_check = applicant.beneficiaryFraudChecks[0]
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+
+        beneficiary_import = BeneficiaryImport.query.first()
+        assert beneficiary_import.source == "demarches_simplifiees"
+        assert beneficiary_import.applicationId == 123
+        assert beneficiary_import.beneficiary == applicant
+        assert beneficiary_import.currentStatus == ImportStatus.REJECTED
+
+        assert applicant.beneficiaryFraudResult.status == fraud_models.FraudStatus.SUSPICIOUS
+        assert (
+            f"Le n° de cni 121314 est déjà pris par l'utilisateur {beneficiary.id}"
+            in applicant.beneficiaryFraudResult.reason
+        )
+
+    @override_features(FORCE_PHONE_VALIDATION=False)
+    @patch(
+        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+    )
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
     def test_import_native_app_user(self, get_application_details, get_closed_application_ids_for_demarche_simplifiee):
         # given
         user = users_api.create_account(
@@ -936,7 +980,19 @@ class RunIntegrationTest:
         )
         parse_beneficiary_info.return_value = information
         get_closed_application_ids_for_dms.return_value = [information.application_id]
-        users_factories.UserFactory(dateOfBirth=datetime(2000, 5, 1), firstName="Jane", lastName="Doe")
+        applicant = users_factories.UserFactory(
+            isBeneficiary=False,
+            dateOfBirth=information.birth_date,
+            firstName=information.first_name,
+            lastName=information.last_name,
+            email=information.email,
+        )
+        beneficiary = users_factories.UserFactory(
+            isBeneficiary=True,
+            dateOfBirth=information.birth_date,
+            firstName=information.first_name,
+            lastName=information.last_name,
+        )
 
         # when
         remote_import.run(
@@ -950,6 +1006,9 @@ class RunIntegrationTest:
 
         beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
         assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
+
+        assert applicant.beneficiaryFraudResult.status == fraud_models.FraudStatus.SUSPICIOUS
+        assert f"Duplicat de l'utilisateur {beneficiary.id}" in applicant.beneficiaryFraudResult.reason
 
     @patch("pcapi.scripts.beneficiary.remote_import.send_activation_email")
     @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
