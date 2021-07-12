@@ -85,7 +85,6 @@ def update_from_csv_file(csv_file):
             results["warnings"].append(
                 f"line {line_nb}: Found multiple prices for offer {row['humanized_offer_id']} ({offer_id}): {prices}"
             )
-            continue
         if not prices:
             results["warnings"].append(
                 f"line {line_nb}: No stock found in database for offer {row['humanized_offer_id']} ({offer_id}), but reimbursement rule has been added nevertheless"
@@ -96,7 +95,6 @@ def update_from_csv_file(csv_file):
                 results["warnings"].append(
                     f"line {line_nb}: Price in database for offer {row['humanized_offer_id']} ({offer_id}) is {db_offer_amount}, file says {file_offer_amount}"
                 )
-                continue
 
         rule = CustomReimbursementRule(offerId=offer_id, amount=reimbursed_amount, timespan=DEFAULT_TIMESPAN)
         repository.save(rule)
