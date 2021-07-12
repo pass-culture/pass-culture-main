@@ -21,7 +21,6 @@ Flask-Script==2.0.6
 Flask-SQLAlchemy==2.4.4
 freezegun==0.3.12
 GeoAlchemy2==0.8.4
-geopandas==0.8.1
 google-auth==1.23.0
 google-cloud-storage==1.35.0
 google-cloud-tasks==2.3.0
@@ -37,8 +36,6 @@ mailjet-rest==1.3.3
 MarkupSafe==1.1.1
 mypy==0.812
 nltk==3.5
-# pandas 1.1.5 has isssues with pylint, see https://github.com/PyCQA/pylint/issues/3969
-pandas!=1.1.5
 pgcli==2.2.0
 Pillow>=8.1.1
 pydantic[email]==1.8.2
