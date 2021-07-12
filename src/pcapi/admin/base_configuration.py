@@ -8,8 +8,6 @@ from flask_admin.helpers import get_form_data
 from flask_login import current_user
 from werkzeug.utils import redirect
 
-import pcapi.core.users.models as users_models
-
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +28,6 @@ class BaseAdminMixin:
         return form_class(get_form_data(), obj=obj)
 
     def is_accessible(self) -> bool:
-        # TODO: remove when we have a clean way to get groups from google.
-        # This is a hackish way to filter from a user role which is weak : we do want a way
-        # to add permissions based on groups and sync'ed from our google IDP, and not developp a way to do it here.
-        if current_user.is_authenticated and users_models.UserRole.JOUVE in current_user.roles:
-            return False
         authorized = current_user.is_authenticated and current_user.isAdmin
         if not authorized:
             logger.warning("[ADMIN] Tentative d'accès non autorisé à l'interface d'administation par %s", current_user)

@@ -2,7 +2,6 @@ from unittest.mock import Mock
 from unittest.mock import patch
 
 import flask_login
-import pytest
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.testing import override_settings
@@ -141,35 +140,3 @@ class BaseAdminFormTest:
                 form = view.get_edit_form()
                 assert hasattr(form, "firstName") is False
                 assert hasattr(form, "lastName") is False
-
-
-@pytest.mark.usefixtures("db_session")
-class JouveAccessTest:
-    """Specific tests to ensure JOUVE does not access anything else"""
-
-    def test_access_index(self, client):
-        user = users_factories.UserFactory(isAdmin=True, roles=[users_models.UserRole.JOUVE])
-        client.with_auth(user.email)
-        response = client.get("/pc/back-office/")
-        assert response.status_code == 200
-
-    def test_access_fraud_views(self, client):
-        user = users_factories.UserFactory(isAdmin=True, roles=[users_models.UserRole.JOUVE])
-        client.with_auth(user.email)
-        response = client.get("/pc/back-office/beneficiary_fraud")
-        assert response.status_code == 200
-
-    @pytest.mark.parametrize(
-        "url",
-        [
-            "/pc/back-office/pro_users",
-            "/pc/back-office/admin_users",
-            "/pc/back-office/beneficiary_users",
-        ],
-    )
-    def test_access_forbidden_views(self, client, url):
-        user = users_factories.UserFactory(isAdmin=True, roles=[users_models.UserRole.JOUVE])
-        client.with_auth(user.email)
-        response = client.get(url)
-        assert response.status_code == 302
-        assert response.headers["Location"] == "http://localhost/pc/back-office/"
