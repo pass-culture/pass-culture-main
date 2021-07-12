@@ -51,7 +51,7 @@ class GetInstitutionalProjectRedactorByEmailTest:
     def test_should_raise_exception_when_api_call_fails(self):
         # Given
         institutional_project_redactor_email = "project.redactor@example.com"
-        adage_error_message = "Something want wrong"
+        adage_error_message = "Something went wrong"
 
         # When
         with pytest.raises(AdageException) as exception:
@@ -61,7 +61,7 @@ class GetInstitutionalProjectRedactorByEmailTest:
                     request_headers={
                         "X-omogen-api-key": "adage-api-key",
                     },
-                    json={"message": adage_error_message},
+                    text=adage_error_message,
                     status_code=400,
                 )
                 get_institutional_project_redactor_by_email(institutional_project_redactor_email)
@@ -69,7 +69,7 @@ class GetInstitutionalProjectRedactorByEmailTest:
         # Then
         assert str(exception.value.message) == "Error getting Adage API"
         assert str(exception.value.status_code) == "400"
-        assert str(exception.value.api_response) == adage_error_message
+        assert exception.value.response_text == adage_error_message
 
     @override_settings(ADAGE_API_URL="https://adage-api-url")
     @override_settings(ADAGE_API_KEY="adage-api-key")

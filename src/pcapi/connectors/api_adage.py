@@ -4,10 +4,10 @@ from pcapi.utils import requests
 
 
 class AdageException(Exception):
-    def __init__(self, message, status_code, api_response):
+    def __init__(self, message, status_code, response_text):
         self.message = message
         self.status_code = status_code
-        self.api_response = api_response
+        self.response_text = response_text
         super().__init__()
 
 
@@ -28,6 +28,6 @@ def get_institutional_project_redactor_by_email(email: str) -> InstitutionalProj
     if api_response.status_code == 404:
         raise InstitutionalProjectRedactorNotFoundException("Requested email is not a known Project Redactor for Adage")
     if api_response.status_code != 200:
-        raise AdageException("Error getting Adage API", api_response.status_code, api_response.json()["message"])
+        raise AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
     return InstitutionalProjectRedactorResponse.parse_obj(api_response.json())

@@ -151,7 +151,7 @@ def create_institutional_project_redactor_account(body: serializers.Institutiona
     except InstitutionalProjectRedactorNotFoundException:
         logger.info("Cette adresse mail n'est pas une adresse mail académique reconnue")
     except AdageException as exception:
-        logger.error(exception.message, extra={"statusCode": exception.status_code, "error": exception.api_response})
+        logger.error(exception.message, extra={"statusCode": exception.status_code, "error": exception.response_text})
         abort(503)
 
 
