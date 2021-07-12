@@ -3,6 +3,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { formatSearchResultDate } from '../../../../../../utils/date/date'
+import { humanizeId } from '../../../../../../utils/dehumanizeId/dehumanizeId'
 import { getHumanizeRelativeDistance } from '../../../../../../utils/geolocation'
 import getThumbUrl from '../../../../../../utils/getThumbUrl'
 import { formatResultPrice } from '../../../../../../utils/price'
@@ -11,7 +12,7 @@ import { SearchHit } from '../ResultsList'
 
 const Result = ({ result, geolocation, search }) => {
   const { _geoloc = {}, objectID, offer, venue } = result
-  const { dates, id: offerId, isDigital, isDuo, label, name, priceMin, priceMax, thumbUrl } = offer
+  const { dates, isDigital, isDuo, label, name, priceMin, priceMax, thumbUrl } = offer
   const { latitude: userLatitude, longitude: userLongitude } = geolocation
   const { lat: venueLatitude, lng: venueLongitude } = _geoloc
   const { departementCode } = venue || {}
@@ -29,7 +30,7 @@ const Result = ({ result, geolocation, search }) => {
   return (
     <Link
       key={objectID}
-      to={`/recherche/resultats/details/${offerId}${search}`}
+      to={`/recherche/resultats/details/${humanizeId(objectID)}${search}`}
     >
       <div className="result-wrapper">
         <img

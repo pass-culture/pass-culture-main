@@ -49,7 +49,6 @@ export const ResultsList = ({
 export const SearchHit = {
   offer: PropTypes.shape({
     dates: PropTypes.arrayOf(PropTypes.number),
-    id: PropTypes.string,
     isDigital: PropTypes.bool,
     isDuo: PropTypes.bool,
     isEvent: PropTypes.bool,
