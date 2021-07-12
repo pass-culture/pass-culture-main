@@ -33,14 +33,17 @@ export const AppSearchFields = {
 
 // We don't use all the fields indexed. Simply retrieve the one we use.
 export const RESULT_FIELDS = {
-  [AppSearchFields.category]: { raw: {} },
   [AppSearchFields.dates]: { raw: {} },
-  [AppSearchFields.description]: { raw: {} },
   [AppSearchFields.id]: { raw: {} },
   [AppSearchFields.is_digital]: { raw: {} },
   [AppSearchFields.is_duo]: { raw: {} },
+  [AppSearchFields.is_event]: { raw: {} },
+  [AppSearchFields.label]: { raw: {} },
   [AppSearchFields.name]: { raw: {} },
   [AppSearchFields.prices]: { raw: {} },
   [AppSearchFields.thumb_url]: { raw: {} },
+  [AppSearchFields.venue_department_code]: { raw: {} },
+  [AppSearchFields.venue_name]: { raw: {} },
   [AppSearchFields.venue_position]: { raw: {} },
+  [AppSearchFields.venue_public_name]: { raw: {} },
 }
