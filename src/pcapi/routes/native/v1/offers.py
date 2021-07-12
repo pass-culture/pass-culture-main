@@ -59,7 +59,7 @@ def report_offer_reasons(user: User) -> serializers.OfferReportReasons:
 
 
 @blueprint.native_v1.route("/offers/reports", methods=["GET"])
-@spectree_serialize(on_success_status=200, api=blueprint.api)
+@spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.UserReportedOffersResponse)
 @authenticated_user_required
 def user_reported_offers(user: User) -> serializers.UserReportedOffersResponse:
     return serializers.UserReportedOffersResponse(reportedOffers=user.reported_offers)
