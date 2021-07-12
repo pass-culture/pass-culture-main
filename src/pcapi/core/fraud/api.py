@@ -121,6 +121,7 @@ def _id_check_fraud_items(content: models.JouveContent) -> List[models.FraudItem
 
 
 def _get_boolean_id_fraud_item(value: Optional[str], key: str, is_strict_ko: bool) -> models.FraudItem:
+    # TODO: refactor with jouve_backend items.
     is_valid = None
     if key == "creatorCtrl" and value == "NOT_APPLICABLE":
         is_valid = True

@@ -119,6 +119,7 @@ class FraudDetectionItem:
 def get_boolean_fraud_detection_item(
     value: Optional[str], key: str, allow_empty=True, allow_not_applicable=False
 ) -> FraudDetectionItem:
+    # TODO: cleanup required when migrating to fraud validation journey v2
     if allow_empty and not value:
         valid = True
     elif allow_not_applicable and value == "NOT_APPLICABLE":
