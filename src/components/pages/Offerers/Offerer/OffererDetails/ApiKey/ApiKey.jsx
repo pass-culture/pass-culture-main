@@ -2,10 +2,13 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import Banner from 'components/layout/Banner/Banner'
+import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import Icon from 'components/layout/Icon'
 import { ReactComponent as SpinnerIcon } from 'components/layout/SubmitButton/assets/loader.svg'
 import { deleteOffererApiKey, generateOffererApiKey } from 'repository/pcapi/pcapi'
 import { ENV_WORDING } from 'utils/config'
+
+import { ReactComponent as DeleteSvg } from './assets/illus-delete.svg'
 
 const ApiKey = ({
   savedApiKeys,
@@ -16,6 +19,7 @@ const ApiKey = ({
 }) => {
   const [newlyGeneratedKeys, setNewGeneratedKeys] = useState([])
   const [isGeneratingKey, setIsGeneratingKey] = useState(false)
+  const [apiKeyToDelete, setApiKeyToDelete] = useState(null)
 
   const generateApiKey = useCallback(async () => {
     try {
@@ -33,17 +37,21 @@ const ApiKey = ({
     }
   }, [offererId, showNotification])
 
-  const deleteApiKey = useCallback(
-    savedApiKey => async () => {
-      try {
-        await deleteOffererApiKey(savedApiKey)
-        loadOffererById(offererId)
-      } catch (e) {
-        showNotification('error', "Une erreur s'est produite, veuillez réessayer")
-      }
-    },
-    [showNotification, loadOffererById, offererId]
-  )
+  function changeApiKeyToDelete(savedApiKey) {
+    return () => {
+      setApiKeyToDelete(savedApiKey)
+    }
+  }
+
+  const confirmApiKeyDeletion = useCallback(async () => {
+    try {
+      await deleteOffererApiKey(apiKeyToDelete)
+      loadOffererById(offererId)
+    } catch (e) {
+      showNotification('error', "Une erreur s'est produite, veuillez réessayer")
+    }
+    setApiKeyToDelete(null)
+  }, [apiKeyToDelete, loadOffererById, showNotification, offererId])
 
   const copyKey = apiKeyToCopy => async () => {
     try {
@@ -100,7 +108,7 @@ const ApiKey = ({
               </span>
               <button
                 className="action  tertiary-button with-icon"
-                onClick={deleteApiKey(savedApiKey)}
+                onClick={changeApiKeyToDelete(savedApiKey)}
                 type="button"
               >
                 <Icon svg="ico-trash" />
@@ -148,6 +156,45 @@ const ApiKey = ({
       >
         {isGeneratingKey ? <SpinnerIcon /> : 'Générer une clé API'}
       </button>
+      {!!apiKeyToDelete && (
+        <DialogBox
+          extraClassNames="api-key-dialog"
+          labelledBy="api-key-deletion-dialog"
+          onDismiss={changeApiKeyToDelete(null)}
+        >
+          <DeleteSvg />
+          <div className="title">
+            {'Êtes-vous sûr de vouloir supprimer votre clé API ?'}
+          </div>
+          <div className="explanation">
+            <p>
+              {
+                "Attention, si vous supprimez cette clé, et qu'aucune autre n'a été générée, cela entraînera une rupture du service."
+              }
+            </p>
+            <br />
+            <p>
+              {'Cette action est irréversible.'}
+            </p>
+          </div>
+          <div className="actions">
+            <button
+              className="secondary-button"
+              onClick={changeApiKeyToDelete(null)}
+              type="button"
+            >
+              {'Annuler'}
+            </button>
+            <button
+              className="primary-button confirm"
+              onClick={confirmApiKeyDeletion}
+              type="button"
+            >
+              {'Confirmer la suppression'}
+            </button>
+          </div>
+        </DialogBox>
+      )}
     </div>
   )
 }

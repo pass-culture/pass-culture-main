@@ -109,13 +109,30 @@ describe('src | Offerer | ApiKey', () => {
     )
   })
 
-  it('should delete a key', async () => {
+  it('should not delete key on modal dismiss', async () => {
     await renderApiKey()
     const deleteSpy = jest.spyOn(pcapi, 'deleteOffererApiKey').mockReturnValue(null)
     const requestDataSpy = jest.spyOn(reduxSagaData, 'requestData')
+    fireEvent.click(screen.getByText('supprimer'))
 
     // when
+    fireEvent.click(screen.getByText('Annuler', { selector: 'button' }))
+
+    // then
+    expect(deleteSpy).not.toHaveBeenCalled()
+    await waitFor(() => {
+      expect(requestDataSpy).not.toHaveBeenCalledWith()
+    })
+  })
+
+  it('should delete a key on modal confirm', async () => {
+    await renderApiKey()
+    const deleteSpy = jest.spyOn(pcapi, 'deleteOffererApiKey').mockReturnValue(null)
+    const requestDataSpy = jest.spyOn(reduxSagaData, 'requestData')
     fireEvent.click(screen.getByText('supprimer'))
+
+    // when
+    fireEvent.click(screen.getByText('Confirmer la suppression', { selector: 'button' }))
 
     // then
     expect(deleteSpy).toHaveBeenCalledWith('key-prefix1')

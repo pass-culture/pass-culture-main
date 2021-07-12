@@ -63,3 +63,31 @@
     min-width: rem(180px);
   }
 }
+
+.api-key-dialog {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: rem(532px);
+  text-align: center;
+
+  .title {
+    @include gabarit();
+
+    margin-top: rem(24px);
+  }
+
+  .explanation {
+    margin-top: rem(24px);
+  }
+
+  .actions {
+    display: flex;
+    margin-top: rem(80px);
+
+    .confirm {
+      margin-left: rem(24px);
+    }
+  }
+}
