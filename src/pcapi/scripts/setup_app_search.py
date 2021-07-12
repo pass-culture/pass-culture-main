@@ -42,7 +42,7 @@ def index_offers():
     for offer in offers:
         if offer.isBookable:
             print(f"Found {offer} to add to index ({offer.name[:20]}...)")
-            documents.append(backend.serialize(offer))
+            documents.append(backend.serialize_offer(offer))
 
     if not documents:
         print("ERR: Could not find any bookable offers to index")
