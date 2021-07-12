@@ -73,54 +73,67 @@ export const loadFakeApiCategories = () => {
       {
         id: 'FILM',
         proLabel: 'Films, vidéos',
+        isSelectable: true,
       },
       {
         id: 'CINEMA',
         proLabel: 'Cinéma',
+        isSelectable: true,
       },
       {
         id: 'CONFERENCE',
         proLabel: 'Conférences, rencontres, découverte des métiers',
+        isSelectable: true,
       },
       {
         id: 'JEU',
         proLabel: 'Jeux (événements, rencontres, concours)',
+        isSelectable: true,
       },
       {
         id: 'LIVRE',
         proLabel: 'Livre',
+        isSelectable: true,
       },
       {
         id: 'MUSEE',
         proLabel: 'Musée, patrimoine, architecture, arts visuels ou contemporains',
+        isSelectable: true,
       },
       {
         id: 'MUSIQUE_LIVE',
         proLabel: 'Musique live',
+        isSelectable: true,
       },
       {
         id: 'MUSIQUE_ENREGISTREE',
         proLabel: 'Musique enregistrée',
+        isSelectable: true,
       },
       {
         id: 'PRATIQUE_ART',
         proLabel: 'Pratique artistique',
+        isSelectable: true,
       },
       {
         id: 'MEDIA',
         proLabel: 'Médias',
+        isSelectable: true,
       },
       {
         id: 'SPECTACLE',
         proLabel: 'Spectacle vivant',
+        isSelectable: true,
       },
       {
         id: 'INSTRUMENT',
         proLabel: 'Instrument de musique',
+        isSelectable: true,
       },
       {
         id: 'BEAUX_ARTS',
         proLabel: 'Beaux-arts',
+        isSelectable: true,
       },
     ],
     subcategories: [

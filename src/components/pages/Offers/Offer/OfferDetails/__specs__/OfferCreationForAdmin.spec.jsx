@@ -59,6 +59,7 @@ describe('offerDetails - Creation - admin user', () => {
           name: 'Musique',
           proLabel: 'Musique',
           appLabel: 'Musique',
+          isSelectable: true,
         },
       ],
       subcategories: [

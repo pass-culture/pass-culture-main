@@ -15,7 +15,11 @@ const OfferCategories = ({
   updateCategoriesFormValues,
 }) => {
   const categories = useSelector(state => state.offers.categories)
-  const categoriesOptions = buildSelectOptions('id', 'proLabel', categories.categories)
+  const categoriesOptions = buildSelectOptions(
+    'id',
+    'proLabel',
+    categories.categories.filter(category => category.isSelectable)
+  )
   const [subCategoriesOptions, setSubCategoriesOptions] = useState(null)
   const [subCategoryConditionalFields, setSubCategoryConditionalFields] = useState([])
 

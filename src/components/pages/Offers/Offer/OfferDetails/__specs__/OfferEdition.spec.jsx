@@ -106,6 +106,7 @@ describe('offerDetails - Edition', () => {
           name: 'Musique',
           proLabel: 'Musique',
           appLabel: 'Musique',
+          isSelectable: true,
         },
       ],
       subcategories: [
