@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-disabled-tests */
 import { DATE_FILTER } from '../../../components/pages/search/Filters/filtersEnums'
 import {
   computeTimeRangeFromHoursToSeconds,
@@ -95,8 +94,7 @@ describe('buildQueryOptions', () => {
       })
     })
 
-    // TODO(antoinewg): unskip when implementing search pagination
-    it.skip('should fetch with all given search parameters', () => {
+    it('should fetch with all given search parameters', () => {
       const geolocation = {
         latitude: 42,
         longitude: 43,
