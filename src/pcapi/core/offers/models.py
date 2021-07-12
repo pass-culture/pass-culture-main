@@ -686,11 +686,11 @@ class OfferReport(PcObject, Model):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
+    userId = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 
     user = relationship("User", foreign_keys=[userId], backref="reported_offers")
 
-    offerId = Column(BigInteger, ForeignKey("offer.id"), index=True, nullable=False)
+    offerId = Column(BigInteger, ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
 
     offer = relationship("Offer", foreign_keys=[offerId], backref="reports")
 
