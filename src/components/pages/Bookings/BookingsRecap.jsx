@@ -7,7 +7,6 @@ import Titles from 'components/layout/Titles/Titles'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
-import BookingsRecapTableLegacy from './BookingsRecapTableLegacy/BookingsRecapTableLegacy' /* eslint-disable-line react/jsx-pascal-case */
 import ChoosePreFiltersMessage from './ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import NoBookingsForPreFiltersMessage from './NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
@@ -16,12 +15,7 @@ import PreFilters from './PreFilters/PreFilters'
 
 const MAX_LOADED_PAGES = 5
 
-const BookingsRecap = ({
-  arePreFiltersEnabled,
-  isUserAdmin,
-  location,
-  showInformationNotification,
-}) => {
+const BookingsRecap = ({ isUserAdmin, location, showInformationNotification }) => {
   const [appliedPreFilters, setAppliedPreFilters] = useState({
     bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
     bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
@@ -29,7 +23,7 @@ const BookingsRecap = ({
     offerVenueId: location.state?.venueId || DEFAULT_PRE_FILTERS.offerVenueId,
   })
   const [bookingsRecap, setBookingsRecap] = useState([])
-  const [isLoading, setIsLoading] = useState(arePreFiltersEnabled ? false : true)
+  const [isLoading, setIsLoading] = useState(false)
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
 
   const loadBookingsRecap = useCallback(
@@ -39,23 +33,16 @@ const BookingsRecap = ({
       setWereBookingsRequested(true)
       setAppliedPreFilters({ ...preFilters })
 
-      // TODO(07/06/2021): To remove when 'ENABLE_BOOKINGS_PAGE_FILTERS_FIRST' feature flip has been removed
-      let bookingsFilters = {}
-      if (preFilters) {
-        bookingsFilters = {
-          venueId: preFilters.offerVenueId,
-          eventDate: preFilters.offerEventDate,
-          bookingPeriodBeginningDate: preFilters.bookingBeginningDate,
-          bookingPeriodEndingDate: preFilters.bookingEndingDate,
-        }
+      const bookingsFilters = {
+        page: 1,
+        venueId: preFilters.offerVenueId,
+        eventDate: preFilters.offerEventDate,
+        bookingPeriodBeginningDate: preFilters.bookingBeginningDate,
+        bookingPeriodEndingDate: preFilters.bookingEndingDate,
       }
 
-      let currentPage = 1
       const { pages, bookings_recap: bookingsRecap } = await pcapi
-        .loadFilteredBookingsRecap({
-          page: currentPage,
-          ...bookingsFilters,
-        })
+        .loadFilteredBookingsRecap({ ...bookingsFilters })
         .then(response => response)
         .catch(() => ({
           page: 0,
@@ -65,10 +52,10 @@ const BookingsRecap = ({
         }))
       setBookingsRecap(bookingsRecap)
 
-      while (currentPage < Math.min(pages, MAX_LOADED_PAGES)) {
-        currentPage += 1
+      while (bookingsFilters.page < Math.min(pages, MAX_LOADED_PAGES)) {
+        bookingsFilters.page += 1
         await pcapi
-          .loadFilteredBookingsRecap({ page: currentPage, ...bookingsFilters })
+          .loadFilteredBookingsRecap({ ...bookingsFilters })
           .then(({ bookings_recap }) =>
             setBookingsRecap(currentBookingsRecap =>
               [...currentBookingsRecap].concat(bookings_recap)
@@ -77,7 +64,7 @@ const BookingsRecap = ({
       }
 
       setIsLoading(false)
-      if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
+      if (bookingsFilters.page === MAX_LOADED_PAGES && bookingsFilters.page < pages) {
         showInformationNotification()
       }
     },
@@ -94,12 +81,6 @@ const BookingsRecap = ({
       })
     }
   }, [location.state, loadBookingsRecap])
-
-  useEffect(() => {
-    if (!arePreFiltersEnabled) {
-      loadBookingsRecap()
-    }
-  }, [arePreFiltersEnabled, loadBookingsRecap])
 
   const werePreFiltersCustomized = useMemo(() => {
     return (
@@ -138,48 +119,33 @@ const BookingsRecap = ({
           {'Réinitialiser les filtres'}
         </button>
       )}
-      {arePreFiltersEnabled ? (
-        <>
-          <PreFilters
-            appliedPreFilters={appliedPreFilters}
-            applyPreFilters={loadBookingsRecap}
-            hasResult={bookingsRecap.length > 0}
+      <PreFilters
+        appliedPreFilters={appliedPreFilters}
+        applyPreFilters={loadBookingsRecap}
+        hasResult={bookingsRecap.length > 0}
+        isLoading={isLoading}
+        wereBookingsRequested={wereBookingsRequested}
+      />
+      {wereBookingsRequested ? (
+        bookingsRecap.length > 0 ? (
+          <BookingsRecapTable
+            bookingsRecap={bookingsRecap}
             isLoading={isLoading}
-            wereBookingsRequested={wereBookingsRequested}
+            locationState={location.state}
           />
-          {wereBookingsRequested ? (
-            bookingsRecap.length > 0 ? (
-              <BookingsRecapTable
-                bookingsRecap={bookingsRecap}
-                isLoading={isLoading}
-                locationState={location.state}
-              />
-            ) : isLoading ? (
-              <Spinner />
-            ) : (
-              <NoBookingsForPreFiltersMessage resetPreFilters={resetPreFilters} />
-            )
-          ) : (
-            <ChoosePreFiltersMessage />
-          )}
-        </>
-      ) : bookingsRecap.length > 0 ? (
-        <BookingsRecapTableLegacy
-          bookingsRecap={bookingsRecap}
-          isLoading={isLoading}
-          locationState={location.state}
-        />
-      ) : isLoading ? (
-        <Spinner />
+        ) : isLoading ? (
+          <Spinner />
+        ) : (
+          <NoBookingsForPreFiltersMessage resetPreFilters={resetPreFilters} />
+        )
       ) : (
-        <NoBookingsMessage />
+        <ChoosePreFiltersMessage />
       )}
     </div>
   )
 }
 
 BookingsRecap.propTypes = {
-  arePreFiltersEnabled: PropTypes.bool.isRequired,
   isUserAdmin: PropTypes.bool.isRequired,
   location: PropTypes.shape({
     state: PropTypes.shape({

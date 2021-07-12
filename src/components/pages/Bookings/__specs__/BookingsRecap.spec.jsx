@@ -6,7 +6,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import { BOOKING_STATUS } from 'components/pages/Bookings/BookingsRecapTableLegacy/CellsFormatter/utils/bookingStatusConverter'
+import { BOOKING_STATUS } from 'components/pages/Bookings/BookingsRecapTable/CellsFormatter/utils/bookingStatusConverter'
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
 import { getVenuesForOfferer, loadFilteredBookingsRecap } from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -57,14 +57,7 @@ describe('components | BookingsRecap | Pro user', () => {
       },
     }
     store = configureTestStore({
-      features: {
-        list: [
-          {
-            isActive: true,
-            name: 'ENABLE_BOOKINGS_PAGE_FILTERS_FIRST',
-            nameKey: 'ENABLE_BOOKINGS_PAGE_FILTERS_FIRST',
-          },
-        ],
+      data: {
         users: [{ publicName: 'René', isAdmin: false, email: 'rené@example.com' }],
       },
     })
