@@ -18,9 +18,12 @@ class Returns200Test:
         # then
         assert response.status_code == 200
         assert list(response.json.keys()) == ["categories", "subcategories"]
-        assert len(response.json["categories"]) == 13
-        assert all(list(category_dict.keys()) == ["id", "proLabel"] for category_dict in response.json["categories"])
-        assert len(response.json["subcategories"]) == 60
+        assert len(response.json["categories"]) == 14
+        assert all(
+            list(category_dict.keys()) == ["id", "proLabel", "isSelectable"]
+            for category_dict in response.json["categories"]
+        )
+        assert len(response.json["subcategories"]) == 64
         assert all(
             list(subcategory_dict.keys())
             == [

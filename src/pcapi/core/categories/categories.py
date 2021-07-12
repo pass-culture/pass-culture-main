@@ -5,6 +5,7 @@ from dataclasses import dataclass
 class Category:
     id: str
     pro_label: str
+    is_selectable: bool = True
 
 
 # region Categories declarations
@@ -61,7 +62,11 @@ SPECTACLE = Category(
     id="SPECTACLE",
     pro_label="Spectacle vivant",
 )
-
+TECHNIQUE = Category(
+    id="TECHNIQUE",
+    pro_label="Catégorie technique",
+    is_selectable=False,
+)
 # endregion
 
 ALL_CATEGORIES = (
@@ -78,6 +83,7 @@ ALL_CATEGORIES = (
     MUSIQUE_LIVE,
     PRATIQUE_ART,
     SPECTACLE,
+    TECHNIQUE,
 )
 ALL_CATEGORIES_DICT = {category.id: category for category in ALL_CATEGORIES}
 

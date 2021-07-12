@@ -204,7 +204,7 @@ class Returns200Test:
                     "remainingQuantity": 1000,
                 }
             ],
-            "subcategoryId": None,
+            "subcategoryId": "SEANCE_CINE",
             "thumbUrl": None,
             "type": "EventType.CINEMA",
             "url": None,

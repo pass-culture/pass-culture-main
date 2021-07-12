@@ -65,7 +65,7 @@ def should_return_serialized_offers_with_relevant_informations():
                     "beginningDatetime": None,
                 }
             ],
-            "subcategoryId": None,
+            "subcategoryId": "SUPPORT_PHYSIQUE_FILM",
             "thumbUrl": "/thumb/url",
             "type": "ThingType.AUDIOVISUEL",
             "venue": {

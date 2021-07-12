@@ -16,6 +16,10 @@ def check_offer_subcategory_is_valid(offer_subcategory_id):
         api_error = ApiErrors()
         api_error.add_error("subcategory", "La sous-catégorie de cette offre est inconnue")
         raise api_error
+    if not ALL_SUBCATEGORIES_DICT[offer_subcategory_id].is_selectable:
+        api_error = ApiErrors()
+        api_error.add_error("subcategory", "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie")
+        raise api_error
 
 
 def check_offer_name_length_is_valid(offer_name: str):

@@ -10,6 +10,7 @@ from pydantic import validator
 
 from pcapi.core.bookings.api import compute_confirmation_date
 from pcapi.core.categories.conf import can_create_from_isbn
+from pcapi.core.categories.conf import get_subcategory_from_type
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import Stock
@@ -33,7 +34,7 @@ class SubcategoryResponseModel(BaseModel):
     matching_type: str
     pro_label: str
     app_label: str
-    search_group: str
+    search_group: Optional[str]
     is_event: bool
     conditional_fields: list[str]
     can_expire: bool
@@ -53,6 +54,7 @@ class SubcategoryResponseModel(BaseModel):
 class CategoryResponseModel(BaseModel):
     id: str
     pro_label: str
+    is_selectable: bool
 
     class Config:
         alias_generator = to_camel
@@ -243,7 +245,7 @@ class ListOffersOfferResponseModel(BaseModel):
     thumbUrl: Optional[str]
     productIsbn: Optional[str]
     type: str
-    subcategoryId: Optional[str]
+    subcategoryId: str
     venue: ListOffersVenueResponseModel
     status: str
     venueId: str
@@ -503,7 +505,7 @@ class GetOfferResponseModel(BaseModel):
     product: GetOfferProductResponseModel
     productId: str
     stocks: list[GetOfferStockResponseModel]
-    subcategoryId: Optional[str]
+    subcategoryId: str
     thumbUrl: Optional[str]
     type: str
     externalTicketOfficeUrl: Optional[str]
@@ -525,6 +527,11 @@ class GetOfferResponseModel(BaseModel):
         if isinstance(date_range, DateTimes):
             return date_range.datetimes
         return date_range
+
+    @classmethod
+    def from_orm(cls, offer):  # type: ignore
+        offer.subcategoryId = offer.subcategoryId or get_subcategory_from_type(offer.type)
+        return super().from_orm(offer)
 
     class Config:
         orm_mode = True

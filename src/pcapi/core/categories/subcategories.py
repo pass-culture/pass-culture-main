@@ -23,6 +23,7 @@ class SearchGroupChoices(Enum):
     SPECTACLE = "Spectacles"
     INSTRUMENT = "Instruments de musique"
     MATERIEL = "Matériel arts créatifs"
+    NONE = None
 
 
 class ReimbursementRuleChoices(Enum):
@@ -1053,6 +1054,76 @@ MATERIEL_ART_CREATIF = Subcategory(
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
 # endregion
+# region TECHNICAL
+ACTIVATION_EVENT = Subcategory(
+    id="ACTIVATION_EVENT",
+    category_id=categories.TECHNIQUE.id,
+    matching_type="EventType.ACTIVATION",
+    pro_label="Catégorie technique d'événement d'activation ",
+    app_label="Catégorie technique d'événement d'activation ",
+    search_group=SearchGroupChoices.NONE.value,
+    is_event=True,
+    conditional_fields=[],
+    can_expire=False,
+    can_be_duo=False,
+    online_offline_platform=OnlineOfflinePlatformChoices.ONLINE_OR_OFFLINE.value,
+    is_digital_deposit=False,
+    is_physical_deposit=False,
+    reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_selectable=False,
+)
+ACTIVATION_THING = Subcategory(
+    id="ACTIVATION_THING",
+    category_id=categories.TECHNIQUE.id,
+    matching_type="ThingType.ACTIVATION",
+    pro_label="Catégorie technique de thing d'activation",
+    app_label="Catégorie technique de thing d'activation",
+    search_group=SearchGroupChoices.NONE.value,
+    is_event=False,
+    conditional_fields=[],
+    can_expire=False,
+    can_be_duo=False,
+    online_offline_platform=OnlineOfflinePlatformChoices.ONLINE_OR_OFFLINE.value,
+    is_digital_deposit=False,
+    is_physical_deposit=True,
+    reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_selectable=False,
+)
+JEU_SUPPORT_PHYSIQUE = Subcategory(
+    id="JEU_SUPPORT_PHYSIQUE",
+    category_id=categories.TECHNIQUE.id,
+    matching_type="ThingType.JEUX",
+    pro_label="Catégorie technique Jeu support physique",
+    app_label="Catégorie technique Jeu support physique",
+    search_group=SearchGroupChoices.NONE.value,
+    is_event=False,
+    conditional_fields=[],
+    can_expire=False,
+    can_be_duo=False,
+    online_offline_platform=OnlineOfflinePlatformChoices.ONLINE_OR_OFFLINE.value,
+    is_digital_deposit=False,
+    is_physical_deposit=True,
+    reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_selectable=False,
+)
+OEUVRE_ART = Subcategory(
+    id="OEUVRE_ART",
+    category_id=categories.TECHNIQUE.id,
+    matching_type="ThingType.OEUVRE_ART",
+    pro_label="Catégorie technique Oeuvre d'art",
+    app_label="Catégorie technique Oeuvre d'art",
+    search_group=SearchGroupChoices.NONE.value,
+    is_event=False,
+    conditional_fields=[],
+    can_expire=True,
+    can_be_duo=False,
+    online_offline_platform=OnlineOfflinePlatformChoices.ONLINE_OR_OFFLINE.value,
+    is_digital_deposit=False,
+    is_physical_deposit=True,
+    reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_selectable=False,
+)
+# endregion
 # endregion
 
 ALL_SUBCATEGORIES = (
@@ -1069,6 +1140,8 @@ ALL_SUBCATEGORIES = (
     ABO_PRESSE_EN_LIGNE,
     ABO_SPECTACLE,
     ACHAT_INSTRUMENT,
+    ACTIVATION_EVENT,
+    ACTIVATION_THING,
     APP_CULTURELLE,
     ATELIER_PRATIQUE_ART,
     AUTRE_SUPPORT_NUMERIQUE,
@@ -1092,6 +1165,7 @@ ALL_SUBCATEGORIES = (
     FESTIVAL_MUSIQUE,
     FESTIVAL_SPECTACLE,
     JEU_EN_LIGNE,
+    JEU_SUPPORT_PHYSIQUE,
     LIVESTREAM_EVENEMENT,
     LIVESTREAM_MUSIQUE,
     LIVRE_AUDIO_PHYSIQUE,
@@ -1099,6 +1173,7 @@ ALL_SUBCATEGORIES = (
     LIVRE_PAPIER,
     LOCATION_INSTRUMENT,
     MATERIEL_ART_CREATIF,
+    OEUVRE_ART,
     PARTITION,
     PODCAST,
     RENCONTRE_JEU,

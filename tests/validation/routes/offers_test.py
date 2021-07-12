@@ -36,6 +36,14 @@ class CheckOfferSubcategoryIsValidTest:
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
+    def test_raises_api_error_when_offer_subcategory_is_not_selectable(self):
+        with pytest.raises(ApiErrors) as error:
+            check_offer_subcategory_is_valid("ACTIVATION_EVENT")
+
+        assert error.value.errors["subcategory"] == [
+            "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
+        ]
+
 
 class CheckOfferNameIsValidTest:
     def test_raises_api_error_when_offer_name_is_too_long(self):
