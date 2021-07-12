@@ -12,6 +12,7 @@ describe('mapStateToProps', () => {
     const props = { history: { push } }
     const state = {
       geolocation: { latitude: 48.8533261, longitude: 2.3451865 },
+      data: { features: [{ isActive: true, nameKey: 'USE_APP_SEARCH_ON_WEBAPP' }] },
     }
 
     // when
@@ -21,6 +22,7 @@ describe('mapStateToProps', () => {
     expect(result).toStrictEqual({
       geolocation: { latitude: 48.8533261, longitude: 2.3451865 },
       redirectToSearchMainPage: expect.any(Function),
+      useAppSearch: true,
     })
   })
 
@@ -28,11 +30,40 @@ describe('mapStateToProps', () => {
     // given
     const push = jest.fn()
     const props = { history: { push } }
+    const state = {
+      data: { features: [{ isActive: true, nameKey: 'USE_APP_SEARCH_ON_WEBAPP' }] },
+    }
 
     // when
-    mapStateToProps({}, props).redirectToSearchMainPage()
+    mapStateToProps(state, props).redirectToSearchMainPage()
 
     // then
     expect(push).toHaveBeenCalledWith('/recherche')
+  })
+
+  it('should return useAppSearch=False if the feature is disabled', () => {
+    // Given
+    const state = {
+      data: { features: [{ isActive: false, nameKey: 'USE_APP_SEARCH_ON_WEBAPP' }] },
+    }
+
+    // When
+    const props = mapStateToProps(state)
+
+    // Then
+    expect(props.useAppSearch).toBe(false)
+  })
+
+  it('should return useAppSearch=True if the feature is enabled', () => {
+    // Given
+    const state = {
+      data: { features: [{ isActive: true, nameKey: 'USE_APP_SEARCH_ON_WEBAPP' }] },
+    }
+
+    // When
+    const props = mapStateToProps(state)
+
+    // Then
+    expect(props.useAppSearch).toBe(true)
   })
 })

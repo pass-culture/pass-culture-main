@@ -130,6 +130,7 @@ class Search extends PureComponent {
             place={place}
             redirectToSearchMainPage={redirectToSearchMainPage}
             search={history.location.search}
+            useAppSearch={this.props.useAppSearch}
             userGeolocation={geolocation}
           />
         </Route>
@@ -179,6 +180,7 @@ Search.propTypes = {
   location: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
   redirectToSearchMainPage: PropTypes.func.isRequired,
+  useAppSearch: PropTypes.bool.isRequired,
 }
 
 export default Search

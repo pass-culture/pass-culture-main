@@ -16,6 +16,7 @@ import Header from '../Header/Header'
 import { EmptyResult } from './EmptyResult/EmptyResult'
 import ResultDetailContainer from './ResultsList/ResultDetail/ResultDetailContainer'
 import { ResultsList } from './ResultsList/ResultsList'
+import { fetchHomeSearch as fetchAppSearch } from '../../../../vendor/search/search'
 
 const SEARCH_RESULTS_URI = '/recherche/resultats'
 
@@ -336,7 +337,8 @@ class Results extends PureComponent {
     if (offerIsFilteredByTime) {
       options.timeRange = timeRange
     }
-    fetchAlgolia(options)
+    const fetchHits = this.props.useAppSearch ? fetchAppSearch : fetchAlgolia
+    fetchHits(options)
       .then(offers => {
         const { results } = this.state
         const { hits, nbHits, nbPages } = offers
@@ -538,6 +540,7 @@ class Results extends PureComponent {
                 updateFilters={this.updateFilters}
                 updateNumberOfActiveFilters={this.updateNumberOfActiveFilters}
                 updatePlace={this.updatePlace}
+                useAppSearch={this.props.useAppSearch}
                 userGeolocation={userGeolocation}
               />
             </div>
@@ -582,6 +585,7 @@ Results.propTypes = {
     name: PropTypes.string,
   }),
   redirectToSearchMainPage: PropTypes.func.isRequired,
+  useAppSearch: PropTypes.bool.isRequired,
   userGeolocation: PropTypes.shape({
     latitude: PropTypes.number,
     longitude: PropTypes.number,

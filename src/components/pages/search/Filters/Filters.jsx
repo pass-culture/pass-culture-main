@@ -14,6 +14,7 @@ import Checkbox from './Checkbox/Checkbox'
 import { DATE_FILTER, PRICE_FILTER, TIME_FILTER } from './filtersEnums'
 import { RadioList } from './RadioList/RadioList'
 import Toggle from './Toggle/Toggle'
+import { fetchHomeSearch as fetchAppSearch } from '../../../../vendor/search/search'
 
 export class Filters extends PureComponent {
   constructor(props) {
@@ -90,7 +91,8 @@ export class Filters extends PureComponent {
     const { showFailModal, updateFilteredOffers } = this.props
     const searchAroundUserOrPlace = !searchAround.everywhere
 
-    fetchAlgolia({
+    const fetchHits = this.props.useAppSearch ? fetchAppSearch : fetchAlgolia
+    fetchHits({
       aroundRadius,
       date,
       geolocation,
@@ -994,5 +996,6 @@ Filters.propTypes = {
   updateFilters: PropTypes.func.isRequired,
   updateNumberOfActiveFilters: PropTypes.func.isRequired,
   updatePlace: PropTypes.func.isRequired,
+  useAppSearch: PropTypes.bool.isRequired,
   userGeolocation: PropTypes.shape().isRequired,
 }

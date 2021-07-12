@@ -89,6 +89,7 @@ describe('components | Results', () => {
       },
       parse: parse,
       redirectToSearchMainPage: jest.fn(),
+      useAppSearch: false,
       userGeolocation: {
         latitude: 40.1,
         longitude: 41.1,
@@ -2270,6 +2271,7 @@ describe('components | Results', () => {
       expect(filters.prop('updateFilters')).toStrictEqual(expect.any(Function))
       expect(filters.prop('updateNumberOfActiveFilters')).toStrictEqual(expect.any(Function))
       expect(filters.prop('updatePlace')).toStrictEqual(expect.any(Function))
+      expect(filters.prop('useAppSearch')).toStrictEqual(props.useAppSearch)
       expect(filters.prop('userGeolocation')).toStrictEqual(props.userGeolocation)
     })
 

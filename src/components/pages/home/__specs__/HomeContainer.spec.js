@@ -40,7 +40,7 @@ describe('home container', () => {
       expect(props.useAppSearch).toBe(true)
     })
 
-    it('should return useAppSearch=True if the feature is disabled', () => {
+    it('should return useAppSearch=False if the feature is disabled', () => {
       // Given
       const state = {
         currentUser: new User(),

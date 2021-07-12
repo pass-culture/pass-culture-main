@@ -213,14 +213,14 @@ describe('src | components | home', () => {
     fetchHomepage.mockResolvedValue([])
 
     // when
-    await mount(
-      <MemoryRouter>
-        <Home {...props} />
-      </MemoryRouter>
+    await act(
+      async () =>
+        await mount(
+          <MemoryRouter>
+            <Home {...props} />
+          </MemoryRouter>
+        )
     )
-    await act(async () => {
-      await flushPromises()
-    })
 
     // then
     expect(fetchHomepage).toHaveBeenCalledWith({ entryId })

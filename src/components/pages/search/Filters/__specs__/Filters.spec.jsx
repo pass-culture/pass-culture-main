@@ -93,6 +93,7 @@ describe('components | Filters', () => {
       updateFilters: jest.fn(),
       updateNumberOfActiveFilters: jest.fn(),
       updatePlace: jest.fn(),
+      useAppSearch: false,
       userGeolocation: {
         latitude: 40,
         longitude: 41,
