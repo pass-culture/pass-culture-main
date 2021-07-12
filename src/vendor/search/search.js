@@ -24,3 +24,19 @@ export const fetchHomeSearch = parameters => {
     nbHits: info.meta.page.total_results,
   }))
 }
+
+// Used for the search page
+export const fetchSearch = params => {
+  const options = buildQueryOptions(params, params.page)
+
+  return client.search(params.query, options).then(response => {
+    const { meta } = response.info
+
+    return {
+      hits: response.results.map(buildAlgoliaHit),
+      nbHits: meta.page.total_results,
+      page: meta.page.current,
+      nbPages: meta.page.total_pages,
+    }
+  })
+}

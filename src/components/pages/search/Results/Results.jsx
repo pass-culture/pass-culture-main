@@ -16,7 +16,7 @@ import Header from '../Header/Header'
 import { EmptyResult } from './EmptyResult/EmptyResult'
 import ResultDetailContainer from './ResultsList/ResultDetail/ResultDetailContainer'
 import { ResultsList } from './ResultsList/ResultsList'
-import { fetchHomeSearch as fetchAppSearch } from '../../../../vendor/search/search'
+import { fetchSearch as fetchAppSearch } from '../../../../vendor/search/search'
 
 const SEARCH_RESULTS_URI = '/recherche/resultats'
 

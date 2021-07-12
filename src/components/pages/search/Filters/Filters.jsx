@@ -14,7 +14,7 @@ import Checkbox from './Checkbox/Checkbox'
 import { DATE_FILTER, PRICE_FILTER, TIME_FILTER } from './filtersEnums'
 import { RadioList } from './RadioList/RadioList'
 import Toggle from './Toggle/Toggle'
-import { fetchHomeSearch as fetchAppSearch } from '../../../../vendor/search/search'
+import { fetchSearch as fetchAppSearch } from '../../../../vendor/search/search'
 
 export class Filters extends PureComponent {
   constructor(props) {
