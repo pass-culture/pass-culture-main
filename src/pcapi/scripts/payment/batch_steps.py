@@ -180,7 +180,7 @@ def send_transactions(
     logger.info("[BATCH][PAYMENTS] Recipients of email : %s", recipients)
 
     venues_csv_path = _save_file_on_disk("venues", venues_csv, "csv")
-    xml_path = _save_file_on_disk("banque_de_france", xml_file, "csv")
+    xml_path = _save_file_on_disk("banque_de_france", xml_file, "xml")
     if not send_payment_message_email(xml_file, venues_csv, checksum, recipients):
         logger.info(
             "[BATCH][PAYMENTS] Could not send payment message email. Files have been stored at %s and %s",
