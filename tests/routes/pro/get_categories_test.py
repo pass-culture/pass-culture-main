@@ -23,7 +23,7 @@ class Returns200Test:
             list(category_dict.keys()) == ["id", "proLabel", "isSelectable"]
             for category_dict in response.json["categories"]
         )
-        assert len(response.json["subcategories"]) == 64
+        assert len(response.json["subcategories"]) == 65
         assert all(
             list(subcategory_dict.keys())
             == [

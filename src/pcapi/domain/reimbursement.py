@@ -3,6 +3,8 @@ from dataclasses import dataclass
 import datetime
 from decimal import Decimal
 
+from pcapi.core.categories import subcategories
+from pcapi.core.offers.models import Offer
 from pcapi.models import Booking
 from pcapi.models import ThingType
 
@@ -40,10 +42,7 @@ class DigitalThingsReimbursement(ReimbursementRule):
 
     def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
         offer = booking.stock.offer
-        book_offer = offer.type == str(ThingType.LIVRE_EDITION)
-        cinema_card_offer = offer.type == str(ThingType.CINEMA_CARD)
-        offer_is_an_exception = book_offer or cinema_card_offer
-        return offer.isDigital and not offer_is_an_exception
+        return offer.isDigital and not _is_offer_an_exception_to_reimbursement_rules(offer)
 
 
 class PhysicalOffersReimbursement(ReimbursementRule):
@@ -54,10 +53,7 @@ class PhysicalOffersReimbursement(ReimbursementRule):
 
     def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
         offer = booking.stock.offer
-        book_offer = offer.type == str(ThingType.LIVRE_EDITION)
-        cinema_card_offer = offer.type == str(ThingType.CINEMA_CARD)
-        offer_is_an_exception = book_offer or cinema_card_offer
-        return offer_is_an_exception or not offer.isDigital
+        return _is_offer_an_exception_to_reimbursement_rules(offer) or not offer.isDigital
 
 
 class MaxReimbursementByOfferer(ReimbursementRule):
@@ -180,3 +176,11 @@ def get_reimbursement_rule(
         candidates.append(rule)
 
     return min(candidates, key=lambda r: r.apply(booking))
+
+
+# FIXME (rchaffal, 2021-07-15): temporary workaroud before implementing subcategory reimbursement rules for all offers
+def _is_offer_an_exception_to_reimbursement_rules(offer: Offer) -> bool:
+    return (
+        offer.type in (str(ThingType.CINEMA_CARD), str(ThingType.LIVRE_EDITION))
+        or offer.subcategoryId == subcategories.MUSEE_VENTE_DISTANCE
+    )

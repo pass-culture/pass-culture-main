@@ -637,6 +637,22 @@ VISITE_VIRTUELLE = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
 )
+MUSEE_VENTE_DISTANCE = Subcategory(
+    id="MUSEE_VENTE_DISTANCE",
+    category_id=categories.MUSEE.id,
+    matching_type="ThingType.MUSEES_PATRIMOINE_ABO",
+    pro_label="Musée vente à distance",
+    app_label="Musée vente à distance",
+    search_group=SearchGroupChoices.VISITE.value,
+    is_event=False,
+    conditional_fields=[],
+    can_expire=False,
+    can_be_duo=False,
+    online_offline_platform=OnlineOfflinePlatformChoices.ONLINE.value,
+    is_digital_deposit=False,
+    is_physical_deposit=True,
+    reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+)
 # endregion
 # region MUSIQUE_LIVE
 
@@ -1173,6 +1189,7 @@ ALL_SUBCATEGORIES = (
     LIVRE_PAPIER,
     LOCATION_INSTRUMENT,
     MATERIEL_ART_CREATIF,
+    MUSEE_VENTE_DISTANCE,
     OEUVRE_ART,
     PARTITION,
     PODCAST,

@@ -209,7 +209,8 @@ class ThingType(Enum):
     MUSEES_PATRIMOINE_ABO = {
         "proLabel": "Musées, galeries, patrimoine - entrées libres, abonnements",
         "appLabel": "Musée, arts visuels et patrimoine",
-        "offlineOnly": True,
+        # MUSEES_PATRIMOINE_ABO can be now offline or online, it is not a problem because front is now using subcategory online_offline_platform parameter
+        "offlineOnly": False,
         "onlineOnly": False,
         "sublabel": "Regarder",
         "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
