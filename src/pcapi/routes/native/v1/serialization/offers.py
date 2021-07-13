@@ -258,8 +258,6 @@ class OfferReportReasons(BaseModel):
 
 
 class ReportedOffer(BaseModel):
-    id: int
-    user_id: int
     offer_id: int
     reported_at: datetime
     reason: Reason

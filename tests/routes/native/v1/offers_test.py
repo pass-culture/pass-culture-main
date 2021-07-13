@@ -491,15 +491,11 @@ class ReportedOffersTest:
         response_reports = sorted(response.json["reportedOffers"], key=lambda x: x["offerId"])
         assert response_reports == [
             {
-                "id": reports[0].id,
-                "userId": reports[0].userId,
                 "offerId": reports[0].offerId,
                 "reportedAt": reports[0].reportedAt.isoformat(),
                 "reason": reports[0].reason.value,
             },
             {
-                "id": reports[1].id,
-                "userId": reports[1].userId,
                 "offerId": reports[1].offerId,
                 "reportedAt": reports[1].reportedAt.isoformat(),
                 "reason": reports[1].reason.value,
