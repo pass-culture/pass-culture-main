@@ -57,6 +57,26 @@ SCHEMA = {
     "venue_public_name": "text",
 }
 
+SYNONYM_SET = (
+    {"anime digital network", "ADN"},
+    {"deezer", "spotify"},
+    {"shingeki no kyojin", "snk", "l'attaque des titans"},
+    {"OSC", "OCS", "netflix"},
+    {"micro", "musique"},
+    {"audible", "j'écoute malin j'écoute audible"},
+    {"canal", "canal+", "canal +", "canal plus", "netflix"},
+)
+
+
+def _build_synonyms_for_tome():
+    global SYNONYM_SET  # pylint: disable=global-statement
+    SYNONYM_SET += ({"T.", "tome"},)
+    for n in range(1, 41):
+        SYNONYM_SET += ({f"{n}", f"T{n}", f"T.{n}"},)
+
+
+_build_synonyms_for_tome()
+
 
 logger = logging.getLogger(__name__)
 
@@ -244,7 +264,7 @@ class AppSearchBackend(base.SearchBackend):
 
 class AppSearchApiClient:
     def __init__(self, host: str, api_key: str):
-        self.host = host
+        self.host = host.rstrip("/")
         self.api_key = api_key
 
     @property
@@ -255,7 +275,7 @@ class AppSearchApiClient:
     @property
     def engines_url(self):
         path = "/api/as/v1/engines"
-        return f"{self.host.rstrip('/')}{path}"
+        return f"{self.host}{path}"
 
     def create_engine(self):
         data = {"name": ENGINE_NAME, "language": ENGINE_LANGUAGE}
@@ -266,17 +286,29 @@ class AppSearchApiClient:
     @property
     def schema_url(self):
         path = f"/api/as/v1/engines/{ENGINE_NAME}/schema"
-        return f"{self.host.rstrip('/')}{path}"
+        return f"{self.host}{path}"
 
     def update_schema(self):
         response = requests.post(self.schema_url, headers=self.headers, json=SCHEMA)
         return response
 
+    # Synonyms API: https://www.elastic.co/guide/en/app-search/current/synonyms.html
+    @property
+    def synonyms_url(self):
+        path = f"/api/as/v1/engines/{ENGINE_NAME}/synonyms"
+        return f"{self.host}{path}"
+
+    def update_synonyms(self):
+        for synonym_set in SYNONYM_SET:
+            data = {"synonyms": list(synonym_set)}
+            response = requests.post(self.synonyms_url, headers=self.headers, json=data)
+            yield response
+
     # Documents API: https://www.elastic.co/guide/en/app-search/current/documents.html
     @property
     def documents_url(self):
         path = f"/api/as/v1/engines/{ENGINE_NAME}/documents"
-        return f"{self.host.rstrip('/')}{path}"
+        return f"{self.host}{path}"
 
     def create_or_update_documents(self, documents: Iterable[dict]):
         batches = [

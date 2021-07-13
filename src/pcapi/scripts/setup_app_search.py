@@ -30,6 +30,11 @@ def setup_engine():
         return
     print("Schema has been initialized.")
 
+    for response in client.update_synonyms():
+        if not _check_errors(response):
+            return
+    print("Synonyms have been set.")
+
 
 def index_offers():
     # FIXME (dbaty, 2021-07-01): late import to avoid import loop of models.
