@@ -41,12 +41,7 @@ def get_user_booking_attributes(user: User) -> dict:
 
     user_bookings = (
         Booking.query.options(
-            joinedload(Booking.stock)
-            .joinedload(Stock.offer)
-            .load_only(
-                Offer.type,
-                Offer.url,
-            )
+            joinedload(Booking.stock).joinedload(Stock.offer).load_only(Offer.type, Offer.url, Offer.productId)
         )
         .filter_by(userId=user.id)
         .order_by(db.desc(Booking.dateCreated))
@@ -61,6 +56,12 @@ def get_user_booking_attributes(user: User) -> dict:
         "date(u.last_booking_date)": _format_date(last_booking_date),
         "u.credit": int(credit.all.remaining * 100) if credit else 0,
     }
+
+    for booking in user_bookings:
+        if booking.dateUsed:
+            attributes[f"date(u.booked_product_{booking.stock.offer.productId}_date_used)"] = _format_date(
+                booking.dateUsed
+            )
 
     # A Batch tag can't be an empty list, otherwise the API returns an error
     if booking_categories:
