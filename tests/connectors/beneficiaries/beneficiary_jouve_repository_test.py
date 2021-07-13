@@ -145,9 +145,7 @@ class JouveBackendTest:
         assert api_jouve_exception.value.route == "/REST/vault/extensionmethod/VEM_GetJeuneByID"
         assert api_jouve_exception.value.status_code == 500
 
-    @pytest.mark.parametrize(
-        "jouve_field", ["birthLocationCtrl", "bodyBirthDateCtrl", "bodyFirstnameCtrl", "bodyNameCtrl"]
-    )
+    @pytest.mark.parametrize("jouve_field", ["birthLocationCtrl", "bodyBirthDateCtrl", "bodyNameCtrl"])
     @pytest.mark.parametrize("wrong_possible_value", ["NOT_APPLICABLE", "KO"])
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     def test_jouve_response_with_wrong_values_are_supiscious(self, _get_raw_content, jouve_field, wrong_possible_value):

@@ -116,13 +116,9 @@ class FraudDetectionItem:
         return f"{self.key}: {self.value} - {self.valid}"
 
 
-def get_boolean_fraud_detection_item(
-    value: Optional[str], key: str, allow_empty=True, allow_not_applicable=False
-) -> FraudDetectionItem:
+def get_boolean_fraud_detection_item(value: Optional[str], key: str, allow_empty=True) -> FraudDetectionItem:
     # TODO: cleanup required when migrating to fraud validation journey v2
     if allow_empty and not value:
-        valid = True
-    elif allow_not_applicable and value == "NOT_APPLICABLE":
         valid = True
     elif value is None or value.upper() in ("NOT_APPLICABLE", "KO", ""):
         valid = False
@@ -155,13 +151,8 @@ def get_fraud_fields(content: dict) -> dict:
             get_threshold_fraud_detection_item(content.bodyBirthDateLevel, "bodyBirthDateLevel", 100),
             get_threshold_fraud_detection_item(content.bodyNameLevel, "bodyNameLevel", 50),
             get_boolean_fraud_detection_item(content.bodyBirthDateCtrl, "bodyBirthDateCtrl"),
-            get_boolean_fraud_detection_item(content.bodyFirstnameCtrl, "bodyFirstnameCtrl"),
-            get_threshold_fraud_detection_item(content.bodyFirstnameLevel, "bodyFirstnameLevel", 50),
             get_boolean_fraud_detection_item(content.bodyNameCtrl, "bodyNameCtrl"),
             get_boolean_fraud_detection_item(content.bodyPieceNumberCtrl, "bodyPieceNumberCtrl"),
             get_threshold_fraud_detection_item(content.bodyPieceNumberLevel, "bodyPieceNumberLevel", 50),
-            get_boolean_fraud_detection_item(content.creatorCtrl, "creatorCtrl", allow_not_applicable=True),
-            get_boolean_fraud_detection_item(content.initialNumberCtrl, "initialNumberCtrl"),
-            get_boolean_fraud_detection_item(content.initialSizeCtrl, "initialSizeCtrl"),
         ],
     }

@@ -118,9 +118,7 @@ class JouveFraudCheckTest:
         db.session.refresh(user)
         assert not user.isBeneficiary
 
-    @pytest.mark.parametrize(
-        "jouve_field", ["birthLocationCtrl", "bodyBirthDateCtrl", "bodyFirstnameCtrl", "bodyNameCtrl"]
-    )
+    @pytest.mark.parametrize("jouve_field", ["birthLocationCtrl", "bodyBirthDateCtrl", "bodyNameCtrl"])
     @pytest.mark.parametrize("wrong_possible_value", ["NOT_APPLICABLE", "KO", ""])
     def test_id_check_fraud_items_wrong_values_are_supiscious(self, jouve_field, wrong_possible_value):
         jouve_content = fraud_factories.JouveContentFactory(**{jouve_field: wrong_possible_value})
