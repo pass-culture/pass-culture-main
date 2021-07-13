@@ -251,22 +251,30 @@ def update_beneficiary_mandatory_information(
 
 
 def update_user_information_from_external_source(user: User, data: fraud_models.JouveContent) -> User:
-    user.activity = data.activity
-    user.address = data.address
-    user.city = data.city
-    user.civility = "Mme" if data.gender == "F" else "M."
-    user.departementCode = PostalCode(data.postalCode).get_departement_code()
-    user.dateOfBirth = data.birthDateTxt
-    user.firstName = data.firstName
-    user.lastName = data.lastName
-    user.postalCode = data.postalCode
-    user.publicName = f"{user.firstName} {user.lastName}"
+    if data.activity:
+        user.activity = data.activity
+    if data.address:
+        user.address = data.address
+    if data.city:
+        user.city = data.city
+    if data.gender:
+        user.civility = "Mme" if data.gender == "F" else "M."
+    if data.birthDateTxt:
+        user.dateOfBirth = data.birthDateTxt
+    if data.firstName:
+        user.firstName = data.firstName
+    if data.lastName:
+        user.lastName = data.lastName
+    if data.postalCode:
+        user.postalCode = data.postalCode
+        user.departementCode = PostalCode(data.postalCode).get_departement_code()
+    if data.firstName and data.lastName:
+        user.publicName = f"{user.firstName} {user.lastName}"
 
     # update user fields to be correctly initialized
     user.hasSeenTutorials = False
     user.remove_admin_role()
 
-    user.dateOfBirth = data.birthDateTxt
     db.session.add(user)
     db.session.flush()
     return user

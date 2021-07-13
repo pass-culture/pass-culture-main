@@ -996,3 +996,22 @@ class BeneficairyInformationUpdateTest:
         assert new_user.city == jouve_data.city
         assert new_user.firstName == jouve_data.firstName
         assert new_user.lastName == jouve_data.lastName
+
+    def test_update_user_information_from_external_empty_source(self):
+        user = UserFactory(activity="Etudiant", postalCode="75001")
+        jouve_data = fraud_factories.JouveContentFactory(
+            activity=None,
+            address=None,
+            city=None,
+            departementCode=None,
+            firstName=None,
+            lastName=None,
+            postalCode=None,
+        )
+        new_user = users_api.update_user_information_from_external_source(user, jouve_data)
+
+        assert new_user.activity is not None
+        assert new_user.address is not None
+        assert new_user.city is not None
+        assert new_user.firstName is not None
+        assert new_user.lastName is not None
