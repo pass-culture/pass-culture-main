@@ -1,8 +1,8 @@
-"""add_feature_flipping_for_bookings_page_pre-filters
+"""remove_feature_flipping_for_bookings_prefilters
 
-Revision ID: 5bca073597c4
-Revises: 77d29ab6c382
-Create Date: 2021-05-28 12:34:10.591044
+Revision ID: 1ee2283828e7
+Revises: f151ee109bd4
+Create Date: 2021-07-12 15:35:34.789724
 
 """
 import enum
@@ -11,8 +11,8 @@ from pcapi.models import feature
 
 
 # revision identifiers, used by Alembic.
-revision = "5bca073597c4"
-down_revision = "77d29ab6c382"
+revision = "1ee2283828e7"
+down_revision = "f151ee109bd4"
 branch_labels = None
 depends_on = None
 
@@ -25,8 +25,8 @@ FLAG = FeatureToggle.ENABLE_BOOKINGS_PAGE_FILTERS_FIRST
 
 
 def upgrade():
-    feature.add_feature_to_database(FLAG)
+    feature.remove_feature_from_database(FLAG)
 
 
 def downgrade():
-    feature.remove_feature_from_database(FLAG)
+    feature.add_feature_to_database(FLAG)
