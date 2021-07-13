@@ -4,7 +4,6 @@ from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
-from sqlalchemy.orm import load_only
 from sqlalchemy.orm.query import Query
 
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import _is_postal_code_eligible
@@ -152,12 +151,6 @@ def find_favorites_domain_by_beneficiary(beneficiary_identifier: int) -> list[Fa
         )
         for favorite_sql_entity in favorite_sql_entities
     ]
-
-
-def get_booking_categories(user: User) -> list[str]:
-    """Get a list of a user's (unique) categories"""
-    offers = Offer.query.join(Stock).join(Booking).filter(Booking.userId == user.id).options(load_only(Offer.type))
-    return list(set(offer.type for offer in offers))
 
 
 def get_beneficiary_import_for_beneficiary(user: User) -> Optional[BeneficiaryImport]:

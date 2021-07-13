@@ -1,13 +1,16 @@
 import pytest
 
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.users.factories import UserFactory
 import pcapi.notifications.push.testing as push_testing
+from pcapi.notifications.push.user_attributes_updates import BATCH_DATETIME_FORMAT
+from pcapi.scripts.batch_update_users_attributes import format_users
 from pcapi.scripts.batch_update_users_attributes import get_users_chunks
 from pcapi.scripts.batch_update_users_attributes import run
 
 
 @pytest.mark.usefixtures("db_session")
-def test_get_users_chunks(app):
+def test_get_users_chunks():
     """
     Test that the correct number of chunks have been fetched, that each one
     does not exceed the maximum chunk size, and that all of the users have been
@@ -25,7 +28,7 @@ def test_get_users_chunks(app):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_run(app):
+def test_run():
     """
     Test that two chunks of users are used and therefore two requests are sent.
     """
@@ -33,3 +36,25 @@ def test_run(app):
     run(4)
 
     assert len(push_testing.requests) == 2
+
+
+@pytest.mark.usefixtures("db_session")
+def test_format_user():
+    user = UserFactory()
+    booking = BookingFactory(user=user)
+
+    res = format_users([user])
+
+    assert len(res) == 1
+    assert res[0].attributes == {
+        "date(u.date_created)": user.dateCreated.strftime(BATCH_DATETIME_FORMAT),
+        "date(u.date_of_birth)": user.dateOfBirth.strftime(BATCH_DATETIME_FORMAT),
+        "date(u.deposit_expiration_date)": user.deposit_expiration_date.strftime(BATCH_DATETIME_FORMAT),
+        "date(u.last_booking_date)": booking.dateCreated.strftime(BATCH_DATETIME_FORMAT),
+        "u.credit": 49000,
+        "u.departement_code": "75",
+        "u.is_beneficiary": True,
+        "u.marketing_push_subscription": True,
+        "u.postal_code": None,
+        "ut.booking_categories": ["ThingType.AUDIOVISUEL"],
+    }

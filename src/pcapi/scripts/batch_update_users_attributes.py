@@ -7,13 +7,11 @@ from itertools import islice
 import logging
 from typing import Generator
 
-from pcapi.core.users.api import get_last_booking_date
-from pcapi.core.users.repository import get_booking_categories
 from pcapi.models import User
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.user_attributes_updates import UserUpdateData
-from pcapi.notifications.push.user_attributes_updates import _format_date
 from pcapi.notifications.push.user_attributes_updates import get_user_attributes
+from pcapi.notifications.push.user_attributes_updates import get_user_booking_attributes
 
 
 logger = logging.getLogger(__name__)
@@ -45,14 +43,7 @@ def get_users_chunks(chunk_size: int) -> Generator[list[User], None, None]:
 def format_users(users: list[User]) -> list[UserUpdateData]:
     res = []
     for user in users:
-        attributes = get_user_attributes(user)
-
-        last_booking_date = get_last_booking_date(user)
-        attributes["date(u.last_booking_date)"] = _format_date(last_booking_date)
-
-        booking_categories = get_booking_categories(user)
-        if booking_categories:
-            attributes["ut.booking_categories"] = booking_categories
+        attributes = get_user_attributes(user) | get_user_booking_attributes(user)
 
         res.append(UserUpdateData(user_id=str(user.id), attributes=attributes))
     print("%d users formatted...", len(res))

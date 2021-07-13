@@ -511,11 +511,6 @@ def _build_link_for_email_change(current_email: str, new_email: str) -> str:
     )
 
 
-def get_last_booking_date(user: User) -> Optional[datetime]:
-    booking = Booking.query.filter(Booking.userId == user.id).order_by(db.desc(Booking.dateCreated)).first()
-    return booking.dateCreated if booking else None
-
-
 def get_domains_credit(user: User, bookings: list[Booking] = None) -> Optional[DomainsCredit]:
     version = user.deposit_version
     if not version or version not in LIMIT_CONFIGURATIONS:
