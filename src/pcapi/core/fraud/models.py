@@ -113,7 +113,7 @@ class UserProfilingFraudData(pydantic.BaseModel):
     tmx_risk_rating: str
     tmx_summary_reason_code: typing.Optional[typing.List[str]]
     summary_risk_score: int
-    unknown_session: str
+    unknown_session: typing.Optional[str]
 
 
 class BeneficiaryFraudCheck(PcObject, Model):

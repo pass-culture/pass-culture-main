@@ -835,7 +835,6 @@ CORRECT_RESPONSE = {
         "week": "10080",
     },
     "transaction_id": "transaction-id",
-    "unknown_session": "yes",
 }
 
 INVALID_PROFILING_RESPONSE = {

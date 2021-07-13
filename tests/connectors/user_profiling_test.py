@@ -120,6 +120,32 @@ def test_get_profiling_data(requests_mock):
     assert request_body["condition_attrib_5"] == user_profiling.AgentType.AGENT_MOBILE.value
 
 
+@override_settings(
+    USER_PROFILING_ORG_ID="fake-orgid", USER_PROFILING_API_KEY="fake_api_key", USER_PROFILING_URL=USER_PROFILING_URL
+)
+def test_get_profiling_data_without_correct_session_id(requests_mock):
+    request = user_profiling_fixtures.CORRECT_RESPONSE.copy()
+    request["unknown_session"] = "yes"
+    requests_mock.register_uri("POST", settings.USER_PROFILING_URL, json=request, status_code=200)
+
+    handler = user_profiling.UserProfilingClient()
+    profiling_data = handler.get_user_profiling_fraud_data(
+        session_id="fake-session-id",
+        user_id="fake-user-id",
+        user_email="firstname.lastname@example.com",
+        birth_date=datetime.date(1999, 6, 5),
+        phone_number="+33712345678",
+        workflow_type=user_profiling.WorkflowType.BENEFICIARY_VALIDATION,
+        ip_address="127.0.0.1",
+        line_of_business=user_profiling.LineOfBusiness.B2B,
+        transaction_id="random-transaction-id",
+        agent_type=user_profiling.AgentType.AGENT_MOBILE,
+    )
+
+    assert isinstance(profiling_data, fraud_models.UserProfilingFraudData)
+    assert profiling_data.unknown_session == "yes"
+
+
 @pytest.mark.parametrize("empty_field", ["account_email_score", "account_telephone_score"])
 @override_settings(
     USER_PROFILING_ORG_ID="fake-orgid", USER_PROFILING_API_KEY="fake_api_key", USER_PROFILING_URL=USER_PROFILING_URL
