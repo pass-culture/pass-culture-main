@@ -164,7 +164,7 @@ def _get_boolean_id_fraud_item(value: Optional[str], key: str, is_strict_ko: boo
     is_valid = None
     if key == "creatorCtrl" and value == "NOT_APPLICABLE":
         is_valid = True
-    elif value in ("NOT_APPLICABLE", "KO", ""):
+    elif value in ("NOT_APPLICABLE", "KO"):
         is_valid = False
     else:
         is_valid = value.upper() != "KO" if value else True
