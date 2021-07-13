@@ -516,12 +516,14 @@ def get_last_booking_date(user: User) -> Optional[datetime]:
     return booking.dateCreated if booking else None
 
 
-def get_domains_credit(user: User) -> Optional[DomainsCredit]:
+def get_domains_credit(user: User, bookings: list[Booking] = None) -> Optional[DomainsCredit]:
     version = user.deposit_version
     if not version or version not in LIMIT_CONFIGURATIONS:
         return None
 
-    bookings = user.get_not_cancelled_bookings()
+    if bookings == None:
+        bookings = user.get_not_cancelled_bookings()
+
     config = LIMIT_CONFIGURATIONS[version]
 
     domains_credit = DomainsCredit(

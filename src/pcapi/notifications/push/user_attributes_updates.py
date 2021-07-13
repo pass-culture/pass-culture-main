@@ -2,7 +2,13 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
+from sqlalchemy.orm import joinedload
+
+from pcapi.core.bookings.models import Booking
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
+from pcapi.models.db import db
 
 
 @dataclass
@@ -38,12 +44,24 @@ def format_booking_date(booking_date: datetime) -> Optional[str]:
 
 def get_user_booking_attributes(user: User) -> dict:
     from pcapi.core.users.api import get_domains_credit
-    from pcapi.core.users.api import get_last_booking_date
-    from pcapi.core.users.repository import get_booking_categories
 
-    credit = get_domains_credit(user)
-    last_booking_date = get_last_booking_date(user)
-    booking_categories = get_booking_categories(user)
+    user_bookings = (
+        Booking.query.options(
+            joinedload(Booking.stock)
+            .joinedload(Stock.offer)
+            .load_only(
+                Offer.type,
+                Offer.url,
+            )
+        )
+        .filter_by(userId=user.id)
+        .order_by(db.desc(Booking.dateCreated))
+        .all()
+    )
+
+    credit = get_domains_credit(user, [booking for booking in user_bookings if not booking.isCancelled])
+    last_booking_date = user_bookings[0].dateCreated if user_bookings else None
+    booking_categories = list(set(booking.stock.offer.type for booking in user_bookings))
 
     attributes = {
         "date(u.last_booking_date)": format_booking_date(last_booking_date),
