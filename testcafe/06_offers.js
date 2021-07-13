@@ -9,10 +9,12 @@ import { fetchSandbox } from './helpers/sandboxes'
 const nameInput = Selector('.offer-form [name="name"]')
 const offererInput = Selector('.offer-form [name="offererId"]')
 const offererOption = Selector('.offer-form [name="offererId"] option')
-const typeInput = Selector('.offer-form [name="type"]')
+const categoryInput = Selector('.offer-form [name="categoryId"]')
+const subcategoryInput = Selector('.offer-form [name="subcategoryId"]')
+const subcategoryOption = Selector('.offer-form [name="subcategoryId"] option')
 const venueInput = Selector('.offer-form [name="venueId"]')
 const venueOption = Selector('.offer-form [name="venueId"] option')
-const typeOption = Selector('.offer-form [name="type"] option')
+const categoryOption = Selector('.offer-form [name="categoryId"] option')
 const durationMinutesInput = Selector('.offer-form [name="durationMinutes"]')
 const descriptionInput = Selector('.offer-form [name="description"]')
 const isDuo = Selector('.offer-form [name="isDuo"]')
@@ -80,8 +82,10 @@ test('je peux créer une offre de type événement', async t => {
   await navigateToNewOfferAs(user, offerer, venue, userRole)(t)
 
   await t
-    .click(typeInput)
-    .click(typeOption.withText('Conférences, rencontres et découverte des métiers'))
+    .click(categoryInput)
+    .click(categoryOption.withText('Conférences, rencontres, découverte des métiers'))
+    .click(subcategoryInput)
+    .click(subcategoryOption.withText('Conférence'))
     .typeText(nameInput, 'Rencontre avec Franck Lepage')
     .click(offererInput)
     .click(offererOption.withText(offerer.name))
@@ -109,8 +113,10 @@ test('je peux créer une offre avec des sous-types', async t => {
   await navigateToNewOfferAs(user, offerer, venue)(t)
 
   await t
-    .click(typeInput)
-    .click(typeOption.withText('Musique - concerts, festivals'))
+    .click(categoryInput)
+    .click(categoryOption.withText('Musique live'))
+    .click(subcategoryInput)
+    .click(subcategoryOption.withText('Concert'))
     .typeText(nameInput, 'Concert de PNL Unplugged')
     .click(musicTypeInput)
     .click(musicTypeOption.withText(eventMusicType))
@@ -136,8 +142,10 @@ test('une offre Event est duo par défaut', async t => {
   await navigateToNewOfferAs(user, offerer, venue)(t)
 
   await t
-    .click(typeInput)
-    .click(typeOption.withText('Spectacle vivant')) // choose an event
+    .click(categoryInput)
+    .click(categoryOption.withText('Spectacle vivant')) // choose an event
+    .click(subcategoryInput)
+    .click(subcategoryOption.withText('Festival'))
     .typeText(nameInput, 'Offre Duo')
     .expect(isDuo.checked)
     .ok()
@@ -208,8 +216,10 @@ test("Je suis empêché de quitter la création d'offre sans confirmation", asyn
   await navigateToNewOfferAs(user, null, null, userRole)(t)
 
   await t
-    .click(typeInput)
-    .click(typeOption.withText('Audiovisuel - films sur supports physiques et VOD'))
+    .click(categoryInput)
+    .click(categoryOption.withText('Films, vidéos'))
+    .click(subcategoryInput)
+    .click(subcategoryOption.withText('Support physique (DVD, Bluray...)'))
     .typeText(nameInput, 'Rencontre avec Franck Lepage')
     .click(offererInput)
     .click(offererOption.withText(offerer.name))
@@ -240,8 +250,10 @@ test("Je peux quitter la création d'offre avec confirmation", async t => {
   await navigateToNewOfferAs(user, null, null, userRole)(t)
 
   await t
-    .click(typeInput)
-    .click(typeOption.withText('Audiovisuel - films sur supports physiques et VOD'))
+    .click(categoryInput)
+    .click(categoryOption.withText('Films, vidéos'))
+    .click(subcategoryInput)
+    .click(subcategoryOption.withText('Support physique (DVD, Bluray...)'))
     .typeText(nameInput, 'Rencontre avec Franck Lepage')
     .click(offererInput)
     .click(offererOption.withText(offerer.name))
@@ -266,8 +278,10 @@ test('Je peux créer une offre avec médiation', async t => {
   await navigateToNewOfferAs(user, null, null, userRole)(t)
 
   await t
-    .click(typeInput)
-    .click(typeOption.withText('Audiovisuel - films sur supports physiques et VOD'))
+    .click(categoryInput)
+    .click(categoryOption.withText('Films, vidéos'))
+    .click(subcategoryInput)
+    .click(subcategoryOption.withText('Support physique (DVD, Bluray...)'))
     .typeText(nameInput, 'Rencontre avec Franck Lepage')
     .click(thumbnailButton)
     .click(importFromUrlButton)
@@ -295,8 +309,10 @@ test("Je suis redirigé sur la liste des offres si je clique sur retour à parti
   await navigateToNewOfferAs(user, null, null, userRole)(t)
 
   await t
-    .click(typeInput)
-    .click(typeOption.withText('Audiovisuel - films sur supports physiques et VOD'))
+    .click(categoryInput)
+    .click(categoryOption.withText('Films, vidéos'))
+    .click(subcategoryInput)
+    .click(subcategoryOption.withText('Support physique (DVD, Bluray...)'))
     .typeText(nameInput, 'Rencontre avec Franck Lepage')
 
   await goBack()
@@ -319,8 +335,10 @@ test("Je suis redirigé sur la liste des offres si je clique sur retour à parti
   await navigateToNewOfferAs(user, null, null, userRole)(t)
 
   await t
-    .click(typeInput)
-    .click(typeOption.withText('Audiovisuel - films sur supports physiques et VOD'))
+    .click(categoryInput)
+    .click(categoryOption.withText('Films, vidéos'))
+    .click(subcategoryInput)
+    .click(subcategoryOption.withText('Support physique (DVD, Bluray...)'))
     .typeText(nameInput, 'Rencontre avec Franck Lepage')
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
@@ -347,8 +365,10 @@ test("Je suis redirigé sur la liste des offres si je clique sur retour à parti
   await navigateToNewOfferAs(user, null, null, userRole)(t)
 
   await t
-    .click(typeInput)
-    .click(typeOption.withText('Audiovisuel - films sur supports physiques et VOD'))
+    .click(categoryInput)
+    .click(categoryOption.withText('Films, vidéos'))
+    .click(subcategoryInput)
+    .click(subcategoryOption.withText('Support physique (DVD, Bluray...)'))
     .typeText(nameInput, 'Rencontre avec Franck Lepage')
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
@@ -381,8 +401,10 @@ test('Je suis redirigé sur la liste des offres si je clique sur retour à parti
   await navigateToNewOfferAs(user, null, null, userRole)(t)
 
   await t
-    .click(typeInput)
-    .click(typeOption.withText('Audiovisuel - films sur supports physiques et VOD'))
+    .click(categoryInput)
+    .click(categoryOption.withText('Films, vidéos'))
+    .click(subcategoryInput)
+    .click(subcategoryOption.withText('Support physique (DVD, Bluray...)'))
     .typeText(nameInput, 'Rencontre avec Franck Lepage')
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
