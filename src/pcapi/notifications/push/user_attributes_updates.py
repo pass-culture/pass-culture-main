@@ -27,19 +27,13 @@ def get_user_attributes(user: User) -> dict:
     return {
         "u.credit": int(credit.all.remaining * 100) if credit else 0,
         "u.departement_code": user.departementCode,
-        "date(u.date_of_birth)": user.dateOfBirth.strftime(BATCH_DATETIME_FORMAT) if user.dateOfBirth else None,
+        "date(u.date_of_birth)": _format_date(user.dateOfBirth),
         "u.postal_code": user.postalCode,
-        "date(u.date_created)": user.dateCreated.strftime(BATCH_DATETIME_FORMAT),
+        "date(u.date_created)": _format_date(user.dateCreated),
         "u.marketing_push_subscription": user.get_notification_subscriptions().marketing_push,
         "u.is_beneficiary": user.isBeneficiary,
-        "date(u.deposit_expiration_date)": user.deposit_expiration_date.strftime(BATCH_DATETIME_FORMAT)
-        if user.deposit_expiration_date
-        else None,
+        "date(u.deposit_expiration_date)": _format_date(user.deposit_expiration_date),
     }
-
-
-def format_booking_date(booking_date: datetime) -> Optional[str]:
-    return booking_date.strftime(BATCH_DATETIME_FORMAT) if booking_date else None
 
 
 def get_user_booking_attributes(user: User) -> dict:
@@ -64,7 +58,7 @@ def get_user_booking_attributes(user: User) -> dict:
     booking_categories = list(set(booking.stock.offer.type for booking in user_bookings))
 
     attributes = {
-        "date(u.last_booking_date)": format_booking_date(last_booking_date),
+        "date(u.last_booking_date)": _format_date(last_booking_date),
         "u.credit": int(credit.all.remaining * 100) if credit else 0,
     }
 
@@ -73,3 +67,7 @@ def get_user_booking_attributes(user: User) -> dict:
         attributes["ut.booking_categories"] = booking_categories
 
     return attributes
+
+
+def _format_date(date: datetime) -> Optional[str]:
+    return date.strftime(BATCH_DATETIME_FORMAT) if date else None

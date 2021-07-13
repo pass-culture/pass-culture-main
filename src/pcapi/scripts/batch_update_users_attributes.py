@@ -12,7 +12,7 @@ from pcapi.core.users.repository import get_booking_categories
 from pcapi.models import User
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.user_attributes_updates import UserUpdateData
-from pcapi.notifications.push.user_attributes_updates import format_booking_date
+from pcapi.notifications.push.user_attributes_updates import _format_date
 from pcapi.notifications.push.user_attributes_updates import get_user_attributes
 
 
@@ -48,7 +48,7 @@ def format_users(users: list[User]) -> list[UserUpdateData]:
         attributes = get_user_attributes(user)
 
         last_booking_date = get_last_booking_date(user)
-        attributes["date(u.last_booking_date)"] = format_booking_date(last_booking_date)
+        attributes["date(u.last_booking_date)"] = _format_date(last_booking_date)
 
         booking_categories = get_booking_categories(user)
         if booking_categories:
