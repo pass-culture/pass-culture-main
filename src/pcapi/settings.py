@@ -159,6 +159,8 @@ BATCH_SECRET_API_KEY = os.environ.get("BATCH_SECRET_API_KEY", "")
 
 # SENDINBLUE
 SENDINBLUE_API_KEY = os.environ.get("SENDINBLUE_API_KEY", "")
+SENDINBLUE_YOUNG_CONTACT_LIST_ID = int(os.environ.get("SENDINBLUE_YOUNG_CONTACT_LIST_ID", 4))
+
 
 # RECAPTCHA
 RECAPTCHA_LICENCE_MINIMAL_SCORE = float(os.environ.get("RECAPTCHA_LICENCE_MINIMAL_SCORE", 0.5))
@@ -265,6 +267,9 @@ GCP_PROJECT = os.environ.get("GCP_PROJECT", "")
 GCP_REGION = os.environ.get("GCP_REGION", "europe-west1")
 GCP_REGION_CLOUD_TASK = os.environ.get("GCP_REGION_CLOUD_TASK", "europe-west3")
 GCP_ID_CHECK_CLOUD_TASK_NAME = os.environ.get("GCP_ID_CHECK_CLOUD_TASK_NAME", "idcheck-prod")
+GCP_SENDINBLUE_CONTACTS_QUEUE_NAME = os.environ.get(
+    "GCP_SENDINBLUE_CONTACTS_QUEUE_NAME", "sendinblue-contacts-queue-prod"
+)
 
 # RATE LIMITER
 RATE_LIMIT_BY_EMAIL = os.environ.get("RATE_LIMIT_BY_EMAIL", "10/minute")

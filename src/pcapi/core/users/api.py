@@ -28,6 +28,7 @@ from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.payments.api as payment_api
+from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import NotificationSubscriptions
@@ -196,6 +197,7 @@ def create_account(
     logger.info("Created user account", extra={"user": user.id})
 
     update_user_attributes_job.delay(user.id)
+    update_external_user(user)
 
     if not is_email_validated and send_activation_mail:
         request_email_confirmation(user)

@@ -21,6 +21,7 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
 import pcapi.core.search.testing as search_testing
 import pcapi.core.testing
+from pcapi.core.users import testing as users_testing
 from pcapi.flask_app import admin
 from pcapi.install_database_extensions import install_database_extensions
 from pcapi.local_providers.install import install_local_providers
@@ -100,6 +101,7 @@ def clear_outboxes():
         push_notifications_testing.reset_requests()
         search_testing.reset_search_store()
         sms_notifications_testing.reset_requests()
+        users_testing.reset_sendinblue_requests()
 
 
 @pytest.fixture(autouse=True)

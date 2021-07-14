@@ -23,6 +23,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import testing as users_testing
 from pcapi.core.users.api import create_phone_validation_token
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.factories import BeneficiaryImportFactory
@@ -386,6 +387,7 @@ class AccountCreationTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
         assert len(push_testing.requests) == 1
+        assert len(users_testing.sendinblue_requests) == 1
 
     @override_features(WHOLE_FRANCE_OPENING=True)
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
