@@ -41,7 +41,7 @@ def task(queue: str, path: str):
 
 
 def _define_handler(f, path, payload_type):
-    @cloud_task_api.route(path, methods=["POST"])
+    @cloud_task_api.route(path, methods=["POST"], endpoint=path)
     @spectree_serialize(on_success_status=204)
     def handle_task(body: payload_type):
         queue_name = request.headers.get("HTTP_X_CLOUDTASKS_QUEUENAME")

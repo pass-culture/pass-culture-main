@@ -64,7 +64,7 @@ class CloudTaskDecoratorTest:
         inner_task = MagicMock()
         generate_task(inner_task)
 
-        route_helper.assert_called_once_with("/void_task", methods=["POST"])
+        route_helper.assert_called_once_with("/void_task", methods=["POST"], endpoint="/void_task")
 
         route_function = route_wrapper.call_args_list[0].args[0]
 
