@@ -29,7 +29,7 @@ export const fetchHomeSearch = parameters => {
 export const fetchSearch = params => {
   const options = buildQueryOptions(params, params.page)
 
-  return client.search(params.query, options).then(response => {
+  return client.search(params.keywords, options).then(response => {
     const { meta } = response.info
 
     return {
