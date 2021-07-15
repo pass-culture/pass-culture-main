@@ -76,12 +76,18 @@ def _get_raw_content(application_id: str) -> dict:
     return response.json()
 
 
-def get_application_content(application_id: str) -> JouveContent:
+def get_application_content(application_id: str, ignore_id_piece_number_field: bool = False) -> JouveContent:
     application_content = _get_raw_content(application_id)
+
     try:
-        return JouveContent(**application_content)
+        jouve_content = JouveContent(**application_content)
     except ValidationError as exc:
         raise JouveContentValidationError(str(exc), exc.errors)
+
+    if ignore_id_piece_number_field:
+        jouve_content.bodyPieceNumber = None
+
+    return jouve_content
 
 
 def get_subscription_from_content(content: JouveContent) -> BeneficiaryPreSubscription:

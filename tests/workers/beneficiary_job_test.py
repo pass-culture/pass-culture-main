@@ -12,4 +12,6 @@ def test_calls_use_case(mocked_create_beneficiary_use_case):
     beneficiary_job(application_id)
 
     # Then
-    mocked_create_beneficiary_use_case.assert_called_once_with(application_id, True, False)
+    mocked_create_beneficiary_use_case.assert_called_once_with(
+        application_id, run_fraud_detection=True, ignore_id_piece_number_field=False, fraud_detection_ko=False
+    )

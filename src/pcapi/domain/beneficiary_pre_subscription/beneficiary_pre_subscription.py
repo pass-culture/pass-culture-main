@@ -15,7 +15,7 @@ class BeneficiaryPreSubscription:
     date_of_birth: datetime
     email: str
     first_name: str
-    id_piece_number: str
+    id_piece_number: Optional[str]
     last_name: str
     phone_number: str
     postal_code: str

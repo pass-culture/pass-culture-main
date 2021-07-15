@@ -108,11 +108,13 @@ def on_identity_fraud_check_result(
 
 
 def _validate_id_piece_number_format_fraud_item(id_piece_number):
-    if not id_piece_number.strip():
-        return models.FraudItem(status=models.FraudStatus.SUSPICIOUS, detail="La Piece d'identité est vide")
+    if not id_piece_number or not id_piece_number.strip():
+        return models.FraudItem(
+            status=models.FraudStatus.SUSPICIOUS, detail="Le numéro de la pièce d'identité est vide"
+        )
     if not re.match(r"^\w{9,10}|\w{12}$", id_piece_number):
         return models.FraudItem(
-            status=models.FraudStatus.SUSPICIOUS, detail="Le format de la pièce d'identité n'est pas valide"
+            status=models.FraudStatus.SUSPICIOUS, detail="Le format du numéro de la pièce d'identité n'est pas valide"
         )
     return models.FraudItem(status=models.FraudStatus.OK, detail=None)
 

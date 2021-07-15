@@ -26,9 +26,17 @@ class CreateBeneficiaryFromApplication:
     def __init__(self) -> None:
         self.beneficiary_repository = BeneficiarySQLRepository()
 
-    def execute(self, application_id: int, run_fraud_detection: bool = True, fraud_detection_ko: bool = False) -> None:
+    def execute(
+        self,
+        application_id: int,
+        run_fraud_detection: bool = True,
+        ignore_id_piece_number_field: bool = False,
+        fraud_detection_ko: bool = False,
+    ) -> None:
         try:
-            jouve_content = jouve_backend.get_application_content(application_id)
+            jouve_content = jouve_backend.get_application_content(
+                application_id, ignore_id_piece_number_field=ignore_id_piece_number_field
+            )
             beneficiary_pre_subscription = jouve_backend.get_subscription_from_content(jouve_content)
         except jouve_backend.ApiJouveException as api_jouve_exception:
             logger.error(
@@ -62,7 +70,11 @@ class CreateBeneficiaryFromApplication:
                 logger.exception("Error on jouve result: %s", exc)
 
         try:
-            validate(beneficiary_pre_subscription, preexisting_account=preexisting_account)
+            validate(
+                beneficiary_pre_subscription,
+                preexisting_account=preexisting_account,
+                ignore_id_piece_number_field=ignore_id_piece_number_field,
+            )
             if fraud_detection_ko:
                 raise FraudDetected("Forced by 'fraud_detection_ko' script argument")
             if run_fraud_detection:

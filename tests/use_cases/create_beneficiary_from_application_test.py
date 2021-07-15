@@ -596,3 +596,33 @@ def test_id_piece_number_wrong_format(mocked_get_content, id_piece_number):
     assert len(mails_testing.outbox) == 1
     assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2905960
     assert mails_testing.outbox[0].sent_data["Mj-campaign"] == "dossier-en-analyse"
+
+
+@patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
+@pytest.mark.usefixtures("db_session")
+def test_id_piece_number_by_pass(
+    mocked_get_content,
+    app,
+):
+    # Given
+    ID_PIECE_NUMBER = "NOT_APPLICABLE"
+    subscribing_user = UserFactory(
+        isBeneficiary=False,
+        dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
+        email=BASE_JOUVE_CONTENT["email"],
+    )
+    UserFactory(idPieceNumber=ID_PIECE_NUMBER)
+    UserFactory(idPieceNumber=None)
+    mocked_get_content.return_value = BASE_JOUVE_CONTENT | {"bodyPieceNumber": ID_PIECE_NUMBER}
+
+    # When
+    create_beneficiary_from_application.execute(BASE_APPLICATION_ID, ignore_id_piece_number_field=True)
+
+    # Then
+    beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.beneficiary == subscribing_user).first()
+
+    assert beneficiary_import.currentStatus == ImportStatus.CREATED
+    assert subscribing_user.isBeneficiary
+    assert not subscribing_user.idPieceNumber
+
+    assert len(mails_testing.outbox) == 1

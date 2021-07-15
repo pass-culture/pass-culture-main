@@ -106,13 +106,18 @@ def _check_id_piece_number_is_unique(beneficiary_pre_subscription: BeneficiaryPr
         raise IdPieceNumberDuplicate(f"id piece number n°{beneficiary_pre_subscription.id_piece_number} already taken")
 
 
-def validate(beneficiary_pre_subscription: BeneficiaryPreSubscription, preexisting_account: User = None) -> None:
+def validate(
+    beneficiary_pre_subscription: BeneficiaryPreSubscription,
+    preexisting_account: User = None,
+    ignore_id_piece_number_field: bool = False,
+) -> None:
     _check_department_is_eligible(beneficiary_pre_subscription)
     if not preexisting_account:
         _check_email_is_not_taken(beneficiary_pre_subscription)
     else:
         if preexisting_account.isBeneficiary or not preexisting_account.isEmailValidated:
             raise BeneficiaryIsADuplicate(f"Email {beneficiary_pre_subscription.email} is already taken.")
-    _check_id_piece_number_format(beneficiary_pre_subscription)
     _check_not_a_duplicate(beneficiary_pre_subscription)
-    _check_id_piece_number_is_unique(beneficiary_pre_subscription)
+    if not ignore_id_piece_number_field:
+        _check_id_piece_number_format(beneficiary_pre_subscription)
+        _check_id_piece_number_is_unique(beneficiary_pre_subscription)
