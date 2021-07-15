@@ -129,21 +129,7 @@ class Returns200Test:
         mocked_send_activation_email.assert_not_called()
         mocked_send_accepted_as_beneficiary_email.assert_called_once()
 
-        assert push_testing.requests == [
-            {
-                "user_id": beneficiary.id,
-                "attribute_values": {
-                    "u.credit": 50000,
-                    "u.departement_code": "35",
-                    "date(u.date_of_birth)": "1995-05-22T00:00:00",
-                    "u.postal_code": "35123",
-                    "date(u.date_created)": beneficiary.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "u.marketing_push_subscription": True,
-                    "u.is_beneficiary": True,
-                    "date(u.deposit_expiration_date)": "2015-05-15T09:00:00",
-                },
-            }
-        ]
+        assert len(push_testing.requests) == 1
 
     @override_features(FORCE_PHONE_VALIDATION=True)
     @patch("pcapi.use_cases.create_beneficiary_from_application.send_accepted_as_beneficiary_email")
@@ -207,21 +193,7 @@ class Returns200Test:
         mocked_send_activation_email.assert_called_once()
         mocked_send_accepted_as_beneficiary_email.assert_not_called()
 
-        assert push_testing.requests == [
-            {
-                "user_id": user.id,
-                "attribute_values": {
-                    "u.credit": 0,
-                    "u.departement_code": "35",
-                    "date(u.date_of_birth)": "1995-05-22T00:00:00",
-                    "u.postal_code": "35123",
-                    "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "u.marketing_push_subscription": True,
-                    "u.is_beneficiary": False,
-                    "date(u.deposit_expiration_date)": None,
-                },
-            }
-        ]
+        assert len(push_testing.requests) == 1
 
 
 class Returns400Test:

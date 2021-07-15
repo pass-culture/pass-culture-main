@@ -26,7 +26,6 @@ from pcapi.repository import transaction
 from pcapi.utils.mailing import MailServiceException
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
 from pcapi.workers.push_notification_job import update_user_attributes_job
-from pcapi.workers.push_notification_job import update_user_bookings_attributes_job
 from pcapi.workers.user_emails_job import send_booking_cancellation_emails_to_user_and_offerer_job
 
 from . import validation
@@ -122,7 +121,7 @@ def book_offer(
 
     search.async_index_offer_ids([stock.offerId])
 
-    update_user_bookings_attributes_job.delay(beneficiary.id)
+    update_user_attributes_job.delay(beneficiary.id)
 
     return booking
 

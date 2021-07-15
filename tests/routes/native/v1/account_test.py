@@ -385,21 +385,7 @@ class AccountCreationTest:
         mocked_check_recaptcha_token_is_valid.assert_called()
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
-        assert push_testing.requests == [
-            {
-                "attribute_values": {
-                    "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "date(u.date_of_birth)": "1960-12-31T00:00:00",
-                    "date(u.deposit_expiration_date)": None,
-                    "u.credit": 0,
-                    "u.departement_code": None,
-                    "u.is_beneficiary": False,
-                    "u.marketing_push_subscription": True,
-                    "u.postal_code": None,
-                },
-                "user_id": user.id,
-            }
-        ]
+        assert len(push_testing.requests) == 1
 
     @override_features(WHOLE_FRANCE_OPENING=True)
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
@@ -565,21 +551,7 @@ class AccountCreationBeforeGrandOpeningTest:
         assert user.externalIds == {"apps_flyer": {"platform": "SOME-PLATFORM", "user": "some-id"}}
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
-        assert push_testing.requests == [
-            {
-                "attribute_values": {
-                    "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "date(u.date_of_birth)": "1960-12-31T00:00:00",
-                    "date(u.deposit_expiration_date)": None,
-                    "u.credit": 0,
-                    "u.departement_code": "93",
-                    "u.is_beneficiary": False,
-                    "u.marketing_push_subscription": True,
-                    "u.postal_code": "93000",
-                },
-                "user_id": user.id,
-            }
-        ]
+        assert len(push_testing.requests) == 1
 
     @override_features(WHOLE_FRANCE_OPENING=False)
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
@@ -639,21 +611,7 @@ class UserProfileUpdateTest:
         assert user.get_notification_subscriptions().marketing_push
         assert not user.get_notification_subscriptions().marketing_email
 
-        assert push_testing.requests == [
-            {
-                "attribute_values": {
-                    "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "date(u.date_of_birth)": "2000-01-01T00:00:00",
-                    "date(u.deposit_expiration_date)": user.deposit.expirationDate.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "u.credit": 50000,
-                    "u.departement_code": "75",
-                    "u.is_beneficiary": True,
-                    "u.marketing_push_subscription": True,
-                    "u.postal_code": None,
-                },
-                "user_id": user.id,
-            }
-        ]
+        assert len(push_testing.requests) == 1
 
 
 class CulturalSurveyTest:

@@ -23,22 +23,6 @@ BATCH_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 def get_user_attributes(user: User) -> dict:
     from pcapi.core.users.api import get_domains_credit
 
-    credit = get_domains_credit(user)
-    return {
-        "u.credit": int(credit.all.remaining * 100) if credit else 0,
-        "u.departement_code": user.departementCode,
-        "date(u.date_of_birth)": _format_date(user.dateOfBirth),
-        "u.postal_code": user.postalCode,
-        "date(u.date_created)": _format_date(user.dateCreated),
-        "u.marketing_push_subscription": user.get_notification_subscriptions().marketing_push,
-        "u.is_beneficiary": user.isBeneficiary,
-        "date(u.deposit_expiration_date)": _format_date(user.deposit_expiration_date),
-    }
-
-
-def get_user_booking_attributes(user: User) -> dict:
-    from pcapi.core.users.api import get_domains_credit
-
     user_bookings = (
         Booking.query.options(
             joinedload(Booking.stock).joinedload(Stock.offer).load_only(Offer.type, Offer.url, Offer.productId)
@@ -53,8 +37,15 @@ def get_user_booking_attributes(user: User) -> dict:
     booking_categories = list(set(booking.stock.offer.type for booking in user_bookings))
 
     attributes = {
-        "date(u.last_booking_date)": _format_date(last_booking_date),
         "u.credit": int(credit.all.remaining * 100) if credit else 0,
+        "u.departement_code": user.departementCode,
+        "date(u.date_of_birth)": _format_date(user.dateOfBirth),
+        "u.postal_code": user.postalCode,
+        "date(u.date_created)": _format_date(user.dateCreated),
+        "u.marketing_push_subscription": user.get_notification_subscriptions().marketing_push,
+        "u.is_beneficiary": user.isBeneficiary,
+        "date(u.deposit_expiration_date)": _format_date(user.deposit_expiration_date),
+        "date(u.last_booking_date)": _format_date(last_booking_date),
     }
 
     for booking in user_bookings:

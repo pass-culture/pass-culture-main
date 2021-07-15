@@ -339,21 +339,7 @@ class ProcessBeneficiaryApplicationTest:
         assert first.civility == "Mme"
         assert first.activity == "Étudiant"
 
-        assert push_testing.requests == [
-            {
-                "attribute_values": {
-                    "date(u.date_created)": first.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "date(u.date_of_birth)": "2000-05-01T00:00:00",
-                    "date(u.deposit_expiration_date)": first.deposit.expirationDate.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "u.credit": 30000,
-                    "u.departement_code": "93",
-                    "u.is_beneficiary": True,
-                    "u.marketing_push_subscription": True,
-                    "u.postal_code": "93130",
-                },
-                "user_id": first.id,
-            }
-        ]
+        assert len(push_testing.requests) == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_an_import_status_is_saved_if_beneficiary_is_created(self, app):
@@ -771,9 +757,6 @@ class RunIntegrationTest:
         assert beneficiary_import.beneficiary == user
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert len(push_testing.requests) == 1
-        assert push_testing.requests[0]["attribute_values"][
-            "date(u.date_of_birth)"
-        ] == self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
 
     @override_features(FORCE_PHONE_VALIDATION=True)
     @patch(
@@ -824,21 +807,7 @@ class RunIntegrationTest:
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert len(push_testing.requests) == 1
 
-        assert push_testing.requests == [
-            {
-                "attribute_values": {
-                    "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "date(u.date_of_birth)": date_of_birth,
-                    "date(u.deposit_expiration_date)": None,
-                    "u.credit": 0,
-                    "u.departement_code": "93",
-                    "u.is_beneficiary": False,
-                    "u.marketing_push_subscription": True,
-                    "u.postal_code": "93450",
-                },
-                "user_id": user.id,
-            }
-        ]
+        assert len(push_testing.requests) == 1
 
     @patch(
         "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
@@ -889,21 +858,7 @@ class RunIntegrationTest:
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert len(push_testing.requests) == 1
 
-        assert push_testing.requests == [
-            {
-                "attribute_values": {
-                    "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "date(u.date_of_birth)": date_of_birth,
-                    "date(u.deposit_expiration_date)": user.deposit.expirationDate.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "u.credit": 30000,
-                    "u.departement_code": "93",
-                    "u.is_beneficiary": True,
-                    "u.marketing_push_subscription": True,
-                    "u.postal_code": "93450",
-                },
-                "user_id": user.id,
-            }
-        ]
+        assert len(push_testing.requests) == 1
 
     @override_features(FORCE_PHONE_VALIDATION=False)
     @patch(

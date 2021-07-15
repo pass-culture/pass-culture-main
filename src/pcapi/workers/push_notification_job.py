@@ -9,7 +9,6 @@ from pcapi.notifications.push.transactional_notifications import get_bookings_ca
 from pcapi.notifications.push.transactional_notifications import get_offer_notification_data
 from pcapi.notifications.push.transactional_notifications import get_tomorrow_stock_notification_data
 from pcapi.notifications.push.user_attributes_updates import get_user_attributes
-from pcapi.notifications.push.user_attributes_updates import get_user_booking_attributes
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 
@@ -25,16 +24,6 @@ def update_user_attributes_job(user_id: int, *extra_providers: Callable[[User], 
         return
 
     update_user_attributes(user.id, get_user_attributes(user))
-
-
-@job(worker.default_queue)
-def update_user_bookings_attributes_job(user_id: int) -> None:
-    user = User.query.get(user_id)
-    if not user:
-        logger.error("No user with id=%s found to send push attributes updates requests", user_id)
-        return
-
-    update_user_attributes(user.id, get_user_booking_attributes(user))
 
 
 @job(worker.default_queue)

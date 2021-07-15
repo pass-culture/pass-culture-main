@@ -98,21 +98,7 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, app):
 
     assert len(mails_testing.outbox) == 1
 
-    assert push_testing.requests == [
-        {
-            "user_id": beneficiary.id,
-            "attribute_values": {
-                "u.credit": 30000,
-                "u.departement_code": "35",
-                "date(u.date_of_birth)": "1995-05-22T00:00:00",
-                "u.postal_code": "35123",
-                "date(u.date_created)": beneficiary.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
-                "u.marketing_push_subscription": True,
-                "u.is_beneficiary": True,
-                "date(u.deposit_expiration_date)": "2015-05-15T09:00:00",
-            },
-        }
-    ]
+    assert len(push_testing.requests) == 1
 
 
 @override_features(FORCE_PHONE_VALIDATION=False)
@@ -153,21 +139,7 @@ def test_application_for_native_app_user(app):
     assert beneficiary_import.beneficiary == beneficiary
     assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": False}
 
-    assert push_testing.requests == [
-        {
-            "user_id": beneficiary.id,
-            "attribute_values": {
-                "u.credit": 30000,
-                "date(u.date_of_birth)": "1995-05-22T00:00:00",
-                "u.departement_code": "35",
-                "u.postal_code": "35123",
-                "date(u.date_created)": beneficiary.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
-                "u.marketing_push_subscription": True,
-                "u.is_beneficiary": True,
-                "date(u.deposit_expiration_date)": "2015-05-15T09:00:00",
-            },
-        }
-    ]
+    assert len(push_testing.requests) == 1
 
 
 @freeze_time("2013-05-15 09:00:00")
@@ -232,21 +204,7 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
     assert beneficiary_import.beneficiary == beneficiary
     assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": True}
 
-    assert push_testing.requests == [
-        {
-            "user_id": beneficiary.id,
-            "attribute_values": {
-                "u.credit": 30000,
-                "u.departement_code": "75",
-                "date(u.date_of_birth)": "2003-10-25T00:00:00",
-                "u.postal_code": "44300",
-                "date(u.date_created)": beneficiary.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
-                "u.marketing_push_subscription": True,
-                "u.is_beneficiary": True,
-                "date(u.deposit_expiration_date)": "2015-05-15T09:00:00",
-            },
-        }
-    ]
+    assert len(push_testing.requests) == 1
     assert len(mails_testing.outbox) == 1
     assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
 

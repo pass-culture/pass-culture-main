@@ -11,7 +11,6 @@ from pcapi.models import User
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.user_attributes_updates import UserUpdateData
 from pcapi.notifications.push.user_attributes_updates import get_user_attributes
-from pcapi.notifications.push.user_attributes_updates import get_user_booking_attributes
 
 
 logger = logging.getLogger(__name__)
@@ -43,7 +42,7 @@ def get_users_chunks(chunk_size: int) -> Generator[list[User], None, None]:
 def format_users(users: list[User]) -> list[UserUpdateData]:
     res = []
     for user in users:
-        attributes = get_user_attributes(user) | get_user_booking_attributes(user)
+        attributes = get_user_attributes(user)
 
         res.append(UserUpdateData(user_id=str(user.id), attributes=attributes))
     print("%d users formatted...", len(res))

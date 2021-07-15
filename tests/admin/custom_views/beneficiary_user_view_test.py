@@ -94,23 +94,7 @@ class BeneficiaryUserViewTest:
             },
         }
 
-        assert push_testing.requests == [
-            {
-                "attribute_values": {
-                    "date(u.date_created)": user_created.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "date(u.date_of_birth)": "2002-07-13T10:05:00",
-                    "date(u.deposit_expiration_date)": user_created.deposit.expirationDate.strftime(
-                        "%Y-%m-%dT%H:%M:%S"
-                    ),
-                    "u.credit": 50000,
-                    "u.departement_code": "93",
-                    "u.is_beneficiary": True,
-                    "u.marketing_push_subscription": True,
-                    "u.postal_code": "93000",
-                },
-                "user_id": user_created.id,
-            },
-        ]
+        assert len(push_testing.requests) == 1
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
