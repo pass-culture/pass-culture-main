@@ -33,12 +33,12 @@ SCHEMA = {
     "date_created": "date",
     "dates": "number",  # easier to work with as a number in the frontend
     "description": "text",
+    "group": "text",
     "is_digital": "number",
     "is_duo": "number",
     "is_educational": "number",
     "is_event": "number",
     "is_thing": "number",
-    "isbn": "text",
     "label": "text",
     "name": "text",
     # "id": "number",  must not be provided when creating the schema.
@@ -188,8 +188,13 @@ class AppSearchBackend(base.SearchBackend):
             ]
 
         extra_data = offer.extraData or {}
-        # FIXME (dbaty): see Cyril's original note about that in `AlgoliaBackend.serialize_offer()`
-        isbn = (extra_data.get("isbn") or extra_data.get("visa")) if extra_data else None
+        # This field is used to show a single search result when
+        # multiple offers of the same product are returned (for
+        # example, the same book or the same movie in multiple
+        # locations).
+        group = (extra_data.get("isbn") or extra_data.get("visa")) if extra_data else None
+        if not group:
+            group = str(offer.id)
 
         artist = " ".join(extra_data.get(key, "") for key in ("author", "performer", "speaker", "stageDirector"))
 
@@ -205,6 +210,7 @@ class AppSearchBackend(base.SearchBackend):
             "date_created": offer.dateCreated,  # used only to rank results
             "dates": dates,
             "description": offer.description,
+            "group": group,
             # TODO (antoinewg, 2021-07-02): remove fields once we've migrated completely to App Search.
             # isDigital is used by the frontend to not show the fake geoloc for digital offers used by algolia
             # Since we don't fake geoloc on App Search => we don't need it
@@ -213,7 +219,6 @@ class AppSearchBackend(base.SearchBackend):
             "is_educational": int(offer.isEducational),
             "is_event": int(offer.isEvent),
             "is_thing": int(offer.isThing),
-            "isbn": isbn,
             "label": offer.offerType["appLabel"],
             "name": offer.name,
             "id": offer.id,

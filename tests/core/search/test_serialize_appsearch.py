@@ -40,12 +40,12 @@ def test_serialize():
         "date_created": offer.dateCreated,
         "dates": [],
         "description": "Un livre qu'il est bien pour le lire",
+        "group": "2221001648",
         "is_digital": 0,
         "is_duo": 0,
         "is_educational": 0,
         "is_event": 0,
         "is_thing": 1,
-        "isbn": "2221001648",
         "label": "Livre ou carte lecture",
         "name": "Titre formidable",
         "id": offer.id,
@@ -72,6 +72,19 @@ def test_serialize_dates_and_times():
     serialized = appsearch.AppSearchBackend().serialize_offer(offer)
     assert serialized["dates"] == [dt.timestamp()]
     assert serialized["times"] == [12 * 60 * 60 + 15 * 60]
+
+
+def test_serialize_group():
+    offer = offers_factories.OfferFactory(extraData={})
+    serialized = appsearch.AppSearchBackend().serialize_offer(offer)
+    assert serialized["group"] == str(offer.id)
+    offer.extraData["visa"] = "56070"
+    serialized = appsearch.AppSearchBackend().serialize_offer(offer)
+    assert serialized["group"] == "56070"
+
+    offer.extraData["isbn"] = "123456789"
+    serialized = appsearch.AppSearchBackend().serialize_offer(offer)
+    assert serialized["group"] == "123456789"
 
 
 def test_serialize_tags():
