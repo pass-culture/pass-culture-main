@@ -806,7 +806,8 @@ class RunIntegrationTest:
         assert User.query.count() == 1
         assert BeneficiaryImport.query.count() == 1
         user = User.query.get(user.id)
-        assert len(user.beneficiaryFraudChecks) == 0
+        assert len(user.beneficiaryFraudChecks) == 1
+        assert user.beneficiaryFraudChecks[0].type == fraud_models.FraudCheckType.DMS
         assert user.beneficiaryFraudResult is None
 
         beneficiary_import = BeneficiaryImport.query.first()

@@ -84,9 +84,6 @@ def run(
             continue
 
         user = find_user_by_email(information.email)
-        if user and user.isBeneficiary is True:
-            _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
-            continue
         if user:
             fraud_check = fraud_api.dms_fraud_check(user, information)
             try:
@@ -99,6 +96,9 @@ def run(
                 logger.info("Error on dms fraud check result: %s", exception)
             except Exception as exc:  # pylint: disable=broad-except
                 logger.exception("Error on dms fraud check result: %s", exc)
+        if user and user.isBeneficiary is True:
+            _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
+            continue
 
         if (
             information.id_piece_number
