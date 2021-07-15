@@ -266,6 +266,8 @@ def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
         repository.save(*objects_to_save)
     logger.info("Booking was marked as used", extra={"booking": booking.id})
 
+    update_user_attributes_job.delay(booking.userId)
+
 
 def mark_as_unused(booking: Booking) -> None:
     validation.check_can_be_mark_as_unused(booking)
@@ -273,6 +275,8 @@ def mark_as_unused(booking: Booking) -> None:
     booking.dateUsed = None
     repository.save(booking)
     logger.info("Booking was marked as unused", extra={"booking": booking.id})
+
+    update_user_attributes_job.delay(booking.userId)
 
 
 def get_qr_code_data(booking_token: str) -> str:

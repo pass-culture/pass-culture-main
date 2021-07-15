@@ -537,6 +537,7 @@ class MarkAsUsedTest:
         booking = factories.BookingFactory()
         api.mark_as_used(booking)
         assert booking.isUsed
+        assert len(push_testing.requests) == 1
 
     def test_mark_as_used_with_uncancel(self):
         booking = factories.BookingFactory(isCancelled=True, cancellationReason="BENEFICIARY")
@@ -580,6 +581,7 @@ class MarkAsUnusedTest:
         booking = factories.BookingFactory(isUsed=True)
         api.mark_as_unused(booking)
         assert not booking.isUsed
+        assert len(push_testing.requests) == 1
 
     @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     def test_mark_as_unused_digital_offer(self):
