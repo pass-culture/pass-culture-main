@@ -416,7 +416,7 @@ secrets:
   - name: REDIS_URL
     version: 1
   - name: SENDINBLUE_API_KEY
-    version: 1
+    version: 2
   - name: SENTRY_DSN
     version: 2
   - name: SUPPORT_EMAIL_ADDRESS

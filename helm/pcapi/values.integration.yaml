@@ -383,7 +383,7 @@ secrets:
   - name: REDIS_URL
     version: 2
   - name: SENDINBLUE_API_KEY
-    version: 1
+    version: 2
   - name: SENTRY_DSN
     version: 3
   - name: SUPPORT_EMAIL_ADDRESS
