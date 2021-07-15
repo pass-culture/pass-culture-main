@@ -496,6 +496,33 @@ def test_id_piece_number_duplicate(
 
 
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
+@pytest.mark.usefixtures("db_session")
+def test_id_piece_number_invalid_format_avoid_duplicate(
+    mocked_get_content,
+    app,
+):
+    # Given
+    ID_PIECE_NUMBER = "140767100016"
+    UserFactory(
+        isBeneficiary=False,
+        dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
+        email=BASE_JOUVE_CONTENT["email"],
+    )
+    UserFactory(idPieceNumber=ID_PIECE_NUMBER)
+    mocked_get_content.return_value = BASE_JOUVE_CONTENT | {
+        "bodyPieceNumber": ID_PIECE_NUMBER,
+        "bodyPieceNumberCtrl": "KO",
+    }
+
+    # When
+    create_beneficiary_from_application.execute(BASE_APPLICATION_ID)
+
+    assert len(mails_testing.outbox) == 1
+    assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2905960
+    assert mails_testing.outbox[0].sent_data["Mj-campaign"] == "dossier-en-analyse"
+
+
+@patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
 @pytest.mark.parametrize("wrong_piece_number", ["NOT_APPLICABLE", "KO", ""])
 @pytest.mark.usefixtures("db_session")
 def test_id_piece_number_invalid(mocked_get_content, wrong_piece_number):

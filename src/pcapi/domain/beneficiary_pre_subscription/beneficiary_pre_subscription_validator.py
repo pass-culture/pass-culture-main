@@ -96,10 +96,11 @@ def _check_id_piece_number_is_unique(beneficiary_pre_subscription: BeneficiaryPr
     if not FeatureToggle.ENABLE_IDCHECK_FRAUD_CONTROLS.is_active():
         return
 
+    # avoid checks on duplicate id piece number if Jouve's result on the id piece number are already done
     if beneficiary_pre_subscription.fraud_fields:
         fraud_controls = {x.key: x for x in beneficiary_pre_subscription.fraud_fields["non_blocking_controls"]}
         id_fraud_control = fraud_controls.get("bodyPieceNumberCtrl")
-        if not id_fraud_control and not id_fraud_control.valid:
+        if id_fraud_control and not id_fraud_control.valid:
             return
     if User.query.filter(User.idPieceNumber == beneficiary_pre_subscription.id_piece_number).count() > 0:
         raise IdPieceNumberDuplicate(f"id piece number n°{beneficiary_pre_subscription.id_piece_number} already taken")
