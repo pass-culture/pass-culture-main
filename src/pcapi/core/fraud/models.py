@@ -5,6 +5,8 @@ import typing
 
 import pydantic
 from pydantic.class_validators import validator
+import pydantic.datetime_parse
+import pydantic.errors
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
 import sqlalchemy.orm
@@ -43,6 +45,13 @@ def _parse_level(level: typing.Optional[str]) -> typing.Optional[None]:
 def _parse_date(date: typing.Optional[str]) -> typing.Optional[None]:
     if not date:
         return None
+    # this function has to support two parsings string format:
+    # 1. the "classical" format such as "year/month/day" which is expressed when calling .dict()
+    # 2. jouve format, when parsing incoming data
+    try:
+        return pydantic.datetime_parse.parse_date(date)
+    except pydantic.DateError:
+        pass
     try:
         return datetime.datetime.strptime(date, "%d/%m/%Y")
     except ValueError:

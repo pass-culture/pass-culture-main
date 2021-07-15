@@ -24,4 +24,6 @@ class FactoriesTest:
         instance = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.JOUVE, resultContent=content
         )
-        assert instance.resultContent == content.dict()
+        serialized_data = fraud_models.JouveContent(**instance.resultContent)
+
+        assert content == serialized_data
