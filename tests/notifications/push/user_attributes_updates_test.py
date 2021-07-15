@@ -30,12 +30,8 @@ class GetUserBookingAttributesTest:
         last_date_created = max(booking.dateCreated for booking in [b1, b2, b3, b4])
 
         assert attributes == {
-            f"date(u.booked_product_{b2.stock.offer.product.id}_date_used)": b2.dateUsed.strftime(
-                BATCH_DATETIME_FORMAT
-            ),
-            f"date(u.booked_product_{b3.stock.offer.product.id}_date_used)": b3.dateUsed.strftime(
-                BATCH_DATETIME_FORMAT
-            ),
+            f"date(u.product_{b2.stock.offer.product.id}_use)": b2.dateUsed.strftime(BATCH_DATETIME_FORMAT),
+            f"date(u.product_{b3.stock.offer.product.id}_use)": b3.dateUsed.strftime(BATCH_DATETIME_FORMAT),
             "date(u.last_booking_date)": last_date_created.strftime(BATCH_DATETIME_FORMAT),
             "u.credit": 47000,
             "ut.booking_categories": ["ThingType.AUDIOVISUEL"],

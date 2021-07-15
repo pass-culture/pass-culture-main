@@ -59,9 +59,7 @@ def get_user_booking_attributes(user: User) -> dict:
 
     for booking in user_bookings:
         if booking.dateUsed:
-            attributes[f"date(u.booked_product_{booking.stock.offer.productId}_date_used)"] = _format_date(
-                booking.dateUsed
-            )
+            attributes[f"date(u.product_{booking.stock.offer.productId}_use)"] = _format_date(booking.dateUsed)
 
     # A Batch tag can't be an empty list, otherwise the API returns an error
     if booking_categories:
