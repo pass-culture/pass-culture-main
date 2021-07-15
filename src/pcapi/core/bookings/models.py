@@ -280,6 +280,7 @@ Booking.trig_update_cancellationDate_on_isCancelled_ddl = """
 
     DROP TRIGGER IF EXISTS stock_update_cancellation_date ON booking;
 
+    -- XXX: update anonymize SQL script if you change anything below
     CREATE TRIGGER stock_update_cancellation_date
     BEFORE INSERT OR UPDATE ON booking
     FOR EACH ROW

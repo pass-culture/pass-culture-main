@@ -200,7 +200,11 @@ class AppSearchBackend(base.SearchBackend):
 
         venue = offer.venue
         if venue.longitude is not None and venue.latitude is not None:
-            position = [venue.longitude, venue.latitude]
+            # It's important to send the position as text, not as an
+            # array of floats. That way, App Search includes the field
+            # in search results (even though the documentation says
+            # that `geolocation` fields are not included).
+            position = f"{venue.latitude},{venue.longitude}"
         else:
             position = None
 

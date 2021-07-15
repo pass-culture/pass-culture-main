@@ -60,7 +60,7 @@ def test_serialize():
         "venue_city": "Paris",
         "venue_department_code": "75",
         "venue_name": "La Moyenne Librairie SA",
-        "venue_position": [decimal.Decimal("2.37850"), decimal.Decimal("48.87004")],
+        "venue_position": "48.87004,2.37850",
         "venue_public_name": "La Moyenne Librairie",
     }
 
@@ -137,7 +137,7 @@ def test_schema():
         elif type_ == "number":
             expected_types = (decimal.Decimal, int)
         elif type_ == "geolocation":
-            expected_types = (decimal.Decimal,)
+            expected_types = (str,)
         elif type_ == "date":
             expected_types = (datetime.datetime,)
         value = serialized[key]
