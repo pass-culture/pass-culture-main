@@ -586,6 +586,16 @@ jobs:
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
             curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=All,environment='"$CIRCLE_BRANCH"',deployed=true version="'"$VERSION_TO_DEPLOY"'"'
 
+  restart-pcapi:
+    executor: gcp-sdk
+    steps:
+      - authenticate_gcp:
+          gcp-key-name: GCP_METIER_KEY
+      - run:
+          name: Get GKE cluster credentials
+          command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
+      - run: kubectl get deploy -n ${CIRCLE_BRANCH} -o name | xargs  -L 1 kubectl rollout restart -n ${CIRCLE_BRANCH}
+
 ###################
 #  WORKFLOWS
 ###################
@@ -681,8 +691,15 @@ workflows:
             - deploy-pcapi
       - release-synthesis:
           requires:
+            - restart-pcapi
             - deploy-pro-netlify
             - deploy-webapp
+      - restart-pcapi:
+          requires:
+            - deploy-pcapi
+          context:
+            - GCP
+            - GCP_EHP
 
   gcp-prod:
     jobs:
@@ -728,5 +745,12 @@ workflows:
             - GCP_PROD
       - release-synthesis:
           requires:
+            - restart-pcapi
             - deploy-pro-cloudstorage
             - deploy-webapp
+      - restart-pcapi:
+          requires:
+            - deploy-pcapi
+          context:
+            - GCP
+            - GCP_PROD
