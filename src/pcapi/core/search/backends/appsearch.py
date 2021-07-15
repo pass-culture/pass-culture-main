@@ -289,10 +289,15 @@ class AppSearchApiClient:
                 logger.error("Some offers could not be indexed, possible typing bug", extra={"errors": errors})
 
     def delete_documents(self, offer_ids: Iterable[int]):
+        batches = [
+            offer_ids[i : i + DOCUMENTS_PER_REQUEST_LIMIT]
+            for i in range(0, len(offer_ids), DOCUMENTS_PER_REQUEST_LIMIT)
+        ]
         # Error handling is done by the caller.
-        data = json.dumps(offer_ids)
-        response = requests.delete(self.documents_url, headers=self.headers, data=data)
-        response.raise_for_status()
+        for batch in batches:
+            data = json.dumps(batch)
+            response = requests.delete(self.documents_url, headers=self.headers, data=data)
+            response.raise_for_status()
 
 
 class AppSearchJsonEncoder(json.JSONEncoder):
