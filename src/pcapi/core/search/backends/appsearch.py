@@ -19,7 +19,6 @@ from . import base
 REDIS_OFFER_IDS_TO_INDEX = "search:appsearch:offer-ids-to-index"
 REDIS_OFFER_IDS_IN_ERROR_TO_INDEX = "search:appsearch:offer-ids-in-error-to-index"
 REDIS_VENUE_IDS_TO_INDEX = "search:appsearch:venue-ids-to-index"
-REDIS_INDEXED_OFFER_IDS = "search:appsearch:indexed-offer-ids"
 
 ENGINE_NAME = "offers"
 ENGINE_LANGUAGE = None
@@ -153,44 +152,31 @@ class AppSearchBackend(base.SearchBackend):
             return 0
 
     def check_offer_is_indexed(self, offer: offers_models.Offer) -> bool:
-        try:
-            return self.redis_client.sismember(REDIS_INDEXED_OFFER_IDS, offer.id)
-        except redis.exceptions.RedisError:
-            logger.exception("Could not check whether offer exists in cache", extra={"offer": offer.id})
-            # This function is only used to avoid an unnecessary
-            # deletion request to App Search if the offer is not in
-            # the cache. Here we don't know, so we'll say it's in the
-            # cache so that we do perform a request to App Search.
-            return True
+        # FIXME (dbaty, 2021-07-15): this is a no-op on App Search.
+        # Once we have removed the Algolia backend, we can remove this
+        # method. It is only used to avoid an unnecessary deletion
+        # request to App Search if the offer is not already indexed.
+        # But it should rarely happen. And having to store a very
+        # large number of ids in a set in Redis does not look like a
+        # good idea.
+        return True
 
     def index_offers(self, offers: Iterable[offers_models.Offer]) -> None:
         if not offers:
             return
         documents = [self.serialize_offer(offer) for offer in offers]
         self.appsearch_client.create_or_update_documents(documents)
-        offer_ids = [offer.id for offer in offers]
-        try:
-            self.redis_client.sadd(REDIS_INDEXED_OFFER_IDS, *offer_ids)
-        except Exception:  # pylint: disable=broad-except
-            logger.exception("Could not add to list of indexed offers", extra={"offers": offer_ids})
 
     def unindex_offer_ids(self, offer_ids: Iterable[int]) -> None:
         if not offer_ids:
             return
         self.appsearch_client.delete_documents(offer_ids)
-        try:
-            self.redis_client.srem(REDIS_INDEXED_OFFER_IDS, *offer_ids)
-        except redis.exceptions.RedisError:
-            logger.exception("Could not remove offers from indexed offers set", extra={"offers": offer_ids})
 
     def unindex_all_offers(self) -> None:
+        pass
         # FIXME (dbaty): remove all indexed documents from the engine.
         # There does not seem to be any way to do that, except by
         # iterating over all indexed documents and removing them.
-        try:
-            self.redis_client.delete(REDIS_INDEXED_OFFER_IDS)
-        except redis.exceptions.RedisError:
-            logger.exception("Could not clear indexed offers cache")
 
     def serialize_offer(self, offer: offers_models.Offer) -> dict:
         dates = []

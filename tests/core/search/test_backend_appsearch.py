@@ -126,9 +126,7 @@ def test_count_offers_to_index_from_error_queue(app):
 
 def test_check_offer_is_indexed(app):
     backend = get_backend()
-    app.redis_client.sadd("search:appsearch:indexed-offer-ids", "1", "")
-    assert backend.check_offer_is_indexed(FakeOffer(id=1))
-    assert not backend.check_offer_is_indexed(FakeOffer(id=2))
+    assert backend.check_offer_is_indexed("whatever")
 
 
 @pytest.mark.usefixtures("db_session")
@@ -143,7 +141,6 @@ def test_index_offers(app):
         posted_json = posted.last_request.json()
         assert posted_json[0]["id"] == offer.id
         assert posted_json[0]["description"] == offer.description
-    assert backend.check_offer_is_indexed(offer)
 
 
 def test_unindex_offer_ids(app):
@@ -154,7 +151,6 @@ def test_unindex_offer_ids(app):
         backend.unindex_offer_ids([1])
         deleted_json = deleted.last_request.json()
         assert deleted_json == [1]
-    assert not backend.check_offer_is_indexed(FakeOffer(id=1))
 
 
 def test_unindex_all_offers(app):
