@@ -95,8 +95,9 @@ describe('buildFacetFilters', () => {
 
       const filters = buildFacetFilters({ offerTypes })
       expect(filters).toStrictEqual([
-        { [AppSearchFields.is_digital]: 1 },
-        { [AppSearchFields.is_event]: 1 },
+        {
+          any: [{ [AppSearchFields.is_digital]: 1 }, { [AppSearchFields.is_event]: 1 }],
+        },
       ])
     })
 
