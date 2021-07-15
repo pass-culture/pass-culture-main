@@ -4,8 +4,7 @@ export const MILLISECONDS_IN_A_DAY = 86400000
 export const MILLISECONDS_IN_A_SECOND = 1000
 
 const getTimestampFromDate = date => {
-  const dateInTimestamp =
-    (date.getTime()) / MILLISECONDS_IN_A_SECOND
+  const dateInTimestamp = date.getTime() / MILLISECONDS_IN_A_SECOND
   return Math.ceil(dateInTimestamp)
 }
 

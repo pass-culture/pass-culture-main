@@ -30,9 +30,9 @@ const buildOfferPriceRangePredicate = params => {
 
 const buildDatePredicate = params => {
   const { date, timeRange } = params
-  if (date && timeRange) return buildDateAndTimePredicate({ date, timeRange })
+  if (date && timeRange && timeRange.length) return buildDateAndTimePredicate({ date, timeRange })
   if (date) return buildDateOnlyPredicate(date)
-  if (timeRange) return buildTimeOnlyPredicate(timeRange)
+  if (timeRange && timeRange.length) return buildTimeOnlyPredicate(timeRange)
   return []
 }
 
@@ -48,6 +48,7 @@ const buildHomepageDatePredicate = params => {
 }
 
 const buildTimeOnlyPredicate = timeRange => {
+  if (timeRange.length === 0) return []
   const [from, to] = computeTimeRangeFromHoursToSeconds(timeRange)
   return [{ [AppSearchFields.times]: { from, to } }]
 }
