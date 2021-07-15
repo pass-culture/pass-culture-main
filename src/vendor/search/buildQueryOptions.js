@@ -13,7 +13,10 @@ export const buildQueryOptions = (params, page) => ({
     ],
   },
   page: {
-    current: page || 1,
+    // pagination starts at 1 for AppSearch and 0 for Algolia
+    // The code is still using Algolia's starting index.
+    // TODO(antoinewg). Once the migration is complete, start pagination at 1
+    current: typeof page === 'number' ? page + 1 : 1,
     size: params.hitsPerPage || 20,
   },
 })

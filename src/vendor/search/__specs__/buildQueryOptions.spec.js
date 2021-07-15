@@ -119,7 +119,7 @@ describe('buildQueryOptions', () => {
       )
 
       expect(filters.page).toStrictEqual({
-        current: 2,
+        current: 3,
         size: 20,
       })
 
