@@ -246,7 +246,7 @@ def update_offer(  # pylint: disable=redefined-builtin
     return offer
 
 
-def update_offers_active_status(query, is_active):
+def batch_update_offers(query, update_fields):
     offer_ids_tuples = query.filter(Offer.validation == OfferValidationStatus.APPROVED).with_entities(Offer.id)
 
     offer_ids = [offer_id for offer_id, in offer_ids_tuples]
@@ -258,7 +258,7 @@ def update_offers_active_status(query, is_active):
         ]
 
         query_to_update = Offer.query.filter(Offer.id.in_(offer_ids_batch))
-        query_to_update.update({"isActive": is_active}, synchronize_session=False)
+        query_to_update.update(update_fields, synchronize_session=False)
         db.session.commit()
 
         search.async_index_offer_ids(offer_ids_batch)

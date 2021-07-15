@@ -69,7 +69,7 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
 @spectree_serialize(response_model=None, on_success_status=204)  # type: ignore
 def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBodyModel) -> None:
     query = offers_repository.get_offers_by_ids(current_user, body.ids)
-    offers_api.update_offers_active_status(query, body.is_active)
+    offers_api.batch_update_offers(query, {"isActive": body.is_active})
 
 
 @private_api.route("/offers/all-active-status", methods=["PATCH"])

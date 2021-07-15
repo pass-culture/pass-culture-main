@@ -18,4 +18,4 @@ def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
         period_beginning_date=filters["period_beginning_date"],
         period_ending_date=filters["period_ending_date"],
     )
-    offers_api.update_offers_active_status(query, is_active)
+    offers_api.batch_update_offers(query, {"isActive": is_active})

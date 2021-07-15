@@ -1162,7 +1162,7 @@ class UpdateOfferTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class UpdateOffersActiveStatusTest:
+class BatchUpdateOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate(self, mocked_async_index_offer_ids):
         offer1 = factories.OfferFactory(isActive=False)
@@ -1174,7 +1174,7 @@ class UpdateOffersActiveStatusTest:
         query = models.Offer.query.filter(
             models.Offer.id.in_({offer1.id, offer2.id, rejected_offer.id, pending_offer.id})
         )
-        api.update_offers_active_status(query, is_active=True)
+        api.batch_update_offers(query, {"isActive": True})
 
         assert models.Offer.query.get(offer1.id).isActive
         assert models.Offer.query.get(offer2.id).isActive
@@ -1189,7 +1189,7 @@ class UpdateOffersActiveStatusTest:
         offer3 = factories.OfferFactory()
 
         query = models.Offer.query.filter(models.Offer.id.in_({offer1.id, offer2.id}))
-        api.update_offers_active_status(query, is_active=False)
+        api.batch_update_offers(query, {"isActive": False})
 
         assert not models.Offer.query.get(offer1.id).isActive
         assert not models.Offer.query.get(offer2.id).isActive
