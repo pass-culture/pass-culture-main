@@ -67,17 +67,7 @@ def admin_update_identity_fraud_check_result(
     return fraud_check
 
 
-def on_identity_fraud_check_result(
-    user: User,
-    beneficiary_fraud_check: models.BeneficiaryFraudCheck,
-) -> models.BeneficiaryFraudResult:
-    if user.isBeneficiary:
-        raise exceptions.UserAlreadyBeneficiary()
-    if not user.isEmailValidated:
-        raise exceptions.UserEmailNotValidated()
-    if FeatureToggle.FORCE_PHONE_VALIDATION.is_active() and not user.is_phone_validated:
-        raise exceptions.UserPhoneNotValidated()
-
+def jouve_fraud_checks(beneficiary_fraud_check: models.BeneficiaryFraudCheck) -> list[models.FraudItem]:
     jouve_content = models.JouveContent(**beneficiary_fraud_check.resultContent)
 
     fraud_items = []
@@ -92,6 +82,40 @@ def on_identity_fraud_check_result(
     fraud_items.append(_validate_id_piece_number_format_fraud_item(jouve_content.bodyPieceNumber))
     fraud_items.append(_duplicate_id_piece_number_fraud_item(jouve_content.bodyPieceNumber))
     fraud_items.extend(_id_check_fraud_items(jouve_content))
+    return fraud_items
+
+
+def dms_fraud_checks(beneficiary_fraud_check: models.BeneficiaryFraudCheck) -> list[models.FraudItem]:
+    dms_content = models.DemarchesSimplifieesContent(**beneficiary_fraud_check.resultContent)
+
+    fraud_items = []
+    fraud_items.append(
+        _duplicate_user_fraud_item(
+            first_name=dms_content.first_name,
+            last_name=dms_content.last_name,
+            birth_date=dms_content.birth_date,
+        )
+    )
+    fraud_items.append(_duplicate_id_piece_number_fraud_item(dms_content.id_piece_number))
+    return fraud_items
+
+
+def on_identity_fraud_check_result(
+    user: User,
+    beneficiary_fraud_check: models.BeneficiaryFraudCheck,
+) -> models.BeneficiaryFraudResult:
+    if user.isBeneficiary:
+        raise exceptions.UserAlreadyBeneficiary()
+    if not user.isEmailValidated:
+        raise exceptions.UserEmailNotValidated()
+    if FeatureToggle.FORCE_PHONE_VALIDATION.is_active() and not user.is_phone_validated:
+        raise exceptions.UserPhoneNotValidated()
+
+    fraud_items = []
+    if beneficiary_fraud_check.type == models.FraudCheckType.JOUVE:
+        fraud_items = jouve_fraud_checks(beneficiary_fraud_check)
+    elif beneficiary_fraud_check.type == models.FraudCheckType.DMS:
+        fraud_items = dms_fraud_checks(beneficiary_fraud_check)
 
     fraud_result = validate_frauds(user, fraud_items)
     repository.save(fraud_result)
@@ -308,31 +332,6 @@ def dms_fraud_check(
     db.session.add(fraud_check)
     db.session.commit()
     return fraud_check
-
-
-def on_dms_fraud_check_result(user: User, beneficiary_fraud_check: models.BeneficiaryFraudCheck):
-    if user.isBeneficiary:
-        raise exceptions.UserAlreadyBeneficiary()
-    if not user.isEmailValidated:
-        raise exceptions.UserEmailNotValidated()
-    if FeatureToggle.FORCE_PHONE_VALIDATION.is_active() and not user.is_phone_validated:
-        raise exceptions.UserPhoneNotValidated()
-
-    dms_content = models.DemarchesSimplifieesContent(**beneficiary_fraud_check.resultContent)
-
-    fraud_items = []
-    fraud_items.append(
-        _duplicate_user_fraud_item(
-            first_name=dms_content.first_name,
-            last_name=dms_content.last_name,
-            birth_date=dms_content.birth_date,
-        )
-    )
-    fraud_items.append(_duplicate_id_piece_number_fraud_item(dms_content.id_piece_number))
-
-    fraud_result = validate_frauds(user, fraud_items)
-    db.session.add(fraud_result)
-    db.session.commit()
 
 
 def validate_frauds(user: User, fraud_items: list[models.FraudItem]) -> models.BeneficiaryFraudResult:

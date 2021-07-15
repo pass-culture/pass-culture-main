@@ -307,6 +307,6 @@ class DMSFraudCheckTest:
         expected_content = fraud_models.DemarchesSimplifieesContent(**fraud_check.resultContent)
         assert content == expected_content
 
-        fraud_api.on_dms_fraud_check_result(user, returned_fraud_check)
+        fraud_api.on_identity_fraud_check_result(user, returned_fraud_check)
         fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(user=user).one_or_none()
         assert fraud_result.status == fraud_models.FraudStatus.OK

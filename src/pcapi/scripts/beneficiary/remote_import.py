@@ -87,7 +87,7 @@ def run(
         if user:
             fraud_check = fraud_api.dms_fraud_check(user, information)
             try:
-                fraud_api.on_dms_fraud_check_result(user, fraud_check)
+                fraud_api.on_identity_fraud_check_result(user, fraud_check)
             except (
                 fraud_exceptions.UserAlreadyBeneficiary,
                 fraud_exceptions.UserEmailNotValidated,
