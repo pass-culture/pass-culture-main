@@ -1,12 +1,13 @@
-import { GEOLOCATION_CRITERIA } from '../../../components/pages/search/Criteria/criteriaEnums'
 import { AppSearchFields } from '../constants'
 
 export const buildGeolocationFilter = params => {
-  const { aroundRadius, geolocation, locationType } = params
+  const { aroundRadius, geolocation, searchAround } = params
 
   if (!geolocation) return []
-  if (locationType === GEOLOCATION_CRITERIA.EVERYWHERE) return []
-  if (aroundRadius === null) return []
+  const { latitude, longitude } = geolocation
+  if (!latitude || !longitude) return []
+
+  if (!searchAround || aroundRadius === null) return []
 
   const center = `${geolocation.latitude}, ${geolocation.longitude}`
   const distance = aroundRadius === 0 ? 1 : aroundRadius

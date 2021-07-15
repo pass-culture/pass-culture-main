@@ -25,7 +25,7 @@ describe('buildGeolocationFilter', () => {
   })
 
   it('should fetch offers with geolocation coordinates, when latitude, longitude and radius are provided and search is around me', () => {
-    const params = { ...baseParams, aroundRadius: 135 }
+    const params = { ...baseParams, aroundRadius: 135, searchAround: true }
     expect(buildGeolocationFilter(params)).toStrictEqual([
       {
         [AppSearchFields.venue_position]: {
@@ -38,7 +38,7 @@ describe('buildGeolocationFilter', () => {
   })
 
   it('should fetch offers with geolocation coordinates, when latitude, longitude, search is around me, and radius equals zero', () => {
-    const params = { ...baseParams, aroundRadius: 0 }
+    const params = { ...baseParams, aroundRadius: 0, searchAround: true }
     expect(buildGeolocationFilter(params)).toStrictEqual([
       {
         [AppSearchFields.venue_position]: {
@@ -52,6 +52,11 @@ describe('buildGeolocationFilter', () => {
 
   it('should fetch offers with geolocation coordinates, when latitude, longitude, search is around me, and radius is null', () => {
     const params = { ...baseParams, aroundRadius: null }
+    expect(buildGeolocationFilter(params)).toStrictEqual([])
+  })
+
+  it('should fetch offers with no geolocation filter if search is not around me or a place', () => {
+    const params = { ...baseParams, searchAround: false }
     expect(buildGeolocationFilter(params)).toStrictEqual([])
   })
 })

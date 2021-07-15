@@ -113,6 +113,7 @@ describe('buildQueryOptions', () => {
           offerTypes,
           offerCategories,
           geolocation,
+          searchAround: false,
         },
         page
       )
@@ -127,7 +128,6 @@ describe('buildQueryOptions', () => {
           { [AppSearchFields.is_digital]: 1 },
           { [AppSearchFields.category]: ['LECON', 'VISITE'] },
           { [AppSearchFields.prices]: { to: 30000 } },
-          { [AppSearchFields.venue_position]: { center: '42, 43', distance: 123, unit: 'km' } },
         ],
       })
     })
@@ -150,6 +150,7 @@ describe('buildQueryOptions', () => {
         offerCategories,
         geolocation,
         offerIsDuo: false,
+        searchAround: true,
       })
 
       expect(filters.filters).toStrictEqual({
@@ -182,6 +183,7 @@ describe('buildQueryOptions', () => {
         geolocation,
         offerIsDuo: true,
         priceRange,
+        searchAround: true,
       })
 
       expect(filters.filters).toStrictEqual({
