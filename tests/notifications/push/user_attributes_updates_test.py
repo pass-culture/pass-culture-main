@@ -18,7 +18,7 @@ class GetUserBookingAttributesTest:
         b1 = BookingFactory(user=user, amount=10)
         b2 = BookingFactory(user=user, amount=10, dateUsed=datetime(2021, 5, 6))
         b3 = BookingFactory(user=user, amount=10, dateUsed=datetime(2021, 7, 8))
-        BookingFactory(user=user, amount=100, isCancelled=True)
+        b4 = BookingFactory(user=user, amount=100, isCancelled=True)
 
         n_query_get_user = 1
         n_query_get_bookings = 1
@@ -27,7 +27,7 @@ class GetUserBookingAttributesTest:
         with assert_num_queries(n_query_get_user + n_query_get_bookings + n_query_get_deposit):
             attributes = get_user_booking_attributes(user)
 
-        last_date_created = max(booking.dateCreated for booking in [b1, b2, b3])
+        last_date_created = max(booking.dateCreated for booking in [b1, b2, b3, b4])
 
         assert attributes == {
             f"date(u.booked_product_{b2.stock.offer.product.id}_date_used)": b2.dateUsed.strftime(
