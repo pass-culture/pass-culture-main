@@ -1195,6 +1195,7 @@ class DeletePastDraftOfferTest:
         two_days_ago = datetime.utcnow() - timedelta(days=2)
         offer = offers_factories.OfferFactory(dateCreated=two_days_ago, validation=OfferValidationStatus.DRAFT)
         offers_factories.MediationFactory(offer=offer)
+        offers_factories.OfferCriterionFactory(offer=offer)
         past_offer = offers_factories.OfferFactory(dateCreated=two_days_ago, validation=OfferValidationStatus.PENDING)
         today_offer = offers_factories.OfferFactory(
             dateCreated=datetime.utcnow(), validation=OfferValidationStatus.DRAFT

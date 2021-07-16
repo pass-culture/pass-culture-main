@@ -24,6 +24,7 @@ from pcapi.core.users.models import User
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.infrastructure.repository.pro_offers.offers_recap_domain_converter import to_domain
 from pcapi.models import Offer
+from pcapi.models import OfferCriterion
 from pcapi.models import Product
 from pcapi.models import Stock
 from pcapi.models import UserOfferer
@@ -311,6 +312,7 @@ def delete_past_draft_offers() -> None:
     yesterday = datetime.utcnow() - timedelta(days=1)
     filters = (Offer.dateCreated < yesterday, Offer.validation == OfferValidationStatus.DRAFT)
     Mediation.query.filter(Mediation.offerId == Offer.id).filter(*filters).delete(synchronize_session=False)
+    OfferCriterion.query.filter(OfferCriterion.offerId == Offer.id).filter(*filters).delete(synchronize_session=False)
     Offer.query.filter(*filters).delete()
     db.session.commit()
 
