@@ -1,0 +1,48 @@
+#!/bin/bash
+
+counter=0
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.py')
+if [[ "$STAGED_FILES" = "" ]]; then
+  exit 0
+fi
+
+LINTED_FILES=""
+
+for FILE in $STAGED_FILES; do
+  LINTED_FILES+=" ${FILE}"
+done
+
+echo -e "\033[0;96mRunning isort to organize imports\033[0m\n"
+isort $LINTED_FILES --check-only --quiet
+if [[ "$?" != 0 ]]; then
+  isort $LINTED_FILES
+  counter=$((counter + 1))
+  echo -e "\n\033[0;91mAdd the corrected files to your commit\033[0m\n"
+else
+  echo -e "\033[0;92mImports correctly sorted\033[0m\n"
+fi
+
+echo -e "\n\033[0;96mRunning black to format files\033[0m\n"
+black $LINTED_FILES --check --quiet
+if [[ "$?" != 0 ]]; then
+  black $LINTED_FILES
+  counter=$((counter + 1))
+  echo -e "\033[0;91mAdd the corrected files to your commit\033[0m\n"
+else
+  echo -e "\033[0;92mCode correctly formatted\033[0m\n"
+fi
+
+echo -e "\n\033[0;96mRunning mypy for type checking (non-blocking step)\033[0m\n"
+mypy $LINTED_FILES --pretty --show-error-codes
+
+echo -e "\n\033[0;96mRunning pylint for code linting\033[0m\n"
+pylint $LINTED_FILES --output-format="colorized" --score=no
+if [[ "$?" != 0 ]]; then
+  counter=$((counter + 1))
+fi
+
+if [[ $counter > 0 ]]; then
+  echo -e "\n\033[0;96mIf you want to bypass it, add --no-verify option when committing.\033[0m\n"
+  exit 1
+fi

@@ -1,0 +1,64 @@
+#!/bin/bash
+
+protected_branch='production'
+
+policy='[Policy] Never force push or delete the '$protected_branch' branch!'
+warning='You are about to deploy a new version in PRODUCTION, are you sure ? [Y/n]'
+warning_different_branch='[WARNING] It seems that you are about to push '$current_branch' (local branch) to the remote '$protected_branch' branch!'
+
+# GET PUSH TARGET
+current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+push_command=$(ps -ocommand= -p $PPID)
+push_only='git push'
+
+# Case: git push origin production, on branch production
+if [[ $push_command =~ $protected_branch ]] && [ $current_branch = $protected_branch ]; then
+    echo $warning
+    read -r < /dev/tty
+    if [[ $REPLY = 'Y' ]]; then
+        exit 0
+    else
+        exit 1
+    fi
+# Case: git push, on branch production
+elif [[ $push_command =~ $push_only ]] && [ $current_branch = $protected_branch ]; then
+    echo $warning
+    read -r < /dev/tty
+    if [[ $REPLY = 'Y' ]]; then
+        exit 0
+    else
+        exit 1
+    fi
+# Case: git push origin production, on some other branch
+elif [[ $push_command =~ $protected_branch ]] && [ $current_branch != $protected_branch ]; then
+    echo $warning_different_branch
+    echo $warning
+    read -r < /dev/tty
+    if [[ $REPLY = 'Y' ]]; then
+        exit 0
+    else
+        exit 1
+    fi
+# Case: all other cases
+else
+  # check for multiple alembic heads before push (especially when rebasing before a merge)
+  if [ $current_branch != $protected_branch ]; then
+    echo -e "\n\033[0;96mRunning alembic multiple heads check\033[0m\n"
+        output=$(alembic branches)
+        if [ ! -z "$output" ]; then
+          echo -e "\n\033[0;91mMultiple alembic heads found\033[0m\n"
+          branchpoint=$(echo "$output" | awk 'FNR == 1 {print $1}')
+          bad_branches=$(echo "$output" | awk 'FNR > 1 {print $2}')
+          echo "HINT: These revisions have the same down_revision ($branchpoint):"
+          while read -r branch
+          do
+            find ./src/pcapi/alembic/versions -name "*$branch*.py" -type f
+          done < <(echo "$bad_branches")
+          echo -e "\n"
+          exit 1
+        else
+          echo -e "\n\033[0;32mJust one head\033[0m\n"
+        fi
+  fi
+    exit 0
+fi
