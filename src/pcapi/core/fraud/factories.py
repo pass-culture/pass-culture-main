@@ -100,6 +100,7 @@ class DemarchesSimplifieesContentFactory(factory.Factory):
 
 
 FRAUD_CHECK_TYPE_MODEL_ASSOCIATION = {
+    models.FraudCheckType.DMS: DemarchesSimplifieesContentFactory,
     models.FraudCheckType.JOUVE: JouveContentFactory,
     models.FraudCheckType.USER_PROFILING: UserProfilingFraudDataFactory,
 }

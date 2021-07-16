@@ -9,21 +9,28 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class FactoriesTest:
     @pytest.mark.parametrize(
-        "check_type,instance_type",
+        "check_type,model_class",
         [
-            (fraud_models.FraudCheckType.USER_PROFILING, fraud_models.UserProfilingFraudData),
+            (fraud_models.FraudCheckType.DMS, fraud_models.DemarchesSimplifieesContent),
             (fraud_models.FraudCheckType.JOUVE, fraud_models.JouveContent),
+            (fraud_models.FraudCheckType.USER_PROFILING, fraud_models.UserProfilingFraudData),
         ],
     )
-    def test_database_serialization(self, check_type, instance_type):
+    def test_database_serialization(self, check_type, model_class):
         instance = fraud_factories.BeneficiaryFraudCheckFactory(type=check_type)
-        instance_type(**instance.resultContent)
+        model_class(**instance.resultContent)
 
-    def test_database_overwrite(self):
-        content = fraud_factories.JouveContentFactory()
-        instance = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.JOUVE, resultContent=content
-        )
-        serialized_data = fraud_models.JouveContent(**instance.resultContent)
+    @pytest.mark.parametrize(
+        "check_type,factory_class",
+        [
+            (fraud_models.FraudCheckType.DMS, fraud_factories.DemarchesSimplifieesContentFactory),
+            (fraud_models.FraudCheckType.JOUVE, fraud_factories.JouveContentFactory),
+            (fraud_models.FraudCheckType.USER_PROFILING, fraud_factories.UserProfilingFraudDataFactory),
+        ],
+    )
+    def test_database_overwrite(self, check_type, factory_class):
+        content = factory_class()
+        instance = fraud_factories.BeneficiaryFraudCheckFactory(type=check_type, resultContent=content)
+        serialized_data = factory_class._meta.model(**instance.resultContent)
 
         assert content == serialized_data
