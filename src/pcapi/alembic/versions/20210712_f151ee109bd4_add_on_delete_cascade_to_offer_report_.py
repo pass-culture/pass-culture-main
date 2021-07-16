@@ -23,7 +23,7 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_constraint(None, "offer_report", type_="foreignkey")
-    op.drop_constraint(None, "offer_report", type_="foreignkey")
+    op.drop_constraint("offer_report_offerId_fkey", "offer_report", type_="foreignkey")
+    op.drop_constraint("offer_report_userId_fkey", "offer_report", type_="foreignkey")
     op.create_foreign_key("offer_report_offerId_fkey", "offer_report", "offer", ["offerId"], ["id"])
     op.create_foreign_key("offer_report_userId_fkey", "offer_report", "user", ["userId"], ["id"])
