@@ -1,7 +1,6 @@
 import logging
 
 from pcapi.connectors.beneficiaries import jouve_backend
-from pcapi.core.fraud import exceptions
 from pcapi.core.fraud.api import on_jouve_result
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
@@ -60,12 +59,6 @@ class CreateBeneficiaryFromApplication:
         if preexisting_account:
             try:
                 on_jouve_result(preexisting_account, jouve_content)
-            except (
-                exceptions.UserAlreadyBeneficiary,
-                exceptions.UserEmailNotValidated,
-                exceptions.UserPhoneNotValidated,
-            ) as exception:
-                logger.info("Error on jouve result: %s", exception)
             except Exception as exc:  # pylint: disable=broad-except
                 logger.exception("Error on jouve result: %s", exc)
 

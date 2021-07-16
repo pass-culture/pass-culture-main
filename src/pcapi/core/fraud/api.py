@@ -12,7 +12,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
 
-from . import exceptions
 from . import models
 
 
@@ -104,18 +103,16 @@ def on_identity_fraud_check_result(
     user: User,
     beneficiary_fraud_check: models.BeneficiaryFraudCheck,
 ) -> models.BeneficiaryFraudResult:
-    if user.isBeneficiary:
-        raise exceptions.UserAlreadyBeneficiary()
-    if not user.isEmailValidated:
-        raise exceptions.UserEmailNotValidated()
-    if FeatureToggle.FORCE_PHONE_VALIDATION.is_active() and not user.is_phone_validated:
-        raise exceptions.UserPhoneNotValidated()
+    fraud_items: list[models.FraudItem] = []
 
-    fraud_items = []
+    fraud_items.append(_check_user_already_beneficiary(user))
+    fraud_items.append(_check_user_email_is_validated(user))
+    fraud_items.append(_check_user_phone_is_validated(user))
+
     if beneficiary_fraud_check.type == models.FraudCheckType.JOUVE:
-        fraud_items = jouve_fraud_checks(beneficiary_fraud_check)
+        fraud_items += jouve_fraud_checks(beneficiary_fraud_check)
     elif beneficiary_fraud_check.type == models.FraudCheckType.DMS:
-        fraud_items = dms_fraud_checks(beneficiary_fraud_check)
+        fraud_items += dms_fraud_checks(beneficiary_fraud_check)
 
     fraud_result = validate_frauds(user, fraud_items)
     repository.save(fraud_result)
@@ -156,6 +153,26 @@ def _duplicate_id_piece_number_fraud_item(document_id_number: str) -> models.Fra
         if duplicate_user
         else None,
     )
+
+
+def _check_user_already_beneficiary(user: User) -> models.FraudItem:
+    if user.isBeneficiary:
+        return models.FraudItem(status=models.FraudStatus.KO, detail="L'utilisateur est déjà bénéficiaire")
+    return models.FraudItem(status=models.FraudStatus.OK, detail=None)
+
+
+def _check_user_email_is_validated(user: User) -> models.FraudItem:
+    if not user.isEmailValidated:
+        return models.FraudItem(status=models.FraudStatus.KO, detail="L'email de l'utilisateur n'est pas validé")
+    return models.FraudItem(status=models.FraudStatus.OK, detail=None)
+
+
+def _check_user_phone_is_validated(user: User) -> models.FraudItem:
+    if FeatureToggle.FORCE_PHONE_VALIDATION.is_active() and not user.is_phone_validated:
+        return models.FraudItem(
+            status=models.FraudStatus.KO, detail="Le n° de téléphone de l'utilisateur n'est pas validé"
+        )
+    return models.FraudItem(status=models.FraudStatus.OK, detail=None)
 
 
 def _id_check_fraud_items(content: models.JouveContent) -> list[models.FraudItem]:

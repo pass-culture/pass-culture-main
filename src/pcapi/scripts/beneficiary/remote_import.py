@@ -6,7 +6,6 @@ from typing import Optional
 from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
 import pcapi.core.fraud.api as fraud_api
-import pcapi.core.fraud.exceptions as fraud_exceptions
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.users.api import activate_beneficiary
 from pcapi.core.users.api import create_reset_password_token
@@ -88,12 +87,6 @@ def run(
             fraud_check = fraud_api.dms_fraud_check(user, information)
             try:
                 fraud_api.on_identity_fraud_check_result(user, fraud_check)
-            except (
-                fraud_exceptions.UserAlreadyBeneficiary,
-                fraud_exceptions.UserEmailNotValidated,
-                fraud_exceptions.UserPhoneNotValidated,
-            ) as exception:
-                logger.info("Error on dms fraud check result: %s", exception)
             except Exception as exc:  # pylint: disable=broad-except
                 logger.exception("Error on dms fraud check result: %s", exc)
         if user and user.isBeneficiary is True:
