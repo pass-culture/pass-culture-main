@@ -41,24 +41,5 @@ elif [[ $push_command =~ $protected_branch ]] && [ $current_branch != $protected
     fi
 # Case: all other cases
 else
-  # check for multiple alembic heads before push (especially when rebasing before a merge)
-  if [ $current_branch != $protected_branch ]; then
-    echo -e "\n\033[0;96mRunning alembic multiple heads check\033[0m\n"
-        output=$(alembic branches)
-        if [ ! -z "$output" ]; then
-          echo -e "\n\033[0;91mMultiple alembic heads found\033[0m\n"
-          branchpoint=$(echo "$output" | awk 'FNR == 1 {print $1}')
-          bad_branches=$(echo "$output" | awk 'FNR > 1 {print $2}')
-          echo "HINT: These revisions have the same down_revision ($branchpoint):"
-          while read -r branch
-          do
-            find ./src/pcapi/alembic/versions -name "*$branch*.py" -type f
-          done < <(echo "$bad_branches")
-          echo -e "\n"
-          exit 1
-        else
-          echo -e "\n\033[0;32mJust one head\033[0m\n"
-        fi
-  fi
     exit 0
 fi
