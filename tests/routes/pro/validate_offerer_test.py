@@ -52,7 +52,9 @@ class Returns202Test:
 
         # Then
         assert response.status_code == 202
-        mocked_async_index_venue_ids.assert_called_once_with([1, 2, 3])
+        mocked_async_index_venue_ids.assert_called_once()
+        called_args, _ = mocked_async_index_venue_ids.call_args
+        assert set(called_args[0]) == set([1, 2, 3])
 
 
 class Returns404Test:
