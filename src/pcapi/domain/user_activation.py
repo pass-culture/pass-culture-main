@@ -13,7 +13,7 @@ IMPORT_STATUS_MODIFICATION_RULE = (
 
 
 def create_beneficiary_from_application(
-    application_detail: fraud_models.DemarchesSimplifieesContent, user: Optional[User] = None
+    application_detail: fraud_models.DMSContent, user: Optional[User] = None
 ) -> User:
     if not user:
         beneficiary = User()

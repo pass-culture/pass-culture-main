@@ -53,7 +53,7 @@ class IsImportStatusChangeAllowedTest:
 class CreateBeneficiaryFromApplicationTest:
     def test_return_newly_created_user(self):
         # given
-        beneficiary_information = fraud_models.DemarchesSimplifieesContent(
+        beneficiary_information = fraud_models.DMSContent(
             department="67",
             last_name="Doe",
             first_name="Jane",
@@ -90,7 +90,7 @@ class CreateBeneficiaryFromApplicationTest:
 
     def test_updates_existing_user(self):
         # given
-        beneficiary_information = fraud_models.DemarchesSimplifieesContent(
+        beneficiary_information = fraud_models.DMSContent(
             department="67",
             last_name="Doe",
             first_name="Jane",

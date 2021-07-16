@@ -338,25 +338,25 @@ class CommonFraudCheckTest:
 class DMSFraudCheckTest:
     def test_dms_fraud_check(self):
         user = users_factories.UserFactory(isBeneficiary=False)
-        content = fraud_factories.DemarchesSimplifieesContentFactory()
-        fraud_api.dms_fraud_check(user, content)
+        content = fraud_factories.DMSContentFactory()
+        fraud_api.on_dms_fraud_check(user, content)
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
             user=user, type=fraud_models.FraudCheckType.DMS
         ).one_or_none()
 
-        expected_content = fraud_models.DemarchesSimplifieesContent(**fraud_check.resultContent)
+        expected_content = fraud_models.DMSContent(**fraud_check.resultContent)
         assert content == expected_content
 
     def test_dms_fraud_result(self):
         user = users_factories.UserFactory(isBeneficiary=False)
-        content = fraud_factories.DemarchesSimplifieesContentFactory()
-        returned_fraud_check = fraud_api.dms_fraud_check(user, content)
+        content = fraud_factories.DMSContentFactory()
+        returned_fraud_check = fraud_api.on_dms_fraud_check(user, content)
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
             user=user, type=fraud_models.FraudCheckType.DMS
         ).one_or_none()
-        expected_content = fraud_models.DemarchesSimplifieesContent(**fraud_check.resultContent)
+        expected_content = fraud_models.DMSContent(**fraud_check.resultContent)
         assert content == expected_content
 
         fraud_api.on_identity_fraud_check_result(user, returned_fraud_check)

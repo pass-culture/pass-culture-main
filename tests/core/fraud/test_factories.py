@@ -11,7 +11,7 @@ class FactoriesTest:
     @pytest.mark.parametrize(
         "check_type,model_class",
         [
-            (fraud_models.FraudCheckType.DMS, fraud_models.DemarchesSimplifieesContent),
+            (fraud_models.FraudCheckType.DMS, fraud_models.DMSContent),
             (fraud_models.FraudCheckType.JOUVE, fraud_models.JouveContent),
             (fraud_models.FraudCheckType.USER_PROFILING, fraud_models.UserProfilingFraudData),
         ],
@@ -23,7 +23,7 @@ class FactoriesTest:
     @pytest.mark.parametrize(
         "check_type,factory_class",
         [
-            (fraud_models.FraudCheckType.DMS, fraud_factories.DemarchesSimplifieesContentFactory),
+            (fraud_models.FraudCheckType.DMS, fraud_factories.DMSContentFactory),
             (fraud_models.FraudCheckType.JOUVE, fraud_factories.JouveContentFactory),
             (fraud_models.FraudCheckType.USER_PROFILING, fraud_factories.UserProfilingFraudDataFactory),
         ],

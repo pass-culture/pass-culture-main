@@ -81,9 +81,9 @@ class UserProfilingFraudDataFactory(factory.Factory):
     unknown_session = random.choice(USERPROFILING_BOOL)
 
 
-class DemarchesSimplifieesContentFactory(factory.Factory):
+class DMSContentFactory(factory.Factory):
     class Meta:
-        model = models.DemarchesSimplifieesContent
+        model = models.DMSContent
 
     last_name = factory.Faker("last_name")
     first_name = factory.Faker("first_name")
@@ -100,7 +100,7 @@ class DemarchesSimplifieesContentFactory(factory.Factory):
 
 
 FRAUD_CHECK_TYPE_MODEL_ASSOCIATION = {
-    models.FraudCheckType.DMS: DemarchesSimplifieesContentFactory,
+    models.FraudCheckType.DMS: DMSContentFactory,
     models.FraudCheckType.JOUVE: JouveContentFactory,
     models.FraudCheckType.USER_PROFILING: UserProfilingFraudDataFactory,
 }

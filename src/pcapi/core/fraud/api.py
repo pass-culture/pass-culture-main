@@ -44,6 +44,23 @@ def on_jouve_result(user: User, jouve_content: models.JouveContent):
     on_identity_fraud_check_result(user, fraud_check)
 
 
+def on_dms_fraud_check(
+    user: User,
+    dms_content: models.DMSContent,
+) -> models.BeneficiaryFraudCheck:
+
+    fraud_check = models.BeneficiaryFraudCheck(
+        user=user,
+        type=models.FraudCheckType.DMS,
+        thirdPartyId=str(dms_content.application_id),
+        resultContent=dms_content,
+    )
+
+    db.session.add(fraud_check)
+    db.session.commit()
+    return fraud_check
+
+
 def admin_update_identity_fraud_check_result(
     user: User, id_piece_number: str
 ) -> Union[models.BeneficiaryFraudCheck, None]:
@@ -85,7 +102,7 @@ def jouve_fraud_checks(beneficiary_fraud_check: models.BeneficiaryFraudCheck) ->
 
 
 def dms_fraud_checks(beneficiary_fraud_check: models.BeneficiaryFraudCheck) -> list[models.FraudItem]:
-    dms_content = models.DemarchesSimplifieesContent(**beneficiary_fraud_check.resultContent)
+    dms_content = models.DMSContent(**beneficiary_fraud_check.resultContent)
 
     fraud_items = []
     fraud_items.append(
@@ -332,23 +349,6 @@ def handle_phone_validation_attempts_limit_reached(user: User, attempts_count: i
 
     create_internal_review_fraud_check(user, fraud_check_data)
     return upsert_suspicious_fraud_result(user, reason)
-
-
-def dms_fraud_check(
-    user: User,
-    dms_content: models.DemarchesSimplifieesContent,
-) -> models.BeneficiaryFraudCheck:
-
-    fraud_check = models.BeneficiaryFraudCheck(
-        user=user,
-        type=models.FraudCheckType.DMS,
-        thirdPartyId=str(dms_content.application_id),
-        resultContent=dms_content,
-    )
-
-    db.session.add(fraud_check)
-    db.session.commit()
-    return fraud_check
 
 
 def validate_frauds(user: User, fraud_items: list[models.FraudItem]) -> models.BeneficiaryFraudResult:

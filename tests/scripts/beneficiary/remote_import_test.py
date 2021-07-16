@@ -286,7 +286,7 @@ class RunTest:
         # then
         process_beneficiary_application.assert_called_with(
             error_messages=[],
-            information=fraud_models.DemarchesSimplifieesContent(
+            information=fraud_models.DMSContent(
                 last_name="Doe",
                 first_name="John",
                 civility="Mme",
@@ -312,7 +312,7 @@ class ProcessBeneficiaryApplicationTest:
         # given
         app.mailjet_client = Mock(spec=Client)
         app.mailjet_client.send = Mock()
-        information = fraud_models.DemarchesSimplifieesContent(
+        information = fraud_models.DMSContent(
             department="93",
             last_name="Doe",
             first_name="Jane",
@@ -345,7 +345,7 @@ class ProcessBeneficiaryApplicationTest:
         # given
         app.mailjet_client = Mock(spec=Client)
         app.mailjet_client.send = Mock()
-        information = fraud_models.DemarchesSimplifieesContent(
+        information = fraud_models.DMSContent(
             department="93",
             last_name="Doe",
             first_name="Jane",
@@ -378,7 +378,7 @@ class ProcessBeneficiaryApplicationTest:
         self, send_activation_email, mock_repository, create_beneficiary_from_application, app
     ):
         # given
-        information = fraud_factories.DemarchesSimplifieesContentFactory(application_id=123)
+        information = fraud_factories.DMSContentFactory(application_id=123)
 
         create_beneficiary_from_application.return_value = users_factories.UserFactory.build(isBeneficiary=True)
 
@@ -398,7 +398,7 @@ class ProcessBeneficiaryApplicationTest:
         self, send_activation_email, mock_repository, create_beneficiary_from_application, app
     ):
         # given
-        information = fraud_factories.DemarchesSimplifieesContentFactory(application_id=123)
+        information = fraud_factories.DMSContentFactory(application_id=123)
         create_beneficiary_from_application.side_effect = [User()]
         mock_repository.save.side_effect = [ApiErrors({"postalCode": ["baaaaad value"]})]
         new_beneficiaries = []
@@ -688,7 +688,7 @@ class RunIntegrationTest:
         assert len(user.beneficiaryFraudChecks) == 1
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        fraud_content = fraud_models.DemarchesSimplifieesContent(**fraud_check.resultContent)
+        fraud_content = fraud_models.DMSContent(**fraud_check.resultContent)
         assert fraud_content.birth_date == user.dateOfBirth.date()
         assert fraud_content.address == "11 Rue du Test"
 
@@ -751,7 +751,7 @@ class RunIntegrationTest:
         assert len(user.beneficiaryFraudChecks) == 1
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        fraud_content = fraud_models.DemarchesSimplifieesContent(**fraud_check.resultContent)
+        fraud_content = fraud_models.DMSContent(**fraud_check.resultContent)
         assert fraud_content.birth_date == user.dateOfBirth.date()
         assert fraud_content.address == "11 Rue du Test"
 
@@ -851,7 +851,7 @@ class RunIntegrationTest:
         user = User.query.first()
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        fraud_content = fraud_models.DemarchesSimplifieesContent(**fraud_check.resultContent)
+        fraud_content = fraud_models.DMSContent(**fraud_check.resultContent)
         assert fraud_content.birth_date == user.dateOfBirth.date()
         assert fraud_content.address == "11 Rue du Test"
 
@@ -969,7 +969,7 @@ class RunIntegrationTest:
         send_activation_email,
     ):
         # given
-        information = fraud_factories.DemarchesSimplifieesContentFactory(
+        information = fraud_factories.DMSContentFactory(
             department="93",
             last_name="Doe",
             first_name="Jane",
@@ -1029,7 +1029,7 @@ class RunIntegrationTest:
         send_activation_email,
     ):
         # given
-        information = fraud_factories.DemarchesSimplifieesContentFactory(
+        information = fraud_factories.DMSContentFactory(
             department="93",
             last_name="Doe",
             first_name="Jane",

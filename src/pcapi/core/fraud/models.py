@@ -94,7 +94,7 @@ class JouveContent(pydantic.BaseModel):
     _parse_birth_date = validator("birthDateTxt", pre=True, allow_reuse=True)(_parse_date)
 
 
-class DemarchesSimplifieesContent(pydantic.BaseModel):
+class DMSContent(pydantic.BaseModel):
     last_name: str
     first_name: str
     civility: str

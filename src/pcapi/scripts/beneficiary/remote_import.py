@@ -84,7 +84,7 @@ def run(
 
         user = find_user_by_email(information.email)
         if user:
-            fraud_check = fraud_api.dms_fraud_check(user, information)
+            fraud_check = fraud_api.on_dms_fraud_check(user, information)
             try:
                 fraud_api.on_identity_fraud_check_result(user, fraud_check)
             except Exception as exc:  # pylint: disable=broad-except
@@ -124,7 +124,7 @@ def run(
     )
 
 
-def parse_beneficiary_information(application_detail: dict) -> fraud_models.DemarchesSimplifieesContent:
+def parse_beneficiary_information(application_detail: dict) -> fraud_models.DMSContent:
     dossier = application_detail["dossier"]
 
     information = {
@@ -155,12 +155,12 @@ def parse_beneficiary_information(application_detail: dict) -> fraud_models.Dema
         if label == "Quel est le numéro de la pièce que vous venez de saisir ?":
             information["id_piece_number"] = value
 
-    return fraud_models.DemarchesSimplifieesContent(**information)
+    return fraud_models.DMSContent(**information)
 
 
 def process_beneficiary_application(
     error_messages: list[str],
-    information: fraud_models.DemarchesSimplifieesContent,
+    information: fraud_models.DMSContent,
     new_beneficiaries: list[User],
     procedure_id: int,
     preexisting_account: Optional[User] = None,
