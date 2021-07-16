@@ -1,10 +1,15 @@
 # pass-culture-main
 
-C'est tout le framework du Pass Culture!
+Le repo `main` contient 6 sub modules du pass Culture suivants :
 
-## Minimal Process
+- l'[api](https://github.com/pass-culture/pass-culture-api) (Flask)
+- le portail [pro](https://github.com/pass-culture/pass-culture-pro) (React), pour les acteurs culturels
+- la [webapp](https://github.com/pass-culture/pass-culture-browser) (React) : version web de l'application des jeunes, remplacée progressivement par l'[app native](https://github.com/pass-culture/pass-culture-app-native/)
+- [adage-front](https://github.com/pass-culture/pass-culture-adage-front) (React), application frontend pour les rédacteurs de projets scolaires
+- [doc](https://github.com/pass-culture/pass-culture-doc) : documentation de l'API pour les partenaires du pass Culture
+- [maintenance-api](https://github.com/pass-culture/pc-maintenance) : page de maintenance
 
-### Install
+## Installation
 
 #### Installer les bibliothèques
 
@@ -45,14 +50,14 @@ C'est tout le framework du Pass Culture!
 
 ### Lancer les applications
 
-#### API
+#### L'api
 
 - `pc start-backend`
 - Tester `http://localhost/apidoc/swagger#/default` et vous devriez accéder au swagger
-- Aller sur l'url `http://localhost/pc/back-office/` pour accéder au back office
+- Aller sur l'url `http://localhost/pc/back-office/` pour accéder au back office Flask Admin
 - `pc sandbox -n industrial` (pour peupler la BDD)
 
-#### L'application web
+#### La webapp
 
 - `pc start-webapp`
 - `http://localhost:3000/` devrait être lancé et fonctionnel
@@ -65,27 +70,15 @@ C'est tout le framework du Pass Culture!
 - `http://localhost:3001/` devrait être lancé et fonctionnel
 - Connectez-vous avec `pctest.admin93.0@example.com` et `user@AZERTY123`
 
-### Configurer son API localement
+#### Flask Admin
 
-Les actions suivantes sont requises afin de faire fonctionner l'IDE correctement côté API et de pouvoir lancer les `hooks` de `pre-commit`
-
-- Installer Python 3.9
-- `cd pass-culture-main/api`
-- `python3 -m venv venv`
-- `source venv/bin/activate`
-- `pip install -r requirements.txt`
-Troubleshooting:
-
-if you got errors, during requirements installation, about psycopg, this may help you: https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7/62931654#62931654
-
-- `pip install -e .`
-- Installation de nltk:
-  - Version Ubuntu: `python -m nltk.downloader punkt stopwords`
-  - Version Mac: `pip install nltk`
+- lancer l'`api`
+- lancer `pro` ou `webapp`
+- se connecter avec les identifiants d'un compte admin
+- visiter `http://localhost/pc/back-office/`
 
 ### Exécution des tests (API, WebApp, Pro)
 
-- Point d'attention : l'API et le pro doivent être lancés pour pouvoir lancer les tests
 - API
   1. `pc start-backend`
   2. `pc test-backend` (permet de lancer tous les tests de l'API)
@@ -93,51 +86,52 @@ if you got errors, during requirements installation, about psycopg, this may hel
   4. `pc test-backend <path_to_test_file> -x <test_name>` (permet de lancer des tests spécifiques et d'arrêter l'exécution au premier test fail)
 - WEBAPP / PRO
   1. `yarn test:unit`
-  2. `yarn test:cafe` (attention, il doit y avoir des données dans la sandbox au préalable `pc sandbox -n testcafe`)
+  2. `yarn test:cafe` (tests end2end)
+  - le backend (`api`) doit être lancé
+  - il doit y avoir des données dans la sandbox au préalable `pc sandbox -n testcafe`
 
-## Développeurs.ses
+## Développement
 
 ### Environnement python local
 
-Pour pouvoir lancer les `hooks` de `pre-commit` sur le projet API, il faut installer l'environnement python en local.
+- Installer Python 3.9 et `pip`
+- Monter un [virtualenv](https://python-guide-pt-br.readthedocs.io/fr/latest/dev/virtualenvs.html) afin d'avoir un environnement isolé et contextualisé pour les besoins de l'API
 
-- installer Python 3.9 et `pip`
-- monter un [virtualenv](https://python-guide-pt-br.readthedocs.io/fr/latest/dev/virtualenvs.html) afin d'avoir un environnement isolé et contextualisé pour les besoins de l'API
   1. `pip install virtualenv`
   2. `cd pass-culture-main/api`
   3. `python -m venv venv`
   4. `source venv/bin/activate`
   5. `pip install -r requirements.txt`
 
-### Rebuild
+Il est utile de lancer périodiquement un `pip install -r requirements.txt` pour mettre à jour les dépendances (chose faite automatiquement par le docker lorsqu'il se lance).
 
-Pour reconstruire l'image docker sans cache
+**Hooks de commit**
 
-```bash
-pc rebuild-backend
-```
+Lorsqu'un commit est effectué sur le projet API, les hooks de commits ([pre-commit](api/hooks/pre-commit), [pre-push](api/hooks/pre-push) ) se lancent.
 
-### Restart
+L'environnement python en local est nécessaire pour que les outils d'anlyse de code (`isort`, `batch`, `pylint`...) se lancent.
 
-Pour effacer la base de données complétement, et relancer tous les containers:
+Si les hooks ne se lancent pas, lancer `pc install-hooks` (commande incluse dans `pc install`)
 
-```bash
-pc restart-backend
-```
+**_Troubleshooting_**
 
-### Reset
+En cas d'erreur lors de l'installation des dépendances avec psycopg, [ceci peut vous aider](https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7/62931654#62931654).
 
-Si vos serveurs de dev tournent, et que vous souhaitez juste effacer les tables de la db:
+- `pip install -e .`
+- Installation de nltk:
+  - Version Ubuntu: `python -m nltk.downloader punkt stopwords`
+  - Version Mac: `pip install nltk`
 
-```bash
-pc reset-sandbox-db
-```
+### Editeur de code (IDE)
 
-Si vous voulez juste enlever les recommandations et bookings crées en dev par votre navigation:
+Point de contrôle (API) :
+Pour une meilleure expérience de développement sur le repo API, vérifier que les fichiers sont correctement formattés (avec `black` et `isort`) lorsqu'un fichier est sauvegardé.
 
-```bash
-pc reset-reco-db
-```
+**VS Code**
+
+Le fichier de configuration [vscode](api/.vscode/settings.json) permet notamment de lancer `black` et `isort` lorsqu'un fichier est sauvegardé.
+
+Vérifier que l'interpreteur python utilisé par VSCode est le bon. Taper `cmd+shift+P` puis `Python: select interpreter` et choisir le python précédemment installé en local (virtual env ou pyenv).
 
 ### Migration
 
@@ -239,18 +233,99 @@ Le mot de passe est toujours : `user@AZERTY123`
 
 (Ces deux utilisateurs existent également pour le 97, pour les utiliser, il suffit de remplacer 93 par 97)
 
-## Tagging des versions
+### Commandes utiles
 
-La politique de tagging de version est la suivante :
+- Rebuild : `pc rebuild-backend` (reconstruire l'image docker sans cache)
+- Restart : `pc restart-backend` (effacer la base de données, et relancer tous les containers)
+- Reset :
+  - `pc reset-sandbox-db` : si vos serveurs de dev tournent, et que vous souhaitez juste réinitialiser la db
+  - `pc reset-reco-db` : (si vous voulez juste enlever les recommandations et bookings créés en dev par votre navigation)
+
+## Deploiement
+
+### Testing
+
+Le déploiement se lance lors d'un merge sur la branche `master` pour les 3 repos :
+
+- api : [configuration circlecI](api/.circleci/config.yml)
+- pro : [configuration circlecI](pro/.circleci/config.yml)
+- wepapp : [configuration circlecI](webapp/.circleci/config.yml)
+
+Pré-requis : installer [jq](https://stedolan.github.io/jq/download/)
+
+### Staging et Production
+
+Le déploiement en staging et production suit les étapes suivantes :
+
+1.  Tagging de la version : [lire plus bas](#tagging-des-versions)
+2.  Déploiement du tag en `staging`
+3.  Tests de la version déployée en `staging`
+4.  Déploiement du tag en `production`
+5.  Déploiement du tag en `integration`
+
+Les 3 repos suivants sont taggés et déployés simultanément :
+
+- `api`
+- `pro`
+- `webapp`
+- `doc`
+
+Une fois le tag posé (les tests doivent être **verts**) réaliser le déploiement avec la commande
+
+```bash
+pc -e <staging|production|integration> -t {numéro_de_version} deploy
+```
+
+Par exemple pour déployer la version 138.0.0 en staging :
+
+```bash
+pc -e staging -t 138.0.0 deploy
+```
+
+A la fin de l'opération, une fenêtre de votre navigateur s'ouvrira sur le workflow en cours.
+
+Après avoir livré en production, ne pas oublier de livrer ensuite sur les environnements d'integration.
+
+### Tagging des versions
+
+_Poser un tag_ consiste à sélectionner un ensemble de commits et de leur attribuer un numéro de version.
+
+1. Se placer sur les 4 repos et checkout la branche voulue
+
+- repo main : `git checkout master && git pull`
+- repo api : `git chekout master && git pull`
+- repo pro : `git chekout master && git pull`
+- repo webapp : `git chekout master && git pull`
+- repo doc : `git chekout master && git pull`
+
+La seule branche devant être taguée de cette façon est master. Pour les hotfixes, [voir plus bas](#hot-fixes).
+
+2. Lancer la commande
+
+```bash
+pc -t {numéro_de_version} tag
+```
+
+Par exemple
+
+```bash
+pc -t 138.0.0 tag
+```
+
+3. Sur CircleCI, vérifier l'avancement du job sur `main`.
+
+### Numéro de version
+
+Pour déterminer le numéro de version
 
 - On n'utilise pas de _semantic versioning_
 - On utilise le format `I.P.S`
-  - I => incrément d'**Itération**
+  - I => numéro de l'**Itération**
   - P => incrément de _fix_ en **Production**
   - S => incrément de _fix_ en **Staging**
 - Lors de la pose d'un tag, il faut communiquer les migrations de BDD embarquées à la data pour éviter des bugs sur les analytics
 
-### Exemple
+#### Exemple
 
 - Je livre une nouvelle version en staging en fin d'itération n°20 => `20.0.0`
 - Je m'aperçois qu'il y a un bug en staging => `20.0.1`
@@ -261,64 +336,39 @@ La politique de tagging de version est la suivante :
 - Je m'aperçois que mon fix est lui-même buggé, je relivre un fix en staging => `20.2.1`
 - Mes deux fix sont cette fois OK, je livre en production => `20.2.1`
 
-Pour poser un tag sur une version :
-
-S'assurer d'avoir bien commité ses fichiers.
-Checkout de master sur pass-culture-main, pass-culture-api, pass-culture-webapp et pass-culture-pro.
-
-```bash
-pc -t I.P.S tag
-```
-
-La seule branche devant être taguée de cette façon est master. Pour les hotfixes, voir plus bas.
-
 Le fichier version.txt de l'API est mis à jours ainsi que le package.json de Webapp et Pro.
 Le tag est posé sur les branches locales checkout (de préférence master): Api, Webapp et Pro.
 Elles sont ensuite poussées sur le repository distant.
-Les tests sont enfin joués et on déploie sur Testing.
+Les tests sont enfin joués et on déploie sur staging.
 
-## Hotfixes
+### Hot fixes
 
-Une fois le commit sur master, déployé en testing et validé par les POs,
-pour tagguer les hotfixes, commencer par se placer sur la dernière version déployée
-en production ou en staging à l'aide d'un `git checkout vI.P.S` sur chacun de projets.
-En effet nous voulons déployer uniquement ce qui est en Prod + nos commits de hotfix.
+Faire un hotfix consiste à créer un nouveau tag à partir du tag précédents avec des commits spécifiques.
 
-Une fois le tag checked-out, cherry-pick le fix du bug puis lancer la commande de création de branches de hotfixes et de tag pour chacun des projets :
+1. Les commits sont poussés sur `master`, déployés sur testing et validés par les POs
+2. Se placer en local sur le dernier tag
 
-`pc -t I.P(+1).S(+1) tag-hotfix`.
+- repo main : `git checkout v{numero_de_version}`
+- repo api : `git chekout v{numero_de_version}`
+- repo pro : `git chekout v{numero_de_version}`
+- repo webapp : `git chekout v{numero_de_version}`
+
+3. Cherry-pick les commits voulus
+
+Exemple :
+
+```
+cd api && git cherry-pick 3e07b9420e93a2a560b2deec1aed2e983fc842e8
+```
+
+4. Lancer la commande de création de tag hot fix :
+
+```bash
+pc -t {numero_de_version_incrémenté} tag-hotfix
+```
 
 Une fois les tests de la CI passés, on peut déployer ce tag.
-Il faut aussi penser à supprimer les branches de hotfixs une fois le déploiement.
-
-## Deploy
-
-Pré-requis : installer [jq](https://stedolan.github.io/jq/download/)
-
-En premier lieu:
-
-- bien vérifier qu'on a, en local, **main** et tous les submodules **(api, pro, webapp)** à jour par rapport à **master**
-- de là on peut poser un tag `pc -t I.P.S. tag` (pour savoir le tag précédent, il suffit de faire un `git tag` dans pass-culture-main)
-- se rendre sur CircleCI pour vérifier qu'il y a un job lancé par submodule **(api, pro, webapp)**, ainsi que **main** qui a également lancé autant de jobs qu'il y a de submodules,
-- réaliser le déploiement lorsque les tests de chaque submodule sont bien **verts**
-
-Pour déployer une nouvelle version, par exemple en staging:
-**(Attention de ne pas déployer sur la production sans concertation !)**
-
-```bash
-pc -e <staging|production|integration> -t I.P.S deploy
-```
-
-Par exemple pour déployer la version 3.0.1 en integration :
-
-```bash
-pc -e integration -t 3.0.1 deploy
-
-```
-
-A la fin de l'opération, une fenêtre de votre navigateur s'ouvrira sur le workflow en cours.
-
-Après avoir livré en production, ne pas oublier de livrer ensuite sur les environnements d'integration.
+Il faut aussi penser à supprimer les branches de hotfixs une fois le déploiement passé.
 
 ## Administration
 
@@ -536,5 +586,3 @@ artillery run scenario.yml -o reports/report-$(date -u +"%Y-%m-%dT%H:%M:%SZ").js
 ```
 
 Un rapport des tests daté sera généré dans le sous-dossier `reports` (qui doit être crée).
-
-## Envoyer
