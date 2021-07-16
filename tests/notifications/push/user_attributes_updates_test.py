@@ -11,6 +11,8 @@ from pcapi.notifications.push.user_attributes_updates import get_user_attributes
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
+MAX_BATCH_PARAMETER_SIZE = 30
+
 
 class GetUserAttributesTest:
     def test_get_attributes(self):
@@ -43,6 +45,13 @@ class GetUserAttributesTest:
             "u.marketing_push_subscription": True,
             "u.postal_code": None,
         }
+
+        for attribute in attributes:
+            if attribute.startswith("date"):
+                attribute = attribute.split("date(")[1].split(")")[0]
+
+            parameter_name = attribute.split(".")[1]
+            assert len(parameter_name) <= MAX_BATCH_PARAMETER_SIZE
 
     def test_get_attributes_without_bookings(self):
         user = UserFactory()
