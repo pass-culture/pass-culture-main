@@ -65,6 +65,7 @@ class CreateBeneficiaryFromApplicationTest:
             postal_code="67200",
             address="11 Rue du Test",
             application_id=123,
+            procedure_id=98012,
         )
 
         # when
@@ -102,6 +103,7 @@ class CreateBeneficiaryFromApplicationTest:
             postal_code="67200",
             address="11 Rue du Test",
             application_id=123,
+            procedure_id=98012,
         )
 
         user = users_api.create_account(

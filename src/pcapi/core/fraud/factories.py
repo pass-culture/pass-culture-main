@@ -90,6 +90,7 @@ class DMSContentFactory(factory.Factory):
     civility = random.choice(["M.", "Mme"])
     email = factory.Faker("ascii_safe_email")
     application_id = factory.Faker("pyint")
+    procedure_id = factory.Faker("pyint")
     departement = factory.Sequence("{}".format)
     birth_date = factory.Faker("date")
     phone = factory.Faker("phone_number")

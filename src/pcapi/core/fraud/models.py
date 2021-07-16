@@ -100,6 +100,7 @@ class DMSContent(pydantic.BaseModel):
     civility: str
     email: str
     application_id: int
+    procedure_id: int
     department: typing.Optional[str]
     birth_date: typing.Optional[datetime.date]
     phone: typing.Optional[str]

@@ -62,7 +62,7 @@ def run(
     for application_id in retry_ids + applications_ids:
         details = get_application_details(application_id, procedure_id, settings.DMS_TOKEN)
         try:
-            information = parse_beneficiary_information(details)
+            information = parse_beneficiary_information(details, procedure_id)
         except Exception as exc:  # pylint: disable=broad-except
             logger.info(
                 "[BATCH][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s had errors and was ignored: %s",
@@ -124,7 +124,7 @@ def run(
     )
 
 
-def parse_beneficiary_information(application_detail: dict) -> fraud_models.DMSContent:
+def parse_beneficiary_information(application_detail: dict, procedure_id: int) -> fraud_models.DMSContent:
     dossier = application_detail["dossier"]
 
     information = {
@@ -133,6 +133,7 @@ def parse_beneficiary_information(application_detail: dict) -> fraud_models.DMSC
         "civility": dossier["individual"]["civilite"],
         "email": dossier["email"],
         "application_id": dossier["id"],
+        "procedure_id": procedure_id,
     }
 
     for field in dossier["champs"]:

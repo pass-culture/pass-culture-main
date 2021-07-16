@@ -292,6 +292,7 @@ class RunTest:
                 civility="Mme",
                 email="john.doe@test.com",
                 application_id=123,
+                procedure_id=6712558,
                 department="67",
                 phone="0123456789",
                 birth_date=date(2000, 5, 1),
@@ -322,6 +323,7 @@ class ProcessBeneficiaryApplicationTest:
             postal_code="93130",
             address="11 Rue du Test",
             application_id=123,
+            procedure_id=123456,
             civility="Mme",
             activity="Étudiant",
         )
@@ -355,6 +357,7 @@ class ProcessBeneficiaryApplicationTest:
             postal_code="93130",
             address="11 Rue du Test",
             application_id=123,
+            procedure_id=123456,
             civility="Mme",
             activity="Étudiant",
         )
@@ -420,7 +423,7 @@ class ParseBeneficiaryInformationTest:
     class BeforeGeneralOpenningTest:
         def test_personal_information_of_beneficiary_are_parsed_from_application_detail(self):
             # when
-            information = parse_beneficiary_information(APPLICATION_DETAIL_STANDARD_RESPONSE)
+            information = parse_beneficiary_information(APPLICATION_DETAIL_STANDARD_RESPONSE, procedure_id=201201)
 
             # then
             assert information.last_name == "Doe"
@@ -437,7 +440,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", department_code="67 - Bas-Rhin")
 
             # when
-            information = parse_beneficiary_information(application_detail)
+            information = parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.department == "67"
@@ -447,7 +450,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", department_code="973 - Guyane")
 
             # when
-            information = parse_beneficiary_information(application_detail)
+            information = parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.department == "973"
@@ -459,7 +462,7 @@ class ParseBeneficiaryInformationTest:
             )
 
             # when
-            information = parse_beneficiary_information(application_detail)
+            information = parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.department == "2B"
@@ -471,7 +474,7 @@ class ParseBeneficiaryInformationTest:
             )
 
             # when
-            information = parse_beneficiary_information(application_detail)
+            information = parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.department == "2a"
@@ -485,7 +488,7 @@ class ParseBeneficiaryInformationTest:
                     field["type_de_champ"]["libelle"] = "Veuillez indiquer votre département de résidence"
 
             # when
-            information = parse_beneficiary_information(application_detail)
+            information = parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.department == "67"
@@ -495,7 +498,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="  93130  ")
 
             # when
-            information = parse_beneficiary_information(application_detail)
+            information = parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.postal_code == "93130"
@@ -505,7 +508,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="67 200")
 
             # when
-            information = parse_beneficiary_information(application_detail)
+            information = parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.postal_code == "67200"
@@ -515,7 +518,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="67 200 Strasbourg ")
 
             # when
-            information = parse_beneficiary_information(application_detail)
+            information = parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.postal_code == "67200"
@@ -525,7 +528,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", civility="M.")
 
             # when
-            information = parse_beneficiary_information(application_detail)
+            information = parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.civility == "M."
@@ -535,7 +538,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed")
 
             # when
-            information = parse_beneficiary_information(application_detail)
+            information = parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.activity == "Étudiant"
@@ -545,7 +548,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", activity=None)
 
             # when
-            information = parse_beneficiary_information(application_detail)
+            information = parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.activity is None
@@ -553,7 +556,9 @@ class ParseBeneficiaryInformationTest:
     class AfterGeneralOpenningTest:
         def test_personal_information_of_beneficiary_are_parsed_from_application_detail(self):
             # when
-            information = parse_beneficiary_information(APPLICATION_DETAIL_STANDARD_RESPONSE_AFTER_GENERALISATION)
+            information = parse_beneficiary_information(
+                APPLICATION_DETAIL_STANDARD_RESPONSE_AFTER_GENERALISATION, procedure_id=201201
+            )
 
             # then
             assert information.last_name == "Doe"
@@ -564,6 +569,7 @@ class ParseBeneficiaryInformationTest:
             assert information.phone == "0123456789"
             assert information.postal_code == "93130"
             assert information.application_id == 123
+            assert information.procedure_id == 201201
 
 
 @pytest.mark.usefixtures("db_session")
