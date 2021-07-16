@@ -26,6 +26,8 @@ WHERE
     OR bank_information."offererId" = booking."offererId"
   )
 
+UPDATE activation_code SET code = 'FAKE-' || id::text ;
+
 UPDATE provider SET "apiKey" = substring(md5(random()::text), 1, 32) WHERE "apiKey" is not null;
 
 UPDATE "user" SET "email" = 'user@' || "id",
