@@ -37,7 +37,7 @@ WHERE
 
 UPDATE activation_code SET code = 'FAKE-' || id::text ;
 
-UPDATE provider SET "apiKey" = pg_temp.random_text(32) WHERE "apiKey" is not null;
+UPDATE provider SET "authToken" = pg_temp.random_text(32) WHERE "authToken" is not null;
 
 UPDATE "user" SET "email" = 'user@' || "id",
   "publicName" = 'User' || "id",
