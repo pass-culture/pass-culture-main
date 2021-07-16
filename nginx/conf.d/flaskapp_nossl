@@ -3,7 +3,68 @@ server {
 
     client_max_body_size 8M;
 
+    satisfy any;
+    # send all requests to the `/validate` endpoint for authorization
+    auth_request /validate;
+    auth_request_set $auth_user $upstream_http_x_vouch_user;
+    resolver 127.0.0.11 ipv6=off;
+
+    allow 127.0.0.1;
+
+    deny all;
+
+    location = /validate {
+        # forward the /validate request to Vouch Proxy
+        proxy_pass http://vouch-proxy:9090/validate;
+        # be sure to pass the original host header
+        proxy_set_header Host $http_host;
+
+        # Vouch Proxy only acts on the request headers
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+
+        # optionally add X-Vouch-User as returned by Vouch Proxy along with the request
+        auth_request_set $auth_resp_x_vouch_user $upstream_http_x_vouch_user;
+
+        # optionally add X-Vouch-IdP-Claims-* custom claims you are tracking
+        #    auth_request_set $auth_resp_x_vouch_idp_claims_groups $upstream_http_x_vouch_idp_claims_groups;
+        #    auth_request_set $auth_resp_x_vouch_idp_claims_given_name $upstream_http_x_vouch_idp_claims_given_name;
+        # optinally add X-Vouch-IdP-AccessToken or X-Vouch-IdP-IdToken
+        #    auth_request_set $auth_resp_x_vouch_idp_accesstoken $upstream_http_x_vouch_idp_accesstoken;
+        #    auth_request_set $auth_resp_x_vouch_idp_idtoken $upstream_http_x_vouch_idp_idtoken;
+
+        # these return values are used by the @error401 call
+        auth_request_set $auth_resp_jwt $upstream_http_x_vouch_jwt;
+        auth_request_set $auth_resp_err $upstream_http_x_vouch_err;
+        auth_request_set $auth_resp_failcount $upstream_http_x_vouch_failcount;
+
+        # Vouch Proxy can run behind the same Nginx reverse proxy
+        # may need to comply to "upstream" server naming
+        # proxy_pass http://vouch.polydev.blue/validate;
+        # proxy_set_header Host $http_host;
+    }
+    # if validate returns `401 not authorized` then forward the request to the error401block
+    error_page 401 = @error401;
+
+    location @error401 {
+        # if there is a username provided in the request, returns a 401 as if it does not succeed in vouch, to continue to another mathod
+                if ($remote_user) {
+            return 401;
+        }
+                # redirect to Vouch Proxy for login
+        return 302 http://localhost:9090/login?url=$scheme://$http_host$request_uri&vouch-failcount=$auth_resp_failcount&X-Vouch-Token=$auth_resp_jwt&error=$auth_resp_err;
+        #return 302 https://vouch.polydev.blue/login?url=$scheme://$http_host$request_uri&vouch-failcount=$auth_resp_failcount&X-Vouch-Token=$auth_resp_jwt&error=$auth_resp_err;
+        # you usually *want* to redirect to Vouch running behind the same Nginx config proteced by https
+        # but to get started you can just forward the end user to the port that vouch is running on
+        # return 302 http://vouch.polydev.blue:9090/login?url=$scheme://$http_host$request_uri&vouch-failcount=$auth_resp_failcount&X-Vouch-Token=$auth_resp_jwt&error=$auth_resp_err;
+    }
+
     location / {
+        try_files /non-existent @flask_app;
+    }
+
+
+    location @flask_app {
         proxy_set_header   Host                 $host;
         proxy_set_header   X-Real-IP            $remote_addr;
         proxy_set_header   X-Forwarded-For      $proxy_add_x_forwarded_for;
@@ -20,3 +81,5 @@ server {
         root  /data/letsencrypt/;
     }
 }
+
+

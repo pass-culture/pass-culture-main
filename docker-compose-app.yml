@@ -29,6 +29,25 @@ services:
     networks:
       - db_nw
 
+  vouch-proxy:
+    image: voucher/vouch-proxy:latest
+    container_name: pc-vouch-proxy
+    environment:
+      VOUCH_DOMAINS: localhost
+      VOUCH_JWT_MAXAGE: 15000
+      VOUCH_COOKIE_MAXAGE: 15000
+      VOUCH_COOKIE_SECURE: "false"
+      OAUTH_PROVIDER: google
+      OAUTH_CLIENT_ID: $OAUTH_CLIENT_ID
+      OAUTH_CLIENT_SECRET: $OAUTH_CLIENT_SECRET
+      # which url to use ? the flask in docker-compose, or the local one which is easier when developping the backend-side locally
+      OAUTH_CALLBACK_URL: http://localhost:5000/pc/back-office/
+      OAUTH_SCOPES: openid,email,profile
+    ports:
+      - 9090:9090
+    networks:
+      - web_nw
+
   flask:
     image: passcultureapp/api-flask:latest
     working_dir: /opt/services/flaskapp/src
