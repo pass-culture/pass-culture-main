@@ -3,6 +3,7 @@ import React, { useCallback } from 'react'
 import { Field } from 'react-final-form'
 
 import HiddenField from 'components/layout/form/fields/HiddenField'
+import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 
 const WithdrawalDetailsFields = props => {
@@ -26,6 +27,17 @@ const WithdrawalDetailsFields = props => {
     [readOnly]
   )
 
+  const renderIsAppliedWithdrawalOnAllOffers = useCallback(({ input }) => {
+    return (
+      <CheckboxInput
+        {...input}
+        label="Appliquer le changement à toutes les offres déjà existantes."
+        name="isWithdrawalAppliedOnAllOffers"
+        value={input.value}
+      />
+    )
+  }, [])
+
   return (
     <div className="section vp-content-section bank-information">
       <div className="main-list-title title-actions-container">
@@ -47,6 +59,13 @@ const WithdrawalDetailsFields = props => {
             name="withdrawalDetails"
             render={renderWithdrawalDetails}
           />
+          {!isCreatedEntity && (
+            <Field
+              name="isWithdrawalAppliedOnAllOffers"
+              render={renderIsAppliedWithdrawalOnAllOffers}
+              type="checkbox"
+            />
+          )}
         </>
       ) : (
         <span>

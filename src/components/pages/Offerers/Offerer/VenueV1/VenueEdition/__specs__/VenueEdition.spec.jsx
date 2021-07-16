@@ -247,20 +247,23 @@ describe('src | components | pages | VenueEdition', () => {
           const state = wrapper.state()
 
           // when
-          wrapper.instance().handleFormSuccess(jest.fn())(state, action)
+          wrapper.instance().handleFormSuccess(jest.fn(), false)(state, action)
 
           // then
-          expect(props.handleSubmitRequestSuccess).toHaveBeenCalledWith({
-            config: {
-              apiPath: '/venues/CM',
-              method: 'PATCH',
-            },
-            payload: {
-              datum: {
-                id: 'CM',
+          expect(props.handleSubmitRequestSuccess).toHaveBeenCalledWith(
+            {
+              config: {
+                apiPath: '/venues/CM',
+                method: 'PATCH',
+              },
+              payload: {
+                datum: {
+                  id: 'CM',
+                },
               },
             },
-          })
+            { hasDelayedUpdates: false }
+          )
         })
       })
     })

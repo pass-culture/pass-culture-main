@@ -43,13 +43,13 @@ class VenueEdition extends PureComponent {
     this.setState(nextState, () => formResolver(errors))
   }
 
-  handleFormSuccess = formResolver => (_state, action) => {
+  handleFormSuccess = (formResolver, hasDelayedUpdates) => (_state, action) => {
     const { venue, handleSubmitRequestSuccess, query, trackModifyVenue } = this.props
 
     const { id: venueId } = venue
 
     this.setState({ isRequestPending: false }, () => {
-      handleSubmitRequestSuccess(action)
+      handleSubmitRequestSuccess(action, { hasDelayedUpdates })
       formResolver()
     })
 
@@ -66,7 +66,7 @@ class VenueEdition extends PureComponent {
       handleSubmitRequest({
         formValues,
         handleFail: this.handleFormFail(resolve),
-        handleSuccess: this.handleFormSuccess(resolve),
+        handleSuccess: this.handleFormSuccess(resolve, formValues.isWithdrawalAppliedOnAllOffers),
       })
     })
   }

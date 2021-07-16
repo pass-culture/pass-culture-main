@@ -93,11 +93,14 @@ export const mapDispatchToProps = (
       )
     },
 
-    handleSubmitRequestSuccess: () => {
+    handleSubmitRequestSuccess: (_action, { hasDelayedUpdates }) => {
+      const text = hasDelayedUpdates
+        ? 'Vos modifications ont bien été prises en compte, cette opération peut durer plusieurs minutes'
+        : 'Vos modifications ont bien été prises en compte'
       dispatch(
         showNotification({
-          text: 'Lieu modifié avec succès !',
-          type: 'success',
+          text: text,
+          type: hasDelayedUpdates ? 'pending' : 'success',
         })
       )
     },

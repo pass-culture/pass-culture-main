@@ -392,11 +392,6 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
   describe('handleSubmitRequestSuccess', () => {
     it('should dispatch action to display a succes message', () => {
       // given
-      const state = {
-        features: {
-          list: [],
-        },
-      }
       const action = {
         config: {
           method: 'POST',
@@ -409,11 +404,28 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
       }
 
       // when
-      mapDispatchToProps(dispatch, ownProps).handleSubmitRequestSuccess(state, action)
+      mapDispatchToProps(dispatch, ownProps).handleSubmitRequestSuccess(action, {
+        hasDelayedUpdates: false,
+      })
 
       // then
       expect(dispatch.mock.calls[0][0]).toStrictEqual({
-        payload: { text: 'Lieu modifié avec succès !', type: 'success' },
+        payload: { text: 'Vos modifications ont bien été prises en compte', type: 'success' },
+        type: 'SHOW_NOTIFICATION',
+      })
+
+      // when
+      mapDispatchToProps(dispatch, ownProps).handleSubmitRequestSuccess(action, {
+        hasDelayedUpdates: true,
+      })
+
+      // then
+      expect(dispatch.mock.calls[1][0]).toStrictEqual({
+        payload: {
+          text:
+            'Vos modifications ont bien été prises en compte, cette opération peut durer plusieurs minutes',
+          type: 'pending',
+        },
         type: 'SHOW_NOTIFICATION',
       })
     })

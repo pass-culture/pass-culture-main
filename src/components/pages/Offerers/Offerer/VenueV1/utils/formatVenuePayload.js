@@ -23,6 +23,7 @@ export const formatVenuePayload = (payload, isCreatedEntity) => {
     'bookingEmail',
     'city',
     'comment',
+    'isWithdrawalAppliedOnAllOffers',
     'latitude',
     'longitude',
     'name',
