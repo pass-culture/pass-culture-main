@@ -56,7 +56,7 @@ UPDATE api_key SET secret = pg_temp.random_text(32)::bytea;
 
 UPDATE "user" SET "email" = 'user@' || "id",
   "publicName" = 'User' || "id",
-  "password" = crypt(('##PASSWORD##' || "id"), gen_salt('bf'))::bytea;
+  "password" = 'fake-hashed-password'::bytea;
 UPDATE "user" SET  "firstName" = 'firstName' || "id" WHERE "firstName" IS NOT NULL;
 UPDATE "user" SET "lastName" = 'lastName' || "id" WHERE "lastName" IS NOT NULL;
 UPDATE "user" SET "dateOfBirth" = '01/01/2001' WHERE "dateOfBirth" IS NOT NULL;
