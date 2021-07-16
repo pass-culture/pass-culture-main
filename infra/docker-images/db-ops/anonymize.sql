@@ -7,7 +7,15 @@ END; $$
 LANGUAGE plpgsql;
 
 
-UPDATE offerer SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
+CREATE OR REPLACE FUNCTION pg_temp.random_text(len INT)
+ RETURNS TEXT AS $$
+BEGIN
+ RETURN substring(gen_random_uuid()::text, 1, len);
+END; $$
+LANGUAGE plpgsql;
+
+
+UPDATE offerer SET "validationToken" = pg_temp.random_text(27) WHERE "validationToken" is not null;
 
 UPDATE booking SET "token" = pg_temp.generate_booking_token_from_id("id") WHERE "token" is not null;
 
@@ -25,10 +33,11 @@ WHERE
     bank_information."venueId" = booking."venueId"
     OR bank_information."offererId" = booking."offererId"
   )
+;
 
 UPDATE activation_code SET code = 'FAKE-' || id::text ;
 
-UPDATE provider SET "apiKey" = substring(md5(random()::text), 1, 32) WHERE "apiKey" is not null;
+UPDATE provider SET "apiKey" = pg_temp.random_text(32) WHERE "apiKey" is not null;
 
 UPDATE "user" SET "email" = 'user@' || "id",
   "publicName" = 'User' || "id",
@@ -37,10 +46,10 @@ UPDATE "user" SET  "firstName" = 'firstName' || "id" WHERE "firstName" IS NOT NU
 UPDATE "user" SET "lastName" = 'lastName' || "id" WHERE "lastName" IS NOT NULL;
 UPDATE "user" SET "dateOfBirth" = '01/01/2001' WHERE "dateOfBirth" IS NOT NULL;
 UPDATE "user" SET "phoneNumber" = '0606060606' WHERE "phoneNumber" IS NOT NULL;
-UPDATE "user" SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
-UPDATE "user" SET "resetPasswordToken" = substring(md5(random()::text),1 , 10) WHERE "resetPasswordToken" is not null;
+UPDATE "user" SET "validationToken" = pg_temp.random_text(27) WHERE "validationToken" is not null;
+UPDATE "user" SET "resetPasswordToken" = pg_temp.random_text(10) WHERE "resetPasswordToken" is not null;
 
-UPDATE user_offerer SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
+UPDATE user_offerer SET "validationToken" = pg_temp.random_text(27) WHERE "validationToken" is not null;
 
 
-UPDATE venue SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
+UPDATE venue SET "validationToken" = pg_temp.random_text(27) WHERE "validationToken" is not null;
