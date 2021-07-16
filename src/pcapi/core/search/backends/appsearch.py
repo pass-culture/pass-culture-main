@@ -193,10 +193,7 @@ class AppSearchBackend(base.SearchBackend):
         self.appsearch_client.delete_documents(offer_ids)
 
     def unindex_all_offers(self) -> None:
-        pass
-        # FIXME (dbaty): remove all indexed documents from the engine.
-        # There does not seem to be any way to do that, except by
-        # iterating over all indexed documents and removing them.
+        self.appsearch_client.delete_all_documents()
 
     def serialize_offer(self, offer: offers_models.Offer) -> dict:
         dates = []
@@ -339,6 +336,23 @@ class AppSearchApiClient:
             data = json.dumps(batch)
             response = requests.delete(self.documents_url, headers=self.headers, data=data)
             response.raise_for_status()
+
+    def delete_all_documents(self):
+        if settings.IS_PROD:
+            raise ValueError("You cannot delete all documents on production.")
+        # As of 2021-07-16, there is no endpoint to delete all
+        # documents. We need to fetch all documents.
+        # Error handling is done by the caller.
+        list_url = f"{self.documents_url}/list"
+        page = 1
+        while True:
+            page_data = {"page": {"page": page, "size": DOCUMENTS_PER_REQUEST_LIMIT}}
+            response = requests.get(list_url, headers=self.headers, json=page_data)
+            document_ids = [document["id"] for document in response.json()["results"]]
+            if not document_ids:
+                break
+            self.delete_documents(document_ids)
+            page += 1
 
 
 class AppSearchJsonEncoder(json.JSONEncoder):
