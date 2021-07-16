@@ -39,6 +39,8 @@ UPDATE activation_code SET code = 'FAKE-' || id::text ;
 
 UPDATE provider SET "authToken" = pg_temp.random_text(32) WHERE "authToken" is not null;
 
+UPDATE api_key SET secret = pg_temp.random_text(32)::bytea;
+
 UPDATE "user" SET "email" = 'user@' || "id",
   "publicName" = 'User' || "id",
   "password" = crypt(('##PASSWORD##' || "id"), gen_salt('bf'))::bytea;
