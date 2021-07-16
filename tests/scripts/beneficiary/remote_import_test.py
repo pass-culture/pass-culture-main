@@ -693,8 +693,8 @@ class RunIntegrationTest:
         assert fraud_content.address == "11 Rue du Test"
 
         fraud_result = user.beneficiaryFraudResult
-        assert fraud_result is None
-
+        assert fraud_result.status == fraud_models.FraudStatus.KO
+        assert "Le n° de téléphone de l'utilisateur n'est pas validé" in fraud_result.reason
         assert BeneficiaryImport.query.count() == 1
         beneficiary_import = BeneficiaryImport.query.first()
 
@@ -808,7 +808,9 @@ class RunIntegrationTest:
         user = User.query.get(user.id)
         assert len(user.beneficiaryFraudChecks) == 1
         assert user.beneficiaryFraudChecks[0].type == fraud_models.FraudCheckType.DMS
-        assert user.beneficiaryFraudResult is None
+
+        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.KO
+        assert "L'utilisateur est déjà bénéficiaire" in user.beneficiaryFraudResult.reason
 
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.source == "demarches_simplifiees"

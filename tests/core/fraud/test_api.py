@@ -321,6 +321,18 @@ class CommonFraudCheckTest:
         assert "Le n° de téléphone de l'utilisateur n'est pas validé" in fraud_result.reason
         assert fraud_result.status == fraud_models.FraudStatus.KO
 
+    @pytest.mark.parametrize("fraud_check_type", [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.JOUVE])
+    def test_previously_validated_user_with_retry(self, fraud_check_type):
+        # The user is already beneficiary, and has already done all the checks but
+        # for any circumstances, someone is trying to redo the validation
+        user = users_factories.UserFactory(isBeneficiary=True)
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
+        fraud_result = fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
+
+        fraud_api.on_identity_fraud_check_result(user, fraud_check)
+
+        assert fraud_result.status == fraud_models.FraudStatus.OK
+
 
 @pytest.mark.usefixtures("db_session")
 class DMSFraudCheckTest:

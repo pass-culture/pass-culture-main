@@ -361,7 +361,9 @@ def validate_frauds(user: User, fraud_items: list[models.FraudItem]) -> models.B
 
     if user.beneficiaryFraudResult:
         fraud_result = user.beneficiaryFraudResult
-        fraud_result.status = status
+        # ensure we never overwrite a previously validated status
+        if fraud_result.status != models.FraudStatus.OK:
+            fraud_result.status = status
     else:
         fraud_result = models.BeneficiaryFraudResult(
             userId=user.id,
