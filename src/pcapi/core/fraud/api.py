@@ -40,14 +40,13 @@ def on_jouve_result(user: User, jouve_content: models.JouveContent):
     repository.save(fraud_check)
 
     # TODO: save user fields from jouve_content
-
     on_identity_fraud_check_result(user, fraud_check)
 
 
 def on_dms_fraud_check(
     user: User,
     dms_content: models.DMSContent,
-) -> models.BeneficiaryFraudCheck:
+) -> None:
 
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
@@ -58,7 +57,7 @@ def on_dms_fraud_check(
 
     db.session.add(fraud_check)
     db.session.commit()
-    return fraud_check
+    on_identity_fraud_check_result(user, fraud_check)
 
 
 def admin_update_identity_fraud_check_result(

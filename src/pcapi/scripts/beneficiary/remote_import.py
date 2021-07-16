@@ -84,9 +84,8 @@ def run(
 
         user = find_user_by_email(information.email)
         if user:
-            fraud_check = fraud_api.on_dms_fraud_check(user, information)
             try:
-                fraud_api.on_identity_fraud_check_result(user, fraud_check)
+                fraud_api.on_dms_fraud_check(user, information)
             except Exception as exc:  # pylint: disable=broad-except
                 logger.exception("Error on dms fraud check result: %s", exc)
         if user and user.isBeneficiary is True:
