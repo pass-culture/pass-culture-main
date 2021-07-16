@@ -1,14 +1,5 @@
 CREATE EXTENSION pgcrypto;
 
-CREATE OR REPLACE FUNCTION pg_temp.generate_random_between(
-  upper_limit NUMERIC,
-  lower_limit NUMERIC)
-  RETURNS NUMERIC AS $$
-BEGIN
-  RETURN trunc(random() * (upper_limit-lower_limit+1) + lower_limit);
-END; $$
-LANGUAGE plpgsql;
-
 CREATE OR REPLACE FUNCTION pg_temp.generate_booking_token_from_id(
  id BIGINT)
  RETURNS VARCHAR(6) AS $$
@@ -20,14 +11,22 @@ LANGUAGE plpgsql;
 
 UPDATE offerer SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
 
--- Set fake IBAN and BIC for each row
-UPDATE bank_information SET "iban" = pg_temp.generate_random_between(999999999,100000000)::text WHERE "iban" is not null;
-UPDATE bank_information SET "bic" = pg_temp.generate_random_between(999999999,100000000)::text WHERE "bic" is not null;
-
 UPDATE booking SET "token" = pg_temp.generate_booking_token_from_id("id") WHERE "token" is not null;
 
-UPDATE payment SET "iban" = 'FR7630001007941234567890185' WHERE "iban" is not null;
-UPDATE payment SET "bic" = 'BDFEFR2L' WHERE "bic" is not null;
+-- Set fake IBAN and BIC in `bank_information` table...
+UPDATE bank_information SET "iban" = 'FR' || lpad(id::text, 25, '0') WHERE "iban" is not null;
+UPDATE bank_information SET "bic" = 'XX' || lpad(id::text, 6, '0') WHERE "bic" is not null;
+-- ... and reuse them in `payment` table.
+UPDATE payment
+SET iban = bank_information.iban, bic = bank_information.bic
+FROM booking, bank_information
+WHERE
+  payment.iban IS NOT NULL
+  AND booking.id = payment."bookingId"
+  AND (
+    bank_information."venueId" = booking."venueId"
+    OR bank_information."offererId" = booking."offererId"
+  )
 
 UPDATE provider SET "apiKey" = substring(md5(random()::text), 1, 32) WHERE "apiKey" is not null;
 
@@ -43,8 +42,6 @@ UPDATE "user" SET "resetPasswordToken" = substring(md5(random()::text),1 , 10) W
 
 UPDATE user_offerer SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
 
-UPDATE bank_information SET "iban" = 'FR7630001007941234567890185' WHERE "iban" is not null;
-UPDATE bank_information SET "bic" = 'BDFEFR2L'  WHERE "bic" is not null;
 
 UPDATE venue SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
 
