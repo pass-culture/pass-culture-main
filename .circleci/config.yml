@@ -528,6 +528,18 @@ jobs:
             export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
 
+  restart-pcapi:
+    executor: gcp-sdk
+    environment:
+      GKE_CLUSTER_NAME: cluster-metier-ehp
+    steps:
+      - authenticate_gcp:
+          gcp-key-name: GCP_METIER_KEY
+      - run:
+          name: Get GKE cluster credentials
+          command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
+      - run: kubectl get deploy -n testing -o name | xargs -L 1 kubectl rollout restart -n testing
+
 ###################
 #  WORKFLOWS
 ###################
@@ -571,7 +583,13 @@ workflows:
             - GCP
             - GCP_EHP
             - Slack
-
+      - restart-pcapi:
+          requires:
+            - deploy-pcapi
+          context:
+            - GCP
+            - GCP_EHP
+            
   nightly:
     triggers:
       - schedule:
