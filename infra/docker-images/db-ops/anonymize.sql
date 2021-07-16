@@ -1,5 +1,3 @@
-CREATE EXTENSION pgcrypto;
-
 CREATE OR REPLACE FUNCTION pg_temp.generate_booking_token_from_id(
  id BIGINT)
  RETURNS VARCHAR(6) AS $$
@@ -44,6 +42,3 @@ UPDATE user_offerer SET "validationToken" = substring(md5(random()::text),1 , 27
 
 
 UPDATE venue SET "validationToken" = substring(md5(random()::text),1 , 27) WHERE "validationToken" is not null;
-
-
-DROP EXTENSION pgcrypto;
