@@ -215,4 +215,11 @@ describe('buildQueryOptions', () => {
       })
     })
   })
+
+  describe('group', () => {
+    it('should always fetch a single offer per group (isbn/visa/...)', () => {
+      const filters = buildQueryOptions(baseParams)
+      expect(filters.group).toStrictEqual({ field: AppSearchFields.group })
+    })
+  })
 })
