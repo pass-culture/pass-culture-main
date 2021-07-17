@@ -54,15 +54,18 @@ UPDATE provider SET "authToken" = pg_temp.random_text(32) WHERE "authToken" is n
 
 UPDATE api_key SET secret = pg_temp.random_text(32)::bytea;
 
-UPDATE "user" SET "email" = 'user@' || "id",
-  "publicName" = 'User' || "id",
-  "password" = 'fake-hashed-password'::bytea;
-UPDATE "user" SET  "firstName" = 'firstName' || "id" WHERE "firstName" IS NOT NULL;
-UPDATE "user" SET "lastName" = 'lastName' || "id" WHERE "lastName" IS NOT NULL;
-UPDATE "user" SET "dateOfBirth" = '01/01/2001' WHERE "dateOfBirth" IS NOT NULL;
-UPDATE "user" SET "phoneNumber" = '0606060606' WHERE "phoneNumber" IS NOT NULL;
-UPDATE "user" SET "validationToken" = pg_temp.random_text(27) WHERE "validationToken" is not null;
-UPDATE "user" SET "resetPasswordToken" = pg_temp.random_text(10) WHERE "resetPasswordToken" is not null;
+UPDATE "user"
+SET
+    "email" = 'user@' || "id",
+    "publicName" = 'User' || "id",
+    "password" = 'fake-hashed-password'::bytea,
+    "firstName" = 'firstName' || "id",
+    "lastName" = 'lastName' || "id",
+    "dateOfBirth" = '01/01/2001',
+    "phoneNumber" = '0606060606',
+    "validationToken" = NULL,
+    "resetPasswordToken" = NULL
+;
 
 UPDATE user_offerer SET "validationToken" = pg_temp.random_text(27) WHERE "validationToken" is not null;
 
