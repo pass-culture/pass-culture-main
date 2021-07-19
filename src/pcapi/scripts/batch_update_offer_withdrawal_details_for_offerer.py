@@ -10,12 +10,13 @@ from pcapi.models import db
 
 
 def batch_update_offer_withdrawal_details_for_offerer(
-    offerer_id: int, withdrawal_details: str, batch_size: int
+    offerer_id: int, withdrawal_details: str, batch_size: int = 1000
 ) -> None:
+    min_id = db.session.query(func.min(Offer.id)).scalar()
     max_id = db.session.query(func.max(Offer.id)).scalar()
     number_of_batch = math.ceil(max_id / batch_size)
     number_of_batch_done = 0
-    ranges = [(i, i + batch_size) for i in range(1, max_id + 1, batch_size)]
+    ranges = [(i, i + batch_size) for i in range(min_id, max_id + 1, batch_size)]
     for start, end in ranges:
         db.session.execute(
             """
