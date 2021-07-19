@@ -351,7 +351,7 @@ def test_generate_venues_csv():
     assert rows[0].startswith('"ID lieu","SIREN"')
     assert rows[1] == ",".join(
         [
-            f'"{venue1.id}"',
+            f'"{humanize(venue1.id)}"',
             '"siren1"',
             '"Offerer 1"',
             '"siret1"',
@@ -364,7 +364,7 @@ def test_generate_venues_csv():
     )
     assert rows[2] == ",".join(
         [
-            f'"{venue2.id}"',
+            f'"{humanize(venue2.id)}"',
             '"siren2"',
             '"Offerer 2"',
             '"siret2"',

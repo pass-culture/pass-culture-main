@@ -178,7 +178,7 @@ def generate_venues_csv(payment_query) -> str:
     writer.writerow(header)
     for group in payment_queries.group_by_venue(payment_query):
         row = (
-            str(group.venue_id),
+            humanize(group.venue_id),
             group.siren,
             group.offerer_name,
             group.siret,
