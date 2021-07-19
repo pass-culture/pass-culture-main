@@ -6,10 +6,8 @@ from datetime import datetime
 from datetime import time
 from decimal import Decimal
 import enum
-from hashlib import md5
 from typing import Optional
 
-import bcrypt
 from dateutil.relativedelta import relativedelta
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
@@ -47,6 +45,7 @@ from pcapi.models.deposit import Deposit
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.user_offerer import UserOfferer
+from pcapi.utils import crypto
 
 
 ALGORITHM_HS_256 = "HS256"
@@ -86,37 +85,6 @@ class Token(PcObject, Model):
     expirationDate = Column(DateTime, nullable=True)
 
     isUsed = Column(Boolean, nullable=False, server_default=false(), default=False)
-
-
-def _hash_password_with_bcrypt(clear_text: str) -> bytes:
-    return bcrypt.hashpw(clear_text.encode("utf-8"), bcrypt.gensalt())
-
-
-def _check_password_with_bcrypt(clear_text: str, hashed: str) -> bool:
-    return bcrypt.checkpw(clear_text.encode("utf-8"), hashed)
-
-
-def _hash_password_with_md5(clear_text: str) -> bytes:
-    if not settings.IS_DEV:
-        raise RuntimeError("This password hasher should not be used outside tests.")
-    return md5(clear_text.encode("utf-8")).hexdigest().encode("utf-8")
-
-
-def _check_password_with_md5(clear_text: str, hashed: str) -> bool:
-    if not settings.IS_DEV:
-        raise RuntimeError("This password hasher should not be used outside tests.")
-    # non constant-time comparison because it's test-only
-    return _hash_password_with_md5(clear_text) == hashed
-
-
-def hash_password(clear_text: str) -> bytes:
-    hasher = _hash_password_with_md5 if settings.IS_DEV else _hash_password_with_bcrypt
-    return hasher(clear_text)
-
-
-def check_password(clear_text: str, hashed: str) -> bool:
-    checker = _check_password_with_md5 if settings.IS_DEV else _check_password_with_bcrypt
-    return checker(clear_text, hashed)
 
 
 class UserRole(enum.Enum):
@@ -232,7 +200,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     externalIds = Column(JSONB, nullable=True, default={}, server_default="{}")
 
     def checkPassword(self, passwordToCheck):
-        return check_password(passwordToCheck, self.password)
+        return crypto.check_password(passwordToCheck, self.password)
 
     def get_id(self):
         return str(self.id)
@@ -270,7 +238,7 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     def setPassword(self, newpass):
         self.clearTextPassword = newpass
-        self.password = hash_password(newpass)
+        self.password = crypto.hash_password(newpass)
 
     def get_not_cancelled_bookings(self) -> list[Booking]:
         return (

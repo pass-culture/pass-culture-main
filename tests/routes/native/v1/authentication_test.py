@@ -11,8 +11,8 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
-from pcapi.core.users.models import hash_password
 from pcapi.models import db
+from pcapi.utils import crypto
 
 from tests.conftest import TestClient
 
@@ -201,7 +201,7 @@ def test_reset_password_success(app):
 
     assert response.status_code == 204
     db.session.refresh(user)
-    assert user.password == hash_password(new_password)
+    assert user.password == crypto.hash_password(new_password)
     assert Token.query.get(token.id) is None
 
 
@@ -216,7 +216,7 @@ def test_reset_password_for_unvalidated_email(app):
 
     assert response.status_code == 204
     db.session.refresh(user)
-    assert user.password == hash_password(new_password)
+    assert user.password == crypto.hash_password(new_password)
     assert user.isEmailValidated
 
 
@@ -252,7 +252,7 @@ def test_change_password_success(app):
 
     assert response.status_code == 204
     db.session.refresh(user)
-    assert user.password == hash_password(new_password)
+    assert user.password == crypto.hash_password(new_password)
 
 
 def test_change_password_failures(app):
@@ -279,7 +279,7 @@ def test_change_password_failures(app):
     assert response.status_code == 400
     assert response.json["code"] == "WEAK_PASSWORD"
     db.session.refresh(user)
-    assert user.password == hash_password(users_factories.DEFAULT_PASSWORD)
+    assert user.password == crypto.hash_password(users_factories.DEFAULT_PASSWORD)
 
 
 @patch("pcapi.core.users.repository.get_user_with_valid_token", return_value=None)

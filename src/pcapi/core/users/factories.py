@@ -10,6 +10,7 @@ from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import user_session
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.utils import crypto
 
 from . import constants
 from . import models
@@ -38,7 +39,7 @@ class UserFactory(BaseFactory):
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
-        kwargs["password"] = pcapi.core.users.models.hash_password(password)
+        kwargs["password"] = crypto.hash_password(password)
         # Let us just say `UserFactory(isAdmin=True)` and not have to
         # mention `isBeneficiary=False` (because it's enforced by a
         # database constraint anyway).
@@ -49,7 +50,7 @@ class UserFactory(BaseFactory):
     @classmethod
     def _build(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
-        kwargs["password"] = pcapi.core.users.models.hash_password(password)
+        kwargs["password"] = crypto.hash_password(password)
         return super()._build(model_class, *args, **kwargs)
 
     @factory.post_generation
@@ -83,13 +84,13 @@ class AdminFactory(BaseFactory):
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
-        kwargs["password"] = pcapi.core.users.models.hash_password(password)
+        kwargs["password"] = crypto.hash_password(password)
         return super()._create(model_class, *args, **kwargs)
 
     @classmethod
     def _build(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
-        kwargs["password"] = pcapi.core.users.models.hash_password(password)
+        kwargs["password"] = crypto.hash_password(password)
         return super()._build(model_class, *args, **kwargs)
 
 
@@ -114,13 +115,13 @@ class BeneficiaryFactory(BaseFactory):
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
-        kwargs["password"] = pcapi.core.users.models.hash_password(password)
+        kwargs["password"] = crypto.hash_password(password)
         return super()._create(model_class, *args, **kwargs)
 
     @classmethod
     def _build(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
-        kwargs["password"] = pcapi.core.users.models.hash_password(password)
+        kwargs["password"] = crypto.hash_password(password)
         return super()._build(model_class, *args, **kwargs)
 
     @factory.post_generation
@@ -152,13 +153,13 @@ class ProFactory(BaseFactory):
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
-        kwargs["password"] = pcapi.core.users.models.hash_password(password)
+        kwargs["password"] = crypto.hash_password(password)
         return super()._create(model_class, *args, **kwargs)
 
     @classmethod
     def _build(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
-        kwargs["password"] = pcapi.core.users.models.hash_password(password)
+        kwargs["password"] = crypto.hash_password(password)
         return super()._build(model_class, *args, **kwargs)
 
 

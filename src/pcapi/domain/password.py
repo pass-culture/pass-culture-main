@@ -3,13 +3,13 @@ import re
 import string
 
 from pcapi.core.users.models import User
-from pcapi.core.users.models import hash_password
 from pcapi.models import ApiErrors
+from pcapi.utils import crypto
 from pcapi.utils.token import random_token
 
 
 def random_hashed_password() -> bytes:
-    return hash_password(random_token(length=12))
+    return crypto.hash_password(random_token(length=12))
 
 
 def random_password() -> str:

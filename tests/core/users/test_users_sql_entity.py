@@ -1,5 +1,4 @@
 from datetime import datetime
-from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
@@ -9,8 +8,6 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.users import factories
 from pcapi.core.users.factories import UserFactory
-from pcapi.core.users.models import check_password
-from pcapi.core.users.models import hash_password
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
@@ -201,30 +198,6 @@ class needsToSeeTutorialsTest:
         repository.save(user)
         # then
         assert user.needsToSeeTutorials is False
-
-
-class DevEnvironmentPasswordHasherTest:
-    def test_hash_password_uses_md5(self):
-        hashed = hash_password("secret")
-        assert hashed == b"5ebe2294ecd0e0f08eab7690d2a6ee69"
-
-    def test_check_password(self):
-        hashed = hash_password("secret")
-        assert not check_password("wrong", hashed)
-        assert check_password("secret", hashed)
-
-
-@patch("pcapi.settings.IS_DEV", False)
-class ProdEnvironmentPasswordHasherTest:
-    def test_hash_password_uses_bcrypt(self):
-        hashed = hash_password("secret")
-        assert hashed != "secret"
-        assert hashed.startswith(b"$2b$")  # bcrypt prefix
-
-    def test_check_password(self):
-        hashed = hash_password("secret")
-        assert not check_password("wrong", hashed)
-        assert check_password("secret", hashed)
 
 
 class CalculateAgeTest:
