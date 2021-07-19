@@ -30,7 +30,7 @@ const WithdrawalDetailsFields = props => {
     <div className="section vp-content-section bank-information">
       <div className="main-list-title title-actions-container">
         <h2 className="main-list-title-text">
-          {'Gérer les modalités de retrait'}
+          {'Modalités de retrait'}
         </h2>
       </div>
 
