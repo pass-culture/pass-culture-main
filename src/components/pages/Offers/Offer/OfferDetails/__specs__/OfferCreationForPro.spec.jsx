@@ -103,6 +103,7 @@ describe('offerDetails - Creation - pro user', () => {
         name: 'Le lieu',
         offererName: 'La structure',
         bookingEmail: 'lieu@example.com',
+        withdrawalDetails: 'Modalité retrait 1',
       },
       {
         id: 'ABC',
@@ -111,6 +112,7 @@ describe('offerDetails - Creation - pro user', () => {
         name: "L'autre lieu",
         offererName: "L'autre structure",
         bookingEmail: 'autre-lieu@example.com',
+        withdrawalDetails: 'Modalité retrait 2',
       },
       {
         id: 'ABCD',
@@ -118,6 +120,7 @@ describe('offerDetails - Creation - pro user', () => {
         managingOffererId: offerer2Id,
         name: "L'autre lieu (Offre numérique)",
         offererName: "L'autre structure",
+        withdrawalDetails: null,
       },
       {
         id: 'ABCDE',
@@ -126,6 +129,7 @@ describe('offerDetails - Creation - pro user', () => {
         name: "L'autre lieu du lieu",
         offererName: "L'autre structure",
         publicName: "Le nom d'usage de l'autre autre lieu",
+        withdrawalDetails: 'Modalité retrait 3',
       },
     ]
 
@@ -1404,6 +1408,22 @@ describe('offerDetails - Creation - pro user', () => {
           'href',
           '/offres'
         )
+      })
+    })
+
+    describe('when selecting a venue with withdrawal details filled', () => {
+      it("should pre-fill withdrawal informations input and preview with venue's", async () => {
+        // Given
+        await renderOffers(props, store)
+
+        await setOfferValues({ categoryId: 'LIVRE' })
+        await setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
+
+        // When
+        await setOfferValues({ venueId: venues[1].id })
+
+        // Then
+        expect(screen.getAllByText('Modalité retrait 2')).toHaveLength(2)
       })
     })
   })

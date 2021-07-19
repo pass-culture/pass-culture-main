@@ -83,6 +83,7 @@ describe('offerDetails - Edition', () => {
       name: 'Le lieu',
       offererName: 'La structure',
       bookingEmail: 'venue@example.com',
+      withdrawalDetails: null,
     }
 
     editedOffer = {

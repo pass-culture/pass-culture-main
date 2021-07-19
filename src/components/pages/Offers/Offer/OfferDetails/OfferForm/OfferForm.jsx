@@ -271,6 +271,15 @@ const OfferForm = ({
     [initialValues.bookingEmail, venue, offerSubCategory, handleFormUpdate, userEmail, isEdition]
   )
 
+  useEffect(
+    function setWithdrawalDetails() {
+      if (venue?.withdrawalDetails) {
+        handleFormUpdate({ withdrawalDetails: venue?.withdrawalDetails })
+      }
+    },
+    [venue, handleFormUpdate]
+  )
+
   useEffect(() => {
     if (formRef.current) {
       const invalidElement = formRef.current.querySelector('.error')
