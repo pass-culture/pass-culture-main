@@ -16,7 +16,7 @@ from pcapi.routes.adage.v1.educational_institution import educational_institutio
 from pcapi.routes.adage.v1.serialization.prebooking import GetPreBookingsRequest
 from pcapi.routes.adage.v1.serialization.prebooking import PreBookingResponse
 from pcapi.routes.adage.v1.serialization.prebooking import PreBookingsResponse
-from pcapi.routes.adage.v1.serialization.prebooking import get_pre_bookings_response
+from pcapi.routes.adage.v1.serialization.prebooking import get_prebookings_serialized
 from pcapi.serialization.decorator import spectree_serialize
 
 
@@ -58,7 +58,7 @@ def get_pre_bookings(query: GetPreBookingsRequest, year_id: str, uai_code: str) 
 
     bookings = bookings_base_query.all()
 
-    return get_pre_bookings_response(bookings)
+    return PreBookingsResponse(prebookings=get_prebookings_serialized(bookings))
 
 
 @blueprint.adage_v1.route("/prebookings/<int:pre_booking_id>/confirm", methods=["POST"])

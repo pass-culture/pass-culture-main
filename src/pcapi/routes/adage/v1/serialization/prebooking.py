@@ -81,7 +81,7 @@ class PreBookingsResponse(BaseModel):
         title = "List of prebookings"
 
 
-def get_pre_bookings_response(bookings: list[Booking]) -> PreBookingsResponse:
+def get_prebookings_serialized(bookings: list[Booking]) -> list[PreBookingResponse]:
     prebookings = []
     for booking in bookings:
         stock = booking.stock
@@ -129,7 +129,7 @@ def get_pre_bookings_response(bookings: list[Booking]) -> PreBookingsResponse:
         )
         prebookings.append(prebooking_response)
 
-    return PreBookingsResponse(prebookings=prebookings)
+    return prebookings
 
 
 def get_education_booking_status(booking: Booking) -> Union[EducationalBookingStatus, BookingStatus]:
