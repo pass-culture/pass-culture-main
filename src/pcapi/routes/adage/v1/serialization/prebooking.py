@@ -64,7 +64,7 @@ class PreBookingResponse(BaseModel):
     yearId: int = Field(description="Shared year id")
     status: Union[EducationalBookingStatus, BookingStatus]
     venueTimezone: str
-    totalAmount: int = Field(description="Total price of the prebooking")
+    totalAmount: float = Field(description="Total price of the prebooking")
     url: Optional[str] = Field(description="Url to access the offer")
     withdrawalDetails: Optional[str]
 
