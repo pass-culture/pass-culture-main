@@ -45,6 +45,7 @@ from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.user_offerer import UserOfferer
+from pcapi.utils import crypto
 from pcapi.utils.date import CUSTOM_TIMEZONES
 from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.date import get_department_timezone
@@ -378,3 +379,6 @@ class ApiKey(PcObject, Model):
     prefix = Column(Text, nullable=True, unique=True)
 
     secret = Column(LargeBinary, nullable=True)
+
+    def check_secret(self, clear_text: str) -> bool:
+        return crypto.check_password(clear_text, self.secret)

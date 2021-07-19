@@ -1,4 +1,3 @@
-import bcrypt
 import factory
 
 from pcapi.core.offerers.models import ApiKey
@@ -10,6 +9,7 @@ import pcapi.core.providers.models
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.testing import BaseFactory
+from pcapi.utils import crypto
 
 
 class ProviderFactory(BaseFactory):
@@ -108,4 +108,4 @@ class ApiKeyFactory(BaseFactory):
 
     @factory.post_generation
     def hash_secret(self, create, extracted):
-        self.secret = bcrypt.hashpw((extracted or DEFAULT_SECRET).encode("utf-8"), bcrypt.gensalt())
+        self.secret = crypto.hash_password(extracted or DEFAULT_SECRET)

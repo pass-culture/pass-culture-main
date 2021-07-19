@@ -1,8 +1,6 @@
 import secrets
 from typing import Optional
 
-import bcrypt
-
 from pcapi import settings
 from pcapi.core import search
 from pcapi.core.offerers.models import ApiKey
@@ -12,6 +10,7 @@ from pcapi.core.users.models import User
 from pcapi.models.db import db
 from pcapi.repository import repository
 from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
+from pcapi.utils import crypto
 
 from . import validation
 from .exceptions import ApiKeyCountMaxReached
@@ -104,9 +103,7 @@ def generate_and_save_api_key(offerer_id: int) -> str:
 def generate_api_key(offerer_id: int) -> tuple[ApiKey, str]:
     clear_secret = secrets.token_hex(32)
     prefix = _generate_api_key_prefix()
-    key = ApiKey(
-        offererId=offerer_id, prefix=prefix, secret=bcrypt.hashpw(_encode_clear_secret(clear_secret), bcrypt.gensalt())
-    )
+    key = ApiKey(offererId=offerer_id, prefix=prefix, secret=crypto.hash_password(clear_secret))
 
     return key, f"{prefix}{API_KEY_SEPARATOR}{clear_secret}"
 
@@ -133,15 +130,11 @@ def find_api_key(key: str) -> Optional[ApiKey]:
     if not api_key:
         return None
 
-    return api_key if bcrypt.checkpw(_encode_clear_secret(clear_secret), api_key.secret) else None
+    return api_key if api_key.check_secret(clear_secret) else None
 
 
 def _create_prefix(env: str, prefix_identifier: str) -> str:
     return f"{env}{API_KEY_SEPARATOR}{prefix_identifier}"
-
-
-def _encode_clear_secret(secret: str) -> bytes:
-    return secret.encode("utf-8")
 
 
 def delete_api_key_by_user(user: User, api_key_prefix: str) -> None:
