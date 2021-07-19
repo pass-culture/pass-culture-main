@@ -525,7 +525,6 @@ jobs:
 ###################
 
 workflows:
-  version: 2
   commit:
     jobs:
       - run-tests:
