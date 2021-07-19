@@ -77,7 +77,7 @@ class Session(_SessionMixin, requests.Session):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Only sets a retry strategy for safe verbs
-        safe_retry_strategy = Retry(total=3, method_whitelist=["HEAD", "GET", "OPTIONS"])
+        safe_retry_strategy = Retry(total=3, allowed_methods=["HEAD", "GET", "OPTIONS"])
         unsafe_retry_strategy = Retry(total=3)
         safe_adapter = HTTPAdapter(max_retries=safe_retry_strategy)
         unsafe_adapter = HTTPAdapter(max_retries=unsafe_retry_strategy)
