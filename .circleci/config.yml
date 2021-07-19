@@ -244,8 +244,10 @@ jobs:
           steps:
             - run:
                 name: Running tests
-                command: |
-                  RUN_ENV=tests venv/bin/pytest tests --cov --cov-report html --junitxml=test-results/junit.xml
+                command: >
+                  RUN_ENV=tests venv/bin/pytest tests --durations=10  --cov --cov-report html
+                  --junitxml=test-results/junit.xml
+
                   venv/bin/coveralls
 
       - unless:
@@ -253,8 +255,10 @@ jobs:
           steps:
             - run:
                 name: Running tests
-                command: |
-                  RUN_ENV=tests venv/bin/pytest << parameters.pytest_extra_args >> --junitxml=test-results/junit.xml
+                command: >
+                  RUN_ENV=tests venv/bin/pytest << parameters.pytest_extra_args >> --durations=10
+                  --junitxml=test-results/junit.xml
+
       - store_test_results:
           path: test-results
       - store_artifacts:
