@@ -309,7 +309,7 @@ jobs:
       - run:
           name: Run pylint
           when: always
-          command: venv/bin/pylint src tests --jobs=4
+          command: venv/bin/pylint src tests --jobs=8
 
   build-container:
     machine:
