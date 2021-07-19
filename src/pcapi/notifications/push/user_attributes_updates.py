@@ -19,6 +19,9 @@ class UserUpdateData:
 
 BATCH_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
+# make sure values are in [a-z0-9_] (no uppercase characters, no '-')
+TRACKED_PRODUCT_IDS = {3084625: "brut_x"}
+
 
 def get_user_attributes(user: User) -> dict:
     from pcapi.core.users.api import get_domains_credit
@@ -49,8 +52,10 @@ def get_user_attributes(user: User) -> dict:
     }
 
     for booking in user_bookings:
-        if booking.dateUsed:
-            attributes[f"date(u.product_{booking.stock.offer.productId}_use)"] = _format_date(booking.dateUsed)
+        if booking.dateUsed and booking.stock.offer.productId in TRACKED_PRODUCT_IDS:
+            attributes[f"date(u.product_{TRACKED_PRODUCT_IDS[booking.stock.offer.productId]}_use)"] = _format_date(
+                booking.dateUsed
+            )
 
     # A Batch tag can't be an empty list, otherwise the API returns an error
     if booking_categories:
