@@ -9,6 +9,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
 from pcapi.flask_app import private_api
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization.venues_serialize import EditVenueBodyModel
 from pcapi.routes.serialization.venues_serialize import GetVenueListResponseModel
 from pcapi.routes.serialization.venues_serialize import GetVenueResponseModel
@@ -21,6 +22,7 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_404
+from pcapi.workers.update_all_venue_offers_withdrawal_details_job import update_all_venue_offers_withdrawal_details_job
 
 
 @private_api.route("/venues/<venue_id>", methods=["GET"])
@@ -80,7 +82,13 @@ def edit_venue(venue_id: str, body: EditVenueBodyModel) -> GetVenueResponseModel
     venue = load_or_404(Venue, venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    venue = offerers_api.update_venue(venue, **body.dict(exclude_unset=True))
+    venue = offerers_api.update_venue(
+        venue, **body.dict(exclude={"isWithdrawalAppliedOnAllOffers"}, exclude_unset=True)
+    )
+
+    if FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS.is_active():
+        if body.withdrawalDetails and body.isWithdrawalAppliedOnAllOffers:
+            update_all_venue_offers_withdrawal_details_job.delay(venue, body.withdrawalDetails)
 
     return GetVenueResponseModel.from_orm(venue)
 

@@ -1,7 +1,10 @@
+from unittest.mock import patch
+
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import override_features
 from pcapi.models import Venue
 from pcapi.utils.human_ids import humanize
 
@@ -21,6 +24,12 @@ def populate_missing_data_from_venue(venue_data, venue):
         "siret": venue_data["siret"] if "siret" in venue_data else venue.siret,
         "venueTypeId": venue_data["venueTypeId"] if "venueTypeId" in venue_data else humanize(venue.venueTypeId),
         "venueLabelId": venue_data["venueLabelId"] if "venueLabelId" in venue_data else humanize(venue.venueLabelId),
+        "withdrawalDetails": venue_data["withdrawalDetails"]
+        if "withdrawalDetails" in venue_data
+        else venue.withdrawalDetails,
+        "isWithdrawalAppliedOnAllOffers": venue_data["isWithdrawalAppliedOnAllOffers"]
+        if "isWithdrawalAppliedOnAllOffers" in venue_data
+        else False,
     }
 
 
@@ -61,6 +70,38 @@ class Returns200Test:
         assert json["isValidated"] is True
         assert "validationToken" not in json
         assert venue.isValidated
+
+    @pytest.mark.usefixtures("db_session")
+    @override_features(ENABLE_VENUE_WITHDRAWAL_DETAILS=True)
+    @patch("pcapi.routes.pro.venues.update_all_venue_offers_withdrawal_details_job.delay")
+    def test_edit_venue_withdrawal_details_with_applied_on_all_offers(
+        self, mocked_update_all_venue_offers_withdrawal_details_job, app
+    ):
+        user_offerer = offers_factories.UserOffererFactory()
+        venue = offers_factories.VenueFactory(
+            name="old name",
+            managingOfferer=user_offerer.offerer,
+        )
+
+        auth_request = TestClient(app.test_client()).with_auth(email=user_offerer.user.email)
+
+        venue_data = populate_missing_data_from_venue(
+            {
+                "name": "new name",
+                "withdrawalDetails": "Ceci est un texte de modalités de retrait",
+                "isWithdrawalAppliedOnAllOffers": True,
+            },
+            venue,
+        )
+
+        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
+
+        assert response.status_code == 200
+        assert venue.withdrawalDetails == "Ceci est un texte de modalités de retrait"
+
+        mocked_update_all_venue_offers_withdrawal_details_job.assert_called_once_with(
+            venue, "Ceci est un texte de modalités de retrait"
+        )
 
     @pytest.mark.usefixtures("db_session")
     def when_siret_does_not_change(self, app) -> None:
