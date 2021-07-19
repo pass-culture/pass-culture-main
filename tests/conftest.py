@@ -192,6 +192,12 @@ class TestClient:
         }
         return self
 
+    def with_eac_token(self) -> "TestClient":
+        self.auth_header = {
+            "Authorization": f"Bearer {settings.EAC_API_KEY}",
+        }
+        return self
+
     def delete(self, route: str, headers: dict = None):
         headers = headers or self.LOCAL_ORIGIN_HEADERS
         result = self.client.delete(route, headers={**self.auth_header, **headers})
