@@ -22,6 +22,7 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_404
+from pcapi.workers.update_all_venue_offers_email_job import update_all_venue_offers_email_job
 from pcapi.workers.update_all_venue_offers_withdrawal_details_job import update_all_venue_offers_withdrawal_details_job
 
 
@@ -83,13 +84,16 @@ def edit_venue(venue_id: str, body: EditVenueBodyModel) -> GetVenueResponseModel
     venue = load_or_404(Venue, venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    venue = offerers_api.update_venue(
-        venue, **body.dict(exclude={"isWithdrawalAppliedOnAllOffers"}, exclude_unset=True)
-    )
+
+    not_venue_fields = {"isEmailAppliedOnAllOffers", "isWithdrawalAppliedOnAllOffers"}
+    venue = offerers_api.update_venue(venue, **body.dict(exclude=not_venue_fields, exclude_unset=True))
 
     if FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS.is_active():
         if body.withdrawalDetails and body.isWithdrawalAppliedOnAllOffers:
             update_all_venue_offers_withdrawal_details_job.delay(venue, body.withdrawalDetails)
+
+    if body.bookingEmail and body.isEmailAppliedOnAllOffers:
+        update_all_venue_offers_email_job.delay(venue, body.bookingEmail)
 
     return GetVenueResponseModel.from_orm(venue)
 

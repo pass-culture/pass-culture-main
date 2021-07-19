@@ -157,6 +157,7 @@ class EditVenueBodyModel(BaseModel):
     venueLabelId: Optional[int]
     withdrawalDetails: Optional[str]
     isWithdrawalAppliedOnAllOffers: Optional[bool]
+    isEmailAppliedOnAllOffers: Optional[bool]
 
     _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
     _dehumanize_venue_type_id = dehumanize_field("venueTypeId")
