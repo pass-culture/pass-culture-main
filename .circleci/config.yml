@@ -174,6 +174,10 @@ jobs:
       is_nightly_build:
         type: boolean
         default: false
+      pytest_extra_args:
+        description: "directories to include and ignore"
+        default: "tests"
+        type: string
     working_directory: ~/pass-culture-api-ci
     docker:
       - image: circleci/python:3.9.4
@@ -250,7 +254,7 @@ jobs:
             - run:
                 name: Running tests
                 command: |
-                  RUN_ENV=tests venv/bin/pytest tests --junitxml=test-results/junit.xml
+                  RUN_ENV=tests venv/bin/pytest << parameters.pytest_extra_args >> --junitxml=test-results/junit.xml
       - store_test_results:
           path: test-results
       - store_artifacts:
@@ -528,7 +532,14 @@ workflows:
   commit:
     jobs:
       - run-tests:
-          name: "Run tests after commit"
+          name: "Run core tests after commit"
+          pytest_extra_args: "tests/core"
+      - run-tests:
+          name: "Run routes tests after commit"
+          pytest_extra_args: "tests/routes"
+      - run-tests:
+          name: "Run other tests after commit"
+          pytest_extra_args: "tests --ignore=tests/core --ignore=tests/routes"
       - quality:
           name: "Run quality checks after commit"
       - build-container:
@@ -538,7 +549,9 @@ workflows:
                 - master
       - build-and-push-image:
           requires:
-            - "Run tests after commit"
+            - "Run core tests after commit"
+            - "Run routes tests after commit"
+            - "Run other tests after commit"
             - "Run quality checks after commit"
           filters:
             branches:
