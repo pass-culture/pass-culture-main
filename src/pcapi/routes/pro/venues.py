@@ -58,6 +58,7 @@ def get_venues(query: VenueListQueryModel) -> GetVenueListResponseModel:
                 publicName=venue.publicName,
                 isVirtual=venue.isVirtual,
                 bookingEmail=venue.bookingEmail,
+                withdrawalDetails=venue.withdrawalDetails,
             )
             for venue in venue_list
         ]

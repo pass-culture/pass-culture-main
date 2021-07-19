@@ -33,6 +33,7 @@ def test_response_serialization(app):
         "publicName": venue.publicName,
         "isVirtual": venue.isVirtual,
         "bookingEmail": venue.bookingEmail,
+        "withdrawalDetails": venue.withdrawalDetails,
     }
 
 
