@@ -41,8 +41,7 @@ def test_api_key_journey(client):
 
 @pytest.mark.usefixtures("db_session")
 def test_maximal_api_key_reached(client):
-    booking = BookingFactory()
-    user_offerer = UserOffererFactory(offerer=booking.stock.offer.venue.managingOfferer)
+    user_offerer = UserOffererFactory()
     for i in range(5):
         ApiKeyFactory(prefix=f"prefix_{i}", offerer=user_offerer.offerer)
 
