@@ -124,6 +124,16 @@ commands:
             set +eo pipefail
             gsutil rsync -r << parameters.build_path >> gs://<< parameters.bucket_name >>
 
+  invalidate-cache:
+    description: Invalidate Cache
+    parameters:
+      url_map_name:
+        type: string
+    steps:
+      - run:
+          name: Invalidate cache
+          command: gcloud compute url-maps invalidate-cdn-cache << parameters.url_map_name >> --path "/*"
+
 ###################
 #  JOBS
 ###################
@@ -492,6 +502,8 @@ jobs:
       - push-to-bucket:
           build_path: ./pro/build/
           bucket_name: ${GCP_PROJECT}-${CIRCLE_BRANCH}-pro
+      - invalidate-cache:
+          url_map_name: ${CIRCLE_BRANCH}-pro-url-map
       - run:
           name: Check deployed version
           command: |
