@@ -1,6 +1,6 @@
 from datetime import datetime
-import enum
 from typing import Optional
+from typing import Union
 
 from pydantic import BaseModel
 from pydantic.fields import Field
@@ -8,6 +8,7 @@ from pydantic.fields import Field
 from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferCategoryResponse
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
@@ -16,18 +17,11 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.human_ids import humanize
 
 
-class PreBookingStatuses(enum.Enum):
-    PENDING = "PENDING"
-    CONFIRMED = "CONFIRMED"
-    REFUSED = "REFUSED"
-    USED = "USED"
-    USED_BY_INSTITUTE = "USED_BY_INSTITUTE"
-    CANCELLED = "CANCELLED"
-
-
 class GetPreBookingsRequest(BaseModel):
     redactorEmail: Optional[str] = Field(description="Email of querying redactor")
-    status: Optional[PreBookingStatuses] = Field(description="Status of retrieved preboookings")
+    status: Optional[Union[EducationalBookingStatus, BookingStatus]] = Field(
+        description="Status of retrieved preboookings"
+    )
 
     class Config:
         title = "Prebookings query filters"
@@ -68,7 +62,7 @@ class PreBookingResponse(BaseModel):
     redactor: Redactor
     UAICode: str = Field(description="Educational institution UAI code")
     yearId: int = Field(description="Shared year id")
-    status: PreBookingStatuses
+    status: Union[EducationalBookingStatus, BookingStatus]
     venueTimezone: str
     totalAmount: int = Field(description="Total price of the prebooking")
     url: Optional[str] = Field(description="Url to access the offer")
@@ -138,7 +132,7 @@ def get_pre_bookings_response(bookings: list[Booking]) -> PreBookingsResponse:
     return PreBookingsResponse(prebookings=prebookings)
 
 
-def get_education_booking_status(booking: Booking) -> PreBookingStatuses:
+def get_education_booking_status(booking: Booking) -> Union[EducationalBookingStatus, BookingStatus]:
     if booking.educationalBooking.status and not booking.status == BookingStatus.USED:
         return booking.educationalBooking.status.value
 

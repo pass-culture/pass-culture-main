@@ -3,11 +3,14 @@ import logging
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.models import EducationalBooking
+from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalYear
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.users.models import User
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.educational_institution import educational_institution_path
 from pcapi.routes.adage.v1.serialization.prebooking import GetPreBookingsRequest
@@ -26,16 +29,34 @@ from . import blueprint
 @spectree_serialize(api=blueprint.api, response_model=PreBookingsResponse, tags=("get prebookings",))
 @adage_api_key_required
 def get_pre_bookings(query: GetPreBookingsRequest, year_id: str, uai_code: str) -> PreBookingsResponse:
-    bookings = (
-        Booking.query.join(EducationalBooking)
+    bookings_base_query = (
+        Booking.query.join(EducationalBooking, Booking.educationalBookingId == EducationalBooking.id)
         .join(EducationalInstitution)
         .join(EducationalYear)
-        .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.venue))
-        .options(joinedload(Booking.educationalBooking).joinedload(EducationalBooking.educationalInstitution))
+        .options(joinedload(Booking.user, innerjoin=True))
+        .options(
+            joinedload(Booking.stock, innerjoin=True)
+            .joinedload(Stock.offer, innerjoin=True)
+            .joinedload(Offer.venue, innerjoin=True)
+        )
+        .options(
+            joinedload(Booking.educationalBooking).joinedload(EducationalBooking.educationalInstitution, innerjoin=True)
+        )
         .filter(EducationalInstitution.institutionId == uai_code)
         .filter(EducationalYear.adageId == year_id)
-        .all()
     )
+
+    if query.redactorEmail is not None:
+        bookings_base_query = bookings_base_query.join(User).filter(User.email == query.redactorEmail)
+
+    if query.status is not None:
+        if query.status in BookingStatus:
+            bookings_base_query = bookings_base_query.filter(Booking.status == query.status)
+
+        if query.status in EducationalBookingStatus:
+            bookings_base_query = bookings_base_query.filter(EducationalBooking.status == query.status)
+
+    bookings = bookings_base_query.all()
 
     return get_pre_bookings_response(bookings)
 
