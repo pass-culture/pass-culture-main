@@ -140,7 +140,7 @@ commands:
       version_file:
         type: string
     steps:
-    - run: echo "export CHART_VERSION=$(cat << parameters.version_file >> | tr -d '[:space:]')" >> $BASH_ENV
+      - run: echo "export CHART_VERSION=$(cat << parameters.version_file >> | tr -d '[:space:]')" >> $BASH_ENV
 
   deploy-helm-chart:
     description: Deploy Crons and worker via helm to Kubernetes Cluster
