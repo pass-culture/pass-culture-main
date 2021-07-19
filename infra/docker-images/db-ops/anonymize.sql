@@ -50,7 +50,7 @@ WHERE
 
 UPDATE activation_code SET code = 'FAKE-' || id::text ;
 
-UPDATE provider SET "authToken" = pg_temp.random_text(32) WHERE "authToken" is not null;
+UPDATE provider SET "authToken" = 'anonymized, you may have to set it if you want to use this provider' WHERE "authToken" is not null;
 
 UPDATE api_key SET secret = pg_temp.random_text(32)::bytea;
 
