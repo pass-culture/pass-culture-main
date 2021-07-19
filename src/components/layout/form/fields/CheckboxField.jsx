@@ -3,8 +3,36 @@ import React, { PureComponent } from 'react'
 import { Field } from 'react-final-form'
 
 class CheckboxField extends PureComponent {
-  renderField = ({ input }) => {
+  renderLabelAlignedField = ({ input }) => {
     const { checked, id, label } = this.props
+
+    return (
+      <div className="field is-label-aligned">
+        <div className="field-label" />
+        <div className="field-control">
+          <input
+            {...input}
+            className="field-checkbox"
+            defaultChecked={checked}
+            id={id}
+            type="checkbox"
+          />
+          {label && (
+            <label htmlFor={id}>
+              {label}
+            </label>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  renderField = ({ input }) => {
+    const { checked, id, label, labelAligned } = this.props
+
+    if (labelAligned) {
+      return this.renderLabelAlignedField({ input })
+    }
 
     return (
       <div>
@@ -38,12 +66,14 @@ class CheckboxField extends PureComponent {
 CheckboxField.defaultProps = {
   checked: true,
   label: '',
+  labelAligned: false,
 }
 
 CheckboxField.propTypes = {
   checked: PropTypes.bool,
   id: PropTypes.string.isRequired,
   label: PropTypes.string,
+  labelAligned: PropTypes.bool,
   name: PropTypes.string.isRequired,
 }
 

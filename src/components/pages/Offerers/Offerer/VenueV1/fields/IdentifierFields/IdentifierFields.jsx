@@ -5,6 +5,7 @@ import { Field } from 'react-final-form'
 import { removeWhitespaces } from 'react-final-form-utils'
 import ReactTooltip from 'react-tooltip'
 
+import CheckboxField from 'components/layout/form/fields/CheckboxField'
 import HiddenField from 'components/layout/form/fields/HiddenField'
 import TextareaField from 'components/layout/form/fields/TextareaField'
 import TextField from 'components/layout/form/fields/TextField'
@@ -158,6 +159,17 @@ class IdentifierFields extends PureComponent {
             required
             type="email"
           />
+          {!readOnly && (
+            <CheckboxField
+              checked={false}
+              id="isEmailAppliedOnAllOffers"
+              label="Appliquer le changement à toutes les offres déjà existantes."
+              labelAligned
+              name="isEmailAppliedOnAllOffers"
+              readOnly
+            />
+          )}
+
           <TextareaField
             label="Commentaire (si pas de SIRET) : "
             name="comment"

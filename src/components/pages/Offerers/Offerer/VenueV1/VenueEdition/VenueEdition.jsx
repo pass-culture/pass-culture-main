@@ -61,12 +61,16 @@ class VenueEdition extends PureComponent {
     const { handleSubmitRequest } = this.props
 
     this.setState({ isRequestPending: true })
+    const hasDelayedUpdates = [
+      formValues.isWithdrawalAppliedOnAllOffers,
+      formValues.isEmailAppliedOnAllOffers,
+    ].includes(true)
 
     return new Promise(resolve => {
       handleSubmitRequest({
         formValues,
         handleFail: this.handleFormFail(resolve),
-        handleSuccess: this.handleFormSuccess(resolve, formValues.isWithdrawalAppliedOnAllOffers),
+        handleSuccess: this.handleFormSuccess(resolve, hasDelayedUpdates),
       })
     })
   }
