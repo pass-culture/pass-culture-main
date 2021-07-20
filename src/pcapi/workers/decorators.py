@@ -57,11 +57,7 @@ def job(queue: Queue):
             logger.info(
                 "Enqueue job %s",
                 func.__name__,
-                extra={
-                    **job_extra_description(current_job),
-                    "status": "enqueued",
-                    "position_in_queue": current_job.get_position(),
-                },
+                extra={**job_extra_description(current_job), "status": "enqueued"},
             )
             return job
 
