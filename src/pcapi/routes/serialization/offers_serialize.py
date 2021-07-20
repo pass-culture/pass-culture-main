@@ -8,7 +8,7 @@ from pydantic import Field
 from pydantic import HttpUrl
 from pydantic import validator
 
-from pcapi.core.bookings.api import compute_confirmation_date
+from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.categories.conf import can_create_from_isbn
 from pcapi.core.categories.conf import get_subcategory_from_type
 from pcapi.core.offers import repository as offers_repository
@@ -360,7 +360,7 @@ class GetOfferStockResponseModel(BaseModel):
 
     @validator("cancellationLimitDate", pre=True, always=True)
     def validate_cancellation_limit_date(cls, cancellation_limit_date, values):  # pylint: disable=no-self-argument
-        return compute_confirmation_date(values.get("beginningDatetime"), datetime.now())
+        return compute_cancellation_limit_date(values.get("beginningDatetime"), datetime.now())
 
     class Config:
         allow_population_by_field_name = True

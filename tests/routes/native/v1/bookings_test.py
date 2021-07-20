@@ -133,6 +133,7 @@ class GetBookingsTest:
             isUsed=True,
             dateUsed=datetime(2021, 3, 2),
             stock__offer__url=OFFER_URL,
+            cancellation_limit_date=datetime(2021, 3, 2),
         )
 
         mediation = MediationFactory(id=111, offer=used2.stock.offer, thumbCount=1, credit="street credit")
@@ -172,8 +173,8 @@ class GetBookingsTest:
             "activationCode": None,
             "cancellationDate": None,
             "cancellationReason": None,
+            "confirmationDate": "2021-03-02T00:00:00Z",
             "completedUrl": f"https://demo.pass/some/path?token={used2.token}&email=pascal.ture@example.com&offerId={humanize(used2.stock.offer.id)}",
-            "confirmationDate": None,
             "dateUsed": "2021-03-02T00:00:00Z",
             "expirationDate": None,
             "quantity": 1,
@@ -242,7 +243,7 @@ class CancelBookingTest:
 
     def test_cancel_confirmed_booking(self, app):
         user = users_factories.UserFactory(email=self.identifier)
-        booking = BookingFactory(user=user, confirmation_date=datetime.now() - timedelta(days=1))
+        booking = BookingFactory(user=user, cancellation_limit_date=datetime.now() - timedelta(days=1))
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())

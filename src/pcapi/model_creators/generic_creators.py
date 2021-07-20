@@ -151,7 +151,7 @@ def create_booking(
     booking.venue = venue
     booking.token = token if token is not None else random_token()
     booking.userId = user.id
-    booking.confirmationDate = bookings_api.compute_confirmation_date(stock.beginningDatetime, date_created)
+    booking.cancellationLimitDate = bookings_api.compute_cancellation_limit_date(stock.beginningDatetime, date_created)
 
     return booking
 

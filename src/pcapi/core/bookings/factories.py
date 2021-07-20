@@ -23,11 +23,13 @@ class BookingFactory(BaseFactory):
     status = models.BookingStatus.CONFIRMED
 
     @factory.post_generation
-    def confirmation_date(self, create, extracted, **kwargs):
+    def cancellation_limit_date(self, create, extracted, **kwargs):
         if extracted:
-            self.confirmationDate = extracted
+            self.cancellationLimitDate = extracted
         else:
-            self.confirmationDate = api.compute_confirmation_date(self.stock.beginningDatetime, self.dateCreated)
+            self.cancellationLimitDate = api.compute_cancellation_limit_date(
+                self.stock.beginningDatetime, self.dateCreated
+            )
         db.session.add(self)
         db.session.flush()
 

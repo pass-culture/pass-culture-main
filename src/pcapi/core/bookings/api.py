@@ -86,7 +86,7 @@ def book_offer(
         )
 
         booking.dateCreated = datetime.datetime.utcnow()
-        booking.confirmationDate = compute_confirmation_date(stock.beginningDatetime, booking.dateCreated)
+        booking.cancellationLimitDate = compute_cancellation_limit_date(stock.beginningDatetime, booking.dateCreated)
 
         if is_activation_code_applicable(stock):
             booking.activationCode = offers_repository.get_available_activation_code(stock)
@@ -304,7 +304,7 @@ def _convert_image_to_base64(image: Image) -> str:
     return f'data:image/png;base64,{str(image_as_base64, encoding="utf-8")}'
 
 
-def compute_confirmation_date(
+def compute_cancellation_limit_date(
     event_beginning: typing.Optional[datetime.datetime], booking_creation_or_event_edition: datetime.datetime
 ) -> typing.Optional[datetime.datetime]:
     if event_beginning:
@@ -325,11 +325,11 @@ def compute_confirmation_date(
     return None
 
 
-def update_confirmation_dates(
+def update_cancellation_limit_dates(
     bookings_to_update: list[Booking], new_beginning_datetime: datetime.datetime
 ) -> list[Booking]:
     for booking in bookings_to_update:
-        booking.confirmationDate = compute_confirmation_date(
+        booking.cancellationLimitDate = compute_cancellation_limit_date(
             event_beginning=new_beginning_datetime, booking_creation_or_event_edition=datetime.datetime.utcnow()
         )
     repository.save(*bookings_to_update)

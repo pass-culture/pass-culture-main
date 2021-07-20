@@ -80,7 +80,7 @@ class Booking(PcObject, Model):
 
     displayAsEnded = Column(Boolean, nullable=True)
 
-    confirmationDate = Column(DateTime, nullable=True)
+    cancellationLimitDate = Column(DateTime, nullable=True)
 
     cancellationReason = Column(
         "cancellationReason",
@@ -171,11 +171,11 @@ class Booking(PcObject, Model):
 
     @hybrid_property
     def isConfirmed(self):
-        return self.confirmationDate is not None and self.confirmationDate <= datetime.utcnow()
+        return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()
 
     @isConfirmed.expression
     def isConfirmed(cls):  # pylint: disable=no-self-argument
-        return and_(cls.confirmationDate.isnot(None), cls.confirmationDate <= datetime.utcnow())
+        return and_(cls.cancellationLimitDate.isnot(None), cls.cancellationLimitDate <= datetime.utcnow())
 
 
 # FIXME (dbaty, 2020-02-08): once `Deposit.expirationDate` has been

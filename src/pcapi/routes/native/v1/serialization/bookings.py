@@ -116,6 +116,7 @@ class BookingReponse(BaseModel):
         # Unfortunate side-effect, the offer object has its url modified and
         # needs to be rolledback.
         booking.stock.offer.url = booking.completedUrl
+        booking.confirmationDate = booking.cancellationLimitDate
         return super().from_orm(booking)
 
     class Config:

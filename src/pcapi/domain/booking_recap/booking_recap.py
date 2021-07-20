@@ -33,7 +33,7 @@ class BookingRecap:
         booking_is_confirmed: bool,
         booking_amount: float,
         cancellation_date: Optional[datetime],
-        confirmation_date: Optional[datetime],
+        cancellation_limit_date: Optional[datetime],
         payment_date: Optional[datetime],
         date_used: Optional[datetime],
         offer_identifier: int,
@@ -62,7 +62,7 @@ class BookingRecap:
         self.booking_status_history = self.build_status_history(
             booking_date=booking_date,
             cancellation_date=cancellation_date,
-            confirmation_date=confirmation_date,
+            cancellation_limit_date=cancellation_limit_date,
             payment_date=payment_date,
             date_used=date_used,
         )
@@ -101,14 +101,14 @@ class BookingRecap:
         self,
         booking_date: datetime,
         cancellation_date: datetime,
-        confirmation_date: datetime,
+        cancellation_limit_date: datetime,
         payment_date: datetime,
         date_used: datetime,
     ) -> BookingRecapHistory:
         if self.booking_is_reimbursed:
             return BookingRecapReimbursedHistory(
                 booking_date=booking_date,
-                confirmation_date=confirmation_date,
+                cancellation_limit_date=cancellation_limit_date,
                 payment_date=payment_date,
                 date_used=date_used,
             )
@@ -116,12 +116,12 @@ class BookingRecap:
             return BookingRecapCancelledHistory(booking_date=booking_date, cancellation_date=cancellation_date)
         if self.booking_is_used:
             return BookingRecapValidatedHistory(
-                booking_date=booking_date, confirmation_date=confirmation_date, date_used=date_used
+                booking_date=booking_date, cancellation_limit_date=cancellation_limit_date, date_used=date_used
             )
         if self.booking_is_confirmed:
             return BookingRecapConfirmedHistory(
                 booking_date=booking_date,
-                confirmation_date=confirmation_date,
+                cancellation_limit_date=cancellation_limit_date,
             )
         return BookingRecapHistory(booking_date)
 

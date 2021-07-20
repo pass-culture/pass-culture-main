@@ -143,7 +143,7 @@ def check_is_usable(booking: Booking) -> None:
         )
         max_cancellation_date = datetime.datetime.strftime(
             utc_datetime_to_department_timezone(
-                api.compute_confirmation_date(
+                api.compute_cancellation_limit_date(
                     booking.stock.beginningDatetime,
                     booking.dateCreated,
                 ),

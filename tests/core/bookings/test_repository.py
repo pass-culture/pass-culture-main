@@ -1243,7 +1243,9 @@ class GetActiveBookingsQuantityForOffererTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock_2, isCancelled=True)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock_2, isCancelled=False)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.BookingFactory(user=beneficiary, stock=stock_2, confirmation_date=yesterday, quantity=2)
+        bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock_2, cancellation_limit_date=yesterday, quantity=2
+        )
 
         # When
         active_bookings_by_venue = booking_repository.get_active_bookings_quantity_for_offerer(offerer.id)
@@ -1285,7 +1287,7 @@ class GetLegacyActiveBookingsQuantityForVenueTest:
         bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=venue)
         bookings_factories.BookingFactory(isCancelled=True, stock__offer__venue=venue)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.BookingFactory(confirmation_date=yesterday, quantity=2, stock__offer__venue=venue)
+        bookings_factories.BookingFactory(cancellation_limit_date=yesterday, quantity=2, stock__offer__venue=venue)
 
         # When
         active_bookings_quantity = booking_repository.get_legacy_active_bookings_quantity_for_venue(venue.id)
@@ -1327,7 +1329,9 @@ class GetValidatedBookingsQuantityForOffererTest:
         stock_2 = offers_factories.ThingStockFactory(offer=offer_2, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock_2)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.BookingFactory(user=beneficiary, stock=stock_2, confirmation_date=yesterday, quantity=2)
+        bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock_2, cancellation_limit_date=yesterday, quantity=2
+        )
 
         # When
         validated_bookings_quantity_by_venue = booking_repository.get_validated_bookings_quantity_for_offerer(
@@ -1356,7 +1360,7 @@ class GetLegacyValidatedBookingsQuantityForVenueTest:
     def test_return_confirmed_bookings_quantity_for_venue(self):
         # Given
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = bookings_factories.BookingFactory(confirmation_date=yesterday, quantity=2)
+        booking = bookings_factories.BookingFactory(cancellation_limit_date=yesterday, quantity=2)
         venue = booking.stock.offer.venue
 
         # When

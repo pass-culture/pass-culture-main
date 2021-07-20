@@ -132,7 +132,7 @@ class BookOfferTest:
         assert len(booking.token) == 6
         assert not booking.isCancelled
         assert not booking.isUsed
-        assert booking.confirmationDate is None
+        assert booking.cancellationLimitDate is None
         assert stock.dnBookedQuantity == 6
 
         mocked_async_index_offer_ids.assert_called_once_with([stock.offer.id])
@@ -213,7 +213,7 @@ class BookOfferTest:
         assert len(booking.token) == 6
         assert not booking.isCancelled
         assert not booking.isUsed
-        assert booking.confirmationDate == two_days_after_booking
+        assert booking.cancellationLimitDate == two_days_after_booking
 
     def test_raise_if_is_admin(self):
         user = users_factories.UserFactory(isAdmin=True)
@@ -669,78 +669,79 @@ class GenerateQrCodeTest:
     ids=["14 Jul", "Daylight Saving Switch", "Now"],
 )
 @pytest.mark.usefixtures("db_session")
-class ComputeConfirmationDateTest:
+class ComputeCancellationDateTest:
     def test_returns_none_if_no_event_beginning(self, booking_date):
         event_beginning = None
         booking_creation = booking_date
-        assert api.compute_confirmation_date(event_beginning, booking_creation) is None
+        assert api.compute_cancellation_limit_date(event_beginning, booking_creation) is None
 
     def test_returns_creation_date_if_event_begins_too_soon(self, booking_date):
         event_date_too_close_to_cancel_booking = booking_date + timedelta(days=1)
         booking_creation = booking_date
         assert (
-            api.compute_confirmation_date(event_date_too_close_to_cancel_booking, booking_creation) == booking_creation
+            api.compute_cancellation_limit_date(event_date_too_close_to_cancel_booking, booking_creation)
+            == booking_creation
         )
 
     def test_returns_two_days_after_booking_creation_if_event_begins_in_more_than_four_days(self, booking_date):
         event_date_more_ten_days_from_now = booking_date + timedelta(days=6)
         booking_creation = booking_date
-        assert api.compute_confirmation_date(
+        assert api.compute_cancellation_limit_date(
             event_date_more_ten_days_from_now, booking_creation
         ) == booking_creation + timedelta(days=2)
 
     def test_returns_two_days_before_event_if_event_begins_between_two_and_four_days_from_now(self, booking_date):
         event_date_four_days_from_now = booking_date + timedelta(days=4)
         booking_creation = booking_date
-        assert api.compute_confirmation_date(
+        assert api.compute_cancellation_limit_date(
             event_date_four_days_from_now, booking_creation
         ) == event_date_four_days_from_now - timedelta(days=2)
 
 
 @freeze_time("2020-11-17 15:00:00")
 @pytest.mark.usefixtures("db_session")
-class UpdateConfirmationDatesTest:
-    def should_update_bookings_confirmation_dates_for_event_beginning_tomorrow(self):
+class UpdateCancellationLimitDatesTest:
+    def should_update_bookings_cancellation_limit_dates_for_event_beginning_tomorrow(self):
         #  Given
         recent_booking = factories.BookingFactory(stock__beginningDatetime=datetime.now() + timedelta(days=90))
         old_booking = factories.BookingFactory(
             stock=recent_booking.stock, dateCreated=(datetime.now() - timedelta(days=7))
         )
         # When
-        updated_bookings = api.update_confirmation_dates(
+        updated_bookings = api.update_cancellation_limit_dates(
             bookings_to_update=[recent_booking, old_booking], new_beginning_datetime=datetime.now() + timedelta(days=1)
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
-        assert recent_booking.confirmationDate == old_booking.confirmationDate == datetime(2020, 11, 17, 15)
+        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == datetime(2020, 11, 17, 15)
 
-    def should_update_bookings_confirmation_dates_for_event_beginning_in_three_days(self):
+    def should_update_bookings_cancellation_limit_dates_for_event_beginning_in_three_days(self):
         #  Given
         recent_booking = factories.BookingFactory(stock__beginningDatetime=datetime.now() + timedelta(days=90))
         old_booking = factories.BookingFactory(
             stock=recent_booking.stock, dateCreated=(datetime.now() - timedelta(days=7))
         )
         # When
-        updated_bookings = api.update_confirmation_dates(
+        updated_bookings = api.update_cancellation_limit_dates(
             bookings_to_update=[recent_booking, old_booking], new_beginning_datetime=datetime.now() + timedelta(days=3)
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
-        assert recent_booking.confirmationDate == old_booking.confirmationDate == datetime(2020, 11, 18, 15)
+        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == datetime(2020, 11, 18, 15)
 
-    def should_update_bookings_confirmation_dates_for_event_beginning_in_a_week(self):
+    def should_update_bookings_cancellation_limit_dates_for_event_beginning_in_a_week(self):
         #  Given
         recent_booking = factories.BookingFactory(stock__beginningDatetime=datetime.now() + timedelta(days=90))
         old_booking = factories.BookingFactory(
             stock=recent_booking.stock, dateCreated=(datetime.now() - timedelta(days=7))
         )
         # When
-        updated_bookings = api.update_confirmation_dates(
+        updated_bookings = api.update_cancellation_limit_dates(
             bookings_to_update=[recent_booking, old_booking], new_beginning_datetime=datetime.now() + timedelta(days=7)
         )
         # Then
         assert updated_bookings == [recent_booking, old_booking]
-        assert recent_booking.confirmationDate == old_booking.confirmationDate == datetime(2020, 11, 19, 15)
+        assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == datetime(2020, 11, 19, 15)
 
 
 @pytest.mark.usefixtures("db_session")

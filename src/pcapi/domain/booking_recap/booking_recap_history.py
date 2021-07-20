@@ -8,9 +8,9 @@ class BookingRecapHistory:
 
 
 class BookingRecapConfirmedHistory(BookingRecapHistory):
-    def __init__(self, confirmation_date: Optional[datetime], **kwargs):
+    def __init__(self, cancellation_limit_date: Optional[datetime], **kwargs):
         super().__init__(**kwargs)
-        self.date_confirmed = confirmation_date
+        self.date_confirmed = cancellation_limit_date
 
 
 class BookingRecapValidatedHistory(BookingRecapConfirmedHistory):

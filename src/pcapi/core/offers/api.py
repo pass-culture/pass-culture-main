@@ -18,7 +18,7 @@ from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.core import search
 from pcapi.core.bookings.api import cancel_bookings_when_offerer_deletes_stock
 from pcapi.core.bookings.api import mark_as_unused
-from pcapi.core.bookings.api import update_confirmation_dates
+from pcapi.core.bookings.api import update_cancellation_limit_dates
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as bookings_repository
@@ -346,7 +346,7 @@ def _edit_stock(
 def _notify_beneficiaries_upon_stock_edit(stock: Stock):
     bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
     if bookings:
-        bookings = update_confirmation_dates(bookings, stock.beginningDatetime)
+        bookings = update_cancellation_limit_dates(bookings, stock.beginningDatetime)
         date_in_two_days = datetime.datetime.utcnow() + datetime.timedelta(days=2)
         check_event_is_in_more_than_48_hours = stock.beginningDatetime > date_in_two_days
         if check_event_is_in_more_than_48_hours:

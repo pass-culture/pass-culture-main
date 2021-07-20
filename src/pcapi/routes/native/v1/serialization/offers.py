@@ -7,7 +7,7 @@ from typing import Optional
 from pydantic.class_validators import validator
 from pydantic.fields import Field
 
-from pcapi.core.bookings.api import compute_confirmation_date
+from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.models import Offer
@@ -70,7 +70,7 @@ class OfferStockResponse(BaseModel):
     @staticmethod
     def _get_cancellation_limit_datetime(stock: Stock) -> Optional[datetime]:
         # compute date as if it were booked now
-        return compute_confirmation_date(stock.beginningDatetime, datetime.now())
+        return compute_cancellation_limit_date(stock.beginningDatetime, datetime.now())
 
     @staticmethod
     def _get_non_scrappable_activation_code(stock: Stock) -> Optional[dict]:

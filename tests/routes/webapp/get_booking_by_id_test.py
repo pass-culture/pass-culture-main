@@ -47,7 +47,7 @@ class Returns200Test:
             "cancellationDate": None,
             "cancellationReason": None,
             "completedUrl": completed_url,
-            "confirmationDate": None,
+            "cancellationLimitDate": None,
             "dateCreated": format_into_utc_date(booking.dateCreated),
             "dateUsed": None,
             "id": humanize(booking.id),

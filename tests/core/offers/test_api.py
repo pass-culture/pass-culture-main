@@ -150,8 +150,8 @@ class UpsertStocksTest:
         notified_bookings = mocked_send_email.call_args_list[0][0][0]
         assert notified_bookings == [booking]
 
-    @mock.patch("pcapi.core.offers.api.update_confirmation_dates")
-    def should_update_bookings_confirmation_date_if_report_of_event(self, mock_update_confirmation_dates):
+    @mock.patch("pcapi.core.offers.api.update_cancellation_limit_dates")
+    def should_update_bookings_cancellation_limit_date_if_report_of_event(self, mock_update_cancellation_limit_dates):
         # Given
         user = users_factories.UserFactory()
         now = datetime.now()
@@ -171,7 +171,7 @@ class UpsertStocksTest:
         api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
 
         # Then
-        mock_update_confirmation_dates.assert_called_once_with([booking], event_reported_in_10_days)
+        mock_update_cancellation_limit_dates.assert_called_once_with([booking], event_reported_in_10_days)
 
     def should_invalidate_booking_token_when_event_is_reported(self):
         # Given
@@ -199,7 +199,7 @@ class UpsertStocksTest:
         updated_booking = Booking.query.get(booking.id)
         assert updated_booking.isUsed is False
         assert updated_booking.dateUsed is None
-        assert updated_booking.confirmationDate == booking.confirmationDate
+        assert updated_booking.cancellationLimitDate == booking.cancellationLimitDate
 
     def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(self):
         # Given

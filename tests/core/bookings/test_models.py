@@ -144,19 +144,19 @@ class BookingQrCodeTest:
 
 @pytest.mark.usefixtures("db_session")
 class BookingIsConfirmedPropertyTest:
-    def test_booking_is_confirmed_when_confirmation_date_is_in_the_past(self):
+    def test_booking_is_confirmed_when_cancellation_limit_date_is_in_the_past(self):
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = factories.BookingFactory(confirmation_date=yesterday)
+        booking = factories.BookingFactory(cancellation_limit_date=yesterday)
 
         assert booking.isConfirmed is True
 
-    def test_booking_is_not_confirmed_when_confirmation_date_is_in_the_future(self):
+    def test_booking_is_not_confirmed_when_cancellation_limit_date_is_in_the_future(self):
         tomorrow = datetime.utcnow() + timedelta(days=1)
-        booking = factories.BookingFactory(confirmation_date=tomorrow)
+        booking = factories.BookingFactory(cancellation_limit_date=tomorrow)
 
         assert booking.isConfirmed is False
 
-    def test_booking_is_not_confirmed_when_no_confirmation_date_exists(self):
+    def test_booking_is_not_confirmed_when_no_cancellation_limit_date_exists(self):
         booking = factories.BookingFactory()
 
         assert booking.isConfirmed is False
@@ -164,23 +164,23 @@ class BookingIsConfirmedPropertyTest:
 
 @pytest.mark.usefixtures("db_session")
 class BookingIsConfirmedSqlQueryTest:
-    def test_booking_is_confirmed_when_confirmation_date_is_in_the_past(self):
+    def test_booking_is_confirmed_when_cancellation_limit_date_is_in_the_past(self):
         yesterday = datetime.utcnow() - timedelta(days=1)
-        factories.BookingFactory(confirmation_date=yesterday)
+        factories.BookingFactory(cancellation_limit_date=yesterday)
 
         query_result = Booking.query.filter(Booking.isConfirmed.is_(True)).all()
 
         assert len(query_result) == 1
 
-    def test_booking_is_not_confirmed_when_confirmation_date_is_in_the_future(self):
+    def test_booking_is_not_confirmed_when_cancellation_limit_date_is_in_the_future(self):
         tomorrow = datetime.utcnow() + timedelta(days=1)
-        factories.BookingFactory(confirmation_date=tomorrow)
+        factories.BookingFactory(cancellation_limit_date=tomorrow)
 
         query_result = Booking.query.filter(Booking.isConfirmed.is_(False)).all()
 
         assert len(query_result) == 1
 
-    def test_booking_is_not_confirmed_when_no_confirmation_date_exists(self):
+    def test_booking_is_not_confirmed_when_no_cancellation_limit_date_exists(self):
         factories.BookingFactory()
 
         query_result = Booking.query.filter(Booking.isConfirmed.is_(False)).all()

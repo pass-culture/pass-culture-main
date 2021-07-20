@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pcapi.core.bookings.api import compute_confirmation_date
+from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.offers.models import Mediation
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
@@ -90,7 +90,7 @@ def create_domain_thing_booking_recap(
             booking_is_confirmed=booking_is_confirmed,
             payment_date=payment_date,
             cancellation_date=cancellation_date,
-            confirmation_date=None,
+            cancellation_limit_date=None,
             date_used=date_used,
             venue_identifier=venue_identifier,
             venue_name=venue_name,
@@ -114,7 +114,7 @@ def create_domain_thing_booking_recap(
         booking_is_confirmed=booking_is_confirmed,
         payment_date=payment_date,
         cancellation_date=cancellation_date,
-        confirmation_date=None,
+        cancellation_limit_date=None,
         date_used=date_used,
         venue_identifier=venue_identifier,
         venue_name=venue_name,
@@ -165,7 +165,7 @@ def create_domain_event_booking_recap(
         event_beginning_datetime=event_beginning_datetime,
         venue_identifier=venue_identifier,
         cancellation_date=cancellation_date,
-        confirmation_date=compute_confirmation_date(event_beginning_datetime, booking_date),
+        cancellation_limit_date=compute_cancellation_limit_date(event_beginning_datetime, booking_date),
         payment_date=payment_date,
         date_used=date_used,
         venue_name=venue_name,

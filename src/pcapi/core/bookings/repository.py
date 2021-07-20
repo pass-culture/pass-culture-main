@@ -358,7 +358,7 @@ def _build_bookings_recap_query(bookings_recap_query: Query) -> Query:
         Booking.amount.label("bookingAmount"),
         Booking.dateUsed.label("dateUsed"),
         Booking.cancellationDate.label("cancellationDate"),
-        Booking.confirmationDate.label("confirmationDate"),
+        Booking.cancellationLimitDate.label("cancellationLimitDate"),
         Booking.isConfirmed.label("isConfirmed"),
         Offer.name.label("offerName"),
         Offer.id.label("offerId"),
@@ -429,7 +429,7 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
         "date_used": _serialize_date_with_timezone(booking.dateUsed, booking),
         "payment_date": _serialize_date_with_timezone(booking.paymentDate, booking),
         "cancellation_date": _serialize_date_with_timezone(booking.cancellationDate, booking=booking),
-        "confirmation_date": None,
+        "cancellation_limit_date": None,
         "venue_name": booking.venuePublicName if booking.venuePublicName else booking.venueName,
         "venue_is_virtual": booking.venueIsVirtual,
     }
@@ -441,7 +441,7 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
                 booking.stockBeginningDatetime, booking.venueDepartementCode
             ),
             booking_is_confirmed=booking.isConfirmed,
-            confirmation_date=_serialize_date_with_timezone(booking.confirmationDate, booking),
+            cancellation_limit_date=_serialize_date_with_timezone(booking.cancellationLimitDate, booking),
         )
 
     elif booking.offerExtraData and "isbn" in booking.offerExtraData:

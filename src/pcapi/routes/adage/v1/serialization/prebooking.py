@@ -92,7 +92,7 @@ def get_prebookings_serialized(bookings: list[Booking]) -> list[PreBookingRespon
             address=venue.address,
             beginningDatetime=stock.beginningDatetime,
             cancellationDate=booking.cancellationDate,
-            cancellationLimitDate=booking.confirmationDate,
+            cancellationLimitDate=booking.cancellationLimitDate,
             category=get_serialized_offer_category(offer),
             city=venue.city,
             confirmationDate=booking.educationalBooking.confirmationDate,
