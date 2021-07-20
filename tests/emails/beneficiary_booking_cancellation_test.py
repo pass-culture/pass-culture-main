@@ -5,6 +5,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings import factories
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.users.factories import UserFactory
@@ -18,6 +19,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
         booking = factories.BookingFactory(
             user=UserFactory(email="fabien@example.com", firstName="Fabien"),
             isCancelled=True,
+            status=BookingStatus.CANCELLED,
             stock=ThingStockFactory(
                 price=10.2,
                 beginningDatetime=datetime.now() - timedelta(days=1),
@@ -52,6 +54,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
         booking = factories.BookingFactory(
             user=UserFactory(email="fabien@example.com", firstName="Fabien"),
             isCancelled=True,
+            status=BookingStatus.CANCELLED,
             stock=EventStockFactory(
                 price=10.2,
                 beginningDatetime=datetime.utcnow(),
@@ -84,6 +87,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
         # Given
         booking = factories.BookingFactory(
             isCancelled=True,
+            status=BookingStatus.CANCELLED,
             stock=EventStockFactory(
                 price=0,
             ),
@@ -100,6 +104,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
         booking = factories.BookingFactory(
             user=UserFactory(),
             isCancelled=True,
+            status=BookingStatus.CANCELLED,
             quantity=2,
             stock=ThingStockFactory(
                 price=10,

@@ -4,6 +4,7 @@ from datetime import timedelta
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import ThingOfferFactory
@@ -33,6 +34,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
             dateCreated=datetime(2020, 4, 22, 0, 0),
             dateUsed=datetime(2020, 5, 5, 0, 0),
             isUsed=True,
+            status=BookingStatus.USED,
             quantity=2,
         )
 
@@ -50,6 +52,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert expected_booking.id == booking.id
         assert expected_booking.isCancelled is False
         assert expected_booking.isUsed is True
+        assert expected_booking.status is BookingStatus.USED
         assert expected_booking.quantity == 2
         assert expected_booking.stockId == stock.id
         assert expected_booking.token == booking.token

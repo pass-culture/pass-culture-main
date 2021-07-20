@@ -8,6 +8,7 @@ import pytest
 from pytest import fixture
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import find_by_pro_user_id
 import pcapi.core.offers.factories as offers_factories
@@ -44,7 +45,7 @@ def test_find_all_ongoing_bookings(app):
     offer = offers_factories.ThingOfferFactory(isActive=True, url="http://url.com", product__thumbCount=1)
     stock = offers_factories.ThingStockFactory(offer=offer, price=0, quantity=10)
     bookings_factories.BookingFactory(user=user, stock=stock, isCancelled=True)
-    bookings_factories.BookingFactory(user=user, stock=stock, isUsed=True)
+    bookings_factories.BookingFactory(user=user, stock=stock, isUsed=True, status=BookingStatus.USED)
     ongoing_booking = bookings_factories.BookingFactory(user=user, stock=stock, isCancelled=False, isUsed=False)
 
     # When
@@ -60,7 +61,9 @@ def test_find_not_cancelled_bookings_by_stock(app):
     user = users_factories.UserFactory()
     stock = offers_factories.ThingStockFactory(price=0)
     bookings_factories.BookingFactory(user=user, stock=stock, isCancelled=True)
-    validated_booking = bookings_factories.BookingFactory(user=user, stock=stock, isUsed=True)
+    validated_booking = bookings_factories.BookingFactory(
+        user=user, stock=stock, isUsed=True, status=BookingStatus.USED
+    )
     not_cancelled_booking = bookings_factories.BookingFactory(user=user, stock=stock, isUsed=False, isCancelled=False)
 
     # When
@@ -87,17 +90,32 @@ class FindPaymentEligibleBookingsForVenueTest:
         future_event_stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=ONE_WEEK_FROM_NOW)
 
         past_event_booking = bookings_factories.BookingFactory(
-            user=beneficiary, stock=past_event_stock, dateUsed=before_cutoff, dateCreated=YESTERDAY, isUsed=True
+            user=beneficiary,
+            stock=past_event_stock,
+            dateUsed=before_cutoff,
+            dateCreated=YESTERDAY,
+            isUsed=True,
+            status=BookingStatus.USED,
         )
 
         future_event_booking = bookings_factories.BookingFactory(
-            user=beneficiary, stock=future_event_stock, dateUsed=before_cutoff, dateCreated=YESTERDAY, isUsed=True
+            user=beneficiary,
+            stock=future_event_stock,
+            dateUsed=before_cutoff,
+            dateCreated=YESTERDAY,
+            isUsed=True,
+            status=BookingStatus.USED,
         )
 
         offer_thing = offers_factories.ThingOfferFactory(venue=venue)
         stock_thing = offers_factories.ThingStockFactory(offer=offer_thing)
         thing_booking = bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock_thing, dateUsed=before_cutoff, dateCreated=NOW, isUsed=True
+            user=beneficiary,
+            stock=stock_thing,
+            dateUsed=before_cutoff,
+            dateCreated=NOW,
+            isUsed=True,
+            status=BookingStatus.USED,
         )
 
         another_offerer = offers_factories.OffererFactory(siren="987654321")
@@ -107,7 +125,12 @@ class FindPaymentEligibleBookingsForVenueTest:
             offer=another_offer, beginningDatetime=TWO_DAYS_AGO, bookingLimitDatetime=THREE_DAYS_AGO
         )
         bookings_factories.BookingFactory(
-            user=beneficiary, stock=another_past_event_stock, dateUsed=before_cutoff, dateCreated=NOW, isUsed=True
+            user=beneficiary,
+            stock=another_past_event_stock,
+            dateUsed=before_cutoff,
+            dateCreated=NOW,
+            isUsed=True,
+            status=BookingStatus.USED,
         )
 
         # When
@@ -123,9 +146,11 @@ class FindPaymentEligibleBookingsForVenueTest:
         venue = offers_factories.VenueFactory()
         cutoff = datetime.now()
         booking1 = bookings_factories.BookingFactory(
-            isUsed=True, dateUsed=cutoff - timedelta(days=1), stock__offer__venue=venue
+            isUsed=True, status=BookingStatus.USED, dateUsed=cutoff - timedelta(days=1), stock__offer__venue=venue
         )
-        bookings_factories.BookingFactory(isUsed=True, dateUsed=cutoff, stock__offer__venue=venue)
+        bookings_factories.BookingFactory(
+            isUsed=True, status=BookingStatus.USED, dateUsed=cutoff, stock__offer__venue=venue
+        )
 
         bookings = booking_repository.find_bookings_eligible_for_payment_for_venue(venue.id, cutoff)
         assert bookings == [booking1]
@@ -332,8 +357,8 @@ class FindAllNotUsedAndNotCancelledTest:
     def test_find_not_used_and_not_cancelled(self):
         # Given
         booking = bookings_factories.BookingFactory()
-        bookings_factories.BookingFactory(isCancelled=True)
-        bookings_factories.BookingFactory(isUsed=True)
+        bookings_factories.BookingFactory(isCancelled=True, status=BookingStatus.CANCELLED)
+        bookings_factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
 
         # When
         bookings = booking_repository.find_not_used_and_not_cancelled()
@@ -405,7 +430,13 @@ class FindByProUserIdTest:
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
         bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock, dateCreated=booking_date, token="ABCDEF", isUsed=True, amount=12
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+            isUsed=True,
+            status=BookingStatus.USED,
+            amount=12,
         )
 
         # When
@@ -591,6 +622,7 @@ class FindByProUserIdTest:
             dateCreated=yesterday,
             token="ABCDEF",
             isUsed=True,
+            status=BookingStatus.USED,
             dateUsed=yesterday,
             amount=5,
         )
@@ -633,6 +665,7 @@ class FindByProUserIdTest:
             token="ABCDEF",
             amount=5,
             isUsed=True,
+            status=BookingStatus.USED,
             dateUsed=yesterday,
             isCancelled=True,
         )
@@ -670,6 +703,7 @@ class FindByProUserIdTest:
             token="ABCDEF",
             amount=5,
             isUsed=True,
+            status=BookingStatus.USED,
             dateUsed=yesterday,
             isCancelled=False,
         )
@@ -867,7 +901,12 @@ class FindByProUserIdTest:
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
         bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock, dateCreated=booking_date, token="ABCDEF", isUsed=True
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+            isUsed=True,
+            status=BookingStatus.USED,
         )
 
         # When
@@ -894,7 +933,12 @@ class FindByProUserIdTest:
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
         bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock, dateCreated=booking_date, token="ABCDEF", isUsed=True
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+            isUsed=True,
+            status=BookingStatus.USED,
         )
 
         # When
@@ -927,6 +971,7 @@ class FindByProUserIdTest:
             dateCreated=(default_booking_date + timedelta(days=1)),
             token="BBBBBB",
             isUsed=True,
+            status=BookingStatus.USED,
         )
 
         venue_for_book = offers_factories.VenueFactory(
@@ -938,7 +983,12 @@ class FindByProUserIdTest:
         )
         stock_for_book = offers_factories.ThingStockFactory(offer=offer_for_book, price=0)
         bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock_for_book, dateCreated=default_booking_date, token="AAAAAA", isUsed=True
+            user=beneficiary,
+            stock=stock_for_book,
+            dateCreated=default_booking_date,
+            token="AAAAAA",
+            isUsed=True,
+            status=BookingStatus.USED,
         )
 
         venue_for_thing = offers_factories.VenueFactory(
@@ -953,6 +1003,7 @@ class FindByProUserIdTest:
             dateCreated=(default_booking_date - timedelta(days=1)),
             token="ABCDEF",
             isUsed=True,
+            status=BookingStatus.USED,
         )
 
         # When
@@ -985,6 +1036,7 @@ class FindByProUserIdTest:
             dateCreated=(default_booking_date + timedelta(days=1)),
             token="BBBBBB",
             isUsed=True,
+            status=BookingStatus.USED,
         )
 
         venue_for_book = offers_factories.VenueFactory(
@@ -996,7 +1048,12 @@ class FindByProUserIdTest:
         )
         stock_for_book = offers_factories.ThingStockFactory(offer=offer_for_book, price=0)
         bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock_for_book, dateCreated=default_booking_date, token="AAAAAA", isUsed=True
+            user=beneficiary,
+            stock=stock_for_book,
+            dateCreated=default_booking_date,
+            token="AAAAAA",
+            isUsed=True,
+            status=BookingStatus.USED,
         )
 
         venue_for_thing = offers_factories.VenueFactory(
@@ -1014,6 +1071,7 @@ class FindByProUserIdTest:
             dateCreated=(default_booking_date - timedelta(days=1)),
             token="ABCDEF",
             isUsed=True,
+            status=BookingStatus.USED,
         )
 
         # When

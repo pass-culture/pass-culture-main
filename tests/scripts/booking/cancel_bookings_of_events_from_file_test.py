@@ -1,10 +1,9 @@
-from datetime import datetime
-
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingStockFactory
@@ -30,9 +29,7 @@ class CancelBookingsOfEventsFromFileTest:
         stock_to_cancel = ThingStockFactory(offer=offer_to_cancel)
         stock_to_not_cancel = ThingStockFactory(offer=offer_to_not_cancel)
 
-        self.booking_to_cancel = BookingFactory(
-            user=beneficiary, stock=stock_to_cancel, isUsed=True, dateUsed=datetime.utcnow()
-        )
+        self.booking_to_cancel = BookingFactory(user=beneficiary, stock=stock_to_cancel, isUsed=False, dateUsed=None)
         self.booking_to_not_cancel = BookingFactory(user=beneficiary, stock=stock_to_not_cancel)
 
         self.booking_2QLYYA_not_to_cancel = BookingFactory(user=beneficiary, stock=stock_to_cancel, token="2QLYYA")
@@ -79,31 +76,39 @@ class CancelBookingsOfEventsFromFileTest:
         # Then
         saved_booking = Booking.query.get(self.booking_to_cancel.id)
         assert saved_booking.isCancelled is True
+        assert saved_booking.status is BookingStatus.CANCELLED
         assert saved_booking.cancellationReason == BookingCancellationReasons.OFFERER
         assert saved_booking.cancellationDate is not None
         assert saved_booking.isUsed is False
+        assert saved_booking.status is not BookingStatus.USED
         assert saved_booking.dateUsed is None
 
         saved_booking = Booking.query.get(self.booking_to_not_cancel.id)
         assert saved_booking.isCancelled is False
+        assert saved_booking.status is not BookingStatus.CANCELLED
         assert saved_booking.cancellationDate is None
 
         saved_2QLYYA_booking = Booking.query.get(self.booking_2QLYYA_not_to_cancel.id)
         assert saved_2QLYYA_booking.isCancelled is False
+        assert saved_2QLYYA_booking.status is not BookingStatus.CANCELLED
         assert saved_2QLYYA_booking.cancellationDate is None
 
         saved_BMTUME_booking = Booking.query.get(self.booking_BMTUME_not_to_cancel.id)
         assert saved_BMTUME_booking.isCancelled is False
+        assert saved_BMTUME_booking.status is not BookingStatus.CANCELLED
         assert saved_BMTUME_booking.cancellationDate is None
 
         saved_LUJ9AM_booking = Booking.query.get(self.booking_LUJ9AM_not_to_cancel.id)
         assert saved_LUJ9AM_booking.isCancelled is False
+        assert saved_LUJ9AM_booking.status is not BookingStatus.CANCELLED
         assert saved_LUJ9AM_booking.cancellationDate is None
 
         saved_DA8YLU_booking = Booking.query.get(self.booking_DA8YLU_not_to_cancel.id)
         assert saved_DA8YLU_booking.isCancelled is False
+        assert saved_DA8YLU_booking.status is not BookingStatus.CANCELLED
         assert saved_DA8YLU_booking.cancellationDate is None
 
         saved_Q46YHM_booking = Booking.query.get(self.booking_Q46YHM_not_to_cancel.id)
         assert saved_Q46YHM_booking.isCancelled is False
+        assert saved_Q46YHM_booking.status is not BookingStatus.CANCELLED
         assert saved_Q46YHM_booking.cancellationDate is None

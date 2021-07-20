@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.users import factories as users_factories
 from pcapi.domain.offers import update_is_active_status
 from pcapi.model_creators.generic_creators import create_booking
@@ -64,3 +65,4 @@ class UpdateIsActiveStatusTest:
         # then
         assert any(not updated_offer.isActive for updated_offer in updated_offers)
         assert not booking.isCancelled
+        assert booking.status is not BookingStatus.CANCELLED

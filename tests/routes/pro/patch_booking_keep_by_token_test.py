@@ -3,6 +3,7 @@ from decimal import Decimal
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
 import pcapi.core.offers.factories as offers_factories
@@ -30,7 +31,7 @@ API_KEY_VALUE = random_token(64)
 class Returns204Test:
     class WithApiKeyAuthTest:
         def test_when_api_key_provided_is_related_to_regular_offer_with_rights(self, app):
-            booking = BookingFactory(isUsed=True, token="ABCDEF")
+            booking = BookingFactory(isUsed=True, status=BookingStatus.USED, token="ABCDEF")
             offerer = booking.stock.offer.venue.managingOfferer
             ApiKeyFactory(offerer=offerer)
 
@@ -46,10 +47,11 @@ class Returns204Test:
             assert response.status_code == 204
             booking = Booking.query.one()
             assert not booking.isUsed
+            assert booking.status is not BookingStatus.USED
             assert booking.dateUsed is None
 
         def test_expect_booking_to_be_used_with_non_standard_origin_header(self, app):
-            booking = BookingFactory(isUsed=True, token="ABCDEF")
+            booking = BookingFactory(isUsed=True, status=BookingStatus.USED, token="ABCDEF")
             offerer = booking.stock.offer.venue.managingOfferer
             ApiKeyFactory(offerer=offerer)
 
@@ -65,11 +67,12 @@ class Returns204Test:
             assert response.status_code == 204
             booking = Booking.query.one()
             assert not booking.isUsed
+            assert booking.status is not BookingStatus.USED
             assert booking.dateUsed is None
 
     class WithBasicAuthTest:
         def test_when_user_is_logged_in_and_regular_offer(self, app):
-            booking = BookingFactory(isUsed=True, token="ABCDEF")
+            booking = BookingFactory(isUsed=True, status=BookingStatus.USED, token="ABCDEF")
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -80,10 +83,11 @@ class Returns204Test:
             assert response.status_code == 204
             booking = Booking.query.one()
             assert not booking.isUsed
+            assert booking.status is not BookingStatus.USED
             assert booking.dateUsed is None
 
         def test_when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, app):
-            booking = BookingFactory(isUsed=True, token="ABCDEF")
+            booking = BookingFactory(isUsed=True, status=BookingStatus.USED, token="ABCDEF")
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -94,12 +98,14 @@ class Returns204Test:
             assert response.status_code == 204
             booking = Booking.query.one()
             assert not booking.isUsed
+            assert booking.status is not BookingStatus.USED
             assert booking.dateUsed is None
 
         # FIXME: I don't understand what we're trying to test, here.
         def test_when_there_is_no_remaining_quantity_after_validating(self, app):
             booking = BookingFactory(
                 isUsed=True,
+                status=BookingStatus.USED,
                 token="ABCDEF",
                 stock__quantity=1,
             )
@@ -113,6 +119,7 @@ class Returns204Test:
             assert response.status_code == 204
             booking = Booking.query.one()
             assert not booking.isUsed
+            assert booking.status is not BookingStatus.USED
             assert booking.dateUsed is None
 
 
@@ -192,31 +199,6 @@ class Returns403Test:
             assert response.status_code == 403
             assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
-        @pytest.mark.usefixtures("db_session")
-        def test_when_api_key_is_provided_and_booking_has_been_cancelled_already(self, app):
-            # Given
-            user = users_factories.UserFactory()
-            pro_user = users_factories.ProFactory(email="pro@example.net")
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(pro_user, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0)
-            booking = create_booking(user=user, stock=stock, is_used=True, venue=venue, is_cancelled=True)
-            repository.save(booking, user_offerer)
-            ApiKeyFactory(offerer=offerer)
-            url = f"/v2/bookings/keep/token/{booking.token}"
-            user2_api_key = f"Bearer {DEFAULT_CLEAR_API_KEY}"
-
-            # When
-            response = TestClient(app.test_client()).patch(
-                url, headers={"Authorization": user2_api_key, "Origin": "http://localhost"}
-            )
-
-            # Then
-            assert response.status_code == 403
-            assert response.json["booking"] == ["Cette réservation a été annulée"]
-            assert Booking.query.get(booking.id).isUsed is True
-
     class WithBasicAuthTest:
         @pytest.mark.usefixtures("db_session")
         def test_when_user_is_not_attached_to_linked_offerer(self, app):
@@ -238,21 +220,6 @@ class Returns403Test:
             assert response.status_code == 403
             assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
             assert Booking.query.get(booking.id).isUsed is False
-
-        @pytest.mark.usefixtures("db_session")
-        def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
-            # Given
-            admin = users_factories.AdminFactory()
-            booking = BookingFactory(isCancelled=True, isUsed=True)
-            url = f"/v2/bookings/keep/token/{booking.token}"
-
-            # When
-            response = TestClient(app.test_client()).with_auth(admin.email).patch(url)
-
-            # Then
-            assert response.status_code == 403
-            assert response.json["booking"] == ["Cette réservation a été annulée"]
-            assert Booking.query.get(booking.id).isUsed is True
 
 
 class Returns404Test:

@@ -6,6 +6,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offers.factories as offers_factories
 from pcapi.scripts.booking.cancel_old_unused_bookings_for_venue import cancel_old_unused_bookings_for_venue
 from pcapi.utils.human_ids import humanize
@@ -24,6 +25,7 @@ def test_should_cancel_old_unused_bookings_for_venue():
         dateCreated=(datetime.now() - timedelta(days=40)),
         stock__offer__venue=venue,
         isUsed=True,
+        status=BookingStatus.USED,
     )
 
     recent_booking = bookings_factories.BookingFactory(
@@ -43,10 +45,14 @@ def test_should_cancel_old_unused_bookings_for_venue():
     other_venue_booking = Booking.query.get(other_venue_booking.id)
 
     assert to_cancel_booking_result.isCancelled
-    assert to_cancel_booking_result.cancellationReason == BookingCancellationReasons.OFFERER
+    assert to_cancel_booking_result.status is BookingStatus.CANCELLED
+    assert to_cancel_booking_result.cancellationReason is BookingCancellationReasons.OFFERER
     assert not used_booking_result.isCancelled
+    assert used_booking_result.status is not BookingStatus.CANCELLED
     assert not recent_booking_result.isCancelled
+    assert recent_booking_result.status is not BookingStatus.CANCELLED
     assert not other_venue_booking.isCancelled
+    assert other_venue_booking.status is not BookingStatus.CANCELLED
 
 
 def test_should_throw_error_for_unknown_venue():

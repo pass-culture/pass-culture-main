@@ -7,6 +7,7 @@ import pytest
 from sqlalchemy import func
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
@@ -27,8 +28,12 @@ def test_generate_and_send_payments():
     # 1 new payment + 1 retried payment for venue 1
     venue1 = offers_factories.VenueFactory(name="venue1")
     offers_factories.BankInformationFactory(venue=venue1)
-    booking11 = bookings_factories.BookingFactory(isUsed=True, dateUsed=before_cutoff, stock__offer__venue=venue1)
-    booking12 = bookings_factories.BookingFactory(isUsed=True, dateUsed=before_cutoff, stock__offer__venue=venue1)
+    booking11 = bookings_factories.BookingFactory(
+        isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff, stock__offer__venue=venue1
+    )
+    booking12 = bookings_factories.BookingFactory(
+        isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff, stock__offer__venue=venue1
+    )
     payment12 = payments_factories.PaymentFactory(booking=booking12)
     payments_factories.PaymentStatusFactory(payment=payment12, status=TransactionStatus.ERROR)
     payment13 = payments_factories.PaymentFactory(booking__stock__offer__venue=venue1)
@@ -38,7 +43,9 @@ def test_generate_and_send_payments():
     # 1 new payment for venue 2
     venue2 = offers_factories.VenueFactory(name="venue2")
     offers_factories.BankInformationFactory(offerer=venue2.managingOfferer)
-    booking2 = bookings_factories.BookingFactory(isUsed=True, dateUsed=before_cutoff, stock__offer__venue=venue2)
+    booking2 = bookings_factories.BookingFactory(
+        isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff, stock__offer__venue=venue2
+    )
 
     # 0 payment for venue 3 (existing booking has already been reimbursed)
     payment3 = payments_factories.PaymentFactory()
@@ -46,7 +53,9 @@ def test_generate_and_send_payments():
 
     # 1 new payment (not processable) for venue 4 (no IBAN nor BIC)
     venue4 = offers_factories.VenueFactory()
-    booking4 = bookings_factories.BookingFactory(isUsed=True, dateUsed=before_cutoff, stock__offer__venue=venue4)
+    booking4 = bookings_factories.BookingFactory(
+        isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff, stock__offer__venue=venue4
+    )
 
     # 0 payment for venue 5 (booking is not used)
     venue5 = offers_factories.VenueFactory()
@@ -55,7 +64,9 @@ def test_generate_and_send_payments():
     # 0 payment for venue 6 (booking has been used after cutoff)
     venue6 = offers_factories.VenueFactory(name="venue2")
     offers_factories.BankInformationFactory(offerer=venue6.managingOfferer)
-    bookings_factories.BookingFactory(isUsed=True, dateUsed=cutoff, stock__offer__venue=venue2)
+    bookings_factories.BookingFactory(
+        isUsed=True, status=BookingStatus.USED, dateUsed=cutoff, stock__offer__venue=venue2
+    )
 
     last_payment_id = Payment.query.with_entities(func.max(Payment.id)).scalar()
     last_status_id = PaymentStatus.query.with_entities(func.max(PaymentStatus.id)).scalar()

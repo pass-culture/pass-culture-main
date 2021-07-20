@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.users.factories import UserFactory
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -112,7 +113,12 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_cancelled_some_offers(self, app):
         # Given
-        BookingFactory(isCancelled=True, user__email="wallet_test@email.com", user__postalCode="75130")
+        BookingFactory(
+            isCancelled=True,
+            status=BookingStatus.CANCELLED,
+            user__email="wallet_test@email.com",
+            user__postalCode="75130",
+        )
 
         # When
         response = TestClient(app.test_client()).with_auth("wallet_test@email.com").get("/beneficiaries/current")

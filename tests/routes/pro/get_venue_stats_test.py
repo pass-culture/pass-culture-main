@@ -1,6 +1,7 @@
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
@@ -13,7 +14,7 @@ class Returns200Test:
     def when_pro_user_has_rights_on_managing_offerer(self, app):
         # given
         booking = bookings_factories.BookingFactory()
-        bookings_factories.BookingFactory(isUsed=True, stock=booking.stock)
+        bookings_factories.BookingFactory(isUsed=True, status=BookingStatus.USED, stock=booking.stock)
         venue = booking.stock.offer.venue
         venue_owner = offers_factories.UserOffererFactory(offerer=venue.managingOfferer).user
 

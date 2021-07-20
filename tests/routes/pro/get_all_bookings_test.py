@@ -7,6 +7,7 @@ import pytest
 
 from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.testing import assert_num_queries
@@ -79,6 +80,7 @@ class Returns200Test:
         booking = bookings_factories.BookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             isUsed=True,
+            status=BookingStatus.USED,
             dateUsed=datetime(2020, 8, 13, 12, 0, 0),
             token="ABCDEF",
             user__email="beneficiary@example.com",

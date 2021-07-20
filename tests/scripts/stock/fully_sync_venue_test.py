@@ -2,6 +2,7 @@ import pytest
 import requests_mock
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
@@ -79,10 +80,12 @@ def test_reset_stock_quantity():
     venue = offer.venue
     stock1_no_bookings = offers_factories.StockFactory(offer=offer, quantity=10)
     stock2_only_cancelled_bookings = offers_factories.StockFactory(offer=offer, quantity=10)
-    bookings_factories.BookingFactory(stock=stock2_only_cancelled_bookings, isCancelled=True)
+    bookings_factories.BookingFactory(
+        stock=stock2_only_cancelled_bookings, isCancelled=True, status=BookingStatus.CANCELLED
+    )
     stock3_mix_of_bookings = offers_factories.StockFactory(offer=offer, quantity=10)
     bookings_factories.BookingFactory(stock=stock3_mix_of_bookings)
-    bookings_factories.BookingFactory(stock=stock3_mix_of_bookings, isCancelled=True)
+    bookings_factories.BookingFactory(stock=stock3_mix_of_bookings, isCancelled=True, status=BookingStatus.CANCELLED)
     manually_added_offer = offers_factories.OfferFactory(venue=venue)
     stock4_manually_added = offers_factories.StockFactory(offer=manually_added_offer, quantity=10)
     stock5_other_venue = offers_factories.StockFactory(quantity=10)

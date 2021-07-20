@@ -4,6 +4,7 @@ from decimal import Decimal
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.payments import factories as payments_factories
 from pcapi.core.users import factories as users_factories
@@ -17,7 +18,9 @@ class FindAllOffererPaymentsTest:
         # Given
         stock = offers_factories.ThingStockFactory(price=10)
         now = datetime.utcnow()
-        booking = bookings_factories.BookingFactory(stock=stock, isUsed=True, dateUsed=now, token="ABCDEF")
+        booking = bookings_factories.BookingFactory(
+            stock=stock, isUsed=True, status=BookingStatus.USED, dateUsed=now, token="ABCDEF"
+        )
         payment = payments_factories.PaymentFactory(
             booking=booking, transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019"
         )

@@ -78,6 +78,7 @@ class Returns204Test:  # No Content
         assert response.status_code == 204
         booking = bookings_models.Booking.query.one()
         assert booking.isUsed
+        assert booking.status is bookings_models.BookingStatus.USED
 
 
 class Returns403Test:
@@ -129,7 +130,7 @@ class Returns403Test:
     def when_booking_is_cancelled(self, app):
         # Given
         admin = users_factories.UserFactory(isAdmin=True)
-        booking = BookingFactory(isCancelled=True)
+        booking = BookingFactory(isCancelled=True, status=bookings_models.BookingStatus.CANCELLED)
         url = f"/bookings/token/{booking.token}"
 
         # When

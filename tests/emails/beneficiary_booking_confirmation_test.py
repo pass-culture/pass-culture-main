@@ -5,6 +5,7 @@ import pytest
 
 from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_features
 from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
@@ -197,7 +198,11 @@ class DigitalOffersTest:
         digital_stock = offers_factories.StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]
         booking = bookings_factories.BookingFactory(
-            isUsed=True, stock__offer=offer, activationCode=first_activation_code, dateCreated=datetime(2018, 1, 1)
+            isUsed=True,
+            status=BookingStatus.USED,
+            stock__offer=offer,
+            activationCode=first_activation_code,
+            dateCreated=datetime(2018, 1, 1),
         )
 
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)

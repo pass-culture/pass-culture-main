@@ -11,6 +11,7 @@ from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
@@ -139,7 +140,7 @@ class UpsertStocksTest:
             price=2,
         )
         booking = bookings_factories.BookingFactory(stock=existing_stock)
-        bookings_factories.BookingFactory(stock=existing_stock, isCancelled=True)
+        bookings_factories.BookingFactory(stock=existing_stock, isCancelled=True, status=BookingStatus.CANCELLED)
 
         # When
         api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)

@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
 import pcapi.core.offers.factories as offers_factories
@@ -203,7 +204,7 @@ class Returns403Test:
         def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
             # Given
             admin = users_factories.UserFactory(isAdmin=True)
-            booking = BookingFactory(isCancelled=True)
+            booking = BookingFactory(isCancelled=True, status=BookingStatus.CANCELLED)
             url = f"/v2/bookings/use/token/{booking.token}"
 
             # When

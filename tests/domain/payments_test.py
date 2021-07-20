@@ -230,29 +230,21 @@ class CreatePaymentDetailsTest:
         assert details.reimbursed_amount == 35
         assert details.reimbursement_rate == 0.5
 
+    @pytest.mark.usefixtures("db_session")
     def test_contains_info_on_booking(self):
         # given
-        user = users_factories.UserFactory.build(email="jane.doe@test.com", id=3)
-        offerer = create_offerer(siren="987654321", name="Joe le Libraire")
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, price=12, quantity=5)
-        booking = create_booking(
-            user=user,
-            stock=stock,
-            date_created=datetime(2018, 2, 5),
-            date_used=datetime(2018, 2, 19),
-            idx=5,
-            quantity=2,
+        booking = bookings_factories.BookingFactory(
+            dateCreated=datetime(2018, 2, 5),
+            dateUsed=datetime(2018, 2, 19),
         )
-        payment = create_payment(booking=booking, offerer=offerer, amount=35)
+        payment = payments_factories.PaymentFactory(booking=booking)
 
         # when
         details = create_payment_details(payment)
 
         # then
         assert details.booking_date == datetime(2018, 2, 5)
-        assert details.booking_amount == stock.price * booking.quantity
+        assert details.booking_amount == booking.stock.price * booking.quantity
         assert details.booking_used_date == datetime(2018, 2, 19)
 
     def test_contains_info_on_offerer(self):

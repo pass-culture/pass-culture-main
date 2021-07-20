@@ -1,7 +1,10 @@
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -48,6 +51,7 @@ class Returns204Test:
         assert response.status_code == 204
         updated_booking = Booking.query.first()
         assert updated_booking.isCancelled
+        assert updated_booking.status is BookingStatus.CANCELLED
 
         assert push_testing.requests[-1] == {
             "group_id": "Cancel_booking",
@@ -88,6 +92,7 @@ class Returns204Test:
         assert response.status_code == 204
         updated_booking = Booking.query.first()
         assert updated_booking.isCancelled
+        assert updated_booking.status is BookingStatus.CANCELLED
 
 
 class Returns401Test:
@@ -204,18 +209,13 @@ class Returns403Test:
         @pytest.mark.usefixtures("db_session")
         def test_should_prevent_a_used_booking_from_being_cancelled(self, app):
             # Given
-            pro_user = users_factories.ProFactory(email="Mr Books@example.net", publicName="Mr Books")
-            offerer = create_offerer(siren="793875030")
-            user_offerer = create_user_offerer(pro_user, offerer)
-            venue = create_venue(offerer)
-            book_offer = create_offer_with_event_product(venue)
-            stock = create_stock(offer=book_offer)
-
-            user = users_factories.UserFactory()
-            booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
+            user_offerer = offers_factories.UserOffererFactory()
+            booking = bookings_factories.BookingFactory(
+                stock__offer__venue__managingOfferer=user_offerer.offerer, isUsed=True, status=BookingStatus.USED
+            )
 
             repository.save(booking, user_offerer)
-            ApiKeyFactory(offerer=offerer)
+            ApiKeyFactory(offerer=user_offerer.offerer)
 
             # When
             response = TestClient(app.test_client()).patch(
@@ -224,11 +224,13 @@ class Returns403Test:
             )
 
             # Then
+            print(response)
             assert response.status_code == 403
             assert response.json["global"] == ["Impossible d'annuler une réservation consommée"]
             updated_booking = Booking.query.first()
             assert updated_booking.isUsed
             assert updated_booking.isCancelled is False
+            assert updated_booking.status is BookingStatus.USED
             assert push_testing.requests == []
 
 

@@ -5,6 +5,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_features
 from pcapi.core.users import exceptions
@@ -225,7 +226,11 @@ class FindByBeneficiaryTest:
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(
-            stock=stock, user=beneficiary, isCancelled=True, cancellationDate=datetime.now()
+            stock=stock,
+            user=beneficiary,
+            isCancelled=True,
+            status=BookingStatus.CANCELLED,
+            cancellationDate=datetime.now(),
         )
         mediation = offers_factories.MediationFactory(offer=offer)
         favorite = factories.FavoriteFactory(mediation=mediation, offer=offer, user=beneficiary)

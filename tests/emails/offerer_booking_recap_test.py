@@ -5,6 +5,7 @@ import pytest
 
 from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.testing import override_features
@@ -260,6 +261,7 @@ def test_no_need_when_booking_is_autovalidated():
         user__firstName="John",
         user__lastName="Doe",
         isUsed=True,
+        status=BookingStatus.USED,
         stock__offer=offer,
         activationCode=first_activation_code,
         dateCreated=datetime(2018, 1, 1),
@@ -298,6 +300,7 @@ def test_a_digital_booking_with_activation_code_is_automatically_used():
         user__firstName="John",
         user__lastName="Doe",
         isUsed=True,
+        status=BookingStatus.USED,
         stock__offer=offer,
         activationCode=first_activation_code,
         dateCreated=datetime(2018, 1, 1),

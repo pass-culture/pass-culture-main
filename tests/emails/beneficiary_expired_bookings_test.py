@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.factories import ProductFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.emails.beneficiary_expired_bookings import build_expired_bookings_recap_email_data_for_beneficiary
@@ -23,6 +24,7 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled():
         stock__offer__venue__name="Mnémosyne",
         dateCreated=long_ago,
         isCancelled=True,
+        status=BookingStatus.CANCELLED,
         cancellationReason=BookingCancellationReasons.EXPIRED,
         user=amnesiac_user,
     )
@@ -34,6 +36,7 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled():
         stock__offer__venue__name="Virgin Megastore",
         dateCreated=long_ago,
         isCancelled=True,
+        status=BookingStatus.CANCELLED,
         cancellationReason=BookingCancellationReasons.EXPIRED,
         user=amnesiac_user,
     )

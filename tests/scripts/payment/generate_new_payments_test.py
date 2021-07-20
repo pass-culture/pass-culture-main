@@ -3,6 +3,7 @@ import datetime
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
@@ -38,11 +39,21 @@ class GenerateNewPaymentsTest:
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
         paying_stock = offers_factories.ThingStockFactory(offer=offer)
         free_stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        bookings_factories.BookingFactory(user=user, stock=paying_stock, isUsed=True, dateUsed=before_cutoff)
-        bookings_factories.BookingFactory(user=user, stock=paying_stock, isUsed=True, dateUsed=before_cutoff)
-        bookings_factories.BookingFactory(user=user, stock=free_stock, isUsed=True, dateUsed=before_cutoff)
-        bookings_factories.BookingFactory(user=user, stock=free_stock, isUsed=True, dateUsed=before_cutoff)
-        bookings_factories.BookingFactory(user=user, stock=paying_stock, isUsed=True, dateUsed=cutoff)
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
+        )
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
+        )
+        bookings_factories.BookingFactory(
+            user=user, stock=free_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
+        )
+        bookings_factories.BookingFactory(
+            user=user, stock=free_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
+        )
+        bookings_factories.BookingFactory(
+            user=user, stock=paying_stock, isUsed=True, status=BookingStatus.USED, dateUsed=cutoff
+        )
 
         payment_message = payments_factories.PaymentMessageFactory(name="ABCD123")
         payments_factories.PaymentFactory(paymentMessage=payment_message)

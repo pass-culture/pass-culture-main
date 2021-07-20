@@ -4,6 +4,7 @@ from lxml.etree import DocumentInvalid
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
@@ -343,12 +344,20 @@ def test_get_venues_to_reimburse():
     before_cutoff = cutoff - datetime.timedelta(days=1)
     venue1 = offers_factories.VenueFactory(name="name")
     # Two matching bookings for this venue, but it should only appear once.
-    bookings_factories.BookingFactory(isUsed=True, dateUsed=before_cutoff, stock__offer__venue=venue1)
-    bookings_factories.BookingFactory(isUsed=True, dateUsed=before_cutoff, stock__offer__venue=venue1)
+    bookings_factories.BookingFactory(
+        isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff, stock__offer__venue=venue1
+    )
+    bookings_factories.BookingFactory(
+        isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff, stock__offer__venue=venue1
+    )
     venue2 = offers_factories.VenueFactory(publicName="public name")
-    bookings_factories.BookingFactory(isUsed=True, dateUsed=before_cutoff, stock__offer__venue=venue2)
+    bookings_factories.BookingFactory(
+        isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff, stock__offer__venue=venue2
+    )
     bookings_factories.BookingFactory(isUsed=False, stock__offer__venue__publicName="booking not used")
-    bookings_factories.BookingFactory(isUsed=True, dateUsed=cutoff, stock__offer__venue__publicName="after cutoff")
+    bookings_factories.BookingFactory(
+        isUsed=True, status=BookingStatus.USED, dateUsed=cutoff, stock__offer__venue__publicName="after cutoff"
+    )
     payments_factories.PaymentFactory(booking__stock__offer__venue__publicName="already has a payment")
 
     venues = get_venues_to_reimburse(cutoff)

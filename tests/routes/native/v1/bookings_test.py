@@ -8,6 +8,7 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import StockFactory
@@ -92,7 +93,11 @@ class GetBookingsTest:
         user = users_factories.UserFactory(email=self.identifier)
 
         permanent_booking = BookingFactory(
-            user=user, stock__offer__type=str(ThingType.LIVRE_AUDIO), isUsed=True, dateUsed=datetime(2021, 2, 3)
+            user=user,
+            stock__offer__type=str(ThingType.LIVRE_AUDIO),
+            isUsed=True,
+            status=BookingStatus.USED,
+            dateUsed=datetime(2021, 2, 3),
         )
 
         event_booking = BookingFactory(user=user, stock=EventStockFactory(beginningDatetime=datetime(2021, 3, 14)))
@@ -101,12 +106,18 @@ class GetBookingsTest:
         first_activation_code = digital_stock.activationCodes[0]
         second_activation_code = digital_stock.activationCodes[1]
         digital_booking = BookingFactory(
-            user=user, isUsed=True, dateUsed=datetime.now(), stock=digital_stock, activationCode=first_activation_code
+            user=user,
+            isUsed=True,
+            status=BookingStatus.USED,
+            dateUsed=datetime.now(),
+            stock=digital_stock,
+            activationCode=first_activation_code,
         )
         ended_digital_booking = BookingFactory(
             user=user,
             displayAsEnded=True,
             isUsed=True,
+            status=BookingStatus.USED,
             dateUsed=datetime.now(),
             stock=digital_stock,
             activationCode=second_activation_code,
@@ -115,6 +126,7 @@ class GetBookingsTest:
         used_but_in_future = BookingFactory(
             user=user,
             isUsed=True,
+            status=BookingStatus.USED,
             dateUsed=datetime(2021, 3, 11),
             stock=StockFactory(beginningDatetime=datetime(2021, 3, 15)),
         )
@@ -126,11 +138,12 @@ class GetBookingsTest:
             cancellation_date=datetime(2021, 3, 10),
         )
         cancelled = BookingFactory(user=user, isCancelled=True, cancellation_date=datetime(2021, 3, 8))
-        used1 = BookingFactory(user=user, isUsed=True, dateUsed=datetime(2021, 3, 1))
+        used1 = BookingFactory(user=user, isUsed=True, status=BookingStatus.USED, dateUsed=datetime(2021, 3, 1))
         used2 = BookingFactory(
             user=user,
             displayAsEnded=True,
             isUsed=True,
+            status=BookingStatus.USED,
             dateUsed=datetime(2021, 3, 2),
             stock__offer__url=OFFER_URL,
             cancellation_limit_date=datetime(2021, 3, 2),
@@ -294,6 +307,7 @@ class ToggleBookingVisibilityTest:
             user=user,
             displayAsEnded=None,
             isUsed=True,
+            status=BookingStatus.USED,
             dateUsed=datetime.now(),
             stock=stock,
             activationCode=activation_code,

@@ -25,7 +25,9 @@ class GetEnabledProvidersForProTest:
         enabled_providers = get_enabled_providers_for_pro()
 
         # Then
-        assert enabled_providers == [provider1, provider2]
+        assert len(enabled_providers) == 2
+        assert provider1 in enabled_providers
+        assert provider2 in enabled_providers
 
 
 class GetProvidersEnabledForProExcludingSpecificProviderTest:

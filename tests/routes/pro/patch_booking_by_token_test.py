@@ -3,6 +3,7 @@ import urllib.parse
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
@@ -35,6 +36,7 @@ class Returns204Test:
             assert response.status_code == 204
             booking = Booking.query.one()
             assert booking.isUsed
+            assert booking.status is BookingStatus.USED
 
     class WhenUserIsLoggedInTest:
         def expect_booking_to_be_used(self, app):
@@ -49,6 +51,7 @@ class Returns204Test:
             assert response.status_code == 204
             booking = Booking.query.one()
             assert booking.isUsed
+            assert booking.status is BookingStatus.USED
 
         def expect_booking_with_token_in_lower_case_to_be_used(self, app):
             booking = BookingFactory(token="ABCDEF")
@@ -62,6 +65,7 @@ class Returns204Test:
             assert response.status_code == 204
             booking = Booking.query.one()
             assert booking.isUsed
+            assert booking.status is BookingStatus.USED
 
         def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
             booking = BookingFactory(token="ABCDEF")
@@ -76,6 +80,7 @@ class Returns204Test:
             assert response.status_code == 204
             booking = Booking.query.one()
             assert booking.isUsed
+            assert booking.status is BookingStatus.USED
 
         # FIXME: what is the purpose of this test? Are we testing that
         # Flask knows how to URL-decode parameters?
@@ -93,6 +98,7 @@ class Returns204Test:
             assert response.status_code == 204
             booking = Booking.query.one()
             assert booking.isUsed
+            assert booking.status is BookingStatus.USED
 
 
 @pytest.mark.usefixtures("db_session")
@@ -174,11 +180,13 @@ class Returns403Test:  # Forbidden
         response = TestClient(app.test_client()).with_auth("admin@example.com").patch(url)
 
         # Then
+        booking = Booking.query.get(booking_id)
         assert response.status_code == 403
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
         ]
-        assert Booking.query.get(booking_id).isUsed is False
+        assert not booking.isUsed
+        assert booking.status is not BookingStatus.USED
 
     def when_booking_has_been_cancelled_already(self, app):
         # Given

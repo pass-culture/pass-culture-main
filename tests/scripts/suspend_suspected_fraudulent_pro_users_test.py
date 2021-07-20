@@ -3,6 +3,7 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.factories import OfferFactory
@@ -141,6 +142,8 @@ def test_cancel_bookings_when_offerer_has_one_or_more():
     assert Stock.query.count() == 2
     assert Booking.query.count() == 2
     assert booking1.isCancelled
-    assert booking1.cancellationReason == BookingCancellationReasons.FRAUD
+    assert booking1.status is BookingStatus.CANCELLED
+    assert booking1.cancellationReason is BookingCancellationReasons.FRAUD
     assert booking2.isCancelled
-    assert booking2.cancellationReason == BookingCancellationReasons.FRAUD
+    assert booking2.status is BookingStatus.CANCELLED
+    assert booking2.cancellationReason is BookingCancellationReasons.FRAUD

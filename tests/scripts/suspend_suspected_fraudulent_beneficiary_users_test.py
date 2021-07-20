@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.users.factories import UserFactory
 from pcapi.scripts.suspend_fraudulent_beneficiary_users import suspend_fraudulent_beneficiary_users_by_email_providers
 
@@ -46,7 +47,9 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
         # Then
         assert not fraudulent_user.isActive
         assert booking_1.isCancelled
+        assert booking_1.status is BookingStatus.CANCELLED
         assert booking_2.isCancelled
+        assert booking_2.status is BookingStatus.CANCELLED
 
     @pytest.mark.usefixtures("db_session")
     def test_does_not_cancel_booking_when_not_cancellable(self):
@@ -67,6 +70,7 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
         # Then
         assert not fraudulent_user.isActive
         assert not uncancellable_booking.isCancelled
+        assert uncancellable_booking.status is not BookingStatus.CANCELLED
 
     @pytest.mark.usefixtures("db_session")
     def test_only_suspend_beneficiary_users_in_given_emails_providers_list(self):

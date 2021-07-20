@@ -14,6 +14,7 @@ import requests_mock
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import InstitutionalProjectRedactorResponse
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.fraud.factories as fraud_factories
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offers import factories as offers_factories
@@ -280,16 +281,21 @@ class SuspendAccountTest:
         user = users_factories.UserFactory(isBeneficiary=True)
         cancellable_booking = bookings_factories.BookingFactory(user=user)
         yesterday = datetime.now() - timedelta(days=1)
-        confirmed_booking = bookings_factories.BookingFactory(user=user, cancellation_limit_date=yesterday)
-        used_booking = bookings_factories.BookingFactory(user=user, isUsed=True)
+        confirmed_booking = bookings_factories.BookingFactory(
+            user=user, confirmation_date=yesterday, status=BookingStatus.CONFIRMED
+        )
+        used_booking = bookings_factories.BookingFactory(user=user, isUsed=True, status=BookingStatus.USED)
         actor = users_factories.UserFactory(isAdmin=True)
 
         users_api.suspend_account(user, users_constants.SuspensionReason.FRAUD, actor)
 
         assert not user.isActive
         assert cancellable_booking.isCancelled
+        assert cancellable_booking.status is BookingStatus.CANCELLED
         assert confirmed_booking.isCancelled
+        assert confirmed_booking.status is BookingStatus.CANCELLED
         assert not used_booking.isCancelled
+        assert used_booking.status is not BookingStatus.CANCELLED
 
     def test_suspend_pro(self):
         booking = bookings_factories.BookingFactory()
@@ -301,6 +307,7 @@ class SuspendAccountTest:
 
         assert not pro.isActive
         assert booking.isCancelled
+        assert booking.status is BookingStatus.CANCELLED
 
     def test_suspend_pro_with_other_offerer_users(self):
         booking = bookings_factories.BookingFactory()
@@ -313,6 +320,7 @@ class SuspendAccountTest:
 
         assert not pro.isActive
         assert not booking.isCancelled
+        assert booking.status is not BookingStatus.CANCELLED
 
 
 class UnsuspendAccountTest:
@@ -669,7 +677,11 @@ class DomainsCreditTest:
 
         # cancelled booking
         bookings_factories.BookingFactory(
-            user=user, amount=150, stock__offer__type=str(ThingType.JEUX), isCancelled=True
+            user=user,
+            amount=150,
+            stock__offer__type=str(ThingType.JEUX),
+            isCancelled=True,
+            status=BookingStatus.CANCELLED,
         )
 
         assert get_domains_credit(user) == DomainsCredit(

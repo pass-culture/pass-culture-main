@@ -3,6 +3,7 @@ import datetime
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offerers.factories as providers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
@@ -316,7 +317,7 @@ class StockBookingsQuantityTest:
         offer = factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
         stock = factories.StockFactory(offer=offer, quantity=5)
         BookingFactory(stock=stock)
-        BookingFactory(stock=stock, isCancelled=True)
+        BookingFactory(stock=stock, isCancelled=True, status=BookingStatus.CANCELLED)
 
         assert Stock.query.filter(Stock.dnBookedQuantity == 1).one() == stock
 
@@ -420,7 +421,7 @@ class StockRemainingQuantityTest:
         offer = factories.OfferFactory()
         stock = factories.StockFactory(offer=offer, quantity=5)
 
-        BookingFactory(stock=stock, isCancelled=True)
+        BookingFactory(stock=stock, isCancelled=True, status=BookingStatus.CANCELLED)
 
         assert stock.remainingQuantity == 5
         assert Offer.query.filter(Stock.remainingQuantity == 5).one() == offer

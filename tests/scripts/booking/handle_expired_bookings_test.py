@@ -6,6 +6,7 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.factories import UserFactory
@@ -25,6 +26,7 @@ class CancelExpiredBookingsTest:
         handle_expired_bookings.cancel_expired_bookings()
 
         assert old_book_booking.isCancelled
+        assert old_book_booking.status is BookingStatus.CANCELLED
         assert old_book_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
         assert old_book_booking.cancellationReason == BookingCancellationReasons.EXPIRED
         assert old_book_booking.stock.dnBookedQuantity == 0
@@ -36,6 +38,7 @@ class CancelExpiredBookingsTest:
         handle_expired_bookings.cancel_expired_bookings()
 
         assert not book_booking.isCancelled
+        assert book_booking.status is not BookingStatus.CANCELLED
         assert not book_booking.cancellationDate
         assert not book_booking.cancellationReason
 
@@ -50,6 +53,7 @@ class CancelExpiredBookingsTest:
         handle_expired_bookings.cancel_expired_bookings()
 
         assert not old_concert_booking.isCancelled
+        assert old_concert_booking.status is not BookingStatus.CANCELLED
         assert not old_concert_booking.cancellationDate
         assert not old_concert_booking.cancellationReason
 
@@ -63,6 +67,7 @@ class CancelExpiredBookingsTest:
         handle_expired_bookings.cancel_expired_bookings()
 
         assert not old_press_subscription_booking.isCancelled
+        assert old_press_subscription_booking.status is not BookingStatus.CANCELLED
         assert not old_press_subscription_booking.cancellationDate
         assert not old_press_subscription_booking.cancellationReason
 
@@ -74,6 +79,7 @@ class CancelExpiredBookingsTest:
             stock__offer__product=book,
             dateCreated=fifty_days_ago,
             isCancelled=True,
+            status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.BENEFICIARY,
         )
         old_book_booking.cancellationDate = forty_days_ago
@@ -82,6 +88,7 @@ class CancelExpiredBookingsTest:
         handle_expired_bookings.cancel_expired_bookings()
 
         assert old_book_booking.isCancelled
+        assert old_book_booking.status is BookingStatus.CANCELLED
         assert old_book_booking.cancellationDate == forty_days_ago
         assert old_book_booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
 
@@ -98,14 +105,17 @@ class CancelExpiredBookingsTest:
         handle_expired_bookings.cancel_expired_bookings()
 
         assert old_guitar_booking.isCancelled
+        assert old_guitar_booking.status is BookingStatus.CANCELLED
         assert old_guitar_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
         assert old_guitar_booking.cancellationReason == BookingCancellationReasons.EXPIRED
 
         assert old_disc_booking.isCancelled
+        assert old_disc_booking.status is BookingStatus.CANCELLED
         assert old_disc_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
         assert old_disc_booking.cancellationReason == BookingCancellationReasons.EXPIRED
 
         assert not old_audio_book_booking.isCancelled
+        assert old_audio_book_booking.status is not BookingStatus.CANCELLED
         assert not old_audio_book_booking.cancellationDate
         assert not old_audio_book_booking.cancellationReason
 
@@ -146,6 +156,7 @@ class NotifyUsersOfExpiredBookingsTest:
             stock__offer__product=dvd,
             dateCreated=long_ago,
             isCancelled=True,
+            status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
         cd = ProductFactory(type=str(offer_type.ThingType.MUSIQUE))
@@ -153,6 +164,7 @@ class NotifyUsersOfExpiredBookingsTest:
             stock__offer__product=cd,
             dateCreated=long_ago,
             isCancelled=True,
+            status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
         painting = ProductFactory(type=str(offer_type.ThingType.OEUVRE_ART))
@@ -160,6 +172,7 @@ class NotifyUsersOfExpiredBookingsTest:
             stock__offer__product=painting,
             dateCreated=very_long_ago,
             isCancelled=True,
+            status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
         expired_yesterday_painting_booking.cancellationDate = yesterday
@@ -191,6 +204,7 @@ class NotifyOfferersOfExpiredBookingsTest:
             stock__offer__product=dvd,
             dateCreated=long_ago,
             isCancelled=True,
+            status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
         cd = ProductFactory(type=str(offer_type.ThingType.MUSIQUE))
@@ -198,6 +212,7 @@ class NotifyOfferersOfExpiredBookingsTest:
             stock__offer__product=cd,
             dateCreated=long_ago,
             isCancelled=True,
+            status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
         painting = ProductFactory(type=str(offer_type.ThingType.OEUVRE_ART))
@@ -205,6 +220,7 @@ class NotifyOfferersOfExpiredBookingsTest:
             stock__offer__product=painting,
             dateCreated=very_long_ago,
             isCancelled=True,
+            status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
         expired_yesterday_painting_booking.cancellationDate = yesterday

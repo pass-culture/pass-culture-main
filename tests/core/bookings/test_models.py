@@ -7,6 +7,7 @@ import pytest
 from pcapi.core.bookings import factories
 from pcapi.core.bookings import models
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.factories import MediationFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models import ApiErrors
@@ -27,20 +28,20 @@ def test_total_amount():
 def test_save_cancellation_date_postgresql_function():
     # In this test, we manually COMMIT so that save_cancellation_date
     # PotsgreSQL function is triggered.
-    booking = factories.BookingFactory()
+    booking = factories.BookingFactory(status=BookingStatus.PENDING)
     assert booking.cancellationDate is None
 
-    booking.isCancelled = True
+    booking.cancelBooking()
     db.session.commit()
     assert booking.cancellationDate is not None
 
     # Don't change cancellationDate when another attribute is updated.
     previous = booking.cancellationDate
-    booking.isUsed = True
+    booking.cancellationReason = "FRAUD"
     db.session.commit()
     assert booking.cancellationDate == previous
 
-    booking.isCancelled = False
+    booking.unCancelBooking()
     db.session.commit()
     assert booking.cancellationDate is None
 
@@ -117,6 +118,7 @@ class BookingQrCodeTest:
     def test_event_return_none_if_booking_is_cancelled(self):
         booking = factories.BookingFactory(
             isCancelled=True,
+            status=BookingStatus.CANCELLED,
             stock__offer__type=str(EventType.CINEMA),
         )
         assert booking.qrCode is None
@@ -130,6 +132,7 @@ class BookingQrCodeTest:
     def test_thing_return_none_if_booking_is_used(self):
         booking = factories.BookingFactory(
             isUsed=True,
+            status=BookingStatus.USED,
             stock__offer__product__type=str(ThingType.JEUX),
         )
         assert booking.qrCode is None
@@ -137,6 +140,7 @@ class BookingQrCodeTest:
     def test_thing_return_none_if_booking_is_cancelled(self):
         booking = factories.BookingFactory(
             isCancelled=True,
+            status=BookingStatus.CANCELLED,
             stock__offer__product__type=str(ThingType.JEUX),
         )
         assert booking.qrCode is None

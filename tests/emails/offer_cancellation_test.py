@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.emails.beneficiary_offer_cancellation import (
@@ -132,7 +133,9 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
         # Given
         user = users_factories.UserFactory()
         stock = offers_factories.EventStockFactory(price=12.52, beginningDatetime=datetime(2019, 10, 9, 10, 20, 00))
-        booking = bookings_factories.BookingFactory(user=user, stock=stock, isCancelled=True, quantity=2)
+        booking = bookings_factories.BookingFactory(
+            user=user, stock=stock, isCancelled=True, status=BookingStatus.CANCELLED, quantity=2
+        )
 
         # When
         mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking)
@@ -171,9 +174,11 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
         user1 = users_factories.UserFactory()
         user2 = users_factories.UserFactory()
         stock = offers_factories.EventStockFactory(price=0, beginningDatetime=datetime(2019, 10, 9, 10, 20, 00))
-        booking1 = bookings_factories.BookingFactory(user=user1, stock=stock, isCancelled=True, quantity=2)
+        booking1 = bookings_factories.BookingFactory(
+            user=user1, stock=stock, isCancelled=True, status=BookingStatus.CANCELLED, quantity=2
+        )
         booking2 = bookings_factories.BookingFactory(
-            user=user2, stock=stock, isCancelled=False, quantity=1, token="29JM9Q"
+            user=user2, stock=stock, isCancelled=False, status=BookingStatus.CANCELLED, quantity=1, token="29JM9Q"
         )
 
         # When
@@ -220,7 +225,9 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
         user1 = users_factories.UserFactory()
         user2 = users_factories.UserFactory()
         stock = offers_factories.ThingStockFactory(price=12)
-        booking1 = bookings_factories.BookingFactory(user=user1, stock=stock, isCancelled=True, quantity=2)
+        booking1 = bookings_factories.BookingFactory(
+            user=user1, stock=stock, isCancelled=True, status=BookingStatus.CANCELLED, quantity=2
+        )
         booking2 = bookings_factories.BookingFactory(
             user=user2, stock=stock, isCancelled=False, quantity=1, token="29JM9Q"
         )
@@ -270,7 +277,9 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
         user2 = users_factories.UserFactory()
         virtual_venue = offers_factories.VirtualVenueFactory()
         stock = offers_factories.ThingStockFactory(offer__venue=virtual_venue, price=12)
-        booking1 = bookings_factories.BookingFactory(user=user1, stock=stock, isCancelled=True, quantity=2)
+        booking1 = bookings_factories.BookingFactory(
+            user=user1, stock=stock, isCancelled=True, status=BookingStatus.CANCELLED, quantity=2
+        )
         booking2 = bookings_factories.BookingFactory(
             user=user2, stock=stock, isCancelled=False, quantity=1, token="29JM9Q"
         )

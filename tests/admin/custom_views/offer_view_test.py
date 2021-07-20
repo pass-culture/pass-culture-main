@@ -6,6 +6,7 @@ import pytest
 
 from pcapi.admin.custom_views.offer_view import OfferView
 import pcapi.core.bookings.factories as booking_factories
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.api import import_offer_validation_config
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import VenueFactory
@@ -553,7 +554,9 @@ class OfferViewTest:
         assert offer.validation == OfferValidationStatus.REJECTED
         assert offer.lastValidationDate == datetime.datetime(2020, 12, 20, 15)
         assert unused_booking.isCancelled
+        assert unused_booking.status is BookingStatus.CANCELLED
         assert not used_booking.isCancelled
+        assert used_booking.status is not BookingStatus.CANCELLED
 
         mocked_send_cancel_booking_notification.assert_called_once_with([unused_booking.id])
 

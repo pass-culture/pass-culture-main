@@ -4,6 +4,7 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.users.factories as users_factories
 
 from tests.conftest import TestClient
@@ -26,7 +27,7 @@ class BookingViewTest:
 
     def test_show_mark_as_used_button(self, app):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
-        bookings_factories.BookingFactory(isCancelled=True, token="ABCDEF")
+        bookings_factories.BookingFactory(isCancelled=True, status=BookingStatus.CANCELLED, token="ABCDEF")
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")
         response = client.post("/pc/back-office/bookings/", form={"token": "abcdeF"})
@@ -37,7 +38,7 @@ class BookingViewTest:
 
     def test_uncancel_and_mark_as_used(self, app):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
-        booking = bookings_factories.BookingFactory(isCancelled=True)
+        booking = bookings_factories.BookingFactory(isCancelled=True, status=BookingStatus.CANCELLED)
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")
         response = client.post("/pc/back-office/bookings/mark-as-used", form={"booking_id": booking.id})
@@ -49,7 +50,9 @@ class BookingViewTest:
         assert "La réservation a été dés-annulée et marquée comme utilisée." in content
         booking = Booking.query.get(booking.id)
         assert not booking.isCancelled
+        assert booking.status is not BookingStatus.CANCELLED
         assert booking.isUsed
+        assert booking.status is BookingStatus.USED
 
     def test_fail_to_uncancel_and_mark_as_used(self, app):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)

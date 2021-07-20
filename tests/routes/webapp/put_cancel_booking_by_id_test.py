@@ -4,6 +4,7 @@ from datetime import timedelta
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import Booking
@@ -23,10 +24,12 @@ class Returns200Test:
         # When
         client = TestClient(app.test_client()).with_auth(booking.user.email)
         response = client.put(f"/bookings/{humanize(booking.id)}/cancel")
+        booking = Booking.query.get(booking.id)
 
         # Then
         assert response.status_code == 200
-        assert Booking.query.get(booking.id).isCancelled
+        assert booking.isCancelled
+        assert booking.status is BookingStatus.CANCELLED
         assert response.json == {
             "amount": 10.0,
             "completedUrl": None,
@@ -45,32 +48,36 @@ class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def when_the_booking_cannot_be_cancelled(self, app):
         # Given
-        booking = bookings_factories.BookingFactory(isUsed=True)
+        booking = bookings_factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
 
         # When
         client = TestClient(app.test_client()).with_auth(booking.user.email)
         response = client.put(f"/bookings/{humanize(booking.id)}/cancel")
+        booking = Booking.query.get(booking.id)
 
         # Then
         assert response.status_code == 400
         assert response.json["booking"] == ["Impossible d'annuler une réservation consommée"]
-        assert not Booking.query.get(booking.id).isCancelled
+        assert not booking.isCancelled
+        assert booking.status is BookingStatus.USED
 
 
 class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_cancelling_a_booking_of_someone_else(self, app):
         # Given
-        booking = bookings_factories.BookingFactory(isUsed=True)
+        booking = bookings_factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
         user2 = users_factories.UserFactory()
 
         # When
         client = TestClient(app.test_client()).with_auth(user2.email)
         response = client.put(f"/bookings/{humanize(booking.id)}/cancel")
+        booking = Booking.query.get(booking.id)
 
         # Then
         assert response.status_code == 404
-        assert not Booking.query.get(booking.id).isCancelled
+        assert not booking.isCancelled
+        assert booking.status is not BookingStatus.CANCELLED
 
     @pytest.mark.usefixtures("db_session")
     def when_the_booking_does_not_exist(self, app):

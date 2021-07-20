@@ -1,6 +1,7 @@
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offers.factories as offer_factories
 import pcapi.core.payments.factories as payment_factories
 from pcapi.scripts.stock.soft_delete_stock import soft_delete_stock
@@ -10,7 +11,7 @@ class SoftDeleteStockTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_ko_if_at_least_one_booking_is_used(self, app):
         # Given
-        booking = bookings_factories.BookingFactory(isUsed=True)
+        booking = bookings_factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
 
         # When
         soft_delete_stock(booking.stock.id)
@@ -21,7 +22,7 @@ class SoftDeleteStockTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_ko_if_at_least_one_booking_has_payments(self, app):
         # Given
-        booking = bookings_factories.BookingFactory(isUsed=True)
+        booking = bookings_factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
         payment = payment_factories.PaymentFactory(booking=booking)
 
         # When
@@ -51,3 +52,4 @@ class SoftDeleteStockTest:
 
         # Then
         assert booking.isCancelled
+        assert booking.status is BookingStatus.CANCELLED
