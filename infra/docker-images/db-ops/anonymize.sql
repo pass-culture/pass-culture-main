@@ -34,7 +34,7 @@ COMMIT;
 
 -- Set fake IBAN and BIC in `bank_information` table...
 UPDATE bank_information SET "iban" = 'FR' || lpad(id::text, 25, '0') WHERE "iban" is not null;
-UPDATE bank_information SET "bic" = 'XX' || lpad(id::text, 6, '0') WHERE "bic" is not null;
+UPDATE bank_information SET "bic" = 'XXXXXX' || 'X' || lpad(upper(to_hex(id)), 4, '0') WHERE "bic" is not null;
 -- ... and reuse them in `payment` table.
 UPDATE payment
 SET iban = bank_information.iban, bic = bank_information.bic
