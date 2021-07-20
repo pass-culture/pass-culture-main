@@ -232,3 +232,26 @@ class CommonTest:
 
         assert isinstance(expected, JouveContent)
         assert expected == JouveContent(**fraud_data.resultContent)
+
+
+class UpsertSuspiciousFraudResultTest:
+    def test_do_not_repeat_previous_reason_and_keep_history(self):
+        """
+        Test that the upsert function does updated the reason when consecutive
+        calls do not use the same reason.
+        """
+        user = UserFactory()
+        first_reason = "first reason"
+        second_reason = "second reason"
+
+        fraud_api.upsert_suspicious_fraud_result(user, first_reason)
+        fraud_api.upsert_suspicious_fraud_result(user, first_reason)
+        fraud_api.upsert_suspicious_fraud_result(user, first_reason)
+        fraud_api.upsert_suspicious_fraud_result(user, second_reason)
+        fraud_api.upsert_suspicious_fraud_result(user, second_reason)
+        fraud_api.upsert_suspicious_fraud_result(user, first_reason)
+        result = fraud_api.upsert_suspicious_fraud_result(user, first_reason)
+
+        assert fraud_models.BeneficiaryFraudResult.query.count() == 1
+        assert result.user == user
+        assert result.reason == f"{first_reason} ; {second_reason} ; {first_reason}"

@@ -16,6 +16,8 @@ from . import models
 
 logger = logging.getLogger(__name__)
 
+FRAUD_RESULT_REASON_SEPARATOR = ";"
+
 
 def on_jouve_result(user: User, jouve_content: models.JouveContent):
     if (
@@ -99,7 +101,7 @@ def on_identity_fraud_check_result(
             userId=user.id,
             status=status,
         )
-    fraud_result.reason = " ; ".join(
+    fraud_result.reason = f" {FRAUD_RESULT_REASON_SEPARATOR} ".join(
         fraud_item.detail for fraud_item in fraud_items if fraud_item.status != models.FraudStatus.OK
     )
 
@@ -233,7 +235,13 @@ def upsert_suspicious_fraud_result(user: User, reason: str) -> models.Beneficiar
     if not fraud_result:
         fraud_result = models.BeneficiaryFraudResult(user=user, status=models.FraudStatus.SUSPICIOUS, reason=reason)
     else:
-        fraud_result.reason = f"{fraud_result.reason} ; {reason}"
+        # if this function is called twice (or more) in a row with the same
+        # reason, do not update the reason column with the same reason repeated
+        # over and over. It makes the reason less readable and therefore less
+        # useful.
+        last_reason = fraud_result.reason.split(FRAUD_RESULT_REASON_SEPARATOR)[-1].strip() if fraud_result else None
+        if last_reason != reason:
+            fraud_result.reason = f"{fraud_result.reason} {FRAUD_RESULT_REASON_SEPARATOR} {reason}"
 
     repository.save(fraud_result)
     return fraud_result
