@@ -9,13 +9,13 @@ from pcapi.models.pc_object import PcObject
 from pcapi.validation.models import entity_validator
 
 
-def delete(*models: list[Model]) -> None:
+def delete(*models: Model) -> None:
     for model in models:
         db.session.delete(model)
     db.session.commit()
 
 
-def save(*models: list[Model]) -> None:
+def save(*models: Model) -> None:
     if not models:
         return None
 
