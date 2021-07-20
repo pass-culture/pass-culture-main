@@ -280,3 +280,18 @@ class BeneficiaryUserViewTest:
 
         mocked_flask_flash.assert_not_called()
         assert not mails_testing.outbox
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.admin.custom_views.mixins.resend_validation_email_mixin.users_api.request_email_confirmation")
+    def test_resend_validation_email_to_beneficiary(
+        self, mocked_request_email_confirmation, mocked_validate_csrf_token, app
+    ):
+        admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        beneficiary = users_factories.UserFactory(email="partner@example.com", isEmailValidated=False)
+        client = TestClient(app.test_client()).with_auth(admin.email)
+
+        url = f"/pc/back-office/beneficiary_users/resend-validation-email?user_id={beneficiary.id}"
+        resend_validation_email_response = client.post(url, form={"csrf_token": "token"})
+        assert resend_validation_email_response.status_code == 302
+        mocked_request_email_confirmation.assert_called_once_with(beneficiary)

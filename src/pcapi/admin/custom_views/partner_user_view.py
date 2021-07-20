@@ -14,6 +14,7 @@ from wtforms.validators import DataRequired
 from wtforms.validators import Length
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.admin.custom_views.mixins.resend_validation_email_mixin import ResendValidationEmailMixin
 from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.api import fulfill_account_password
@@ -30,7 +31,7 @@ def filter_email(value: Optional[str]) -> Optional[str]:
     return sanitize_email(value)
 
 
-class PartnerUserView(SuspensionMixin, BaseAdminView):
+class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView):
     can_edit = True
     can_create = True
     column_list = [
