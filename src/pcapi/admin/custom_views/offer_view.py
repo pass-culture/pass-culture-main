@@ -55,7 +55,16 @@ class OfferView(BaseAdminView):
     can_edit = True
     can_delete = False
     can_export = True
-    column_list = ["id", "name", "type", "criteria", "rankingWeight", "validation", "lastValidationDate"]
+    column_list = [
+        "id",
+        "name",
+        "type",
+        "criteria",
+        "rankingWeight",
+        "validation",
+        "lastValidationDate",
+        "isEducational",
+    ]
     column_sortable_list = ["name", "type", "criteria", "rankingWeight", "validation", "lastValidationDate"]
     column_labels = {
         "name": "Nom",
@@ -63,11 +72,24 @@ class OfferView(BaseAdminView):
         "criteria": "Tag",
         "criteria.name": "Tag",
         "rankingWeight": "Pondération",
+        "lastValidationDate": "Dernière date de validation",
+        "isEducational": "Offre EAC",
     }
     # Do not add searchable column on offer view for performance reasons
     # use the filters feature instead
-    column_filters = ["id", "type", "criteria.name", "name", "rankingWeight", "validation", "lastValidationDate"]
-    form_columns = ["criteria", "rankingWeight"]
+    column_filters = (
+        [
+            "id",
+            "type",
+            "criteria.name",
+            "name",
+            "rankingWeight",
+            "validation",
+            "lastValidationDate",
+            "isEducational",
+        ],
+    )
+    form_columns = ["criteria", "rankingWeight", "isEducational"]
     simple_list_pager = True
 
     def get_edit_form(self) -> wtforms.Form:
