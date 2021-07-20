@@ -1,5 +1,7 @@
 from flask import Blueprint
+from flask_cors.extension import CORS
 
+from pcapi import settings
 from pcapi.routes.native import utils
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
@@ -7,6 +9,11 @@ from pcapi.serialization.utils import before_handler
 
 native_v1 = Blueprint("native_v1", __name__)
 native_v1.before_request(utils.check_client_version)
+CORS(
+    native_v1,
+    origins=settings.CORS_ALLOWED_ORIGINS_NATIVE,
+    supports_credentials=True,
+)
 
 
 JWT_AUTH = "JWTAuth"
