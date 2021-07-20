@@ -46,6 +46,7 @@ WHERE
     bank_information."venueId" = booking."venueId"
     OR bank_information."offererId" = booking."offererId"
   )
+  AND bank_information.status = 'ACCEPTED'
 ;
 
 UPDATE activation_code SET code = 'FAKE-' || id::text ;
