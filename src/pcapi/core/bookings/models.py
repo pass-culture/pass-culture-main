@@ -19,6 +19,10 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
 from pcapi.core.bookings.conf import BOOKINGS_AUTO_EXPIRY_DELAY
+from pcapi.core.bookings.exceptions import BookingHasAlreadyBeenUsed
+from pcapi.core.bookings.exceptions import BookingIsAlreadyCancelled
+from pcapi.core.bookings.exceptions import BookingIsAlreadyUsed
+from pcapi.core.bookings.exceptions import BookingIsCancelled
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
@@ -91,11 +95,7 @@ class Booking(PcObject, Model):
         nullable=True,
     )
 
-    status = Column(
-        "status",
-        Enum(BookingStatus),
-        nullable=True,
-    )
+    status = Column("status", Enum(BookingStatus), nullable=True, default=BookingStatus.CONFIRMED)
 
     educationalBookingId = Column(BigInteger, ForeignKey("educational_booking.id"), nullable=True, unique=True)
     educationalBooking = relationship(
@@ -103,6 +103,34 @@ class Booking(PcObject, Model):
         backref="booking",
         uselist=False,
     )
+
+    def markAsUsed(self):
+        if self.status is BookingStatus.USED or self.isUsed:
+            raise BookingHasAlreadyBeenUsed()
+        if self.status is BookingStatus.CANCELLED or self.isCancelled:
+            raise BookingIsCancelled()
+        self.isUsed = True
+        self.dateUsed = datetime.utcnow()
+        self.status = BookingStatus.USED
+
+    def markAsUnused(self):
+        self.isUsed = False
+        self.dateUsed = None
+        self.status = None
+
+    def cancelBooking(self) -> None:
+        if self.status is BookingStatus.CANCELLED or self.isCancelled:
+            raise BookingIsAlreadyCancelled()
+        if self.status is BookingStatus.USED or self.isUsed:
+            raise BookingIsAlreadyUsed()
+        self.isCancelled = True
+        self.status = BookingStatus.CANCELLED
+        self.cancellationDate = datetime.utcnow()
+
+    def unCancelBooking(self) -> None:
+        self.isCancelled = False
+        self.status = None
+        self.cancellationDate = None
 
     @property
     def expirationDate(self) -> Optional[datetime]:

@@ -54,9 +54,8 @@ def _cancel_bookings_of_offers_from_rows(csv_rows: Iterable, reason: BookingCanc
         )
 
         for booking in bookings_to_cancel:
+            booking.markAsUnused()
             bookings_api._cancel_booking(booking, reason)
-            booking.isUsed = False
-            booking.dateUsed = None
 
         try:
             repository.save(*bookings_to_cancel)

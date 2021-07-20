@@ -1,6 +1,10 @@
 from pcapi.domain.client_exceptions import ClientError
 
 
+class InvalidStatusChangeException(Exception):
+    pass
+
+
 class OfferIsAlreadyBooked(ClientError):
     def __init__(self):
         super().__init__("offerId", "Cette offre a déja été reservée par l'utilisateur")
@@ -51,6 +55,21 @@ class UserHasInsufficientFunds(ClientError):
 class BookingIsAlreadyUsed(ClientError):
     def __init__(self):
         super().__init__("booking", "Impossible d'annuler une réservation consommée")
+
+
+class BookingHasAlreadyBeenUsed(ClientError):
+    def __init__(self):
+        super().__init__("booking", "Cette offre a déjà été utilisée")
+
+
+class BookingIsAlreadyCancelled(ClientError):
+    def __init__(self):
+        super().__init__("booking", "Cette réservation a déjà été annulée")
+
+
+class BookingIsCancelled(ClientError):
+    def __init__(self):
+        super().__init__("booking", "Cette réservation a été annulée et ne peut être marquée comme étant utilisée")
 
 
 class CannotCancelConfirmedBooking(ClientError):

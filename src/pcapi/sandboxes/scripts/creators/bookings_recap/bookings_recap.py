@@ -1,6 +1,9 @@
 from datetime import datetime
 from datetime import timedelta
+import logging
 
+from pcapi.core.bookings.exceptions import BookingIsAlreadyCancelled
+from pcapi.core.bookings.exceptions import BookingIsAlreadyUsed
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventProductFactory
@@ -20,6 +23,9 @@ from pcapi.models import EventType
 from pcapi.models import ThingType
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
+
+
+logger = logging.getLogger(__name__)
 
 
 def save_bookings_recap_sandbox():
@@ -217,5 +223,8 @@ def save_bookings_recap_sandbox():
     ]
 
     for booking in bookings_to_cancel:
-        booking.isCancelled = True
+        try:
+            booking.cancelBooking()
+        except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
+            logger.info(str(e), extra={"booking": booking.id})
     repository.save(*bookings_to_cancel)

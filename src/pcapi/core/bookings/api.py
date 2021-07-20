@@ -13,6 +13,7 @@ from pcapi.core import search
 from pcapi.core.bookings import conf
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
@@ -29,6 +30,8 @@ from pcapi.workers.push_notification_job import update_user_attributes_job
 from pcapi.workers.user_emails_job import send_booking_cancellation_emails_to_user_and_offerer_job
 
 from . import validation
+from .exceptions import BookingIsAlreadyCancelled
+from .exceptions import BookingIsAlreadyUsed
 
 
 logger = logging.getLogger(__name__)
@@ -92,8 +95,7 @@ def book_offer(
             booking.activationCode = offers_repository.get_available_activation_code(stock)
 
             if FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS.is_active():
-                booking.isUsed = True
-                booking.dateUsed = datetime.datetime.utcnow()
+                booking.markAsUsed()
 
         stock.dnBookedQuantity += booking.quantity
 
@@ -131,16 +133,17 @@ def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> Non
     with transaction():
         stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
         db.session.refresh(booking)
-        if booking.isCancelled:
+        try:
+            booking.cancelBooking()
+        except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
             logger.info(
-                "Booking was already cancelled",
+                str(e),
                 extra={
                     "booking": booking.id,
                     "reason": str(reason),
                 },
             )
             return
-        booking.isCancelled = True
         booking.cancellationReason = reason
         stock.dnBookedQuantity -= booking.quantity
         repository.save(booking, stock)
@@ -166,8 +169,11 @@ def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons
     with transaction():
         stock = offers_repository.get_and_lock_stock(stock_id=stock.id)
         for booking in stock.bookings:
-            if not booking.isCancelled and not booking.isUsed:
-                booking.isCancelled = True
+            try:
+                booking.cancelBooking()
+            except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
+                logger.info(str(e), extra={"booking": booking.id, "reason": reason})
+            else:
                 booking.cancellationReason = reason
                 stock.dnBookedQuantity -= booking.quantity
                 deleted_bookings.append(booking)
@@ -255,14 +261,13 @@ def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
     with transaction():
         objects_to_save = [booking]
         if uncancel and booking.isCancelled:
-            booking.isCancelled = False
+            booking.unCancelBooking()
             booking.cancellationReason = None
             stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
             stock.dnBookedQuantity += booking.quantity
             objects_to_save.append(stock)
         validation.check_is_usable(booking)
-        booking.isUsed = True
-        booking.dateUsed = datetime.datetime.utcnow()
+        booking.markAsUsed()
         repository.save(*objects_to_save)
     logger.info("Booking was marked as used", extra={"booking": booking.id})
 
@@ -271,8 +276,7 @@ def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
 
 def mark_as_unused(booking: Booking) -> None:
     validation.check_can_be_mark_as_unused(booking)
-    booking.isUsed = False
-    booking.dateUsed = None
+    booking.markAsUnused()
     repository.save(booking)
     logger.info("Booking was marked as unused", extra={"booking": booking.id})
 
@@ -377,5 +381,7 @@ def auto_mark_as_used_after_event():
         .filter(Stock.beginningDatetime < threshold)
     )
     # fmt: on
-    n_updated = bookings.update({"isUsed": True, "dateUsed": now}, synchronize_session=False)
+    n_updated = bookings.update(
+        {"isUsed": True, "status": BookingStatus.USED, "dateUsed": now}, synchronize_session=False
+    )
     logger.info("Automatically marked bookings as used after event", extra={"bookings": n_updated})

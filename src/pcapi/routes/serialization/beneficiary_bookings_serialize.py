@@ -58,6 +58,7 @@ def _serialize_beneficiary_booking(
         "isCancelled": beneficiary_booking.isCancelled,
         "isUsed": beneficiary_booking.isUsed,
         "quantity": beneficiary_booking.quantity,
+        "status": beneficiary_booking.status,
         "displayAsEnded": beneficiary_booking.displayAsEnded,
         "activationCode": beneficiary_booking.activationCode,
         "stock": {

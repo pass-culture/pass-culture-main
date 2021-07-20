@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 import pcapi.core.bookings.api as bookings_api
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.domain.beneficiary_bookings.active_mediation import ActiveMediation
 from pcapi.domain.beneficiary_bookings.thumb_url import ThumbUrl
 from pcapi.models.offer_type import EventType
@@ -22,6 +23,7 @@ class BeneficiaryBooking:
         id: int,
         isCancelled: bool,
         isUsed: bool,
+        status: BookingStatus,
         quantity: int,
         stockId: int,
         token: str,
@@ -75,6 +77,7 @@ class BeneficiaryBooking:
         self.id = id
         self.isCancelled = isCancelled
         self.isUsed = isUsed
+        self.status = status
         self.quantity = quantity
         self.stockId = stockId
         self.token = token
