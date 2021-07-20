@@ -55,7 +55,7 @@ class VenueView(BaseAdminView):
         offer_import="Import d'offres",
     )
     column_searchable_list = ["name", "siret", "publicName"]
-    column_filters = ["postalCode", "city", "publicName"]
+    column_filters = ["postalCode", "city", "publicName", "id"]
     form_columns = [
         "name",
         "siret",

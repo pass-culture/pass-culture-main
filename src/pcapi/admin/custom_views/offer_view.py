@@ -77,18 +77,16 @@ class OfferView(BaseAdminView):
     }
     # Do not add searchable column on offer view for performance reasons
     # use the filters feature instead
-    column_filters = (
-        [
-            "id",
-            "type",
-            "criteria.name",
-            "name",
-            "rankingWeight",
-            "validation",
-            "lastValidationDate",
-            "isEducational",
-        ],
-    )
+    column_filters = [
+        "id",
+        "type",
+        "criteria.name",
+        "name",
+        "rankingWeight",
+        "validation",
+        "lastValidationDate",
+        "isEducational",
+    ]
     form_columns = ["criteria", "rankingWeight", "isEducational"]
     simple_list_pager = True
 
