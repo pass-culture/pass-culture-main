@@ -242,6 +242,24 @@ CINE_VENTE_DISTANCE = Subcategory(
     is_physical_deposit=True,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
+
+CINE_PLEIN_AIR = Subcategory(
+    id="CINE_PLEIN_AIR",
+    category_id=categories.CINEMA.id,
+    matching_type="EventType.CINEMA",
+    pro_label="Cinéma plein air",
+    app_label="Cinéma plein air",
+    search_group=SearchGroupChoices.CINEMA.value,
+    is_event=True,
+    conditional_fields=["author", "visa", "stageDirector"],
+    can_expire=False,
+    can_be_duo=True,
+    online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
+    is_digital_deposit=False,
+    is_physical_deposit=False,
+    reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+)
+
 # endregion
 # region CONFERENCE
 
@@ -1166,6 +1184,7 @@ ALL_SUBCATEGORIES = (
     CARTE_CINE_ILLIMITE,
     CARTE_CINE_MULTISEANCES,
     CARTE_MUSEE,
+    CINE_PLEIN_AIR,
     CINE_VENTE_DISTANCE,
     CONCERT,
     CONCOURS,
