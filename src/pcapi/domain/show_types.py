@@ -30,7 +30,6 @@ show_types = [
         "code": 300,
         "label": "Danse",
         "children": [
-            {"code": 301, "label": "Danse du Monde"},
             {"code": 302, "label": "Ballet"},
             {"code": 303, "label": "Cancan"},
             {"code": 304, "label": "Claquette"},
