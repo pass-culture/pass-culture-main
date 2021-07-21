@@ -10,7 +10,15 @@ export const IS_PROD = !IS_DEV
 export const HELP_PAGE_URL = 'https://aide.passculture.app'
 export const CGU_URL = 'https://pass.culture.fr/cgu-professionnels/'
 
-export const API_URL = process.env.API_URL || 'http://localhost'
+// FIXME : Remove when transition to new domain is done
+let apiUrlBasedOnDomain
+if (typeof window !== 'undefined') {
+  apiUrlBasedOnDomain = window.location.hostname.includes('beta.gouv')
+    ? process.env.API_URL_OLD
+    : process.env.API_URL_NEW
+}
+export const API_URL = apiUrlBasedOnDomain || 'http://localhost'
+
 export const {
   ENVIRONMENT_NAME,
   ENV_WORDING,
