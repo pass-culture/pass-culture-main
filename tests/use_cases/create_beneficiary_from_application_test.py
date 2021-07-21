@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
 
+from pcapi.connectors.beneficiaries import jouve_backend
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
@@ -584,3 +585,14 @@ def test_id_piece_number_by_pass(
     assert not subscribing_user.idPieceNumber
 
     assert len(mails_testing.outbox) == 1
+
+
+@patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
+def test_jouve_raise_403(mocked_get_content, caplog):
+    mocked_get_content.side_effect = jouve_backend.ApiJouveException(
+        "Error getting API Jouve authentication token", route="/any/url/", status_code=403
+    )
+
+    create_beneficiary_from_application.execute(BASE_APPLICATION_ID)
+    mocked_get_content.assert_called()
+    assert caplog.messages[0] == "Error getting API Jouve authentication token"

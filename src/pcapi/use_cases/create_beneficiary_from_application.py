@@ -39,10 +39,10 @@ class CreateBeneficiaryFromApplication:
             beneficiary_pre_subscription = jouve_backend.get_subscription_from_content(jouve_content)
         except jouve_backend.ApiJouveException as api_jouve_exception:
             logger.error(
-                api_jouve_exception.value.message,
+                api_jouve_exception.message,
                 extra={
-                    "route": api_jouve_exception.value.route,
-                    "statusCode": api_jouve_exception.value.status_code,
+                    "route": api_jouve_exception.route,
+                    "statusCode": api_jouve_exception.status_code,
                     "applicationId": application_id,
                 },
             )
