@@ -57,7 +57,15 @@ export const IS_PROD = !IS_DEV
 // - ./webapp/public/MentionsLegalesPass.md
 export const SUPPORT_EMAIL = 'support@passculture.app'
 export const SUPPORT_EMAIL_SUBJECT = encodeURI('Votre question depuis l’application pass Culture')
-export const API_URL = process.env.API_URL || 'http://localhost'
+
+// FIXME : Remove when transition to new domain is done
+let apiUrlBasedOnDomain
+if (typeof window !== 'undefined') {
+  apiUrlBasedOnDomain = window.location.hostname.includes('beta.gouv')
+    ? process.env.API_URL_OLD
+    : process.env.API_URL_NEW
+}
+export const API_URL = apiUrlBasedOnDomain || 'http://localhost'
 
 let calculatedLocalhost
 if (typeof window !== 'undefined') {
