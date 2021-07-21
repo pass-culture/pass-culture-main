@@ -32,7 +32,7 @@ INSTRUMENT = Category(
 )
 JEU = Category(
     id="JEU",
-    pro_label="Jeux (événements, rencontres, concours)",
+    pro_label="Jeux",
 )
 LIVRE = Category(
     id="LIVRE",
