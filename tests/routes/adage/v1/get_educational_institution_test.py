@@ -69,7 +69,9 @@ class Returns200Test:
                     "cancellationLimitDate": booking.cancellationLimitDate.isoformat(),
                     "category": get_serialized_offer_category(offer),
                     "city": venue.city,
-                    "confirmationDate": booking.educationalBooking.confirmationDate.isoformat(),
+                    "confirmationDate": booking.educationalBooking.confirmationDate.isoformat()
+                    if booking.educationalBooking.confirmationDate
+                    else None,
                     "confirmationLimitDate": booking.educationalBooking.confirmationLimitDate.isoformat(),
                     "coordinates": {
                         "latitude": float(venue.latitude),

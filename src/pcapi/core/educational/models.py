@@ -83,5 +83,5 @@ class EducationalBooking(Model):
         nullable=True,
     )
 
-    confirmationDate = Column(DateTime, nullable=True, default=datetime.utcnow)
-    confirmationLimitDate = Column(DateTime, nullable=True, default=datetime.utcnow)
+    confirmationDate = Column(DateTime, nullable=True)
+    confirmationLimitDate = Column(DateTime, nullable=True)

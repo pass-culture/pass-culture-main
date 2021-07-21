@@ -42,5 +42,6 @@ class EducationalBookingFactory(BaseFactory):
     class Meta:
         model = models.EducationalBooking
 
+    confirmationLimitDate = datetime.datetime.utcnow()
     educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
     educationalYear = factory.SubFactory(EducationalYearFactory)
