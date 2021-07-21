@@ -46,20 +46,15 @@ def _define_handler(f, path, payload_type):
     def handle_task(body: payload_type):
         queue_name = request.headers.get("HTTP_X_CLOUDTASKS_QUEUENAME")
         task_id = request.headers.get("HTTP_X_CLOUDTASKS_TASKNAME")
-        logger.info("Received cloud task", extra={"queue": queue_name, "handler": path, "task": task_id, "body": body})
+        job_details = {"queue": queue_name, "handler": path, "task": task_id, "body": request.get_json()}
+        logger.info("Received cloud task", extra=job_details)
 
         try:
             f(body)
         except Exception as e:  # pylint: disable=broad-except
-            logger.exception(
-                "Exception caught when executing cloud task",
-                extra={"queue": queue_name, "handler": path, "task": task_id, "error": e, "body": body},
-            )
+            logger.exception("Exception caught when executing cloud task", extra={**job_details, "error": e})
         else:
-            logger.info(
-                "Successfully executed cloud task",
-                extra={"queue": queue_name, "handler": path, "task": task_id, "body": body},
-            )
+            logger.info("Successfully executed cloud task", extra=job_details)
 
 
 def _enqueue_task(queue, path, payload):
