@@ -2,18 +2,15 @@ import pytest
 
 import pcapi.core.users.factories as users_factories
 
-from tests.conftest import TestClient
-
 
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
-    def test_get_categories(self, app):
+    def test_get_categories(self, app, client):
         # Given
         user = users_factories.UserFactory()
 
         # when
-        client = TestClient(app.test_client()).with_auth(email=user.email)
-        response = client.get("/offers/categories")
+        response = client.with_auth(user.email).get("/offers/categories")
 
         # then
         assert response.status_code == 200
