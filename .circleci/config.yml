@@ -645,6 +645,16 @@ workflows:
           context:
             - GCP
             - GCP_EHP
+      - deploy-dbops:
+          requires:
+            - build-and-push-image-db-ops
+          filters:
+            branches:
+              only:
+                - staging
+          context:
+            - GCP
+            - GCP_EHP
       - deploy-pcapi:
           requires:
             - build-and-push-image
