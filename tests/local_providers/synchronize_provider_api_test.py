@@ -115,12 +115,14 @@ class ProviderAPICronTest:
         # Test updates stock if already exists
         assert stock.quantity == 6
         assert stock.rawProviderQuantity == 6
+        assert stock.lastProviderId == provider.id
 
         # Test creates stock if does not exist
         assert len(offer.stocks) == 1
         created_stock = offer.stocks[0]
         assert created_stock.quantity == 4
         assert created_stock.rawProviderQuantity == 4
+        assert created_stock.lastProviderId == provider.id
 
         # Test creates offer if does not exist
         created_offer = Offer.query.filter_by(idAtProviders=f"{ISBNs[2]}@{siret}").one()
@@ -156,6 +158,9 @@ class ProviderAPICronTest:
         assert created_offer.idAtProviders == f"{ISBNs[2]}@{siret}"
         assert created_offer.idAtProvider == ISBNs[2]
         assert created_offer.lastProviderId == provider.id
+
+        # Test update existing offers attributes
+        assert stock.offer.lastProviderId == provider.id
 
         # Test it adds offer in redis
         assert mocked_async_index_offer_ids.mock_calls == [
