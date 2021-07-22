@@ -1462,6 +1462,7 @@ class UpdateBeneficiaryInformationTest:
         assert notification["attribute_values"]["u.is_beneficiary"]
         assert notification["attribute_values"]["u.postal_code"] == "77000"
 
+    @override_features(ENABLE_PHONE_VALIDATION=False)
     def test_update_beneficiary_information_without_address(self, app):
         """
         Test that valid request:
@@ -1515,6 +1516,56 @@ class UpdateBeneficiaryInformationTest:
         assert notification["user_id"] == user.id
         assert notification["attribute_values"]["u.is_beneficiary"]
         assert notification["attribute_values"]["u.postal_code"] == "77000"
+
+    @override_features(ENABLE_PHONE_VALIDATION=True)
+    def test_update_beneficiary_phone_number_not_updated(self, app):
+        """
+        Test that valid request:
+            * updates the user's id check profile information;
+            * sets the user to beneficiary;
+            * send a request to Batch to update the user's information
+        """
+        user = users_factories.UserFactory(
+            isBeneficiary=False,
+            address=None,
+            city=None,
+            postalCode=None,
+            activity=None,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            roles=[],
+        )
+
+        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
+        beneficiary_import.setStatus(ImportStatus.CREATED)
+
+        access_token = create_access_token(identity=user.email)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        profile_data = {
+            "address": None,
+            "city": "Uneville",
+            "postalCode": "77000",
+            "activity": "Lycéen",
+            "phone": "0601020304",
+        }
+
+        response = test_client.patch("/native/v1/beneficiary_information", profile_data)
+
+        assert response.status_code == 204
+
+        user = User.query.get(user.id)
+        assert user.address is None
+        assert user.city == "Uneville"
+        assert user.postalCode == "77000"
+        assert user.activity == "Lycéen"
+        assert user.phoneNumber is None
+
+        assert user.isBeneficiary
+        assert user.has_beneficiary_role
+        assert user.deposit
+
+        assert len(push_testing.requests) == 1
 
 
 class ProfilingFraudScoreTest:

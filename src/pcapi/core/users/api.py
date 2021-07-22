@@ -239,7 +239,7 @@ def update_beneficiary_mandatory_information(
         "activity": activity,
         "hasCompletedIdCheck": True,
     }
-    if not user.phoneNumber and phone_number:
+    if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active() and not user.phoneNumber and phone_number:
         update_payload["phoneNumber"] = phone_number
 
     with transaction():
@@ -270,11 +270,23 @@ def update_user_information_from_external_source(user: User, data: fraud_models.
         user.firstName = data.firstName
     if data.lastName:
         user.lastName = data.lastName
-    if data.postalCode:
+    if data.postalCode and not user.postalCode:
         user.postalCode = data.postalCode
         user.departementCode = PostalCode(data.postalCode).get_departement_code()
     if data.firstName and data.lastName:
         user.publicName = f"{user.firstName} {user.lastName}"
+
+    if data.bodyPieceNumber:
+        items = (
+            fraud_api._validate_id_piece_number_format_fraud_item(data.bodyPieceNumber),
+            fraud_api._duplicate_id_piece_number_fraud_item(data.bodyPieceNumber),
+        )
+        if all((item.status == fraud_models.FraudStatus.OK) for item in items):
+            user.bodyPieceNumber = data.bodyPieceNumber
+
+    if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
+        if not user.phoneNumber and data.phoneNumber:
+            user.phoneNumber = data.phoneNumber
 
     # update user fields to be correctly initialized
     user.hasSeenTutorials = False

@@ -118,7 +118,7 @@
       <td>{% if model.dateOfBirth %}{{ model.dateOfBirth.strftime('%d/%m/%Y') }}{% else %}Inconnue{% endif %}</td>
     </tr>
     <tr>
-      <th scope="row">Département de naissance</th>
+      <th scope="row">Code départemental</th>
       <td>{{ model.departmentCode|default('Inconnu') }}</td>
     </tr>
     <tr>
