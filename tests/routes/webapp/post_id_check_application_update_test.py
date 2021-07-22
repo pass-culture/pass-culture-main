@@ -21,6 +21,7 @@ JOUVE_CONTENT = {
     "activity": "Apprenti",
     "address": "3 rue de Valois",
     "birthDateTxt": "22/05/1995",
+    "birthLocationCtrl": "OK",
     "bodyBirthDateCtrl": "OK",
     "bodyBirthDateLevel": 100,
     "bodyFirstnameCtrl": "OK",

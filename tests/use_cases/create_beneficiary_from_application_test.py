@@ -29,6 +29,7 @@ JOUVE_CONTENT = {
     "activity": "Apprenti",
     "address": "3 rue de Valois",
     "birthDateTxt": "22/05/1995",
+    "birthLocationCtrl": "OK",
     "bodyBirthDateCtrl": "OK",
     "bodyBirthDateLevel": 100,
     "bodyFirstnameCtrl": "OK",
@@ -160,7 +161,7 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
         hasCompletedIdCheck=True,
     )
     push_testing.reset_requests()
-    _get_raw_content.return_value = {
+    _get_raw_content.return_value = JOUVE_CONTENT | {
         "id": BASE_APPLICATION_ID,
         "firstName": "first_name",
         "lastName": "last_name",
@@ -335,6 +336,10 @@ BASE_JOUVE_CONTENT = {
     "gender": "M",
     "bodyPieceNumber": "id-piece-number",
     "birthDateTxt": "25/10/2003",
+    "bodyBirthDateCtrl": "OK",
+    "bodyPieceNumberCtrl": "OK",
+    "bodyPieceNumberLevel": "100",
+    "bodyNameCtrl": "OK",
     "phoneNumber": "+33607080900",
     "postalCode": "77100",
     "posteCodeCtrl": "OK",
@@ -596,3 +601,40 @@ def test_jouve_raise_403(mocked_get_content, caplog):
     create_beneficiary_from_application.execute(BASE_APPLICATION_ID)
     mocked_get_content.assert_called()
     assert caplog.messages[0] == "Error getting API Jouve authentication token"
+
+
+@pytest.mark.usefixtures("db_session")
+class JouveDataValidationTest:
+    @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
+    @pytest.mark.parametrize(
+        "jouve_field", ["birthLocationCtrl", "bodyBirthDateCtrl", "bodyNameCtrl", "bodyPieceNumberCtrl"]
+    )
+    @pytest.mark.parametrize("possible_value", ["KO", "NOT_APPLICABLE", "", "bodyPieceNumberCtrl"])
+    def test_mandatory_jouve_fields_wrong_data(self, mocked_get_content, jouve_field, possible_value):
+        UserFactory(
+            isBeneficiary=False,
+            dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
+            email=BASE_JOUVE_CONTENT["email"],
+        )
+        mocked_get_content.return_value = BASE_JOUVE_CONTENT | {jouve_field: possible_value}
+        create_beneficiary_from_application.execute(BASE_APPLICATION_ID, ignore_id_piece_number_field=True)
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2905960
+        assert mails_testing.outbox[0].sent_data["Mj-campaign"] == "dossier-en-analyse"
+
+    @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
+    @pytest.mark.parametrize("jouve_field", ["bodyBirthDateLevel", "bodyNameLevel", "bodyPieceNumberLevel"])
+    @pytest.mark.parametrize("possible_value", ["", "NOT_APPLICABLE", "25"])
+    def test_mandatory_jouve_fields_wrong_integer_data(self, mocked_get_content, jouve_field, possible_value):
+        UserFactory(
+            isBeneficiary=False,
+            dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
+            email=BASE_JOUVE_CONTENT["email"],
+        )
+        mocked_get_content.return_value = BASE_JOUVE_CONTENT | {jouve_field: possible_value}
+        create_beneficiary_from_application.execute(BASE_APPLICATION_ID, ignore_id_piece_number_field=True)
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2905960
+        assert mails_testing.outbox[0].sent_data["Mj-campaign"] == "dossier-en-analyse"

@@ -122,23 +122,19 @@ class FraudDetectionItem:
         return f"{self.key}: {self.value} - {self.valid}"
 
 
-def get_boolean_fraud_detection_item(value: Optional[str], key: str, allow_empty=True) -> FraudDetectionItem:
-    # TODO: cleanup required when migrating to fraud validation journey v2
-    if allow_empty and not value:
+def get_boolean_fraud_detection_item(value: Optional[str], key: str) -> FraudDetectionItem:
+    valid = False
+    if value and value == "OK":
         valid = True
-    elif value is None or value.upper() in ("NOT_APPLICABLE", "KO", ""):
-        valid = False
-    else:
-        valid = True
-
     return FraudDetectionItem(key=key, value=value, valid=valid)
 
 
 def get_threshold_fraud_detection_item(value: Optional[int], key: str, threshold: int) -> FraudDetectionItem:
+    valid = False
     try:
-        valid = int(value) >= threshold if value else True
-    except ValueError:
-        valid = True
+        valid = int(value) >= threshold
+    except (ValueError, TypeError):
+        valid = False
 
     return FraudDetectionItem(key=key, value=value, valid=valid)
 
