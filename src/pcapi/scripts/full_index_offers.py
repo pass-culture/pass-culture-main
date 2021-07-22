@@ -73,6 +73,10 @@ def full_index_offers(direction, batch_start=None):
             try:
                 backend.index_offers(q)
             except Exception as exc:  # pylint: disable=broad-except
+                # FIXME (dbaty): bug here. We don't fetch offers
+                # sorted by their id, so the lower and upper bounds
+                # are not necessarily in `q[0]` and `q[-1]`. We should
+                # rather use `min(o.id for o in q)` and `max(o.id for o in q)`.
                 logger.error(
                     "Full offer reindexation: error while reindexing from %d to %d: %s", q[0].id, q[-1].id, exc
                 )
