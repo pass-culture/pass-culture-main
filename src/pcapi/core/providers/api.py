@@ -120,6 +120,9 @@ def synchronize_stocks(stock_details, venue: Venue, provider_id: Optional[int] =
     offers_provider_references = [stock_detail["offers_provider_reference"] for stock_detail in stock_details]
     offers_by_provider_reference = get_offers_map_by_id_at_providers(offers_provider_references)
 
+    offers_update_mapping = _get_offers_update_mapping(offers_by_provider_reference.values(), provider_id)
+    db.session.bulk_update_mappings(Offer, offers_update_mapping)
+
     new_offers = _build_new_offers_from_stock_details(
         stock_details, offers_by_provider_reference, products_by_provider_reference, venue, provider_id
     )
@@ -137,6 +140,7 @@ def synchronize_stocks(stock_details, venue: Venue, provider_id: Optional[int] =
         stocks_by_provider_reference,
         offers_by_provider_reference,
         products_by_provider_reference,
+        provider_id,
     )
 
     db.session.bulk_save_objects(new_stocks)
@@ -147,6 +151,10 @@ def synchronize_stocks(stock_details, venue: Venue, provider_id: Optional[int] =
     search.async_index_offer_ids(offer_ids)
 
     return {"new_offers": len(new_offers), "new_stocks": len(new_stocks), "updated_stocks": len(update_stock_mapping)}
+
+
+def _get_offers_update_mapping(offer_id_list: List[int], provider_id):
+    return [{"id": offer_id, "lastProviderId": provider_id} for offer_id in offer_id_list]
 
 
 def _build_new_offers_from_stock_details(
@@ -185,6 +193,7 @@ def _get_stocks_to_upsert(
     stocks_by_provider_reference: Dict[str, Dict],
     offers_by_provider_reference: Dict[str, int],
     products_by_provider_reference: Dict[str, Product],
+    provider_id: int,
 ) -> Tuple[List[Dict], List[Stock], Set[int]]:
     update_stock_mapping = []
     new_stocks = []
@@ -218,6 +227,7 @@ def _get_stocks_to_upsert(
                     "quantity": stock_detail["available_quantity"] + stock["booking_quantity"],
                     "rawProviderQuantity": stock_detail["available_quantity"],
                     "price": book_price,
+                    "lastProviderId": provider_id,
                 }
             )
             if _should_reindex_offer(stock_detail["available_quantity"], book_price, stock):
@@ -230,6 +240,7 @@ def _get_stocks_to_upsert(
                 stock_detail,
                 offers_by_provider_reference[stock_detail["offers_provider_reference"]],
                 book_price,
+                provider_id,
             )
             if not _validate_stock_or_offer(stock):
                 continue
@@ -240,7 +251,7 @@ def _get_stocks_to_upsert(
     return update_stock_mapping, new_stocks, offer_ids
 
 
-def _build_stock_from_stock_detail(stock_detail: Dict, offers_id: int, price: float) -> Stock:
+def _build_stock_from_stock_detail(stock_detail: Dict, offers_id: int, price: float, provider_id: int) -> Stock:
     return Stock(
         quantity=stock_detail["available_quantity"],
         rawProviderQuantity=stock_detail["available_quantity"],
@@ -249,6 +260,7 @@ def _build_stock_from_stock_detail(stock_detail: Dict, offers_id: int, price: fl
         price=price,
         dateModified=datetime.now(),
         idAtProviders=stock_detail["stocks_provider_reference"],
+        lastProviderId=provider_id,
     )
 
 

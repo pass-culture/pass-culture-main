@@ -244,6 +244,7 @@ class SynchronizeStocksTest:
             "product_ref3": Product(extraData={"prix_livre": 11.03}),
             "product_ref4": Product(extraData={"prix_livre": 7.01}),
         }
+        provider_id = 1
 
         # When
         update_stock_mapping, new_stocks, offer_ids = api._get_stocks_to_upsert(
@@ -251,6 +252,7 @@ class SynchronizeStocksTest:
             stocks_by_provider_reference,
             offers_by_provider_reference,
             products_by_provider_reference,
+            provider_id,
         )
 
         assert update_stock_mapping == [
@@ -259,12 +261,14 @@ class SynchronizeStocksTest:
                 "quantity": 15 + 3,
                 "price": 15.78,
                 "rawProviderQuantity": 15,
+                "lastProviderId": 1,
             },
             {
                 "id": 2,
                 "quantity": 15 + 3,
                 "price": 7.01,
                 "rawProviderQuantity": 15,
+                "lastProviderId": 1,
             },
         ]
 
@@ -274,6 +278,7 @@ class SynchronizeStocksTest:
         assert new_stock.offerId == 134
         assert new_stock.price == 28.989
         assert new_stock.idAtProviders == "stock_ref2"
+        assert new_stock.lastProviderId == 1
 
         assert offer_ids == set([123, 134])
 
