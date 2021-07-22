@@ -72,7 +72,7 @@ def full_index_offers(direction, batch_start=None):
         if force_index or len(q) > BATCH_SIZE:
             try:
                 backend.index_offers(q)
-            except Exception as exc:
+            except Exception as exc:  # pylint: disable=broad-except
                 logger.error(
                     "Full offer reindexation: error while reindexing from %d to %d: %s", q[0].id, q[-1].id, exc
                 )
