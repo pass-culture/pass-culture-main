@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
@@ -26,10 +27,18 @@ const OfferCreation = ({
   const [displayedVenues, setDisplayedVenues] = useState([])
   const [selectedOfferer, setSelectedOfferer] = useState(initialValues.offererId)
 
+  const { categories } = useSelector(state => state.offers.categories)
+
   useEffect(() => setSelectedOfferer(initialValues.offererId), [initialValues.offererId])
 
   useEffect(() => {
     (async () => {
+      // On first load store.offers.categories is not set.
+      // in this case we want do display the spinner using isLoading === true.
+      if (categories === undefined) {
+        return
+      }
+
       if (isUserAdmin) {
         const offererResponse = await pcapi.getOfferer(initialValues.offererId)
 
@@ -57,7 +66,7 @@ const OfferCreation = ({
 
       setIsLoading(false)
     })()
-  }, [initialValues.offererId, isUserAdmin, initialValues])
+  }, [initialValues.offererId, isUserAdmin, initialValues, categories])
 
   const filterVenuesForPro = useCallback(() => {
     const venuesToDisplay = selectedOfferer
