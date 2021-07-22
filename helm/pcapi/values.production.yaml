@@ -465,5 +465,11 @@ secrets:
     version: 2
   - name: TRANSACTIONS_RECIPIENTS
     version: 2
+  - name: USER_PROFILING_URL
+    version: 1
+  - name: USER_PROFILING_ORG_ID
+    version: 1
+  - name: USER_PROFILING_API_KEY
+    version: 1
   - name: WALLET_BALANCES_RECIPIENTS
     version: 2
