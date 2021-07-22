@@ -6,6 +6,7 @@ from typing import Union
 
 import sqlalchemy
 
+from pcapi.connectors.beneficiaries import jouve_backend
 from pcapi.core.users.models import User
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
@@ -200,7 +201,6 @@ def _id_check_fraud_items(content: models.JouveContent) -> list[models.FraudItem
     fraud_items.append(_get_boolean_id_fraud_item(content.bodyBirthDateCtrl, "bodyBirthDateCtrl", False))
     fraud_items.append(_get_boolean_id_fraud_item(content.bodyNameCtrl, "bodyNameCtrl", False))
     fraud_items.append(_get_boolean_id_fraud_item(content.bodyPieceNumberCtrl, "bodyPieceNumberCtrl", False))
-    fraud_items.append(_get_boolean_id_fraud_item(content.initialNumberCtrl, "initialNumberCtrl", False))
 
     fraud_items.append(_get_threshold_id_fraud_item(content.bodyBirthDateLevel, "bodyBirthDateLevel", 100, False))
     fraud_items.append(_get_threshold_id_fraud_item(content.bodyNameLevel, "bodyNameLevel", 50, False))
@@ -210,15 +210,10 @@ def _id_check_fraud_items(content: models.JouveContent) -> list[models.FraudItem
 
 
 def _get_boolean_id_fraud_item(value: Optional[str], key: str, is_strict_ko: bool) -> models.FraudItem:
-    # TODO: refactor with jouve_backend items.
-    is_valid = None
-    if key == "creatorCtrl" and value == "NOT_APPLICABLE":
-        is_valid = True
-    elif value in ("NOT_APPLICABLE", "KO"):
-        is_valid = False
-    else:
-        is_valid = value.upper() != "KO" if value else True
-    if is_valid:
+    # TODO: move those functions when using fraud v2 journey only
+    item = jouve_backend.get_boolean_fraud_detection_item(value, key)
+
+    if item.valid:
         status = models.FraudStatus.OK
     elif is_strict_ko:
         status = models.FraudStatus.KO
@@ -231,11 +226,9 @@ def _get_boolean_id_fraud_item(value: Optional[str], key: str, is_strict_ko: boo
 def _get_threshold_id_fraud_item(
     value: Optional[int], key: str, threshold: int, is_strict_ko: bool
 ) -> models.FraudItem:
-    try:
-        is_valid = int(value) >= threshold if value else True
-    except ValueError:
-        is_valid = True
-    if is_valid:
+    # TODO: move those functions when using fraud v2 journey only
+    item = jouve_backend.get_threshold_fraud_detection_item(value, key, threshold)
+    if item.valid:
         status = models.FraudStatus.OK
     elif is_strict_ko:
         status = models.FraudStatus.KO
