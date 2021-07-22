@@ -5,14 +5,13 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.testing import override_features
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import User
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.deposit import Deposit
 from pcapi.notifications.push import testing as push_testing
-from pcapi.repository import repository
 
 from tests.conftest import TestClient
 
@@ -83,10 +82,12 @@ class Returns200Test:
         stubed_random_token.return_value = "token"
         _get_raw_content.return_value = JOUVE_CONTENT
 
-        user = create_user(idx=4, email="rennes@example.org", is_beneficiary=False, is_email_validated=True)
-
-        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
-        repository.save(user)
+        users_factories.UserFactory(
+            email="rennes@example.org",
+            isBeneficiary=False,
+            isEmailValidated=True,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
 
         # When
         data = {"id": "35"}
