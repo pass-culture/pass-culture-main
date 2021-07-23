@@ -37,7 +37,7 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
     const searchFiltersInUri = translateQueryParamsToApiParams(query.parse())
     dispatch(
       saveSearchFilters({
-        name: searchFiltersInUri.name || DEFAULT_SEARCH_FILTERS.name,
+        nameOrIsbn: searchFiltersInUri.nameOrIsbn || DEFAULT_SEARCH_FILTERS.nameOrIsbn,
         offererId: searchFiltersInUri.offererId || DEFAULT_SEARCH_FILTERS.offererId,
         venueId: searchFiltersInUri.venueId || DEFAULT_SEARCH_FILTERS.venueId,
         typeId: searchFiltersInUri.typeId || DEFAULT_SEARCH_FILTERS.typeId,

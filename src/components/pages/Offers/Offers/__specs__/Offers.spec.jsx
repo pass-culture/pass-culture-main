@@ -141,7 +141,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
-        name: ALL_OFFERS,
+        nameOrIsbn: ALL_OFFERS,
         venueId: ALL_VENUES,
         typeId: ALL_TYPES,
         offererId: ALL_OFFERERS,
@@ -385,7 +385,7 @@ describe('src | components | pages | Offers | Offers', () => {
           // Then
           expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
             creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
-            name: '',
+            nameOrIsbn: '',
             offererId: DEFAULT_SEARCH_FILTERS.offererId,
             venueId: DEFAULT_SEARCH_FILTERS.venueId,
             typeId: DEFAULT_SEARCH_FILTERS.typeId,
@@ -489,7 +489,7 @@ describe('src | components | pages | Offers | Offers', () => {
             )
             expect(statusFiltersIcon.closest('button')).toBeDisabled()
             expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
-              name: DEFAULT_SEARCH_FILTERS.name,
+              nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
               venueId: DEFAULT_SEARCH_FILTERS.venueId,
               typeId: DEFAULT_SEARCH_FILTERS.typeId,
               offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -522,7 +522,7 @@ describe('src | components | pages | Offers | Offers', () => {
             )
             expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
             expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
-              name: DEFAULT_SEARCH_FILTERS.name,
+              nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
               venueId: DEFAULT_SEARCH_FILTERS.venueId,
               typeId: DEFAULT_SEARCH_FILTERS.typeId,
               offererId: 'EF',
@@ -549,7 +549,7 @@ describe('src | components | pages | Offers | Offers', () => {
             )
             expect(statusFiltersIcon.closest('button')).toBeDisabled()
             expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
-              name: DEFAULT_SEARCH_FILTERS.name,
+              nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
               venueId: DEFAULT_SEARCH_FILTERS.venueId,
               typeId: DEFAULT_SEARCH_FILTERS.typeId,
               offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -581,7 +581,7 @@ describe('src | components | pages | Offers | Offers', () => {
             )
             expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
             expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
-              name: DEFAULT_SEARCH_FILTERS.name,
+              nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
               venueId: venueId,
               typeId: DEFAULT_SEARCH_FILTERS.typeId,
               offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -745,7 +745,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
-        name: DEFAULT_SEARCH_FILTERS.name,
+        nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -759,7 +759,7 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should load offers with written offer name filter', async () => {
       // Given
       renderOffers(props, store)
-      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre'), {
+      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'), {
         target: { value: 'Any word' },
       })
 
@@ -768,7 +768,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
-        name: 'Any word',
+        nameOrIsbn: 'Any word',
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -793,7 +793,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
         venueId: proVenues[0].id,
-        name: DEFAULT_SEARCH_FILTERS.name,
+        nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
@@ -817,7 +817,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
-        name: DEFAULT_SEARCH_FILTERS.name,
+        nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
         typeId: offerTypes[0].value,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
@@ -840,7 +840,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
         creationMode: 'imported',
-        name: DEFAULT_SEARCH_FILTERS.name,
+        nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -863,7 +863,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
-        name: DEFAULT_SEARCH_FILTERS.name,
+        nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
@@ -886,7 +886,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
-        name: DEFAULT_SEARCH_FILTERS.name,
+        nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
@@ -901,7 +901,7 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should properly format received date', async () => {
       // Given
       renderOffers(props, store)
-      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre'), {
+      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'), {
         target: { value: 'Any word' },
       })
 
@@ -910,7 +910,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
-        name: 'Any word',
+        nameOrIsbn: 'Any word',
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -924,7 +924,7 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should set new date value on filters', async () => {
       // Given
       renderOffers(props, store)
-      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre'), {
+      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'), {
         target: { value: 'Any word' },
       })
 
@@ -933,7 +933,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
-        name: 'Any word',
+        nameOrIsbn: 'Any word',
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -989,7 +989,7 @@ describe('src | components | pages | Offers | Offers', () => {
         categorie: null,
         creation: null,
         lieu: null,
-        nom: null,
+        'nom-ou-isbn': null,
         page: 2,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
@@ -1003,7 +1003,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await renderOffers(props, store)
 
       // When
-      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre'), {
+      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'), {
         target: { value: 'AnyWord' },
       })
       await fireEvent.click(screen.getByText('Lancer la recherche'))
@@ -1013,7 +1013,7 @@ describe('src | components | pages | Offers | Offers', () => {
         categorie: null,
         creation: null,
         lieu: null,
-        nom: 'AnyWord',
+        'nom-ou-isbn': 'AnyWord',
         page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
@@ -1025,7 +1025,7 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should store search value', async () => {
       // Given
       await renderOffers(props, store)
-      const searchInput = screen.getByPlaceholderText('Rechercher par nom d’offre')
+      const searchInput = screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN')
 
       // When
       fireEvent.change(searchInput, { target: { value: 'search string' } })
@@ -1035,7 +1035,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
         venueId: ALL_VENUES,
         typeId: ALL_TYPES,
-        name: 'search string',
+        nameOrIsbn: 'search string',
         offererId: ALL_OFFERERS,
         status: ALL_STATUS,
         creationMode: DEFAULT_CREATION_MODE.id,
@@ -1049,7 +1049,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await renderOffers(props, store)
 
       // When
-      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre'), {
+      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'), {
         target: { value: ALL_OFFERS },
       })
       await fireEvent.click(screen.getByText('Lancer la recherche'))
@@ -1059,7 +1059,7 @@ describe('src | components | pages | Offers | Offers', () => {
         categorie: null,
         creation: null,
         lieu: null,
-        nom: null,
+        'nom-ou-isbn': null,
         page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
@@ -1084,7 +1084,7 @@ describe('src | components | pages | Offers | Offers', () => {
         lieu: proVenues[0].id,
         categorie: null,
         creation: null,
-        nom: null,
+        'nom-ou-isbn': null,
         page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
@@ -1114,7 +1114,7 @@ describe('src | components | pages | Offers | Offers', () => {
         categorie: 'test_id_1',
         creation: null,
         lieu: null,
-        nom: null,
+        'nom-ou-isbn': null,
         page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
@@ -1139,7 +1139,7 @@ describe('src | components | pages | Offers | Offers', () => {
         categorie: null,
         creation: null,
         lieu: null,
-        nom: null,
+        'nom-ou-isbn': null,
         page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
@@ -1162,7 +1162,7 @@ describe('src | components | pages | Offers | Offers', () => {
         categorie: null,
         creation: null,
         lieu: null,
-        nom: null,
+        'nom-ou-isbn': null,
         page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
@@ -1212,7 +1212,7 @@ describe('src | components | pages | Offers | Offers', () => {
         creation: 'manuelle',
         categorie: null,
         lieu: null,
-        nom: null,
+        'nom-ou-isbn': null,
         page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
@@ -1241,7 +1241,7 @@ describe('src | components | pages | Offers | Offers', () => {
         categorie: null,
         creation: null,
         lieu: null,
-        nom: null,
+        'nom-ou-isbn': null,
         page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,

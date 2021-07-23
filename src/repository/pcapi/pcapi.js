@@ -24,7 +24,7 @@ export const updateOffer = (offerId, offer) => {
 }
 
 export const loadFilteredOffers = async ({
-  name = DEFAULT_SEARCH_FILTERS.name,
+  nameOrIsbn = DEFAULT_SEARCH_FILTERS.nameOrIsbn,
   offererId = DEFAULT_SEARCH_FILTERS.offererId,
   venueId = DEFAULT_SEARCH_FILTERS.venueId,
   typeId = DEFAULT_SEARCH_FILTERS.typeId,
@@ -34,7 +34,7 @@ export const loadFilteredOffers = async ({
   creationMode = DEFAULT_SEARCH_FILTERS.creationMode,
 }) => {
   const body = createRequestBody({
-    name,
+    nameOrIsbn,
     offererId,
     venueId,
     typeId,

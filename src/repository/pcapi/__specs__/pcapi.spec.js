@@ -96,7 +96,7 @@ describe('pcapi', () => {
     it('should call offers route with filters when provided', async () => {
       // Given
       const filters = {
-        name: 'OCS',
+        nameOrIsbn: 'OCS',
         venueId: 'AA',
         status: 'expired',
         creationMode: 'manual',
@@ -107,7 +107,7 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith(
-        '/offers?name=OCS&venueId=AA&status=expired&creationMode=manual'
+        '/offers?nameOrIsbn=OCS&venueId=AA&status=expired&creationMode=manual'
       )
     })
   })

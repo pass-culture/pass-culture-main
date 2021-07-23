@@ -49,9 +49,9 @@ const SearchFilters = ({
     [setSearchFilters]
   )
 
-  const storeNameSearchValue = useCallback(
+  const storeNameOrIsbnSearchValue = useCallback(
     event => {
-      updateSearchFilters({ name: event.target.value })
+      updateSearchFilters({ nameOrIsbn: event.target.value })
     },
     [updateSearchFilters]
   )
@@ -125,9 +125,9 @@ const SearchFilters = ({
         <TextInput
           label="Nom de l’offre"
           name="offre"
-          onChange={storeNameSearchValue}
-          placeholder="Rechercher par nom d’offre"
-          value={selectedFilters.name}
+          onChange={storeNameOrIsbnSearchValue}
+          placeholder="Rechercher par nom d’offre ou par ISBN"
+          value={selectedFilters.nameOrIsbn}
         />
         <div className="form-row">
           <Select
@@ -209,7 +209,7 @@ SearchFilters.propTypes = {
   }),
   removeOfferer: PropTypes.func.isRequired,
   selectedFilters: PropTypes.shape({
-    name: PropTypes.string,
+    nameOrIsbn: PropTypes.string,
     offererId: PropTypes.string,
     venueId: PropTypes.string,
     typeId: PropTypes.string,
