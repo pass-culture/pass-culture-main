@@ -242,6 +242,7 @@ crons:
       args:
         - src/pcapi/scheduled_tasks/clock.py
     algolia:
+      replicaCount: 3
       enabled: true
       command:
         - python
