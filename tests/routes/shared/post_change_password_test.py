@@ -2,10 +2,9 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.users.models import User
-from pcapi.model_creators.generic_creators import create_user
+from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.models import ApiErrors
-from pcapi.repository import repository
 
 from tests.conftest import TestClient
 
@@ -14,8 +13,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_current_user_changes_password(self, app):
         # given
-        user = create_user(email="user@test.com")
-        repository.save(user)
+        user = users_factories.UserFactory(email="user@test.com")
         data = {
             "oldPassword": user.clearTextPassword,
             "newPassword": "N3W_p4ssw0rd",
@@ -27,7 +25,7 @@ class Returns200Test:
         response = TestClient(app.test_client()).with_auth(user.email).post("/users/current/change-password", json=data)
 
         # then
-        user = User.query.get(user_id)
+        user = users_models.User.query.get(user_id)
         assert user.checkPassword("N3W_p4ssw0rd") is True
         assert response.status_code == 204
 
@@ -40,8 +38,7 @@ class Returns400Test:
         api_errors = ApiErrors()
         api_errors.add_error("password", "missing password")
         api_errors.status_code = 400
-        user = create_user(email="user@test.com")
-        repository.save(user)
+        user = users_factories.UserFactory(email="user@test.com")
         validate_change_password_request.side_effect = api_errors
         data = {}
 

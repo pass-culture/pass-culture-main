@@ -1,8 +1,8 @@
 import pytest
 
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import Favorite
@@ -16,8 +16,7 @@ class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def when_offer_id_is_not_received(self, app):
         # Given
-        user = create_user(email="test@email.com")
-        repository.save(user)
+        user = users_factories.UserFactory(email="test@email.com")
 
         json = {
             "mediationId": "DA",
@@ -35,7 +34,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_offer_is_not_found(self, app):
         # Given
-        user = create_user(email="test@email.com")
+        user = users_factories.UserFactory.build(email="test@email.com")
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
         offer = create_offer_with_thing_product(venue, thumb_count=0)
@@ -56,12 +55,12 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_mediation_is_not_found(self, app):
         # Given
-        user = create_user(email="test@email.com")
+        user = users_factories.UserFactory(email="test@email.com")
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
         offer = create_offer_with_thing_product(venue, thumb_count=0)
         mediation = create_mediation(offer, is_active=True)
-        repository.save(user, mediation)
+        repository.save(mediation)
 
         json = {
             "offerId": humanize(offer.id),
@@ -79,12 +78,12 @@ class Returns201Test:
     @pytest.mark.usefixtures("db_session")
     def when_offer_is_added_as_favorite_for_current_user(self, app):
         # Given
-        user = create_user(email="test@email.com")
+        user = users_factories.UserFactory(email="test@email.com")
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
         offer = create_offer_with_thing_product(venue, thumb_count=0)
         mediation = create_mediation(offer, is_active=True)
-        repository.save(user, mediation)
+        repository.save(mediation)
 
         json = {
             "offerId": humanize(offer.id),
@@ -105,11 +104,11 @@ class Returns201Test:
     @pytest.mark.usefixtures("db_session")
     def when_mediation_id_doest_not_exist(self, app):
         # Given
-        user = create_user(email="test@email.com")
+        user = users_factories.UserFactory(email="test@email.com")
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
         offer = create_offer_with_thing_product(venue, thumb_count=0)
-        repository.save(user, offer)
+        repository.save(offer)
 
         json = {
             "offerId": humanize(offer.id),

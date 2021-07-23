@@ -25,7 +25,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_provider
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
@@ -61,7 +60,7 @@ class GetCappedOffersForFiltersTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_sorted_by_id_desc(self):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
@@ -120,7 +119,7 @@ class GetCappedOffersForFiltersTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_offers_filtered_by_manual_creation_mode_when_provided(self):
         # given
-        pro_user = create_user()
+        pro_user = users_factories.UserFactory()
         offerer = create_offerer()
         create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
@@ -144,7 +143,7 @@ class GetCappedOffersForFiltersTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_offers_filtered_by_imported_creation_mode_when_provided(self):
         # given
-        pro_user = create_user()
+        pro_user = users_factories.UserFactory()
         offerer = create_offerer()
         create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
@@ -585,7 +584,7 @@ class GetCappedOffersForFiltersTest:
 
             five_days_ago = datetime.now() - timedelta(days=5)
             in_five_days = datetime.now() + timedelta(days=5)
-            beneficiary = create_user(email="jane.doe@example.com")
+            beneficiary = users_factories.UserFactory(email="jane.doe@example.com")
             offers_factories.ThingStockFactory(offer=self.sold_old_thing_offer_with_all_stocks_empty, quantity=0)
             offers_factories.ThingStockFactory(
                 offer=self.active_thing_offer_with_one_stock_with_remaining_quantity, quantity=5

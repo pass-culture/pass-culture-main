@@ -9,6 +9,8 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.offerers.models import Offerer
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
+from pcapi.core.users import factories as users_factories
+
 from pcapi.domain.payments import UnmatchedPayments
 from pcapi.domain.payments import _set_end_to_end_id_and_group_into_transactions
 from pcapi.domain.payments import apply_banishment
@@ -25,7 +27,6 @@ from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
 from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import Booking
@@ -173,7 +174,7 @@ class FilterOutBookingsWithoutCostTest:
 class KeepOnlyNotProcessablePaymentsTest:
     def test_it_returns_only_payments_with_current_status_as_not_processable(self):
         # given
-        user = create_user()
+        user = users_factories.UserFactory()
         booking = create_booking(user=user)
         offerer = create_offerer()
         payments = [
@@ -191,7 +192,7 @@ class KeepOnlyNotProcessablePaymentsTest:
 
     def test_it_returns_an_empty_list_if_everything_has_no_not_processable_payment(self):
         # given
-        user = create_user()
+        user = users_factories.UserFactory()
         booking = create_booking(user=user)
         offerer = create_offerer()
         payments = [
@@ -217,7 +218,7 @@ class KeepOnlyNotProcessablePaymentsTest:
 class CreatePaymentDetailsTest:
     def test_contains_info_on_bank_transaction(self):
         # given
-        user = create_user()
+        user = users_factories.UserFactory()
         booking = create_booking(user=user)
         offerer = create_offerer()
         payment = create_payment(booking, offerer, 35, iban="123456789")
@@ -232,7 +233,7 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_booking(self):
         # given
-        user = create_user(email="jane.doe@test.com", idx=3)
+        user = users_factories.UserFactory(email="jane.doe@test.com")
         offerer = create_offerer(siren="987654321", name="Joe le Libraire")
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -257,7 +258,7 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_offerer(self):
         # given
-        user = create_user(email="jane.doe@test.com", idx=3)
+        user = users_factories.UserFactory(email="jane.doe@test.com")
         offerer = create_offerer(siren="987654321", name="Joe le Libraire")
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -274,7 +275,7 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_venue(self):
         # given
-        user = create_user(email="jane.doe@test.com", idx=3)
+        user = users_factories.UserFactory(email="jane.doe@test.com")
         offerer = create_offerer(siren="987654321", name="Joe le Libraire")
         venue = create_venue(offerer, name="Jack le Sculpteur", siret="1234567891234", idx=1)
         offer = create_offer_with_thing_product(venue)
@@ -292,7 +293,7 @@ class CreatePaymentDetailsTest:
 
     def test_contains_info_on_offer(self):
         # given
-        user = create_user(email="jane.doe@test.com", idx=3)
+        user = users_factories.UserFactory(email="jane.doe@test.com")
         offerer = create_offerer(siren="987654321", name="Joe le Libraire")
         venue = create_venue(offerer, name="Jack le Sculpteur", siret="1234567891234")
         offer = create_offer_with_thing_product(venue)

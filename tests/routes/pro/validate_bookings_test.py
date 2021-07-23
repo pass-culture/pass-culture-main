@@ -8,10 +8,9 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_event_occurrence
@@ -34,7 +33,7 @@ tomorrow_minus_one_hour = tomorrow - timedelta(hours=1)
 class Returns204Test:  # No Content
     def when_user_has_rights(self, app):
         booking = BookingFactory(token="ABCDEF")
-        pro_user = UserFactory(email="pro@example.com")
+        pro_user = users_factories.ProFactory(email="pro@example.com")
         offerer = booking.stock.offer.venue.managingOfferer
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -48,7 +47,7 @@ class Returns204Test:  # No Content
 
     def when_header_is_not_standard_but_request_is_valid(self, app):
         booking = BookingFactory(token="ABCDEF")
-        pro_user = UserFactory(email="pro@example.com")
+        pro_user = users_factories.ProFactory(email="pro@example.com")
         offerer = booking.stock.offer.venue.managingOfferer
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -67,7 +66,7 @@ class Returns204Test:  # No Content
             token="ABCDEF",
             user__email="user+plus@example.com",
         )
-        pro_user = UserFactory(email="pro@example.com")
+        pro_user = users_factories.ProFactory(email="pro@example.com")
         offerer = booking.stock.offer.venue.managingOfferer
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -85,8 +84,8 @@ class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_editor_and_valid_email(self, app):
         # Given
-        user = create_user()
-        admin_user = create_user(email="admin@example.com")
+        user = users_factories.UserFactory()
+        admin_user = users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(
@@ -113,7 +112,7 @@ class Returns403Test:
         # Given
         next_week = datetime.utcnow() + timedelta(weeks=1)
         booking = BookingFactory(stock__beginningDatetime=next_week)
-        pro_user = UserFactory(email="pro@example.com")
+        pro_user = users_factories.ProFactory(email="pro@example.com")
         offerer = booking.stock.offer.venue.managingOfferer
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         url = "/bookings/token/{}".format(booking.token)
@@ -129,7 +128,7 @@ class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_booking_is_cancelled(self, app):
         # Given
-        admin = UserFactory(isAdmin=True)
+        admin = users_factories.UserFactory(isAdmin=True)
         booking = BookingFactory(isCancelled=True)
         url = f"/bookings/token/{booking.token}"
 
@@ -146,8 +145,8 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_editor_and_invalid_email(self, app):
         # Given
-        user = create_user()
-        admin_user = create_user(email="admin@example.com")
+        user = users_factories.UserFactory()
+        admin_user = users_factories.AdminFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(
@@ -168,8 +167,8 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_booking_user_email_with_special_character_not_url_encoded(self, app):
         # Given
-        user = create_user(email="user+plus@example.com")
-        user_admin = create_user(email="admin@example.com")
+        user = users_factories.UserFactory(email="user+plus@example.com")
+        user_admin = users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         user_offerer = create_user_offerer(user_admin, offerer)
         venue = create_venue(offerer)
@@ -192,8 +191,8 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_editor_and_valid_email_but_invalid_offer_id(self, app):
         # Given
-        user = create_user()
-        admin_user = create_user(email="admin@example.com")
+        user = users_factories.UserFactory()
+        admin_user = users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(

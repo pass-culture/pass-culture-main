@@ -1,7 +1,7 @@
 import pytest
 
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
@@ -13,8 +13,8 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_get_user_offerer_should_return_only_user_offerer_from_current_user(self, app):
         # given
-        user1 = create_user(email="patrick.fiori@test.com")
-        user2 = create_user(email="celine.dion@test.com")
+        user1 = users_factories.UserFactory(email="patrick.fiori@test.com")
+        user2 = users_factories.UserFactory(email="celine.dion@test.com")
         offerer = create_offerer(siren="123456781")
         user_offerer1 = create_user_offerer(user1, offerer)
         user_offerer2 = create_user_offerer(user2, offerer)
@@ -34,8 +34,8 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_offerer_id_does_not_exist(self, app):
         # given
-        user1 = create_user(email="patrick.fiori@test.com")
-        user2 = create_user(email="celine.dion@test.com")
+        user1 = users_factories.UserFactory(email="patrick.fiori@test.com")
+        user2 = users_factories.UserFactory(email="celine.dion@test.com")
         offerer = create_offerer(siren="123456781")
         user_offerer1 = create_user_offerer(user1, offerer)
         user_offerer2 = create_user_offerer(user2, offerer)

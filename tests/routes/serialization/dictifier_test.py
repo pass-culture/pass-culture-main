@@ -1,9 +1,9 @@
 import pytest
 
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
@@ -17,7 +17,7 @@ class AsDictTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_model_keys(self, app):
         # given
-        user = create_user(postal_code=None)
+        user = users_factories.UserFactory.build(postalCode=None)
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         repository.save(user_offerer)
@@ -34,7 +34,7 @@ class AsDictTest:
     @pytest.mark.usefixtures("db_session")
     def test_does_not_return_excluded_keys(self, app):
         # given
-        user = create_user(postal_code=None)
+        user = users_factories.UserFactory.build(postalCode=None)
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         repository.save(user_offerer)
@@ -49,7 +49,7 @@ class AsDictTest:
     @pytest.mark.usefixtures("db_session")
     def test_does_not_return_properties_by_default(self, app):
         # given
-        user = create_user(postal_code=None)
+        user = users_factories.UserFactory.build(postalCode=None)
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         repository.save(user_offerer)
@@ -64,7 +64,7 @@ class AsDictTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_included_properties(self, app):
         # given
-        user = create_user(postal_code=None)
+        user = users_factories.UserFactory.build(postalCode=None)
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         repository.save(user_offerer)
@@ -79,7 +79,7 @@ class AsDictTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_model_keys_on_joined_relationships(self, app):
         # given
-        user = create_user()
+        user = users_factories.UserFactory.build()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         repository.save(user_offerer)
@@ -130,7 +130,7 @@ class AsDictTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_humanized_ids_for_primary_keys(self, app):
         # given
-        user = create_user(idx=12, postal_code=None)
+        user = users_factories.UserFactory.build(id=12, postalCode=None)
 
         # when
         dict_result = as_dict(user, includes=[])
@@ -141,7 +141,7 @@ class AsDictTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_humanized_ids_for_foreign_keys(self, app):
         # given
-        user = create_user(idx=12, postal_code=None)
+        user = users_factories.UserFactory.build(id=12, postalCode=None)
         booking = create_booking(user=user, stock=Stock(), idx=13)
         booking.userId = user.id
 

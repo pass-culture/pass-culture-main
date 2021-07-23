@@ -5,9 +5,9 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
@@ -49,29 +49,29 @@ def get_by_siren_stub(offerer):
 class GetUsersInformationFromStockBookingsTest:
     def test_returns_correct_users_information_from_bookings_stock(self):
         # Given
-        user_1 = create_user(
-            is_beneficiary=True,
-            departement_code="93",
+        user_1 = users_factories.UserFactory.build(
+            isBeneficiary=True,
+            departementCode="93",
             email="test@example.com",
-            first_name="Jean",
-            last_name="Dupont",
-            public_name="Test",
+            firstName="Jean",
+            lastName="Dupont",
+            publicName="Test",
         )
-        user_2 = create_user(
-            is_beneficiary=True,
-            departement_code="93",
+        user_2 = users_factories.UserFactory.build(
+            isBeneficiary=True,
+            departementCode="93",
             email="mail@example.com",
-            first_name="Jaja",
-            last_name="Dudu",
-            public_name="Test",
+            firstName="Jaja",
+            lastName="Dudu",
+            publicName="Test",
         )
-        user_3 = create_user(
-            is_beneficiary=True,
-            departement_code="93",
+        user_3 = users_factories.UserFactory.build(
+            isBeneficiary=True,
+            departementCode="93",
             email="mail@example.com",
-            first_name="Toto",
-            last_name="Titi",
-            public_name="Test",
+            firstName="Toto",
+            lastName="Titi",
+            publicName="Test",
         )
         offerer = create_offerer()
         venue = create_venue(
@@ -118,7 +118,7 @@ class BuildPcProOfferLinkTest:
 class FormatDateAndHourForEmailTest:
     def test_should_return_formatted_event_beginningDatetime_when_offer_is_an_event(self):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory.build()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
@@ -133,7 +133,7 @@ class FormatDateAndHourForEmailTest:
 
     def test_should_return_empty_string_when_offer_is_not_an_event(self):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory.build()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -150,7 +150,7 @@ class FormatDateAndHourForEmailTest:
 class FormatBookingHoursForEmailTest:
     def test_should_return_hours_and_minutes_from_beginningDatetime_when_contains_hours(self):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory.build()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
@@ -165,7 +165,7 @@ class FormatBookingHoursForEmailTest:
 
     def test_should_return_only_hours_from_event_beginningDatetime_when_oclock(self):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory.build()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
@@ -180,7 +180,7 @@ class FormatBookingHoursForEmailTest:
 
     def test_should_return_empty_string_when_offer_is_not_an_event(self):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory.build()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -197,7 +197,7 @@ class FormatBookingHoursForEmailTest:
 class MakeValidationEmailObjectTest:
     def test_should_return_subject_with_correct_departement_code(self):
         # Given
-        user = create_user(departement_code="93")
+        user = users_factories.UserFactory.build(departementCode="93")
         offerer = create_offerer(postal_code="95490")
         user_offerer = create_user_offerer(user=user, offerer=offerer)
 

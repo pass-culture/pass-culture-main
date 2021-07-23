@@ -1,7 +1,6 @@
 import pytest
 
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.repository import repository
+from pcapi.core.users import factories as users_factories
 
 from tests.conftest import TestClient
 
@@ -20,8 +19,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged(self, app):
         # given
-        user = create_user(email="test@email.com")
-        repository.save(user)
+        user = users_factories.UserFactory(email="test@email.com")
 
         # when
         response = TestClient(app.test_client()).with_auth("test@email.com").get("/types")
@@ -39,8 +37,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_admin(self, app):
         # given
-        admin_user = create_user(is_beneficiary=False, email="pctest.admin93.0@example.com", is_admin=True)
-        repository.save(admin_user)
+        users_factories.UserFactory(isBeneficiary=False, email="pctest.admin93.0@example.com", isAdmin=True)
 
         # when
         response = TestClient(app.test_client()).with_auth("pctest.admin93.0@example.com").get("/types")
@@ -55,9 +52,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_returns_types_labels(self, app):
         # given
-        user = create_user(email="test@email.com")
-
-        repository.save(user)
+        users_factories.UserFactory(email="test@email.com")
 
         # when
         response = TestClient(app.test_client()).with_auth("test@email.com").get("/types")

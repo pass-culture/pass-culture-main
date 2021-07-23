@@ -2,9 +2,9 @@ from flask_login import AnonymousUserMixin
 import pytest
 
 from pcapi.core.offerers.models import ApiKey
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
@@ -20,10 +20,10 @@ class CheckUserCanValidateBookingTest:
         self, app
     ):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer, None)
-        repository.save(user, offerer, user_offerer)
+        repository.save(offerer, user_offerer)
 
         # When
         result = check_user_can_validate_bookings(user, offerer.id)
@@ -60,11 +60,11 @@ class CheckUserCanValidateBookingV2Test:
     @pytest.mark.usefixtures("db_session")
     def test_does_not_raise_error_when_user_has_editor_rights_on_booking(self, app):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer, None)
 
-        repository.save(user, offerer, user_offerer)
+        repository.save(offerer, user_offerer)
 
         # Then the following should not raise
         check_user_can_validate_bookings_v2(user, offerer.id)
@@ -88,11 +88,11 @@ class CheckApiKeyAllowsToValidateBookingTest:
     @pytest.mark.usefixtures("db_session")
     def test_does_not_raise_error_when_api_key_is_provided_and_is_related_to_offerer_id(self, app):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer, None)
 
-        repository.save(user, offerer, user_offerer)
+        repository.save(offerer, user_offerer)
 
         validApiKey = ApiKey()
         validApiKey.prefix = random_token(64)

@@ -4,9 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
@@ -41,8 +41,8 @@ class FetchUserEmailsForOffersTest:
         today = datetime(2020, 4, 10)
         tomorrow = today + timedelta(days=1)
 
-        pro = create_user(email="john.doe@example.com")
-        pro1 = create_user(email="john.rambo@example.com")
+        pro = users_factories.ProFactory(email="john.doe@example.com")
+        pro1 = users_factories.ProFactory(email="john.rambo@example.com")
 
         offerer = create_offerer(siren="123456789")
         user_offerer = create_user_offerer(user=pro, offerer=offerer)
@@ -74,15 +74,15 @@ class FetchUserEmailsForOffersTest:
         today = datetime(2020, 4, 10)
         tomorrow = today + timedelta(days=1)
 
-        user = create_user(email="jean.dupont@example.com")
-        pro = create_user(email="john.doe@example.com")
+        users_factories.UserFactory(email="jean.dupont@example.com")
+        pro = users_factories.ProFactory(email="john.doe@example.com")
         offerer = create_offerer()
         user_offerer = create_user_offerer(user=pro, offerer=offerer)
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(beginning_datetime=tomorrow, offer=offer)
 
-        repository.save(stock, user_offerer, user)
+        repository.save(stock, user_offerer)
 
         # When
         pro_emails = fetch_user_emails_for_offers_with_max_stock_date_between_today_and_end_of_quarantine(

@@ -1,7 +1,6 @@
 import pytest
 
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.repository import repository
+from pcapi.core.users import factories as users_factories
 
 from tests.conftest import TestClient
 
@@ -11,8 +10,8 @@ class Returns200Test:
     def when_activation_token_exists(self, app):
         # given
         token = "U2NCXTNB2"
-        user = create_user(reset_password_token=token)
-        repository.save(user)
+        user = users_factories.BeneficiaryFactory()
+        users_factories.ResetPasswordToken(value=token, user=user)
 
         # when
         request = TestClient(app.test_client()).get("/users/token/" + token)

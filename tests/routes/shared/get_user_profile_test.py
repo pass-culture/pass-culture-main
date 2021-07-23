@@ -2,8 +2,8 @@ import datetime
 
 import pytest
 
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
@@ -19,20 +19,21 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_and_has_no_deposit(self, app):
         # Given
-        user = create_user(
+        user = users_factories.BeneficiaryFactory(
             civility="M.",
-            departement_code="93",
+            address=None,
+            city=None,
+            needsToFillCulturalSurvey=False,
+            departementCode="93",
             email="toto@example.com",
-            first_name="Jean",
-            last_name="Smisse",
-            date_of_birth=datetime.datetime(2000, 1, 1),
-            phone_number="0612345678",
-            postal_code="93020",
-            public_name="Toto",
+            firstName="Jean",
+            lastName="Smisse",
+            dateOfBirth=datetime.datetime(2000, 1, 1),
+            phoneNumber="0612345678",
+            postalCode="93020",
+            publicName="Toto",
+            isEmailValidated=True,
         )
-        user.isEmailValidated = True
-        user.add_beneficiary_role()
-        repository.save(user)
 
         # When
         response = TestClient(app.test_client()).with_auth(email="toto@example.com").get("/users/current")
@@ -73,7 +74,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_returns_has_physical_venues_and_has_offers(self, app):
         # Given
-        user = create_user(email="test@email.com")
+        user = users_factories.UserFactory(email="test@email.com")
         offerer = create_offerer()
         offerer2 = create_offerer(siren="123456788")
         user_offerer = create_user_offerer(user, offerer)

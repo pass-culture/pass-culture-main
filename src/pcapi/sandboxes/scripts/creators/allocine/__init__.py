@@ -1,6 +1,7 @@
 from random import randint
 
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
@@ -8,6 +9,7 @@ from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.models import EventType
+from pcapi.repository import repository
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
 
 
@@ -23,12 +25,12 @@ def save_allocine_sandbox() -> None:
 
     create_industrial_admin_users()
 
-    user = create_user(
-        first_name="Didier",
-        last_name="Champion",
-        public_name="Didier Champion",
+    user = users_factories.UserFactory(
+        firstName="Didier",
+        lastName="Champion",
+        publicName="Didier Champion",
         email="pro.exploitant-cinema@example.net",
-        is_beneficiary=False,
+        isBeneficiary=False,
     )
 
     offerer = create_offerer(
@@ -60,7 +62,7 @@ def save_allocine_sandbox() -> None:
 
     venue_provider = create_venue_provider(venue, provider=provider, is_active=True)
 
-    repository.save(user, offerer, user_offerer, venue, provider, venue_provider)
+    repository.save(offerer, user_offerer, venue, provider, venue_provider)
 
     offer = create_offer_with_event_product(
         venue,

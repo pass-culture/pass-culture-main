@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from sqlalchemy.exc import IntegrityError
 
-from pcapi.model_creators.generic_creators import create_user
+from pcapi.core.users import factories as users_factories
 from pcapi.models import ApiErrors
 from pcapi.validation.models.user import validate
 
@@ -13,7 +13,7 @@ class UserAlreadyExistsTest:
         self, mocked_count_users_by_email, app
     ):
         # Given
-        user = create_user(idx=None)
+        user = users_factories.UserFactory.build(id=None)
         mocked_count_users_by_email.return_value = 1
         api_errors = ApiErrors()
 
@@ -28,7 +28,7 @@ class UserAlreadyExistsTest:
         self, mocked_count_users_by_email, app
     ):
         # Given
-        user = create_user(idx=1)
+        user = users_factories.UserFactory.build(id=1)
         mocked_count_users_by_email.return_value = 1
         api_errors = ApiErrors()
 
@@ -43,7 +43,7 @@ class UserAlreadyExistsTest:
         self, mocked_count_users_by_email, app
     ):
         # Given
-        user = create_user(idx=None)
+        user = users_factories.UserFactory.build(id=None)
         mocked_count_users_by_email.side_effect = IntegrityError("Mock", "mock", "mock")
         api_errors = ApiErrors()
 
@@ -58,7 +58,7 @@ class UserAlreadyExistsTest:
         self, mocked_count_users_by_email, app
     ):
         # Given
-        user = create_user(idx=1)
+        user = users_factories.UserFactory.build(id=1)
         mocked_count_users_by_email.return_value = IntegrityError("mock", "mock", "mock")
         api_errors = ApiErrors()
 
@@ -72,7 +72,7 @@ class UserAlreadyExistsTest:
 class PublicNameTest:
     def test_should_return_error_message_when_user_public_name_is_empty(self, app):
         # Given
-        user = create_user(public_name="")
+        user = users_factories.UserFactory.build(publicName="")
         api_errors = ApiErrors()
 
         # When
@@ -84,7 +84,7 @@ class PublicNameTest:
     @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
     def test_should_not_return_error_message_when_user_public_name_is_correct(self, mocked_count_users_by_email, app):
         # Given
-        user = create_user(public_name="Jo")
+        user = users_factories.UserFactory.build(publicName="Jo")
         mocked_count_users_by_email.return_value = 0
         api_errors = ApiErrors()
 
@@ -98,7 +98,7 @@ class PublicNameTest:
 class EmailTest:
     def test_should_return_error_message_when_email_does_not_contain_at_sign(self, app):
         # Given
-        user = create_user(email="joel.example.com")
+        user = users_factories.UserFactory.build(email="joel.example.com")
         api_errors = ApiErrors()
 
         # When
@@ -110,7 +110,7 @@ class EmailTest:
     @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
     def test_should_not_return_error_message_when_user_email_is_correct(self, mocked_count_users_by_email, app):
         # Given
-        user = create_user(email="joel@example.com")
+        user = users_factories.UserFactory.build(email="joel@example.com")
         mocked_count_users_by_email.return_value = 0
         api_errors = ApiErrors()
 
@@ -124,7 +124,7 @@ class EmailTest:
 class AdminTest:
     def test_should_return_error_message_when_admin_user_is_beneficiary(self, app):
         # Given
-        user = create_user(is_admin=True, is_beneficiary=True)
+        user = users_factories.UserFactory.build(isAdmin=True, isBeneficiary=True)
         api_errors = ApiErrors()
 
         # When
@@ -137,7 +137,8 @@ class AdminTest:
 class PasswordTest:
     def test_should_return_error_message_when_user_password_is_less_than_8_characters(self, app):
         # Given
-        user = create_user(password="Jo")
+        user = users_factories.UserFactory.build()
+        user.setPassword("Jo")
         api_errors = ApiErrors()
 
         # When
@@ -149,7 +150,8 @@ class PasswordTest:
     @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
     def test_should_not_return_error_message_when_user_password_is_correct(self, mocked_count_users_by_email, app):
         # Given
-        user = create_user(password="JoelDupont")
+        user = users_factories.UserFactory.build()
+        user.setPassword("JoelDupont")
         mocked_count_users_by_email.return_value = 0
         api_errors = ApiErrors()
 

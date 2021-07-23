@@ -1,7 +1,7 @@
 import pytest
 
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
@@ -10,7 +10,7 @@ from pcapi.repository import repository
 @pytest.mark.usefixtures("db_session")
 def test_save_user_offerer_raise_api_error_when_not_unique(app):
     # Given
-    user = create_user()
+    user = users_factories.UserFactory.build()
     offerer = create_offerer()
     uo1 = create_user_offerer(user, offerer)
     repository.save(user, offerer, uo1)

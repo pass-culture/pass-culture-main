@@ -1,8 +1,8 @@
 import pytest
 
 from pcapi.core.testing import override_features
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.models import UserOfferer
 from pcapi.repository import repository
@@ -15,13 +15,13 @@ def test_should_change_pro_users_to_beneficiary(app):
     offerer_1 = create_offerer(siren="987654321")
     offerer_2 = create_offerer(siren="567890342")
     offerer_3 = create_offerer(siren="345987987")
-    pro_1 = create_user(email="email@example.com", is_beneficiary=False, needs_to_fill_cultural_survey=False)
-    pro_2 = create_user(email="email2@example.com")
-    pro_3 = create_user(email="email3@example.com")
+    pro_1 = users_factories.ProFactory(email="email@example.com", needsToFillCulturalSurvey=False)
+    pro_2 = users_factories.ProFactory(email="email2@example.com")
+    pro_3 = users_factories.ProFactory(email="email3@example.com")
     user_offerer_1 = create_user_offerer(pro_1, offerer_1)
     user_offerer_2 = create_user_offerer(pro_1, offerer_2)
     user_offerer_3 = create_user_offerer(pro_3, offerer_3)
-    repository.save(pro_1, pro_2, user_offerer_1, user_offerer_2, user_offerer_3)
+    repository.save(user_offerer_1, user_offerer_2, user_offerer_3)
     pro_users_list_to_change = [pro_1.id, pro_2.id]
 
     # when
@@ -48,13 +48,13 @@ def test_should_change_pro_users_to_beneficiary_with_v1_deposit(app):
     offerer_1 = create_offerer(siren="987654321")
     offerer_2 = create_offerer(siren="567890342")
     offerer_3 = create_offerer(siren="345987987")
-    pro_1 = create_user(email="email@example.com", is_beneficiary=False, needs_to_fill_cultural_survey=False)
-    pro_2 = create_user(email="email2@example.com")
-    pro_3 = create_user(email="email3@example.com")
+    pro_1 = users_factories.ProFactory(email="email@example.com", needsToFillCulturalSurvey=False)
+    pro_2 = users_factories.ProFactory(email="email2@example.com")
+    pro_3 = users_factories.ProFactory(email="email3@example.com")
     user_offerer_1 = create_user_offerer(pro_1, offerer_1)
     user_offerer_2 = create_user_offerer(pro_1, offerer_2)
     user_offerer_3 = create_user_offerer(pro_3, offerer_3)
-    repository.save(pro_1, pro_2, user_offerer_1, user_offerer_2, user_offerer_3)
+    repository.save(user_offerer_1, user_offerer_2, user_offerer_3)
     pro_users_list_to_change = [pro_1.id, pro_2.id]
 
     # when

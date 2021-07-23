@@ -4,9 +4,9 @@ import itertools
 import logging
 import uuid
 
+from pcapi.core.users import factories as users_factories
 import pcapi.core.bookings.conf as bookings_conf
 from pcapi.core.payments.api import create_deposit
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.repository import repository
 
 
@@ -68,20 +68,20 @@ def create_industrial_webapp_young_users():
 
         email = f"pctest.jeune{departement_code}.{tag}.v{deposit_version}@example.com"
 
-        user = create_user(
-            cultural_survey_id=cultural_survey_id,
-            departement_code=str(departement_code),
+        user = users_factories.UserFactory(
+            culturalSurveyId=cultural_survey_id,
+            departementCode=str(departement_code),
             email=email,
-            phone_number=f"+336{index:0>8}",
-            first_name="PC Test Jeune",
-            date_of_birth=datetime(2003, 1, 1),
-            has_seen_tutorials=has_seen_tutorials,
-            last_name=f"{departement_code} {short_tag} {deposit_version}",
-            needs_to_fill_cultural_survey=needs_to_fill_cultural_survey,
-            postal_code="{}100".format(departement_code),
-            public_name=f"PC Test Jeune {departement_code} {short_tag} {deposit_version}",
-            reset_password_token=reset_password_token,
-            reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
+            phoneNumber=f"+336{index:0>8}",
+            firstName="PC Test Jeune",
+            dateOfBirth=datetime(2003, 1, 1),
+            hasSeenTutorials=has_seen_tutorials,
+            lastName=f"{departement_code} {short_tag} {deposit_version}",
+            needsToFillCulturalSurvey=needs_to_fill_cultural_survey,
+            postalCode="{}100".format(departement_code),
+            publicName=f"PC Test Jeune {departement_code} {short_tag} {deposit_version}",
+            resetPasswordToken=reset_password_token,
+            resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
         )
         user_key = f"jeune{departement_code} {tag} v{deposit_version}"
         users_by_name[user_key] = user
@@ -128,21 +128,21 @@ def create_industrial_webapp_general_public_users():
         if age == "age-less-than-18yo":
             date_of_birth = today - timedelta(16 * 366)
 
-        user = create_user(
-            cultural_survey_id=None,
-            departement_code=str(departement_code),
+        user = users_factories.UserFactory(
+            culturalSurveyId=None,
+            departementCode=str(departement_code),
             email=email,
-            phone_number=f"+336{index:0>8}",
-            first_name="PC Test Grand Public",
-            date_of_birth=date_of_birth,
-            has_seen_tutorials=False,
-            is_beneficiary=False,
-            last_name=f"{short_age} {deposit_version}",
-            needs_to_fill_cultural_survey=True,
-            postal_code="{}100".format(departement_code),
-            public_name=f"PC Test Grand Public {short_age} {deposit_version}",
-            reset_password_token=None,
-            reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
+            phoneNumber=f"+336{index:0>8}",
+            firstName="PC Test Grand Public",
+            dateOfBirth=date_of_birth,
+            hasSeenTutorials=False,
+            isBeneficiary=False,
+            lastName=f"{short_age} {deposit_version}",
+            needsToFillCulturalSurvey=True,
+            postalCode="{}100".format(departement_code),
+            publicName=f"PC Test Grand Public {short_age} {deposit_version}",
+            resetPasswordToken=None,
+            resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
         )
         user_key = f"grandpublic{age}v{deposit_version}"
         users_by_name[user_key] = user

@@ -4,8 +4,8 @@ from datetime import datetime
 import pytest
 
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
@@ -38,10 +38,10 @@ class OffererQueriesTest:
 def test_find_email_of_user_offerer_should_returns_email(app):
     # Given
     offerer = create_offerer()
-    pro_user = create_user(email="pro@example.com")
+    pro_user = users_factories.ProFactory(email="pro@example.com")
     user_offerer = create_user_offerer(pro_user, offerer)
 
-    repository.save(pro_user, user_offerer)
+    repository.save(user_offerer)
 
     # When
     result = find_new_offerer_user_email(offerer.id)

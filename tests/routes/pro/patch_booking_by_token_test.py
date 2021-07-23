@@ -4,10 +4,9 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_event_occurrence
@@ -40,7 +39,7 @@ class Returns204Test:
     class WhenUserIsLoggedInTest:
         def expect_booking_to_be_used(self, app):
             booking = BookingFactory(token="ABCDEF")
-            pro_user = UserFactory(email="pro@example.com")
+            pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -53,7 +52,7 @@ class Returns204Test:
 
         def expect_booking_with_token_in_lower_case_to_be_used(self, app):
             booking = BookingFactory(token="ABCDEF")
-            pro_user = UserFactory(email="pro@example.com")
+            pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -66,7 +65,7 @@ class Returns204Test:
 
         def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
             booking = BookingFactory(token="ABCDEF")
-            pro_user = UserFactory(email="pro@example.com")
+            pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -82,7 +81,7 @@ class Returns204Test:
         # Flask knows how to URL-decode parameters?
         def expect_booking_to_be_used_with_special_char_in_url(self, app):
             booking = BookingFactory(token="ABCDEF", user__email="user+plus@example.com")
-            pro_user = UserFactory(email="pro@example.com")
+            pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -101,7 +100,7 @@ class Returns400Test:
     class WhenUserIsAnonymousTest:
         def when_email_is_missing(self, app):
             # Given
-            user = create_user()
+            user = users_factories.UserFactory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -120,7 +119,7 @@ class Returns400Test:
 
         def when_offer_id_is_missing(self, app):
             # Given
-            user = create_user()
+            user = users_factories.UserFactory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -137,7 +136,7 @@ class Returns400Test:
 
         def when_both_email_and_offer_id_are_missing(self, app):
             # Given
-            user = create_user()
+            user = users_factories.UserFactory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -160,8 +159,9 @@ class Returns400Test:
 class Returns403Test:  # Forbidden
     def when_user_is_not_attached_to_linked_offerer(self, app):
         # Given
-        user = create_user()
-        admin_user = create_user(email="admin@example.com")
+        user = users_factories.UserFactory.build()
+        admin_user = users_factories.UserFactory.build(email="admin@example.com")
+
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -182,7 +182,7 @@ class Returns403Test:  # Forbidden
 
     def when_booking_has_been_cancelled_already(self, app):
         # Given
-        admin = UserFactory(isAdmin=True)
+        admin = users_factories.AdminFactory()
         booking = BookingFactory(isCancelled=True)
         url = f"/bookings/token/{booking.token}"
 
@@ -200,7 +200,7 @@ class Returns404Test:
     class WhenUserIsAnonymousTest:
         def when_booking_does_not_exist(self, app):
             # Given
-            user = create_user()
+            user = users_factories.UserFactory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -220,13 +220,13 @@ class Returns404Test:
     class WhenUserIsLoggedInTest:
         def when_user_is_not_editor_and_email_does_not_match(self, app):
             # Given
-            user = create_user()
-            admin_user = create_user(email="admin@example.com")
+            user = users_factories.UserFactory()
+            users_factories.AdminFactory(email="admin@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            repository.save(booking, admin_user)
+            repository.save(booking)
             booking_id = booking.id
             url = "/bookings/token/{}?email={}".format(booking.token, "wrong@example.com")
 
@@ -239,8 +239,8 @@ class Returns404Test:
 
         def when_email_has_special_characters_but_is_not_url_encoded(self, app):
             # Given
-            user = create_user(email="user+plus@example.com")
-            user_admin = create_user(email="admin@example.com")
+            user = users_factories.UserFactory(email="user+plus@example.com")
+            user_admin = users_factories.UserFactory(email="admin@example.com")
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_admin, offerer)
             venue = create_venue(offerer)
@@ -259,13 +259,13 @@ class Returns404Test:
 
         def when_user_is_not_editor_and_offer_id_is_invalid(self, app):
             # Given
-            user = create_user()
-            admin_user = create_user(email="admin@example.com")
+            user = users_factories.UserFactory()
+            users_factories.AdminFactory(email="admin@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            repository.save(booking, admin_user)
+            repository.save(booking)
             booking_id = booking.id
             url = "/bookings/token/{}?email={}&offer_id={}".format(booking.token, user.email, humanize(123))
 

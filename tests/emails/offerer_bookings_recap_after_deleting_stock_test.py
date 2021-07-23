@@ -1,12 +1,12 @@
 from datetime import datetime
 from unittest.mock import patch
 
+from pcapi.core.users import factories as users_factories
 from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation,
 )
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
@@ -21,7 +21,9 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
     )
     def test_should_return_mailjet_data_with_correct_information_when_offer_is_an_event(self, build_pc_pro_offer_link):
         # Given
-        user = create_user(public_name="John Doe", first_name="John", last_name="Doe", email="john@example.com")
+        user = users_factories.UserFactory.build(
+            publicName="John Doe", firstName="John", lastName="Doe", email="john@example.com"
+        )
         offerer = create_offerer()
         venue = create_venue(offerer, name="Venue name")
         offer = create_offer_with_event_product(venue, event_name="My Event")
@@ -58,7 +60,9 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
     )
     def test_should_return_mailjet_data_when_multiple_bookings_and_offer_is_a_thing(self, build_pc_pro_offer_link):
         # Given
-        user = create_user(public_name="John Doe", first_name="John", last_name="Doe", email="john@example.com")
+        user = users_factories.UserFactory.build(
+            publicName="John Doe", firstName="John", lastName="Doe", email="john@example.com"
+        )
         offerer = create_offerer()
         venue = create_venue(offerer, name="La petite librairie", public_name="La grande librairie")
         thing_product = create_product_with_thing_type(thing_name="Le récit de voyage")
@@ -66,7 +70,9 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
         stock = create_stock_from_offer(offer, price=0)
         booking = create_booking(user=user, stock=stock, token="12346", quantity=6)
 
-        user2 = create_user(public_name="James Bond", first_name="James", last_name="Bond", email="bond@example.com")
+        user2 = users_factories.UserFactory.build(
+            publicName="James Bond", firstName="James", lastName="Bond", email="bond@example.com"
+        )
         booking2 = create_booking(user=user2, stock=stock, token="12345")
         bookings = [booking, booking2]
 

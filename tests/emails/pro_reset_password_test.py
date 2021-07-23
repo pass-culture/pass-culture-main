@@ -2,9 +2,9 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.users import factories as users_factories
 from pcapi.emails.pro_reset_password import retrieve_data_for_reset_password_pro_email
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.repository import repository
 
@@ -14,7 +14,7 @@ class MakeProResetPasswordEmailDataTest:
     @pytest.mark.usefixtures("db_session")
     def test_email_is_sent_to_dev_at_passculture_when_not_production_environment(self):
         # Given
-        pro = create_user(email="pro@example.com", reset_password_token="ABCDEFG")
+        pro = users_factories.UserFactory(email="pro@example.com", resetPasswordToken="ABCDEFG")
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro, offerer)
 
@@ -34,7 +34,7 @@ class MakeProResetPasswordEmailDataTest:
     @pytest.mark.usefixtures("db_session")
     def test_email_is_sent_to_pro_offerer_when_production_environment(self):
         # Given
-        pro = create_user(email="pro@example.com", reset_password_token="ABCDEFG")
+        pro = users_factories.UserFactory(email="pro@example.com", resetPasswordToken="ABCDEFG")
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro, offerer)
 

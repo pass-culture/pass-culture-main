@@ -6,7 +6,6 @@ import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
@@ -22,7 +21,7 @@ class Returns204Test:
     @pytest.mark.usefixtures("db_session")
     def test_should_returns_204_with_cancellation_allowed(self, app):
         # Given
-        pro_user = create_user(email="Mr Books@example.net", public_name="Mr Books")
+        pro_user = users_factories.ProFactory(email="Mr Books@example.net", publicName="Mr Books")
         offerer = create_offerer(siren="793875030")
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
@@ -62,7 +61,7 @@ class Returns204Test:
     @pytest.mark.usefixtures("db_session")
     def test_should_returns_204_with_lowercase_token(self, app):
         # Given
-        pro_user = create_user(email="Mr Books@example.net", public_name="Mr Books")
+        pro_user = users_factories.ProFactory(email="Mr Books@example.net", publicName="Mr Books")
         offerer = create_offerer(siren="793875030")
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
@@ -139,7 +138,7 @@ class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_the_api_key_is_not_linked_to_the_right_offerer(self, app):
         # Given
-        pro_user = create_user(email="Mr Books@example.net", public_name="Mr Books")
+        pro_user = users_factories.ProFactory(email="Mr Books@example.net", publicName="Mr Books")
         offerer = create_offerer(siren="793875030")
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
@@ -170,7 +169,7 @@ class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_the_logged_user_has_not_rights_on_offerer(self, app):
         # Given
-        pro_user = create_user(email="mr.book@example.net", public_name="Mr Books")
+        pro_user = users_factories.ProFactory(email="mr.book@example.net", publicName="Mr Books")
         offerer = create_offerer(siren="793875030")
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
@@ -205,7 +204,7 @@ class Returns403Test:
         @pytest.mark.usefixtures("db_session")
         def test_should_prevent_a_used_booking_from_being_cancelled(self, app):
             # Given
-            pro_user = create_user(email="Mr Books@example.net", public_name="Mr Books")
+            pro_user = users_factories.ProFactory(email="Mr Books@example.net", publicName="Mr Books")
             offerer = create_offerer(siren="793875030")
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
@@ -264,7 +263,7 @@ class Returns410Test:
     @pytest.mark.usefixtures("db_session")
     def test_cancel_a_booking_already_cancelled(self, app):
         # Given
-        pro_user = create_user(email="Mr Books@example.net", public_name="Mr Books")
+        pro_user = users_factories.ProFactory(email="Mr Books@example.net", publicName="Mr Books")
         offerer = create_offerer(siren="793875030")
         user_offerer = create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)

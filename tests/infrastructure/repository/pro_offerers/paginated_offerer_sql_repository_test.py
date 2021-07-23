@@ -1,11 +1,11 @@
 import pytest
 
+from pcapi.core.users import factories as users_factories
 from pcapi.domain.pro_offerers.paginated_offerers import PaginatedOfferers
 from pcapi.infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import (
     PaginatedOfferersSQLRepository,
 )
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.repository import repository
@@ -15,7 +15,7 @@ class PaginatedOffererSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def should_only_return_offerers_linked_to_user(self, app):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer1 = create_offerer()
         offerer2 = create_offerer(siren="912345678")
         user_offerer = create_user_offerer(user=user, offerer=offerer1)
@@ -41,7 +41,7 @@ class PaginatedOffererSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_linked_offerers_with_matching_keywords_in_name(self, app):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer1 = create_offerer(name="Theatre")
         offerer2 = create_offerer(name="Cinema", siren="912345678")
         venue1 = create_venue(offerer=offerer1, siret=None, is_virtual=True)
@@ -69,7 +69,7 @@ class PaginatedOffererSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_linked_offerers_with_matching_keywords_in_venue_name(self, app):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer1 = create_offerer(name="Theatre")
         offerer2 = create_offerer(name="Cinema", siren="912345678")
         venue1 = create_venue(name="Les fleurs", offerer=offerer1, siret=None, is_virtual=True)
@@ -97,7 +97,7 @@ class PaginatedOffererSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_only_one_offerers_when_it_has_multiple_venues(self, app):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer1 = create_offerer(name="Theatre")
         venue1 = create_venue(name="Les fleurs", offerer=offerer1, siret=None, is_virtual=True)
         venue2 = create_venue(name="Les jardins du vide", offerer=offerer1, siret=None, is_virtual=True)
@@ -123,7 +123,7 @@ class PaginatedOffererSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def should_filter_out_non_validated_offerers(self, app):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer1 = create_offerer(validation_token="RTYUIO")
         offerer2 = create_offerer(siren="987654310")
         user_offerer1 = create_user_offerer(user=user, offerer=offerer1)

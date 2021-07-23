@@ -3,11 +3,11 @@ from datetime import timedelta
 import logging
 
 import pcapi.core.payments.api as payments_api
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_event_occurrence
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
@@ -27,28 +27,28 @@ three_days = timedelta(days=3)
 
 
 def save_users_with_deposits():
-    user1 = create_user(
-        is_beneficiary=True,
+    user1 = users_factories.UserFactory(
+        isBeneficiary=True,
         email="user1@test.com",
         reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
     )
-    user2 = create_user(
-        is_beneficiary=True,
+    user2 = users_factories.UserFactory(
+        isBeneficiary=True,
         email="user2@test.com",
         reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
     )
-    user3 = create_user(
-        is_beneficiary=True,
+    user3 = users_factories.UserFactory(
+        isBeneficiary=True,
         email="user3@test.com",
         reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
     )
-    user4 = create_user(
-        is_beneficiary=True,
+    user4 = users_factories.UserFactory(
+        isBeneficiary=True,
         email="user4@test.com",
         reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
     )
-    user5 = create_user(
-        is_beneficiary=True,
+    user5 = users_factories.UserFactory(
+        isBeneficiary=True,
         email="user5@test.com",
         reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
     )

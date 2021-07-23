@@ -2,9 +2,9 @@ from datetime import datetime
 from datetime import timedelta
 import logging
 
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import check_if_siren_already_exists
@@ -62,16 +62,16 @@ def create_industrial_offerers_with_pro_users():
         last_name = MOCK_LAST_NAMES[user_index]
         email = get_email(first_name, last_name, domain)
         user_name = "{} {}".format(first_name, last_name)
-        user = create_user(
-            reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
-            departement_code=str(departement_code),
+        user = users_factories.UserFactory(
+            resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
+            departementCode=str(departement_code),
             email=email,
-            first_name=first_name,
-            last_name=last_name,
-            postal_code="{}100".format(departement_code),
-            phone_number="01 00 00 00 00",
-            public_name="{} {}".format(first_name, last_name),
-            validation_token="{}{}".format(user_validation_prefix, user_validation_suffix),
+            firstName=first_name,
+            lastName=last_name,
+            postalCode="{}100".format(departement_code),
+            phoneNumber="01 00 00 00 00",
+            publicName="{} {}".format(first_name, last_name),
+            validationToken="{}{}".format(user_validation_prefix, user_validation_suffix),
         )
         users_by_name[user_name] = user
         user_index += 1
@@ -135,16 +135,16 @@ def create_industrial_offerers_with_pro_users():
         if location_index % VALIDATED_OFFERERS_REMOVE_MODULO == 0:
             offerer.generate_validation_token()
 
-        user = create_user(
-            reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
-            departement_code=str(departement_code),
+        user = users_factories.UserFactory(
+            resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
+            departementCode=str(departement_code),
             email=email,
-            first_name=first_name,
-            last_name=last_name,
-            postal_code="{}100".format(departement_code),
-            phone_number="01 00 00 00 00",
-            public_name="{} {}".format(first_name, last_name),
-            validation_token=user_validation_token,
+            firstName=first_name,
+            lastName=last_name,
+            postalCode="{}100".format(departement_code),
+            phoneNumber="01 00 00 00 00",
+            publicName="{} {}".format(first_name, last_name),
+            validationToken=user_validation_token,
         )
         users_by_name[user_name] = user
         user_validation_suffix += 1
@@ -169,16 +169,16 @@ def create_industrial_offerers_with_pro_users():
             else:
                 user_validation_token = "{}{}".format(user_validation_prefix, user_validation_suffix)
             user_name = "{} {}".format(first_name, last_name)
-            user = create_user(
-                reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
-                departement_code=str(departement_code),
+            user = users_factories.UserFactory(
+                resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
+                departementCode=str(departement_code),
                 email=email,
-                first_name=first_name,
-                last_name=last_name,
-                postal_code="{}100".format(departement_code),
-                phone_number="01 00 00 00 00",
-                public_name="{} {}".format(first_name, last_name),
-                validation_token=user_validation_token,
+                firstName=first_name,
+                lastName=last_name,
+                postalCode="{}100".format(departement_code),
+                phoneNumber="01 00 00 00 00",
+                publicName="{} {}".format(first_name, last_name),
+                validationToken=user_validation_token,
             )
             users_by_name[user_name] = user
             user_index += 1

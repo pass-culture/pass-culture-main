@@ -1,9 +1,9 @@
 from unittest.mock import patch
 
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_product_with_thing_type
@@ -154,7 +154,7 @@ def test_should_not_return_errors_when_valid_stock():
 @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
 def test_should_return_errors_when_invalid_user(mock_count_users_by_email, app):
     # Given
-    user = create_user(public_name="")
+    user = users_factories.UserFactory.build(publicName="")
     mock_count_users_by_email.return_value = 0
 
     # When
@@ -167,7 +167,7 @@ def test_should_return_errors_when_invalid_user(mock_count_users_by_email, app):
 @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
 def test_should_not_return_errors_when_valid_user(mock_count_users_by_email, app):
     # Given
-    user = create_user(public_name="Joe la bricole")
+    user = users_factories.UserFactory.build(publicName="Joe la bricole")
     mock_count_users_by_email.return_value = 0
 
     # When

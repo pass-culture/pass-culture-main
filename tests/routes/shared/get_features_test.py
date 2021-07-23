@@ -1,7 +1,6 @@
 import pytest
 
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.repository import repository
+from pcapi.core.users import factories as users_factories
 
 from tests.conftest import TestClient
 
@@ -10,8 +9,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in(self, app):
         # given
-        user = create_user()
-        repository.save(user)
+        user = users_factories.UserFactory()
 
         # when
         response = TestClient(app.test_client()).with_auth(user.email).get("/features")

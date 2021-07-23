@@ -1,12 +1,12 @@
 import pytest
 
 from pcapi.core.offers.models import Mediation
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_product_with_thing_type
@@ -89,14 +89,14 @@ class DeleteUnwantedExistingProductTest:
     ):
         # Given
         isbn = "1111111111111"
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer = create_offerer(siren="775671464")
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
         product = create_product_with_thing_type(id_at_providers=isbn, is_gcu_compatible=True)
         offer = create_offer_with_thing_product(venue, product=product, is_active=True)
         stock = create_stock(offer=offer, price=0)
         booking = create_booking(user=user, is_cancelled=True, stock=stock)
-        repository.save(venue, product, offer, stock, booking, user)
+        repository.save(venue, product, offer, stock, booking)
 
         # When
         with pytest.raises(Exception):
@@ -112,7 +112,7 @@ class DeleteUnwantedExistingProductTest:
     def test_should_delete_product_when_related_offer_has_mediation(self, app):
         # Given
         isbn = "1111111111111"
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer = create_offerer(siren="775671464")
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
         product = create_product_with_thing_type(id_at_providers=isbn)
@@ -120,7 +120,7 @@ class DeleteUnwantedExistingProductTest:
         stock = create_stock(offer=offer, price=0)
         mediation = create_mediation(offer=offer)
 
-        repository.save(venue, product, offer, stock, user, mediation)
+        repository.save(venue, product, offer, stock, mediation)
 
         # When
         delete_unwanted_existing_product("1111111111111")
@@ -135,7 +135,7 @@ class DeleteUnwantedExistingProductTest:
     def test_should_delete_product_when_related_offer_is_on_user_favorite_list(self, app):
         # Given
         isbn = "1111111111111"
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer = create_offerer(siren="775671464")
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
         product = create_product_with_thing_type(id_at_providers=isbn)
@@ -144,7 +144,7 @@ class DeleteUnwantedExistingProductTest:
         mediation = create_mediation(offer=offer)
         favorite = create_favorite(mediation=mediation, offer=offer, user=user)
 
-        repository.save(venue, product, offer, stock, user, mediation, favorite)
+        repository.save(venue, product, offer, stock, mediation, favorite)
 
         # When
         delete_unwanted_existing_product("1111111111111")

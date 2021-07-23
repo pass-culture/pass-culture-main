@@ -9,17 +9,16 @@ from pcapi.connectors.beneficiaries import jouve_backend
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.db import db
 from pcapi.models.deposit import Deposit
 from pcapi.notifications.push import testing as push_testing
-from pcapi.repository import repository
 from pcapi.use_cases.create_beneficiary_from_application import create_beneficiary_from_application
 
 
@@ -217,8 +216,7 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
 def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     # Given
     email = "rennes@example.org"
-    user = create_user(email=email, idx=4)
-    repository.save(user)
+    user = users_factories.UserFactory(email=email, id=4)
 
     # When
     create_beneficiary_from_application.execute(APPLICATION_ID)
@@ -245,8 +243,9 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     date_of_birth = datetime(1995, 5, 22)
     existing_user_id = 4
 
-    user = create_user(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth, idx=existing_user_id)
-    repository.save(user)
+    user = users_factories.UserFactory(
+        firstName=first_name, lastName=last_name, dateOfBirth=date_of_birth, id=existing_user_id
+    )
 
     # When
     create_beneficiary_from_application.execute(APPLICATION_ID)

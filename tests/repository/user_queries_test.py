@@ -8,7 +8,6 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_beneficiary_import
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import ImportStatus
 from pcapi.repository import repository
@@ -108,13 +107,12 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_case(self, app):
         # given
-        user1 = create_user(
-            date_of_birth=datetime(2000, 5, 1), email="john@example.com", first_name="john", last_name="DOe"
+        user1 = users_factories.UserFactory(
+            dateOfBirth=datetime(2000, 5, 1), email="john@example.com", firstName="john", lastName="DOe"
         )
-        user2 = create_user(
-            date_of_birth=datetime(2000, 3, 20), email="jane@example.com", first_name="jaNE", last_name="DOe"
+        user2 = users_factories.UserFactory(
+            dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
         )
-        repository.save(user1, user2)
 
         # when
         users = find_beneficiary_by_civility("john", "doe", datetime(2000, 5, 1))
@@ -126,13 +124,12 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_dash(self, app):
         # given
-        user2 = create_user(
-            date_of_birth=datetime(2000, 3, 20), email="jane@example.com", first_name="jaNE", last_name="DOe"
+        user2 = users_factories.UserFactory(
+            dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
         )
-        user1 = create_user(
-            date_of_birth=datetime(2000, 5, 1), email="john.b@example.com", first_name="john-bob", last_name="doe"
+        user1 = users_factories.UserFactory(
+            dateOfBirth=datetime(2000, 5, 1), email="john.b@example.com", firstName="john-bob", lastName="doe"
         )
-        repository.save(user1, user2)
 
         # when
         users = find_beneficiary_by_civility("johnbob", "doe", datetime(2000, 5, 1))
@@ -144,13 +141,12 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_spaces(self, app):
         # given
-        user2 = create_user(
-            date_of_birth=datetime(2000, 3, 20), email="jane@example.com", first_name="jaNE", last_name="DOe"
+        user2 = users_factories.UserFactory(
+            dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
         )
-        user1 = create_user(
-            date_of_birth=datetime(2000, 5, 1), email="john.b@example.com", first_name="john bob", last_name="doe"
+        user1 = users_factories.UserFactory(
+            dateOfBirth=datetime(2000, 5, 1), email="john.b@example.com", firstName="john bob", lastName="doe"
         )
-        repository.save(user1, user2)
 
         # when
         users = find_beneficiary_by_civility("johnbob", "doe", datetime(2000, 5, 1))
@@ -162,13 +158,12 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_accents(self, app):
         # given
-        user2 = create_user(
-            date_of_birth=datetime(2000, 3, 20), email="jane@example.com", first_name="jaNE", last_name="DOe"
+        user2 = users_factories.UserFactory(
+            dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
         )
-        user1 = create_user(
-            date_of_birth=datetime(2000, 5, 1), email="john.b@example.com", first_name="john bob", last_name="doe"
+        user1 = users_factories.UserFactory(
+            dateOfBirth=datetime(2000, 5, 1), email="john.b@example.com", firstName="john bob", lastName="doe"
         )
-        repository.save(user1, user2)
 
         # when
         users = find_beneficiary_by_civility("jöhn bób", "doe", datetime(2000, 5, 1))
@@ -180,8 +175,7 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_if_one_criteria_does_not_match(self, app):
         # given
-        user = create_user(date_of_birth=datetime(2000, 5, 1), first_name="Jean", last_name="DOe")
-        repository.save(user)
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 5, 1), firstName="Jean", lastName="DOe")
 
         # when
         users = find_beneficiary_by_civility("john", "doe", datetime(2000, 5, 1))
@@ -192,13 +186,12 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_first_and_last_names_and_birthdate_and_invalid_email(self, app):
         # given
-        user1 = create_user(
-            date_of_birth=datetime(2000, 5, 1), email="john@example.com", first_name="john", last_name="DOe"
+        user1 = users_factories.UserFactory(
+            dateOfBirth=datetime(2000, 5, 1), email="john@example.com", firstName="john", lastName="DOe"
         )
-        user2 = create_user(
-            date_of_birth=datetime(2000, 3, 20), email="jane@example.com", first_name="jaNE", last_name="DOe"
+        user2 = users_factories.UserFactory(
+            dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
         )
-        repository.save(user1, user2)
 
         # when
         users = find_beneficiary_by_civility("john", "doe", datetime(2000, 5, 1))
@@ -218,9 +211,9 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
         two_days_ago = now - timedelta(days=2)
         three_days_ago = now - timedelta(days=3)
 
-        user1 = create_user(date_created=yesterday, email="user1@example.com")
-        user2 = create_user(date_created=two_days_ago, email="user2@example.com")
-        user3 = create_user(date_created=three_days_ago, email="user3@example.com")
+        users_factories.UserFactory(dateCreated=yesterday, email="user1@example.com")
+        user2 = users_factories.UserFactory(dateCreated=two_days_ago, email="user2@example.com")
+        user3 = users_factories.UserFactory(dateCreated=three_days_ago, email="user3@example.com")
         beneficiary_import = [
             create_beneficiary_import(
                 user=user2, status=ImportStatus.ERROR, date=two_days_ago, application_id=1, source_id=source_id
@@ -230,7 +223,7 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
             ),
         ]
 
-        repository.save(user1, *beneficiary_import)
+        repository.save(*beneficiary_import)
 
         # when
         most_recent_creation_date = find_most_recent_beneficiary_creation_date_for_source(
@@ -248,7 +241,7 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
         now = datetime.utcnow()
         yesterday = now - timedelta(days=1)
 
-        user = create_user(date_created=yesterday, email="user@example.com")
+        user = users_factories.UserFactory(dateCreated=yesterday, email="user@example.com")
         beneficiary_import = create_beneficiary_import(
             user=user, status=ImportStatus.CREATED, date=yesterday, application_id=3, source_id=old_source_id
         )
@@ -267,8 +260,7 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
     def test_returns_min_year_if_no_beneficiary_import_exist(self, app):
         # given
         yesterday = datetime.utcnow() - timedelta(days=1)
-        user = create_user(date_created=yesterday)
-        repository.save(user)
+        users_factories.UserFactory(dateCreated=yesterday)
 
         # when
         most_recent_creation_date = find_most_recent_beneficiary_creation_date_for_source(

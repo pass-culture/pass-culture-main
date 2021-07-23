@@ -1,12 +1,12 @@
 from datetime import datetime
 
+from pcapi.core.users import factories as users_factories
 from pcapi.emails.user_notification_after_stock_update import (
     retrieve_data_to_warn_user_after_stock_update_affecting_booking,
 )
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 
@@ -17,7 +17,7 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0)
         new_beginning_datetime = datetime(2019, 8, 20, 12, 0, 0)
 
-        user = create_user()
+        user = users_factories.UserFactory.build()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name="Offer name")

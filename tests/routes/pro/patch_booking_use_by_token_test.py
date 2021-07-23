@@ -4,11 +4,10 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
@@ -65,7 +64,7 @@ class Returns204Test:
     class WithBasicAuthTest:
         def test_when_user_is_logged_in_and_regular_offer(self, app):
             booking = BookingFactory(token="ABCDEF")
-            pro_user = UserFactory(email="pro@example.com")
+            pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -78,7 +77,7 @@ class Returns204Test:
 
         def test_when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, app):
             booking = BookingFactory(token="ABCDEF")
-            pro_user = UserFactory(email="pro@example.com")
+            pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -94,7 +93,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_not_logged_in_and_doesnt_give_api_key(self, app):
         # Given
-        user = create_user(email="user@example.com")
+        user = users_factories.UserFactory(email="user@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -112,15 +111,15 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_not_logged_in_and_not_existing_api_key_given(self, app):
         # Given
-        user = create_user(email="user@example.com")
-        pro_user = create_user(email="pro@example.com")
+        user = users_factories.UserFactory(email="user@example.com")
+        users_factories.ProFactory(email="pro@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)
 
-        repository.save(pro_user, booking)
+        repository.save(booking)
 
         # When
         url = "/v2/bookings/use/token/{}".format(booking.token)
@@ -137,7 +136,7 @@ class Returns403Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_api_key_given_not_related_to_booking_offerer(self, app):
             # Given
-            user = UserFactory(email="user@example.com")
+            user = users_factories.UserFactory(email="user@example.com")
             offerer2 = offers_factories.OffererFactory(siren="987654321")
             offer = offers_factories.EventOfferFactory(type="EventType.CINEMA")
             stock = offers_factories.EventStockFactory(offer=offer, price=0)
@@ -160,8 +159,8 @@ class Returns403Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_api_key_is_provided_and_booking_has_been_cancelled_already(self, app):
             # Given
-            user = create_user()
-            pro_user = create_user(email="pro@example.com")
+            user = users_factories.UserFactory()
+            pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
@@ -182,13 +181,13 @@ class Returns403Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_user_is_not_attached_to_linked_offerer(self, app):
             # Given
-            user = create_user()
-            pro_user = create_user(email="pro@example.com")
+            user = users_factories.UserFactory()
+            users_factories.ProFactory(email="pro@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
-            repository.save(booking, pro_user)
+            repository.save(booking)
             booking_id = booking.id
             url = f"/v2/bookings/use/token/{booking.token}"
 
@@ -203,7 +202,7 @@ class Returns403Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
             # Given
-            admin = UserFactory(isAdmin=True)
+            admin = users_factories.UserFactory(isAdmin=True)
             booking = BookingFactory(isCancelled=True)
             url = f"/v2/bookings/use/token/{booking.token}"
 
@@ -220,7 +219,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_booking_is_not_provided_at_all(self, app):
         # Given
-        user = create_user(email="user@example.com")
+        user = users_factories.UserFactory(email="user@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -239,7 +238,7 @@ class Returns404Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_api_key_is_provided_and_booking_does_not_exist(self, app):
             # Given
-            user = create_user()
+            user = users_factories.UserFactory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -264,8 +263,8 @@ class Returns404Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_user_is_logged_in_and_booking_does_not_exist(self, app):
             # Given
-            user = create_user()
-            pro_user = create_user(email="pro@example.com")
+            user = users_factories.UserFactory()
+            pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)

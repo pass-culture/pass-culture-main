@@ -40,7 +40,6 @@ from pcapi.domain.user_emails import send_warning_to_beneficiary_after_pro_booki
 from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.models import offer_type
@@ -73,7 +72,7 @@ class SendBeneficiaryBookingCancellationEmailTest:
         self, mocked_make_beneficiary_booking_cancellation_email_data
     ):
         # given
-        beneficiary = create_user()
+        beneficiary = users_factories.UserFactory()
         booking = create_booking(beneficiary, idx=23)
 
         # when
@@ -93,7 +92,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         self, make_offerer_driven_cancellation_email_for_offerer
     ):
         # Given
-        user = create_user(email="user@example.com")
+        user = users_factories.UserFactory(email="user@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         venue.bookingEmail = "booking@example.com"
@@ -164,7 +163,7 @@ class SendBookingConfirmationEmailToBeneficiaryTest:
     )
     def when_called_calls_send_email(self, mocked_retrieve_data_for_beneficiary_booking_confirmation_email):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         booking = create_booking(user=user, idx=23)
 
         # When
@@ -232,7 +231,7 @@ class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
 class SendProUserValidationEmailTest:
     def test_sends_email_to_pro_user(self):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         user.generate_validation_token()
 
         # When
@@ -246,7 +245,7 @@ class SendProUserValidationEmailTest:
 class SendAdminUserValidationEmailTest:
     def test_send_mail_to_admin_user(self):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         token = users_factories.ResetPasswordToken(user=user)
 
         # When

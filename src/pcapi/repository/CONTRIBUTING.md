@@ -51,13 +51,12 @@ class FindUserActivationBookingTest:
     @clean_database
     def test_returns_activation_booking_linked_to_user(self, app):
         # given
-        user = create_user()
-        offerer = create_offerer(siren='123456789', name='pass Culture')
-        venue_online = create_venue(offerer, siret=None, is_virtual=True)
-        activation_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.ACTIVATION)
-        activation_stock = create_stock_from_offer(activation_offer, quantity=200, price=0)
-        activation_booking = create_booking(user=user, stock=activation_stock, venue=venue_online)
-        repository.save(activation_booking)
+        user = UserFactory()
+        offerer = OffererFactory(siren='123456789', name='pass Culture')
+        venue_online = VenueFactory(offerer, siret=None, isVirtual=True)
+        activation_offer = OfferFactory(venue_online, thingType=ThingType.ACTIVATION)
+        activation_stock = StockFactory(activation_offer, quantity=200, price=0)
+        activation_booking = BookingFactory(user=user, stock=activation_stock, venue=venue_online)
 
         # when
         booking = find_user_activation_booking(user)

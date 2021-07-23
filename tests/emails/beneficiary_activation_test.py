@@ -6,7 +6,6 @@ import pytest
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.emails import beneficiary_activation
-from pcapi.model_creators.generic_creators import create_user
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -15,7 +14,9 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class GetActivationEmailTest:
     def test_should_return_dict_when_environment_is_production(self):
         # Given
-        user = create_user(email="fabien+test@example.net", first_name="Fabien", reset_password_token="ABCD123")
+        user = users_factories.UserFactory.build(
+            email="fabien+test@example.net", firstName="Fabien", resetPasswordToken="ABCD123"
+        )
 
         # When
         activation_email_data = beneficiary_activation.get_activation_email_data(user, user.tokens[0])
@@ -34,7 +35,7 @@ class GetActivationEmailTest:
     @freeze_time("2013-05-15 09:00:00")
     def test_return_dict_for_native_eligible_user(self):
         # Given
-        user = create_user(email="fabien+test@example.net", date_of_birth=datetime(1995, 2, 5))
+        user = users_factories.UserFactory.build(email="fabien+test@example.net", dateOfBirth=datetime(1995, 2, 5))
         token = users_factories.EmailValidationToken.build(user=user)
 
         # When
@@ -52,7 +53,7 @@ class GetActivationEmailTest:
     @override_features(APPLY_BOOKING_LIMITS_V2=False)
     def test_return_dict_for_native_under_age_user_v1(self):
         # Given
-        user = create_user(email="fabien+test@example.net", date_of_birth=datetime(1995, 2, 5))
+        user = users_factories.UserFactory.build(email="fabien+test@example.net", dateOfBirth=datetime(1995, 2, 5))
         token = users_factories.EmailValidationToken.build(user=user)
 
         # When
@@ -69,7 +70,7 @@ class GetActivationEmailTest:
     @override_features(APPLY_BOOKING_LIMITS_V2=True)
     def test_return_dict_for_native_under_age_user_v2(self):
         # Given
-        user = create_user(email="fabien+test@example.net", date_of_birth=datetime(1995, 2, 5))
+        user = users_factories.UserFactory.build(email="fabien+test@example.net", dateOfBirth=datetime(1995, 2, 5))
         token = users_factories.EmailValidationToken.build(user=user)
 
         # When

@@ -5,10 +5,10 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.offers.factories import StockWithActivationCodesFactory
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_event_occurrence
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
@@ -31,7 +31,7 @@ class SerializeBookingTest:
     @freeze_time("2019-11-26 18:29:20.891028")
     def test_should_return_dict_when_offer_is_a_cinema(self):
         # Given
-        user = create_user(email="user@example.com", public_name="John Doe")
+        user = users_factories.UserFactory.build(email="user@example.com", publicName="John Doe")
         offerer = create_offerer()
         venue = create_venue(offerer, name="Venue name", address="Venue address")
         offer = create_offer_with_event_product(venue=venue, event_name="Event Name", event_type=EventType.CINEMA)
@@ -68,7 +68,7 @@ class SerializeBookingTest:
     @freeze_time("2019-11-26 18:29:20.891028")
     def test_should_humanize_ids(self):
         # Given
-        user = create_user(email="user@example.com", public_name="John Doe")
+        user = users_factories.UserFactory.build(email="user@example.com", publicName="John Doe")
         offerer = create_offerer()
         venue = create_venue(offerer, name="Venue name", address="Venue address")
         offer = create_offer_with_event_product(
@@ -88,7 +88,7 @@ class SerializeBookingTest:
 
     def test_should_return_dict_when_offer_is_a_subscription_cinema(self):
         # Given
-        user = create_user(email="user@example.com", public_name="John Doe")
+        user = users_factories.UserFactory.build(email="user@example.com", publicName="John Doe")
         offerer = create_offerer()
         venue = create_venue(offerer, name="Venue name", address="Venue address")
         product = create_product_with_thing_type(
@@ -140,7 +140,7 @@ class SerializeBookingTest:
 
     def test_should_return_empty_isbn_when_product_does_not_contain_isbn(self):
         # Given
-        user = create_user(email="user@example.com", public_name="John Doe")
+        user = users_factories.UserFactory.build(email="user@example.com", publicName="John Doe")
         offerer = create_offerer()
         venue = create_venue(offerer, name="Venue name", address="Venue address")
         product = create_product_with_thing_type(
@@ -159,7 +159,7 @@ class SerializeBookingTest:
     @freeze_time("2019-11-26 18:29:20.891028")
     def test_should_return_empty_formula_when_offer_is_not_a_cinema(self):
         # Given
-        user = create_user(email="user@example.com", public_name="John Doe")
+        user = users_factories.UserFactory.build(email="user@example.com", publicName="John Doe")
         offerer = create_offerer()
         venue = create_venue(offerer, name="Venue name", address="Venue address")
         offer = create_offer_with_event_product(venue=venue, event_name="Event Name", event_type=EventType.JEUX)
@@ -176,11 +176,11 @@ class SerializeBookingTest:
     @freeze_time("2019-11-26 18:29:20.891028")
     def test_should_return_date_of_birth_and_phone_number_when_offer_is_an_activation(self):
         # Given
-        user = create_user(
-            date_of_birth=datetime(2001, 1, 1),
+        user = users_factories.UserFactory.build(
+            dateOfBirth=datetime(2001, 1, 1),
             email="user@example.com",
-            phone_number="0612345678",
-            public_name="John Doe",
+            phoneNumber="0612345678",
+            publicName="John Doe",
         )
         offerer = create_offerer()
         venue = create_venue(offerer, name="Venue name", address="Venue address")

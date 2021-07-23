@@ -1,6 +1,5 @@
 from pcapi import settings
 import pcapi.core.users.factories as users_factories
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.utils.mailing import make_admin_user_validation_email
 from pcapi.utils.mailing import make_pro_user_validation_email
 
@@ -10,7 +9,7 @@ from tests.conftest import clean_database
 class ProValidationEmailsTest:
     def test_make_pro_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
-        user = create_user(email="test@example.com")
+        user = users_factories.UserFactory.build(email="test@example.com")
         user.generate_validation_token()
 
         # When

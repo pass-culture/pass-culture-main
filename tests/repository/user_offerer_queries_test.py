@@ -2,8 +2,8 @@ import pytest
 from sqlalchemy.orm.exc import MultipleResultsFound
 
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
@@ -21,7 +21,7 @@ from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id
 @pytest.mark.usefixtures("db_session")
 def test_find_one_or_none_by_user_id_should_return_one_user_offerer_with_same_user_id(app):
     # Given
-    user = create_user(email="offerer@email.com")
+    user = users_factories.UserFactory(email="offerer@email.com")
     offerer = create_offerer(siren="123456789")
     user_offerer = create_user_offerer(user, offerer)
     repository.save(user_offerer)
@@ -37,7 +37,7 @@ def test_find_one_or_none_by_user_id_should_return_one_user_offerer_with_same_us
 @pytest.mark.usefixtures("db_session")
 def test_find_one_or_none_by_user_id_raises_exception_when_several_are_found(app):
     # Given
-    user = create_user(email="offerer@email.com")
+    user = users_factories.UserFactory(email="offerer@email.com")
     offerer1 = create_offerer(siren="123456789")
     offerer2 = create_offerer(siren="987654321")
     user_offerer1 = create_user_offerer(user, offerer1)
@@ -52,9 +52,9 @@ def test_find_one_or_none_by_user_id_raises_exception_when_several_are_found(app
 @pytest.mark.usefixtures("db_session")
 def test_find_one_or_none_by_user_id_should_return_none_user_offerer_when_none_are_found(app):
     # Given
-    user = create_user(email="offerer@email.com")
+    user = users_factories.UserFactory(email="offerer@email.com")
     offerer = create_offerer(siren="123456789")
-    repository.save(user, offerer)
+    repository.save(offerer)
 
     # When
     first_user_offerer = find_one_or_none_by_user_id(user.id)
@@ -66,7 +66,7 @@ def test_find_one_or_none_by_user_id_should_return_none_user_offerer_when_none_a
 @pytest.mark.usefixtures("db_session")
 def test_filter_query_where_user_is_user_offerer_and_is_validated(app):
     # Given
-    user = create_user(email="offerer@email.com")
+    user = users_factories.UserFactory(email="offerer@email.com")
     offerer1 = create_offerer(siren="123456789")
     offerer2 = create_offerer(siren="987654321")
     offerer3 = create_offerer(siren="123456780")

@@ -52,7 +52,6 @@ from pcapi.core.users.models import UserRole
 from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
@@ -579,7 +578,7 @@ class FulfillAccountPasswordTest:
 class SetOffererDepartementCodeTest:
     def should_set_user_department_to_undefined_department_code_when_offerer_has_none(self):
         # Given
-        new_user = create_user()
+        new_user = users_factories.UserFactory()
         offerer = create_offerer(postal_code=None)
 
         # When
@@ -590,7 +589,7 @@ class SetOffererDepartementCodeTest:
 
     def should_set_user_department_code_based_on_offerer(self):
         # Given
-        new_user = create_user()
+        new_user = users_factories.UserFactory()
         offerer = create_offerer(postal_code="75019")
 
         # When

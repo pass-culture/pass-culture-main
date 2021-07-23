@@ -10,12 +10,11 @@ from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users import factories as users_factories
 from pcapi.local_providers import TiteLiveThings
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
@@ -378,7 +377,7 @@ class TiteliveThingsTest:
 
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer = create_offerer(siren="775671464")
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
         titelive_provider = activate_provider("TiteLiveThings")
@@ -502,7 +501,7 @@ class TiteliveThingsTest:
         titelive_provider = activate_provider("TiteLiveThings")
         repository.save(titelive_provider)
 
-        user = UserFactory(email="user@example.net")
+        user = users_factories.UserFactory(email="user@example.net")
         offerer = OffererFactory(siren="123456789")
         venue = VenueFactory(managingOfferer=offerer)
         product = ThingProductFactory(

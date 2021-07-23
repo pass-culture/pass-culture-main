@@ -2,7 +2,7 @@ import datetime
 
 import pytest
 
-from pcapi.model_creators.generic_creators import create_user
+from pcapi.core.users import factories as users_factories
 from pcapi.models import UserSession
 from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
@@ -15,21 +15,22 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_account_is_known(self, app):
         # given
-        user = create_user(
+        user = users_factories.UserFactory(
             civility="M.",
-            departement_code="93",
+            departementCode="93",
+            city=None,
+            address=None,
+            needsToFillCulturalSurvey=False,
             email="user@example.com",
-            first_name="Jean",
-            last_name="Smisse",
-            date_of_birth=datetime.datetime(2000, 1, 1),
-            phone_number="0612345678",
-            postal_code="93020",
-            public_name="Toto",
-            last_connection_date=datetime.datetime(2019, 1, 1),
+            firstName="Jean",
+            lastName="Smisse",
+            dateOfBirth=datetime.datetime(2000, 1, 1),
+            phoneNumber="0612345678",
+            postalCode="93020",
+            publicName="Toto",
+            lastConnectionDate=datetime.datetime(2019, 1, 1),
         )
-        user.isEmailValidated = True
-        user.add_beneficiary_role()
-        repository.save(user)
+
         data = {"identifier": user.email, "password": user.clearTextPassword}
 
         # when
@@ -66,8 +67,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_no_departement_code(self, app):
         # given
-        user = create_user(email="USER@example.COM", departement_code=None)
-        repository.save(user)
+        user = users_factories.UserFactory(email="USER@example.COM", departementCode=None)
         data = {"identifier": user.email, "password": user.clearTextPassword}
 
         # when
@@ -79,8 +79,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_account_is_known_with_mixed_case_email(self, app):
         # given
-        user = create_user(email="USER@example.COM")
-        repository.save(user)
+        user = users_factories.UserFactory(email="USER@example.COM")
         data = {"identifier": "uSeR@EXAmplE.cOm", "password": user.clearTextPassword}
 
         # when
@@ -92,8 +91,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_account_is_known_with_trailing_spaces_in_email(self, app):
         # given
-        user = create_user(email="user@example.com")
-        repository.save(user)
+        user = users_factories.UserFactory(email="user@example.com")
         data = {"identifier": "  user@example.com  ", "password": user.clearTextPassword}
 
         # when
@@ -105,8 +103,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def expect_a_new_user_session_to_be_recorded(self, app):
         # given
-        user = create_user(email="user@example.com")
-        repository.save(user)
+        user = users_factories.UserFactory(email="user@example.com")
         data = {"identifier": user.email, "password": user.clearTextPassword}
 
         # when
@@ -125,8 +122,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_identifier_is_missing(self, app):
         # Given
-        user = create_user()
-        repository.save(user)
+        user = users_factories.UserFactory()
         data = {"identifier": None, "password": user.clearTextPassword}
 
         # When
@@ -139,8 +135,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_identifier_is_incorrect(self, app):
         # Given
-        user = create_user()
-        repository.save(user)
+        user = users_factories.UserFactory()
         data = {"identifier": "random.email@test.com", "password": user.clearTextPassword}
 
         # When
@@ -153,8 +148,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_password_is_missing(self, app):
         # Given
-        user = create_user()
-        repository.save(user)
+        user = users_factories.UserFactory()
         data = {"identifier": user.email, "password": None}
 
         # When
@@ -167,8 +161,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_password_is_incorrect(self, app):
         # Given
-        user = create_user()
-        repository.save(user)
+        user = users_factories.UserFactory()
         data = {"identifier": user.email, "password": "wr0ng_p455w0rd"}
 
         # When
@@ -181,7 +174,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_account_is_not_validated(self, app):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory.build()
         user.generate_validation_token()
         repository.save(user)
         data = {"identifier": user.email, "password": user.clearTextPassword}

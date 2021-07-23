@@ -2,8 +2,8 @@ from datetime import datetime
 from datetime import timedelta
 import logging
 
+from pcapi.core.users import factories as users_factories
 from pcapi.core.offers.factories import UserOffererFactory
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.repository import repository
 
 
@@ -25,17 +25,17 @@ def create_industrial_pro_users(offerers_by_name: dict) -> dict:
 
         for pro_count in range(PROS_COUNT):
             email = "pctest.pro{}.{}@example.com".format(departement_code, pro_count)
-            user = create_user(
-                reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
-                is_beneficiary=False,
-                date_of_birth=None,
-                departement_code=str(departement_code),
+            user = users_factories.UserFactory(
+                resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
+                isBeneficiary=False,
+                dateOfBirth=None,
+                departementCode=str(departement_code),
                 email=email,
-                first_name="PC Test Pro",
-                is_admin=False,
-                last_name="{} {}".format(departement_code, pro_count),
-                postal_code="{}100".format(departement_code),
-                public_name="PC Test Pro {} {}".format(departement_code, pro_count),
+                firstName="PC Test Pro",
+                isAdmin=False,
+                lastName="{} {}".format(departement_code, pro_count),
+                postalCode="{}100".format(departement_code),
+                publicName="PC Test Pro {} {}".format(departement_code, pro_count),
             )
             users_by_name["pro{} {}".format(departement_code, pro_count)] = user
             UserOffererFactory(offerer=offerers[index], user=user)

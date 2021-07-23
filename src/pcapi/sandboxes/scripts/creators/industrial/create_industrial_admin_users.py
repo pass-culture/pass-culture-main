@@ -2,8 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 import logging
 
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.repository import repository
+from pcapi.core.users import factories as users_factories
 
 
 logger = logging.getLogger(__name__)
@@ -22,20 +21,15 @@ def create_industrial_admin_users():
 
         for admin_count in range(ADMINS_COUNT):
             email = "pctest.admin{}.{}@example.com".format(departement_code, admin_count)
-            users_by_name["admin{} {}".format(departement_code, admin_count)] = create_user(
-                reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
-                is_beneficiary=False,
-                date_of_birth=None,
-                departement_code=str(departement_code),
+            users_by_name["admin{} {}".format(departement_code, admin_count)] = users_factories.AdminFactory(
+                resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
+                departementCode=str(departement_code),
                 email=email,
-                first_name="PC Test Admin",
-                is_admin=True,
-                last_name="{} {}".format(departement_code, admin_count),
-                postal_code="{}100".format(departement_code),
-                public_name="PC Test Admin {} {}".format(departement_code, admin_count),
+                firstName="PC Test Admin",
+                lastName="{} {}".format(departement_code, admin_count),
+                postalCode="{}100".format(departement_code),
+                publicName="PC Test Admin {} {}".format(departement_code, admin_count),
             )
-
-    repository.save(*users_by_name.values())
 
     logger.info("created %d users", len(users_by_name))
 

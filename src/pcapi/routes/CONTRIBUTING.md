@@ -66,8 +66,8 @@ class Get:
         @clean_database
         def test_offers_are_paginated_by_chunks_of_10(self, app):
             # Given
-            user = create_user(email='user@test.com', password='azerty123')
-            create_offers_for(user, 20)
+            user = UserFactory()
+            offer = OfferFactory(user, 20)
 
             # when
             response = TestClient(app.test_client()) \

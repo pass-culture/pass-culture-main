@@ -3,8 +3,8 @@ import secrets
 from bs4 import BeautifulSoup
 import pytest
 
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.utils.mailing import make_validation_email_object
 
@@ -25,12 +25,12 @@ def test_write_object_validation_email(app):
         validation_token=validation_token,
     )
 
-    user = create_user(
-        is_beneficiary=False,
-        departement_code="75",
+    user = users_factories.UserFactory.build(
+        isBeneficiary=False,
+        departementCode="75",
         email="user@accenture.com",
-        public_name="Test",
-        validation_token=validation_token,
+        publicName="Test",
+        validationToken=validation_token,
     )
 
     user_offerer = create_user_offerer(user=user, offerer=offerer, validation_token=validation_token)
@@ -92,7 +92,7 @@ def test_write_object_validation_email(app):
 def test_validation_email_object_does_not_include_validation_link_if_user_offerer_is_already_validated(app):
     # Given
     offerer = create_offerer()
-    user = create_user()
+    user = users_factories.UserFactory.build()
     user_offerer = create_user_offerer(user, offerer)
 
     # When
@@ -109,7 +109,7 @@ def test_validation_email_object_does_not_include_validation_link_if_user_offere
 def test_validation_email_object_does_not_include_validation_link_if_offerer_is_already_validated(app):
     # Given
     offerer = create_offerer(idx=123)
-    user = create_user()
+    user = users_factories.UserFactory.build()
     user_offerer = create_user_offerer(user=user, offerer=offerer)
 
     # When
@@ -126,7 +126,7 @@ def test_validation_email_object_does_not_include_validation_link_if_offerer_is_
 def test_validation_email_should_neither_return_clearTextPassword_nor_totallysafepsswd(app):
     # Given
     offerer = create_offerer()
-    user = create_user()
+    user = users_factories.UserFactory.build()
     user_offerer = create_user_offerer(user=user, offerer=offerer)
 
     mocked_api_entreprises = get_by_siren_stub

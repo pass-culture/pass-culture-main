@@ -1,8 +1,7 @@
 import pytest
 
-from pcapi.model_creators.generic_creators import create_user
+from pcapi.core.users import factories as users_factories
 from pcapi.models import UserSession
-from pcapi.repository import repository
 
 from tests.conftest import TestClient
 
@@ -11,8 +10,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def expect_the_existing_user_session_to_be_deleted_deleted(self, app):
         # given
-        user = create_user(email="test@mail.com")
-        repository.save(user)
+        user = users_factories.UserFactory(email="test@mail.com")
         auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
         assert auth_request.get("/bookings").status_code == 200

@@ -2,8 +2,8 @@ import secrets
 
 import pytest
 
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.models import UserOfferer
 from pcapi.repository import repository
@@ -25,7 +25,7 @@ class Returns202Test:
             name="Crédit Coopératif",
             validation_token=offerer_token,
         )
-        user = create_user()
+        user = users_factories.UserFactory()
         user_offerer = create_user_offerer(user, offerer, validation_token=user_offerer_token)
         repository.save(offerer, user_offerer)
         user_offerer_id = offerer.id
@@ -65,7 +65,7 @@ class Returns404Test:
             name="Crédit Coopératif",
             validation_token=offerer_token,
         )
-        user = create_user()
+        user = users_factories.UserFactory()
         user_offerer = create_user_offerer(user, offerer, validation_token=user_offerer_token)
         repository.save(offerer, user_offerer)
         user_offerer_id = offerer.id

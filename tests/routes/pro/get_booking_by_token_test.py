@@ -7,9 +7,9 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.payments.factories import PaymentFactory
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_event_occurrence
@@ -29,8 +29,8 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_rights_and_regular_offer(self, app):
         # Given
-        user = create_user(email="user@example.com", public_name="John Doe")
-        admin_user = create_user(email="admin@example.com")
+        user = users_factories.UserFactory(email="user@example.com", publicName="John Doe")
+        admin_user = users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
@@ -60,8 +60,8 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, app):
         # Given
-        user = create_user(email="user@example.com", public_name="John Doe")
-        admin_user = create_user(email="admin@example.com")
+        user = users_factories.UserFactory(email="user@example.com", publicName="John Doe")
+        admin_user = users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
@@ -92,8 +92,8 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_rights_and_email_with_special_characters_url_encoded(self, app):
         # Given
-        user = create_user(email="user+plus@example.com")
-        user_admin = create_user(email="admin@example.com")
+        user = users_factories.UserFactory(email="user+plus@example.com")
+        user_admin = users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         user_offerer = create_user_offerer(user_admin, offerer)
         venue = create_venue(offerer)
@@ -116,15 +116,15 @@ class Returns204Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_logged_in_and_gives_right_email(self, app):
         # Given
-        user = create_user(email="user@example.com")
-        admin_user = create_user(email="admin@example.com")
+        user = users_factories.UserFactory(email="user@example.com")
+        users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name="Event Name")
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(admin_user, booking)
+        repository.save(booking)
         url = f"/bookings/token/{booking.token}?email=user@example.com"
 
         # When
@@ -136,15 +136,15 @@ class Returns204Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_logged_in_and_give_right_email_and_event_offer_id(self, app):
         # Given
-        user = create_user(email="user@example.com")
-        admin_user = create_user(email="admin@example.com")
+        user = users_factories.UserFactory(email="user@example.com")
+        users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name="Event Name")
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(admin_user, booking)
+        repository.save(booking)
         url = f"/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(offer.id)}"
 
         # When
@@ -156,13 +156,13 @@ class Returns204Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_logged_in_and_give_right_email_and_offer_id_thing(self, app):
         # Given
-        user = create_user(email="user@example.com")
-        admin_user = create_user(email="admin@example.com")
+        user = users_factories.UserFactory(email="user@example.com")
+        users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(admin_user, booking)
+        repository.save(booking)
         url = f"/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(stock.offerId)}"
 
         # When
@@ -176,8 +176,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_token_user_has_rights_but_token_not_found(self, app):
         # Given
-        admin_user = create_user(email="admin@example.com")
-        repository.save(admin_user)
+        users_factories.UserFactory(email="admin@example.com")
         url = "/bookings/token/12345"
 
         # When
@@ -190,15 +189,15 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_logged_in_and_wrong_email(self, app):
         # Given
-        user = create_user(email="user@example.com")
-        admin_user = create_user(email="admin@example.com")
+        user = users_factories.UserFactory(email="user@example.com")
+        admin_user = users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name="Event Name")
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(admin_user, booking)
+        repository.save(booking)
         url = f"/bookings/token/{booking.token}?email=toto@example.com"
 
         # When
@@ -211,13 +210,13 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_logged_in_right_email_and_wrong_offer(self, app):
         # Given
-        user = create_user(email="user@example.com")
-        admin_user = create_user(email="admin@example.com")
+        user = users_factories.UserFactory(email="user@example.com")
+        admin_user = users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(admin_user, booking)
+        repository.save(booking)
         url = f"/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(123)}"
 
         # When
@@ -230,8 +229,8 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_rights_and_email_with_special_characters_not_url_encoded(self, app):
         # Given
-        user = create_user(email="user+plus@example.com")
-        user_admin = create_user(email="admin@example.com")
+        user = users_factories.UserFactory(email="user+plus@example.com")
+        user_admin = users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         user_offerer = create_user_offerer(user_admin, offerer)
         venue = create_venue(offerer)
@@ -253,15 +252,15 @@ class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_logged_in_and_doesnt_give_email(self, app):
         # Given
-        user = create_user(email="user@example.com")
-        admin_user = create_user(email="admin@example.com")
+        user = users_factories.UserFactory(email="user@example.com")
+        admin_user = users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name="Event Name")
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(admin_user, booking)
+        repository.save(booking)
         url = f"/bookings/token/{booking.token}"
 
         # When
@@ -277,15 +276,15 @@ class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_doesnt_have_rights_and_token_exists(self, app):
         # Given
-        user = create_user(email="user@example.com")
-        querying_user = create_user(email="querying@example.com")
+        user = users_factories.UserFactory(email="user@example.com")
+        querying_user = users_factories.UserFactory(email="querying@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name="Event Name")
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(querying_user, booking)
+        repository.save(booking)
         url = f"/bookings/token/{booking.token}"
 
         # When
@@ -319,13 +318,13 @@ class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_booking_is_cancelled(self, app):
         # Given
-        user = create_user(email="user@example.com")
-        admin_user = create_user(email="admin@example.com")
+        user = users_factories.UserFactory(email="user@example.com")
+        admin_user = users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
         booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
-        repository.save(admin_user, booking)
+        repository.save(booking)
         url = f"/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(stock.offerId)}"
 
         # When
@@ -356,13 +355,13 @@ class Returns410Test:
     @pytest.mark.usefixtures("db_session")
     def when_booking_is_already_validated(self, app):
         # Given
-        user = create_user(email="user@example.com")
-        admin_user = create_user(email="admin@example.com")
+        user = users_factories.UserFactory(email="user@example.com")
+        admin_user = users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
         booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
-        repository.save(admin_user, booking)
+        repository.save(booking)
         url = f"/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(stock.offerId)}"
 
         # When

@@ -1,11 +1,11 @@
 import pytest
 
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.repository import repository
@@ -18,7 +18,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_but_has_no_favorites(self, app):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         repository.save(user)
 
         # When
@@ -31,7 +31,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_and_has_two_favorite_offers(self, app):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
         offer1 = create_offer_with_thing_product(venue=venue, thumb_count=0)
@@ -56,7 +56,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_and_a_favorite_booked_offer_exist(self, app):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
         offer = create_offer_with_thing_product(venue, thumb_count=0)
