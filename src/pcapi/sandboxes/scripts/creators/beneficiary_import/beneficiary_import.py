@@ -21,7 +21,7 @@ def create_beneficiary_user() -> users_models.User:
 
 
 def create_admin_user():
-    admin_user = users_factories.UserFactory(isBeneficiary=False, isAdmin=True, email="pctest.admin93.0@example.com")
+    users_factories.UserFactory(isBeneficiary=False, isAdmin=True, email="pctest.admin93.0@example.com")
     logger.info("created 1 admin user")
 
 

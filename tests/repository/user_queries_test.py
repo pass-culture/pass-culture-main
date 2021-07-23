@@ -107,10 +107,10 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_case(self, app):
         # given
-        user1 = users_factories.UserFactory(
+        users_factories.UserFactory(
             dateOfBirth=datetime(2000, 5, 1), email="john@example.com", firstName="john", lastName="DOe"
         )
-        user2 = users_factories.UserFactory(
+        users_factories.UserFactory(
             dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
         )
 
@@ -124,10 +124,10 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_dash(self, app):
         # given
-        user2 = users_factories.UserFactory(
+        users_factories.UserFactory(
             dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
         )
-        user1 = users_factories.UserFactory(
+        users_factories.UserFactory(
             dateOfBirth=datetime(2000, 5, 1), email="john.b@example.com", firstName="john-bob", lastName="doe"
         )
 
@@ -141,10 +141,10 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_spaces(self, app):
         # given
-        user2 = users_factories.UserFactory(
+        users_factories.UserFactory(
             dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
         )
-        user1 = users_factories.UserFactory(
+        users_factories.UserFactory(
             dateOfBirth=datetime(2000, 5, 1), email="john.b@example.com", firstName="john bob", lastName="doe"
         )
 
@@ -158,10 +158,10 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_accents(self, app):
         # given
-        user2 = users_factories.UserFactory(
+        users_factories.UserFactory(
             dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
         )
-        user1 = users_factories.UserFactory(
+        users_factories.UserFactory(
             dateOfBirth=datetime(2000, 5, 1), email="john.b@example.com", firstName="john bob", lastName="doe"
         )
 
@@ -175,7 +175,7 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_if_one_criteria_does_not_match(self, app):
         # given
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 5, 1), firstName="Jean", lastName="DOe")
+        users_factories.UserFactory(dateOfBirth=datetime(2000, 5, 1), firstName="Jean", lastName="DOe")
 
         # when
         users = find_beneficiary_by_civility("john", "doe", datetime(2000, 5, 1))
@@ -186,10 +186,10 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_first_and_last_names_and_birthdate_and_invalid_email(self, app):
         # given
-        user1 = users_factories.UserFactory(
+        users_factories.UserFactory(
             dateOfBirth=datetime(2000, 5, 1), email="john@example.com", firstName="john", lastName="DOe"
         )
-        user2 = users_factories.UserFactory(
+        users_factories.UserFactory(
             dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
         )
 

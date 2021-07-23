@@ -112,7 +112,7 @@ class DeleteUnwantedExistingProductTest:
     def test_should_delete_product_when_related_offer_has_mediation(self, app):
         # Given
         isbn = "1111111111111"
-        user = users_factories.UserFactory()
+        users_factories.UserFactory()
         offerer = create_offerer(siren="775671464")
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
         product = create_product_with_thing_type(id_at_providers=isbn)

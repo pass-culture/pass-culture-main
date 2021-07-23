@@ -190,7 +190,7 @@ class Returns404Test:
     def when_user_not_logged_in_and_wrong_email(self, app):
         # Given
         user = users_factories.UserFactory(email="user@example.com")
-        admin_user = users_factories.UserFactory(email="admin@example.com")
+        users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name="Event Name")
@@ -211,7 +211,7 @@ class Returns404Test:
     def when_user_not_logged_in_right_email_and_wrong_offer(self, app):
         # Given
         user = users_factories.UserFactory(email="user@example.com")
-        admin_user = users_factories.UserFactory(email="admin@example.com")
+        users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
@@ -253,7 +253,7 @@ class Returns400Test:
     def when_user_not_logged_in_and_doesnt_give_email(self, app):
         # Given
         user = users_factories.UserFactory(email="user@example.com")
-        admin_user = users_factories.UserFactory(email="admin@example.com")
+        users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name="Event Name")
@@ -277,7 +277,7 @@ class Returns400Test:
     def when_user_doesnt_have_rights_and_token_exists(self, app):
         # Given
         user = users_factories.UserFactory(email="user@example.com")
-        querying_user = users_factories.UserFactory(email="querying@example.com")
+        users_factories.UserFactory(email="querying@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name="Event Name")
@@ -319,7 +319,7 @@ class Returns403Test:
     def when_booking_is_cancelled(self, app):
         # Given
         user = users_factories.UserFactory(email="user@example.com")
-        admin_user = users_factories.UserFactory(email="admin@example.com")
+        users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
@@ -356,7 +356,7 @@ class Returns410Test:
     def when_booking_is_already_validated(self, app):
         # Given
         user = users_factories.UserFactory(email="user@example.com")
-        admin_user = users_factories.UserFactory(email="admin@example.com")
+        users_factories.UserFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
