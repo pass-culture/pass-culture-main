@@ -92,7 +92,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         self, make_offerer_driven_cancellation_email_for_offerer
     ):
         # Given
-        user = users_factories.UserFactory(email="user@example.com")
+        user = users_factories.UserFactory.build(email="user@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         venue.bookingEmail = "booking@example.com"
