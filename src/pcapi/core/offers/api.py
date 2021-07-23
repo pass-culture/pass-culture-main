@@ -190,8 +190,6 @@ def update_offer(  # pylint: disable=redefined-builtin
     isNational: bool = UNCHANGED,
     name: str = UNCHANGED,
     extraData: dict = UNCHANGED,
-    # FIXME: type (and subcategoryId) should not be updatable
-    type: str = UNCHANGED,
     externalTicketOfficeUrl: str = UNCHANGED,
     url: str = UNCHANGED,
     withdrawalDetails: str = UNCHANGED,

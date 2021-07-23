@@ -137,7 +137,6 @@ class PatchOfferBodyModel(BaseModel):
     isNational: Optional[bool]
     name: Optional[str]
     extraData: Any
-    type: Optional[str]
     externalTicketOfficeUrl: Optional[HttpUrl]
     url: Optional[HttpUrl]
     withdrawalDetails: Optional[str]
