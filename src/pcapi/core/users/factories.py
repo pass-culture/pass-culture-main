@@ -45,13 +45,17 @@ class UserFactory(BaseFactory):
         # database constraint anyway).
         if kwargs.get("isAdmin"):
             kwargs["isBeneficiary"] = False
-        return super()._create(model_class, *args, **kwargs)
+        instance = super()._create(model_class, *args, **kwargs)
+        instance.clearTextPassword = DEFAULT_PASSWORD
+        return instance
 
     @classmethod
     def _build(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
-        return super()._build(model_class, *args, **kwargs)
+        instance = super()._build(model_class, *args, **kwargs)
+        instance.clearTextPassword = DEFAULT_PASSWORD
+        return instance
 
     @factory.post_generation
     def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
