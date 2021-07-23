@@ -364,6 +364,8 @@ secrets:
     version: 2
   - name: MAILJET_API_SECRET
     version: 2
+  - name: NOTION_TOKEN
+    version: 1
   - name: OVH_BUCKET_NAME
     version: 2
   - name: OVH_PASSWORD

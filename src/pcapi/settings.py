@@ -306,3 +306,6 @@ APPSEARCH_HOST = os.environ.get("APPSEARCH_HOST", "")
 ADAGE_API_KEY = os.environ.get("ADAGE_API_KEY", None)
 ADAGE_API_URL = os.environ.get("ADAGE_API_URL", None)
 EAC_API_KEY = os.environ.get("EAC_API_KEY", None)
+
+# NOTION
+NOTION_TOKEN = os.environ.get("NOTION_TOKEN", "")

@@ -36,6 +36,7 @@ mailjet-rest==1.3.3
 MarkupSafe==1.1.1
 mypy==0.812
 nltk==3.5
+notion-client==0.4.0
 pgcli==2.2.0
 Pillow>=8.1.1
 pydantic[email]==1.8.2

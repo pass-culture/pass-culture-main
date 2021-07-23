@@ -436,6 +436,8 @@ secrets:
     version: 2
   - name: NATIVE_RECAPTCHA_SECRET
     version: 1
+  - name: NOTION_TOKEN
+    version: 1
   - name: OVH_BUCKET_NAME
     version: 2
   - name: OVH_PASSWORD

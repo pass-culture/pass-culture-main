@@ -2,6 +2,7 @@ import logging
 
 from sqlalchemy.orm.util import aliased
 
+import pcapi.connectors.notion as notion_connector
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.models import db
@@ -26,11 +27,21 @@ def synchronize_stocks() -> None:
     )
 
     for venue_provider in venue_providers:
-        # We need to stock this value inside a variable to prevent a crash
-        # if the session is broken and we need to log the id
+        # We need to stock these values inside variables to prevent a crash
+        # if the session is broken and we need to log them
+        venue_id = venue_provider.venueId
         venue_provider_id = venue_provider.id
+        venue_id_at_offer_provider = venue_provider.venueIdAtOfferProvider
+        provider_name = venue_provider.provider.name
+
         try:
             synchronize_provider_api.synchronize_venue_provider(venue_provider)
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception("Could not synchronize venue_provider=%s: %s", venue_provider_id, exc)
+            notion_connector.add_to_synchronization_error_database(
+                title=exc,
+                provider_name=provider_name,
+                venue_id=venue_id,
+                venue_id_at_offer_provider=venue_id_at_offer_provider,
+            )
             db.session.rollback()
