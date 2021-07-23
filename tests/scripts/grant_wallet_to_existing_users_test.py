@@ -2,13 +2,17 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import Deposit
+from pcapi.repository import repository
 from pcapi.scripts.grant_wallet_to_existing_users import grant_wallet_to_existing_users
 
 
 def test_should_grant_wallet_to_existing_users(app, db_session):
     # given
-    beneficiary = users_factories.BeneficiaryFactory(email="email@example.com")
-    beneficiary_2 = users_factories.BeneficiaryFactory(email="email2@example.com")
+    # The build method is explicitly called to avoid the deposit generation
+    # which is done if the Factory saves the object.
+    beneficiary = users_factories.UserFactory.build(email="email@example.com")
+    beneficiary_2 = users_factories.UserFactory.build(email="email2@example.com")
+    repository.save(beneficiary, beneficiary_2)
 
     # when
     grant_wallet_to_existing_users([beneficiary.id, beneficiary_2.id])
@@ -33,8 +37,9 @@ def test_should_grant_wallet_to_existing_users(app, db_session):
 @override_features(APPLY_BOOKING_LIMITS_V2=False)
 def test_should_grant_wallet_to_existing_users_with_v1_deposit(app, db_session):
     # given
-    beneficiary = users_factories.BeneficiaryFactory(email="email@example.com")
-    beneficiary_2 = users_factories.BeneficiaryFactory(email="email2@example.com")
+    beneficiary = users_factories.UserFactory.build(email="email@example.com")
+    beneficiary_2 = users_factories.UserFactory.build(email="email2@example.com")
+    repository.save(beneficiary, beneficiary_2)
 
     # when
     grant_wallet_to_existing_users([beneficiary.id, beneficiary_2.id])

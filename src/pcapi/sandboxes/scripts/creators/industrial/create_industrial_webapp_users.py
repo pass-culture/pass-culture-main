@@ -68,7 +68,7 @@ def create_industrial_webapp_young_users():
 
         email = f"pctest.jeune{departement_code}.{tag}.v{deposit_version}@example.com"
 
-        user = users_factories.UserFactory(
+        user = users_factories.UserFactory.build(
             culturalSurveyId=cultural_survey_id,
             departementCode=str(departement_code),
             email=email,
