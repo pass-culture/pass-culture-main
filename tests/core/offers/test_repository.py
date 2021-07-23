@@ -405,7 +405,7 @@ class GetCappedOffersForFiltersTest:
             assert offer_for_other_offerer.id not in offers_id
             assert len(offers.offers) == 1
 
-    class NameFilterTest:
+    class NameOrIsbnFilterTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offer_which_name_equal_keyword_when_keyword_is_less_or_equal_than_3_letters(self, app):
             # given
@@ -418,7 +418,7 @@ class GetCappedOffersForFiltersTest:
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.isAdmin,
                 offers_limit=10,
-                name_keywords="ocs",
+                name_keywords_or_isbn="ocs",
             )
 
             # then
@@ -444,7 +444,7 @@ class GetCappedOffersForFiltersTest:
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.isAdmin,
                 offers_limit=10,
-                name_keywords="seras-tu",
+                name_keywords_or_isbn="seras-tu",
             )
 
             # then
@@ -470,7 +470,7 @@ class GetCappedOffersForFiltersTest:
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.isAdmin,
                 offers_limit=10,
-                name_keywords="mon océan",
+                name_keywords_or_isbn="mon océan",
             )
 
             # then
@@ -491,7 +491,34 @@ class GetCappedOffersForFiltersTest:
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.isAdmin,
                 offers_limit=10,
-                name_keywords="ocean",
+                name_keywords_or_isbn="ocean",
+            )
+
+            # then
+            offers_id = [offer.id for offer in offers.offers]
+            assert expected_offer.id in offers_id
+            assert other_offer.id not in offers_id
+            assert len(offers.offers) == 1
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_offer_which_isbn_is_equally_to_name_keyword_or_isbn(self, app):
+            # given
+            user_offerer = offers_factories.UserOffererFactory()
+            expected_offer = offers_factories.OfferFactory(
+                name="seras-tu là", venue__managingOfferer=user_offerer.offerer, extraData={"isbn": "1234567891234"}
+            )
+            other_offer = offers_factories.OfferFactory(
+                name="François, seras-tu là ?",
+                venue__managingOfferer=user_offerer.offerer,
+                extraData={"isbn": "1234567891235"},
+            )
+
+            # when
+            offers = get_capped_offers_for_filters(
+                user_id=user_offerer.user.id,
+                user_is_admin=user_offerer.user.isAdmin,
+                offers_limit=10,
+                name_keywords_or_isbn="1234567891234",
             )
 
             # then

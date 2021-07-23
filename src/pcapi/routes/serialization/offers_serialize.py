@@ -191,7 +191,7 @@ class PatchAllOffersActiveStatusBodyModel(BaseModel):
     is_active: bool
     offerer_id: Optional[int]
     venue_id: Optional[int]
-    name: Optional[str]
+    name_or_isbn: Optional[str]
     type_id: Optional[str]
     creation_mode: Optional[str]
     status: Optional[str]
@@ -259,7 +259,7 @@ class ListOffersResponseModel(BaseModel):
 
 
 class ListOffersQueryModel(BaseModel):
-    name: Optional[str]
+    nameOrIsbn: Optional[str]
     offerer_id: Optional[int]
     status: Optional[str]
     venue_id: Optional[int]

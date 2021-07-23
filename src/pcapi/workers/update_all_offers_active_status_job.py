@@ -13,7 +13,7 @@ def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
         status=filters["status"],
         venue_id=filters["venue_id"],
         type_id=filters["type_id"],
-        name_keywords=filters["name"],
+        name_keywords_or_isbn=filters["name_or_isbn"],
         creation_mode=filters["creation_mode"],
         period_beginning_date=filters["period_beginning_date"],
         period_ending_date=filters["period_ending_date"],

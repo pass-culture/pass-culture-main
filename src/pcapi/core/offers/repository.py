@@ -45,7 +45,7 @@ def get_capped_offers_for_filters(
     status: Optional[str] = None,
     venue_id: Optional[int] = None,
     type_id: Optional[str] = None,
-    name_keywords: Optional[str] = None,
+    name_keywords_or_isbn: Optional[str] = None,
     creation_mode: Optional[str] = None,
     period_beginning_date: Optional[str] = None,
     period_ending_date: Optional[str] = None,
@@ -57,7 +57,7 @@ def get_capped_offers_for_filters(
         status=status,
         venue_id=venue_id,
         type_id=type_id,
-        name_keywords=name_keywords,
+        name_keywords_or_isbn=name_keywords_or_isbn,
         creation_mode=creation_mode,
         period_beginning_date=period_beginning_date,
         period_ending_date=period_ending_date,
@@ -96,7 +96,7 @@ def get_offers_by_filters(
     status: Optional[str] = None,
     venue_id: Optional[int] = None,
     type_id: Optional[str] = None,
-    name_keywords: Optional[str] = None,
+    name_keywords_or_isbn: Optional[str] = None,
     creation_mode: Optional[str] = None,
     period_beginning_date: Optional[datetime] = None,
     period_ending_date: Optional[datetime] = None,
@@ -121,11 +121,11 @@ def get_offers_by_filters(
         query = _filter_by_creation_mode(query, creation_mode)
     if type_id is not None:
         query = query.filter(Offer.type == type_id)
-    if name_keywords is not None:
-        search = name_keywords
-        if len(name_keywords) > 3:
-            search = "%{}%".format(name_keywords)
-        query = query.filter(Offer.name.ilike(search))
+    if name_keywords_or_isbn is not None:
+        search = name_keywords_or_isbn
+        if len(name_keywords_or_isbn) > 3:
+            search = "%{}%".format(name_keywords_or_isbn)
+        query = query.filter(or_(Offer.name.ilike(search), Offer.extraData["isbn"].astext == name_keywords_or_isbn))
     if status is not None:
         query = _filter_by_status(query, status)
     if period_beginning_date is not None or period_ending_date is not None:
