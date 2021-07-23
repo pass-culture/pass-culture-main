@@ -14,7 +14,8 @@ from pcapi.repository import repository
 class MakeUserResetPasswordEmailDataTest:
     def test_email(self):
         # Given
-        user = users_factories.UserFactory(email="ewing@example.com", firstName="Bobby", resetPasswordToken="ABCDEFG")
+        user = users_factories.UserFactory(email="ewing@example.com", firstName="Bobby")
+        users_factories.ResetPasswordToken(user=user, value="ABCDEFG")
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
 
@@ -37,9 +38,8 @@ class NativeAppUserResetPasswordEmailDataTest:
         user = users_factories.UserFactory.build(
             email="ewing+demo@example.com",
             firstName="Bobby",
-            resetPasswordToken="abc",
-            resetPasswordTokenValidityLimit=datetime(2020, 1, 1),
         )
+        users_factories.ResetPasswordToken.build(user=user, value="abc", expirationDate=datetime(2020, 1, 1))
         # When
         reset_password_email_data = retrieve_data_for_reset_password_native_app_email(user, user.tokens[0])
 

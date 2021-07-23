@@ -14,9 +14,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class GetActivationEmailTest:
     def test_should_return_dict_when_environment_is_production(self):
         # Given
-        user = users_factories.UserFactory.build(
-            email="fabien+test@example.net", firstName="Fabien", resetPasswordToken="ABCD123"
-        )
+        user = users_factories.UserFactory.build(email="fabien+test@example.net", firstName="Fabien")
+        users_factories.ResetPasswordToken(user=user, value="ABCD123")
 
         # When
         activation_email_data = beneficiary_activation.get_activation_email_data(user, user.tokens[0])

@@ -9,7 +9,7 @@ from tests.conftest import clean_database
 class ProValidationEmailsTest:
     def test_make_pro_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
-        user = users_factories.UserFactory.build(email="test@example.com")
+        user = users_factories.ProFactory.build(publicName="John Doe", email="test@example.com")
         user.generate_validation_token()
 
         # When
@@ -20,8 +20,8 @@ class ProValidationEmailsTest:
             "MJ-TemplateID": 1660341,
             "MJ-TemplateLanguage": True,
             "Vars": {
-                "nom_structure": "John Doe",
                 "lien_validation_mail": f"{settings.PRO_URL}/inscription/validation/{user.validationToken}",
+                "nom_structure": "John Doe",
             },
         }
 
