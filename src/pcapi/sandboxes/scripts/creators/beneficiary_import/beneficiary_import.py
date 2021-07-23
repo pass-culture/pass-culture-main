@@ -1,7 +1,7 @@
 import logging
 
-from pcapi.core.users import models as users_models
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.model_creators.generic_creators import create_beneficiary_import
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus

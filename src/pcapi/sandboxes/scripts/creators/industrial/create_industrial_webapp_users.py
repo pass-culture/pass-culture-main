@@ -4,9 +4,9 @@ import itertools
 import logging
 import uuid
 
-from pcapi.core.users import factories as users_factories
 import pcapi.core.bookings.conf as bookings_conf
 from pcapi.core.payments.api import create_deposit
+from pcapi.core.users import factories as users_factories
 from pcapi.repository import repository
 
 

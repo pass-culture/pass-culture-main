@@ -2,8 +2,8 @@ from datetime import datetime
 from datetime import timedelta
 import logging
 
-from pcapi.core.users import factories as users_factories
 from pcapi.core.offers.factories import UserOffererFactory
+from pcapi.core.users import factories as users_factories
 from pcapi.repository import repository
 
 
