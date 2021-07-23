@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import OffererFactory
@@ -42,7 +43,6 @@ from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
-from pcapi.models import offer_type
 from pcapi.utils.human_ids import humanize
 
 from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
@@ -453,7 +453,7 @@ class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
         user = users_factories.BeneficiaryFactory(email="isasimov@example.com")
         created_23_days_ago = now - timedelta(days=23)
 
-        dvd = ProductFactory(type=str(offer_type.ThingType.AUDIOVISUEL))
+        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
         soon_to_be_expired_dvd_booking = BookingFactory(
             stock__offer__product=dvd,
             stock__offer__name="Fondation",
@@ -462,7 +462,7 @@ class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
             user=user,
         )
 
-        cd = ProductFactory(type=str(offer_type.ThingType.MUSIQUE))
+        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
         soon_to_be_expired_cd_booking = BookingFactory(
             stock__offer__product=cd,
             stock__offer__name="Fondation et Empire",

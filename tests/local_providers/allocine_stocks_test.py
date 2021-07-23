@@ -6,6 +6,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.categories import subcategories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import AllocineStocks
 from pcapi.model_creators.generic_creators import create_allocine_venue_provider
@@ -14,7 +15,7 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.model_creators.specific_creators import create_product_with_event_type
+from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
 from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Product
@@ -253,6 +254,7 @@ class UpdateObjectsTest:
         assert not created_offer.isDuo
         assert created_offer.name == "Les Contes de la mère poule - VF"
         assert created_offer.product == created_product
+        assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offer.type == str(EventType.CINEMA)
         assert created_offer.withdrawalDetails == venue.withdrawalDetails
 
@@ -276,6 +278,7 @@ class UpdateObjectsTest:
         }
 
         assert created_product.name == "Les Contes de la mère poule"
+        assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert created_product.type == str(EventType.CINEMA)
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
@@ -355,6 +358,7 @@ class UpdateObjectsTest:
         assert not original_version_offer.isDuo
         assert original_version_offer.name == "Les Contes de la mère poule - VO"
         assert original_version_offer.product == created_products[0]
+        assert original_version_offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert original_version_offer.type == str(EventType.CINEMA)
 
         dubbed_version_offer = created_offers[1]
@@ -369,6 +373,7 @@ class UpdateObjectsTest:
         assert not dubbed_version_offer.isDuo
         assert dubbed_version_offer.name == "Les Contes de la mère poule - VF"
         assert dubbed_version_offer.product == created_products[0]
+        assert dubbed_version_offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert dubbed_version_offer.type == str(EventType.CINEMA)
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
@@ -457,9 +462,9 @@ class UpdateObjectsTest:
             ]
         )
 
-        product = create_product_with_event_type(
+        product = create_product_with_event_subcategory(
             event_name="Test event",
-            event_type=EventType.CINEMA,
+            event_subcategory_id=subcategories.SEANCE_CINE.id,
             duration_minutes=60,
             id_at_providers="TW92aWU6Mzc4MzI=",
         )
@@ -470,7 +475,7 @@ class UpdateObjectsTest:
         offer_vo = create_offer_with_event_product(
             product=product,
             event_name="Test event",
-            event_type=EventType.CINEMA,
+            event_subcategory_id=subcategories.SEANCE_CINE.id,
             duration_minutes=60,
             id_at_providers="TW92aWU6Mzc4MzI=%77567146400110-VO",
             venue=venue,
@@ -478,7 +483,7 @@ class UpdateObjectsTest:
         offer_vf = create_offer_with_event_product(
             product=product,
             event_name="Test event",
-            event_type=EventType.CINEMA,
+            event_subcategory_id=subcategories.SEANCE_CINE.id,
             duration_minutes=60,
             id_at_providers="TW92aWU6Mzc4MzI=%77567146400110-VF",
             venue=venue,
@@ -530,9 +535,9 @@ class UpdateObjectsTest:
             ]
         )
 
-        product = create_product_with_event_type(
+        product = create_product_with_event_subcategory(
             event_name="Test event",
-            event_type=EventType.CINEMA,
+            event_subcategory_id=subcategories.SEANCE_CINE.id,
             duration_minutes=60,
             id_at_providers="TW92aWU6Mzc4MzI=",
         )
@@ -633,6 +638,7 @@ class UpdateObjectsTest:
         }
 
         assert created_offer.type == str(EventType.CINEMA)
+        assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offer.name == "Les Contes de la mère poule - VF"
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
@@ -711,9 +717,9 @@ class UpdateObjectsTest:
         with open(file_path, "rb") as thumb_file:
             mock_get_object_thumb.return_value = thumb_file.read()
 
-        product = create_product_with_event_type(
+        product = create_product_with_event_subcategory(
             event_name="Test event",
-            event_type=EventType.CINEMA,
+            event_subcategory_id=subcategories.SEANCE_CINE.id,
             duration_minutes=60,
             id_at_providers="TW92aWU6Mzc4MzI=",
             thumb_count=0,
@@ -769,9 +775,9 @@ class UpdateObjectsTest:
         with open(file_path, "rb") as thumb_file:
             mock_get_object_thumb.return_value = thumb_file.read()
 
-        product = create_product_with_event_type(
+        product = create_product_with_event_subcategory(
             event_name="Test event",
-            event_type=EventType.CINEMA,
+            event_subcategory_id=subcategories.SEANCE_CINE.id,
             duration_minutes=60,
             id_at_providers="TW92aWU6Mzc4MzI=",
             thumb_count=1,

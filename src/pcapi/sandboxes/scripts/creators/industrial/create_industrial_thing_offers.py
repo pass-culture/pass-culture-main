@@ -53,7 +53,7 @@ def create_industrial_thing_offers(things_by_name, offerers_by_name, venues_by_n
             thing_offers_by_name[name] = create_offer_with_thing_product(
                 thing_venue,
                 product=thing,
-                thing_type=thing.type,
+                thing_subcategory_id=thing.subcategoryId,
                 is_active=is_active,
                 id_at_providers=str(id_at_providers),
             )

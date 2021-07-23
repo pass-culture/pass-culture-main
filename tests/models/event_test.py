@@ -1,5 +1,5 @@
-from pcapi.model_creators.specific_creators import create_product_with_event_type
-from pcapi.models import EventType
+from pcapi.core.categories import subcategories
+from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
 from pcapi.models import Product
 
 
@@ -9,7 +9,9 @@ def test_an_event_is_always_physical_and_cannot_be_digital():
 
 def test_event_offerType_returns_dict_matching_EventType_enum():
     # given
-    event_product = create_product_with_event_type(event_type=EventType.SPECTACLE_VIVANT)
+    event_product = create_product_with_event_subcategory(
+        event_subcategory_id=subcategories.SPECTACLE_REPRESENTATION.id,
+    )
     expected_value = {
         "conditionalFields": ["author", "showType", "stageDirector", "performer"],
         "proLabel": "Spectacle vivant",
@@ -35,7 +37,7 @@ def test_event_offerType_returns_dict_matching_EventType_enum():
 
 def test_event_offerType_returns_None_if_type_does_not_match_EventType_enum():
     # given
-    event_product = create_product_with_event_type(event_type="Workshop")
+    event_product = create_product_with_event_subcategory(event_subcategory_id="Workshop")
 
     # when
     offer_type = event_product.offerType

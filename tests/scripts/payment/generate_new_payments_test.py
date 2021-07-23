@@ -4,11 +4,11 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
-from pcapi.models import ThingType
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
@@ -285,9 +285,7 @@ class GenerateNewPaymentsTest:
         venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
         venue2 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="98765432154321")
         venue3 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="98123432154321")
-        product = offers_factories.ThingProductFactory(
-            type=str(ThingType.LIVRE_EDITION),
-        )
+        product = offers_factories.ThingProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         offer1 = offers_factories.ThingOfferFactory(venue=venue1, product=product)
         offer2 = offers_factories.ThingOfferFactory(venue=venue2, product=product)
         offer3 = offers_factories.ThingOfferFactory(venue=venue3, product=product)
@@ -331,9 +329,7 @@ class GenerateNewPaymentsTest:
         venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
         venue2 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="98765432154321")
         venue3 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="98123432154321")
-        product = offers_factories.ThingProductFactory(
-            type=str(ThingType.LIVRE_EDITION),
-        )
+        product = offers_factories.ThingProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         offer1 = offers_factories.ThingOfferFactory(venue=venue1, product=product)
         offer2 = offers_factories.ThingOfferFactory(venue=venue2, product=product)
         offer3 = offers_factories.ThingOfferFactory(venue=venue3, product=product)

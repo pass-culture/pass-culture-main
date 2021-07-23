@@ -13,8 +13,8 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_event_occurrence
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_product_with_event_type
-from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
+from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
 from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.models import Offer
@@ -31,7 +31,7 @@ class FindOffersTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_offers_by_venue_id_returns_offers_matching_venue_id(self, app):
         # Given
-        product = create_product_with_thing_type(thing_name="Lire un livre", is_national=True)
+        product = create_product_with_thing_subcategory(thing_name="Lire un livre", is_national=True)
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="34000", departement_code="34")
         offer = create_offer_with_thing_product(venue=venue, product=product)
@@ -147,7 +147,7 @@ class QueryOfferWithRemainingStocksTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_1_offer_when_there_are_one_full_stock_and_one_empty_stock(self):
         # Given
-        product = create_product_with_thing_type(thing_name="Lire un livre", is_national=True)
+        product = create_product_with_thing_subcategory(thing_name="Lire un livre", is_national=True)
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="34000", departement_code="34")
         offer = create_offer_with_thing_product(venue=venue, product=product)
@@ -171,7 +171,7 @@ class QueryOfferWithRemainingStocksTest:
 
 
 def _create_event_stock_and_offer_for_date(venue, date):
-    product = create_product_with_event_type()
+    product = create_product_with_event_subcategory()
     offer = create_offer_with_event_product(venue=venue, product=product)
     event_occurrence = create_event_occurrence(offer, beginning_datetime=date)
     stock = create_stock_from_event_occurrence(event_occurrence, booking_limit_date=date)

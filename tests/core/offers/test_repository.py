@@ -6,6 +6,7 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.offers.factories import EventStockFactory
@@ -97,10 +98,10 @@ class GetCappedOffersForFiltersTest:
     def should_return_offers_of_given_type(self):
         user_offerer = offers_factories.UserOffererFactory()
         requested_offer = offers_factories.OfferFactory(
-            type=str(ThingType.AUDIOVISUEL), venue__managingOfferer=user_offerer.offerer
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id, venue__managingOfferer=user_offerer.offerer
         )
         other_offer = offers_factories.OfferFactory(
-            type=str(ThingType.JEUX), venue__managingOfferer=user_offerer.offerer
+            subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id, venue__managingOfferer=user_offerer.offerer
         )
 
         offers = get_capped_offers_for_filters(
@@ -935,7 +936,7 @@ class GetCappedOffersForFiltersTest:
             )
             offers_factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=pending_offer)
 
-            offer = offers_factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
+            offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
             offers_factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=offer)
 
             user = pending_offer.venue.managingOfferer
@@ -960,7 +961,7 @@ class GetCappedOffersForFiltersTest:
             )
             offers_factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=rejected_offer)
 
-            offer = offers_factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
+            offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
             offers_factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=offer)
 
             user = rejected_offer.venue.managingOfferer

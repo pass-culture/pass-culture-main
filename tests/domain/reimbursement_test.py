@@ -5,25 +5,25 @@ from decimal import Decimal
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.payments.models as payments_models
 import pcapi.core.users.factories as users_factories
 from pcapi.domain import reimbursement
 from pcapi.models import Booking
-from pcapi.models import ThingType
 from pcapi.repository import repository
 
 
-def create_non_digital_thing_booking(quantity=1, price=10, user=None, date_created=None, product_type=None):
+def create_non_digital_thing_booking(quantity=1, price=10, user=None, date_created=None, product_subcategory_id=None):
     booking_kwargs = {}
     if user:
         booking_kwargs["user"] = user
     if date_created:
         booking_kwargs["dateCreated"] = date_created
     offer_kwargs = {}
-    if product_type:
-        offer_kwargs = {"product__type": product_type}
+    if product_subcategory_id:
+        offer_kwargs = {"product__subcategoryId": product_subcategory_id}
     stock = offers_factories.StockFactory(
         price=price,
         offer=offers_factories.ThingOfferFactory(**offer_kwargs),
@@ -31,11 +31,11 @@ def create_non_digital_thing_booking(quantity=1, price=10, user=None, date_creat
     return bookings_factories.BookingFactory(stock=stock, quantity=quantity, **booking_kwargs)
 
 
-def create_digital_booking(quantity=1, price=10, user=None, product_type=None):
+def create_digital_booking(quantity=1, price=10, user=None, product_subcategory_id=None):
     user = user or users_factories.BeneficiaryFactory()
     product_kwargs = {}
-    if product_type:
-        product_kwargs = {"type": product_type}
+    if product_subcategory_id:
+        product_kwargs = {"subcategoryId": product_subcategory_id}
     product = offers_factories.DigitalProductFactory(**product_kwargs)
     stock = offers_factories.StockFactory(
         price=price,
@@ -113,7 +113,7 @@ class DigitalThingsReimbursementTest:
 
     def test_is_not_relevant_for_digital_books(self):
         # given
-        booking = create_digital_booking(product_type=str(ThingType.LIVRE_EDITION))
+        booking = create_digital_booking(product_subcategory_id=subcategories.LIVRE_PAPIER.id)
 
         # when
         is_relevant = reimbursement.DigitalThingsReimbursement().is_relevant(booking)
@@ -123,7 +123,7 @@ class DigitalThingsReimbursementTest:
 
     def test_is_not_relevant_for_cinema_cards(self):
         # given
-        booking = create_digital_booking(product_type=str(ThingType.CINEMA_CARD))
+        booking = create_digital_booking(product_subcategory_id=subcategories.CINE_VENTE_DISTANCE.id)
 
         # when
         is_relevant = reimbursement.DigitalThingsReimbursement().is_relevant(booking)
@@ -176,7 +176,7 @@ class PhysicalOffersReimbursementTest:
 
     def test_is_relevant_for_booking_on_digital_books(self):
         # given
-        booking = create_digital_booking(product_type=str(ThingType.LIVRE_EDITION))
+        booking = create_digital_booking(product_subcategory_id=subcategories.LIVRE_PAPIER.id)
 
         # when
         is_relevant = reimbursement.PhysicalOffersReimbursement().is_relevant(booking)
@@ -186,7 +186,7 @@ class PhysicalOffersReimbursementTest:
 
     def test_is_relevant_for_booking_on_cinema_cards(self):
         # given
-        booking = create_digital_booking(product_type=str(ThingType.CINEMA_CARD))
+        booking = create_digital_booking(product_subcategory_id=subcategories.CINE_VENTE_DISTANCE.id)
 
         # when
         is_relevant = reimbursement.PhysicalOffersReimbursement().is_relevant(booking)
@@ -394,7 +394,9 @@ class ReimbursementRateByVenueAbove150000Test:
 class ReimbursementRateForBookAbove20000Test:
     def test_apply_for_booking_returns_a_reimbursed_amount(self):
         # given
-        booking = create_non_digital_thing_booking(product_type=str(ThingType.LIVRE_EDITION), price=40, quantity=3)
+        booking = create_non_digital_thing_booking(
+            product_subcategory_id=subcategories.LIVRE_PAPIER.id, price=40, quantity=3
+        )
 
         # when
         reimbursed_amount = reimbursement.ReimbursementRateForBookAbove20000().apply(booking)
@@ -405,7 +407,7 @@ class ReimbursementRateForBookAbove20000Test:
     def test_is_relevant_for_booking_on_book_with_cumulative_value_below_20000(self):
         # given
         rule = reimbursement.ReimbursementRateForBookAbove20000()
-        booking = create_non_digital_thing_booking(product_type=str(ThingType.LIVRE_EDITION))
+        booking = create_non_digital_thing_booking(product_subcategory_id=subcategories.LIVRE_PAPIER.id)
         cumulative_booking_value = 100
 
         # when
@@ -417,7 +419,7 @@ class ReimbursementRateForBookAbove20000Test:
     def test_is_not_relevant_for_booking_on_book_with_cumulative_value_of_exactly_20000(self):
         # given
         rule = reimbursement.ReimbursementRateForBookAbove20000()
-        booking = create_non_digital_thing_booking(product_type=str(ThingType.LIVRE_EDITION))
+        booking = create_non_digital_thing_booking(product_subcategory_id=subcategories.LIVRE_PAPIER.id)
         cumulative_booking_value = 20000
 
         # when
@@ -429,7 +431,7 @@ class ReimbursementRateForBookAbove20000Test:
     def test_is_relevant_for_booking_on_book_with_cumulative_value_above_20000(self):
         # given
         rule = reimbursement.ReimbursementRateForBookAbove20000()
-        booking = create_non_digital_thing_booking(product_type=str(ThingType.LIVRE_EDITION))
+        booking = create_non_digital_thing_booking(product_subcategory_id=subcategories.LIVRE_PAPIER.id)
         cumulative_booking_value = 55000
 
         # when

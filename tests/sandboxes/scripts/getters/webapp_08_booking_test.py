@@ -6,8 +6,8 @@ from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_product_with_event_type
-from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
+from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.getters.webapp_08_booking import get_non_free_event_offer
 from pcapi.sandboxes.scripts.getters.webapp_08_booking import get_non_free_thing_offer_with_active_mediation
@@ -21,7 +21,7 @@ class GetNonFreeThingOfferWithActiveMediationTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        product = create_product_with_thing_type()
+        product = create_product_with_thing_subcategory()
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
@@ -63,7 +63,7 @@ class GetNonFreeThingOfferWithActiveMediationTest:
                 "productId": humanize(product.id),
                 "rankingWeight": None,
                 "status": "ACTIVE",
-                "subcategoryId": None,
+                "subcategoryId": "LIVRE_PAPIER",
                 "thingName": "Test Book",
                 "type": "ThingType.LIVRE_EDITION",
                 "url": None,
@@ -81,7 +81,7 @@ class GetNonFreeThingOfferWithActiveMediationTest:
         # Given
         offerer = create_offerer(validation_token="validation_token")
         venue = create_venue(offerer)
-        product = create_product_with_thing_type()
+        product = create_product_with_thing_subcategory()
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
@@ -100,7 +100,7 @@ class GetNonFreeEventOfferTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        product = create_product_with_event_type()
+        product = create_product_with_event_subcategory()
         offer = create_offer_with_event_product(venue, product=product)
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
@@ -142,7 +142,7 @@ class GetNonFreeEventOfferTest:
                 "productId": humanize(product.id),
                 "rankingWeight": None,
                 "status": "ACTIVE",
-                "subcategoryId": None,
+                "subcategoryId": "SPECTACLE_REPRESENTATION",
                 "thingName": "Test event",
                 "type": "EventType.SPECTACLE_VIVANT",
                 "url": None,
@@ -160,7 +160,7 @@ class GetNonFreeEventOfferTest:
         # Given
         offerer = create_offerer(validation_token="validation_token")
         venue = create_venue(offerer)
-        product = create_product_with_event_type()
+        product = create_product_with_event_subcategory()
         offer = create_offer_with_event_product(venue, product=product)
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)

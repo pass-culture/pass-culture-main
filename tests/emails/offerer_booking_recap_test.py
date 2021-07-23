@@ -3,9 +3,9 @@ from datetime import timezone
 
 import pytest
 
-from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.testing import override_features
@@ -24,7 +24,7 @@ def make_booking(**kwargs):
         stock__price=10,
         stock__offer__name="Super événement",
         stock__offer__product__name="Super événement",
-        stock__offer__product__type=str(models.EventType.SPECTACLE_VIVANT),
+        stock__offer__product__subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
         stock__offer__venue__name="Lieu de l'offreur",
         stock__offer__venue__address="25 avenue du lieu",
         stock__offer__venue__postalCode="75010",
@@ -85,7 +85,7 @@ def test_with_book():
         stock__offer__name="Le récit de voyage",
         stock__offer__product__extraData={"isbn": "123456789"},
         stock__offer__product__name="Le récit de voyage",
-        stock__offer__product__type=str(models.ThingType.LIVRE_EDITION),
+        stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         stock__offer__venue__address=None,
         stock__offer__venue__city=None,
         stock__offer__venue__departementCode=None,
@@ -116,7 +116,7 @@ def test_non_digital_bookings_can_expire_after_30_days():
         stock__offer__name="Le récit de voyage",
         stock__offer__product__extraData={"isbn": "123456789"},
         stock__offer__product__name="Le récit de voyage",
-        stock__offer__product__type=str(models.ThingType.LIVRE_EDITION),
+        stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         stock__offer__venue__address=None,
         stock__offer__venue__city=None,
         stock__offer__venue__departementCode=None,
@@ -146,7 +146,7 @@ def test_with_book_with_missing_isbn():
         stock__offer__name="Le récit de voyage",
         stock__offer__product__extraData={},  # no ISBN
         stock__offer__product__name="Le récit de voyage",
-        stock__offer__product__type=str(models.ThingType.LIVRE_EDITION),
+        stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         stock__offer__venue__address=None,
         stock__offer__venue__city=None,
         stock__offer__venue__departementCode=None,
@@ -177,7 +177,7 @@ def test_a_digital_booking_expires_after_30_days():
     booking = make_booking(
         quantity=10,
         stock__price=0,
-        stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
+        stock__offer__product__subcategoryId=subcategories.VOD.id,
         stock__offer__product__url="http://example.com",
         stock__offer__name="Super offre numérique",
     )

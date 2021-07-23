@@ -1,8 +1,9 @@
 import logging
 
+from pcapi.core.categories.conf import get_subcategory_from_type
 from pcapi.domain.music_types import music_types
 from pcapi.domain.types import get_formatted_active_product_types
-from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_DESCRIPTIONS
@@ -36,13 +37,27 @@ def create_industrial_thing_products():
             name = "{} / {}".format(thing_type_dict["value"], MOCK_NAMES[mock_index])
             is_national = thing_type_dict["onlineOnly"]
             url = "https://ilestencoretemps.fr/" if thing_type_dict["onlineOnly"] else None
-            thing_product = create_product_with_thing_type(
+            thing_product = create_product_with_thing_subcategory(
                 author_name=MOCK_AUTHOR_NAMES[mock_index],
                 description=MOCK_DESCRIPTIONS[mock_index],
                 id_at_providers=str(id_at_providers),
                 is_national=is_national,
                 thing_name=MOCK_NAMES[mock_index],
-                thing_type=thing_type_dict["value"],
+                thing_subcategory_id=get_subcategory_from_type(
+                    offer_type=thing_type_dict["value"], is_virtual_venue=False
+                ),
+                thumb_count=0,
+                url=url,
+            )
+            virtual_venue_thing_product = create_product_with_thing_subcategory(
+                author_name=MOCK_AUTHOR_NAMES[mock_index],
+                description=MOCK_DESCRIPTIONS[mock_index],
+                id_at_providers=str(id_at_providers + 1),
+                is_national=is_national,
+                thing_name=MOCK_NAMES[mock_index],
+                thing_subcategory_id=get_subcategory_from_type(
+                    offer_type=thing_type_dict["value"], is_virtual_venue=True
+                ),
                 thumb_count=0,
                 url=url,
             )
@@ -73,10 +88,12 @@ def create_industrial_thing_products():
                     extraData[conditionalField] = random_token(13)
                 extra_data_index += 1
             thing_product.extraData = extraData
+            virtual_venue_thing_product.extraData = extraData
 
             thing_products_by_name[name] = thing_product
+            thing_products_by_name[name + "_virtual_venue"] = virtual_venue_thing_product
 
-            id_at_providers += 1
+            id_at_providers += 2
 
         type_index += len(thing_type_dicts)
 

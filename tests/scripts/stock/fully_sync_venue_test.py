@@ -3,10 +3,10 @@ import requests_mock
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
-from pcapi.models.offer_type import ThingType
 from pcapi.scripts.stock import fully_sync_venue
 
 
@@ -21,7 +21,7 @@ def test_fully_sync_venue():
     product2 = offers_factories.ProductFactory(
         idAtProviders="1234",
         extraData={"prix_livre": 10},
-        type=str(ThingType.LIVRE_EDITION),
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
 
     with requests_mock.Mocker() as mock:
@@ -50,7 +50,7 @@ def test_fully_sync_venue_with_new_provider():
     product2 = offers_factories.ProductFactory(
         idAtProviders="1234",
         extraData={"prix_livre": 10},
-        type=str(ThingType.LIVRE_EDITION),
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
     new_provider = offerers_factories.APIProviderFactory(apiUrl=api_url)
 

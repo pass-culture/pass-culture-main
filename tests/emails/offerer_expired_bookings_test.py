@@ -7,10 +7,10 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.emails.offerer_expired_bookings import build_expired_bookings_recap_email_data_for_offerer
-from pcapi.models import offer_type
 
 
 @pytest.mark.usefixtures("db_session")
@@ -22,7 +22,7 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app)
     now = datetime.utcnow()
     offerer = OffererFactory()
     long_ago = now - timedelta(days=31)
-    dvd = ProductFactory(type=str(offer_type.ThingType.AUDIOVISUEL))
+    dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
     expired_today_dvd_booking = BookingFactory(
         user__publicName="Dory",
         user__email="dory@example.com",
@@ -36,7 +36,7 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app)
         cancellationReason=BookingCancellationReasons.EXPIRED,
     )
 
-    cd = ProductFactory(type=str(offer_type.ThingType.MUSIQUE))
+    cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
     expired_today_cd_booking = BookingFactory(
         user__publicName="Dorian",
         user__email="dorian@example.com",

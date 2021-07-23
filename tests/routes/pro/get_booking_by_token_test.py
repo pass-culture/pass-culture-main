@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.categories import subcategories
 from pcapi.core.payments.factories import PaymentFactory
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
@@ -16,7 +17,6 @@ from pcapi.model_creators.specific_creators import create_event_occurrence
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
-from pcapi.models import EventType
 from pcapi.models import api_errors
 from pcapi.repository import repository
 from pcapi.routes.serialization import serialize
@@ -34,7 +34,9 @@ class Returns200Test:
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_name="Event Name", event_type=EventType.CINEMA)
+        offer = create_offer_with_event_product(
+            venue, event_name="Event Name", event_subcategory_id=subcategories.SEANCE_CINE.id
+        )
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)
@@ -65,7 +67,9 @@ class Returns200Test:
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_name="Event Name", event_type=EventType.CINEMA)
+        offer = create_offer_with_event_product(
+            venue, event_name="Event Name", event_subcategory_id=subcategories.SEANCE_CINE.id
+        )
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)

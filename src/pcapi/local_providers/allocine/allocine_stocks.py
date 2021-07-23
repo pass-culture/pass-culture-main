@@ -8,13 +8,13 @@ from dateutil.parser import parse
 from sqlalchemy import Sequence
 
 from pcapi import settings
+from pcapi.core.categories import subcategories
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
 from pcapi.domain.price_rule import AllocineStocksPriceRule
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock
@@ -132,7 +132,8 @@ class AllocineStocks(LocalProvider):
 
     def fill_product_attributes(self, allocine_product: Product):
         allocine_product.name = self.movie_information["title"]
-        allocine_product.type = str(EventType.CINEMA)
+        allocine_product.subcategoryId = subcategories.SEANCE_CINE.id
+        allocine_product.type = subcategories.SEANCE_CINE.matching_type
         allocine_product.thumbCount = 0
 
         self.update_from_movie_information(allocine_product, self.movie_information)
@@ -167,7 +168,8 @@ class AllocineStocks(LocalProvider):
         )
 
         allocine_offer.name = f"{self.movie_information['title']} - {movie_version}"
-        allocine_offer.type = str(EventType.CINEMA)
+        allocine_offer.subcategoryId = subcategories.SEANCE_CINE.id
+        allocine_offer.type = subcategories.SEANCE_CINE.matching_type
         allocine_offer.productId = self.last_product_id
 
         is_new_offer_to_insert = allocine_offer.id is None

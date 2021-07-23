@@ -11,6 +11,7 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import find_by_pro_user_id
+from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.payments.factories import PaymentFactory
 from pcapi.core.payments.factories import PaymentStatusFactory
@@ -23,7 +24,6 @@ from pcapi.model_creators.generic_creators import create_payment
 from pcapi.models import Booking
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.models.offer_type import ThingType
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -1274,17 +1274,21 @@ class FindSoonToBeExpiredBookingsTest:
         too_old_expired_creation_date = datetime.combine(too_old_expired_creation_date, time(12, 34, 17))
 
         expected_booking = bookings_factories.BookingFactory(
-            dateCreated=expired_creation_date, stock__offer__product__type=str(ThingType.AUDIOVISUEL)
+            dateCreated=expired_creation_date,
+            stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         # offer type not expirable
         bookings_factories.BookingFactory(
-            dateCreated=expired_creation_date, stock__offer__product__type=str(ThingType.LIVRE_AUDIO)
+            dateCreated=expired_creation_date,
+            stock__offer__product__subcategoryId=subcategories.LIVRE_AUDIO_PHYSIQUE.id,
         )
         bookings_factories.BookingFactory(
-            dateCreated=non_expired_creation_date, stock__offer__product__type=str(ThingType.AUDIOVISUEL)
+            dateCreated=non_expired_creation_date,
+            stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         bookings_factories.BookingFactory(
-            dateCreated=too_old_expired_creation_date, stock__offer__product__type=str(ThingType.AUDIOVISUEL)
+            dateCreated=too_old_expired_creation_date,
+            stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
 
         # When

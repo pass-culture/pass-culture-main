@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.local_providers.local_provider import _save_same_thumb_from_thumb_count_to_index
@@ -61,6 +62,7 @@ class UpdateObjectsTest:
         # Then
         new_product = Product.query.one()
         assert new_product.name == "New Product"
+        assert new_product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert new_product.type == str(ThingType.LIVRE_EDITION)
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
@@ -73,7 +75,7 @@ class UpdateObjectsTest:
             lastProvider=provider,
             idAtProviders=providable_info.id_at_providers,
             name="Old product name",
-            type=str(ThingType.INSTRUMENT),
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
         )
         local_provider = provider_test_utils.TestLocalProvider()
         next_function.side_effect = [[providable_info]]
@@ -97,7 +99,7 @@ class UpdateObjectsTest:
             lastProvider=provider,
             idAtProviders=providable_info.id_at_providers,
             name="Old product name",
-            type=str(ThingType.INSTRUMENT),
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
         )
         local_provider = provider_test_utils.TestLocalProvider()
         next_function.side_effect = [[providable_info]]
@@ -201,7 +203,7 @@ class CreateObjectTest:
 
         # Then
         assert api_errors.value.errors["url"] == [
-            "Une offre de type Jeux (support physique) ne peut pas être numérique"
+            "Une offre de type Vente et location d’instruments de musique ne peut pas être numérique"
         ]
         assert Product.query.count() == 0
         provider_event = LocalProviderEvent.query.one()
@@ -216,7 +218,7 @@ class HandleUpdateTest:
         providable_info = create_providable_info()
         product = offers_factories.ThingProductFactory(
             name="Old product name",
-            type=str(ThingType.INSTRUMENT),
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
             idAtProviders=providable_info.id_at_providers,
             lastProvider=provider,
         )
@@ -236,7 +238,7 @@ class HandleUpdateTest:
         providable_info = create_providable_info()
         product = offers_factories.ThingProductFactory(
             name="Old product name",
-            type=str(ThingType.INSTRUMENT),
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
             idAtProviders=providable_info.id_at_providers,
             lastProvider=provider,
         )
@@ -248,7 +250,7 @@ class HandleUpdateTest:
 
         # Then
         assert api_errors.value.errors["url"] == [
-            "Une offre de type Jeux (support physique) ne peut pas être numérique"
+            "Une offre de type Vente et location d’instruments de musique ne peut pas être numérique"
         ]
         provider_event = LocalProviderEvent.query.one()
         assert provider_event.type == LocalProviderEventType.SyncError

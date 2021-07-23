@@ -3,9 +3,9 @@ from datetime import timezone
 
 import pytest
 
-from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_features
 from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
@@ -20,7 +20,7 @@ def make_booking(**kwargs):
         stock__beginningDatetime=datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc),
         stock__price=23.99,
         stock__offer__name="Super événement",
-        stock__offer__product__type=str(models.EventType.SPECTACLE_VIVANT),
+        stock__offer__product__subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
         stock__offer__venue__name="Lieu de l'offreur",
         stock__offer__venue__address="25 avenue du lieu",
         stock__offer__venue__postalCode="75010",
@@ -72,7 +72,6 @@ def get_expected_base_email_data(booking, mediation, **overrides):
 def test_should_return_event_specific_data_for_email_when_offer_is_an_event():
     booking = make_booking()
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
-
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
 
     expected = get_expected_base_email_data(booking, mediation)
@@ -99,7 +98,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event()
 @pytest.mark.usefixtures("db_session")
 def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing():
     booking = make_booking(
-        stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
+        stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         stock__offer__name="Super bien culturel",
     )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
@@ -162,7 +161,7 @@ class DigitalOffersTest:
         booking = make_booking(
             quantity=10,
             stock__price=0,
-            stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
+            stock__offer__product__subcategoryId=subcategories.VOD.id,
             stock__offer__product__url="http://example.com",
             stock__offer__name="Super offre numérique",
         )
@@ -241,7 +240,7 @@ def test_use_activation_code_instead_of_token_if_possible():
         user__email="used-email@example.com",
         quantity=10,
         stock__price=0,
-        stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
+        stock__offer__product__subcategoryId=subcategories.VOD.id,
         stock__offer__product__url="http://example.com?token={token}&offerId={offerId}&email={email}",
         stock__offer__name="Super offre numérique",
     )
@@ -277,7 +276,7 @@ def test_add_expiration_date_from_activation_code():
     booking = make_booking(
         quantity=10,
         stock__price=0,
-        stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
+        stock__offer__product__subcategoryId=subcategories.VOD.id,
         stock__offer__product__url="http://example.com",
         stock__offer__name="Super offre numérique",
     )

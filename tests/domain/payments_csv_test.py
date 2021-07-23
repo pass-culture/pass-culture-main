@@ -3,12 +3,12 @@ from decimal import Decimal
 
 import pytest
 
+from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.domain.payments import generate_payment_details_csv
 from pcapi.domain.payments import generate_wallet_balances_csv
-from pcapi.models.offer_type import ThingType
 from pcapi.models.payment import Payment
 from pcapi.models.wallet_balance import WalletBalance
 from pcapi.utils.human_ids import humanize
@@ -32,7 +32,7 @@ class GeneratePaymentDetailsCsvTest:
             booking__dateUsed=used_date,
             booking__user__email="john.doe@example.com",
             booking__stock__offer__product__name="Une histoire formidable",
-            booking__stock__offer__product__type=str(ThingType.AUDIOVISUEL),
+            booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
             booking__stock__offer__venue=venue1,
             iban="IBAN1",
             amount=9,
@@ -51,7 +51,7 @@ class GeneratePaymentDetailsCsvTest:
             booking__dateUsed=used_date,
             booking__user__email="jeanne.doux@example.com",
             booking__stock__offer__product__name="Une histoire plutôt bien",
-            booking__stock__offer__product__type=str(ThingType.AUDIOVISUEL),
+            booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
             booking__stock__offer__venue=venue2,
             iban="IBAN2",
             amount=11,

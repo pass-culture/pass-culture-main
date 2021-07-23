@@ -9,7 +9,7 @@ import pytest
 from pcapi.local_providers import TiteLiveThingThumbs
 from pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs import extract_thumb_index
 from pcapi.model_creators.provider_creators import provider_test
-from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.models import Product
 from pcapi.repository import repository
 import pcapi.sandboxes
@@ -44,8 +44,8 @@ class TiteliveThingThumbsTest:
         self, get_thumbs_zip_file_from_ftp, get_ordered_thumbs_zip_files, app
     ):
         # given
-        product1 = create_product_with_thing_type(id_at_providers="9780847858903", thumb_count=0)
-        product2 = create_product_with_thing_type(id_at_providers="9782016261903", thumb_count=0)
+        product1 = create_product_with_thing_subcategory(id_at_providers="9780847858903", thumb_count=0)
+        product2 = create_product_with_thing_subcategory(id_at_providers="9782016261903", thumb_count=0)
         repository.save(product1, product2)
         zip_thumb_file = get_zip_with_2_usable_thumb_files()
         get_ordered_thumbs_zip_files.return_value = [zip_thumb_file]
@@ -74,7 +74,7 @@ class TiteliveThingThumbsTest:
         self, get_thumbs_zip_file_from_ftp, get_ordered_thumbs_zip_files, app
     ):
         # Given
-        product1 = create_product_with_thing_type(id_at_providers="9780847858903", thumb_count=0)
+        product1 = create_product_with_thing_subcategory(id_at_providers="9780847858903", thumb_count=0)
         repository.save(product1)
         zip_thumb_file = get_zip_with_1_usable_thumb_file()
         get_ordered_thumbs_zip_files.return_value = [zip_thumb_file]

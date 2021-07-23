@@ -5,6 +5,7 @@ from freezegun.api import freeze_time
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers.factories import VenueFactory
@@ -12,7 +13,6 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.providers import api
 from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.models import ApiErrors
-from pcapi.models import ThingType
 from pcapi.models.product import Product
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 
@@ -36,7 +36,7 @@ class CreateVenueProviderTest:
 def create_product(isbn, **kwargs):
     return factories.ProductFactory(
         idAtProviders=isbn,
-        type=str(ThingType.LIVRE_EDITION),
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
         extraData={"prix_livre": 12},
         **kwargs,
     )
@@ -65,7 +65,7 @@ class SynchronizeStocksTest:
             {"ref": "3010000108124", "available": 17},
             {"ref": "3010000108125", "available": 17},
         ]
-        provider = offerers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
+        offerers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
         venue = VenueFactory()
         siret = venue.siret
         provider = offerers_factories.ProviderFactory()

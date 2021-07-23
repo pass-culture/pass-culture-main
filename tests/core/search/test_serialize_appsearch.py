@@ -5,6 +5,7 @@ import json
 import pytest
 from sqlalchemy.orm import joinedload
 
+from pcapi.core.categories import subcategories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
@@ -28,7 +29,7 @@ def test_serialize():
             "stageDirector": "Stage Director",
         },
         rankingWeight=2,
-        type="ThingType.LIVRE_EDITION",
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
         venue__id=127,
         venue__name="La Moyenne Librairie SA",
         venue__publicName="La Moyenne Librairie",
@@ -79,7 +80,7 @@ def test_serialize_artist_empty():
 
 
 def test_serialize_dates_and_times():
-    offer = offers_factories.OfferFactory(type="EventType.CINEMA")
+    offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
     dt = datetime.datetime(2032, 1, 1, 12, 15)
     offers_factories.EventStockFactory(offer=offer, beginningDatetime=dt)
     serialized = appsearch.AppSearchBackend().serialize_offer(offer)

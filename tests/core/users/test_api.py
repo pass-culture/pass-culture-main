@@ -15,6 +15,7 @@ from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import InstitutionalProjectRedactorResponse
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails import testing as mails_testing
@@ -56,8 +57,6 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
-from pcapi.models.offer_type import EventType
-from pcapi.models.offer_type import ThingType
 from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
@@ -652,19 +651,19 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=50,
-            stock__offer__type=str(EventType.CINEMA),
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )
         bookings_factories.BookingFactory(
             user=user,
             amount=5,
-            stock__offer__type=str(EventType.CINEMA),
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )
 
         # booking in digital domain
         bookings_factories.BookingFactory(
             user=user,
             amount=80,
-            stock__offer__type=str(ThingType.JEUX_VIDEO),
+            stock__offer__subcategoryId=subcategories.JEU_EN_LIGNE.id,
             stock__offer__url="http://on.line",
         )
 
@@ -672,16 +671,16 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=150,
-            stock__offer__type=str(ThingType.JEUX),
+            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         # cancelled booking
         bookings_factories.BookingFactory(
             user=user,
             amount=150,
-            stock__offer__type=str(ThingType.JEUX),
             isCancelled=True,
             status=BookingStatus.CANCELLED,
+            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         assert get_domains_credit(user) == DomainsCredit(
@@ -697,7 +696,7 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=250,
-            stock__offer__type=str(ThingType.JEUX),
+            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         assert get_domains_credit(user) == DomainsCredit(
@@ -711,7 +710,7 @@ class DomainsCreditTest:
         bookings_factories.BookingFactory(
             user=user,
             amount=250,
-            stock__offer__type=str(ThingType.JEUX),
+            stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         with freeze_time(datetime.now() + relativedelta(years=DEPOSIT_VALIDITY_IN_YEARS, days=2)):

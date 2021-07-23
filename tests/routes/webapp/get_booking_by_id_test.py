@@ -137,7 +137,7 @@ class Returns200Test:
                             "remainingQuantity": "unlimited",
                         }
                     ],
-                    "subcategoryId": None,
+                    "subcategoryId": "SUPPORT_PHYSIQUE_FILM",
                     "thumbUrl": None,
                     "type": "ThingType.AUDIOVISUEL",
                     "url": "https://host/path/{token}?offerId={offerId}&email={email}",

@@ -7,9 +7,9 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_num_queries
-from pcapi.models import offer_type
 from pcapi.repository import repository
 from pcapi.scripts.booking import handle_expired_bookings
 
@@ -19,7 +19,7 @@ class CancelExpiredBookingsTest:
     def should_cancel_old_thing_that_can_expire_booking(self, app) -> None:
         now = datetime.utcnow()
         two_months_ago = now - timedelta(days=60)
-        book = ProductFactory(type=str(offer_type.ThingType.LIVRE_EDITION))
+        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         old_book_booking = BookingFactory(stock__offer__product=book, dateCreated=two_months_ago)
 
         handle_expired_bookings.cancel_expired_bookings()
@@ -31,7 +31,7 @@ class CancelExpiredBookingsTest:
         assert old_book_booking.stock.dnBookedQuantity == 0
 
     def should_not_cancel_new_thing_that_can_expire_booking(self, app) -> None:
-        book = ProductFactory(type=str(offer_type.ThingType.LIVRE_EDITION))
+        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         book_booking = BookingFactory(stock__offer__product=book)
 
         handle_expired_bookings.cancel_expired_bookings()
@@ -44,7 +44,9 @@ class CancelExpiredBookingsTest:
     def should_not_cancel_old_event_booking(self, app) -> None:
         two_months_ago = datetime.utcnow() - timedelta(days=60)
         tomorrow = datetime.utcnow() + timedelta(days=1)
-        concert = ProductFactory(type=str(offer_type.EventType.MUSIQUE))
+        concert = ProductFactory(
+            subcategoryId=subcategories.CONCERT.id,
+        )
         old_concert_booking = BookingFactory(
             dateCreated=two_months_ago, stock__beginningDatetime=tomorrow, stock__offer__product=concert
         )
@@ -58,7 +60,7 @@ class CancelExpiredBookingsTest:
 
     def should_not_cancel_old_thing_that_cannot_expire_booking(self, app) -> None:
         two_months_ago = datetime.utcnow() - timedelta(days=60)
-        press_subscription = ProductFactory(type=str(offer_type.ThingType.PRESSE_ABO))
+        press_subscription = ProductFactory(subcategoryId=subcategories.ABO_PRESSE_EN_LIGNE.id)
         old_press_subscription_booking = BookingFactory(
             stock__offer__product=press_subscription, dateCreated=two_months_ago
         )
@@ -73,7 +75,7 @@ class CancelExpiredBookingsTest:
     def should_not_update_cancelled_old_thing_that_can_expire_booking(self, app) -> None:
         fifty_days_ago = datetime.utcnow() - timedelta(days=50)
         forty_days_ago = datetime.utcnow() - timedelta(days=40)
-        book = ProductFactory(type=str(offer_type.ThingType.LIVRE_EDITION))
+        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         old_book_booking = BookingFactory(
             stock__offer__product=book,
             dateCreated=fifty_days_ago,
@@ -94,11 +96,13 @@ class CancelExpiredBookingsTest:
     def should_only_cancel_old_thing_that_can_expire_bookings_before_start_date(self, app) -> None:
         now = datetime.utcnow()
         two_months_ago = now - timedelta(days=60)
-        guitar = ProductFactory(type=str(offer_type.ThingType.INSTRUMENT))
+        guitar = ProductFactory(
+            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+        )
         old_guitar_booking = BookingFactory(stock__offer__product=guitar, dateCreated=two_months_ago)
-        disc = ProductFactory(type=str(offer_type.ThingType.MUSIQUE))
+        disc = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
         old_disc_booking = BookingFactory(stock__offer__product=disc, dateCreated=two_months_ago)
-        audio_book = ProductFactory(type=str(offer_type.ThingType.LIVRE_AUDIO))
+        audio_book = ProductFactory(subcategoryId=subcategories.LIVRE_AUDIO_PHYSIQUE.id)
         old_audio_book_booking = BookingFactory(stock__offer__product=audio_book, dateCreated=two_months_ago)
 
         handle_expired_bookings.cancel_expired_bookings()
@@ -121,7 +125,7 @@ class CancelExpiredBookingsTest:
     def test_queries_performance(self, app) -> None:
         now = datetime.utcnow()
         two_months_ago = now - timedelta(days=60)
-        book = ProductFactory(type=str(offer_type.ThingType.LIVRE_EDITION))
+        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         BookingFactory.create_batch(size=10, stock__offer__product=book, dateCreated=two_months_ago)
         n_queries = (
             1  # select count
@@ -149,7 +153,7 @@ class NotifyUsersOfExpiredBookingsTest:
         yesterday = now - timedelta(days=1)
         long_ago = now - timedelta(days=31)
         very_long_ago = now - timedelta(days=32)
-        dvd = ProductFactory(type=str(offer_type.ThingType.AUDIOVISUEL))
+        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
         expired_today_dvd_booking = BookingFactory(
             stock__offer__product=dvd,
             dateCreated=long_ago,
@@ -157,7 +161,7 @@ class NotifyUsersOfExpiredBookingsTest:
             status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
-        cd = ProductFactory(type=str(offer_type.ThingType.MUSIQUE))
+        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
         expired_today_cd_booking = BookingFactory(
             stock__offer__product=cd,
             dateCreated=long_ago,
@@ -165,7 +169,7 @@ class NotifyUsersOfExpiredBookingsTest:
             status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
-        painting = ProductFactory(type=str(offer_type.ThingType.OEUVRE_ART))
+        painting = ProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
         expired_yesterday_painting_booking = BookingFactory(
             stock__offer__product=painting,
             dateCreated=very_long_ago,
@@ -197,7 +201,7 @@ class NotifyOfferersOfExpiredBookingsTest:
         yesterday = now - timedelta(days=1)
         long_ago = now - timedelta(days=31)
         very_long_ago = now - timedelta(days=32)
-        dvd = ProductFactory(type=str(offer_type.ThingType.AUDIOVISUEL))
+        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
         expired_today_dvd_booking = BookingFactory(
             stock__offer__product=dvd,
             dateCreated=long_ago,
@@ -205,7 +209,7 @@ class NotifyOfferersOfExpiredBookingsTest:
             status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
-        cd = ProductFactory(type=str(offer_type.ThingType.MUSIQUE))
+        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
         expired_today_cd_booking = BookingFactory(
             stock__offer__product=cd,
             dateCreated=long_ago,
@@ -213,7 +217,7 @@ class NotifyOfferersOfExpiredBookingsTest:
             status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
-        painting = ProductFactory(type=str(offer_type.ThingType.OEUVRE_ART))
+        painting = ProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
         expired_yesterday_painting_booking = BookingFactory(
             stock__offer__product=painting,
             dateCreated=very_long_ago,

@@ -4,11 +4,15 @@ import uuid
 import factory
 
 from pcapi import models
-import pcapi.core.offerers.models as offerers_models
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
+from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
+import pcapi.core.offerers.models
 from pcapi.core.offers.models import OfferReport
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 from pcapi.models import offer_type
 
 
@@ -67,7 +71,8 @@ class ProductFactory(BaseFactory):
     class Meta:
         model = models.Product
 
-    type = factory.Iterator(ALL_TYPES)
+    subcategoryId = factory.Iterator(ALL_SUBCATEGORIES, getter=lambda s: s.id)
+    type = "MATCHED_FROM_SUBCATEGORY_ID_IN_POST_GENERATION"  # FIXME: fseguin(2021-07-22): deprecated
     name = factory.Sequence("Product {}".format)
     description = factory.Sequence("A passionate description of product {}".format)
 
@@ -78,13 +83,20 @@ class ProductFactory(BaseFactory):
             kwargs["idAtProviders"] = uuid.uuid4()
         return super()._create(model_class, *args, **kwargs)
 
+    # FIXME: fseguin(2021-07-22): deprecated
+    @factory.post_generation
+    def match_type(self, create, extracted, **kwargs):
+        self.type = getattr(ALL_SUBCATEGORIES_DICT.get(self.subcategoryId, ""), "matching_type", None)
+        db.session.add(self)
+        db.session.flush()
+
 
 class EventProductFactory(ProductFactory):
-    type = str(offer_type.EventType.CINEMA)
+    subcategoryId = subcategories.SEANCE_CINE.id
 
 
 class ThingProductFactory(ProductFactory):
-    type = str(offer_type.ThingType.AUDIOVISUEL)
+    subcategoryId = subcategories.SUPPORT_PHYSIQUE_FILM.id
 
 
 class DigitalProductFactory(ThingProductFactory):
@@ -99,7 +111,8 @@ class OfferFactory(BaseFactory):
 
     product = factory.SubFactory(ThingProductFactory)
     venue = factory.SubFactory(VenueFactory)
-    type = factory.SelfAttribute("product.type")
+    type = "MATCHED_FROM_SUBCATEGORY_ID_IN_POST_GENERATION"  # FIXME: fseguin(2021-07-22): deprecated
+    subcategoryId = factory.SelfAttribute("product.subcategoryId")
     name = factory.SelfAttribute("product.name")
     description = factory.SelfAttribute("product.description")
     url = factory.SelfAttribute("product.url")
@@ -125,6 +138,13 @@ class OfferFactory(BaseFactory):
             )
 
         return super()._create(model_class, *args, **kwargs)
+
+    # FIXME: fseguin(2021-07-22): deprecated
+    @factory.post_generation
+    def match_type(self, create, extracted, **kwargs):
+        self.type = getattr(ALL_SUBCATEGORIES_DICT.get(self.subcategoryId, ""), "matching_type", None)
+        db.session.add(self)
+        db.session.flush()
 
 
 class EventOfferFactory(OfferFactory):

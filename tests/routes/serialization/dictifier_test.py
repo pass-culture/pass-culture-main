@@ -7,7 +7,7 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.model_creators.specific_creators import create_product_with_event_type
+from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
 from pcapi.models import Stock
 from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
@@ -98,7 +98,7 @@ class AsDictTest:
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        event_product = create_product_with_event_type(event_name="My Event")
+        event_product = create_product_with_event_subcategory(event_name="My Event")
         offer = create_offer_with_event_product(venue, product=event_product)
         mediation = create_mediation(offer)
         repository.save(mediation)
@@ -115,7 +115,7 @@ class AsDictTest:
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        event_product = create_product_with_event_type(event_name="My Event")
+        event_product = create_product_with_event_subcategory(event_name="My Event")
         offer = create_offer_with_event_product(venue, product=event_product)
         mediation = create_mediation(offer)
         repository.save(mediation)

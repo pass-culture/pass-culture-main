@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 import logging
 
+from pcapi.core.categories import subcategories
 import pcapi.core.payments.api as payments_api
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
@@ -13,8 +14,6 @@ from pcapi.model_creators.specific_creators import create_event_occurrence
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
-from pcapi.models import EventType
-from pcapi.models import ThingType
 from pcapi.models import Venue
 from pcapi.repository import repository
 
@@ -94,7 +93,9 @@ def save_offerer_without_iban():
 
 def save_free_event_offer_with_stocks(venue: Venue):
     free_event_offer = create_offer_with_event_product(
-        venue, event_name="Free event", event_type=EventType.SPECTACLE_VIVANT
+        venue,
+        event_name="Free event",
+        event_subcategory_id=subcategories.SPECTACLE_REPRESENTATION.id,
     )
     past_occurrence = create_event_occurrence(free_event_offer, beginning_datetime=now - three_days)
     future_occurrence = create_event_occurrence(free_event_offer, beginning_datetime=now + three_days)
@@ -107,7 +108,10 @@ def save_free_event_offer_with_stocks(venue: Venue):
 
 def save_non_reimbursable_thing_offer(venue: Venue):
     paid_non_reimbursable_offer = create_offer_with_thing_product(
-        venue, thing_name="Concert en ligne", thing_type=ThingType.JEUX_VIDEO, url="http://my.game.fr"
+        venue,
+        thing_name="Concert en ligne",
+        thing_subcategory_id=subcategories.JEU_SUPPORT_PHYSIQUE.id,
+        url="http://my.game.fr",
     )
     non_reimbursable_stock = create_stock(offer=paid_non_reimbursable_offer, price=30)
     repository.save(non_reimbursable_stock)
@@ -117,7 +121,7 @@ def save_non_reimbursable_thing_offer(venue: Venue):
 
 def save_reimbursable_thing_offer(venue: Venue):
     paid_reimbursable_offer = create_offer_with_thing_product(
-        venue, thing_name="Roman cool", thing_type=ThingType.LIVRE_EDITION
+        venue, thing_name="Roman cool", thing_subcategory_id=subcategories.LIVRE_PAPIER.id
     )
     reimbursable_stock = create_stock(offer=paid_reimbursable_offer, price=30)
     repository.save(reimbursable_stock)
@@ -127,7 +131,7 @@ def save_reimbursable_thing_offer(venue: Venue):
 
 def save_paid_online_book_offer(venue: Venue):
     paid_reimbursable_offer = create_offer_with_thing_product(
-        venue, thing_name="Roman cool", thing_type=ThingType.LIVRE_EDITION, url="https://mycoolbook.fr"
+        venue, thing_name="Roman cool", thing_subcategory_id=subcategories.LIVRE_PAPIER.id, url="https://mycoolbook.fr"
     )
     reimbursable_stock = create_stock(offer=paid_reimbursable_offer, price=20)
     repository.save(reimbursable_stock)
@@ -137,7 +141,9 @@ def save_paid_online_book_offer(venue: Venue):
 
 def save_paid_reimbursable_event_offer(venue: Venue):
     paid_reimbursable_event_offer = create_offer_with_event_product(
-        venue, event_name="Paid event", event_type=EventType.SPECTACLE_VIVANT
+        venue,
+        event_name="Paid event",
+        event_subcategory_id=subcategories.SPECTACLE_REPRESENTATION.id,
     )
     past_occurrence = create_event_occurrence(paid_reimbursable_event_offer, beginning_datetime=now - three_days)
     future_occurrence = create_event_occurrence(paid_reimbursable_event_offer, beginning_datetime=now + three_days)

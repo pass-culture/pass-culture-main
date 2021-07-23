@@ -6,7 +6,7 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.models.db import db
@@ -19,7 +19,7 @@ class SaveChunksTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        product = create_product_with_thing_type()
+        product = create_product_with_thing_subcategory()
         repository.save(venue, product)
 
         offer = create_offer_with_thing_product(venue, product=product, id_at_providers="1%12345678912345")
@@ -40,7 +40,7 @@ class SaveChunksTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        product = create_product_with_thing_type()
+        product = create_product_with_thing_subcategory()
         repository.save(venue, product)
 
         offer = create_offer_with_thing_product(venue, product=product, id_at_providers="1%12345678912345")
@@ -72,7 +72,7 @@ class SaveChunksTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        product = create_product_with_thing_type()
+        product = create_product_with_thing_subcategory()
         offer = create_offer_with_thing_product(venue, product=product, id_at_providers="1%12345678912345")
         repository.save(venue, product, offer)
 
@@ -96,7 +96,7 @@ class SaveChunksTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        product = create_product_with_thing_type()
+        product = create_product_with_thing_subcategory()
         offer1 = create_offer_with_thing_product(venue, product=product, id_at_providers="1%12345678912345")
         offer2 = create_offer_with_thing_product(venue, product=product, id_at_providers="2%12345678912345")
         stock = create_stock(offer=offer1)

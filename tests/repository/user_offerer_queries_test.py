@@ -8,8 +8,8 @@ from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_product_with_event_type
-from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
+from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.models import Offer
 from pcapi.models import UserOfferer
 from pcapi.models import Venue
@@ -73,10 +73,10 @@ def test_filter_query_where_user_is_user_offerer_and_is_validated(app):
     user_offerer1 = create_user_offerer(pro, offerer1)
     user_offerer2 = create_user_offerer(pro, offerer2)
 
-    event1 = create_product_with_event_type(event_name="Rencontre avec Jacques Martin")
-    event2 = create_product_with_event_type(event_name="Concert de contrebasse")
-    thing1 = create_product_with_thing_type(thing_name="Jacques la fripouille")
-    thing2 = create_product_with_thing_type(thing_name="Belle du Seigneur")
+    event1 = create_product_with_event_subcategory(event_name="Rencontre avec Jacques Martin")
+    event2 = create_product_with_event_subcategory(event_name="Concert de contrebasse")
+    thing1 = create_product_with_thing_subcategory(thing_name="Jacques la fripouille")
+    thing2 = create_product_with_thing_subcategory(thing_name="Belle du Seigneur")
     venue1 = create_venue(offerer1, name="Bataclan", city="Paris", siret=offerer1.siren + "12345")
     venue2 = create_venue(offerer2, name="Librairie la Rencontre", city="Saint Denis", siret=offerer2.siren + "54321")
     venue3 = create_venue(

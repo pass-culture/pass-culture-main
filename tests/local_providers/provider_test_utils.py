@@ -1,8 +1,8 @@
 from pathlib import Path
 
+from pcapi.core.categories import subcategories
 from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.local_provider import LocalProvider
-from pcapi.models import ThingType
 from pcapi.models.db import Model
 import pcapi.sandboxes
 
@@ -17,7 +17,8 @@ class TestLocalProvider(LocalProvider):
 
     def fill_object_attributes(self, obj):
         obj.name = "New Product"
-        obj.type = str(ThingType.LIVRE_EDITION)
+        obj.subcategoryId = subcategories.LIVRE_PAPIER.id
+        obj.type = subcategories.LIVRE_PAPIER.matching_type
 
     def __next__(self):
         pass
@@ -33,7 +34,8 @@ class TestLocalProviderWithApiErrors(LocalProvider):
 
     def fill_object_attributes(self, obj):
         obj.name = "New Product"
-        obj.type = str(ThingType.JEUX)
+        obj.subcategoryId = subcategories.ACHAT_INSTRUMENT.id
+        obj.type = subcategories.ACHAT_INSTRUMENT.matching_type
         obj.url = "http://url.com"
 
     def __next__(self):
@@ -50,7 +52,8 @@ class TestLocalProviderNoCreation(LocalProvider):
 
     def fill_object_attributes(self, obj):
         obj.name = "New Product"
-        obj.type = str(ThingType.LIVRE_EDITION)
+        obj.subcategoryId = subcategories.LIVRE_PAPIER.id
+        obj.type = subcategories.LIVRE_PAPIER.matching_type
 
     def __next__(self):
         pass
@@ -74,7 +77,7 @@ class TestLocalProviderWithThumb(LocalProvider):
 
     def fill_object_attributes(self, pc_object: Model):
         pc_object.name = "New Product"
-        pc_object.type = str(ThingType.LIVRE_EDITION)
+        pc_object.subcategoryId = subcategories.LIVRE_PAPIER.id
 
     def __next__(self):
         pass
@@ -98,7 +101,7 @@ class TestLocalProviderWithThumbIndexAt4(LocalProvider):
 
     def fill_object_attributes(self, pc_object):
         pc_object.name = "New Product"
-        pc_object.type = str(ThingType.LIVRE_EDITION)
+        pc_object.subcategoryId = subcategories.LIVRE_PAPIER.id
 
     def __next__(self):
         pass

@@ -9,6 +9,7 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import StockFactory
@@ -17,7 +18,6 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models.db import db
-from pcapi.models.offer_type import ThingType
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -94,9 +94,9 @@ class GetBookingsTest:
 
         permanent_booking = BookingFactory(
             user=user,
-            stock__offer__type=str(ThingType.LIVRE_AUDIO),
             isUsed=True,
             status=BookingStatus.USED,
+            stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
             dateUsed=datetime(2021, 2, 3),
         )
 
@@ -133,7 +133,7 @@ class GetBookingsTest:
 
         cancelled_permanent_booking = BookingFactory(
             user=user,
-            stock__offer__type=str(ThingType.LIVRE_AUDIO),
+            stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
             isCancelled=True,
             cancellation_date=datetime(2021, 3, 10),
         )
@@ -163,7 +163,6 @@ class GetBookingsTest:
             response = test_client.get("/native/v1/bookings")
 
         assert response.status_code == 200
-
         assert [b["id"] for b in response.json["ongoing_bookings"]] == [
             expire_tomorrow.id,
             event_booking.id,

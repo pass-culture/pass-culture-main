@@ -10,7 +10,7 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.model_creators.specific_creators import create_stock_from_offer
 
 
@@ -65,7 +65,7 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
         )
         offerer = create_offerer()
         venue = create_venue(offerer, name="La petite librairie", public_name="La grande librairie")
-        thing_product = create_product_with_thing_type(thing_name="Le récit de voyage")
+        thing_product = create_product_with_thing_subcategory(thing_name="Le récit de voyage")
         offer = create_offer_with_thing_product(venue=venue, product=thing_product)
         stock = create_stock_from_offer(offer, price=0)
         booking = create_booking(user=beneficiary, stock=stock, token="12346", quantity=6)

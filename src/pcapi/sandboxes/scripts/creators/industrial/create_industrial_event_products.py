@@ -1,9 +1,10 @@
 import logging
 
+from pcapi.core.categories.conf import get_subcategory_from_type
 from pcapi.domain.music_types import music_types
 from pcapi.domain.show_types import show_types
 from pcapi.domain.types import get_formatted_active_product_types
-from pcapi.model_creators.specific_creators import create_product_with_event_type
+from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
 from pcapi.models.offer_type import EventType
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_DESCRIPTION
@@ -45,11 +46,11 @@ def create_industrial_event_products():
             event_type = event_type_dict["value"]
 
             name = "{} / {}".format(event_type_dict["value"], event_name)
-            event_product = create_product_with_event_type(
+            event_product = create_product_with_event_subcategory(
                 description=description,
                 duration_minutes=60,
                 event_name=event_name,
-                event_type=event_type,
+                event_subcategory_id=get_subcategory_from_type(offer_type=event_type, is_virtual_venue=False),
                 thumb_count=0,
             )
 
@@ -82,7 +83,6 @@ def create_industrial_event_products():
                     pass
                 extra_data_index += 1
             event_product.extraData = extraData
-
             event_products_by_name[name] = event_product
 
         type_index += len(event_type_dicts)

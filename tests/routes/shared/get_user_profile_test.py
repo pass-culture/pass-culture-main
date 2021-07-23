@@ -2,12 +2,12 @@ import datetime
 
 import pytest
 
+from pcapi.core.categories import subcategories
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.models import ThingType
 from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
@@ -83,7 +83,7 @@ class Returns200Test:
         offerer2_physical_venue = create_venue(offerer2, siret="12345678856734")
         offerer2_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         offer = create_offer_with_thing_product(
-            offerer_virtual_venue, thing_type=ThingType.JEUX_VIDEO_ABO, url="http://fake.url"
+            offerer_virtual_venue, thing_subcategory_id=subcategories.ABO_JEU_VIDEO.id, url="http://fake.url"
         )
         offer2 = create_offer_with_thing_product(offerer2_physical_venue)
 

@@ -6,6 +6,7 @@ import pytest
 
 from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
@@ -17,8 +18,6 @@ from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.models import OfferReport
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.factories import UserFactory
-from pcapi.models.offer_type import EventType
-from pcapi.models.offer_type import ThingType
 import pcapi.notifications.push.testing as notifications_testing
 
 from tests.conftest import TestClient
@@ -32,7 +31,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class OffersTest:
     @freeze_time("2020-01-01")
     def test_get_event_offer(self, app):
-        offer_type = EventType.CINEMA
         extra_data = {
             "author": "mandibule",
             "isbn": "3838",
@@ -46,7 +44,7 @@ class OffersTest:
             "visa": "vasi",
         }
         offer = OfferFactory(
-            type=str(offer_type),
+            subcategoryId=subcategories.SEANCE_CINE.id,
             isDuo=True,
             description="desk cryption",
             name="l'offre du siècle",
@@ -160,9 +158,8 @@ class OffersTest:
         }
 
     def test_get_thing_offer(self, app):
-        product = ProductFactory(thumbCount=1)
-        offer_type = ThingType.MUSEES_PATRIMOINE_ABO
-        offer = OfferFactory(type=str(offer_type), product=product, isEducational=True)
+        product = ProductFactory(thumbCount=1, subcategoryId=subcategories.ABO_MUSEE.id)
+        offer = OfferFactory(product=product, isEducational=True)
         ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
@@ -326,15 +323,14 @@ class ReportOfferTest:
 
         # expected queries:
         #   * get user
-        #   * get offer
         #   * insert report
         #   * release savepoint
         #
         #   * reload user
-        #   * reload offer
+        #   * select offer
         #   * insert email into db
         #   * release savepoint
-        with assert_num_queries(8):
+        with assert_num_queries(7):
             response = test_client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "INAPPROPRIATE"})
             assert response.status_code == 204
 
@@ -357,15 +353,14 @@ class ReportOfferTest:
 
         # expected queries:
         #   * get user
-        #   * get offer
         #   * insert report
         #   * release savepoint
         #
         #   * reload user
-        #   * reload offer
+        #   * select offer
         #   * insert email into db
         #   * release savepoint
-        with assert_num_queries(8):
+        with assert_num_queries(7):
             data = {"reason": "OTHER", "customReason": "saynul"}
             response = test_client.post(f"/native/v1/offer/{offer.id}/report", json=data)
             assert response.status_code == 204

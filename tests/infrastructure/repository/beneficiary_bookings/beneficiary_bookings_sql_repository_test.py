@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import ThingOfferFactory
@@ -89,9 +90,9 @@ class BeneficiaryBookingsSQLRepositoryTest:
     def test_should_not_return_activation_bookings(self, app):
         # Given
         beneficiary = BeneficiaryFactory()
-        offer1 = EventOfferFactory(type="ThingType.ACTIVATION")
-        offer2 = EventOfferFactory(type="ThingType.ACTIVATION")
-        offer3 = EventOfferFactory(type="ThingType.ANY")
+        offer1 = EventOfferFactory(subcategoryId=subcategories.ACTIVATION_THING.id)
+        offer2 = EventOfferFactory(subcategoryId=subcategories.ACTIVATION_THING.id)
+        offer3 = EventOfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
         stock1 = EventStockFactory(offer=offer1)
         stock2 = EventStockFactory(offer=offer2)
         stock3 = EventStockFactory(offer=offer3)

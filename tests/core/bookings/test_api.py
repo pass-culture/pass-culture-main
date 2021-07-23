@@ -15,6 +15,7 @@ from pcapi.core.bookings import models
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
@@ -149,9 +150,10 @@ class BookOfferTest:
         assert email_data2["MJ-TemplateID"] == 2996790  # to beneficiary
 
     def test_booked_categories_are_sent_to_batch_backend(self, app):
-        offer1 = offers_factories.OfferFactory(type="ThingType.AUDIOVISUEL")
-        offer2 = offers_factories.OfferFactory(type="ThingType.CINEMA_ABO")
-        offers_factories.OfferFactory(type="ThingType.INSTRUMENT")
+        offer1 = offers_factories.OfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
+        offer2 = offers_factories.OfferFactory(subcategoryId=subcategories.CARTE_CINE_ILLIMITE.id)
+
+        offers_factories.OfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
 
         stock1 = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer=offer1)
         stock2 = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer=offer2)

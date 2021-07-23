@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import Mediation
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
@@ -9,12 +10,11 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.models import Favorite
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock
-from pcapi.models.offer_type import ThingType
 from pcapi.repository import repository
 from pcapi.repository.product_queries import delete_unwanted_existing_product
 from pcapi.repository.product_queries import find_active_book_product_by_isbn
@@ -25,7 +25,7 @@ class DeleteUnwantedExistingProductTest:
     def test_should_delete_product_when_isbn_found(self, app):
         # Given
         isbn = "1111111111111"
-        product = create_product_with_thing_type(id_at_providers=isbn)
+        product = create_product_with_thing_subcategory(id_at_providers=isbn)
         repository.save(product)
 
         # When
@@ -38,7 +38,7 @@ class DeleteUnwantedExistingProductTest:
     def test_should_not_delete_product_when_isbn_not_found(self, app):
         # Given
         isbn = "1111111111111"
-        product = create_product_with_thing_type(id_at_providers=isbn)
+        product = create_product_with_thing_subcategory(id_at_providers=isbn)
         repository.save(product)
 
         # When
@@ -51,10 +51,10 @@ class DeleteUnwantedExistingProductTest:
     def test_should_delete_nothing_when_product_not_found(self, app):
         # Given
         isbn = "1111111111111"
-        product = create_product_with_thing_type(
+        product = create_product_with_thing_subcategory(
             id_at_providers=isbn,
             is_gcu_compatible=False,
-            thing_type=ThingType.LIVRE_EDITION,
+            thing_subcategory_id=subcategories.LIVRE_PAPIER.id,
         )
         repository.save(product)
 
@@ -70,7 +70,7 @@ class DeleteUnwantedExistingProductTest:
         isbn = "1111111111111"
         offerer = create_offerer(siren="775671464")
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
-        product = create_product_with_thing_type(id_at_providers=isbn)
+        product = create_product_with_thing_subcategory(id_at_providers=isbn)
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer, price=0)
         repository.save(venue, product, offer, stock)
@@ -92,7 +92,7 @@ class DeleteUnwantedExistingProductTest:
         beneficiary = users_factories.BeneficiaryFactory()
         offerer = create_offerer(siren="775671464")
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
-        product = create_product_with_thing_type(id_at_providers=isbn, is_gcu_compatible=True)
+        product = create_product_with_thing_subcategory(id_at_providers=isbn, is_gcu_compatible=True)
         offer = create_offer_with_thing_product(venue, product=product, is_active=True)
         stock = create_stock(offer=offer, price=0)
         booking = create_booking(user=beneficiary, is_cancelled=True, stock=stock)
@@ -114,7 +114,7 @@ class DeleteUnwantedExistingProductTest:
         isbn = "1111111111111"
         offerer = create_offerer(siren="775671464")
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
-        product = create_product_with_thing_type(id_at_providers=isbn)
+        product = create_product_with_thing_subcategory(id_at_providers=isbn)
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer, price=0)
         mediation = create_mediation(offer=offer)
@@ -137,7 +137,7 @@ class DeleteUnwantedExistingProductTest:
         beneficiary = users_factories.BeneficiaryFactory()
         offerer = create_offerer(siren="775671464")
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
-        product = create_product_with_thing_type(id_at_providers=isbn)
+        product = create_product_with_thing_subcategory(id_at_providers=isbn)
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer, price=0)
         mediation = create_mediation(offer=offer)
@@ -161,7 +161,10 @@ class FindActiveBookProductByIsbnTest:
     def test_should_return_active_book_product_when_existing_isbn_is_given(self, app):
         # Given
         isbn = "1111111111111"
-        product = create_product_with_thing_type(id_at_providers=isbn, thing_type=ThingType.LIVRE_EDITION)
+        product = create_product_with_thing_subcategory(
+            id_at_providers=isbn,
+            thing_subcategory_id=subcategories.LIVRE_PAPIER.id,
+        )
         repository.save(product)
 
         # When
@@ -175,7 +178,10 @@ class FindActiveBookProductByIsbnTest:
         # Given
         invalid_isbn = "99999999999"
         valid_isbn = "1111111111111"
-        product = create_product_with_thing_type(id_at_providers=valid_isbn, thing_type=ThingType.LIVRE_EDITION)
+        product = create_product_with_thing_subcategory(
+            id_at_providers=valid_isbn,
+            thing_subcategory_id=subcategories.LIVRE_PAPIER.id,
+        )
         repository.save(product)
 
         # When
@@ -188,8 +194,8 @@ class FindActiveBookProductByIsbnTest:
     def test_should_not_return_not_gcu_compatible_product(self, app):
         # Given
         valid_isbn = "1111111111111"
-        product = create_product_with_thing_type(
-            id_at_providers=valid_isbn, thing_type=ThingType.LIVRE_EDITION, is_gcu_compatible=False
+        product = create_product_with_thing_subcategory(
+            id_at_providers=valid_isbn, thing_subcategory_id=subcategories.LIVRE_PAPIER.id, is_gcu_compatible=False
         )
         repository.save(product)
 

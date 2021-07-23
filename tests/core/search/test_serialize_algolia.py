@@ -5,6 +5,7 @@ from decimal import Decimal
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.categories import subcategories
 from pcapi.core.search.backends.algolia import AlgoliaBackend
 from pcapi.model_creators.generic_creators import create_criterion
 from pcapi.model_creators.generic_creators import create_offerer
@@ -12,7 +13,6 @@ from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.models import EventType
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
@@ -44,7 +44,7 @@ class BuildObjectTest:
             idx=3,
             is_active=True,
             event_name="Event name",
-            event_type=EventType.MUSIQUE,
+            event_subcategory_id=subcategories.EVENEMENT_MUSIQUE.id,
             thumb_count=1,
             date_created=datetime(2020, 1, 1, 10, 0, 0),
             ranking_weight=3,
@@ -437,7 +437,7 @@ class BuildObjectTest:
             idx=3,
             is_active=True,
             event_name="Event name",
-            event_type=EventType.MUSIQUE,
+            event_subcategory_id=subcategories.EVENEMENT_MUSIQUE.id,
             thumb_count=1,
             date_created=datetime(2020, 1, 1, 10, 0, 0),
             criteria=[criterion],
@@ -529,7 +529,7 @@ class BuildObjectTest:
             idx=3,
             is_active=True,
             event_name="Event name",
-            event_type=EventType.MUSIQUE,
+            event_subcategory_id=subcategories.EVENEMENT_MUSIQUE.id,
             thumb_count=1,
             date_created=datetime(2020, 1, 1, 10, 0, 0),
             criteria=[criterion1, criterion2],

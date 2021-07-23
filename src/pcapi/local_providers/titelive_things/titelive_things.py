@@ -6,13 +6,13 @@ from typing import Optional
 
 from pcapi.connectors.ftp_titelive import connect_to_titelive_ftp
 from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
+from pcapi.core.categories import subcategories
 from pcapi.domain.titelive import get_date_from_filename
 from pcapi.domain.titelive import read_things_date
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import BookFormat
 from pcapi.models import Product
-from pcapi.models import ThingType
 from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import local_provider_event_queries
 from pcapi.repository import product_queries
@@ -111,9 +111,10 @@ class TiteLiveThings(LocalProvider):
 
         self.product_infos = get_infos_from_data_line(elements)
 
-        self.product_type, self.product_extra_data["bookFormat"] = get_thing_type_and_extra_data_from_titelive_type(
-            self.product_infos["code_support"]
-        )
+        (
+            self.product_subcategory_id,
+            self.product_extra_data["bookFormat"],
+        ) = get_subcategory_and_extra_data_from_titelive_type(self.product_infos["code_support"])
         book_unique_identifier = self.product_infos["ean13"]
 
         ineligibility_reason = self.get_ineligibility_reason()
@@ -140,7 +141,7 @@ class TiteLiveThings(LocalProvider):
         )
         return [providable_info]
 
-    def get_ineligibility_reason(self) -> str:
+    def get_ineligibility_reason(self) -> Optional[str]:
         if self.product_infos["is_scolaire"] == "1" or self.product_infos["code_csr"] in SCHOOL_RELATED_CSR_CODE:
             return "school"
 
@@ -150,15 +151,17 @@ class TiteLiveThings(LocalProvider):
         ):
             return "press"
 
-        if not self.product_type:
-            return "uneligible-product-type"
+        if not self.product_subcategory_id:
+            return "uneligible-product-subcategory"
 
         return None
 
     def fill_object_attributes(self, product: Product):
         product.name = trim_with_elipsis(self.product_infos["titre"], 140)
         product.datePublished = read_things_date(self.product_infos["date_parution"])
-        product.type = self.product_type
+        subcategory = subcategories.ALL_SUBCATEGORIES_DICT[self.product_subcategory_id]
+        product.subcategoryId = subcategory.id
+        product.type = subcategory.matching_type
         product.extraData = self.product_extra_data.copy()
         product.extraData.update(get_extra_data_from_infos(self.product_infos))
 
@@ -201,59 +204,59 @@ def get_lines_from_thing_file(thing_file: str):
     return iter(data_wrapper.readlines())
 
 
-def get_thing_type_and_extra_data_from_titelive_type(titelive_type):
+def get_subcategory_and_extra_data_from_titelive_type(titelive_type):
     # pylint: disable=too-many-return-statements
-    if titelive_type == "A":
+    if titelive_type in ("A", "I", "LA"):  # obsolete codes
         return None, None
-    if titelive_type == "BD":
-        return str(ThingType.LIVRE_EDITION), BookFormat.BANDE_DESSINEE.value
-    if titelive_type == "BL":
-        return str(ThingType.LIVRE_EDITION), BookFormat.BEAUX_LIVRES.value
-    if titelive_type == "C":
+    if titelive_type == "BD":  # bande dessinée
+        return subcategories.LIVRE_PAPIER.id, BookFormat.BANDE_DESSINEE.value
+    if titelive_type == "BL":  # beaux livres
+        return subcategories.LIVRE_PAPIER.id, BookFormat.BEAUX_LIVRES.value
+    if titelive_type == "C":  # carte et plan
         return None, None
-    if titelive_type == "CA":
+    if titelive_type == "CA":  # CD audio
         return None, None
-    if titelive_type == "CB":
+    if titelive_type == "CB":  # coffret / boite
         return None, None
-    if titelive_type == "CD":
+    if titelive_type == "CD":  # CD-ROM
         return None, None
-    if titelive_type == "CL":
+    if titelive_type == "CL":  # calendrier
         return None, None
-    if titelive_type == "DV":
+    if titelive_type == "DV":  # DVD
         return None, None
-    if titelive_type == "EB":
+    if titelive_type == "EB":  # contenu numérique (hors livre électronique)
         return None, None
-    if titelive_type == "K7":
+    if titelive_type == "K7":  # cassette audio vidéo
         return None, None
-    if titelive_type == "LA":
+    if titelive_type == "LA":  # obsolete code
         return None, None
-    if titelive_type == "LC":
-        return str(ThingType.LIVRE_EDITION), BookFormat.LIVRE_CASSETTE.value
-    if titelive_type == "LD":
-        return str(ThingType.LIVRE_EDITION), BookFormat.LIVRE_AUDIO.value
-    if titelive_type == "LE":
+    if titelive_type == "LC":  # livre + cassette
+        return subcategories.LIVRE_PAPIER.id, BookFormat.LIVRE_CASSETTE.value  # TODO: verify
+    if titelive_type == "LD":  # livre + CD audio
+        return subcategories.LIVRE_PAPIER.id, BookFormat.LIVRE_AUDIO.value  # TODO: verify
+    if titelive_type == "LE":  # livre numérique
         return None, None
-    if titelive_type == "LR":
+    if titelive_type == "LR":  # livre + CD-ROM
         return None, None
-    if titelive_type == "LT":
+    if titelive_type == "LT":  # liseuses et tablettes
         return None, None
-    if titelive_type == "LV":
+    if titelive_type == "LV":  # livre + DVD
         return None, None
-    if titelive_type == "M":
-        return str(ThingType.LIVRE_EDITION), BookFormat.MOYEN_FORMAT.value
-    if titelive_type == "O":
+    if titelive_type == "M":  # moyen format
+        return subcategories.LIVRE_PAPIER.id, BookFormat.MOYEN_FORMAT.value
+    if titelive_type == "O":  # objet
         return None, None
-    if titelive_type == "P":
-        return str(ThingType.LIVRE_EDITION), BookFormat.POCHE.value
-    if titelive_type == "PC":
+    if titelive_type == "P":  # poche
+        return subcategories.LIVRE_PAPIER.id, BookFormat.POCHE.value
+    if titelive_type == "PC":  # papeterie / consommable
         return None, None
-    if titelive_type == "PS":
+    if titelive_type == "PS":  # poster
         return None, None
-    if titelive_type == "R":
-        return str(ThingType.LIVRE_EDITION), BookFormat.REVUE.value
-    if titelive_type in ("T", "TL"):
-        return str(ThingType.LIVRE_EDITION), None
-    if titelive_type == "TR":
+    if titelive_type == "R":  # revue
+        return subcategories.LIVRE_PAPIER.id, BookFormat.REVUE.value  # TODO: verify
+    if titelive_type in ("T", "TL"):  # livre papier (hors spécificité)
+        return subcategories.LIVRE_PAPIER.id, None
+    if titelive_type == "TR":  # transparents
         return None, None
     return None, None
 

@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingProductFactory
@@ -18,12 +19,11 @@ from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.models import BookFormat
 from pcapi.models import LocalProviderEvent
 from pcapi.models import Offer
 from pcapi.models import Product
-from pcapi.models import ThingType
 from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import repository
 
@@ -153,7 +153,7 @@ class TiteliveThingsTest:
 
         titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
 
-        product = create_product_with_thing_type(
+        product = create_product_with_thing_subcategory(
             id_at_providers="9782895026310",
             thing_name="Toto à la playa",
             date_modified_at_last_provider=datetime(2001, 1, 1),
@@ -298,7 +298,7 @@ class TiteliveThingsTest:
 
         titelive_provider = activate_provider("TiteLiveThings")
         repository.save(titelive_provider)
-        product = create_product_with_thing_type(
+        product = create_product_with_thing_subcategory(
             id_at_providers="9782895026310",
             thing_name="Toto à la playa",
             date_modified_at_last_provider=datetime(2001, 1, 1),
@@ -339,7 +339,7 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = activate_provider("TiteLiveThings")
-        product = create_product_with_thing_type(
+        product = create_product_with_thing_subcategory(
             id_at_providers="9782895026310",
             thing_name="Toto à la playa",
             date_modified_at_last_provider=datetime(2001, 1, 1),
@@ -382,7 +382,7 @@ class TiteliveThingsTest:
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
         titelive_provider = activate_provider("TiteLiveThings")
         repository.save(venue)
-        product = create_product_with_thing_type(
+        product = create_product_with_thing_subcategory(
             id_at_providers="9782895026310",
             thing_name="Toto à la playa",
             date_modified_at_last_provider=datetime(2001, 1, 1),
@@ -462,7 +462,7 @@ class TiteliveThingsTest:
 
         titelive_provider = activate_provider("TiteLiveThings")
         repository.save(titelive_provider)
-        product = create_product_with_thing_type(
+        product = create_product_with_thing_subcategory(
             id_at_providers="9782895026310",
             thing_name="Presse papier",
             date_modified_at_last_provider=datetime(2001, 1, 1),
@@ -507,7 +507,7 @@ class TiteliveThingsTest:
         product = ThingProductFactory(
             idAtProviders="9782895026310",
             name="Presse papier",
-            type=str(ThingType.LIVRE_EDITION),
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
             dateModifiedAtLastProvider=datetime(2001, 1, 1),
             lastProviderId=titelive_provider.id,
         )

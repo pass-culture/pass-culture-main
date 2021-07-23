@@ -6,15 +6,15 @@ import string
 from typing import Iterable
 from typing import Optional
 
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.providers.models import Provider
 from pcapi.models import Criterion
-from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock
-from pcapi.models import ThingType
 from pcapi.models import Venue
 
 
@@ -26,7 +26,7 @@ def create_offer_with_event_product(
     description: Optional[str] = None,
     duration_minutes: Optional[int] = 60,
     event_name: str = "Test event",
-    event_type: EventType = EventType.SPECTACLE_VIVANT,
+    event_subcategory_id: Optional[str] = subcategories.SPECTACLE_REPRESENTATION.id,
     id_at_providers: str = None,
     idx: int = None,
     is_active: bool = True,
@@ -43,9 +43,9 @@ def create_offer_with_event_product(
 ) -> Offer:
     offer = Offer()
     if product is None:
-        product = create_product_with_event_type(
+        product = create_product_with_event_subcategory(
             event_name=event_name,
-            event_type=event_type,
+            event_subcategory_id=event_subcategory_id,
             duration_minutes=duration_minutes,
             thumb_count=thumb_count,
             is_national=is_national,
@@ -55,6 +55,7 @@ def create_offer_with_event_product(
     offer.product = product
     offer.venue = venue
     offer.name = product.name
+    offer.subcategoryId = product.subcategoryId
     offer.type = product.type
     offer.description = description
     offer.isNational = product.isNational
@@ -103,7 +104,7 @@ def create_offer_with_thing_product(
     media_urls: Iterable[str] = ("test/urls",),
     product: Product = None,
     thing_name: Optional[str] = "Test Book",
-    thing_type: ThingType = ThingType.AUDIOVISUEL,
+    thing_subcategory_id: Optional[str] = subcategories.VOD.id,
     thumb_count: int = 0,
     url: Optional[str] = None,
     last_provider_id: int = None,
@@ -118,7 +119,8 @@ def create_offer_with_thing_product(
         offer.product = product
         offer.productId = product.id
         offer.name = product.name
-        offer.type = product.type
+        offer.type = getattr(ALL_SUBCATEGORIES_DICT.get(product.subcategoryId, ""), "matching_type", None)
+        offer.subcategoryId = product.subcategoryId
         offer.mediaUrls = product.mediaUrls
         offer.extraData = product.extraData
         offer.url = product.url
@@ -128,11 +130,11 @@ def create_offer_with_thing_product(
         if is_digital:
             url = "fake/url"
         if is_offline_only:
-            thing_type = ThingType.CINEMA_ABO
+            thing_subcategory_id = subcategories.CARTE_CINE_MULTISEANCES.id
 
-        offer.product = create_product_with_thing_type(
+        offer.product = create_product_with_thing_subcategory(
             thing_name=thing_name,
-            thing_type=thing_type,
+            thing_subcategory_id=thing_subcategory_id,
             media_urls=media_urls,
             idx=product_idx,
             author_name=author_name,
@@ -142,7 +144,8 @@ def create_offer_with_thing_product(
             description=description,
         )
         offer.name = thing_name
-        offer.type = str(thing_type)
+        offer.subcategoryId = thing_subcategory_id
+        offer.type = getattr(ALL_SUBCATEGORIES_DICT.get(thing_subcategory_id, ""), "matching_type", None)
         offer.mediaUrls = media_urls
         offer.extraData = {"author": author_name}
         offer.url = url
@@ -172,9 +175,9 @@ def create_offer_with_thing_product(
     return offer
 
 
-def create_product_with_event_type(
+def create_product_with_event_subcategory(
     event_name: str = "Test event",
-    event_type: EventType = EventType.SPECTACLE_VIVANT,
+    event_subcategory_id: Optional[str] = subcategories.SPECTACLE_REPRESENTATION.id,
     description: str = None,
     duration_minutes: int = 60,
     id_at_providers: str = None,
@@ -190,15 +193,16 @@ def create_product_with_event_type(
     product.idAtProviders = id_at_providers
     product.isNational = is_national
     product.isDuo = is_duo
-    product.type = str(event_type)
+    product.subcategoryId = event_subcategory_id
+    product.type = getattr(ALL_SUBCATEGORIES_DICT.get(event_subcategory_id, ""), "matching_type", None)
     product.description = description
 
     return product
 
 
-def create_product_with_thing_type(
+def create_product_with_thing_subcategory(
     thing_name: str = "Test Book",
-    thing_type: ThingType = ThingType.LIVRE_EDITION,
+    thing_subcategory_id: Optional[str] = subcategories.LIVRE_PAPIER.id,
     author_name: str = "Test Author",
     is_national: bool = False,
     id_at_providers: str = None,
@@ -217,7 +221,8 @@ def create_product_with_thing_type(
 ) -> Product:
     product = Product()
     product.id = idx
-    product.type = str(thing_type)
+    product.subcategoryId = thing_subcategory_id
+    product.type = getattr(ALL_SUBCATEGORIES_DICT.get(thing_subcategory_id, ""), "matching_type", None)
     product.name = thing_name
     product.description = description
     if extra_data:
@@ -239,8 +244,8 @@ def create_product_with_thing_type(
     if is_digital:
         product.url = "fake/url"
     if is_offline_only:
-        product.type = str(ThingType.CINEMA_ABO)
-
+        product.subcategoryId = subcategories.CARTE_CINE_MULTISEANCES.id
+        product.type = ALL_SUBCATEGORIES_DICT[product.subcategoryId].matching_type
     return product
 
 
@@ -301,7 +306,7 @@ def create_stock_with_event_offer(
     booking_email: str = "offer.booking.email@example.com",
     quantity: int = 10,
     is_soft_deleted: bool = False,
-    event_type: EventType = EventType.JEUX,
+    event_subcategory_id: Optional[str] = subcategories.EVENEMENT_JEU.id,
     name: str = "Mains, sorts et papiers",
     offer_id: int = None,
     beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=72),
@@ -323,7 +328,7 @@ def create_stock_with_event_offer(
     stock.offer = create_offer_with_event_product(
         venue,
         event_name=name,
-        event_type=event_type,
+        event_subcategory_id=event_subcategory_id,
         booking_email=booking_email,
         is_national=False,
         thumb_count=thumb_count,
@@ -345,7 +350,7 @@ def create_stock_with_thing_offer(
     soft_deleted: bool = False,
     url: str = None,
     booking_limit_datetime: datetime = None,
-    thing_type: ThingType = ThingType.AUDIOVISUEL,
+    thing_subcategory_id: str = subcategories.SUPPORT_PHYSIQUE_FILM.id,
 ) -> Stock:
     stock = Stock()
     stock.offerer = offerer
@@ -354,7 +359,7 @@ def create_stock_with_thing_offer(
     if offer:
         stock.offer = offer
     else:
-        stock.offer = create_offer_with_thing_product(venue, thing_name=name, thing_type=thing_type)
+        stock.offer = create_offer_with_thing_product(venue, thing_name=name, thing_subcategory_id=thing_subcategory_id)
 
     stock.offer.bookingEmail = booking_email
     stock.bookingLimitDatetime = booking_limit_datetime

@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.categories import subcategories
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -13,7 +14,6 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_from_offer
-from pcapi.models import ThingType
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.mailing import build_pc_pro_offer_link
@@ -74,7 +74,7 @@ class GetUsersInformationFromStockBookingsTest:
         venue = create_venue(
             offerer=offerer, name="Test offerer", booking_email="reservations@test.fr", is_virtual=True, siret=None
         )
-        thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
+        thing_offer = create_offer_with_thing_product(venue, thing_subcategory_id=subcategories.LIVRE_NUMERIQUE.id)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(thing_offer, price=0, quantity=10, beginning_datetime=beginning_datetime)
         booking_1 = create_booking(user=user_1, stock=stock, venue=venue, token="HELLO0")

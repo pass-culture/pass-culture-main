@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
 import pcapi.core.offers.factories as offers_factories
@@ -139,7 +140,7 @@ class Returns403Test:
             # Given
             user = users_factories.BeneficiaryFactory(email="user@example.com")
             offerer2 = offers_factories.OffererFactory(siren="987654321")
-            offer = offers_factories.EventOfferFactory(type="EventType.CINEMA")
+            offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
             stock = offers_factories.EventStockFactory(offer=offer, price=0)
             booking = BookingFactory(user=user, stock=stock)
 

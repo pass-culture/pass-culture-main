@@ -6,7 +6,7 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.validation.models.entity_validator import validate
 
 
@@ -109,7 +109,7 @@ def test_should_not_return_errors_when_valid_offerer():
 
 def test_should_return_errors_when_invalid_product():
     # Given
-    product = create_product_with_thing_type(is_offline_only=True, is_digital=True)
+    product = create_product_with_thing_subcategory(is_offline_only=True, is_digital=True)
 
     # When
     api_errors = validate(product)
@@ -120,7 +120,7 @@ def test_should_return_errors_when_invalid_product():
 
 def test_should_return_errors_when_valid_product():
     # Given
-    product = create_product_with_thing_type()
+    product = create_product_with_thing_subcategory()
 
     # When
     api_errors = validate(product)

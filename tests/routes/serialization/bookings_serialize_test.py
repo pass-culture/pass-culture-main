@@ -4,6 +4,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
@@ -13,10 +14,8 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_event_occurrence
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_product_with_thing_type
+from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
-from pcapi.models import EventType
-from pcapi.models import ThingType
 from pcapi.routes.serialization import serialize_booking
 from pcapi.routes.serialization.bookings_serialize import serialize_booking_minimal
 from pcapi.utils.human_ids import humanize
@@ -34,7 +33,9 @@ class SerializeBookingTest:
         user = users_factories.BeneficiaryFactory.build(email="user@example.com", publicName="John Doe")
         offerer = create_offerer()
         venue = create_venue(offerer, name="Venue name", address="Venue address")
-        offer = create_offer_with_event_product(venue=venue, event_name="Event Name", event_type=EventType.CINEMA)
+        offer = create_offer_with_event_product(
+            venue=venue, event_name="Event Name", event_subcategory_id=subcategories.SEANCE_CINE.id
+        )
         event_occurrence = create_event_occurrence(offer, beginning_datetime=datetime.utcnow())
         stock = create_stock_from_event_occurrence(event_occurrence, price=12)
         booking = create_booking(user=user, quantity=3, stock=stock, venue=venue)
@@ -72,7 +73,7 @@ class SerializeBookingTest:
         offerer = create_offerer()
         venue = create_venue(offerer, name="Venue name", address="Venue address")
         offer = create_offer_with_event_product(
-            venue=venue, event_name="Event Name", event_type=EventType.CINEMA, idx=999
+            venue=venue, event_name="Event Name", event_subcategory_id=subcategories.SEANCE_CINE.id, idx=999
         )
         event_occurrence = create_event_occurrence(offer, beginning_datetime=datetime.utcnow())
         stock = create_stock_from_event_occurrence(event_occurrence, price=12)
@@ -91,8 +92,10 @@ class SerializeBookingTest:
         user = users_factories.BeneficiaryFactory.build(email="user@example.com", publicName="John Doe")
         offerer = create_offerer()
         venue = create_venue(offerer, name="Venue name", address="Venue address")
-        product = create_product_with_thing_type(
-            thing_name="Event Name", thing_type=ThingType.CINEMA_ABO, extra_data={"isbn": "123456789"}
+        product = create_product_with_thing_subcategory(
+            thing_name="Event Name",
+            thing_subcategory_id=subcategories.CARTE_CINE_ILLIMITE.id,
+            extra_data={"isbn": "123456789"},
         )
         offer = create_offer_with_thing_product(
             venue,
@@ -143,8 +146,8 @@ class SerializeBookingTest:
         user = users_factories.BeneficiaryFactory.build(email="user@example.com", publicName="John Doe")
         offerer = create_offerer()
         venue = create_venue(offerer, name="Venue name", address="Venue address")
-        product = create_product_with_thing_type(
-            thing_name="Event Name", thing_type=ThingType.CINEMA_ABO, extra_data={}
+        product = create_product_with_thing_subcategory(
+            thing_name="Event Name", thing_subcategory_id=subcategories.CARTE_CINE_ILLIMITE.id, extra_data={}
         )
         offer = create_offer_with_thing_product(venue, product=product, idx=999)
         stock = create_stock(offer=offer, price=12)
@@ -162,7 +165,9 @@ class SerializeBookingTest:
         user = users_factories.BeneficiaryFactory.build(email="user@example.com", publicName="John Doe")
         offerer = create_offerer()
         venue = create_venue(offerer, name="Venue name", address="Venue address")
-        offer = create_offer_with_event_product(venue=venue, event_name="Event Name", event_type=EventType.JEUX)
+        offer = create_offer_with_event_product(
+            venue=venue, event_name="Event Name", event_subcategory_id=subcategories.EVENEMENT_JEU.id
+        )
         event_occurrence = create_event_occurrence(offer, beginning_datetime=datetime.utcnow())
         stock = create_stock_from_event_occurrence(event_occurrence, price=12)
         booking = create_booking(user=user, quantity=3, stock=stock, venue=venue)
@@ -184,7 +189,9 @@ class SerializeBookingTest:
         )
         offerer = create_offerer()
         venue = create_venue(offerer, name="Venue name", address="Venue address")
-        offer = create_offer_with_event_product(venue=venue, event_name="Event Name", event_type=EventType.ACTIVATION)
+        offer = create_offer_with_event_product(
+            venue=venue, event_name="Event Name", event_subcategory_id=subcategories.ACTIVATION_EVENT.id
+        )
         event_occurrence = create_event_occurrence(offer, beginning_datetime=datetime.utcnow())
         stock = create_stock_from_event_occurrence(event_occurrence, price=12)
         booking = create_booking(user=user, quantity=3, stock=stock, venue=venue)

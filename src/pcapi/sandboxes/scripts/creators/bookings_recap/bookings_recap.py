@@ -5,6 +5,7 @@ import logging
 from pcapi.core.bookings.exceptions import BookingIsAlreadyCancelled
 from pcapi.core.bookings.exceptions import BookingIsAlreadyUsed
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventProductFactory
 from pcapi.core.offers.factories import EventStockFactory
@@ -19,8 +20,6 @@ from pcapi.core.payments.factories import PaymentFactory
 from pcapi.core.payments.factories import PaymentStatusFactory
 from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.core.users.factories import ProFactory
-from pcapi.models import EventType
-from pcapi.models import ThingType
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 
@@ -66,34 +65,38 @@ def save_bookings_recap_sandbox():
     venue3 = VenueFactory(managingOfferer=offerer, name="Théatre Mordor", siret="64538954601379")
     venue4_virtual = VenueFactory(managingOfferer=offerer, name="Un lieu virtuel", siret=None, isVirtual=True)
 
-    product1_venue1 = EventProductFactory(name="Jurassic Park", type=str(EventType.CINEMA))
+    product1_venue1 = EventProductFactory(name="Jurassic Park", subcategoryId=subcategories.SEANCE_CINE.id)
     offer1_venue1 = EventOfferFactory(product=product1_venue1, venue=venue1, isDuo=True)
     stock_1_offer1_venue1 = EventStockFactory(
         offer=offer1_venue1, beginningDatetime=yesterday, quantity=None, price=12.99
     )
 
-    product2_venue1 = EventProductFactory(name="Matrix", type=str(EventType.CINEMA))
+    product2_venue1 = EventProductFactory(name="Matrix", subcategoryId=subcategories.SEANCE_CINE.id)
 
     offer2_venue1 = EventOfferFactory(product=product2_venue1, venue=venue1, isDuo=False)
     stock_2_offer2_venue1 = EventStockFactory(offer=offer2_venue1, beginningDatetime=today, quantity=None, price=0)
 
     product1_venue2 = ThingProductFactory(
-        name="Fondation", type=str(ThingType.LIVRE_EDITION), extraData={"isbn": "9788804119135"}
+        name="Fondation", subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"isbn": "9788804119135"}
     )
     offer1_venue2 = ThingOfferFactory(product=product1_venue2, venue=venue2)
     stock_1_offer1_venue2 = ThingStockFactory(offer=offer1_venue2, quantity=42, price=9.99)
 
     product2_venue2 = ThingProductFactory(
-        name="Martine à la playa", type=str(ThingType.LIVRE_EDITION), extraData={"isbn": "9787605639121"}
+        name="Martine à la playa",
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
+        extraData={"isbn": "9787605639121"},
     )
     offer2_venue2 = ThingOfferFactory(product=product2_venue2, venue=venue2)
     stock_1_offer2_venue2 = ThingStockFactory(offer=offer2_venue2, quantity=12, price=49.99)
 
-    product1_venue3 = EventProductFactory(name="Danse des haricots", type=str(EventType.SPECTACLE_VIVANT))
+    product1_venue3 = EventProductFactory(
+        name="Danse des haricots", subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id
+    )
     offer1_venue3 = EventOfferFactory(product=product1_venue3, venue=venue3)
     stock_1_offer1_venue3 = EventStockFactory(offer=offer1_venue3, quantity=44, price=18.50)
 
-    product1_venue4 = ThingProductFactory(name="Le livre des haricots", type=str(ThingType.LIVRE_EDITION))
+    product1_venue4 = ThingProductFactory(name="Le livre des haricots", subcategoryId=subcategories.LIVRE_PAPIER.id)
     offer1_venue4 = ThingOfferFactory(product=product1_venue4, venue=venue4_virtual)
     stock_1_offer1_venue4 = ThingStockFactory(offer=offer1_venue4, quantity=70, price=10.99)
 

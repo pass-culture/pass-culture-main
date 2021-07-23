@@ -11,10 +11,10 @@ from pcapi.core.bookings import factories
 from pcapi.core.bookings import models
 from pcapi.core.bookings import validation
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models import ThingType
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository import repository
@@ -123,7 +123,7 @@ class CheckExpenseLimitsDepositVersion1Test:
 
     def test_physical_limit(self):
         beneficiary = self._get_beneficiary()
-        offer = offers_factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
+        offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
         factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
 
         validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
@@ -136,7 +136,7 @@ class CheckExpenseLimitsDepositVersion1Test:
 
     def test_physical_limit_on_uncapped_type(self):
         beneficiary = self._get_beneficiary()
-        offer = offers_factories.OfferFactory(product__type=str(ThingType.CINEMA_ABO))
+        offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.CARTE_CINE_ILLIMITE.id)
         factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
 
         # should not raise because CINEMA_ABO is not capped
@@ -144,7 +144,7 @@ class CheckExpenseLimitsDepositVersion1Test:
 
     def test_digital_limit(self):
         beneficiary = self._get_beneficiary()
-        product = offers_factories.DigitalProductFactory(type=str(ThingType.AUDIOVISUEL))
+        product = offers_factories.DigitalProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
         offer = offers_factories.OfferFactory(product=product)
         factories.BookingFactory(
             user=beneficiary,
@@ -162,7 +162,7 @@ class CheckExpenseLimitsDepositVersion1Test:
 
     def test_digital_limit_on_uncapped_type(self):
         beneficiary = self._get_beneficiary()
-        product = offers_factories.DigitalProductFactory(type=str(ThingType.OEUVRE_ART))
+        product = offers_factories.DigitalProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
         offer = offers_factories.OfferFactory(product=product)
         factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
 
@@ -172,7 +172,7 @@ class CheckExpenseLimitsDepositVersion1Test:
     def test_global_limit(self):
         beneficiary = self._get_beneficiary()
         factories.BookingFactory(user=beneficiary, stock__price=490)
-        offer = offers_factories.OfferFactory(type=str(ThingType.CINEMA_ABO))
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CARTE_CINE_ILLIMITE.id)
 
         validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
 
@@ -191,20 +191,20 @@ class CheckExpenseLimitsDepositVersion2Test:
     def test_raise_if_deposit_expired(self):
         yesterday = datetime.now() - timedelta(days=1)
         beneficiary = self._get_beneficiary(deposit__expirationDate=yesterday)
-        offer = offers_factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
+        offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
         with pytest.raises(exceptions.UserHasInsufficientFunds):
             validation.check_expenses_limits(beneficiary, 10, offer)
 
     def test_physical_limit(self):
         beneficiary = self._get_beneficiary()
-        offer = offers_factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
+        offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
         factories.BookingFactory(user=beneficiary, stock__price=290, stock__offer=offer)
 
         validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
 
     def test_digital_limit(self):
         beneficiary = self._get_beneficiary()
-        product = offers_factories.DigitalProductFactory(type=str(ThingType.AUDIOVISUEL))
+        product = offers_factories.DigitalProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
         offer = offers_factories.OfferFactory(product=product)
         factories.BookingFactory(
             user=beneficiary,
@@ -222,7 +222,7 @@ class CheckExpenseLimitsDepositVersion2Test:
 
     def test_digital_limit_on_uncapped_type(self):
         beneficiary = self._get_beneficiary()
-        product = offers_factories.DigitalProductFactory(type=str(ThingType.OEUVRE_ART))
+        product = offers_factories.DigitalProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
         offer = offers_factories.OfferFactory(product=product)
         factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
 
@@ -232,7 +232,7 @@ class CheckExpenseLimitsDepositVersion2Test:
     def test_global_limit(self):
         beneficiary = self._get_beneficiary()
         factories.BookingFactory(user=beneficiary, stock__price=290)
-        offer = offers_factories.OfferFactory(type=str(ThingType.CINEMA_ABO))
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CARTE_CINE_ILLIMITE.id)
 
         validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
 

@@ -46,7 +46,7 @@ def create_industrial_event_offers(events_by_name, offerers_by_name):
             else:
                 is_duo = True
             event_offers_by_name[name] = create_offer_with_event_product(
-                event_venue, product=event, event_type=event.type, is_active=is_active, is_duo=is_duo
+                event_venue, product=event, event_subcategory_id=event.subcategoryId, is_active=is_active, is_duo=is_duo
             )
             offer_index += 1
 

@@ -6,6 +6,7 @@ from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers.factories import ApiKeyFactory
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
@@ -19,7 +20,6 @@ from pcapi.model_creators.specific_creators import create_offer_with_event_produ
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
-from pcapi.models import EventType
 from pcapi.models import api_errors
 from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
@@ -41,7 +41,7 @@ class Returns200Test:
         offer = create_offer_with_event_product(
             venue=venue,
             event_name="Event Name",
-            event_type=EventType.CINEMA,
+            event_subcategory_id=subcategories.SEANCE_CINE.id,
             extra_data={
                 "theater": {
                     "allocine_movie_id": 165,
@@ -97,7 +97,9 @@ class Returns200Test:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user2, offerer)
         venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_name="Event Name", event_type=EventType.CINEMA)
+        offer = create_offer_with_event_product(
+            venue, event_name="Event Name", event_subcategory_id=subcategories.SEANCE_CINE.id
+        )
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)
@@ -123,7 +125,9 @@ class Returns200Test:
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_name="Event Name", event_type=EventType.CINEMA)
+        offer = create_offer_with_event_product(
+            venue, event_name="Event Name", event_subcategory_id=subcategories.SEANCE_CINE.id
+        )
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)
@@ -231,7 +235,7 @@ class Returns403Test:
         # Given
         user = users_factories.BeneficiaryFactory(email="user@example.com")
         offerer2 = offers_factories.OffererFactory(siren="987654321")
-        offer = offers_factories.EventOfferFactory(type="EventType.CINEMA")
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
         stock = offers_factories.EventStockFactory(offer=offer, price=0)
         booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
