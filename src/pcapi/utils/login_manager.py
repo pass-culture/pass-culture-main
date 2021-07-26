@@ -1,4 +1,5 @@
 """ login_manager """
+import logging
 import uuid
 
 from flask import current_app as app
@@ -13,6 +14,9 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.user_session_queries import delete_user_session
 from pcapi.repository.user_session_queries import existing_user_session
 from pcapi.repository.user_session_queries import register_user_session
+
+
+logger = logging.getLogger(__name__)
 
 
 @app.login_manager.user_loader
@@ -39,6 +43,7 @@ def get_user_with_request(request):
     except users_exceptions.UnvalidatedAccount as exc:
         errors.add_error("identifier", "Ce compte n'est pas validé.")
         raise errors from exc
+    logger.info("User logged in with authorization header", extra={"route": str(request.url_rule)})
     login_user(user)
     stamp_session(user)
     return user
