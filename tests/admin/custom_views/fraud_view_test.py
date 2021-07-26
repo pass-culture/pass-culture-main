@@ -208,7 +208,7 @@ class BeneficiaryFraudValidationViewTest:
 @pytest.mark.usefixtures("db_session")
 class JouveUpdateIDPieceNumberTest:
     def setup_method(self, method):
-        self.jouve_user = users_factories.UserFactory(isAdmin=True, roles=[users_models.UserRole.JOUVE])
+        self.jouve_admin = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
 
     def test_update_beneficiary_id_piece_number(self, client):
         user = users_factories.UserFactory(isAdmin=False, isBeneficiary=False)
@@ -231,7 +231,7 @@ class JouveUpdateIDPieceNumberTest:
         )
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.SUSPICIOUS)
 
-        client.with_auth(self.jouve_user.email)
+        client.with_auth(self.jouve_admin.email)
         response = client.post(
             f"/pc/back-office/beneficiary_fraud/update/beneficiary/id_piece_number/{user.id}",
             form={"id_piece_number": "123123123123"},
@@ -247,15 +247,46 @@ class JouveUpdateIDPieceNumberTest:
         assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
 
     def test_jouve_specific_query_filter(self, client):
-        jouve_admin = users_factories.UserFactory(
-            isAdmin=True, isBeneficiary=False, roles=[users_models.UserRole.JOUVE]
-        )
-        client.with_auth(jouve_admin.email)
+        client.with_auth(self.jouve_admin.email)
 
         fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.JOUVE)
         fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.DMS)
         response = client.get("/pc/back-office/beneficiary_fraud")
         assert "<ul><li>dms</li></ul>" not in response.data.decode()
+
+    def test_admin_can_update_id_piece_number(self, client):
+        admin = users_factories.AdminFactory()
+        user = users_factories.UserFactory(isAdmin=False, isBeneficiary=False, idPieceNumber=None)
+        content = fraud_factories.JouveContentFactory(
+            birthLocationCtrl="OK",
+            bodyBirthDateCtrl="OK",
+            bodyBirthDateLevel=100,
+            bodyFirstnameCtrl="OK",
+            bodyFirstnameLevel=100,
+            bodyNameLevel=100,
+            bodyNameCtrl="OK",
+            bodyPieceNumber="wrong-id-piece-number",
+            bodyPieceNumberCtrl="KO",  # ensure we correctly update this field later in the test
+            bodyPieceNumberLevel=100,
+            creatorCtrl="OK",
+            initialSizeCtrl="OK",
+        )
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.JOUVE, resultContent=content
+        )
+        fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.SUSPICIOUS)
+
+        client.with_auth(admin.email)
+        client.post(
+            f"/pc/back-office/beneficiary_fraud/update/beneficiary/id_piece_number/{user.id}",
+            form={"id_piece_number": "123123123123"},
+        )
+
+        assert fraud_check.resultContent["bodyPieceNumberCtrl"] == "OK"
+        assert fraud_check.resultContent["bodyPieceNumber"] == "123123123123"
+        assert user.isBeneficiary
+        assert len(user.beneficiaryImports) == 1
+        assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
 
 
 @pytest.mark.usefixtures("db_session")

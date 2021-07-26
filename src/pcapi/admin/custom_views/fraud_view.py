@@ -189,7 +189,7 @@ class FraudView(base_configuration.BaseAdminView):
 
     @flask_admin.expose("/update/beneficiary/id_piece_number/<user_id>", methods=["POST"])
     def update_beneficiary_id_piece_number(self, user_id):
-        if not self.check_super_admins() or not users_models.UserRole.JOUVE in flask_login.current_user.roles:
+        if not self.check_super_admins() and not flask_login.current_user.has_jouve_role:
             flask.flash("Vous n'avez pas les droits suffisant pour activer ce bénéficiaire", "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
 
