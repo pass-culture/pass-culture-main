@@ -17,9 +17,11 @@ class BeneficiaryFraudListViewTest:
         admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
         client.with_auth(admin.email)
 
-        user = users_factories.UserFactory()
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudResultFactory(user=user)
+        for review_status in fraud_models.FraudReviewStatus:
+            user = users_factories.UserFactory()
+            fraud_factories.BeneficiaryFraudCheckFactory(user=user)
+            fraud_factories.BeneficiaryFraudResultFactory(user=user)
+            fraud_factories.BeneficiaryFraudReviewFactory(user=user, review=review_status)
         response = client.get("/pc/back-office/beneficiary_fraud/")
         assert response.status_code == 200
 

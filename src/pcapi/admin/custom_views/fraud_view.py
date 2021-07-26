@@ -36,6 +36,7 @@ def beneficiary_fraud_review_formatter(view, context, model, name) -> Markup:
     result_mapping_class = {
         fraud_models.FraudReviewStatus.OK: "badge-success",
         fraud_models.FraudReviewStatus.KO: "badge-danger",
+        fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS: "badge-secondary",
     }
     if model.beneficiaryFraudReview is None:
         return Markup("""<span class="badge badge-secondary">inconnu</span>""")
