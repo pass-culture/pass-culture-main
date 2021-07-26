@@ -15,7 +15,8 @@ describe('src | components | pages | Reimbursements', () => {
 
       // then
       const downloadInformation = wrapper.find({
-        children: 'Téléchargez le récapitulatif des remboursements de vos offres.',
+        children:
+          'Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une contremarque dans le guichet ou à la validation automatique des contremarques d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.',
       })
       const fileFormatInformation = wrapper.find({
         children:
@@ -55,14 +56,21 @@ describe('src | components | pages | Reimbursements', () => {
       const wrapper = shallow(<Reimbursements />)
 
       // then
-      expect(wrapper.find('Banner').props()).toStrictEqual({
-        type: 'notification-info',
-        linkTitle: 'En savoir plus sur les prochains remboursements',
-        href:
-          'https://aide.passculture.app/fr/articles/5096833-calendrier-des-prochains-remboursements',
-        icon: 'ico-external-site',
-        children: null,
-      })
+      expect(wrapper.find('Banner')).toHaveLength(1)
+
+      const links = wrapper.find('.tertiary-link')
+      expect(links).toHaveLength(2)
+      expect(links.at(0).prop('href')).toBe(
+        'https://aide.passculture.app/fr/articles/5096833-acteurs-culturels-quel-est-le-calendrier-des-prochains-remboursements'
+      )
+      expect(links.at(0).prop('children')).toContain('Les prochains remboursements')
+      expect(links.at(0).find('Icon').prop('svg')).toBe('ico-external-site')
+
+      expect(links.at(1).prop('href')).toBe(
+        'https://aide.passculture.app/fr/articles/5096171-acteurs-culturels-comment-determiner-ses-modalites-de-remboursement'
+      )
+      expect(links.at(1).prop('children')).toContain('Les modalités de remboursements')
+      expect(links.at(1).find('Icon').prop('svg')).toBe('ico-external-site')
     })
   })
 })

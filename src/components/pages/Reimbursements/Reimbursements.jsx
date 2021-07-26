@@ -4,6 +4,7 @@ import AppLayout from 'app/AppLayout'
 import Banner from 'components/layout/Banner/Banner'
 import CsvTableButtonContainer from 'components/layout/CsvTableButton/CsvTableButtonContainer'
 import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadButtonContainer'
+import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import { API_URL } from 'utils/config'
@@ -16,17 +17,35 @@ const Reimbursements = () => (
   >
     <PageTitle title="Vos remboursements" />
     <Titles title="Remboursements" />
-    <p className="advice">
-      {'Téléchargez le récapitulatif des remboursements de vos offres.'}
+    <p>
+      {
+        'Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une contremarque dans le guichet ou à la validation automatique des contremarques d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.'
+      }
     </p>
+    <Banner type="notification-info">
+      {'En savoir plus sur'}
+      <a
+        className="bi-link tertiary-link"
+        href="https://aide.passculture.app/fr/articles/5096833-acteurs-culturels-quel-est-le-calendrier-des-prochains-remboursements"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <Icon svg="ico-external-site" />
+        {'Les prochains remboursements'}
+      </a>
+      <a
+        className="bi-link tertiary-link"
+        href="https://aide.passculture.app/fr/articles/5096171-acteurs-culturels-comment-determiner-ses-modalites-de-remboursement"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <Icon svg="ico-external-site" />
+        {'Les modalités de remboursements'}
+      </a>
+    </Banner>
     <p className="advice">
       {'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'}
     </p>
-    <Banner
-      href="https://aide.passculture.app/fr/articles/5096833-calendrier-des-prochains-remboursements"
-      linkTitle="En savoir plus sur les prochains remboursements"
-      type="notification-info"
-    />
     <hr />
     <div className="flex-end">
       <DownloadButtonContainer
