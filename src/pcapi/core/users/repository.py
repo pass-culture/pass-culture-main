@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+import logging
 from typing import Optional
 
 from dateutil.relativedelta import relativedelta
@@ -25,10 +26,15 @@ from . import models
 from .models import User
 
 
+logger = logging.getLogger(__name__)
+
+
 def check_user_and_credentials(user: User, password: str) -> None:
     # Order is important to prevent end-user to guess user emails
     # We need to check email and password before checking email validation
     if not user or not user.isActive or not user.checkPassword(password):
+        if user:
+            logging.info("Failed authentication attempt", extra={"user": user.id, "avoid_current_user": True})
         raise exceptions.InvalidIdentifier()
     if not user.isValidated or not user.isEmailValidated:
         raise exceptions.UnvalidatedAccount()

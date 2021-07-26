@@ -84,16 +84,22 @@ def monkey_patch_logger_makeRecord():
 
 class JsonFormatter(logging.Formatter):
     def format(self, record):
+        # `getattr()` is necessary for log records that have not
+        # been created by our `Logger.makeRecord()` defined above.
+        # It should not happen, but let's be defensive.
+        extra = getattr(record, "extra", {})
+
+        # We need to be able to deactivate current_user accession
+        # in case we are logging inside the current_user context itself.
+        user_id = None if extra.get("avoid_current_user") else get_logged_in_user_id()
+
         json_record = {
             "logging.googleapis.com/trace": get_or_set_correlation_id(),
             "module": record.name,
             "severity": record.levelname,
-            "user_id": get_logged_in_user_id(),
+            "user_id": user_id,
             "message": record.getMessage(),
-            # `getattr()` is necessary for log records that have not
-            # been created by our `Logger.makeRecord()` defined above.
-            # It should not happen, but let's be defensive.
-            "extra": getattr(record, "extra", {}),
+            "extra": extra,
         }
         try:
             return json.dumps(json_record)
