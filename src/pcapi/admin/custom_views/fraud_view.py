@@ -120,14 +120,14 @@ class FraudView(base_configuration.BaseAdminView):
         # TODO: remove when we have a clean way to get groups from google.
         # This is a hackish way to filter from a user role which is weak : we do want a way
         # to add permissions based on groups and sync'ed from our google IDP, and not developp a way to do it here.
-        if flask_login.current_user.is_authenticated and users_models.UserRole.JOUVE in flask_login.current_user.roles:
+        if flask_login.current_user.is_authenticated and flask_login.current_user.has_jouve_role:
             return True
 
         return super().is_accessible()
 
     def get_query(self):
         filters = users_models.User.beneficiaryFraudChecks.any() | users_models.User.beneficiaryFraudResult.has()
-        if users_models.UserRole.JOUVE in flask_login.current_user.roles:
+        if flask_login.current_user.has_jouve_role:
             filters = users_models.User.beneficiaryFraudChecks.any(type=fraud_models.FraudCheckType.JOUVE)
 
         query = users_models.User.query.filter(filters).options(
@@ -139,7 +139,7 @@ class FraudView(base_configuration.BaseAdminView):
 
     def get_count_query(self):
         filters = users_models.User.beneficiaryFraudChecks.any() | users_models.User.beneficiaryFraudResult.has()
-        if users_models.UserRole.JOUVE in flask_login.current_user.roles:
+        if flask_login.current_user.has_jouve_role:
             filters = users_models.User.beneficiaryFraudChecks.any(type=fraud_models.FraudCheckType.JOUVE)
 
         query = db.session.query(sqlalchemy.func.count(users_models.User.id)).filter(filters)

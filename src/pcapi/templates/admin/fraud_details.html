@@ -83,7 +83,7 @@
     Soumettre une revue manuelle
   </button>
   {% endif %}
-  {% if "JOUVE" in current_user.roles or current_user.is_super_admin() %}
+  {% if current_user.has_jouve_role or current_user.is_super_admin() %}
   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userIdPieceNumberUpdate">
     Mettre à jour la pièce d'identité
   </button>
