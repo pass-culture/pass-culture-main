@@ -258,7 +258,7 @@
         "description": "Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?",
         "offlineOnly": true,
         "onlineOnly": false,
-        "proLabel": "Jeux — évenements, rencontres, concours",
+        "proLabel": "Jeux",
         "sublabel": "Jouer",
         "type": "Event",
         "value": "EventType.JEUX"

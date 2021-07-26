@@ -87,7 +87,7 @@ export const loadFakeApiCategories = () => {
       },
       {
         id: 'JEU',
-        proLabel: 'Jeux (événements, rencontres, concours)',
+        proLabel: 'Jeux',
         isSelectable: true,
       },
       {
@@ -97,7 +97,7 @@ export const loadFakeApiCategories = () => {
       },
       {
         id: 'MUSEE',
-        proLabel: 'Musée, patrimoine, architecture, arts visuels ou contemporains',
+        proLabel: 'Musée, patrimoine, architecture, arts visuels',
         isSelectable: true,
       },
       {
@@ -195,8 +195,8 @@ export const loadFakeApiCategories = () => {
         id: 'ABO_PLATEFORME_VIDEO',
         categoryId: 'FILM',
         matchingType: 'ThingType.AUDIOVISUEL',
-        proLabel: 'Abonnement à une plateforme',
-        appLabel: 'Abonnement à une plateforme',
+        proLabel: 'Abonnement plateforme streaming',
+        appLabel: 'Abonnement plateforme streaming',
         searchGroup: 'Films, séries, podcasts',
         isEvent: false,
         conditionalFields: [],
@@ -627,8 +627,8 @@ export const loadFakeApiCategories = () => {
         id: 'ABO_LIVRE_NUMERIQUE',
         categoryId: 'LIVRE',
         matchingType: 'ThingType.LIVRE_AUDIO',
-        proLabel: 'Abonnement (livres numériques)',
-        appLabel: 'Abonnement (livres numériques)',
+        proLabel: 'Abonnement livres numériques',
+        appLabel: 'Abonnement livres numériques',
         searchGroup: 'Livres',
         isEvent: false,
         conditionalFields: [],

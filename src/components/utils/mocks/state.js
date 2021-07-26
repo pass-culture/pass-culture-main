@@ -522,11 +522,11 @@ const state = {
         value: 'EventType.CONFERENCE_DEBAT_DEDICACE',
       },
       {
-        appLabel: 'Jeux (Évenements, Rencontres, Concours)',
+        appLabel: 'Jeux',
         id: 3,
         description:
           'Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?',
-        proLabel: 'Jeux (Évenements, Rencontres, Concours)',
+        proLabel: 'Jeux',
         offlineOnly: true,
         onlineOnly: false,
         sublabel: 'Jouer',

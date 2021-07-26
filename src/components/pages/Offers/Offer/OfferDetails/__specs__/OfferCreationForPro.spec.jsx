@@ -1799,7 +1799,7 @@ describe('offerDetails - Creation - pro user', () => {
 
       // Then
       expect(
-        screen.getByText('Musée, patrimoine, architecture, arts visuels ou contemporains', {
+        screen.getByText('Musée, patrimoine, architecture, arts visuels', {
           selector: 'option',
         })
       ).toBeInTheDocument()
