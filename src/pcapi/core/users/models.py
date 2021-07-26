@@ -226,7 +226,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     def is_anonymous(self) -> bool:
         return False
 
-    def is_super_user(self) -> bool:
+    def is_super_admin(self) -> bool:
         if settings.IS_PROD:
             return self.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
         return self.isAdmin

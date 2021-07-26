@@ -57,7 +57,7 @@ class BaseAdminView(BaseAdminMixin, ModelView):
         # Flask-Admin populates its form cache.
         if not current_user or not current_user.is_authenticated:
             return False
-        return current_user.is_super_user()
+        return current_user.is_super_admin()
 
 
 class BaseCustomAdminView(BaseAdminMixin, BaseView):
@@ -67,4 +67,4 @@ class BaseCustomAdminView(BaseAdminMixin, BaseView):
         # Flask-Admin populates its form cache.
         if not current_user or not current_user.is_authenticated:
             return False
-        return current_user.is_super_user()
+        return current_user.is_super_admin()
