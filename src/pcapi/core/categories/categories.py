@@ -44,7 +44,7 @@ MEDIA = Category(
 )
 MUSEE = Category(
     id="MUSEE",
-    pro_label="Musée, patrimoine, architecture, arts visuels ou contemporains",
+    pro_label="Musée, patrimoine, architecture, arts visuels",
 )
 MUSIQUE_ENREGISTREE = Category(
     id="MUSIQUE_ENREGISTREE",
