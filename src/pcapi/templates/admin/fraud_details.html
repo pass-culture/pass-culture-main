@@ -78,16 +78,22 @@
 </div>
 <div class="row">
   <div class="col">
-  {% if not model.beneficiaryFraudReview and (current_user.has_jouve_role or current_user.is_super_admin()) %}
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userValidationModal">
-    Soumettre une revue manuelle
-  </button>
-  {% endif %}
-  {% if current_user.has_jouve_role or current_user.is_super_admin() %}
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userIdPieceNumberUpdate">
-    Mettre à jour la pièce d'identité
-  </button>
-  {% endif %}
+    {% if not model.beneficiaryFraudReview and (current_user.has_jouve_role or current_user.is_super_admin()) %}
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userValidationModal">
+      Soumettre une revue manuelle
+    </button>
+    {% endif %}
+    {% if current_user.has_jouve_role or current_user.is_super_admin() %}
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userIdPieceNumberUpdate">
+      Mettre à jour la pièce d'identité
+    </button>
+    {% endif %}
+    {% if current_user.isAdmin %}
+    <button name="submit" form="validate_form_button" type="submit" class="btn btn-primary">Valider le n° de téléphone</button>
+    {# avoid putting the button inside the form to get the buttons aligned on the same grid #}
+    <form id="validate_form_button" method="POST" action="{{ url_for('beneficiary_fraud.validate_phone_number', user_id=model.id)}}">
+    </form>
+    {% endif %}
   </div>
 </div>
 <div class="row">

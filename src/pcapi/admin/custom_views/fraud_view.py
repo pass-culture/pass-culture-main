@@ -1,3 +1,5 @@
+import logging
+
 import flask
 import flask_admin
 import flask_login
@@ -17,6 +19,9 @@ from pcapi.domain import user_emails
 import pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository as beneficiary_repository
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+
+
+logger = logging.getLogger(__name__)
 
 
 def beneficiary_fraud_result_formatter(view, context, model, name) -> Markup:
@@ -221,4 +226,24 @@ class FraudView(base_configuration.BaseAdminView):
             beneficiary_repository.BeneficiarySQLRepository.save(pre_subscription, user)
 
         flask.flash(f"N° de pièce d'identitée modifiée sur le bénéficiaire {user.firstName} {user.lastName}")
+        return flask.redirect(flask.url_for(".details_view", id=user_id))
+
+    @flask_admin.expose("/validate/beneficiary/phone_number/<user_id>", methods=["POST"])
+    def validate_phone_number(self, user_id):
+        if not flask_login.current_user.has_admin_role:
+            flask.flash(
+                "Vous n'avez pas les droits suffisant pour valider le numéro de téléphone de cet utilisateur", "error"
+            )
+            return flask.redirect(flask.url_for(".details_view", id=user_id))
+
+        user = users_models.User.query.get(user_id)
+        if not user:
+            flask.flash("Cet utilisateur n'existe pas", "error")
+            return flask.redirect(flask.url_for(".index_view"))
+
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
+        db.session.add(user)
+        db.session.commit()
+        logger.info("flask-admin: Manual phone validation", extra={"validated_user": user.id})
+        flask.flash(f"Le n° de téléphone de l'utilisateur {user.id} {user.firstName} {user.lastName} est validé")
         return flask.redirect(flask.url_for(".details_view", id=user_id))
