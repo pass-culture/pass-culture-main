@@ -223,7 +223,6 @@ def test_delete_cascade_offerer_should_remove_venue_synchronization_to_allocine_
         allocineVenueProvider__venue__managingOfferer=offerer_to_delete
     )
     offerers_factories.AllocineVenueProviderPriceRuleFactory()
-    AllocineVenueProvider.query.all()
 
     # When
     delete_cascade_offerer_by_id(offerer_to_delete.id)

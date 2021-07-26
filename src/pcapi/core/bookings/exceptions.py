@@ -69,3 +69,11 @@ class CannotDeleteOffererWithBookingsException(ClientError):
             "cannotDeleteOffererWithBookingsException",
             "Structure juridique non supprimable car elle contient des réservations",
         )
+
+
+class CannotDeleteVenueWithBookingsException(ClientError):
+    def __init__(self):
+        super().__init__(
+            "cannotDeleteVenueWithBookingsException",
+            "Lieu non supprimable car il contient des réservations",
+        )
