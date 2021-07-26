@@ -16,6 +16,7 @@ class ProviderApiStocksTest:
         api_provider_1 = offerers_factories.APIProviderFactory()
         api_provider_2 = offerers_factories.APIProviderFactory()
         specific_provider = offerers_factories.AllocineProviderFactory()
+        inactive_provider = offerers_factories.APIProviderFactory(isActive=False)
 
         correct_venue_providers = [
             VenueProviderFactory(isActive=True, provider=api_provider_1),
@@ -25,6 +26,7 @@ class ProviderApiStocksTest:
 
         VenueProviderFactory(isActive=True, provider=specific_provider)
         VenueProviderFactory(isActive=False, provider=api_provider_1)
+        VenueProviderFactory(isActive=True, provider=inactive_provider)
 
         # When
         synchronize_stocks()
