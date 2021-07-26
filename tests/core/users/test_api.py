@@ -1016,9 +1016,16 @@ class BeneficairyInformationUpdateTest:
         assert new_user.firstName is not None
         assert new_user.lastName is not None
 
+    def test_update_id_piece_number(self):
+        user = UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber=None)
+        jouve_data = fraud_factories.JouveContentFactory(bodyPieceNumber="140767100016")
+
+        users_api.update_user_information_from_external_source(user, jouve_data)
+        assert user.idPieceNumber == "140767100016"
+
     def test_update_id_piece_number_duplicate(self):
         user = UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber="140767100016")
-        jouve_data = fraud_factories.JouveContentFactory(id_piece_number=user.idPieceNumber)
+        jouve_data = fraud_factories.JouveContentFactory(bodyPieceNumber=user.idPieceNumber)
         new_user = UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber=None)
 
         users_api.update_user_information_from_external_source(user, jouve_data)
@@ -1026,7 +1033,7 @@ class BeneficairyInformationUpdateTest:
 
     def test_update_id_piece_number_invalid_format(self):
         user = UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber=None)
-        jouve_data = fraud_factories.JouveContentFactory(id_piece_number="ITT T TITITT")
+        jouve_data = fraud_factories.JouveContentFactory(bodyPieceNumber="ITT T TITITT")
         users_api.update_user_information_from_external_source(user, jouve_data)
         assert user.idPieceNumber is None
 

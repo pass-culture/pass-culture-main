@@ -282,7 +282,7 @@ def update_user_information_from_external_source(user: User, data: fraud_models.
             fraud_api._duplicate_id_piece_number_fraud_item(data.bodyPieceNumber),
         )
         if all((item.status == fraud_models.FraudStatus.OK) for item in items):
-            user.bodyPieceNumber = data.bodyPieceNumber
+            user.idPieceNumber = data.bodyPieceNumber
 
     if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
         if not user.phoneNumber and data.phoneNumber:
