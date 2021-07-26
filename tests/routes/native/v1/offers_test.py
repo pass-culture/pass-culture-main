@@ -461,7 +461,7 @@ class OfferReportReasonsTest:
                 "title": "La description est non conforme",
                 "description": "La date ne correspond pas, mauvaise description...",
             },
-            "PRICE_TOO_HIGH": {"title": "Le tarif est trop élevé", "description": "comparé à l'offre public"},
+            "PRICE_TOO_HIGH": {"title": "Le tarif est trop élevé", "description": "comparé à l'offre publique"},
             "INAPPROPRIATE": {
                 "title": "Le contenu est inapproprié",
                 "description": "violence, incitation à la haine, nudité...",

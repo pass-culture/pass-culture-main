@@ -650,7 +650,7 @@ class Reason(enum.Enum):
                 title="La description est non conforme",
                 description="La date ne correspond pas, mauvaise description...",
             ),
-            "PRICE_TOO_HIGH": ReasonMeta(title="Le tarif est trop élevé", description="comparé à l'offre public"),
+            "PRICE_TOO_HIGH": ReasonMeta(title="Le tarif est trop élevé", description="comparé à l'offre publique"),
             "INAPPROPRIATE": ReasonMeta(
                 title="Le contenu est inapproprié", description="violence, incitation à la haine, nudité..."
             ),
