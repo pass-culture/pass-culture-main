@@ -4,6 +4,7 @@ export const HTTP_STATUS = {
   FORBIDDEN: 403,
   SERVICE_UNAVAILABLE: 503,
 }
+const NOT_JSON_BODY_RESPONSE_STATUS = [HTTP_STATUS.NO_CONTENT, HTTP_STATUS.SERVICE_UNAVAILABLE]
 const GET_HTTP_METHOD = 'GET'
 const DELETE_HTTP_METHOD = 'DELETE'
 
@@ -25,7 +26,9 @@ const buildUrl = path => `${API_URL}${path}`
 
 const fetchWithErrorHandler = async (path, options) => {
   const response = await fetch(buildUrl(path), options)
-  const results = response.status !== HTTP_STATUS.NO_CONTENT ? await response.json() : null
+  const results = NOT_JSON_BODY_RESPONSE_STATUS.includes(response.status)
+    ? null
+    : await response.json()
   if (!response.ok) {
     if (response.status === HTTP_STATUS.SERVICE_UNAVAILABLE) {
       window.location.href = URL_FOR_MAINTENANCE

@@ -86,13 +86,10 @@ describe('pcapiClient', () => {
 
     it('should redirect to maintenance page when status is 503', async () => {
       // Given
-      fetch.mockResponse(JSON.stringify('Service Unavailable'), { status: 503 })
+      fetch.mockResponse('Service Unavailable', { status: 503 })
 
       // When
-      await expect(client.get('/bookings/pro')).rejects.toStrictEqual({
-        errors: 'Service Unavailable',
-        status: 503,
-      })
+      await expect(client.get('/bookings/pro')).rejects.toBeNull()
 
       // Then
       expect(setHrefSpy).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
