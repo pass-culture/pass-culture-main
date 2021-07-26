@@ -13,6 +13,7 @@ import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
+from pcapi.domain import user_emails
 import pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository as beneficiary_repository
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
@@ -146,7 +147,10 @@ class FraudView(base_configuration.BaseAdminView):
 
     @flask_admin.expose("/validate/beneficiary/<user_id>", methods=["POST"])
     def validate_beneficiary(self, user_id):
-        if not self.check_super_admins() or not FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS.is_active():
+        if not FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS.is_active():
+            flask.flash("Fonctionnalité non activée", "error")
+            return flask.redirect(flask.url_for(".details_view", id=user_id))
+        if not self.check_super_admins() and not flask_login.current_user.has_jouve_role:
             flask.flash("Vous n'avez pas les droits suffisant pour activer ce bénéficiaire", "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
         form = FraudReviewForm(flask.request.form)
@@ -161,17 +165,25 @@ class FraudView(base_configuration.BaseAdminView):
 
         if user.beneficiaryFraudReview:
             flask.flash(
-                "Une revue manuelle a déjà été réalisée sur l'utilisateur {user.id} {user.firstName} {user.lastName}"
+                f"Une revue manuelle a déjà été réalisée sur l'utilisateur {user.id} {user.firstName} {user.lastName}"
             )
             return flask.redirect(flask.url_for(".details_view", id=user_id))
 
         review = fraud_models.BeneficiaryFraudReview(
             user=user, author=flask_login.current_user, reason=form.data["reason"], review=form.data["review"]
         )
+        if review.review == fraud_models.FraudReviewStatus.OK.value:
+            users_api.update_user_information_from_external_source(user, fraud_api.get_source_data(user))
+            users_api.activate_beneficiary(user, "fraud_validation")
+            flask.flash(f"L'utilisateur à été activé comme bénéficiaire {user.firstName} {user.lastName}")
+
+        elif review.review == fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS.value:
+            review.reason += " ; Redirigé vers DMS"
+            user_emails.send_document_verification_error_email(user.email, "unread-document")
+            flask.flash(f"L'utilisateur {user.firstName} {user.lastName} à été redirigé vers DMS")
         db.session.add(review)
         db.session.commit()
-        users_api.update_user_information_from_external_source(user, fraud_api.get_source_data(user))
-        users_api.activate_beneficiary(user, "fraud_validation")
+
         flask.flash(f"Une revue manuelle ajoutée pour le bénéficiaire {user.firstName} {user.lastName}")
         return flask.redirect(flask.url_for(".details_view", id=user_id))
 

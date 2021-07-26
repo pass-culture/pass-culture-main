@@ -1,7 +1,9 @@
 import pytest
 
+from pcapi import settings
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -44,7 +46,7 @@ class BeneficiaryFraudValidationViewTest:
         assert response.headers["Location"] == "http://localhost/pc/back-office/"
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
-    def test_validation_view_validate_user(self, client):
+    def test_validation_view_validate_user_staging(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         admin = users_factories.UserFactory(isAdmin=True)
@@ -138,6 +140,69 @@ class BeneficiaryFraudValidationViewTest:
         jouve_content = fraud_models.JouveContent(**check.resultContent)
         assert user.firstName == jouve_content.firstName
         assert user.lastName == jouve_content.lastName
+
+    @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
+    def test_validation_from_jouve_admin(self, client):
+        user = users_factories.UserFactory(isBeneficiary=False)
+        check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
+        jouve_admin = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
+        client.with_auth(jouve_admin.email)
+
+        response = client.post(
+            f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
+            form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
+        )
+        assert response.status_code == 302
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=jouve_admin).one_or_none()
+        assert review is not None
+        assert review.author == jouve_admin
+        assert user.isBeneficiary is True
+
+        jouve_content = fraud_models.JouveContent(**check.resultContent)
+        assert user.firstName == jouve_content.firstName
+        assert user.lastName == jouve_content.lastName
+
+    def test_review_ko_does_not_activate_the_beneficiary(self, client):
+        user = users_factories.UserFactory(isBeneficiary=False)
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
+        admin = users_factories.UserFactory(isAdmin=True)
+        client.with_auth(admin.email)
+
+        with override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[admin.email]):
+            response = client.post(
+                f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
+                form={"user_id": user.id, "reason": "User is denied", "review": "KO"},
+            )
+        assert response.status_code == 302
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one_or_none()
+        assert review is not None
+        assert review.author == admin
+        assert review.review == fraud_models.FraudReviewStatus.KO
+        assert user.isBeneficiary is False
+
+    def test_return_to_dms(self, client):
+        user = users_factories.UserFactory(isBeneficiary=False)
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
+        jouve_admin = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
+        client.with_auth(jouve_admin.email)
+
+        client.post(
+            f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
+            form={"user_id": user.id, "reason": "User is granted", "review": "REDIRECTED_TO_DMS"},
+        )
+
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=jouve_admin).one_or_none()
+        assert review is not None
+        assert review.author == jouve_admin
+        assert review.review == fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS
+        assert "; Redirigé vers DMS" in review.reason
+        assert user.isBeneficiary is False
+
+        assert len(mails_testing.outbox) == 1
+        sent_data = mails_testing.outbox[0].sent_data
+
+        assert sent_data["Vars"]["url"] == settings.DMS_USER_URL
+        assert sent_data["MJ-TemplateID"] == 2958557
 
 
 @pytest.mark.usefixtures("db_session")

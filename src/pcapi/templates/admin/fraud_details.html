@@ -17,12 +17,13 @@
       <form method="POST" action="{{ url_for('beneficiary_fraud.validate_beneficiary', user_id=model.id)}}">
       <div class="modal-body">
           <div class="form-group row">
-            <label for="review" class="col-4 col-form-label">review</label>
+            <label for="review" class="col-4 col-form-label">Revue</label>
             <div class="col-8">
               <select id="review" name="review" class="form-control">
                 <option></option>
                 <option value="OK">OK</option>
                 <option value="KO">KO</option>
+                <option value="REDIRECTED_TO_DMS">Renvoi vers DMS</option>
               </select>
             </div>
           </div>
@@ -77,7 +78,7 @@
 </div>
 <div class="row">
   <div class="col">
-  {% if not model.beneficiaryFraudReview and current_user.is_super_user() %}
+  {% if not model.beneficiaryFraudReview and (current_user.has_jouve_role or current_user.is_super_user()) %}
   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userValidationModal">
     Soumettre une revue manuelle
   </button>

@@ -31,6 +31,7 @@ class FraudStatus(enum.Enum):
 class FraudReviewStatus(enum.Enum):
     OK = "OK"
     KO = "KO"
+    REDIRECTED_TO_DMS = "REDIRECTED_TO_DMS"
 
 
 def _parse_level(level: typing.Optional[str]) -> typing.Optional[None]:

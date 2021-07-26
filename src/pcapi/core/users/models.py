@@ -444,6 +444,14 @@ class User(PcObject, Model, NeedsValidationMixin):
     def has_pro_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.PRO])
 
+    @hybrid_property
+    def has_jouve_role(self) -> bool:
+        return UserRole.JOUVE in self.roles if self.roles else False
+
+    @has_jouve_role.expression
+    def has_jouve_role(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.roles.contains([UserRole.JOUVE])
+
     def get_notification_subscriptions(self) -> NotificationSubscriptions:
         return NotificationSubscriptions(**self.notificationSubscriptions or {})
 
