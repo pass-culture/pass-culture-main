@@ -39,7 +39,7 @@ def synchronize_stocks() -> None:
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception("Could not synchronize venue_provider=%s: %s", venue_provider_id, exc)
             notion_connector.add_to_synchronization_error_database(
-                title=exc,
+                exception=exc,
                 provider_name=provider_name,
                 venue_id=venue_id,
                 venue_id_at_offer_provider=venue_id_at_offer_provider,

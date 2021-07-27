@@ -13,9 +13,9 @@ PROVIDER_API_ERRORS_DATABASE_ID = "e7bd2f6ddedf43f7a7bc87849caaa3ed"
 
 
 def add_to_synchronization_error_database(
-    title: str,
+    exception: Exception,
     provider_name: str,
-    venue_id: str,
+    venue_id: int,
     venue_id_at_offer_provider: str,
 ):
     if settings.IS_DEV:
@@ -26,9 +26,10 @@ def add_to_synchronization_error_database(
         notion.pages.create(
             parent={"database_id": PROVIDER_API_ERRORS_DATABASE_ID},
             properties={
-                "Titre": {
-                    "title": [{"text": {"content": title}}],
+                "Détail": {
+                    "title": [{"text": {"content": str(exception)}}],
                 },
+                "Type": {"select": {"name": exception.__class__.__name__}},
                 "Provider": {"select": {"name": provider_name}},
                 "VenueId": {
                     "rich_text": [{"text": {"content": str(venue_id)}}],
