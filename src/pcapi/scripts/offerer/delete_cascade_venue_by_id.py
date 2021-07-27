@@ -73,18 +73,21 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
 
     db.session.commit()
 
+    recap_data = {
+        "venue_id": venue_id,
+        "deleted_bank_informations_count": deleted_bank_informations_count,
+        "deleted_venues_count": deleted_venues_count,
+        "deleted_venue_providers_count": deleted_venue_providers_count,
+        "deleted_allocine_venue_providers_count": deleted_allocine_venue_providers_count,
+        "deleted_offers_count": deleted_offers_count,
+        "deleted_mediations_count": deleted_mediations_count,
+        "deleted_favorites_count": deleted_favorites_count,
+        "deleted_offer_criteria_count": deleted_offer_criteria_count,
+        "deleted_stocks_count": deleted_stocks_count,
+    }
     logger.info(
         "Deleted venue",
-        extra={
-            "venue_id": venue_id,
-            "deleted_bank_informations_count": deleted_bank_informations_count,
-            "deleted_venues_count": deleted_venues_count,
-            "deleted_venue_providers_count": deleted_venue_providers_count,
-            "deleted_allocine_venue_providers_count": deleted_allocine_venue_providers_count,
-            "deleted_offers_count": deleted_offers_count,
-            "deleted_mediations_count": deleted_mediations_count,
-            "deleted_favorites_count": deleted_favorites_count,
-            "deleted_offer_criteria_count": deleted_offer_criteria_count,
-            "deleted_stocks_count": deleted_stocks_count,
-        },
+        extra=recap_data,
     )
+
+    return recap_data

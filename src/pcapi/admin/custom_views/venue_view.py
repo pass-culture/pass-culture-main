@@ -1,5 +1,6 @@
 from typing import Union
 
+from flask import flash
 from flask import request
 from flask import url_for
 from markupsafe import Markup
@@ -9,9 +10,11 @@ from wtforms import Form
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core import search
+from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
 from pcapi.core.offerers.api import VENUE_ALGOLIA_INDEXED_FIELDS
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
+from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 
 
 def _offers_link(view, context, model, name) -> Markup:
@@ -28,6 +31,7 @@ def _get_venue_provider_link(view, context, model, name) -> Union[Markup, None]:
 
 class VenueView(BaseAdminView):
     can_edit = True
+    can_delete = True
     column_list = [
         "id",
         "name",
@@ -89,6 +93,14 @@ class VenueView(BaseAdminView):
         formatters.update(offres=_offers_link)
         formatters.update(offer_import=_get_venue_provider_link)
         return formatters
+
+    def delete_model(self, venue: Venue) -> bool:
+        try:
+            delete_cascade_venue_by_id(venue.id)
+            return True
+        except CannotDeleteVenueWithBookingsException:
+            flash("Impossible d'effacer un lieu pour lequel il existe des reservations.", "error")
+        return False
 
     def update_model(self, new_venue_form: Form, venue: Venue) -> bool:
         has_siret_changed = new_venue_form.siret.data != venue.siret
