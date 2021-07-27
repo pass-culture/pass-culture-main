@@ -1087,7 +1087,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_only_booking_for_requested_venue(self, app: fixture):
         # Given
-        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        pro_user = users_factories.ProFactory()
         user_offerer = offers_factories.UserOffererFactory(user=pro_user)
 
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)

@@ -14,7 +14,7 @@ class MakeProResetPasswordEmailDataTest:
     @pytest.mark.usefixtures("db_session")
     def test_email_is_sent_to_dev_at_passculture_when_not_production_environment(self):
         # Given
-        pro = users_factories.UserFactory(email="pro@example.com")
+        pro = users_factories.ProFactory(email="pro@example.com")
         users_factories.ResetPasswordToken(user=pro, value="ABCDEFG")
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro, offerer)
@@ -35,7 +35,7 @@ class MakeProResetPasswordEmailDataTest:
     @pytest.mark.usefixtures("db_session")
     def test_email_is_sent_to_pro_offerer_when_production_environment(self):
         # Given
-        pro = users_factories.UserFactory(email="pro@example.com")
+        pro = users_factories.ProFactory(email="pro@example.com")
         users_factories.ResetPasswordToken(user=pro, value="ABCDEFG")
         offerer = create_offerer()
         user_offerer = create_user_offerer(pro, offerer)

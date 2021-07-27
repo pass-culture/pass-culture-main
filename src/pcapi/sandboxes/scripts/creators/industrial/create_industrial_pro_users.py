@@ -28,7 +28,6 @@ def create_industrial_pro_users(offerers_by_name: dict) -> dict:
                 departementCode=str(departement_code),
                 email=email,
                 firstName="PC Test Pro",
-                isAdmin=False,
                 lastName="{} {}".format(departement_code, pro_count),
                 postalCode="{}100".format(departement_code),
                 publicName="PC Test Pro {} {}".format(departement_code, pro_count),

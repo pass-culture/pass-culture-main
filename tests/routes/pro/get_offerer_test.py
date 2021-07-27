@@ -15,7 +15,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_offerer_does_not_exist(self, app):
         # Given
-        pro = users_factories.UserFactory(isBeneficiary=False)
+        pro = users_factories.ProFactory()
         invalid_id = 12
 
         # When
@@ -31,7 +31,7 @@ class Returns200Test:
     def test_when_user_has_rights_on_offerer(self, app):
         # given
 
-        pro = users_factories.UserFactory(isBeneficiary=False)
+        pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue = offers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="Venue withdrawal details")

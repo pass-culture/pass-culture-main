@@ -88,7 +88,7 @@ class Returns200Test:
             user__lastName="Granger",
             user__phoneNumber="0100000000",
         )
-        pro_user = users_factories.UserFactory(email="pro@example.com")
+        pro_user = users_factories.ProFactory(email="pro@example.com")
         offerer = booking.stock.offer.venue.managingOfferer
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -152,7 +152,7 @@ class Returns200Test:
         stock = offers_factories.EventStockFactory(beginningDatetime=requested_date)
         booking = bookings_factories.BookingFactory(stock=stock, token="AAAAAA", dateCreated=datetime(2020, 8, 11))
         bookings_factories.BookingFactory(stock=offers_factories.EventStockFactory(), token="BBBBBB")
-        pro_user = users_factories.UserFactory(email="pro@example.com")
+        pro_user = users_factories.ProFactory(email="pro@example.com")
         offerer = stock.offer.venue.managingOfferer
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -173,7 +173,7 @@ class Returns200Test:
         booking_period_ending_date_iso = "2020-08-12"
         booking = bookings_factories.BookingFactory(dateCreated=booking_date, token="AAAAAA")
         bookings_factories.BookingFactory(token="BBBBBB")
-        pro_user = users_factories.UserFactory(email="pro@example.com")
+        pro_user = users_factories.ProFactory(email="pro@example.com")
         offerer = booking.stock.offer.venue.managingOfferer
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 

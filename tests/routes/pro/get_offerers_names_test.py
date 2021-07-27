@@ -45,7 +45,7 @@ class Returns200ForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_response_serializer(self, app):
         # given
-        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        pro_user = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -59,7 +59,7 @@ class Returns200ForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_offerers_names(self, app):
         # given
-        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        pro_user = users_factories.ProFactory()
         offerers = self._setup_offerers_for_pro_user(pro_user)
 
         # when
@@ -79,7 +79,7 @@ class Returns200ForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_validated_offerers_names(self, app):
         # given
-        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        pro_user = users_factories.ProFactory()
         offerers = self._setup_offerers_for_pro_user(pro_user)
 
         # when
@@ -98,7 +98,7 @@ class Returns200ForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_not_validated_offerers_names(self, app):
         # given
-        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        pro_user = users_factories.ProFactory()
         offerers = self._setup_offerers_for_pro_user(pro_user)
 
         # when
@@ -115,7 +115,7 @@ class Returns200ForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_validated_for_user_offerers_names(self, app):
         # given
-        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        pro_user = users_factories.ProFactory()
         offerers = self._setup_offerers_for_pro_user(pro_user)
 
         # when
@@ -136,7 +136,7 @@ class Returns200ForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_not_validated_for_user_offerers_names(self, app):
         # given
-        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        pro_user = users_factories.ProFactory()
         offerers = self._setup_offerers_for_pro_user(pro_user)
 
         # when

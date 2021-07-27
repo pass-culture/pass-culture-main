@@ -70,7 +70,7 @@ class GetFilteredVenuesForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_return_value_and_order(self, app):
         # given
-        pro_user = users_factories.UserFactory(email="user.pro@test.com", isBeneficiary=False)
+        pro_user = users_factories.ProFactory(email="user.pro@test.com")
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         venue_2 = offers_factories.VenueFactory(name="BB - name", managingOfferer=offerer)
@@ -89,7 +89,7 @@ class GetFilteredVenuesForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_empty_return_value(self, app):
         # given
-        pro_user = users_factories.UserFactory(email="user.pro@test.com", isBeneficiary=False)
+        pro_user = users_factories.ProFactory(email="user.pro@test.com")
 
         # when
         venue_list = offerers_repository.get_filtered_venues(pro_user_id=pro_user.id, user_is_admin=False)
@@ -100,7 +100,7 @@ class GetFilteredVenuesForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_venues(self, app):
         # given
-        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        pro_user = users_factories.ProFactory()
         venues = self._setup_venues_for_pro_user(pro_user)
 
         # when
@@ -118,7 +118,7 @@ class GetFilteredVenuesForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_validated_venues(self, app):
         # given
-        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        pro_user = users_factories.ProFactory()
         venues = self._setup_venues_for_pro_user(pro_user)
 
         # when
@@ -139,7 +139,7 @@ class GetFilteredVenuesForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_not_validated_venues(self, app):
         # given
-        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        pro_user = users_factories.ProFactory()
         venues = self._setup_venues_for_pro_user(pro_user)
 
         # when
@@ -158,7 +158,7 @@ class GetFilteredVenuesForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_venues_for_offerer_id(self, app):
         # given
-        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        pro_user = users_factories.ProFactory()
         venues = self._setup_venues_for_pro_user(pro_user)
         expected_venue = venues["owned_venue_validated"]
 
@@ -178,7 +178,7 @@ class GetFilteredVenuesForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_validated_for_user_venues(self, app):
         # given
-        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        pro_user = users_factories.ProFactory()
         venues = self._setup_venues_for_pro_user(pro_user)
 
         # when
@@ -199,7 +199,7 @@ class GetFilteredVenuesForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_not_validated_for_user_venues(self, app):
         # given
-        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        pro_user = users_factories.ProFactory()
         venues = self._setup_venues_for_pro_user(pro_user)
 
         # when
@@ -218,7 +218,7 @@ class GetFilteredVenuesForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_venues_from_active_offerers_only(self, app):
         # given
-        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        pro_user = users_factories.ProFactory()
         venues = self._setup_venues_for_pro_user(pro_user)
 
         # when
@@ -237,7 +237,7 @@ class GetFilteredVenuesForProUserTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_venues_from_active_and_inactive_offerers(self, app):
         # given
-        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        pro_user = users_factories.ProFactory()
         venues = self._setup_venues_for_pro_user(pro_user)
 
         # when

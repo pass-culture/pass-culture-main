@@ -80,7 +80,7 @@ class Returns200Test:
         self, app, db_session
     ):
         # Given
-        pro = users_factories.UserFactory(isAdmin=False, isBeneficiary=False)
+        pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
         requested_venue = offers_factories.VenueFactory(managingOfferer=offerer, siret="12345678912345")

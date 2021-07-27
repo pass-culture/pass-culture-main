@@ -39,7 +39,7 @@ class OfferValidationViewTest:
         users_factories.AdminFactory(email="admin@example.com")
         venue = VenueFactory()
         offerer = venue.managingOfferer
-        pro_user = users_factories.UserFactory(email="pro@example.com")
+        pro_user = users_factories.ProFactory(email="pro@example.com")
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         # newest offer
         offers_factories.OfferFactory(
@@ -87,7 +87,7 @@ class OfferValidationViewTest:
         venue = VenueFactory()
         offerer = venue.managingOfferer
 
-        pro_user = users_factories.UserFactory(email="pro@example.com")
+        pro_user = users_factories.ProFactory(email="pro@example.com")
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         offer = offers_factories.OfferFactory(
@@ -125,7 +125,7 @@ class OfferValidationViewTest:
 
         venue = VenueFactory()
         offerer = venue.managingOfferer
-        pro_user = users_factories.UserFactory(email="pro@example.com")
+        pro_user = users_factories.ProFactory(email="pro@example.com")
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True, venue=venue)

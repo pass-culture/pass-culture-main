@@ -229,11 +229,11 @@ class BookOfferTest:
             api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
 
     def test_raise_if_pro_user(self):
-        user = users_factories.UserFactory(isBeneficiary=False, isAdmin=False)
+        pro = users_factories.ProFactory()
         stock = offers_factories.StockFactory()
 
         with pytest.raises(exceptions.UserHasInsufficientFunds):
-            api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+            api.book_offer(beneficiary=pro, stock_id=stock.id, quantity=1)
 
     def test_raise_if_no_more_stock(self):
         booking = factories.BookingFactory(stock__quantity=1)

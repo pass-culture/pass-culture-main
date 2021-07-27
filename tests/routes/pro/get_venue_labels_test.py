@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core.offerers.factories import VenueLabelFactory
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.factories import ProFactory
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -21,12 +21,12 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_the_user_is_authenticated(self, app):
         # Given
-        user = UserFactory(isAdmin=False, isBeneficiary=False)
+        pro = ProFactory()
         venue_label_1 = VenueLabelFactory(label="Maison des illustres")
         venue_label_2 = VenueLabelFactory(label="Monuments historiques")
 
         # When
-        response = TestClient(app.test_client()).with_auth(user.email).get("/venue-labels")
+        response = TestClient(app.test_client()).with_auth(pro.email).get("/venue-labels")
 
         # then
         assert response.status_code == 200

@@ -5,9 +5,7 @@ from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
 def get_existing_pro_validated_user_without_offer() -> dict:
     return {
         "user": get_pro_helper(
-            users_factories.UserFactory(
-                isAdmin=False,
-                isBeneficiary=False,
+            users_factories.ProFactory(
                 validationToken=None,
             )
         )

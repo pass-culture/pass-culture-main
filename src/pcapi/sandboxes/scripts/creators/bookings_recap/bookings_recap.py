@@ -17,8 +17,8 @@ from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.payments.factories import DepositFactory
 from pcapi.core.payments.factories import PaymentFactory
 from pcapi.core.payments.factories import PaymentStatusFactory
+from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.core.users.factories import ProFactory
-from pcapi.core.users.factories import UserFactory
 from pcapi.models import EventType
 from pcapi.models import ThingType
 from pcapi.models.payment_status import TransactionStatus
@@ -32,15 +32,17 @@ def save_bookings_recap_sandbox():
     yesterday = datetime.utcnow() - timedelta(days=1)
     today = datetime.utcnow()
 
-    beneficiary1 = UserFactory(publicName="Riri Duck", firstName="Riri", lastName="Duck", email="riri.duck@example.com")
+    beneficiary1 = BeneficiaryFactory(
+        publicName="Riri Duck", firstName="Riri", lastName="Duck", email="riri.duck@example.com"
+    )
 
-    beneficiary2 = UserFactory(
+    beneficiary2 = BeneficiaryFactory(
         publicName="Fifi Brindacier",
         firstName="Fifi",
         lastName="Brindacier",
         email="fifi.brindacier@example.com",
     )
-    beneficiary3 = UserFactory(
+    beneficiary3 = BeneficiaryFactory(
         publicName="LouLou Duck",
         firstName="Loulou",
         lastName="Duck",
@@ -56,7 +58,6 @@ def save_bookings_recap_sandbox():
         firstName="Balthazar",
         lastName="Picsou",
         email="balthazar.picsou@example.com",
-        isBeneficiary=False,
     )
     offerer = OffererFactory(siren="645389012")
     UserOffererFactory(user=pro, offerer=offerer)

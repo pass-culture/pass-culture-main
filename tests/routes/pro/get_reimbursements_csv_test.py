@@ -20,10 +20,10 @@ def test_with_user_linked_to_offerers(app):
         payments_factories.PaymentFactory(
             booking__stock__offer__venue=venue, transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21"
         )
-    user = users_factories.UserFactory(isBeneficiary=False, offerers=[offerer1, offerer2])
+    pro = users_factories.ProFactory(offerers=[offerer1, offerer2])
 
     # When
-    client = TestClient(app.test_client()).with_auth(user.email)
+    client = TestClient(app.test_client()).with_auth(pro.email)
     response = client.get("/reimbursements/csv")
 
     # Then
@@ -37,10 +37,10 @@ def test_with_user_linked_to_offerers(app):
 @pytest.mark.usefixtures("db_session")
 def test_with_user_with_no_offerer(app):
     # Given
-    user = users_factories.UserFactory()
+    pro = users_factories.ProFactory()
 
     # When
-    client = TestClient(app.test_client()).with_auth(user.email)
+    client = TestClient(app.test_client()).with_auth(pro.email)
     response = client.get("/reimbursements/csv")
 
     # Then
@@ -58,10 +58,10 @@ def test_with_blacklisted_offerer(app):
         booking__stock__offer__venue__managingOfferer=offerer,
         transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
     )
-    user = users_factories.UserFactory(isBeneficiary=False, offerers=[offerer])
+    pro = users_factories.ProFactory(offerers=[offerer])
 
     # When
-    client = TestClient(app.test_client()).with_auth(user.email)
+    client = TestClient(app.test_client()).with_auth(pro.email)
     response = client.get("/reimbursements/csv")
 
     # Then

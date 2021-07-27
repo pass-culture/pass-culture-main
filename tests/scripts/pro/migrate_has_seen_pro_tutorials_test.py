@@ -12,14 +12,14 @@ from pcapi.scripts.pro.migrate_has_seen_pro_tutorials import migrate_has_seen_pr
 def should_udpate_has_seen_pro_tutorials_by_batch():
     today = datetime.now()
     yesterday = datetime.now() - timedelta(days=1)
-    users_factories.UserFactory(hasSeenProTutorials=False, dateCreated=yesterday, isBeneficiary=False)
-    users_factories.UserFactory(hasSeenProTutorials=False, dateCreated=yesterday, isBeneficiary=False)
-    users_factories.UserFactory(hasSeenProTutorials=False, dateCreated=yesterday, isBeneficiary=False)
-    users_factories.UserFactory(hasSeenProTutorials=False, dateCreated=yesterday, isBeneficiary=False)
-    users_factories.UserFactory(hasSeenProTutorials=False, dateCreated=yesterday, isBeneficiary=False)
+    users_factories.ProFactory(hasSeenProTutorials=False, dateCreated=yesterday)
+    users_factories.ProFactory(hasSeenProTutorials=False, dateCreated=yesterday)
+    users_factories.ProFactory(hasSeenProTutorials=False, dateCreated=yesterday)
+    users_factories.ProFactory(hasSeenProTutorials=False, dateCreated=yesterday)
+    users_factories.ProFactory(hasSeenProTutorials=False, dateCreated=yesterday)
 
-    users_factories.UserFactory(hasSeenProTutorials=False, dateCreated=today, isBeneficiary=False)
-    users_factories.UserFactory(hasSeenProTutorials=False, dateCreated=yesterday, isBeneficiary=True)
+    users_factories.ProFactory(hasSeenProTutorials=False, dateCreated=today)
+    users_factories.BeneficiaryFactory(hasSeenProTutorials=False, dateCreated=yesterday)
 
     migrate_has_seen_pro_tutorials(1)
 

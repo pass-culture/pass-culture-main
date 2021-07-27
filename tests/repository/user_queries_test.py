@@ -71,15 +71,11 @@ class GetAllUsersWalletBalancesTest:
 class FindProUsersByEmailProviderTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_pro_users_with_matching_email_provider(self):
-        pro_user_with_matching_email = users_factories.UserFactory(
-            email="pro_user@suspect.com", isBeneficiary=False, isActive=True
-        )
+        pro_user_with_matching_email = users_factories.ProFactory(email="pro_user@suspect.com", isActive=True)
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro_user_with_matching_email, offerer=offerer)
 
-        pro_user_with_not_matching_email = users_factories.UserFactory(
-            email="pro_user@example.com", isBeneficiary=False, isActive=True
-        )
+        pro_user_with_not_matching_email = users_factories.ProFactory(email="pro_user@example.com", isActive=True)
         offerer2 = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro_user_with_not_matching_email, offerer=offerer2)
 
@@ -90,8 +86,8 @@ class FindProUsersByEmailProviderTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_only_pro_users_with_matching_email_provider(self):
-        pro_user_with_matching_email = users_factories.UserFactory(
-            email="pro_user_with_matching_email@suspect.com", isBeneficiary=False, isActive=True
+        pro_user_with_matching_email = users_factories.ProFactory(
+            email="pro_user_with_matching_email@suspect.com", isActive=True
         )
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro_user_with_matching_email, offerer=offerer)

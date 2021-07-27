@@ -18,10 +18,10 @@ class Returns200Test:
         venue = create_venue(offerer1)
         repository.save(offerer1, venue)
 
-        user = users_factories.UserFactory(offerers=[offerer1])
+        pro = users_factories.ProFactory(offerers=[offerer1])
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).get("/offerers")
+        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers")
 
         # then
         assert response.status_code == 200
@@ -37,12 +37,11 @@ class Returns200Test:
         offerer3 = create_offerer(siren="123456783", name="offreur B")
         repository.save(offerer1, offerer3, offerer2)
 
-        user = users_factories.UserFactory()
-        user.offerers = [offerer1, offerer2, offerer3]
-        repository.save(user)
+        pro = users_factories.ProFactory(offerers=[offerer1, offerer2, offerer3])
+        repository.save(pro)
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).get("/offerers")
+        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers")
 
         # then
         assert response.status_code == 200
@@ -54,17 +53,17 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_logged_in_and_return_a_list_of_offerers_including_non_validated_structures(self, app):
         # given
-        user = users_factories.UserFactory()
+        pro = users_factories.ProFactory()
         offerer1 = create_offerer(siren="123456781", name="offreur A")
         offerer2 = create_offerer(siren="123456782", name="offreur B")
         offerer3 = create_offerer(siren="123456783", name="offreur C")
-        user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
-        user_offerer2 = create_user_offerer(user, offerer2, validation_token="AZE123")
-        user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
+        user_offerer1 = create_user_offerer(pro, offerer1, validation_token=None)
+        user_offerer2 = create_user_offerer(pro, offerer2, validation_token="AZE123")
+        user_offerer3 = create_user_offerer(pro, offerer3, validation_token=None)
         repository.save(user_offerer1, user_offerer2, user_offerer3)
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).get("/offerers")
+        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers")
 
         # then
         assert response.status_code == 200
@@ -85,10 +84,10 @@ class Returns200Test:
         offerer3 = create_offerer(siren="123456783", name="offreur B")
         repository.save(offerer1, offerer3, offerer2)
 
-        user = users_factories.UserFactory(isBeneficiary=True, isAdmin=False, offerers=[offerer1, offerer2])
+        pro = users_factories.ProFactory(offerers=[offerer1, offerer2])
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).get("/offerers")
+        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers")
 
         # then
         assert response.status_code == 200
@@ -177,17 +176,17 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_param_validated_is_false_and_returns_only_not_validated_offerers(self, app):
         # given
-        user = users_factories.UserFactory()
+        pro = users_factories.ProFactory()
         offerer1 = create_offerer(siren="123456781", name="offreur C", validation_token=None)
         offerer2 = create_offerer(siren="123456782", name="offreur A", validation_token="AZE123")
         offerer3 = create_offerer(siren="123456783", name="offreur B", validation_token=None)
-        user_offerer1 = create_user_offerer(user, offerer1)
-        user_offerer2 = create_user_offerer(user, offerer2)
-        user_offerer3 = create_user_offerer(user, offerer3)
+        user_offerer1 = create_user_offerer(pro, offerer1)
+        user_offerer2 = create_user_offerer(pro, offerer2)
+        user_offerer3 = create_user_offerer(pro, offerer3)
         repository.save(user_offerer1, user_offerer2, user_offerer3)
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).get("/offerers?validated=false")
+        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers?validated=false")
 
         # then
         assert response.status_code == 200
@@ -196,17 +195,17 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_param_validated_is_true_and_returns_only_validated_offerers(self, app):
         # given
-        user = users_factories.UserFactory()
+        pro = users_factories.ProFactory()
         offerer1 = create_offerer(siren="123456781", name="offreur C", validation_token=None)
         offerer2 = create_offerer(siren="123456782", name="offreur A", validation_token="AZE123")
         offerer3 = create_offerer(siren="123456783", name="offreur B", validation_token=None)
-        user_offerer1 = create_user_offerer(user, offerer1)
-        user_offerer2 = create_user_offerer(user, offerer2)
-        user_offerer3 = create_user_offerer(user, offerer3)
+        user_offerer1 = create_user_offerer(pro, offerer1)
+        user_offerer2 = create_user_offerer(pro, offerer2)
+        user_offerer3 = create_user_offerer(pro, offerer3)
         repository.save(user_offerer1, user_offerer2, user_offerer3)
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).get("/offerers?validated=true")
+        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers?validated=true")
 
         # then
         assert response.status_code == 200
@@ -217,13 +216,13 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_param_validated_is_true_returns_all_info_of_validated_offerers(self, app):
         # given
-        user = users_factories.UserFactory()
+        pro = users_factories.ProFactory()
         offerer1 = create_offerer(siren="123456781", name="offreur C", validation_token=None)
         offerer2 = create_offerer(siren="123456782", name="offreur A", validation_token="AZE123")
         offerer3 = create_offerer(siren="123456783", name="offreur B", validation_token=None)
-        user_offerer1 = create_user_offerer(user, offerer1)
-        user_offerer2 = create_user_offerer(user, offerer2)
-        user_offerer3 = create_user_offerer(user, offerer3)
+        user_offerer1 = create_user_offerer(pro, offerer1)
+        user_offerer2 = create_user_offerer(pro, offerer2)
+        user_offerer3 = create_user_offerer(pro, offerer3)
         bank_information1 = create_bank_information(application_id=1, offerer=offerer1)
         bank_information2 = create_bank_information(application_id=2, offerer=offerer2)
         bank_information3 = create_bank_information(application_id=3, offerer=offerer3)
@@ -232,7 +231,7 @@ class Returns200Test:
         )
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).get("/offerers?validated=true")
+        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers?validated=true")
 
         # then
         assert response.status_code == 200
@@ -264,13 +263,13 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_no_bank_information_for_offerer(self, app):
         # given
-        user = users_factories.UserFactory()
+        pro = users_factories.ProFactory()
         offerer1 = create_offerer(siren="123456781", name="offreur C")
-        user_offerer1 = create_user_offerer(user, offerer1)
+        user_offerer1 = create_user_offerer(pro, offerer1)
         repository.save(user_offerer1)
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).get("/offerers?validated=true")
+        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers?validated=true")
 
         # then
         assert response.status_code == 200
@@ -281,9 +280,9 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_returns_metadata(self, app):
         # given
-        user = users_factories.UserFactory(email="user@test.com")
+        pro = users_factories.ProFactory(email="user@test.com")
         offerer = create_offerer(name="offreur C")
-        user_offerer = create_user_offerer(user, offerer)
+        user_offerer = create_user_offerer(pro, offerer)
         repository.save(user_offerer)
         auth_request = TestClient(app.test_client()).with_auth(email="user@test.com")
 
@@ -297,11 +296,11 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_returns_proper_data_count_by_counting_distinct_offerers(self, app):
         # given
-        user = users_factories.UserFactory(email="user@test.com")
+        pro = users_factories.ProFactory(email="user@test.com")
         offerer1 = create_offerer(name="offreur")
-        user_offerer1 = create_user_offerer(user, offerer1)
+        user_offerer1 = create_user_offerer(pro, offerer1)
         offerer2 = create_offerer(name="offreur 2", siren="123456781")
-        user_offerer2 = create_user_offerer(user, offerer2)
+        user_offerer2 = create_user_offerer(pro, offerer2)
         venue1 = create_venue(offerer1)
         venue2 = create_venue(siret="12345678912346", offerer=offerer1)
         repository.save(user_offerer1, user_offerer2, venue1, venue2)

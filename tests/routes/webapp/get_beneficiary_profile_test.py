@@ -5,6 +5,7 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.users.factories import AdminFactory
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -146,9 +147,9 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_a_pro(self, app):
         # Given
-        user = UserFactory(email="pro@example.com", postalCode=None, isBeneficiary=False, dateOfBirth=None)
-        user.suspensionReason = None
-        repository.save(user)
+        pro = ProFactory(email="pro@example.com", postalCode=None, dateOfBirth=None)
+        pro.suspensionReason = None
+        repository.save(pro)
 
         # When
         response = TestClient(app.test_client()).with_auth("pro@example.com").get("/beneficiaries/current")

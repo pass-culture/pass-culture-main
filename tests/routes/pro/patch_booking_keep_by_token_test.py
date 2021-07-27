@@ -174,7 +174,7 @@ class Returns403Test:
         def test_when_the_api_key_is_not_linked_to_the_right_offerer(self, app):
             # Given
             user = users_factories.UserFactory(email="user@example.net")
-            pro_user = users_factories.UserFactory(email="pro@example.net")
+            pro_user = users_factories.ProFactory(email="pro@example.net")
 
             offerer = offers_factories.OffererFactory(siren="123456789")
             offerer2 = offers_factories.OffererFactory(siren="987654321")

@@ -254,7 +254,7 @@ class Returns403Test:
         # Given
         next_week = datetime.utcnow() + timedelta(weeks=1)
         unconfirmed_booking = bookings_factories.BookingFactory(stock__beginningDatetime=next_week)
-        pro_user = users_factories.UserFactory(email="pro@example.com")
+        pro_user = users_factories.ProFactory(email="pro@example.com")
         offerer = unconfirmed_booking.stock.offer.venue.managingOfferer
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         url = f"/v2/bookings/token/{unconfirmed_booking.token}"

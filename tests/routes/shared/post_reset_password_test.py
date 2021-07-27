@@ -114,7 +114,7 @@ class Returns204Test:
 
     @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
     @patch("pcapi.routes.shared.passwords.send_reset_password_email_to_pro")
-    def test_should_send_reset_password_email_when_user_is_an_offerer(
+    def test_should_send_reset_password_email_when_user_is_a_pro(
         self,
         send_reset_password_email_to_pro_mock,
         check_recaptcha_token_is_valid_mock,
@@ -122,11 +122,11 @@ class Returns204Test:
         db_session,
     ):
         # given
-        user = users_factories.UserFactory(isBeneficiary=False)
-        data = {"token": "dumbToken", "email": user.email}
+        pro = users_factories.ProFactory()
+        data = {"token": "dumbToken", "email": pro.email}
 
         # when
         TestClient(app.test_client()).post("/users/reset-password", json=data)
 
         # then
-        send_reset_password_email_to_pro_mock.assert_called_once_with(user)
+        send_reset_password_email_to_pro_mock.assert_called_once_with(pro)

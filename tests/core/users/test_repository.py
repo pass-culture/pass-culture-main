@@ -99,8 +99,7 @@ class GetNewlyEligibleUsersTest:
             departementCode="93",
         )
         # Pro
-        pro_user = factories.UserFactory(
-            isBeneficiary=False,
+        pro_user = factories.ProFactory(
             dateOfBirth=datetime(2000, 1, 1),
             dateCreated=datetime(2018, 1, 1),
             departementCode="93",
@@ -143,9 +142,7 @@ class GetNewlyEligibleUsersTest:
         # Admin
         factories.AdminFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
         # Pro
-        pro_user = factories.UserFactory(
-            isBeneficiary=False, dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1)
-        )
+        pro_user = factories.ProFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
         offers_factories.UserOffererFactory(user=pro_user)
         # User not yet 18
         factories.UserFactory(isBeneficiary=False, dateOfBirth=datetime(2000, 1, 2), dateCreated=datetime(2017, 12, 1))

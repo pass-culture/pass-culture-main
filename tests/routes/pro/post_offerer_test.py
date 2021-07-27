@@ -9,7 +9,7 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.users.factories import AdminFactory
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.factories import ProFactory
 from pcapi.models import UserOfferer
 from pcapi.utils.human_ids import humanize
 
@@ -31,7 +31,7 @@ class Returns201Test:
             status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
         )
 
-        user = UserFactory()
+        pro = ProFactory()
         digital_venue_type = VirtualVenueTypeFactory()
         body = {
             "name": "Test Offerer",
@@ -42,7 +42,7 @@ class Returns201Test:
         }
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
 
         # then
         assert response.status_code == 201
@@ -60,12 +60,12 @@ class Returns201Test:
             status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
         )
 
-        user = UserFactory()
+        pro = ProFactory()
         VirtualVenueTypeFactory()
         body = {"name": "Test Offerer", "siren": "418166096", "postalCode": "93100", "city": "Montreuil"}
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
 
         # then
         assert response.status_code == 201
@@ -80,7 +80,7 @@ class Returns201Test:
             status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
         )
 
-        user = AdminFactory()
+        admin = AdminFactory()
         VirtualVenueTypeFactory()
         body = {
             "name": "Test Offerer",
@@ -91,7 +91,7 @@ class Returns201Test:
         }
 
         # When
-        response = TestClient(app.test_client()).with_auth(user.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_auth(admin.email).post("/offerers", json=body)
 
         # then
         assert response.status_code == 201
@@ -104,7 +104,7 @@ class Returns201Test:
             status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
         )
 
-        user = UserFactory(isBeneficiary=False, isAdmin=False)
+        pro = ProFactory()
         VirtualVenueTypeFactory()
         body = {
             "name": "Test Offerer",
@@ -115,12 +115,12 @@ class Returns201Test:
         }
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
 
         # then
         assert response.status_code == 201
         offerer = Offerer.query.first()
-        assert offerer.UserOfferers[0].user == user
+        assert offerer.UserOfferers[0].user == pro
 
     @patch("pcapi.domain.admin_emails.make_validation_email_object")
     @patch("pcapi.connectors.api_entreprises.requests.get")
@@ -134,10 +134,9 @@ class Returns201Test:
             status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
         )
 
-        user = UserFactory(isBeneficiary=False, isAdmin=False)
-        user_2 = UserFactory(email="other_offerer@mail.com", isAdmin=False)
+        pro = ProFactory()
         offerer = OffererFactory()
-        UserOffererFactory(user=user_2, offerer=offerer, validationToken=None)
+        UserOffererFactory(offerer=offerer, validationToken=None)
         VirtualVenueTypeFactory()
         body = {
             "name": offerer.name,
@@ -148,13 +147,13 @@ class Returns201Test:
         }
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
 
         # then
         assert response.status_code == 201
         offerer = Offerer.query.first()
         created_user_offerer = (
-            UserOfferer.query.filter(UserOfferer.offerer == offerer).filter(UserOfferer.user == user).one()
+            UserOfferer.query.filter(UserOfferer.offerer == offerer).filter(UserOfferer.user == pro).one()
         )
         assert created_user_offerer.validationToken is not None
 
@@ -170,7 +169,7 @@ class Returns201Test:
             status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
         )
 
-        user = UserFactory(isBeneficiary=False, isAdmin=False)
+        pro = ProFactory()
         VirtualVenueTypeFactory()
         body = {
             "name": "Test Offerer",
@@ -181,7 +180,7 @@ class Returns201Test:
         }
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
 
         # then
         assert response.status_code == 201
@@ -201,7 +200,7 @@ class Returns201Test:
             status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
         )
 
-        user = UserFactory(isBeneficiary=False, isAdmin=False)
+        pro = ProFactory()
         offerer = OffererFactory()
         body = {
             "name": offerer.name,
@@ -212,12 +211,12 @@ class Returns201Test:
         }
 
         # When
-        response = TestClient(app.test_client()).with_auth(user.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
 
         # Then
         assert response.status_code == 201
         offerer = Offerer.query.first()
-        assert offerer.UserOfferers[0].user == user
+        assert offerer.UserOfferers[0].user == pro
         assert offerer.UserOfferers[0].validationToken is not None
 
     @patch("pcapi.domain.admin_emails.make_validation_email_object")
@@ -232,7 +231,7 @@ class Returns201Test:
             status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
         )
 
-        user = UserFactory(isBeneficiary=False, isAdmin=False)
+        pro = ProFactory()
         offerer = OffererFactory(validationToken="not_validated")
         body = {
             "name": offerer.name,
@@ -243,7 +242,7 @@ class Returns201Test:
         }
 
         # When
-        response = TestClient(app.test_client()).with_auth(user.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
 
         # Then
         assert response.status_code == 201
@@ -264,7 +263,7 @@ class Returns201Test:
             status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
         )
 
-        user = UserFactory(isBeneficiary=False, isAdmin=False)
+        pro = ProFactory()
         offerer = OffererFactory(validationToken="not_validated")
         body = {
             "name": offerer.name,
@@ -275,7 +274,7 @@ class Returns201Test:
         }
 
         # When
-        response = TestClient(app.test_client()).with_auth(user.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
 
         # Then
         assert response.status_code == 201

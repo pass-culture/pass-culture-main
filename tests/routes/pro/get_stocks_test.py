@@ -18,7 +18,7 @@ class Returns200Test:
     def test_returns_an_event_stock(self, app, assert_num_queries):
         # Given
         now = datetime.utcnow()
-        pro = users_factories.UserFactory(isBeneficiary=False)
+        pro = users_factories.ProFactory()
         stock = offers_factories.EventStockFactory(
             dateCreated=now,
             dateModified=now,
@@ -77,7 +77,7 @@ class Returns200Test:
     def test_returns_a_thing_stock_without_activation_codes(self, app):
         # Given
         now = datetime.utcnow()
-        pro = users_factories.UserFactory(isBeneficiary=False)
+        pro = users_factories.ProFactory()
         stock = offers_factories.ThingStockFactory(
             dateCreated=now,
             dateModified=now,
@@ -118,7 +118,7 @@ class Returns200Test:
     def test_returns_a_thing_stock_with_activation_codes(self, app, assert_num_queries):
         # Given
         now = datetime.utcnow()
-        pro = users_factories.UserFactory(isBeneficiary=False)
+        pro = users_factories.ProFactory()
         offer = offers_factories.OfferFactory(url="url.com")
         stock, _ = offers_factories.ThingStockFactory.create_batch(
             2,
@@ -178,7 +178,7 @@ class Returns200Test:
 
     def test_does_not_return_soft_deleted_stock(self, app):
         # Given
-        pro = users_factories.UserFactory(isBeneficiary=False)
+        pro = users_factories.ProFactory()
         stock = offers_factories.ThingStockFactory(isSoftDeleted=True)
         offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
         client = TestClient(app.test_client()).with_auth(email=pro.email)
@@ -195,7 +195,7 @@ class Returns200Test:
     def test_query_performance(self, app, db_session, assert_num_queries):
         # Given
         now = datetime.utcnow()
-        pro = users_factories.UserFactory(isBeneficiary=False)
+        pro = users_factories.ProFactory()
         stock_1 = offers_factories.ThingStockFactory(
             dateCreated=now,
             dateModified=now,
@@ -228,7 +228,7 @@ class Returns403Test:
     def test_returns_an_event_stock(self, app):
         # Given
         now = datetime.utcnow()
-        pro = users_factories.UserFactory(isBeneficiary=False)
+        pro = users_factories.ProFactory()
         stock = offers_factories.EventStockFactory(
             dateCreated=now,
             dateModified=now,

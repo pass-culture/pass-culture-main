@@ -82,7 +82,7 @@ def test_default_admin_call(mock_get_filtered_venues, app):
 @pytest.mark.usefixtures("db_session")
 @patch("pcapi.core.offerers.repository.get_filtered_venues")
 def test_invalid_offerer_id(mock_get_filtered_venues, app):
-    pro_user = users_factories.UserFactory(email="user.pro@test.com", isBeneficiary=False)
+    pro_user = users_factories.ProFactory(email="user.pro@test.com")
     offerer = offers_factories.OffererFactory()
     offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
     offers_factories.VenueFactory(managingOfferer=offerer)
@@ -113,7 +113,7 @@ def test_invalid_offerer_id(mock_get_filtered_venues, app):
 @pytest.mark.usefixtures("db_session")
 @patch("pcapi.core.offerers.repository.get_filtered_venues")
 def test_full_valid_call(mock_get_filtered_venues, app):
-    pro_user = users_factories.UserFactory(email="user.pro@test.com", isBeneficiary=False)
+    pro_user = users_factories.ProFactory(email="user.pro@test.com")
     offerer = offers_factories.OffererFactory()
     offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -142,7 +142,7 @@ def test_full_valid_call(mock_get_filtered_venues, app):
 @pytest.mark.usefixtures("db_session")
 @patch("pcapi.core.offerers.repository.get_filtered_venues")
 def test_full_valid_call_with_false(mock_get_filtered_venues, app):
-    pro_user = users_factories.UserFactory(email="user.pro@test.com", isBeneficiary=False)
+    pro_user = users_factories.ProFactory(email="user.pro@test.com")
     offerer = offers_factories.OffererFactory()
     offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -171,7 +171,7 @@ def test_full_valid_call_with_false(mock_get_filtered_venues, app):
 @pytest.mark.usefixtures("db_session")
 @patch("pcapi.core.offerers.repository.get_filtered_venues")
 def test_invalid_validated(mock_get_filtered_venues, app):
-    pro_user = users_factories.UserFactory(email="user.pro@test.com", isBeneficiary=False)
+    pro_user = users_factories.ProFactory(email="user.pro@test.com")
 
     query_params = [
         "validated=toto",
@@ -188,7 +188,7 @@ def test_invalid_validated(mock_get_filtered_venues, app):
 @pytest.mark.usefixtures("db_session")
 @patch("pcapi.core.offerers.repository.get_filtered_venues")
 def test_invalid_validated_for_user(mock_get_filtered_venues, app):
-    pro_user = users_factories.UserFactory(email="user.pro@test.com", isBeneficiary=False)
+    pro_user = users_factories.ProFactory(email="user.pro@test.com")
 
     query_params = [
         "validatedForUser=43",
@@ -205,7 +205,7 @@ def test_invalid_validated_for_user(mock_get_filtered_venues, app):
 @pytest.mark.usefixtures("db_session")
 @patch("pcapi.core.offerers.repository.get_filtered_venues")
 def test_invalid_active_offerer_only(mock_get_filtered_venues, app):
-    pro_user = users_factories.UserFactory(email="user.pro@test.com", isBeneficiary=False)
+    pro_user = users_factories.ProFactory(email="user.pro@test.com")
 
     query_params = [
         "activeOfferersOnly=tata",

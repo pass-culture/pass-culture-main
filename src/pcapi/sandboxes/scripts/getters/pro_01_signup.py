@@ -13,11 +13,4 @@ def get_existing_pro_user_with_offerer():
 
 
 def get_existing_pro_not_validated_user_with_real_offerer():
-    return {
-        "user": get_pro_helper(
-            users_factories.UserFactory(
-                isAdmin=False,
-                isBeneficiary=False,
-            )
-        )
-    }
+    return {"user": get_pro_helper(users_factories.ProFactory())}

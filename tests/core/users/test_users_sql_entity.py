@@ -194,7 +194,7 @@ class needsToSeeTutorialsTest:
     @pytest.mark.usefixtures("db_session")
     def test_pro_user_has_not_to_see_tutorials_when_already_seen(self, app):
         # given
-        user = users_factories.UserFactory.build(isBeneficiary=False)
+        user = users_factories.ProFactory.build()
         # when
         repository.save(user)
         # then

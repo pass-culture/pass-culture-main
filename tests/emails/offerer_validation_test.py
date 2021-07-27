@@ -25,8 +25,7 @@ def test_write_object_validation_email(app):
         validation_token=validation_token,
     )
 
-    user = users_factories.UserFactory.build(
-        isBeneficiary=False,
+    user = users_factories.ProFactory.build(
         departementCode="75",
         email="user@accenture.com",
         publicName="Test",

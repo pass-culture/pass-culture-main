@@ -129,7 +129,7 @@ class ProUserViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_suspend_pro(self, mocked_validate_csrf_token, app):
         admin = users_factories.AdminFactory(email="admin15@example.com")
-        pro = users_factories.UserFactory(email="user15@example.com", isBeneficiary=False)
+        pro = users_factories.ProFactory(email="user15@example.com")
 
         client = TestClient(app.test_client()).with_auth(admin.email)
         url = f"/pc/back-office/pro_users/suspend?user_id={pro.id}"
@@ -148,7 +148,7 @@ class ProUserViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_unsuspend_pro(self, mocked_validate_csrf_token, app):
         admin = users_factories.AdminFactory(email="admin15@example.com")
-        pro = users_factories.UserFactory(email="user15@example.com", isBeneficiary=False, isActive=False)
+        pro = users_factories.ProFactory(email="user15@example.com", isActive=False)
 
         client = TestClient(app.test_client()).with_auth(admin.email)
         url = f"/pc/back-office/pro_users/unsuspend?user_id={pro.id}"

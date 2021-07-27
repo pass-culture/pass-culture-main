@@ -36,7 +36,7 @@ class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_pro_user_does_not_have_rights(self, app):
         # given
-        pro_user = users_factories.UserFactory()
+        pro_user = users_factories.ProFactory()
         venue = offers_factories.VenueFactory()
 
         auth_request = TestClient(app.test_client()).with_auth(email=pro_user.email)

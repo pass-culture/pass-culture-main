@@ -119,7 +119,7 @@ class GetCappedOffersForFiltersTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_offers_filtered_by_manual_creation_mode_when_provided(self):
         # given
-        pro_user = users_factories.UserFactory()
+        pro_user = users_factories.ProFactory()
         offerer = create_offerer()
         create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
@@ -143,7 +143,7 @@ class GetCappedOffersForFiltersTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_offers_filtered_by_imported_creation_mode_when_provided(self):
         # given
-        pro_user = users_factories.UserFactory()
+        pro_user = users_factories.ProFactory()
         offerer = create_offerer()
         create_user_offerer(pro_user, offerer)
         venue = create_venue(offerer)
@@ -313,7 +313,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_not_return_offers_of_given_venue_when_user_is_not_attached_to_its_offerer(self, app):
             # given
-            pro = users_factories.UserFactory(isBeneficiary=False, isAdmin=False)
+            pro = users_factories.ProFactory()
             offer_for_requested_venue = offers_factories.OfferFactory()
             offer_for_other_venue = offers_factories.OfferFactory()
 
@@ -334,7 +334,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_venue_when_user_is_attached_to_its_offerer(self, app):
             # given
-            pro = users_factories.UserFactory(isBeneficiary=False, isAdmin=False)
+            pro = users_factories.ProFactory()
             pro_attachment_to_offerer = offers_factories.UserOffererFactory(user=pro)
             offer_for_requested_venue = offers_factories.OfferFactory(
                 venue__managingOfferer=pro_attachment_to_offerer.offerer
@@ -360,7 +360,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_not_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self):
             # given
-            pro = users_factories.UserFactory(isBeneficiary=False, isAdmin=False)
+            pro = users_factories.ProFactory()
             offer_for_requested_offerer = offers_factories.OfferFactory()
             offer_for_other_offerer = offers_factories.OfferFactory()
 
@@ -381,7 +381,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self):
             # given
-            pro = users_factories.UserFactory(isBeneficiary=False, isAdmin=False)
+            pro = users_factories.ProFactory()
             pro_attachment_to_requested_offerer = offers_factories.UserOffererFactory(user=pro)
             pro_attachment_to_other_offerer = offers_factories.UserOffererFactory(user=pro)
             offer_for_requested_offerer = offers_factories.OfferFactory(
@@ -532,7 +532,7 @@ class GetCappedOffersForFiltersTest:
             self.venue = offers_factories.VenueFactory()
             self.offerer = self.venue.managingOfferer
             self.other_venue = offers_factories.VenueFactory(managingOfferer=self.offerer)
-            self.pro = users_factories.UserFactory(isBeneficiary=False)
+            self.pro = users_factories.ProFactory()
             self.user_offerer = offers_factories.UserOffererFactory(user=self.pro, offerer=self.offerer)
 
             self.sold_out_offer_on_other_venue = offers_factories.ThingOfferFactory(
@@ -611,7 +611,7 @@ class GetCappedOffersForFiltersTest:
 
             five_days_ago = datetime.now() - timedelta(days=5)
             in_five_days = datetime.now() + timedelta(days=5)
-            beneficiary = users_factories.UserFactory(email="jane.doe@example.com")
+            beneficiary = users_factories.BeneficiaryFactory(email="jane.doe@example.com")
             offers_factories.ThingStockFactory(offer=self.sold_old_thing_offer_with_all_stocks_empty, quantity=0)
             offers_factories.ThingStockFactory(
                 offer=self.active_thing_offer_with_one_stock_with_remaining_quantity, quantity=5
