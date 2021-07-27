@@ -102,7 +102,7 @@ class PartnerUserViewTest:
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_super_admin_can_suspend_then_unsuspend_partner(self, mocked_validate_csrf_token, app):
-        super_admin = users_factories.UserFactory(email="superadmin@example.com", isAdmin=True)
+        super_admin = users_factories.AdminFactory(email="superadmin@example.com")
         partner = users_factories.UserFactory(email="partner@example.com")
         client = TestClient(app.test_client()).with_auth(super_admin.email)
 

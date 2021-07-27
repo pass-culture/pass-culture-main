@@ -176,7 +176,7 @@ class Returns200ForAdminTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_offerers_names(self, app):
         # given
-        admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
+        admin = users_factories.AdminFactory()
         offerers = self._setup_offerers_for_users()
 
         # when
@@ -196,7 +196,7 @@ class Returns200ForAdminTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_validated_offerers(self, app):
         # given
-        admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
+        admin = users_factories.AdminFactory()
         offerers = self._setup_offerers_for_users()
 
         # when
@@ -214,7 +214,7 @@ class Returns200ForAdminTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_not_validated_offerers(self, app):
         # given
-        admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
+        admin = users_factories.AdminFactory()
         offerers = self._setup_offerers_for_users()
 
         # when

@@ -102,7 +102,7 @@ class Returns200Test:
         offerer3 = create_offerer(siren="123456783", name="offreur B")
         repository.save(offerer1, offerer3, offerer2)
 
-        user = users_factories.UserFactory(isBeneficiary=False, isAdmin=True, offerers=[offerer1, offerer2])
+        user = users_factories.AdminFactory(offerers=[offerer1, offerer2])
 
         # when
         response = TestClient(app.test_client()).with_auth(user.email).get("/offerers")
@@ -119,7 +119,7 @@ class Returns200Test:
         bank_information1 = create_bank_information(application_id=1, offerer=offerer1)
         bank_information2 = create_bank_information(application_id=2, offerer=offerer2)
 
-        user = users_factories.UserFactory(isBeneficiary=False, isAdmin=True, offerers=[offerer1, offerer2])
+        user = users_factories.AdminFactory(offerers=[offerer1, offerer2])
         repository.save(bank_information1, bank_information2)
 
         # when
@@ -343,7 +343,7 @@ class Returns400Test:
         offerer3 = create_offerer(siren="123456783", name="offreur B")
         repository.save(offerer1, offerer3, offerer2)
 
-        user = users_factories.UserFactory(isBeneficiary=False, isAdmin=True, offerers=[offerer1, offerer2])
+        user = users_factories.AdminFactory(offerers=[offerer1, offerer2])
 
         # when
         response = TestClient(app.test_client()).with_auth(user.email).get("/offerers?validated=blabla")

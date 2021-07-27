@@ -18,7 +18,7 @@ class ManyOffersOperationsViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_search_product_from_isbn(self, mocked_validate_csrf_token, app):
         # Given
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
 
         data = dict(isbn="978-3-16-148410-0")
 
@@ -36,7 +36,7 @@ class ManyOffersOperationsViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_search_product_from_visa(self, mocked_validate_csrf_token, app):
         # Given
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
 
         data = dict(visa="978148")
 
@@ -51,7 +51,7 @@ class ManyOffersOperationsViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_search_product_from_isbn_with_invalid_isbn(self, mocked_validate_csrf_token, app):
         # Given
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
 
         data = dict(
             isbn="978-3-16-14840-0",
@@ -67,7 +67,7 @@ class ManyOffersOperationsViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_search_product_with_no_isbn_nor_visa(self, mocked_validate_csrf_token, app):
         # Given
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
 
         data = dict()
 
@@ -84,7 +84,7 @@ class ManyOffersOperationsViewTest:
         self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app
     ):
         # Given
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         product = offers_factories.ProductFactory(extraData={"isbn": "9783161484100"})
         offer1 = offers_factories.OfferFactory(product=product, extraData={"isbn": "9783161484100"})
         offer2 = offers_factories.OfferFactory(product=product, extraData={"isbn": "9783161484100"})
@@ -120,7 +120,7 @@ class ManyOffersOperationsViewTest:
         self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app
     ):
         # Given
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         product = offers_factories.ProductFactory(extraData={"visa": "9783161484100"})
         offer1 = offers_factories.OfferFactory(product=product, extraData={"visa": "9783161484100"})
         offer2 = offers_factories.OfferFactory(product=product, extraData={"visa": "9783161484100"})
@@ -153,7 +153,7 @@ class ManyOffersOperationsViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_edit_product_offers_criteria_from_isbn_without_offers(self, mocked_validate_csrf_token, app):
         # Given
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
 
         # When
         client = TestClient(app.test_client()).with_auth("admin@example.com")
@@ -166,7 +166,7 @@ class ManyOffersOperationsViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_edit_product_offers_criteria_from_visa_without_offers(self, mocked_validate_csrf_token, app):
         # Given
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
 
         # When
         client = TestClient(app.test_client()).with_auth("admin@example.com")
@@ -201,7 +201,7 @@ class ManyOffersOperationsViewTest:
         self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app, db_session
     ):
         # Given
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         offerer = offers_factories.OffererFactory()
         product_1 = offers_factories.ThingProductFactory(
             description="premier produit inapproprié", extraData={"isbn": "isbn-de-test"}

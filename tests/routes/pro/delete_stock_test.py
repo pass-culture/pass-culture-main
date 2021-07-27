@@ -45,7 +45,7 @@ class Returns400Test:
         offer = offers_factories.OfferFactory(lastProvider=provider, idAtProviders="1")
         stock = offers_factories.StockFactory(offer=offer)
 
-        user = users_factories.UserFactory(isAdmin=True)
+        user = users_factories.AdminFactory()
 
         # when
         client = TestClient(app.test_client()).with_auth(user.email)
@@ -58,7 +58,7 @@ class Returns400Test:
     def test_delete_non_approved_offer_fails(self, app, db_session):
         pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
         stock = offers_factories.StockFactory(offer=pending_validation_offer)
-        user = users_factories.UserFactory(isAdmin=True)
+        user = users_factories.AdminFactory()
 
         client = TestClient(app.test_client()).with_auth(user.email)
         response = client.delete(f"/stocks/{humanize(stock.id)}")

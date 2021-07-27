@@ -230,7 +230,7 @@ class AppendUserHasAccessAttributeTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_true_when_current_user_is_admin(self, app):
         # Given
-        current_user = users_factories.UserFactory(email="current@example.net", isAdmin=True, postalCode=None)
+        current_user = users_factories.AdminFactory(email="current@example.net", postalCode=None)
         user = users_factories.UserFactory(postalCode=None)
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer, validation_token=None)

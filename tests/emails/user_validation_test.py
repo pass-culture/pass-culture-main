@@ -33,7 +33,7 @@ class AdminValidationEmailsTest:
     @clean_database
     def test_make_admin_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
-        user = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        user = users_factories.AdminFactory(email="admin@example.com")
         users_factories.ResetPasswordToken(user=user, value="ABCDEF")
 
         # When

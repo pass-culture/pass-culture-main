@@ -219,7 +219,7 @@ class Returns400Test:
 @pytest.mark.usefixtures("db_session")
 class Returns401Test:
     def when_user_is_admin(self, app):
-        user = users_factories.UserFactory(isAdmin=True)
+        user = users_factories.AdminFactory()
 
         client = TestClient(app.test_client()).with_auth(user.email)
         response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")

@@ -26,7 +26,7 @@ class BeneficiaryUserViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_list_beneficiaries(self, mocked_validate_csrf_token, app):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         users_factories.UserFactory.create_batch(3, isBeneficiary=True)
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")
@@ -44,7 +44,7 @@ class BeneficiaryUserViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_beneficiary_user_creation(self, mocked_validate_csrf_token, app):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
 
         data = dict(
             email="LAMA@example.com",
@@ -100,7 +100,7 @@ class BeneficiaryUserViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_beneficiary_user_creation_for_deposit_v2(self, mocked_validate_csrf_token, app):
-        users_factories.UserFactory(email="user@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="user@example.com")
 
         data = dict(
             email="toto@example.com",
@@ -156,7 +156,7 @@ class BeneficiaryUserViewTest:
         # and call `get_create_form()`, because `scaffold_form()` is
         # called, which in turn calls the `form_columns` property,
         # which expects to see an authenticated user.
-        admin = users_factories.UserFactory(isAdmin=True)
+        admin = users_factories.AdminFactory()
         headers = {"Authorization": _basic_auth_str(admin.email, users_factories.DEFAULT_PASSWORD)}
         with app.test_request_context(headers=headers):
             form_class = BeneficiaryUserView(User, db_session)
@@ -166,7 +166,7 @@ class BeneficiaryUserViewTest:
 
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[])
     def test_beneficiary_user_creation_is_restricted_in_prod(self, app, db_session):
-        users_factories.UserFactory(email="user@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="user@example.com")
 
         data = dict(
             email="toto@example.com",
@@ -193,7 +193,7 @@ class BeneficiaryUserViewTest:
     #  generate a valid CSRF token in tests. This should be fixed.
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_suspend_beneficiary(self, mocked_validate_csrf_token, app):
-        admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True)
+        admin = users_factories.AdminFactory(email="admin15@example.com")
         booking = bookings_factories.BookingFactory()
         beneficiary = booking.user
 
@@ -215,7 +215,7 @@ class BeneficiaryUserViewTest:
     #  generate a valid CSRF token in tests. This should be fixed.
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_unsuspend_beneficiary(self, mocked_validate_csrf_token, app):
-        admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True)
+        admin = users_factories.AdminFactory(email="admin15@example.com")
         beneficiary = users_factories.UserFactory(email="user15@example.com", isActive=False)
 
         client = TestClient(app.test_client()).with_auth(admin.email)
@@ -232,7 +232,7 @@ class BeneficiaryUserViewTest:
     @clean_database
     @patch("pcapi.settings.IS_PROD", True)
     def test_suspend_beneficiary_is_restricted(self, app):
-        admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        admin = users_factories.AdminFactory(email="admin@example.com")
         beneficiary = users_factories.UserFactory(email="user@example.com")
 
         client = TestClient(app.test_client()).with_auth(admin.email)
@@ -250,16 +250,16 @@ class BeneficiaryUserViewTest:
     )
     @pytest.mark.usefixtures("db_session")
     def test_allow_suspension_and_unsuspension(self):
-        basic_admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        basic_admin = users_factories.AdminFactory(email="admin@example.com")
         assert not _allow_suspension_and_unsuspension(basic_admin)
-        super_admin = users_factories.UserFactory(email="super-admin@example.com", isAdmin=True)
+        super_admin = users_factories.AdminFactory(email="super-admin@example.com")
         assert _allow_suspension_and_unsuspension(super_admin)
 
     @clean_database
     @patch("pcapi.admin.custom_views.beneficiary_user_view.flash")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_beneficiary_user_edition_does_not_send_email(self, mocked_validate_csrf_token, mocked_flask_flash, app):
-        users_factories.UserFactory(email="user@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="user@example.com")
         user_to_edit = users_factories.UserFactory(email="not_yet_edited@email.com", isAdmin=False)
 
         data = dict(

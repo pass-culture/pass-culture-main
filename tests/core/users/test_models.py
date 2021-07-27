@@ -263,5 +263,5 @@ class SuperAdminTest:
 
     @override_settings()
     def test_super_user_not_prod_is_admin_is_super_admin(self):
-        user = user_factories.UserFactory(isAdmin=True)
+        user = user_factories.AdminFactory()
         assert user.is_super_admin()

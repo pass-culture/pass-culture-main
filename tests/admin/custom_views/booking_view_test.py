@@ -15,7 +15,7 @@ from tests.conftest import TestClient
 @mock.patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token", lambda *args, **kwargs: True)
 class BookingViewTest:
     def test_search_booking(self, app):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         booking = bookings_factories.BookingFactory()
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")
@@ -27,7 +27,7 @@ class BookingViewTest:
         assert "Marquer comme utilisée" not in content
 
     def test_show_mark_as_used_button(self, app):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         bookings_factories.BookingFactory(isCancelled=True, status=BookingStatus.CANCELLED, token="ABCDEF")
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")
@@ -38,7 +38,7 @@ class BookingViewTest:
         assert "Marquer comme utilisée" in content
 
     def test_uncancel_and_mark_as_used(self, app):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         booking = bookings_factories.BookingFactory(isCancelled=True, status=BookingStatus.CANCELLED)
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")
@@ -57,7 +57,7 @@ class BookingViewTest:
         assert booking.status is BookingStatus.USED
 
     def test_fail_to_uncancel_and_mark_as_used(self, app):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         booking = bookings_factories.BookingFactory()
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")

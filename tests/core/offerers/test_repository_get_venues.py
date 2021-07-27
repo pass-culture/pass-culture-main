@@ -287,7 +287,7 @@ class GetFilteredVenuesForAdminTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_venues(self, app):
         # given
-        admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
+        admin = users_factories.AdminFactory()
         venues = self._setup_venues_for_users()
 
         # when
@@ -308,7 +308,7 @@ class GetFilteredVenuesForAdminTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_validated_venues(self, app):
         # given
-        admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
+        admin = users_factories.AdminFactory()
         venues = self._setup_venues_for_users()
 
         # when
@@ -326,7 +326,7 @@ class GetFilteredVenuesForAdminTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_all_not_validated_venues(self, app):
         # given
-        admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
+        admin = users_factories.AdminFactory()
         venues = self._setup_venues_for_users()
 
         # when

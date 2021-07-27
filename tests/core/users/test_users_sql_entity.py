@@ -50,7 +50,7 @@ class HasAccessTest:
     def test_has_access_if_admin(self):
         # given
         offerer = offers_factories.OffererFactory()
-        admin = users_factories.UserFactory(isAdmin=True)
+        admin = users_factories.AdminFactory()
 
         assert admin.has_access(offerer.id)
 

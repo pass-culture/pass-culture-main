@@ -12,7 +12,7 @@ class ApiKeyViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_api_key_creation(self, mocked_validate_csrf_token, app):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         offerer = offers_factories.OffererFactory(siren=123456789)
 
         data = dict(
@@ -31,7 +31,7 @@ class ApiKeyViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_api_key_creation_with_wrong_siren(self, mocked_validate_csrf_token, app):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
 
         data = dict(
             offererSiren=123456789,

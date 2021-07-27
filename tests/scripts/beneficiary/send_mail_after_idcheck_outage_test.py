@@ -40,7 +40,7 @@ class SendMailAfterIdcheckOutageTest:
             postalCode="93000",
         )
         # Admin
-        factories.UserFactory(isAdmin=True, dateOfBirth=datetime(2000, 1, 1), **ELIGIBLE_CONDTIONS)
+        factories.AdminFactory(dateOfBirth=datetime(2000, 1, 1), **ELIGIBLE_CONDTIONS)
         # Pro
         pro_user = factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), **ELIGIBLE_CONDTIONS)
         offers_factories.UserOffererFactory(user=pro_user)

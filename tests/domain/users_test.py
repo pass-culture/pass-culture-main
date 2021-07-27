@@ -8,7 +8,7 @@ from pcapi.domain.users import check_is_authorized_to_access_bookings_recap
 class CheckUserIsNotAdminTest:
     def test_when_user_is_admin_should_prevent_from_accessing_bookings_list(self):
         # Given
-        user = users_factories.UserFactory.build(isAdmin=True, isBeneficiary=False)
+        user = users_factories.AdminFactory.build()
 
         # When
         with pytest.raises(UnauthorizedForAdminUser) as exception:

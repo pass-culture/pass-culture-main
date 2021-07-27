@@ -16,7 +16,7 @@ import pcapi.models
 @pytest.mark.usefixtures("db_session")
 class BeneficiaryFraudListViewTest:
     def test_list_view(self, client):
-        admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        admin = users_factories.AdminFactory(email="admin@example.com")
         client.with_auth(admin.email)
 
         for review_status in fraud_models.FraudReviewStatus:
@@ -31,7 +31,7 @@ class BeneficiaryFraudListViewTest:
 @pytest.mark.usefixtures("db_session")
 class BeneficiaryFraudDetailViewTest:
     def test_detail_view(self, client):
-        admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        admin = users_factories.AdminFactory(email="admin@example.com")
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudResultFactory(user=user)
@@ -53,7 +53,7 @@ class BeneficiaryFraudValidationViewTest:
     def test_validation_view_validate_user_staging(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
-        admin = users_factories.UserFactory(isAdmin=True)
+        admin = users_factories.AdminFactory()
         client.with_auth(admin.email)
 
         response = client.post(
@@ -76,7 +76,7 @@ class BeneficiaryFraudValidationViewTest:
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_wrong_args(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
-        admin = users_factories.UserFactory(isAdmin=True)
+        admin = users_factories.AdminFactory()
 
         client.with_auth(admin.email)
 
@@ -95,7 +95,7 @@ class BeneficiaryFraudValidationViewTest:
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_already_reviewed(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
-        admin = users_factories.UserFactory(isAdmin=True)
+        admin = users_factories.AdminFactory()
         expected_review = fraud_factories.BeneficiaryFraudReviewFactory(user=user, author=admin)
         client.with_auth(admin.email)
 
@@ -110,7 +110,7 @@ class BeneficiaryFraudValidationViewTest:
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_not_super_user_fails(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
-        admin = users_factories.UserFactory(isAdmin=True)
+        admin = users_factories.AdminFactory()
         client.with_auth(admin.email)
 
         with override_settings(IS_PROD=True):
@@ -127,7 +127,7 @@ class BeneficiaryFraudValidationViewTest:
     def test_validation_prod_requires_super_admin(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
-        admin = users_factories.UserFactory(isAdmin=True)
+        admin = users_factories.AdminFactory()
         client.with_auth(admin.email)
 
         with override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[admin.email]):
@@ -169,7 +169,7 @@ class BeneficiaryFraudValidationViewTest:
     def test_review_ko_does_not_activate_the_beneficiary(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
-        admin = users_factories.UserFactory(isAdmin=True)
+        admin = users_factories.AdminFactory()
         client.with_auth(admin.email)
 
         with override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[admin.email]):

@@ -73,7 +73,7 @@ class IsAccessibleTest:
     @patch("flask_login.utils._get_user")
     def test_access_is_authorized_for_admin_users(self, get_user):
         # given
-        get_user.return_value = users_factories.UserFactory.build(isAdmin=True)
+        get_user.return_value = users_factories.AdminFactory.build()
 
         # when
         view = DummyAdminView(Booking, fake_db_session)
@@ -109,7 +109,7 @@ class IsAccessibleTest:
     @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="")
     def test_check_super_admins_is_deactived_in_non_prod_environments(self, get_user):
         # given
-        get_user.return_value = users_factories.UserFactory.build(email="dummy@email.com", isAdmin=True)
+        get_user.return_value = users_factories.AdminFactory.build(email="dummy@example.com")
 
         # when
         view = DummyAdminView(Booking, fake_db_session)

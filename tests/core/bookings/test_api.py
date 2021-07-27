@@ -222,7 +222,7 @@ class BookOfferTest:
         assert booking.cancellationLimitDate == two_days_after_booking
 
     def test_raise_if_is_admin(self):
-        user = users_factories.UserFactory(isAdmin=True)
+        user = users_factories.AdminFactory()
         stock = offers_factories.StockFactory()
 
         with pytest.raises(exceptions.UserHasInsufficientFunds):

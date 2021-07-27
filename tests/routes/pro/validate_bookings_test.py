@@ -129,7 +129,7 @@ class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_booking_is_cancelled(self, app):
         # Given
-        admin = users_factories.UserFactory(isAdmin=True)
+        admin = users_factories.AdminFactory()
         booking = BookingFactory(isCancelled=True, status=bookings_models.BookingStatus.CANCELLED)
         url = f"/bookings/token/{booking.token}"
 

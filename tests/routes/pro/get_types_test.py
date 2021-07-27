@@ -37,7 +37,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_admin(self, app):
         # given
-        users_factories.UserFactory(isBeneficiary=False, email="pctest.admin93.0@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="pctest.admin93.0@example.com")
 
         # when
         response = TestClient(app.test_client()).with_auth("pctest.admin93.0@example.com").get("/types")

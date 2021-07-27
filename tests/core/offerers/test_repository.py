@@ -36,7 +36,7 @@ class GetAllVenueTypesTest:
 class GetAllOfferersForUserTest:
     def should_return_all_offerers_for_an_admin(self) -> None:
         # Given
-        admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
+        admin = users_factories.AdminFactory()
         offerer = offers_factories.OffererFactory()
 
         # When
@@ -89,7 +89,7 @@ class GetAllOfferersForUserTest:
 
     def should_not_return_deactivated_offerers(self) -> None:
         # Given
-        admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
+        admin = users_factories.AdminFactory()
         offers_factories.OffererFactory(isActive=False)
 
         # When

@@ -887,7 +887,7 @@ class CreateOfferTest:
         assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
 
     def test_create_activation_offer(self):
-        user = users_factories.UserFactory(isAdmin=True)
+        user = users_factories.AdminFactory()
         venue = factories.VenueFactory()
 
         data = offers_serialize.PostOfferBodyModel(

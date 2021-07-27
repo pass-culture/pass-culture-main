@@ -36,7 +36,7 @@ class OfferValidationViewTest:
     def test_approve_offer_and_go_to_next_offer(
         self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, app
     ):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         venue = VenueFactory()
         offerer = venue.managingOfferer
         pro_user = users_factories.UserFactory(email="pro@example.com")
@@ -83,7 +83,7 @@ class OfferValidationViewTest:
     def test_approve_last_pending_offer_and_go_to_the_next_offer_redirect_to_validation_page(
         self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, app
     ):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         venue = VenueFactory()
         offerer = venue.managingOfferer
 
@@ -121,7 +121,7 @@ class OfferValidationViewTest:
         app,
     ):
         # Given
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
 
         venue = VenueFactory()
         offerer = venue.managingOfferer
@@ -156,7 +156,7 @@ class OfferValidationViewTest:
         app,
     ):
         # Given
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
 
         venue = VenueFactory(bookingEmail="venue@example.com")
 
@@ -181,7 +181,7 @@ class OfferValidationViewTest:
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
     def test_import_validation_config(self, mocked_validate_csrf_token, app):
         # Given
-        users_factories.UserFactory(email="super_admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="super_admin@example.com")
         config_yaml = """
                     minimum_score: 0.6
                     rules:
@@ -246,7 +246,7 @@ class OfferValidationViewTest:
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
     def test_import_validation_config_fail_with_wrong_value(self, mocked_validate_csrf_token, app):
         # Given
-        users_factories.UserFactory(email="super_admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="super_admin@example.com")
         config_yaml = """
                     minimum_score: 0.6
                     parameters:
@@ -279,7 +279,7 @@ class OfferValidationViewTest:
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
     def test_import_validation_config_fail_when_user_is_not_super_admin(self, mocked_validate_csrf_token, app):
         # Given
-        users_factories.UserFactory(email="not_super_admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="not_super_admin@example.com")
         config_yaml = """
                     minimum_score: 0.6
                     parameters:
@@ -333,7 +333,7 @@ class OfferValidationViewTest:
                                 comparated: "REJECTED"
                     """
         import_offer_validation_config(config_yaml)
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
         mocked_get_offerer_legal_category.return_value = {
             "legal_category_code": 5202,
@@ -379,7 +379,7 @@ class OfferValidationViewTest:
                                 comparated: "REJECTED"
                     """
         import_offer_validation_config(config_yaml)
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
         mocked_get_offerer_legal_category.return_value = {
@@ -404,7 +404,7 @@ class OfferValidationViewTest:
 
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
     def test_access_to_validation_page_with_super_admin_user_on_prod_env(self, app):
-        users_factories.UserFactory(email="super_admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="super_admin@example.com")
         client = TestClient(app.test_client()).with_auth("super_admin@example.com")
 
         response = client.get("/pc/back-office/validation/")
@@ -413,7 +413,7 @@ class OfferValidationViewTest:
 
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
     def test_access_to_validation_page_with_none_super_admin_user_on_prod_env(self, app):
-        users_factories.UserFactory(email="simple_admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="simple_admin@example.com")
         client = TestClient(app.test_client()).with_auth("simple_admin@example.com")
 
         response = client.get("/pc/back-office/validation/")
@@ -439,7 +439,7 @@ class GetOfferValidationViewTest:
                                 comparated: "5202"
                     """
         import_offer_validation_config(config_yaml)
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         offerer = offers_factories.OffererFactory()
         offers_factories.OfferFactory(
             validation=OfferValidationStatus.PENDING, isActive=False, venue__managingOfferer=offerer
@@ -474,7 +474,7 @@ class OfferViewTest:
         mocked_validate_csrf_token,
         app,
     ):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         with freeze_time("2020-11-17 15:00:00") as frozen_time:
             offer = offers_factories.OfferFactory(
                 validation=OfferValidationStatus.APPROVED, isActive=True, venue__bookingEmail="offerer@example.com"
@@ -507,7 +507,7 @@ class OfferViewTest:
         mocked_validate_csrf_token,
         app,
     ):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         with freeze_time("2020-11-17 15:00:00") as frozen_time:
             offer = offers_factories.OfferFactory(validation=OfferValidationStatus.REJECTED, isActive=True)
             frozen_time.move_to("2020-12-20 15:00:00")
@@ -538,7 +538,7 @@ class OfferViewTest:
         mocked_validate_csrf_token,
         app,
     ):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         with freeze_time("2020-11-17 15:00:00") as frozen_time:
             offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True)
             stock = offers_factories.StockFactory(offer=offer, price=10)
@@ -563,7 +563,7 @@ class OfferViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_change_to_draft_approved_offer(self, mocked_validate_csrf_token, app):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.AdminFactory(email="admin@example.com")
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True)
         data = dict(validation=OfferValidationStatus.DRAFT.value)
         client = TestClient(app.test_client()).with_auth("admin@example.com")

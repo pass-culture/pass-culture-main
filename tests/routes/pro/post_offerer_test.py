@@ -8,6 +8,7 @@ from pcapi.core.offerers.factories import VirtualVenueTypeFactory
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import UserOffererFactory
+from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.models import UserOfferer
 from pcapi.utils.human_ids import humanize
@@ -79,7 +80,7 @@ class Returns201Test:
             status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
         )
 
-        user = UserFactory(isBeneficiary=False, isAdmin=True)
+        user = AdminFactory()
         VirtualVenueTypeFactory()
         body = {
             "name": "Test Offerer",

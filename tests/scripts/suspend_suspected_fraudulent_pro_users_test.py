@@ -13,6 +13,7 @@ from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.scripts.suspend_fraudulent_pro_users import suspend_fraudulent_pro_by_email_providers
 
@@ -21,7 +22,7 @@ from pcapi.scripts.suspend_fraudulent_pro_users import suspend_fraudulent_pro_by
 def test_suspend_pros_in_given_emails_providers_list():
     # Given
     fraudulent_emails_providers = ["example.com"]
-    admin_user = UserFactory(isBeneficiary=False, isAdmin=True, email="admin@example.net")
+    admin_user = AdminFactory(email="admin@example.net")
     fraudulent_user = UserFactory(
         isBeneficiary=False,
         email="jesuisunefraude@example.com",
@@ -40,7 +41,7 @@ def test_suspend_pros_in_given_emails_providers_list():
 def test_only_suspend_pro_users_in_given_emails_providers_list():
     # Given
     fraudulent_emails_providers = ["example.com"]
-    admin_user = UserFactory(isBeneficiary=False, isAdmin=True, email="admin@example.net")
+    admin_user = AdminFactory(email="admin@example.net")
     pro_fraudulent_user_with_uppercase_domain = UserFactory(isBeneficiary=False, email="jesuisunefraude@EXAmple.com")
     pro_fraudulent_user_with_subdomain = UserFactory(isBeneficiary=False, email="jesuisunefraude@sub.example.com")
     beneficiary_fraudulent_user = UserFactory(isBeneficiary=True, email="jesuisuneautrefraude@example.com")
@@ -62,7 +63,7 @@ def test_only_suspend_pro_users_in_given_emails_providers_list():
 def test_dont_suspend_users_not_in_given_emails_providers_list():
     # Given
     fraudulent_emails_providers = ["example.com"]
-    admin_user = UserFactory(isBeneficiary=False, isAdmin=True, email="admin@example.net")
+    admin_user = AdminFactory(email="admin@example.net")
     non_fraudulent_pro = UserFactory(isBeneficiary=False, email="jenesuispasunefraude@gmoil.com")
 
     # When
@@ -75,7 +76,7 @@ def test_dont_suspend_users_not_in_given_emails_providers_list():
 @pytest.mark.usefixtures("db_session")
 def test_suspend_pro_user_with_many_offerers_and_delete_all_offerers():
     fraudulent_emails_providers = ["example.com"]
-    admin_user = UserFactory(isBeneficiary=False, isAdmin=True, email="admin@example.net")
+    admin_user = AdminFactory(email="admin@example.net")
     fraudulent_user = UserFactory(
         isBeneficiary=False,
         email="jesuisunefraude@example.com",
@@ -95,7 +96,7 @@ def test_suspend_pro_user_with_many_offerers_and_delete_all_offerers():
 def test_delete_offerer_and_venue():
     # Given
     fraudulent_emails_providers = ["example.com"]
-    admin_user = UserFactory(isBeneficiary=False, isAdmin=True, email="admin@example.net")
+    admin_user = AdminFactory(email="admin@example.net")
     fraudulent_user = UserFactory(
         isBeneficiary=False,
         email="jesuisunefraude@example.com",
@@ -116,7 +117,7 @@ def test_delete_offerer_and_venue():
 def test_cancel_bookings_when_offerer_has_one_or_more():
     # Given
     fraudulent_emails_providers = ["example.com"]
-    admin_user = UserFactory(isBeneficiary=False, isAdmin=True, email="admin@example.net")
+    admin_user = AdminFactory(email="admin@example.net")
     beneficiary1 = UserFactory(email="beneficiary1@example.net")
     beneficiary2 = UserFactory(email="beneficiary2@example.net")
     fraudulent_user = UserFactory(

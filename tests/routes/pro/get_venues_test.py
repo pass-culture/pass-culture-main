@@ -64,7 +64,7 @@ def test_default_call(mock_get_filtered_venues, app):
 @pytest.mark.usefixtures("db_session")
 @patch("pcapi.core.offerers.repository.get_filtered_venues")
 def test_default_admin_call(mock_get_filtered_venues, app):
-    admin_user = users_factories.UserFactory(email="admin.pro@test.com", isBeneficiary=False, isAdmin=True)
+    admin_user = users_factories.AdminFactory(email="admin.pro@test.com")
 
     # when
     response = TestClient(app.test_client()).with_auth(admin_user.email).get("/venues")

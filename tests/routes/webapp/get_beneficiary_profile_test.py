@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.users.factories import AdminFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.users.factories import UserFactory
 from pcapi.model_creators.generic_creators import create_booking
@@ -157,12 +158,12 @@ class Returns200Test:
         assert response.json["suspensionReason"] == None
 
     @pytest.mark.usefixtures("db_session")
-    def when_user_is_a_admin(self, app):
+    def when_user_is_an_admin(self, app):
         # Given
-        UserFactory(email="pro@example.com", postalCode=None, dateOfBirth=None, isAdmin=True)
+        AdminFactory(email="admin@example.com", postalCode=None, dateOfBirth=None)
 
         # When
-        response = TestClient(app.test_client()).with_auth("pro@example.com").get("/beneficiaries/current")
+        response = TestClient(app.test_client()).with_auth("admin@example.com").get("/beneficiaries/current")
 
         # Then
         assert response.status_code == 200

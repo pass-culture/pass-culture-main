@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.users.factories import AdminFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.users.factories import UserFactory
 from pcapi.scripts.suspend_fraudulent_beneficiary_users import suspend_fraudulent_beneficiary_users_by_email_providers
@@ -11,7 +12,7 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
     def test_suspend_users_in_given_emails_providers_list(self):
         # Given
         fraudulent_emails_providers = ["example.com"]
-        admin_user = UserFactory(isBeneficiary=False, isAdmin=True)
+        admin_user = AdminFactory()
         fraudulent_user = UserFactory(
             isBeneficiary=True,
             email="jesuisunefraude@example.com",
@@ -31,7 +32,7 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
     def test_cancel_bookings_of_suspended_users(self):
         # Given
         fraudulent_emails_providers = ["example.com"]
-        admin_user = UserFactory(isBeneficiary=False, isAdmin=True)
+        admin_user = AdminFactory()
         fraudulent_user = UserFactory(
             isBeneficiary=True,
             email="jesuisunefraude@example.com",
@@ -55,7 +56,7 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
     def test_does_not_cancel_booking_when_not_cancellable(self):
         # Given
         fraudulent_emails_providers = ["example.com"]
-        admin_user = UserFactory(isBeneficiary=False, isAdmin=True)
+        admin_user = AdminFactory()
         fraudulent_user = UserFactory(
             isBeneficiary=True,
             email="jesuisunefraude@example.com",
@@ -76,7 +77,7 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
     def test_only_suspend_beneficiary_users_in_given_emails_providers_list(self):
         # Given
         fraudulent_emails_providers = ["example.com"]
-        admin_user = UserFactory(isBeneficiary=False, isAdmin=True)
+        admin_user = AdminFactory()
         beneficiary_fraudulent_user = UserFactory(isBeneficiary=True, email="jesuisunefraude@example.com")
         beneficiary_fraudulent_user_with_uppercase_domain = UserFactory(
             isBeneficiary=True, email="jesuisunefraude@EXAmple.com"
@@ -102,7 +103,7 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
     def test_dont_suspend_users_not_in_given_emails_providers_list(self):
         # Given
         fraudulent_emails_providers = ["gmoil.com"]
-        admin_user = UserFactory(isBeneficiary=False, isAdmin=True)
+        admin_user = AdminFactory()
         non_fraudulent_user = UserFactory(isBeneficiary=True, email="jenesuispasunefraude@example.com")
         BookingFactory(user=non_fraudulent_user, stock__price=1)
 

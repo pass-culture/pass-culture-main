@@ -9,7 +9,7 @@ from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.factories import AdminFactory
 
 from tests.conftest import TestClient
 from tests.conftest import clean_database
@@ -20,7 +20,7 @@ class VenueViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_update_venue_siret(self, mocked_async_index_venue_ids, mocked_validate_csrf_token, app):
-        UserFactory(email="user@example.com", isAdmin=True)
+        AdminFactory(email="user@example.com")
         venue = VenueFactory(siret="22222222222222")
         old_id_at_providers = "11111@22222222222222"
         stock = StockFactory(
@@ -57,7 +57,7 @@ class VenueViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_update_venue_other_offer_id_at_provider(self, mocked_validate_csrf_token, app):
-        UserFactory(email="user@example.com", isAdmin=True)
+        AdminFactory(email="user@example.com")
         venue = VenueFactory(siret="22222222222222")
         id_at_providers = "id_at_provider_ne_contenant_pas_le_siret"
         stock = StockFactory(offer__venue=venue, idAtProviders=id_at_providers, offer__idAtProviders=id_at_providers)
@@ -90,7 +90,7 @@ class VenueViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_update_venue_without_siret(self, mocked_validate_csrf_token, app):
-        UserFactory(email="user@example.com", isAdmin=True)
+        AdminFactory(email="user@example.com")
         venue = VenueFactory(siret=None, comment="comment to allow null siret")
 
         data = dict(
@@ -114,7 +114,7 @@ class VenueViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_reindex_venue_on_coordinates_change(self, mocked_async_index_venue_ids, mocked_validate_csrf_token, app):
-        UserFactory(email="user@example.com", isAdmin=True)
+        AdminFactory(email="user@example.com")
         venue = VenueFactory()
 
         data = dict(

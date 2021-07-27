@@ -142,6 +142,6 @@ class BeneficiaryFraudReviewFactory(testing.BaseFactory):
     class Meta:
         model = models.BeneficiaryFraudReview
 
-    user = factory.SubFactory(users_factories.UserFactory, isBeneficiary=True)
-    author = factory.SubFactory(users_factories.UserFactory, isAdmin=True)
+    user = factory.SubFactory(users_factories.BeneficiaryFactory)
+    author = factory.SubFactory(users_factories.AdminFactory)
     reason = factory.Sequence("Fraud validation reason #{0}".format)

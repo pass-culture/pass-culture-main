@@ -167,7 +167,7 @@ class GetCappedOffersForFiltersTest:
     @pytest.mark.usefixtures("db_session")
     def should_not_return_event_offers_with_only_deleted_stock_if_filtering_by_time_period(self):
         # given
-        pro = users_factories.UserFactory(isAdmin=True)
+        pro = users_factories.AdminFactory()
         offer_in_requested_time_period = offers_factories.OfferFactory()
         offers_factories.EventStockFactory(
             offer=offer_in_requested_time_period, beginningDatetime=datetime(2020, 1, 2), isSoftDeleted=True
@@ -186,7 +186,7 @@ class GetCappedOffersForFiltersTest:
     @pytest.mark.usefixtures("db_session")
     def should_consider_venue_locale_datetime_when_filtering_by_date(self):
         # given
-        admin = users_factories.UserFactory(isAdmin=True)
+        admin = users_factories.AdminFactory()
         period_beginning_date = "2020-04-21T00:00:00"
         period_ending_date = "2020-04-21T23:59:59"
 
@@ -217,7 +217,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_venue_when_user_is_not_attached_to_its_offerer(self, app):
             # given
-            admin = users_factories.UserFactory(isAdmin=True)
+            admin = users_factories.AdminFactory()
             offer_for_requested_venue = offers_factories.OfferFactory()
             offer_for_other_venue = offers_factories.OfferFactory()
 
@@ -238,7 +238,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_venue_when_user_is_attached_to_its_offerer(self, app):
             # given
-            admin = users_factories.UserFactory(isAdmin=True)
+            admin = users_factories.AdminFactory()
             admin_attachment_to_offerer = offers_factories.UserOffererFactory(user=admin)
             offer_for_requested_venue = offers_factories.OfferFactory(
                 venue__managingOfferer=admin_attachment_to_offerer.offerer
@@ -264,7 +264,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self):
             # given
-            admin = users_factories.UserFactory(isAdmin=True)
+            admin = users_factories.AdminFactory()
             offer_for_requested_offerer = offers_factories.OfferFactory()
             offer_for_other_offerer = offers_factories.OfferFactory()
 
@@ -285,7 +285,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self):
             # given
-            admin = users_factories.UserFactory(isAdmin=True)
+            admin = users_factories.AdminFactory()
             admin_attachment_to_requested_offerer = offers_factories.UserOffererFactory(user=admin)
             admin_attachment_to_other_offerer = offers_factories.UserOffererFactory(user=admin)
             offer_for_requested_offerer = offers_factories.OfferFactory(
@@ -1049,7 +1049,7 @@ class GetOffersByIdsTest:
     def test_return_all_for_admins(self):
         offer1 = offers_factories.OfferFactory()
         offer2 = offers_factories.OfferFactory()
-        user = users_factories.UserFactory(isAdmin=True)
+        user = users_factories.AdminFactory()
 
         query = get_offers_by_ids(user, [offer1.id, offer2.id])
 

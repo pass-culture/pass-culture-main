@@ -50,7 +50,6 @@ from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
-from pcapi.core.users.models import UserRole
 from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.model_creators.generic_creators import create_offerer
@@ -264,10 +263,10 @@ class DeleteExpiredTokensTest:
 
 class SuspendAccountTest:
     def test_suspend_admin(self):
-        user = users_factories.UserFactory(isAdmin=True, roles=[UserRole.ADMIN])
+        user = users_factories.AdminFactory()
         users_factories.UserSessionFactory(user=user)
         reason = users_constants.SuspensionReason.FRAUD
-        actor = users_factories.UserFactory(isAdmin=True)
+        actor = users_factories.AdminFactory()
 
         users_api.suspend_account(user, reason, actor)
 
@@ -286,7 +285,7 @@ class SuspendAccountTest:
             user=user, cancellation_limit_date=yesterday, status=BookingStatus.CONFIRMED
         )
         used_booking = bookings_factories.BookingFactory(user=user, isUsed=True, status=BookingStatus.USED)
-        actor = users_factories.UserFactory(isAdmin=True)
+        actor = users_factories.AdminFactory()
 
         users_api.suspend_account(user, users_constants.SuspensionReason.FRAUD, actor)
 
@@ -302,7 +301,7 @@ class SuspendAccountTest:
         booking = bookings_factories.BookingFactory()
         offerer = booking.stock.offer.venue.managingOfferer
         pro = offers_factories.UserOffererFactory(offerer=offerer).user
-        actor = users_factories.UserFactory(isAdmin=True)
+        actor = users_factories.AdminFactory()
 
         users_api.suspend_account(pro, users_constants.SuspensionReason.FRAUD, actor)
 
@@ -315,7 +314,7 @@ class SuspendAccountTest:
         offerer = booking.stock.offer.venue.managingOfferer
         pro = offers_factories.UserOffererFactory(offerer=offerer).user
         offers_factories.UserOffererFactory(offerer=offerer)
-        actor = users_factories.UserFactory(isAdmin=True)
+        actor = users_factories.AdminFactory()
 
         users_api.suspend_account(pro, users_constants.SuspensionReason.FRAUD, actor)
 
@@ -327,7 +326,7 @@ class SuspendAccountTest:
 class UnsuspendAccountTest:
     def test_unsuspend_account(self):
         user = users_factories.UserFactory(isActive=False)
-        actor = users_factories.UserFactory(isAdmin=True)
+        actor = users_factories.AdminFactory()
 
         users_api.unsuspend_account(user, actor)
 

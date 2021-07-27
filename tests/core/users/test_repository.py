@@ -93,11 +93,9 @@ class GetNewlyEligibleUsersTest:
             departementCode="93",
         )
         # Admin
-        factories.UserFactory(
-            isBeneficiary=False,
+        factories.AdminFactory(
             dateOfBirth=datetime(2000, 1, 1),
             dateCreated=datetime(2018, 1, 1),
-            isAdmin=True,
             departementCode="93",
         )
         # Pro
@@ -143,9 +141,7 @@ class GetNewlyEligibleUsersTest:
         # Possible beneficiary that registered too late
         factories.UserFactory(isBeneficiary=False, dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
         # Admin
-        factories.UserFactory(
-            isBeneficiary=False, dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1), isAdmin=True
-        )
+        factories.AdminFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
         # Pro
         pro_user = factories.UserFactory(
             isBeneficiary=False, dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1)

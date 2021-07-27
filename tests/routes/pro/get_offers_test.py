@@ -14,7 +14,7 @@ class Returns200Test:
         self, app, db_session, assert_num_queries
     ):
         # Given
-        admin = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
+        admin = users_factories.AdminFactory()
         offerer = offers_factories.OffererFactory(name="My Offerer")
         departement_code = "12"
         requested_venue = offers_factories.VenueFactory(
