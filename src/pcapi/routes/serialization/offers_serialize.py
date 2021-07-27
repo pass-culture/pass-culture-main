@@ -530,7 +530,7 @@ class GetOfferResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, offer):  # type: ignore
-        offer.subcategoryId = offer.subcategoryId or get_subcategory_from_type(offer.type)
+        offer.subcategoryId = offer.subcategoryId or get_subcategory_from_type(offer.type, offer.venue.isVirtual)
         return super().from_orm(offer)
 
     class Config:
