@@ -21,4 +21,4 @@ class VenueResponse(BaseModel):
     isPermanent: typing.Optional[bool]
     withdrawalDetails: typing.Optional[str]
     address: typing.Optional[str]
-    postalCode: str
+    postalCode: typing.Optional[str]
