@@ -8,8 +8,6 @@ def get_existing_pro_validated_user_with_validated_offerer_with_validated_user_o
     user_offerer = offers_factories.UserOffererFactory(
         validationToken=None,
         offerer__validationToken=None,
-        user__isAdmin=False,
-        user__isBeneficiary=False,
         user__validationToken=None,
     )
     venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)

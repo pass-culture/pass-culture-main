@@ -7,8 +7,6 @@ def get_pro_validated_no_reset_password_token_user():
     user_offerer = offers_factories.UserOffererFactory(
         validationToken=None,
         offerer__validationToken=None,
-        user__isAdmin=False,
-        user__isBeneficiary=False,
         user__validationToken=None,
     )
     return {"user": get_pro_helper(user_offerer.user)}
@@ -18,8 +16,6 @@ def get_pro_validated_with_reset_password_token_user():
     user_offerer = offers_factories.UserOffererFactory(
         validationToken=None,
         offerer__validationToken=None,
-        user__isAdmin=False,
-        user__isBeneficiary=False,
         user__validationToken=None,
     )
     users_factories.ResetPasswordToken(user=user_offerer.user)

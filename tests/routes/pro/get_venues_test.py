@@ -13,7 +13,6 @@ from tests.conftest import TestClient
 def test_response_serialization(app):
     user_offerer = offers_factories.UserOffererFactory(
         user__email="user.pro@test.com",
-        user__isBeneficiary=False,
     )
     venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
@@ -42,7 +41,6 @@ def test_response_serialization(app):
 def test_default_call(mock_get_filtered_venues, app):
     user_offerer = offers_factories.UserOffererFactory(
         user__email="user.pro@test.com",
-        user__isBeneficiary=False,
     )
     offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 

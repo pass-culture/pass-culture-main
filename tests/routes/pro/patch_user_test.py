@@ -11,7 +11,7 @@ from tests.conftest import TestClient
 
 @pytest.mark.usefixtures("db_session")
 def test_patch_user(app):
-    pro = offers_factories.UserOffererFactory(user__isBeneficiary=False).user
+    pro = offers_factories.UserOffererFactory().user
     data = {"firstName": "John", "lastName": "Doe", "email": "new@example.com", "phoneNumber": "09 99 99 99 99"}
 
     client = TestClient(app.test_client()).with_auth(email=pro.email)
@@ -47,7 +47,7 @@ def test_reject_beneficiary(app):
 
 @pytest.mark.usefixtures("db_session")
 def test_forbid_some_attributes(app):
-    pro = offers_factories.UserOffererFactory(user__isBeneficiary=False).user
+    pro = offers_factories.UserOffererFactory().user
     # It's tedious to test all attributes. We focus on the most sensitive ones.
     forbidden_attributes = {
         "isAdmin": True,

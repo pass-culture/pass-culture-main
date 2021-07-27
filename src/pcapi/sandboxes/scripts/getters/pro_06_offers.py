@@ -7,8 +7,6 @@ def get_existing_pro_validated_user_with_at_least_one_visible_activated_offer():
     user_offerer = offers_factories.UserOffererFactory(
         validationToken=None,
         offerer__validationToken=None,
-        user__isAdmin=False,
-        user__isBeneficiary=False,
         user__validationToken=None,
     )
     venue = offers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
@@ -21,8 +19,6 @@ def get_existing_pro_validated_user_with_at_least_one_offer_with_at_least_one_th
     user_offerer = offers_factories.UserOffererFactory(
         validationToken=None,
         offerer__validationToken=None,
-        user__isAdmin=False,
-        user__isBeneficiary=False,
         user__validationToken=None,
     )
     venue = offers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)

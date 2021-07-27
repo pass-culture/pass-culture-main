@@ -32,7 +32,7 @@ class UserOffererFactory(BaseFactory):
     class Meta:
         model = models.UserOfferer
 
-    user = factory.SubFactory(users_factories.UserFactory)
+    user = factory.SubFactory(users_factories.ProFactory)
     offerer = factory.SubFactory(OffererFactory)
 
 

@@ -10,8 +10,6 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     user_offerer = offers_factories.UserOffererFactory(
         validationToken=None,
         offerer__validationToken=None,
-        user__isAdmin=False,
-        user__isBeneficiary=False,
         user__validationToken=None,
     )
     offers_factories.BankInformationFactory(offerer=user_offerer.offerer)
@@ -30,8 +28,6 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     user_offerer = offers_factories.UserOffererFactory(
         validationToken=None,
         offerer__validationToken=None,
-        user__isAdmin=False,
-        user__isBeneficiary=False,
         user__validationToken=None,
     )
     offers_factories.BankInformationFactory(offerer=user_offerer.offerer)
@@ -52,8 +48,6 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     user_offerer = offers_factories.UserOffererFactory(
         validationToken=None,
         offerer__validationToken=None,
-        user__isAdmin=False,
-        user__isBeneficiary=False,
         user__validationToken=None,
     )
     offers_factories.BankInformationFactory(offerer=user_offerer.offerer)

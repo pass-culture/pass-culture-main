@@ -6,8 +6,6 @@ def get_pro_user():
     user_offerer = offers_factories.UserOffererFactory(
         validationToken=None,
         offerer__validationToken=None,
-        user__isAdmin=False,
-        user__isBeneficiary=False,
         user__validationToken=None,
         user__phoneNumber="01 00 00 00 00",
     )
