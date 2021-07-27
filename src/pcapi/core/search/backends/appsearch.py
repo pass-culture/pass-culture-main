@@ -230,9 +230,6 @@ class AppSearchBackend(base.SearchBackend):
             "dates": dates,
             "description": offer.description,
             "group": group,
-            # TODO (antoinewg, 2021-07-02): remove fields once we've migrated completely to App Search.
-            # isDigital is used by the frontend to not show the fake geoloc for digital offers used by algolia
-            # Since we don't fake geoloc on App Search => we don't need it
             "is_digital": int(offer.isDigital),
             "is_duo": int(offer.isDuo),
             "is_educational": int(offer.isEducational),
