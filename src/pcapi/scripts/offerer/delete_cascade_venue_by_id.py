@@ -1,5 +1,6 @@
 import logging
 
+from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offerers.models import Venue
@@ -54,7 +55,8 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
         Venue.id == venue_id,
     ).delete(synchronize_session=False)
 
-    deleted_offers_count = Offer.query.filter(Offer.venueId == venue_id).delete(synchronize_session=False)
+    offer_ids_to_delete = db.session.query(Offer.id).filter(Offer.venueId == venue_id)
+    deleted_offers_count = Offer.query.filter(Offer.id.in_(offer_ids_to_delete)).delete(synchronize_session=False)
 
     deleted_venue_providers_count = VenueProvider.query.filter(VenueProvider.venueId == venue_id).delete(
         synchronize_session=False
@@ -72,6 +74,7 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
     )
 
     db.session.commit()
+    search.reindex_offer_ids(offer_ids_to_delete)
 
     recap_data = {
         "venue_id": venue_id,

@@ -1,5 +1,6 @@
 import logging
 
+from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offerers.models import ApiKey
@@ -58,9 +59,10 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         Venue.managingOffererId == offerer_id,
     ).delete(synchronize_session=False)
 
-    deleted_offers_count = Offer.query.filter(Offer.venueId == Venue.id, Venue.managingOffererId == offerer_id).delete(
-        synchronize_session=False
+    offer_ids_to_delete = db.session.query(Offer.id).filter(
+        Offer.venueId == Venue.id, Venue.managingOffererId == offerer_id
     )
+    deleted_offers_count = Offer.query.filter(Offer.id.in_(offer_ids_to_delete)).delete(synchronize_session=False)
 
     deleted_venue_providers_count = VenueProvider.query.filter(
         VenueProvider.venueId == Venue.id, Venue.managingOffererId == offerer_id
@@ -90,6 +92,7 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
     Offerer.query.filter(Offerer.id == offerer_id).delete()
 
     db.session.commit()
+    search.reindex_offer_ids(offer_ids_to_delete)
 
     logger.info(
         "Deleted offerer",
