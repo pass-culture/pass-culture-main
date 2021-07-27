@@ -29,6 +29,7 @@ from pcapi.workers.push_notification_job import send_cancel_booking_notification
 from pcapi.workers.push_notification_job import update_user_attributes_job
 from pcapi.workers.user_emails_job import send_booking_cancellation_emails_to_user_and_offerer_job
 
+from . import exceptions
 from . import validation
 from .exceptions import BookingIsAlreadyCancelled
 from .exceptions import BookingIsAlreadyUsed
@@ -272,6 +273,23 @@ def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
     logger.info("Booking was marked as used", extra={"booking": booking.id})
 
     update_user_attributes_job.delay(booking.userId)
+
+
+def mark_as_cancelled(booking: Booking) -> None:
+    """
+    A booking can be cancelled only if it has not been cancelled before and if
+    it has not been refunded. Since a payment can be retried, it is safer to
+    say that a booking with payment, whatever its status, should be considered
+    refunded.
+    """
+    if booking.isCancelled:
+        raise exceptions.BookingAlreadyCancelled("la réservation a déjà été annulée")
+
+    if booking.payments:
+        raise exceptions.BookingAlreadyRefunded("la réservation a déjà été remboursée")
+
+    _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
+    user_emails.send_user_driven_cancellation_email_to_offerer(booking)
 
 
 def mark_as_unused(booking: Booking) -> None:

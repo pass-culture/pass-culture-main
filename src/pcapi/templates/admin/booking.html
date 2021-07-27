@@ -16,7 +16,11 @@
     <div><b>Offre :</b> {{ booking.stock.offer.name }}</div>
     <div><b>Date d'annulation :</b>
       {% if booking.isCancelled %}
-        {{ booking.cancellationDate.strftime('%d/%m/%Y %H:%M') }}
+        {% if booking.cancellationDate %}
+            {{ booking.cancellationDate.strftime('%d/%m/%Y %H:%M') }}
+        {% else %}
+            inconnue
+        {% endif %}
       {% else %}
         non annulée
       {% endif %}
@@ -28,12 +32,21 @@
       Si cette réservation a été annulée par erreur (ou
       frauduleusement) alors qu'elle a en fait été utilisée, il est
       possible de la marquer comme utilisée.
-      <br>
-      <b>Attention : cette opération est irréversible.</b>
     </p>
-    <form action="mark-as-used" method="POST">
+    <form action={{ url_for(".uncancel_and_mark_as_used", booking_id=booking.id) }} method="POST">
       {{ forms.display_form(mark_as_used_form) }}
       <input class="btn btn-danger" type="submit" value="Marquer comme utilisée">
+    </form>
+  {% endif %}
+
+  {% if cancel_form %}
+    <p>
+      Annuler cette réservation manuellement.
+      <br>
+    </p>
+    <form action={{ url_for(".cancel", booking_id=booking.id) }} method="POST">
+      {{ forms.display_form(cancel_form) }}
+      <input class="btn btn-danger" type="submit" value="Marquer comme annulée">
     </form>
   {% endif %}
 

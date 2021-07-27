@@ -96,3 +96,11 @@ class CannotDeleteVenueWithBookingsException(ClientError):
             "cannotDeleteVenueWithBookingsException",
             "Lieu non supprimable car il contient des réservations",
         )
+
+
+class BookingAlreadyCancelled(Exception):
+    pass
+
+
+class BookingAlreadyRefunded(Exception):
+    pass

@@ -5,7 +5,7 @@ from flask.helpers import url_for
 from flask_admin import expose
 from flask_admin.form import SecureForm
 from sqlalchemy.orm import joinedload
-from wtforms import HiddenField
+import werkzeug
 from wtforms import StringField
 from wtforms import validators
 
@@ -26,14 +26,19 @@ class SearchForm(SecureForm):
 
 
 class MarkAsUsedForm(SecureForm):
-    booking_id = HiddenField()
+    pass
+
+
+class CancelForm(SecureForm):
+    pass
 
 
 class BookingView(BaseCustomAdminView):
     @expose("/", methods=["GET", "POST"])
-    def search(self):
+    def search(self) -> werkzeug.Response:
         search_form = SearchForm(request.form)
         mark_as_used_form = None
+        cancel_form = None
 
         # Get booking by token from POSTed search; or by id from GET
         # on redirect (because we'd rather not see the token in the
@@ -52,6 +57,8 @@ class BookingView(BaseCustomAdminView):
                     flash("Aucune réservation n'existe avec ce code de contremarque.", "error")
                 elif booking.isCancelled:
                     mark_as_used_form = MarkAsUsedForm(booking_id=booking.id)
+                elif not booking.payments:
+                    cancel_form = CancelForm(booking_id=booking.id)
         elif "id" in request.args:
             booking = (
                 Booking.query.options(joinedload(Booking.user))
@@ -60,18 +67,17 @@ class BookingView(BaseCustomAdminView):
             )
 
         return self.render(
-            "admin/booking.html", search_form=search_form, mark_as_used_form=mark_as_used_form, booking=booking
+            "admin/booking.html",
+            search_form=search_form,
+            mark_as_used_form=mark_as_used_form,
+            booking=booking,
+            cancel_form=cancel_form,
         )
 
-    @expose("/mark-as-used", methods=["POST"])
-    def uncancel_and_mark_as_used(self):
-        form = MarkAsUsedForm(request.form)
-        if not form.validate():
-            flash(f"Une erreur est survenue : {form.errors}", "error")
-            return redirect(url_for(".search"))
-
-        booking = Booking.query.get(form.booking_id.data)
-        booking_url = f"{url_for('.search')}?id={booking.id}"
+    @expose("/mark-as-used/<int:booking_id>", methods=["POST"])
+    def uncancel_and_mark_as_used(self, booking_id: int) -> werkzeug.Response:
+        booking = Booking.query.get_or_404(booking_id)
+        booking_url = url_for(".search", id=booking.id)
 
         if not booking.isCancelled:
             flash("Cette réservation n'est pas annulée, elle ne peut pas être validée via ce formulaire.", "error")
@@ -87,4 +93,21 @@ class BookingView(BaseCustomAdminView):
             flash(f"L'opération a échoué : {err}", "error")
         else:
             flash("La réservation a été dés-annulée et marquée comme utilisée.", "info")
+        return redirect(booking_url)
+
+    @expose("/cancel/<int:booking_id>", methods=["POST"])
+    def cancel(self, booking_id: int) -> werkzeug.Response:
+        """
+        Parse form, cancel booking and then send and email to the booking's
+        offerer
+        """
+        booking = Booking.query.get_or_404(booking_id)
+        booking_url = url_for(".search", id=booking.id)
+
+        try:
+            bookings_api.mark_as_cancelled(booking)
+        except Exception as exc:  # pylint: disable=broad-except
+            flash(f"L'opération a échoué : {str(exc)}", "error")
+        else:
+            flash("La réservation a été marquée comme annulée", "info")
         return redirect(booking_url)
