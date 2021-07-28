@@ -74,3 +74,10 @@ def get_newly_eligible_user_email_data(user: users_models.User) -> dict:
             "depositAmount": int(deposit_amount),
         },
     }
+
+
+def get_dms_application_data() -> dict:
+    return {
+        "Mj-TemplateID": 3062771,
+        "Mj-TemplateLanguage": True,
+    }

@@ -1,4 +1,5 @@
 import logging
+import typing
 
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
@@ -264,3 +265,8 @@ def send_withdrawal_terms_to_newly_validated_offerer(offerer: Offerer) -> None:
     offerer_email = find_new_offerer_user_email(offerer.id)
     data = retrieve_data_for_new_offerer_validated_withdrawal_terms_email()
     mails.send(recipients=[offerer_email], data=data)
+
+
+def send_dms_application_emails(users: typing.Iterable[User]) -> None:
+    data = beneficiary_activation.get_dms_application_data()
+    mails.send(recipients=[user.email for user in users], data=data)
