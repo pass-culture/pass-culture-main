@@ -62,7 +62,7 @@ def create_industrial_offerers_with_pro_users():
         last_name = MOCK_LAST_NAMES[user_index]
         email = get_email(first_name, last_name, domain)
         user_name = "{} {}".format(first_name, last_name)
-        user = users_factories.UserFactory(
+        user = users_factories.ProFactory(
             resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
             departementCode=str(departement_code),
             email=email,
@@ -135,7 +135,7 @@ def create_industrial_offerers_with_pro_users():
         if location_index % VALIDATED_OFFERERS_REMOVE_MODULO == 0:
             offerer.generate_validation_token()
 
-        user = users_factories.UserFactory(
+        user = users_factories.ProFactory(
             resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
             departementCode=str(departement_code),
             email=email,
@@ -169,7 +169,7 @@ def create_industrial_offerers_with_pro_users():
             else:
                 user_validation_token = "{}{}".format(user_validation_prefix, user_validation_suffix)
             user_name = "{} {}".format(first_name, last_name)
-            user = users_factories.UserFactory(
+            user = users_factories.ProFactory(
                 resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
                 departementCode=str(departement_code),
                 email=email,

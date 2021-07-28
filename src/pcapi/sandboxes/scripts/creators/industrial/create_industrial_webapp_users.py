@@ -137,6 +137,7 @@ def create_industrial_webapp_general_public_users():
             dateOfBirth=date_of_birth,
             hasSeenTutorials=False,
             isBeneficiary=False,
+            roles=[],
             lastName=f"{short_age} {deposit_version}",
             needsToFillCulturalSurvey=True,
             postalCode="{}100".format(departement_code),

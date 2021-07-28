@@ -14,6 +14,7 @@ from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.payments.factories import DepositFactory
 from pcapi.core.payments.factories import PaymentFactory
 from pcapi.core.payments.factories import PaymentStatusFactory
+from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.models import EventType
 from pcapi.models import ThingType
@@ -44,7 +45,7 @@ def save_bookings_recap_sandbox():
     DepositFactory(user=beneficiary1, version=1)
     DepositFactory(user=beneficiary1, version=1)
 
-    pro = UserFactory(
+    pro = ProFactory(
         publicName="Balthazar Picsou",
         firstName="Balthazar",
         lastName="Picsou",
