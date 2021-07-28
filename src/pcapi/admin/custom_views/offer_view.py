@@ -29,6 +29,7 @@ from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.connectors.api_entreprises import get_offerer_legal_category
 from pcapi.core import search
 from pcapi.core.bookings.api import cancel_bookings_from_rejected_offer
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers.api import import_offer_validation_config
@@ -50,6 +51,12 @@ from pcapi.workers.push_notification_job import send_cancel_booking_notification
 logger = logging.getLogger(__name__)
 
 
+def offer_category_formatter(view, context, model, name) -> str:
+    if model.subcategoryId is None:
+        return ""
+    return subcategories.ALL_SUBCATEGORIES_DICT[model.subcategoryId].category_id
+
+
 class OfferView(BaseAdminView):
     can_create = False
     can_edit = True
@@ -59,6 +66,8 @@ class OfferView(BaseAdminView):
         "id",
         "name",
         "type",
+        "subcategoryId",
+        "categoryId",
         "criteria",
         "rankingWeight",
         "validation",
@@ -69,6 +78,8 @@ class OfferView(BaseAdminView):
     column_labels = {
         "name": "Nom",
         "type": "Type",
+        "subcategoryId": "Sous-catégorie",
+        "categoryId": "Catégorie",
         "criteria": "Tag",
         "criteria.name": "Tag",
         "rankingWeight": "Pondération",
@@ -104,6 +115,16 @@ class OfferView(BaseAdminView):
                 description="Vous pouvez choisir uniquement APPROVED ou REJECTED",
             )
         return form
+
+    @property
+    def column_formatters(self):
+        formatters = super().column_formatters.copy()
+        formatters.update(
+            {
+                "categoryId": offer_category_formatter,
+            }
+        )
+        return formatters
 
     def on_form_prefill(self, form, id):  # pylint:disable=redefined-builtin
         if hasattr(form, "validation"):
