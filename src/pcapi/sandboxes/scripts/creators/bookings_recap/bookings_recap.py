@@ -224,7 +224,7 @@ def save_bookings_recap_sandbox():
 
     for booking in bookings_to_cancel:
         try:
-            booking.cancelBooking()
+            booking.cancel_booking()
         except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
             logger.info(str(e), extra={"booking": booking.id})
     repository.save(*bookings_to_cancel)

@@ -69,6 +69,7 @@ def cancel_expired_bookings(batch_size: int = 500) -> None:
                     "isCancelled": True,
                     "status": BookingStatus.CANCELLED,
                     "cancellationReason": BookingCancellationReasons.EXPIRED,
+                    "cancellationDate": datetime.datetime.utcnow(),
                 },
                 synchronize_session=False,
             )

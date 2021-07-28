@@ -95,7 +95,7 @@ def book_offer(
             booking.activationCode = offers_repository.get_available_activation_code(stock)
 
             if FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS.is_active():
-                booking.markAsUsed()
+                booking.mark_as_used()
 
         stock.dnBookedQuantity += booking.quantity
 
@@ -134,7 +134,7 @@ def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> Non
         stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
         db.session.refresh(booking)
         try:
-            booking.cancelBooking()
+            booking.cancel_booking()
         except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
             logger.info(
                 str(e),
@@ -170,7 +170,7 @@ def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons
         stock = offers_repository.get_and_lock_stock(stock_id=stock.id)
         for booking in stock.bookings:
             try:
-                booking.cancelBooking()
+                booking.cancel_booking()
             except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
                 logger.info(str(e), extra={"booking": booking.id, "reason": reason})
             else:
@@ -261,13 +261,13 @@ def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
     with transaction():
         objects_to_save = [booking]
         if uncancel and booking.isCancelled:
-            booking.unCancelBooking()
+            booking.uncancel_booking()
             booking.cancellationReason = None
             stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
             stock.dnBookedQuantity += booking.quantity
             objects_to_save.append(stock)
         validation.check_is_usable(booking)
-        booking.markAsUsed()
+        booking.mark_as_used()
         repository.save(*objects_to_save)
     logger.info("Booking was marked as used", extra={"booking": booking.id})
 
@@ -276,7 +276,7 @@ def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
 
 def mark_as_unused(booking: Booking) -> None:
     validation.check_can_be_mark_as_unused(booking)
-    booking.markAsUnused()
+    booking.mark_as_unused()
     repository.save(booking)
     logger.info("Booking was marked as unused", extra={"booking": booking.id})
 

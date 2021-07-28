@@ -144,13 +144,13 @@ def create_booking(
     booking.dateUsed = date_used
     booking.id = idx
     if is_used:
-        booking.markAsUsed()
+        booking.mark_as_used()
     else:
-        booking.markAsUnused()
+        booking.mark_as_unused()
     if is_cancelled:
-        booking.cancelBooking()
+        booking.cancel_booking()
     else:
-        booking.unCancelBooking()
+        booking.uncancel_booking()
     booking.quantity = quantity
     booking.stock = stock
     booking.offerer = offerer

@@ -9,7 +9,6 @@ from pcapi.utils.token import random_token
 
 from . import api
 from . import models
-from .models import BookingStatus
 
 
 class BookingFactory(BaseFactory):
@@ -21,7 +20,7 @@ class BookingFactory(BaseFactory):
     token = factory.LazyFunction(random_token)
     user = factory.SubFactory(users_factories.UserFactory)
     amount = factory.SelfAttribute("stock.price")
-    status = BookingStatus.CONFIRMED
+    status = models.BookingStatus.CONFIRMED
 
     @factory.post_generation
     def cancellation_limit_date(self, create, extracted, **kwargs):

@@ -28,5 +28,5 @@ def find_bookings_to_cancel() -> list[Booking]:
 
 def cancel_bookings(bookings: list[Booking]):
     for booking in bookings:
-        booking.markAsUnused()
+        booking.mark_as_unused()
     repository.save(*bookings)

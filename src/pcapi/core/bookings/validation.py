@@ -162,11 +162,6 @@ def check_is_usable(booking: Booking) -> None:
 
 # FIXME: should not raise exceptions from `api_errors` (see above for details).
 def check_can_be_mark_as_unused(booking: Booking) -> None:
-    if not booking.isUsed:
-        gone = api_errors.ResourceGoneError()
-        gone.add_error("booking", "Cette réservation n'a pas encore été validée")
-        raise gone
-
     if (
         booking.stock.canHaveActivationCodes
         and booking.activationCode
@@ -184,6 +179,11 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
     if payment_queries.has_payment(booking):
         gone = api_errors.ResourceGoneError()
         gone.add_error("payment", "Le remboursement est en cours de traitement")
+        raise gone
+
+    if not booking.isUsed:
+        gone = api_errors.ResourceGoneError()
+        gone.add_error("booking", "Cette réservation n'a pas encore été validée")
         raise gone
 
 

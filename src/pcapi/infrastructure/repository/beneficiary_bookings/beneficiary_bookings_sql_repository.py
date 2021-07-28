@@ -36,7 +36,6 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
                     id=booking.id,
                     isCancelled=booking.isCancelled,
                     isUsed=booking.isUsed,
-                    status=booking.status,
                     quantity=booking.quantity,
                     stockId=booking.stockId,
                     token=booking.token,

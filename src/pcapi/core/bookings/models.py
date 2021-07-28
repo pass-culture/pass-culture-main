@@ -104,7 +104,7 @@ class Booking(PcObject, Model):
         uselist=False,
     )
 
-    def markAsUsed(self):
+    def mark_as_used(self):
         if self.status is BookingStatus.USED or self.isUsed:
             raise BookingHasAlreadyBeenUsed()
         if self.status is BookingStatus.CANCELLED or self.isCancelled:
@@ -113,12 +113,12 @@ class Booking(PcObject, Model):
         self.dateUsed = datetime.utcnow()
         self.status = BookingStatus.USED
 
-    def markAsUnused(self):
+    def mark_as_unused(self):
         self.isUsed = False
         self.dateUsed = None
         self.status = None
 
-    def cancelBooking(self) -> None:
+    def cancel_booking(self) -> None:
         if self.status is BookingStatus.CANCELLED or self.isCancelled:
             raise BookingIsAlreadyCancelled()
         if self.status is BookingStatus.USED or self.isUsed:
@@ -127,7 +127,7 @@ class Booking(PcObject, Model):
         self.status = BookingStatus.CANCELLED
         self.cancellationDate = datetime.utcnow()
 
-    def unCancelBooking(self) -> None:
+    def uncancel_booking(self) -> None:
         self.isCancelled = False
         self.status = None
         self.cancellationDate = None
