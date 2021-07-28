@@ -123,7 +123,7 @@ const SearchFilters = ({
       )}
       <form onSubmit={requestFilteredOffers}>
         <TextInput
-          label="Nom de l’offre"
+          label="Nom de l’offre ou ISBN"
           name="offre"
           onChange={storeNameOrIsbnSearchValue}
           placeholder="Rechercher par nom d’offre ou par ISBN"

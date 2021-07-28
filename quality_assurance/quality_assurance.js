@@ -38,7 +38,7 @@ test('captures d’écran de toutes les pages du site', async () => {
     .click(Selector('input[type="checkbox"]'))
     .click(Selector('.field-date-end .period-filter-input'))
     .takeScreenshot(optionsOfScreenshot('offres'))
-    .typeText(Selector('label').withText('Nom de l’offre'), 'search without result')
+    .typeText(Selector('label').withText('Nom de l’offre ou ISBN'), 'search without result')
     .click(Selector('button').withText('Lancer la recherche'))
     .takeScreenshot(optionsOfScreenshot('offres-search-without-result'))
   await t
