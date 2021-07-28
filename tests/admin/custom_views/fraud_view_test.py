@@ -359,4 +359,4 @@ class ValidatePhoneNumberTest:
         )
 
         assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
-        assert caplog.messages[0] == "flask-admin: Manual phone validation"
+        assert "flask-admin: Manual phone validation" in caplog.messages
