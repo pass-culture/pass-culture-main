@@ -39,6 +39,7 @@ class GetOffererVenueResponseModel(BaseModel):
     venueLabelId: Optional[str]
     venueTypeId: Optional[str]
     stats: Optional[VenueStatsResponseModel]
+    withdrawalDetails: Optional[str]
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")

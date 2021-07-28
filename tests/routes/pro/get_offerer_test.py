@@ -34,7 +34,7 @@ class Returns200Test:
         pro = users_factories.UserFactory(isBeneficiary=False)
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="Venue withdrawal details")
         ApiKeyFactory(offerer=offerer, prefix="testenv_prefix")
         ApiKeyFactory(offerer=offerer, prefix="testenv_prefix2")
 
@@ -87,6 +87,7 @@ class Returns200Test:
                     "stats": None,
                     "venueLabelId": humanize(offererVenue.venueLabelId),
                     "venueTypeId": humanize(offererVenue.venueTypeId),
+                    "withdrawalDetails": venue.withdrawalDetails,
                 }
                 for offererVenue in offerer.managedVenues
             ],
