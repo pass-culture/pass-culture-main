@@ -11,7 +11,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.factories import VirtualVenueFactory
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.models import UserOfferer
@@ -500,7 +500,7 @@ class CreateAnEntireOffererFromCSVRowTest:
     def test_when_user_already_exists(self, app):
         # Given
         VirtualVenueTypeFactory()
-        UserFactory(email="librairie.fictive@example.com")
+        ProFactory(email="librairie.fictive@example.com")
         csv_row = OrderedDict(
             [
                 ("", "104"),
@@ -584,7 +584,7 @@ class CreateAnEntireOffererFromCSVRowTest:
         # Given
         VenueTypeFactory(label="Librairie")
         VirtualVenueTypeFactory()
-        UserFactory(email="librairie.fictive@example.com")
+        ProFactory(email="librairie.fictive@example.com")
         csv_row = OrderedDict(
             [
                 ("", "104"),

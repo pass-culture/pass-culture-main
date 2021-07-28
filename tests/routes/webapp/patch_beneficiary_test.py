@@ -5,7 +5,6 @@ import pytest
 
 from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.core.users.factories import ProFactory
-from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import User
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
@@ -111,7 +110,7 @@ def test_reject_pro_user(app):
 
 @pytest.mark.usefixtures("db_session")
 def test_forbid_some_attributes(app):
-    user = UserFactory()
+    user = BeneficiaryFactory()
     # It's tedious to test all attributes. We focus on the most sensitive ones.
     forbidden_attributes = {
         "email": "new@example.com",

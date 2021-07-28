@@ -377,7 +377,7 @@ class TiteliveThingsTest:
 
         get_lines_from_thing_file.return_value = iter([data_line])
 
-        user = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
         offerer = create_offerer(siren="775671464")
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
         titelive_provider = activate_provider("TiteLiveThings")
@@ -390,7 +390,7 @@ class TiteliveThingsTest:
         )
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user=user, stock=stock)
+        booking = create_booking(user=beneficiary, stock=stock)
         repository.save(product, offer, stock, booking)
 
         titelive_things = TiteLiveThings()
@@ -501,7 +501,7 @@ class TiteliveThingsTest:
         titelive_provider = activate_provider("TiteLiveThings")
         repository.save(titelive_provider)
 
-        user = users_factories.UserFactory(email="user@example.net")
+        beneficiary = users_factories.BeneficiaryFactory(email="user@example.net")
         offerer = OffererFactory(siren="123456789")
         venue = VenueFactory(managingOfferer=offerer)
         product = ThingProductFactory(
@@ -513,7 +513,7 @@ class TiteliveThingsTest:
         )
         offer = ThingOfferFactory(product=product, venue=venue, isActive=True)
         stock = ThingStockFactory(offer=offer, price=0)
-        BookingFactory(user=user, stock=stock)
+        BookingFactory(user=beneficiary, stock=stock)
 
         titelive_things = TiteLiveThings()
 

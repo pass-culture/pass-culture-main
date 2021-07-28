@@ -29,10 +29,10 @@ class GetAllBookingsTest:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.bookings.repository.find_by_pro_user_id")
     def test_call_repository_with_user_and_page(self, find_by_pro_user_id, app):
-        user = users_factories.UserFactory()
-        TestClient(app.test_client()).with_auth(user.email).get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&page=3")
+        pro = users_factories.ProFactory()
+        TestClient(app.test_client()).with_auth(pro.email).get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&page=3")
         find_by_pro_user_id.assert_called_once_with(
-            user_id=user.id,
+            user_id=pro.id,
             booking_period=BOOKING_PERIOD,
             event_date=None,
             venue_id=None,
@@ -42,10 +42,10 @@ class GetAllBookingsTest:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.bookings.repository.find_by_pro_user_id")
     def test_call_repository_with_page_1(self, find_by_pro_user_id, app):
-        user = users_factories.UserFactory()
-        TestClient(app.test_client()).with_auth(user.email).get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+        pro = users_factories.ProFactory()
+        TestClient(app.test_client()).with_auth(pro.email).get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
         find_by_pro_user_id.assert_called_once_with(
-            user_id=user.id,
+            user_id=pro.id,
             booking_period=BOOKING_PERIOD,
             event_date=None,
             venue_id=None,
@@ -56,17 +56,17 @@ class GetAllBookingsTest:
     @patch("pcapi.core.bookings.repository.find_by_pro_user_id")
     def test_call_repository_with_venue_id(self, find_by_pro_user_id, app):
         # Given
-        user = users_factories.UserFactory()
+        pro = users_factories.ProFactory()
         venue = VenueFactory()
 
         # When
-        TestClient(app.test_client()).with_auth(user.email).get(
+        TestClient(app.test_client()).with_auth(pro.email).get(
             f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&venueId={humanize(venue.id)}"
         )
 
         # Then
         find_by_pro_user_id.assert_called_once_with(
-            user_id=user.id,
+            user_id=pro.id,
             booking_period=BOOKING_PERIOD,
             event_date=None,
             venue_id=venue.id,
@@ -197,18 +197,18 @@ class Returns200Test:
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
     def when_page_number_is_not_a_number(self, app):
-        user = users_factories.UserFactory()
+        pro = users_factories.ProFactory()
 
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_auth(pro.email)
         response = client.get("/bookings/pro?page=not-a-number")
 
         assert response.status_code == 400
         assert response.json["page"] == ["Saisissez un nombre valide"]
 
     def when_booking_period_is_not_given(self, app):
-        user = users_factories.UserFactory()
+        pro = users_factories.ProFactory()
 
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_auth(pro.email)
         response = client.get("/bookings/pro")
 
         assert response.status_code == 400
@@ -219,9 +219,9 @@ class Returns400Test:
 @pytest.mark.usefixtures("db_session")
 class Returns401Test:
     def when_user_is_admin(self, app):
-        user = users_factories.AdminFactory()
+        admin = users_factories.AdminFactory()
 
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_auth(admin.email)
         response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
 
         assert response.status_code == 401
@@ -231,9 +231,9 @@ class Returns401Test:
 
     @override_features(DISABLE_BOOKINGS_RECAP_FOR_SOME_PROS=True)
     def when_user_is_blacklisted(self, app):
-        user = users_factories.UserFactory(offerers=[offers_factories.OffererFactory(siren="334473352")])
+        pro = users_factories.ProFactory(offerers=[offers_factories.OffererFactory(siren="334473352")])
 
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_auth(pro.email)
         response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
 
         assert response.status_code == 401

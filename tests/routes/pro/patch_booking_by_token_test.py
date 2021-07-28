@@ -106,7 +106,7 @@ class Returns400Test:
     class WhenUserIsAnonymousTest:
         def when_email_is_missing(self, app):
             # Given
-            user = users_factories.UserFactory()
+            user = users_factories.BeneficiaryFactory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -125,7 +125,7 @@ class Returns400Test:
 
         def when_offer_id_is_missing(self, app):
             # Given
-            user = users_factories.UserFactory()
+            user = users_factories.BeneficiaryFactory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -142,7 +142,7 @@ class Returns400Test:
 
         def when_both_email_and_offer_id_are_missing(self, app):
             # Given
-            user = users_factories.UserFactory()
+            user = users_factories.BeneficiaryFactory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -165,19 +165,19 @@ class Returns400Test:
 class Returns403Test:  # Forbidden
     def when_user_is_not_attached_to_linked_offerer(self, app):
         # Given
-        user = users_factories.UserFactory.build()
-        admin_user = users_factories.UserFactory.build(email="admin@example.com")
+        user = users_factories.BeneficiaryFactory.build()
+        pro = users_factories.ProFactory.build(email="pro@example.com")
 
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(booking, admin_user)
+        repository.save(booking, pro)
         booking_id = booking.id
         url = "/bookings/token/{}?email={}".format(booking.token, user.email)
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@example.com").patch(url)
+        response = TestClient(app.test_client()).with_auth("pro@example.com").patch(url)
 
         # Then
         booking = Booking.query.get(booking_id)
@@ -208,7 +208,7 @@ class Returns404Test:
     class WhenUserIsAnonymousTest:
         def when_booking_does_not_exist(self, app):
             # Given
-            user = users_factories.UserFactory()
+            user = users_factories.BeneficiaryFactory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -228,7 +228,7 @@ class Returns404Test:
     class WhenUserIsLoggedInTest:
         def when_user_is_not_editor_and_email_does_not_match(self, app):
             # Given
-            user = users_factories.UserFactory()
+            user = users_factories.BeneficiaryFactory()
             users_factories.AdminFactory(email="admin@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -247,8 +247,8 @@ class Returns404Test:
 
         def when_email_has_special_characters_but_is_not_url_encoded(self, app):
             # Given
-            user = users_factories.UserFactory(email="user+plus@example.com")
-            user_admin = users_factories.UserFactory(email="admin@example.com")
+            user = users_factories.BeneficiaryFactory(email="user+plus@example.com")
+            user_admin = users_factories.AdminFactory(email="admin@example.com")
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_admin, offerer)
             venue = create_venue(offerer)
@@ -267,7 +267,7 @@ class Returns404Test:
 
         def when_user_is_not_editor_and_offer_id_is_invalid(self, app):
             # Given
-            user = users_factories.UserFactory()
+            user = users_factories.BeneficiaryFactory()
             users_factories.AdminFactory(email="admin@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)

@@ -5,7 +5,7 @@ import pytest
 
 from pcapi.core.payments import api
 from pcapi.core.payments import factories
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
@@ -17,7 +17,7 @@ class CreateDepositTest:
     @pytest.mark.usefixtures("db_session")
     def test_deposit_created_with_an_expiration_date(self, app):
         # Given
-        beneficiary = UserFactory(email="beneficiary@example.com")
+        beneficiary = BeneficiaryFactory(email="beneficiary@example.com")
         repository.delete(*beneficiary.deposits)
 
         # When

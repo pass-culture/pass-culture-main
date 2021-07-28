@@ -67,7 +67,7 @@ class Returns404Test:
     def when_cancelling_a_booking_of_someone_else(self, app):
         # Given
         booking = bookings_factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
-        user2 = users_factories.UserFactory()
+        user2 = users_factories.BeneficiaryFactory()
 
         # When
         client = TestClient(app.test_client()).with_auth(user2.email)
@@ -82,7 +82,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_the_booking_does_not_exist(self, app):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryFactory()
 
         # When
         client = TestClient(app.test_client()).with_auth(user.email)

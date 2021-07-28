@@ -91,8 +91,8 @@ def test_write_object_validation_email(app):
 def test_validation_email_object_does_not_include_validation_link_if_user_offerer_is_already_validated(app):
     # Given
     offerer = create_offerer()
-    user = users_factories.UserFactory.build()
-    user_offerer = create_user_offerer(user, offerer)
+    pro = users_factories.ProFactory.build()
+    user_offerer = create_user_offerer(pro, offerer)
 
     # When
     email = make_validation_email_object(offerer, user_offerer, get_by_siren=get_by_siren_stub)
@@ -108,8 +108,8 @@ def test_validation_email_object_does_not_include_validation_link_if_user_offere
 def test_validation_email_object_does_not_include_validation_link_if_offerer_is_already_validated(app):
     # Given
     offerer = create_offerer(idx=123)
-    user = users_factories.UserFactory.build()
-    user_offerer = create_user_offerer(user=user, offerer=offerer)
+    pro = users_factories.ProFactory.build()
+    user_offerer = create_user_offerer(user=pro, offerer=offerer)
 
     # When
     email = make_validation_email_object(offerer, user_offerer, get_by_siren=get_by_siren_stub)
@@ -125,8 +125,8 @@ def test_validation_email_object_does_not_include_validation_link_if_offerer_is_
 def test_validation_email_should_neither_return_clearTextPassword_nor_totallysafepsswd(app):
     # Given
     offerer = create_offerer()
-    user = users_factories.UserFactory.build()
-    user_offerer = create_user_offerer(user=user, offerer=offerer)
+    pro = users_factories.ProFactory.build()
+    user_offerer = create_user_offerer(user=pro, offerer=offerer)
 
     mocked_api_entreprises = get_by_siren_stub
 

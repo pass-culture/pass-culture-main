@@ -13,8 +13,8 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_get_user_offerer_should_return_only_user_offerer_from_current_user(self, app):
         # given
-        user1 = users_factories.UserFactory(email="patrick.fiori@test.com")
-        user2 = users_factories.UserFactory(email="celine.dion@test.com")
+        user1 = users_factories.ProFactory(email="patrick.fiori@example.com")
+        user2 = users_factories.ProFactory(email="celine.dion@example.com")
         offerer = create_offerer(siren="123456781")
         user_offerer1 = create_user_offerer(user1, offerer)
         user_offerer2 = create_user_offerer(user2, offerer)
@@ -34,8 +34,8 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_offerer_id_does_not_exist(self, app):
         # given
-        user1 = users_factories.UserFactory(email="patrick.fiori@test.com")
-        user2 = users_factories.UserFactory(email="celine.dion@test.com")
+        user1 = users_factories.ProFactory(email="patrick.fiori@example.com")
+        user2 = users_factories.ProFactory(email="celine.dion@example.com")
         offerer = create_offerer(siren="123456781")
         user_offerer1 = create_user_offerer(user1, offerer)
         user_offerer2 = create_user_offerer(user2, offerer)

@@ -70,11 +70,11 @@ class Returns400Test:
 class Returns403Test:
     def when_current_user_has_no_rights_on_offer(self, app, db_session):
         # given
-        user = users_factories.UserFactory(email="notadmin@example.com")
+        pro = users_factories.ProFactory(email="notadmin@example.com")
         stock = offers_factories.StockFactory()
 
         # when
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_auth(pro.email)
         response = client.delete(f"/stocks/{humanize(stock.id)}")
 
         # then

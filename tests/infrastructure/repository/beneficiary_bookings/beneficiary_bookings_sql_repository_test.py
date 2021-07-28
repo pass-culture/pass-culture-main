@@ -9,7 +9,7 @@ from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingStockFactory
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import (
     BeneficiaryBookingsSQLRepository,
@@ -24,11 +24,11 @@ class BeneficiaryBookingsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_beneficiary_bookings_with_expected_information(self, app):
         # Given
-        user = UserFactory()
+        beneficiary = BeneficiaryFactory()
         offer = ThingOfferFactory(isActive=True, url="http://url.com", product__thumbCount=1)
         stock = ThingStockFactory(offer=offer, price=0, quantity=10)
         booking = BookingFactory(
-            user=user,
+            user=beneficiary,
             stock=stock,
             token="ABCDEF",
             dateCreated=datetime(2020, 4, 22, 0, 0),
@@ -39,7 +39,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
         )
 
         # When
-        result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=user.id)
+        result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=beneficiary.id)
 
         # Then
         assert isinstance(result, BeneficiaryBookingsWithStocks)
@@ -55,12 +55,12 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert expected_booking.quantity == 2
         assert expected_booking.stockId == stock.id
         assert expected_booking.token == booking.token
-        assert expected_booking.userId == user.id
+        assert expected_booking.userId == beneficiary.id
         assert expected_booking.offerId == stock.offer.id
         assert expected_booking.name == stock.offer.name
         assert expected_booking.type == stock.offer.type
         assert expected_booking.url == stock.offer.url
-        assert expected_booking.email == user.email
+        assert expected_booking.email == beneficiary.email
         assert expected_booking.beginningDatetime == stock.beginningDatetime
         assert expected_booking.venueId == stock.offer.venue.id
         assert expected_booking.departementCode == stock.offer.venue.departementCode
@@ -71,15 +71,15 @@ class BeneficiaryBookingsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_by_beneficiary_id(self, app):
         # Given
-        user1 = UserFactory()
-        user2 = UserFactory()
+        beneficiary_1 = BeneficiaryFactory()
+        beneficiary_2 = BeneficiaryFactory()
         offer = EventOfferFactory()
         stock = EventStockFactory(offer=offer)
-        booking1 = BookingFactory(user=user1, stock=stock)
-        BookingFactory(user=user2, stock=stock)
+        booking1 = BookingFactory(user=beneficiary_1, stock=stock)
+        BookingFactory(user=beneficiary_2, stock=stock)
 
         # When
-        result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=user1.id)
+        result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=beneficiary_1.id)
 
         # Then
         assert len(result.bookings) == 1
@@ -88,19 +88,19 @@ class BeneficiaryBookingsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_activation_bookings(self, app):
         # Given
-        user = UserFactory()
+        beneficiary = BeneficiaryFactory()
         offer1 = EventOfferFactory(type="ThingType.ACTIVATION")
         offer2 = EventOfferFactory(type="ThingType.ACTIVATION")
         offer3 = EventOfferFactory(type="ThingType.ANY")
         stock1 = EventStockFactory(offer=offer1)
         stock2 = EventStockFactory(offer=offer2)
         stock3 = EventStockFactory(offer=offer3)
-        BookingFactory(user=user, stock=stock1)
-        BookingFactory(user=user, stock=stock2)
-        booking3 = BookingFactory(user=user, stock=stock3)
+        BookingFactory(user=beneficiary, stock=stock1)
+        BookingFactory(user=beneficiary, stock=stock2)
+        booking3 = BookingFactory(user=beneficiary, stock=stock3)
 
         # When
-        result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=user.id)
+        result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=beneficiary.id)
 
         # Then
         assert len(result.bookings) == 1
@@ -112,14 +112,14 @@ class BeneficiaryBookingsSQLRepositoryTest:
         now = datetime.utcnow()
         two_days_ago = now - timedelta(days=2)
         three_days_ago = now - timedelta(days=3)
-        user = UserFactory()
+        beneficiary = BeneficiaryFactory()
         offer = EventOfferFactory()
         stock = EventStockFactory(offer=offer)
-        booking1 = BookingFactory(user=user, stock=stock, dateCreated=two_days_ago, isCancelled=True)
-        BookingFactory(user=user, stock=stock, dateCreated=three_days_ago, isCancelled=True)
+        booking1 = BookingFactory(user=beneficiary, stock=stock, dateCreated=two_days_ago, isCancelled=True)
+        BookingFactory(user=beneficiary, stock=stock, dateCreated=three_days_ago, isCancelled=True)
 
         # When
-        result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=user.id)
+        result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=beneficiary.id)
 
         # Then
         assert len(result.bookings) == 1
@@ -133,24 +133,24 @@ class BeneficiaryBookingsSQLRepositoryTest:
         two_days_bis = now + timedelta(days=2, hours=20)
         three_days = now + timedelta(days=3)
 
-        user = UserFactory()
+        beneficiary = BeneficiaryFactory()
 
         booking1 = BookingFactory(
-            user=user,
+            user=beneficiary,
             stock=EventStockFactory(
                 beginningDatetime=three_days,
                 bookingLimitDatetime=now,
             ),
         )
         booking2 = BookingFactory(
-            user=user,
+            user=beneficiary,
             stock=EventStockFactory(
                 beginningDatetime=two_days,
                 bookingLimitDatetime=now,
             ),
         )
         booking3 = BookingFactory(
-            user=user,
+            user=beneficiary,
             stock=EventStockFactory(
                 beginningDatetime=two_days_bis,
                 bookingLimitDatetime=now,
@@ -158,7 +158,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
         )
 
         # When
-        result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=user.id)
+        result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=beneficiary.id)
 
         # Then
         assert len(result.bookings) == 3

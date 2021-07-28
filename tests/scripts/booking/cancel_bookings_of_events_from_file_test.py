@@ -15,7 +15,7 @@ from pcapi.scripts.booking.cancel_bookings_of_events_from_file import _cancel_bo
 @pytest.mark.usefixtures("db_session")
 class CancelBookingsOfEventsFromFileTest:
     def test_cancel_bookings_of_offers_from_rows(self):
-        beneficiary = users_factories.UserFactory(email="user@example.net")
+        beneficiary = users_factories.BeneficiaryFactory(email="user@example.net")
 
         offerer_to_cancel = OffererFactory(name="Librairie les petits parapluies gris", siren="123456789")
         offerer_to_not_cancel = OffererFactory(name="L'amicale du club de combat", siren="987654321")

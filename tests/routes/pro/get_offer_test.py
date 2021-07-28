@@ -17,7 +17,7 @@ from tests.conftest import TestClient
 class Returns200Test:
     def test_access_by_beneficiary(self, app):
         # Given
-        beneficiary = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
         offer = offers_factories.ThingOfferFactory()
 
         # When
@@ -36,7 +36,7 @@ class Returns200Test:
 
     def test_access_even_if_offerer_has_no_siren(self, app):
         # Given
-        beneficiary = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
         offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer__siren=None,
         )
@@ -50,7 +50,7 @@ class Returns200Test:
 
     def test_returns_an_active_mediation(self, app):
         # Given
-        beneficiary = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
         offer = offers_factories.ThingOfferFactory()
         mediation = offers_factories.MediationFactory(offer=offer)
 
@@ -66,7 +66,7 @@ class Returns200Test:
     def test_returns_an_event_stock(self, app):
         # Given
         now = datetime.utcnow()
-        beneficiary = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
         stock = offers_factories.EventStockFactory(
             dateCreated=now,
             dateModified=now,
@@ -255,7 +255,7 @@ class Returns200Test:
     @freeze_time("2019-10-15 00:00:00")
     def test_returns_a_thing_stock(self, app):
         # Given
-        beneficiary = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
         stock = offers_factories.ThingStockFactory()
         offer = stock.offer
         offer.subcategoryId = subcategories.LIVRE_PAPIER.id
@@ -275,7 +275,7 @@ class Returns200Test:
     @freeze_time("2019-10-15 00:00:00")
     def test_returns_a_thing_with_activation_code_stock(self, app):
         # Given
-        beneficiary = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
         offer = offers_factories.OfferFactory(
             stocks=[offers_factories.StockWithActivationCodesFactory()],
             subcategoryId=subcategories.ABO_PLATEFORME_MUSIQUE.id,

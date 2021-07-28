@@ -4,7 +4,7 @@ from pcapi.core.offerers.factories import VirtualVenueTypeFactory
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import UserOffererFactory
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import User
 from pcapi.models.user_offerer import UserOfferer
 
@@ -93,8 +93,8 @@ class Returns204Test:
         # Given
         VirtualVenueTypeFactory()
         offerer = OffererFactory(siren="349974931", validationToken="not_validated")
-        user = UserFactory(email="bobby@test.com", publicName="bobby")
-        UserOffererFactory(user=user, offerer=offerer)
+        pro = ProFactory(email="bobby@test.com", publicName="bobby")
+        UserOffererFactory(user=pro, offerer=offerer)
 
         data = BASE_DATA_PRO.copy()
 
@@ -104,11 +104,11 @@ class Returns204Test:
         # Then
         assert response.status_code == 204
         assert "Set-Cookie" not in response.headers
-        user = User.query.filter_by(email="toto_pro@example.com").first()
-        assert user is not None
+        pro = User.query.filter_by(email="toto_pro@example.com").first()
+        assert pro is not None
         offerer = Offerer.query.filter_by(siren="349974931").first()
         assert offerer is not None
-        user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).first()
+        user_offerer = UserOfferer.query.filter_by(user=pro, offerer=offerer).first()
         assert user_offerer is not None
         assert user_offerer.validationToken is not None
 

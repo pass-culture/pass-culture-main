@@ -93,10 +93,12 @@ def test_doesnt_raise_if_no_exact_duplicate(app):
     first_name = "John"
     last_name = "Doe"
     date_of_birth = datetime(1993, 2, 2)
-    users_factories.UserFactory(firstName="Joe", lastName=last_name, dateOfBirth=date_of_birth, email="e1@ex.org")
-    users_factories.UserFactory(firstName=first_name, lastName="Trump", dateOfBirth=date_of_birth, email="e2@ex.org")
+    users_factories.UserFactory(firstName="Joe", lastName=last_name, dateOfBirth=date_of_birth, email="e1@example.com")
     users_factories.UserFactory(
-        firstName=first_name, lastName=last_name, dateOfBirth=datetime(1992, 2, 2), email="e3@ex.org"
+        firstName=first_name, lastName="Dane", dateOfBirth=date_of_birth, email="e2@example.com"
+    )
+    users_factories.UserFactory(
+        firstName=first_name, lastName=last_name, dateOfBirth=datetime(1992, 2, 2), email="e3@example.com"
     )
 
     beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(

@@ -19,7 +19,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged(self, app):
         # given
-        users_factories.UserFactory(email="test@email.com")
+        users_factories.ProFactory(email="test@email.com")
 
         # when
         response = TestClient(app.test_client()).with_auth("test@email.com").get("/types")
@@ -52,7 +52,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_returns_types_labels(self, app):
         # given
-        users_factories.UserFactory(email="test@email.com")
+        users_factories.ProFactory(email="test@email.com")
 
         # when
         response = TestClient(app.test_client()).with_auth("test@email.com").get("/types")

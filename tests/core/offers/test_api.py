@@ -66,7 +66,7 @@ class UpsertStocksTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_upsert_multiple_stocks(self, mocked_async_index_offer_ids):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         existing_stock = factories.StockFactory(offer=offer, price=10)
         created_stock_data = StockCreationBodyModel(price=10, quantity=7)
@@ -90,7 +90,7 @@ class UpsertStocksTest:
     @freeze_time("2020-11-17 15:00:00")
     def test_upsert_stocks_triggers_draft_offer_validation(self):
         # Given draft offers and new stock data
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         draft_approvable_offer = OfferFactory(name="a great offer", validation=OfferValidationStatus.DRAFT)
         draft_suspicious_offer = OfferFactory(name="An PENDING offer", validation=OfferValidationStatus.DRAFT)
         draft_fraudulent_offer = OfferFactory(name="A REJECTED offer", validation=OfferValidationStatus.DRAFT)
@@ -114,7 +114,7 @@ class UpsertStocksTest:
 
     def test_upsert_stocks_does_not_trigger_approved_offer_validation(self):
         # Given offers with stock and new stock data
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         approved_offer = OfferFactory(name="a great offer that should be REJECTED")
         factories.StockFactory(offer=approved_offer, price=10)
         created_stock_data = StockCreationBodyModel(price=8, quantity=7)
@@ -129,7 +129,7 @@ class UpsertStocksTest:
     @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
     def test_sends_email_if_beginning_date_changes_on_edition(self, mocked_send_email):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.EventOfferFactory()
         existing_stock = factories.StockFactory(offer=offer, price=10)
         beginning = datetime.now() + timedelta(days=10)
@@ -154,7 +154,7 @@ class UpsertStocksTest:
     @mock.patch("pcapi.core.offers.api.update_cancellation_limit_dates")
     def should_update_bookings_cancellation_limit_date_if_report_of_event(self, mock_update_cancellation_limit_dates):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         now = datetime.now()
         event_in_4_days = now + timedelta(days=4)
         event_reported_in_10_days = now + timedelta(days=10)
@@ -176,7 +176,7 @@ class UpsertStocksTest:
 
     def should_invalidate_booking_token_when_event_is_reported(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         now = datetime.now()
         booking_made_3_days_ago = now - timedelta(days=3)
         event_in_4_days = now + timedelta(days=4)
@@ -204,7 +204,7 @@ class UpsertStocksTest:
 
     def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         now = datetime.now()
         date_used_in_48_hours = datetime.now() + timedelta(days=2)
         event_in_3_days = now + timedelta(days=3)
@@ -231,7 +231,7 @@ class UpsertStocksTest:
 
     def test_does_not_allow_edition_of_stock_of_another_offer_than_given(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         other_offer = factories.ThingOfferFactory()
         existing_stock_on_other_offer = factories.StockFactory(offer=other_offer, price=10)
@@ -249,7 +249,7 @@ class UpsertStocksTest:
 
     def test_does_not_allow_invalid_quantity_on_creation_and_edition(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         existing_stock = factories.StockFactory(offer=offer, price=10)
         created_stock_data = StockCreationBodyModel(price=10, quantity=-2)
@@ -264,7 +264,7 @@ class UpsertStocksTest:
 
     def test_does_not_allow_invalid_price_on_creation_and_edition(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         existing_stock = factories.StockFactory(offer=offer, price=10)
         created_stock_data = StockCreationBodyModel(price=-1)
@@ -281,7 +281,7 @@ class UpsertStocksTest:
 
     def test_does_not_allow_beginning_datetime_on_thing_offer_on_creation_and_edition(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         beginning_date = datetime.utcnow() + timedelta(days=4)
         existing_stock = factories.StockFactory(offer=offer, price=10)
@@ -303,7 +303,7 @@ class UpsertStocksTest:
 
     def test_validate_booking_limit_datetime_with_expiration_datetime_on_creation(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.DigitalOfferFactory()
         created_stock_data = StockCreationBodyModel(
             price=0,
@@ -328,7 +328,7 @@ class UpsertStocksTest:
 
     def test_validate_booking_limit_datetime_with_expiration_datetime_on_edition(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.DigitalOfferFactory()
         existing_stock = factories.StockFactory(offer=offer)
         ActivationCodeFactory(expirationDate=datetime.now(), stock=existing_stock)
@@ -350,7 +350,7 @@ class UpsertStocksTest:
 
     def test_does_not_allow_a_negative_remaining_quantity_on_edition(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         booking = bookings_factories.BookingFactory(stock__offer=offer, stock__quantity=10)
         existing_stock = booking.stock
@@ -365,7 +365,7 @@ class UpsertStocksTest:
 
     def test_does_not_allow_missing_dates_for_an_event_offer_on_creation_and_edition(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.EventOfferFactory()
         created_stock_data = StockCreationBodyModel(price=10, beginningDatetime=None, bookingLimitDatetime=None)
 
@@ -378,7 +378,7 @@ class UpsertStocksTest:
 
     def test_does_not_allow_booking_limit_after_beginning_for_an_event_offer_on_creation_and_edition(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.EventOfferFactory()
         beginning_date = datetime.utcnow() + timedelta(days=4)
         booking_limit = beginning_date + timedelta(days=4)
@@ -399,7 +399,7 @@ class UpsertStocksTest:
 
     def test_does_not_allow_edition_of_a_past_event_stock(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         date_in_the_past = datetime.utcnow() - timedelta(days=4)
         existing_stock = factories.StockFactory(offer=offer, price=10, beginningDatetime=date_in_the_past)
@@ -414,7 +414,7 @@ class UpsertStocksTest:
 
     def test_does_not_allow_upsert_stocks_on_a_synchronized_offer(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory(
             lastProvider=offerers_factories.AllocineProviderFactory(localClass="TiteLiveStocks")
         )
@@ -429,7 +429,7 @@ class UpsertStocksTest:
 
     def test_allow_edition_of_price_and_quantity_for_stocks_of_offers_synchronized_with_allocine(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.EventOfferFactory(
             lastProvider=offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         )
@@ -451,7 +451,7 @@ class UpsertStocksTest:
 
     def test_does_not_allow_edition_of_beginningDateTime_for_stocks_of_offers_synchronized_with_allocine(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.EventOfferFactory(
             lastProvider=offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         )
@@ -473,7 +473,7 @@ class UpsertStocksTest:
         assert error.value.errors == {"global": ["Pour les offres importées, certains champs ne sont pas modifiables"]}
 
     def test_create_stock_for_non_approved_offer_fails(self):
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory(validation=OfferValidationStatus.PENDING)
         created_stock_data = StockCreationBodyModel(price=10, quantity=7)
 
@@ -486,7 +486,7 @@ class UpsertStocksTest:
         assert Stock.query.count() == 0
 
     def test_edit_stock_of_non_approved_offer_fails(self):
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory(validation=OfferValidationStatus.PENDING)
         existing_stock = factories.StockFactory(offer=offer, price=10)
         edited_stock_data = StockEditionBodyModel(id=existing_stock.id, price=5, quantity=7)
@@ -505,7 +505,7 @@ class UpsertStocksTest:
     def test_send_email_when_offer_automatically_approved_based_on_fraud_criteria(
         self, mocked_set_offer_status_based_on_fraud_criteria, mocked_offer_creation_notification_to_admin
     ):
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory(validation=OfferValidationStatus.DRAFT)
         created_stock_data = StockCreationBodyModel(price=10, quantity=7)
         mocked_set_offer_status_based_on_fraud_criteria.return_value = OfferValidationStatus.APPROVED
@@ -519,7 +519,7 @@ class UpsertStocksTest:
     def test_not_send_email_when_offer_pass_to_pending_based_on_fraud_criteria(
         self, mocked_set_offer_status_based_on_fraud_criteria, mocked_offer_creation_notification_to_admin
     ):
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory(validation=OfferValidationStatus.DRAFT)
         created_stock_data = StockCreationBodyModel(price=10, quantity=7)
         mocked_set_offer_status_based_on_fraud_criteria.return_value = OfferValidationStatus.PENDING
@@ -637,7 +637,7 @@ class CreateMediationV2Test:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_ok(self, mocked_async_index_offer_ids):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
 
@@ -655,7 +655,7 @@ class CreateMediationV2Test:
 
     def test_erase_former_mediations(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         existing_number_of_files = len(os.listdir(self.THUMBS_DIR))
@@ -685,7 +685,7 @@ class CreateMediationV2Test:
     @mock.patch("pcapi.core.object_storage.store_public_object", side_effect=Exception)
     def test_rollback_if_exception(self, mock_store_public_object):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         existing_number_of_files = len(os.listdir(self.THUMBS_DIR))
@@ -925,7 +925,7 @@ class CreateOfferTest:
         assert offer.isEducational
 
     def test_fail_if_unknown_venue(self):
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(1),
             name="An awful offer",
@@ -942,7 +942,7 @@ class CreateOfferTest:
 
     def test_fail_if_user_not_related_to_offerer(self):
         venue = factories.VenueFactory()
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(venue.id),
             audioDisabilityCompliant=True,

@@ -8,7 +8,7 @@ from pcapi.core.bookings import factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import ThingStockFactory
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
 
 
@@ -17,7 +17,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
     def test_should_return_thing_data_when_booking_is_a_thing(self):
         # Given
         booking = factories.BookingFactory(
-            user=UserFactory(email="fabien@example.com", firstName="Fabien"),
+            user=BeneficiaryFactory(email="fabien@example.com", firstName="Fabien"),
             isCancelled=True,
             status=BookingStatus.CANCELLED,
             stock=ThingStockFactory(
@@ -52,7 +52,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
     def test_should_return_event_data_when_booking_is_an_event(self):
         # Given
         booking = factories.BookingFactory(
-            user=UserFactory(email="fabien@example.com", firstName="Fabien"),
+            user=BeneficiaryFactory(email="fabien@example.com", firstName="Fabien"),
             isCancelled=True,
             status=BookingStatus.CANCELLED,
             stock=EventStockFactory(
@@ -102,7 +102,6 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
     def test_should_return_the_price_multiplied_by_quantity_when_it_is_a_duo_offer(self):
         # Given
         booking = factories.BookingFactory(
-            user=UserFactory(),
             isCancelled=True,
             status=BookingStatus.CANCELLED,
             quantity=2,

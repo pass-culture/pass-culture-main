@@ -12,7 +12,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_get_list_with_valid_venue_id(self, app):
         # given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
         venue_provider = offerers_factories.VenueProviderFactory(
             venue__name="Librairie Titelive",
@@ -31,7 +31,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_get_list_that_include_allocine_with_valid_venue_id(self, app):
         # given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         allocine_stocks_provider = get_provider_by_local_class("AllocineStocks")
         allocine_venue_provider = offerers_factories.VenueProviderFactory(
             venue__name="Whatever cinema",
@@ -52,7 +52,7 @@ class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def when_listing_all_venues_without_venue_id_argument(self, app):
         # given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
         offerers_factories.VenueProviderFactory(
             venue__name="Librairie Titelive",

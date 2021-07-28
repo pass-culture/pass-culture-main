@@ -275,7 +275,7 @@ class Returns400Test:
 class Returns403Test:
     def when_user_is_not_attached_to_offerer(self, app):
         # Given
-        users_factories.UserFactory(email="user@example.com")
+        users_factories.ProFactory(email="user@example.com")
         venue = offers_factories.VirtualVenueFactory()
 
         # When

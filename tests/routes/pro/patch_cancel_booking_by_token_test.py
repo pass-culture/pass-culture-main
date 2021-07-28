@@ -72,7 +72,7 @@ class Returns204Test:
         book_offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=book_offer)
 
-        user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryFactory()
         booking = create_booking(user=user, stock=stock, venue=venue)
 
         repository.save(booking, user_offerer)
@@ -99,13 +99,14 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_not_authenticated_used_api_key_or_login(self, app):
         # Given
-        user = users_factories.UserFactory()
+        pro = users_factories.ProFactory()
         offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
+        user_offerer = create_user_offerer(pro, offerer)
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        booking = create_booking(user=user, stock=stock, venue=venue)
+        beneficiary = users_factories.BeneficiaryFactory()
+        booking = create_booking(user=beneficiary, stock=stock, venue=venue)
         repository.save(user_offerer, booking)
 
         # When
@@ -119,13 +120,14 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_giving_an_api_key_that_does_not_exists(self, app):
         # Given
-        user = users_factories.UserFactory()
+        pro = users_factories.ProFactory()
         offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
+        user_offerer = create_user_offerer(pro, offerer)
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        booking = create_booking(user=user, stock=stock, venue=venue)
+        beneficiary = users_factories.BeneficiaryFactory()
+        booking = create_booking(user=beneficiary, stock=stock, venue=venue)
         repository.save(user_offerer, booking)
 
         # When
@@ -150,7 +152,7 @@ class Returns403Test:
         book_offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=book_offer)
 
-        user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryFactory()
         booking = create_booking(user=user, stock=stock, venue=venue)
 
         repository.save(booking, user_offerer)
@@ -181,7 +183,7 @@ class Returns403Test:
         book_offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=book_offer)
 
-        user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryFactory()
         booking = create_booking(user=user, stock=stock, venue=venue)
 
         repository.save(booking, user_offerer)
@@ -214,7 +216,6 @@ class Returns403Test:
                 stock__offer__venue__managingOfferer=user_offerer.offerer, isUsed=True, status=BookingStatus.USED
             )
 
-            repository.save(booking, user_offerer)
             ApiKeyFactory(offerer=user_offerer.offerer)
 
             # When
@@ -237,13 +238,14 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_the_booking_does_not_exists(self, app):
         # Given
-        user = users_factories.UserFactory()
+        pro = users_factories.ProFactory()
         offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
+        user_offerer = create_user_offerer(pro, offerer)
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        booking = create_booking(user=user, stock=stock, venue=venue)
+        beneficiary = users_factories.BeneficiaryFactory()
+        booking = create_booking(user=beneficiary, stock=stock, venue=venue)
         repository.save(user_offerer, booking)
 
         ApiKeyFactory(offerer=offerer)
@@ -271,7 +273,7 @@ class Returns410Test:
         book_offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=book_offer)
 
-        user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryFactory()
         booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
 
         repository.save(booking, user_offerer)

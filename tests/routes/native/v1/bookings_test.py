@@ -31,7 +31,7 @@ class PostBookingTest:
 
     def test_post_bookings(self, app):
         stock = StockFactory()
-        user = users_factories.UserFactory(email=self.identifier)
+        user = users_factories.BeneficiaryFactory(email=self.identifier)
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -46,7 +46,7 @@ class PostBookingTest:
         assert response.json["bookingId"] == booking.id
 
     def test_no_stock_found(self, app):
-        users_factories.UserFactory(email=self.identifier)
+        users_factories.BeneficiaryFactory(email=self.identifier)
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -57,7 +57,7 @@ class PostBookingTest:
         assert response.status_code == 400
 
     def test_insufficient_credit(self, app):
-        users_factories.UserFactory(email=self.identifier)
+        users_factories.BeneficiaryFactory(email=self.identifier)
         stock = StockFactory(price=501)
 
         access_token = create_access_token(identity=self.identifier)
@@ -70,7 +70,7 @@ class PostBookingTest:
         assert response.json["code"] == "INSUFFICIENT_CREDIT"
 
     def test_already_booked(self, app):
-        user = users_factories.UserFactory(email=self.identifier)
+        user = users_factories.BeneficiaryFactory(email=self.identifier)
         booking = BookingFactory(user=user)
 
         access_token = create_access_token(identity=self.identifier)
@@ -90,7 +90,7 @@ class GetBookingsTest:
     @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     def test_get_bookings(self, app):
         OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"
-        user = users_factories.UserFactory(email=self.identifier)
+        user = users_factories.BeneficiaryFactory(email=self.identifier)
 
         permanent_booking = BookingFactory(
             user=user,
@@ -227,7 +227,7 @@ class CancelBookingTest:
     identifier = "pascal.ture@example.com"
 
     def test_cancel_booking(self, app):
-        user = users_factories.UserFactory(email=self.identifier)
+        user = users_factories.BeneficiaryFactory(email=self.identifier)
         booking = BookingFactory(user=user)
 
         access_token = create_access_token(identity=self.identifier)
@@ -243,7 +243,7 @@ class CancelBookingTest:
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
 
     def test_cancel_others_booking(self, app):
-        users_factories.UserFactory(email=self.identifier)
+        users_factories.BeneficiaryFactory(email=self.identifier)
         booking = BookingFactory()
 
         access_token = create_access_token(identity=self.identifier)
@@ -255,7 +255,7 @@ class CancelBookingTest:
         assert response.status_code == 404
 
     def test_cancel_confirmed_booking(self, app):
-        user = users_factories.UserFactory(email=self.identifier)
+        user = users_factories.BeneficiaryFactory(email=self.identifier)
         booking = BookingFactory(user=user, cancellation_limit_date=datetime.now() - timedelta(days=1))
 
         access_token = create_access_token(identity=self.identifier)
@@ -275,7 +275,7 @@ class ToggleBookingVisibilityTest:
     identifier = "pascal.ture@example.com"
 
     def test_toggle_visibility(self, app):
-        user = users_factories.UserFactory(email=self.identifier)
+        user = users_factories.BeneficiaryFactory(email=self.identifier)
         access_token = create_access_token(identity=self.identifier)
 
         booking = BookingFactory(user=user, displayAsEnded=None)
@@ -298,7 +298,7 @@ class ToggleBookingVisibilityTest:
 
     @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     def test_integration_toggle_visibility(self, app):
-        user = users_factories.UserFactory(email=self.identifier)
+        user = users_factories.BeneficiaryFactory(email=self.identifier)
         access_token = create_access_token(identity=self.identifier)
 
         stock = StockWithActivationCodesFactory()

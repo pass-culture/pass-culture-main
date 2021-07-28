@@ -10,7 +10,7 @@ from pcapi.repository import repository
 @pytest.mark.usefixtures("db_session")
 def test_save_user_offerer_raise_api_error_when_not_unique(app):
     # Given
-    user = users_factories.UserFactory.build()
+    user = users_factories.ProFactory.build()
     offerer = create_offerer()
     uo1 = create_user_offerer(user, offerer)
     repository.save(user, offerer, uo1)

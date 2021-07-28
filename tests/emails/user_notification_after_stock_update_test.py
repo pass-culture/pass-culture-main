@@ -17,12 +17,12 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0)
         new_beginning_datetime = datetime(2019, 8, 20, 12, 0, 0)
 
-        user = users_factories.UserFactory.build()
+        beneficiary = users_factories.BeneficiaryFactory.build()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name="Offer name")
         stock = create_stock(beginning_datetime=beginning_datetime, offer=offer, price=20)
-        booking = create_booking(user=user, stock=stock)
+        booking = create_booking(user=beneficiary, stock=stock)
 
         stock.beginningDatetime = new_beginning_datetime
 
@@ -35,7 +35,7 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
             "MJ-TemplateLanguage": True,
             "Vars": {
                 "offer_name": booking.stock.offer.name,
-                "user_first_name": user.firstName,
+                "user_first_name": beneficiary.firstName,
                 "venue_name": booking.stock.offer.venue.name,
                 "event_date": "mardi 20 août 2019",
                 "event_hour": "14h",

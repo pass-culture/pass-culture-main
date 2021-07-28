@@ -70,10 +70,10 @@ def test_delete_cascade_offerer_should_remove_managed_venues_offers_and_stocks()
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_all_user_attachments_to_deleted_offerer():
     # Given
-    user = users_factories.UserFactory()
+    pro = users_factories.ProFactory()
     offerer_to_delete = offers_factories.OffererFactory()
-    offers_factories.UserOffererFactory(user=user, offerer=offerer_to_delete)
-    offers_factories.UserOffererFactory(user=user)
+    offers_factories.UserOffererFactory(user=pro, offerer=offerer_to_delete)
+    offers_factories.UserOffererFactory(user=pro)
 
     # When
     delete_cascade_offerer_by_id(offerer_to_delete.id)

@@ -48,7 +48,7 @@ def test_venue_has_known_allocine_id(app):
 @pytest.mark.usefixtures("db_session")
 def test_venue_has_no_allocine_id(app):
     # Given
-    user = UserFactory(email="user@test.com")
+    user = UserFactory(email="user@example.com")
     venue = VenueFactory()
 
     allocine_provider = ProviderFactory(localClass="AllocineStocks")

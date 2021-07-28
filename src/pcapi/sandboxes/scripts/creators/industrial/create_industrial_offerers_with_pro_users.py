@@ -60,7 +60,7 @@ def create_industrial_offerers_with_pro_users():
         last_name = MOCK_LAST_NAMES[user_index]
         email = get_email(first_name, last_name, domain)
         user_name = "{} {}".format(first_name, last_name)
-        user = users_factories.ProFactory(
+        pro = users_factories.ProFactory(
             departementCode=str(departement_code),
             email=email,
             firstName=first_name,
@@ -70,13 +70,13 @@ def create_industrial_offerers_with_pro_users():
             publicName="{} {}".format(first_name, last_name),
             validationToken="{}{}".format(user_validation_prefix, user_validation_suffix),
         )
-        users_by_name[user_name] = user
+        users_by_name[user_name] = pro
         user_index += 1
         user_validation_suffix += 1
 
         user_offerers_by_name["{} / {}".format(user_name, offerer_name)] = create_user_offerer(
             offerer=offerer,
-            user=user,
+            user=pro,
         )
 
     # loop on locations to create offerers and associated users
@@ -132,7 +132,7 @@ def create_industrial_offerers_with_pro_users():
         if location_index % VALIDATED_OFFERERS_REMOVE_MODULO == 0:
             offerer.generate_validation_token()
 
-        user = users_factories.ProFactory(
+        pro = users_factories.ProFactory(
             departementCode=str(departement_code),
             email=email,
             firstName=first_name,
@@ -142,14 +142,14 @@ def create_industrial_offerers_with_pro_users():
             publicName="{} {}".format(first_name, last_name),
             validationToken=user_validation_token,
         )
-        users_by_name[user_name] = user
+        users_by_name[user_name] = pro
         user_validation_suffix += 1
         user_index += 1
 
         # user_offerer with None as validation token
         # because this user has created the offerer
         user_offerers_by_name["{} / {}".format(user_name, offerer_name)] = create_user_offerer(
-            offerer=offerer, user=user
+            offerer=offerer, user=pro
         )
 
         # create also users that are attached to this offerer
@@ -165,7 +165,7 @@ def create_industrial_offerers_with_pro_users():
             else:
                 user_validation_token = "{}{}".format(user_validation_prefix, user_validation_suffix)
             user_name = "{} {}".format(first_name, last_name)
-            user = users_factories.ProFactory(
+            pro = users_factories.ProFactory(
                 departementCode=str(departement_code),
                 email=email,
                 firstName=first_name,
@@ -175,7 +175,7 @@ def create_industrial_offerers_with_pro_users():
                 publicName="{} {}".format(first_name, last_name),
                 validationToken=user_validation_token,
             )
-            users_by_name[user_name] = user
+            users_by_name[user_name] = pro
             user_index += 1
             user_validation_suffix += 1
 
@@ -186,7 +186,7 @@ def create_industrial_offerers_with_pro_users():
                     user_offerer_validation_prefix, user_offerer_validation_suffix
                 )
             user_offerers_by_name["{} / {}".format(user_name, offerer_name)] = create_user_offerer(
-                offerer=offerer, user=user, validation_token=user_offerer_validation_token
+                offerer=offerer, user=pro, validation_token=user_offerer_validation_token
             )
             user_offerer_validation_suffix += 1
 
@@ -194,7 +194,7 @@ def create_industrial_offerers_with_pro_users():
     user_items_with_several_offerers = pick_every(users_by_name.items(), USERS_WITH_SEVERAL_OFFERERS_PICK_MODULO)
     user_offerer_index = 0
 
-    for (user_name, user) in user_items_with_several_offerers:
+    for (user_name, pro) in user_items_with_several_offerers:
         offerer_items_with_three_attached_users = pick_every(
             offerers_by_name.items(), OFFERERS_WITH_THREE_ATTACHED_USERS_PICK_MODULO
         )
@@ -211,7 +211,7 @@ def create_industrial_offerers_with_pro_users():
                     user_offerer_validation_prefix, user_offerer_validation_suffix
                 )
             user_offerers_by_name["{} / {}".format(user_name, offerer_name)] = create_user_offerer(
-                offerer=offerer, user=user, validation_token=user_offerer_validation_token
+                offerer=offerer, user=pro, validation_token=user_offerer_validation_token
             )
             user_offerer_index += 1
             user_offerer_validation_suffix += 1

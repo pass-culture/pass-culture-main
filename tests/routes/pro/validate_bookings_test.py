@@ -85,20 +85,20 @@ class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_editor_and_valid_email(self, app):
         # Given
-        user = users_factories.UserFactory()
-        admin_user = users_factories.UserFactory(email="admin@example.com")
+        user = users_factories.BeneficiaryFactory()
+        pro = users_factories.ProFactory(email="pro@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(
             offerer, venue, price=0, beginning_datetime=tomorrow, booking_limit_datetime=tomorrow_minus_one_hour
         )
         booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(booking, admin_user)
+        repository.save(booking, pro)
         booking_id = booking.id
         url = "/bookings/token/{}?email={}".format(booking.token, user.email)
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@example.com").patch(url)
+        response = TestClient(app.test_client()).with_auth("pro@example.com").patch(url)
 
         # Then
         assert response.status_code == 403
@@ -146,7 +146,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_editor_and_invalid_email(self, app):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryFactory()
         admin_user = users_factories.AdminFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -168,10 +168,10 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_booking_user_email_with_special_character_not_url_encoded(self, app):
         # Given
-        user = users_factories.UserFactory(email="user+plus@example.com")
-        user_admin = users_factories.UserFactory(email="admin@example.com")
+        user = users_factories.BeneficiaryFactory(email="user+plus@example.com")
+        admin_user = users_factories.AdminFactory(email="admin@example.com")
         offerer = create_offerer()
-        user_offerer = create_user_offerer(user_admin, offerer)
+        user_offerer = create_user_offerer(admin_user, offerer)
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name="Event Name")
         event_occurrence = create_event_occurrence(offer, beginning_datetime=tomorrow)
@@ -192,8 +192,8 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_editor_and_valid_email_but_invalid_offer_id(self, app):
         # Given
-        user = users_factories.UserFactory()
-        admin_user = users_factories.UserFactory(email="admin@example.com")
+        user = users_factories.BeneficiaryFactory()
+        admin_user = users_factories.AdminFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(

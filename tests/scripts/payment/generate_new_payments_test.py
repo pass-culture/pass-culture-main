@@ -34,25 +34,25 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        user = users_factories.UserFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
         offerer = offers_factories.OffererFactory()
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
         paying_stock = offers_factories.ThingStockFactory(offer=offer)
         free_stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
+            user=beneficiary, stock=paying_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
         )
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
+            user=beneficiary, stock=paying_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
         )
         bookings_factories.BookingFactory(
-            user=user, stock=free_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
+            user=beneficiary, stock=free_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
         )
         bookings_factories.BookingFactory(
-            user=user, stock=free_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
+            user=beneficiary, stock=free_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
         )
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock, isUsed=True, status=BookingStatus.USED, dateUsed=cutoff
+            user=beneficiary, stock=paying_stock, isUsed=True, status=BookingStatus.USED, dateUsed=cutoff
         )
 
         payment_message = payments_factories.PaymentMessageFactory(name="ABCD123")
@@ -82,7 +82,7 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        user = users_factories.UserFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
         offerer1 = offers_factories.OffererFactory(siren="123456789")
         offerer2 = offers_factories.OffererFactory(siren="987654321")
         offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
@@ -94,10 +94,10 @@ class GenerateNewPaymentsTest:
         paying_stock1 = offers_factories.ThingStockFactory(offer=offer1)
         paying_stock2 = offers_factories.ThingStockFactory(offer=offer2)
         free_stock1 = offers_factories.ThingStockFactory(offer=offer1, price=0)
-        bookings_factories.BookingFactory(user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff)
-        bookings_factories.BookingFactory(user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff)
-        bookings_factories.BookingFactory(user=user, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff)
-        bookings_factories.BookingFactory(user=user, stock=free_stock1, isUsed=True, dateUsed=before_cutoff)
+        bookings_factories.BookingFactory(user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff)
+        bookings_factories.BookingFactory(user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff)
+        bookings_factories.BookingFactory(user=beneficiary, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff)
+        bookings_factories.BookingFactory(user=beneficiary, stock=free_stock1, isUsed=True, dateUsed=before_cutoff)
 
         # When
         generate_new_payments(cutoff, batch_date=datetime.datetime.now())
@@ -112,7 +112,7 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        user = users_factories.UserFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
         offerer1 = offers_factories.OffererFactory(siren="123456789")
         offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
         venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
@@ -127,17 +127,17 @@ class GenerateNewPaymentsTest:
         paying_stock3 = offers_factories.ThingStockFactory(offer=offer3, price=10000)
         offers_factories.ThingStockFactory(offer=offer1, price=0)
 
-        user.deposit.amount = 50000
-        repository.save(user.deposit)
+        beneficiary.deposit.amount = 50000
+        repository.save(beneficiary.deposit)
 
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
 
         # When
@@ -155,7 +155,7 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        user = users_factories.UserFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
         offerer1 = offers_factories.OffererFactory(siren="123456789")
         offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
         venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
@@ -170,17 +170,17 @@ class GenerateNewPaymentsTest:
         paying_stock3 = offers_factories.ThingStockFactory(offer=offer3, price=30000)
         offers_factories.ThingStockFactory(offer=offer1, price=0)
 
-        user.deposit.amount = 50000
-        repository.save(user.deposit)
+        beneficiary.deposit.amount = 50000
+        repository.save(beneficiary.deposit)
 
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
 
         # When
@@ -198,7 +198,7 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        user = users_factories.UserFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
         offerer1 = offers_factories.OffererFactory(siren="123456789")
         offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
         venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
@@ -211,14 +211,14 @@ class GenerateNewPaymentsTest:
 
         offers_factories.ThingStockFactory(offer=offer1, price=0)
 
-        user.deposit.amount = 50000
-        repository.save(user.deposit)
+        beneficiary.deposit.amount = 50000
+        repository.save(beneficiary.deposit)
 
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
 
         # When
@@ -236,7 +236,7 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        user = users_factories.UserFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
         offerer1 = offers_factories.OffererFactory(siren="123456789")
         offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
         venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
@@ -251,17 +251,17 @@ class GenerateNewPaymentsTest:
         paying_stock3 = offers_factories.ThingStockFactory(offer=offer3, price=30000)
         offers_factories.ThingStockFactory(offer=offer1, price=0)
 
-        user.deposit.amount = 50000
-        repository.save(user.deposit)
+        beneficiary.deposit.amount = 50000
+        repository.save(beneficiary.deposit)
 
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
 
         # When
@@ -279,7 +279,7 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        user = users_factories.UserFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
         offerer1 = offers_factories.OffererFactory(siren="123456789")
         offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
         venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
@@ -297,17 +297,17 @@ class GenerateNewPaymentsTest:
         paying_stock3 = offers_factories.ThingStockFactory(offer=offer3, price=50000)
         offers_factories.ThingStockFactory(offer=offer1, price=0)
 
-        user.deposit.amount = 80000
-        repository.save(user.deposit)
+        beneficiary.deposit.amount = 80000
+        repository.save(beneficiary.deposit)
 
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
 
         # When
@@ -325,7 +325,7 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        user = users_factories.UserFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
         offerer1 = offers_factories.OffererFactory(siren="123456789")
         offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
         venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
@@ -343,17 +343,17 @@ class GenerateNewPaymentsTest:
         paying_stock3 = offers_factories.ThingStockFactory(offer=offer3, price=100000)
         offers_factories.ThingStockFactory(offer=offer1, price=0)
 
-        user.deposit.amount = 120000
-        repository.save(user.deposit)
+        beneficiary.deposit.amount = 120000
+        repository.save(beneficiary.deposit)
 
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
         bookings_factories.BookingFactory(
-            user=user, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
+            user=beneficiary, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
         )
 
         # When

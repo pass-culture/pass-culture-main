@@ -25,7 +25,7 @@ class Returns202Test:
             name="Crédit Coopératif",
             validation_token=offerer_token,
         )
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         user_offerer = create_user_offerer(user, offerer, validation_token=user_offerer_token)
         repository.save(offerer, user_offerer)
         user_offerer_id = offerer.id
@@ -65,7 +65,7 @@ class Returns404Test:
             name="Crédit Coopératif",
             validation_token=offerer_token,
         )
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         user_offerer = create_user_offerer(user, offerer, validation_token=user_offerer_token)
         repository.save(offerer, user_offerer)
         user_offerer_id = offerer.id

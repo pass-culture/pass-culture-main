@@ -60,7 +60,7 @@ class GetCappedOffersForFiltersTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_sorted_by_id_desc(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)

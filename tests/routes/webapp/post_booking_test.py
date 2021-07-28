@@ -12,7 +12,7 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class Returns201Test:
     def test_booking_creation(self, app):
-        user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryFactory()
         stock = offers_factories.StockFactory()
 
         data = {"stockId": humanize(stock.id), "quantity": 1}
@@ -37,7 +37,7 @@ class Returns201Test:
     @override_features(ENABLE_ACTIVATION_CODES=True)
     def test_booking_creation_with_activation_code(self, app):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryFactory()
         stock = offers_factories.StockWithActivationCodesFactory(
             activationCodes=["code-vgya451afvyux"], offer__url="https://new.example.com?token={token}"
         )
@@ -67,7 +67,7 @@ class Returns201Test:
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
     def when_use_case_raise_stock_is_not_bookable_exception(self, app):
-        user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryFactory()
         stock = offers_factories.StockFactory(quantity=0)
 
         data = {"stockId": humanize(stock.id), "quantity": 1}

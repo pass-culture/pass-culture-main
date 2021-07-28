@@ -75,11 +75,11 @@ class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_current_user_doesnt_have_rights(self, app):
         # given
-        user = users_factories.UserFactory(email="user.pro@test.com")
+        pro = users_factories.ProFactory(email="user.pro@example.com")
         venue = offers_factories.VenueFactory(name="L'encre et la plume")
 
         # when
-        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+        auth_request = TestClient(app.test_client()).with_auth(email=pro.email)
         response = auth_request.get("/venues/%s" % humanize(venue.id))
 
         # then

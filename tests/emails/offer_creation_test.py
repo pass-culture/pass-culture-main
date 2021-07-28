@@ -11,7 +11,7 @@ from pcapi.utils.mailing import make_offer_rejection_notification_email
 @pytest.mark.usefixtures("db_session")
 class MakeOfferCreationNotificationEmailTest:
     def test_with_physical_offer(self):
-        author = users_factories.UserFactory()
+        author = users_factories.ProFactory()
         offer = offers_factories.ThingOfferFactory(
             author=author,
             product__name="Le vent se lève",
@@ -59,12 +59,12 @@ class MakeOfferCreationNotificationEmailTest:
         assert "Adresse du lieu : Montreuil 93100" in venue_details
 
         pro_user_information = str(parsed_email.find("p", {"id": "pro_user_information"}))
-        assert "Nom : Doux" in pro_user_information
-        assert "Prénom : Jeanne" in pro_user_information
+        assert f"Nom : {author.lastName}" in pro_user_information
+        assert f"Prénom : {author.firstName}" in pro_user_information
 
     def test_with_virtual_offer(self):
         # Given
-        author = users_factories.UserFactory()
+        author = users_factories.ProFactory()
         offer = offers_factories.EventOfferFactory(
             author=author,
             product=offers_factories.DigitalProductFactory(name="Les lièvres pas malins"),
@@ -81,7 +81,7 @@ class MakeOfferCreationNotificationEmailTest:
 @pytest.mark.usefixtures("db_session")
 class MakeOfferRejectionNotificationEmailTest:
     def test_with_physical_offer(self):
-        author = users_factories.UserFactory(firstName=None)
+        author = users_factories.ProFactory(firstName=None)
         offer = offers_factories.ThingOfferFactory(
             author=author,
             product__name="Le vent se lève",
@@ -123,12 +123,12 @@ class MakeOfferRejectionNotificationEmailTest:
         assert "Adresse du lieu : Montreuil 93100" in venue_details
 
         pro_user_information = str(parsed_email.find("p", {"id": "pro_user_information"}))
-        assert "Nom : Doux" in pro_user_information
-        assert "Prénom : None" in pro_user_information
+        assert f"Nom : {author.lastName}" in pro_user_information
+        assert f"Prénom : {author.firstName}" in pro_user_information
 
     def test_with_virtual_offer(self):
         # Given
-        author = users_factories.UserFactory()
+        author = users_factories.ProFactory()
         offer = offers_factories.EventOfferFactory(
             author=author,
             product=offers_factories.DigitalProductFactory(name="Les lièvres pas malins"),

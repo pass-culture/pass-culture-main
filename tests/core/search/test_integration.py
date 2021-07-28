@@ -11,7 +11,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def test_offer_indexation_on_booking_cycle(app):
-    beneficiary = users_factories.UserFactory()
+    beneficiary = users_factories.BeneficiaryFactory()
     stock = offers_factories.StockFactory(quantity=1)
     offer = stock.offer
     assert search_testing.search_store == {}

@@ -7,7 +7,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_get_categories(self, app, client):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
 
         # when
         response = client.with_auth(user.email).get("/offers/categories")

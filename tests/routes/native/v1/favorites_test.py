@@ -356,11 +356,11 @@ class DeleteTest:
         def when_user_delete_another_user_favorite(self, app):
             # Given
             _, test_client = utils.create_user_and_test_client(app)
-            other_user = users_factories.UserFactory()
+            other_beneficiary = users_factories.BeneficiaryFactory()
             offerer = offers_factories.OffererFactory()
             venue = offers_factories.VenueFactory(managingOfferer=offerer)
             offer = offers_factories.ThingOfferFactory(venue=venue)
-            favorite = users_factories.FavoriteFactory(offer=offer, user=other_user)
+            favorite = users_factories.FavoriteFactory(offer=offer, user=other_beneficiary)
             assert Favorite.query.count() == 1
 
             # When

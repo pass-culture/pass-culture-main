@@ -216,7 +216,7 @@ class BeneficiaryUserViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_unsuspend_beneficiary(self, mocked_validate_csrf_token, app):
         admin = users_factories.AdminFactory(email="admin15@example.com")
-        beneficiary = users_factories.UserFactory(email="user15@example.com", isActive=False)
+        beneficiary = users_factories.BeneficiaryFactory(email="user15@example.com", isActive=False)
 
         client = TestClient(app.test_client()).with_auth(admin.email)
         url = f"/pc/back-office/beneficiary_users/unsuspend?user_id={beneficiary.id}"
@@ -233,7 +233,7 @@ class BeneficiaryUserViewTest:
     @patch("pcapi.settings.IS_PROD", True)
     def test_suspend_beneficiary_is_restricted(self, app):
         admin = users_factories.AdminFactory(email="admin@example.com")
-        beneficiary = users_factories.UserFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
 
         client = TestClient(app.test_client()).with_auth(admin.email)
         url = f"/pc/back-office/beneficiary_users/suspend?user_id={beneficiary.id}"
@@ -260,7 +260,7 @@ class BeneficiaryUserViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_beneficiary_user_edition_does_not_send_email(self, mocked_validate_csrf_token, mocked_flask_flash, app):
         users_factories.AdminFactory(email="user@example.com")
-        user_to_edit = users_factories.UserFactory(email="not_yet_edited@email.com", isAdmin=False)
+        user_to_edit = users_factories.BeneficiaryFactory(email="not_yet_edited@email.com", isAdmin=False)
 
         data = dict(
             email="edited@email.com",
@@ -289,8 +289,8 @@ class BeneficiaryUserViewTest:
     def test_resend_validation_email_to_beneficiary(
         self, mocked_request_email_confirmation, mocked_validate_csrf_token, app
     ):
-        admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
-        beneficiary = users_factories.UserFactory(email="partner@example.com", isEmailValidated=False)
+        admin = users_factories.AdminFactory(email="admin@example.com")
+        beneficiary = users_factories.BeneficiaryFactory(email="partner@example.com", isEmailValidated=False)
         client = TestClient(app.test_client()).with_auth(admin.email)
 
         url = f"/pc/back-office/beneficiary_users/resend-validation-email?user_id={beneficiary.id}"

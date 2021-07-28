@@ -18,7 +18,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_but_has_no_favorites(self, app):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryFactory()
         repository.save(user)
 
         # When
@@ -31,7 +31,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_and_has_two_favorite_offers(self, app):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryFactory()
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
         offer1 = create_offer_with_thing_product(venue=venue, thumb_count=0)
@@ -56,7 +56,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_and_a_favorite_booked_offer_exist(self, app):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryFactory()
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
         offer = create_offer_with_thing_product(venue, thumb_count=0)

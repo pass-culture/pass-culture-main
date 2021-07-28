@@ -61,7 +61,7 @@ def test_too_many_bookings_postgresql_exception():
     booking1 = factories.BookingFactory(stock__quantity=1)
     with db.session.no_autoflush:
         booking2 = models.Booking()
-        booking2.user = users_factories.UserFactory()
+        booking2.user = users_factories.BeneficiaryFactory()
         booking2.stock = booking1.stock
         booking2.offerer = booking1.stock.offer.venue.managingOfferer
         booking2.venue = booking1.stock.offer.venue

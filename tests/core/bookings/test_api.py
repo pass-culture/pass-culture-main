@@ -34,7 +34,7 @@ from tests.conftest import clean_database
 class BookOfferConcurrencyTest:
     @clean_database
     def test_create_booking(self, app):
-        user = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
         assert models.Booking.query.count() == 0
 
@@ -44,7 +44,7 @@ class BookOfferConcurrencyTest:
             connection.execute(text("""SELECT * FROM stock WHERE stock.id = :stock_id FOR UPDATE"""), stock_id=stock.id)
 
             with pytest.raises(sqlalchemy.exc.OperationalError):
-                api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+                api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
         assert models.Booking.query.count() == 0
         assert offers_models.Stock.query.filter_by(id=stock.id, dnBookedQuantity=5).count() == 1
@@ -109,10 +109,10 @@ class BookOfferConcurrencyTest:
 class BookOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_create_booking(self, mocked_async_index_offer_ids, app):
-        user = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
 
-        booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
         # One request should have been sent to Batch with the user's
         # updated attributes
@@ -154,11 +154,11 @@ class BookOfferTest:
         stock1 = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer=offer1)
         stock2 = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer=offer2)
 
-        user = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
         date_created = datetime.now() - timedelta(days=5)
-        factories.BookingFactory.create_batch(3, user=user, dateCreated=date_created, stock=stock2)
+        factories.BookingFactory.create_batch(3, user=beneficiary, dateCreated=date_created, stock=stock2)
 
-        booking = api.book_offer(beneficiary=user, stock_id=stock1.id, quantity=1)
+        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock1.id, quantity=1)
 
         # One request should have been sent to Batch with the user's
         # updated attributes
@@ -175,9 +175,9 @@ class BookOfferTest:
     def test_booking_on_digital_offer_with_activation_stock(self):
         offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
         stock = offers_factories.StockWithActivationCodesFactory(price=10, dnBookedQuantity=3, offer=offer)
-        user = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
 
-        booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
         assert booking.isUsed
         assert booking.status is BookingStatus.USED
@@ -186,19 +186,19 @@ class BookOfferTest:
     def test_booking_on_digital_offer_without_activation_stock(self):
         offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer=offer)
-        user = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
 
-        booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
         assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
 
     def test_create_event_booking(self):
         ten_days_from_now = datetime.utcnow() + timedelta(days=10)
-        user = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
         stock = offers_factories.StockFactory(price=10, beginningDatetime=ten_days_from_now, dnBookedQuantity=5)
 
-        booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
         # One request should have been sent to Batch with the user's
         # updated attributes
@@ -239,7 +239,7 @@ class BookOfferTest:
         booking = factories.BookingFactory(stock__quantity=1)
         with pytest.raises(exceptions.StockIsNotBookable):
             api.book_offer(
-                beneficiary=users_factories.UserFactory(),
+                beneficiary=users_factories.BeneficiaryFactory(),
                 stock_id=booking.stock.id,
                 quantity=1,
             )
@@ -257,7 +257,7 @@ class BookOfferTest:
         stock = offers_factories.StockFactory(price=800)
         with pytest.raises(exceptions.UserHasInsufficientFunds):
             api.book_offer(
-                beneficiary=users_factories.UserFactory(),
+                beneficiary=users_factories.BeneficiaryFactory(),
                 stock_id=stock.id,
                 quantity=1,
             )
@@ -265,7 +265,7 @@ class BookOfferTest:
     def test_raise_if_invalid_quantity(self):
         with pytest.raises(exceptions.QuantityIsInvalid):
             api.book_offer(
-                beneficiary=users_factories.UserFactory(),
+                beneficiary=users_factories.BeneficiaryFactory(),
                 stock_id=offers_factories.StockFactory().id,
                 quantity=2,
             )
@@ -274,12 +274,12 @@ class BookOfferTest:
         @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_book_offer_with_first_activation_code_available(self):
             # Given
-            user = users_factories.UserFactory()
+            beneficiary = users_factories.BeneficiaryFactory()
             stock = offers_factories.StockWithActivationCodesFactory()
             first_activation_code = stock.activationCodes[0]
 
             # When
-            booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
             # Then
             assert booking.activationCode == first_activation_code
@@ -287,7 +287,7 @@ class BookOfferTest:
         @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_ignore_activation_that_is_already_used_for_booking(self):
             # Given
-            user = users_factories.UserFactory()
+            beneficiary = users_factories.BeneficiaryFactory()
             booking = factories.BookingFactory(isUsed=True, status=BookingStatus.USED, token="ABCDEF")
             stock = offers_factories.StockWithActivationCodesFactory(
                 activationCodes=["code-vgya451afvyux", "code-bha45k15fuz"]
@@ -295,7 +295,7 @@ class BookOfferTest:
             stock.activationCodes[0].booking = booking
 
             # When
-            booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
             # Then
             assert booking.activationCode.code == "code-bha45k15fuz"
@@ -303,14 +303,14 @@ class BookOfferTest:
         @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_raise_when_no_activation_code_available(self):
             # Given
-            user = users_factories.UserFactory()
+            beneficiary = users_factories.BeneficiaryFactory()
             booking = factories.BookingFactory(isUsed=True, status=BookingStatus.USED, token="ABCDEF")
             stock = offers_factories.StockWithActivationCodesFactory(activationCodes=["code-vgya451afvyux"])
             stock.activationCodes[0].booking = booking
 
             # When
             with pytest.raises(exceptions.NoActivationCodeAvailable) as error:
-                api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+                api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
             # Then
             assert Booking.query.count() == 1
@@ -321,14 +321,14 @@ class BookOfferTest:
         @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_raise_when_activation_codes_are_expired(self):
             # Given
-            user = users_factories.UserFactory()
+            beneficiary = users_factories.BeneficiaryFactory()
             stock = offers_factories.StockWithActivationCodesFactory(
                 activationCodes__expirationDate=datetime(2000, 1, 1)
             )
 
             # When
             with pytest.raises(exceptions.NoActivationCodeAvailable) as error:
-                api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+                api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
             # Then
             assert error.value.errors == {
@@ -450,9 +450,9 @@ class CancelByBeneficiaryTest:
 
     def test_raise_if_trying_to_cancel_someone_else_s_booking(self):
         booking = factories.BookingFactory()
-        other_user = users_factories.UserFactory()
+        other_beneficiary = users_factories.BeneficiaryFactory()
         with pytest.raises(exceptions.BookingDoesntExist):
-            api.cancel_booking_by_beneficiary(other_user, booking)
+            api.cancel_booking_by_beneficiary(other_beneficiary, booking)
         assert not booking.isCancelled
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason

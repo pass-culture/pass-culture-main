@@ -9,7 +9,6 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.users.factories import UserFactory
 from pcapi.models import offer_type
 from pcapi.repository import repository
 from pcapi.scripts.booking import handle_expired_bookings
@@ -123,8 +122,7 @@ class CancelExpiredBookingsTest:
         now = datetime.utcnow()
         two_months_ago = now - timedelta(days=60)
         book = ProductFactory(type=str(offer_type.ThingType.LIVRE_EDITION))
-        user = UserFactory()
-        BookingFactory.create_batch(size=10, stock__offer__product=book, dateCreated=two_months_ago, user=user)
+        BookingFactory.create_batch(size=10, stock__offer__product=book, dateCreated=two_months_ago)
         n_queries = (
             1  # select count
             + 1  # select initial booking ids

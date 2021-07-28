@@ -2,7 +2,7 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.factories import ProFactory
 from pcapi.models import Venue
 from pcapi.repository import repository
 from pcapi.utils.human_ids import dehumanize
@@ -15,7 +15,7 @@ from tests.conftest import TestClient
 def test_should_register_new_venue(app):
     # given
     offerer = offers_factories.OffererFactory(siren="302559178")
-    user = UserFactory()
+    user = ProFactory()
     user_offerer = offers_factories.UserOffererFactory(user=user, offerer=offerer)
     venue_type = offerers_factories.VenueTypeFactory(label="Musée")
     venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
@@ -56,7 +56,7 @@ def test_should_register_new_venue(app):
 def test_should_consider_the_venue_to_be_permanent(app):
     # given
     offerer = offers_factories.OffererFactory(siren="302559178")
-    user = UserFactory()
+    user = ProFactory()
     user_offerer = offers_factories.UserOffererFactory(user=user, offerer=offerer)
     venue_type = offerers_factories.VenueTypeFactory(label="Musée")
     venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
@@ -89,7 +89,7 @@ def test_should_consider_the_venue_to_be_permanent(app):
 def test_should_return_401_when_latitude_out_of_range_and_longitude_wrong_format(app):
     # given
     offerer = offers_factories.OffererFactory(siren="302559178")
-    user = UserFactory()
+    user = ProFactory()
     user_offerer = offers_factories.UserOffererFactory(user=user, offerer=offerer)
     repository.save(user_offerer)
 
@@ -120,7 +120,7 @@ def test_should_return_401_when_latitude_out_of_range_and_longitude_wrong_format
 def test_should_return_401_when_longitude_out_of_range_and_latitude_wrong_format(app):
     # given
     offerer = offers_factories.OffererFactory(siren="302559178")
-    user = UserFactory()
+    user = ProFactory()
     user_offerer = offers_factories.UserOffererFactory(user=user, offerer=offerer)
     repository.save(user_offerer)
 
@@ -150,7 +150,7 @@ def test_should_return_401_when_longitude_out_of_range_and_latitude_wrong_format
 @pytest.mark.usefixtures("db_session")
 def test_should_return_403_when_user_is_not_managing_offerer_create_venue(app):
     offerer = offers_factories.OffererFactory(siren="302559178")
-    user = UserFactory()
+    user = ProFactory()
     venue_type = offerers_factories.VenueTypeFactory(label="Musée")
     venue_data = {
         "name": "Ma venue",

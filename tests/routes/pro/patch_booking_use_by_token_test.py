@@ -94,7 +94,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_not_logged_in_and_doesnt_give_api_key(self, app):
         # Given
-        user = users_factories.UserFactory(email="user@example.com")
+        user = users_factories.BeneficiaryFactory(email="user@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -112,7 +112,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_not_logged_in_and_not_existing_api_key_given(self, app):
         # Given
-        user = users_factories.UserFactory(email="user@example.com")
+        user = users_factories.BeneficiaryFactory(email="user@example.com")
         users_factories.ProFactory(email="pro@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -137,7 +137,7 @@ class Returns403Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_api_key_given_not_related_to_booking_offerer(self, app):
             # Given
-            user = users_factories.UserFactory(email="user@example.com")
+            user = users_factories.BeneficiaryFactory(email="user@example.com")
             offerer2 = offers_factories.OffererFactory(siren="987654321")
             offer = offers_factories.EventOfferFactory(type="EventType.CINEMA")
             stock = offers_factories.EventStockFactory(offer=offer, price=0)
@@ -160,7 +160,7 @@ class Returns403Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_api_key_is_provided_and_booking_has_been_cancelled_already(self, app):
             # Given
-            user = users_factories.UserFactory()
+            user = users_factories.BeneficiaryFactory()
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
@@ -182,7 +182,7 @@ class Returns403Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_user_is_not_attached_to_linked_offerer(self, app):
             # Given
-            user = users_factories.UserFactory()
+            user = users_factories.BeneficiaryFactory()
             users_factories.ProFactory(email="pro@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -220,7 +220,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_booking_is_not_provided_at_all(self, app):
         # Given
-        user = users_factories.UserFactory(email="user@example.com")
+        user = users_factories.BeneficiaryFactory(email="user@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -239,7 +239,7 @@ class Returns404Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_api_key_is_provided_and_booking_does_not_exist(self, app):
             # Given
-            user = users_factories.UserFactory()
+            user = users_factories.BeneficiaryFactory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -264,7 +264,7 @@ class Returns404Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_user_is_logged_in_and_booking_does_not_exist(self, app):
             # Given
-            user = users_factories.UserFactory()
+            user = users_factories.BeneficiaryFactory()
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)

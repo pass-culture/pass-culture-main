@@ -21,8 +21,8 @@ class FindPaymentsByMessageTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_payments_matching_message(self, app):
         # given
-        user = users_factories.UserFactory()
-        booking = create_booking(user=user)
+        beneficiary = users_factories.BeneficiaryFactory()
+        booking = create_booking(user=beneficiary)
         offerer = booking.stock.offer.venue.managingOfferer
         transaction1 = create_payment_message(name="XML1")
         transaction2 = create_payment_message(name="XML2")
@@ -48,8 +48,8 @@ class FindPaymentsByMessageTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_if_message_is_not_matched(self, app):
         # given
-        user = users_factories.UserFactory()
-        booking = create_booking(user=user)
+        beneficiary = users_factories.BeneficiaryFactory()
+        booking = create_booking(user=beneficiary)
         offerer = booking.stock.offer.venue.managingOfferer
         message1 = create_payment_message(name="XML1")
         message2 = create_payment_message(name="XML2")
@@ -73,12 +73,11 @@ class FindNotProcessableWithBankInformationTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_payments_to_retry_if_no_bank_information(self, app):
         # Given
-        user = users_factories.UserFactory()
         product = offers_factories.ThingProductFactory(name="Lire un livre", isNational=True)
         venue = offers_factories.VenueFactory(postalCode="34000", departementCode="34")
         offer = offers_factories.ThingOfferFactory(product=product, venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0, quantity=2)
-        booking = bookings_factories.BookingFactory(user=user, stock=stock, quantity=2, isCancelled=True)
+        booking = bookings_factories.BookingFactory(stock=stock, quantity=2, isCancelled=True)
         payment = factories.PaymentFactory(booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555")
         factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.NOT_PROCESSABLE)
 
@@ -93,15 +92,14 @@ class FindNotProcessableWithBankInformationTest:
         self, app
     ):
         # Given
-        user = users_factories.UserFactory()
-        user_offerer = offers_factories.UserOffererFactory(user=user)
+        user_offerer = offers_factories.UserOffererFactory()
         product = offers_factories.ThingProductFactory(name="Lire un livre", isNational=True)
         venue = offers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer, postalCode="34000", departementCode="34"
         )
         offer = offers_factories.ThingOfferFactory(product=product, venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        booking = bookings_factories.BookingFactory(stock=stock)
         not_processable_payment = factories.PaymentFactory(
             booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
         )
@@ -119,15 +117,14 @@ class FindNotProcessableWithBankInformationTest:
         self, app
     ):
         # Given
-        user = users_factories.UserFactory()
-        user_offerer = offers_factories.UserOffererFactory(user=user)
+        user_offerer = offers_factories.UserOffererFactory()
         product = offers_factories.ThingProductFactory(name="Lire un livre", isNational=True)
         venue = offers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer, postalCode="34000", departementCode="34"
         )
         offer = offers_factories.ThingOfferFactory(product=product, venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        booking = bookings_factories.BookingFactory(stock=stock)
         not_processable_payment = factories.PaymentFactory(
             booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
         )
@@ -144,15 +141,14 @@ class FindNotProcessableWithBankInformationTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_payment_to_retry_if_bank_information_status_is_not_accepted(self, app):
         # Given
-        user = users_factories.UserFactory()
-        user_offerer = offers_factories.UserOffererFactory(user=user)
+        user_offerer = offers_factories.UserOffererFactory()
         product = offers_factories.ThingProductFactory(name="Lire un livre", isNational=True)
         venue = offers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer, postalCode="34000", departementCode="34"
         )
         offer = offers_factories.ThingOfferFactory(product=product, venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        booking = bookings_factories.BookingFactory(stock=stock)
         not_processable_payment = factories.PaymentFactory(
             booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
         )
@@ -172,15 +168,14 @@ class FindNotProcessableWithBankInformationTest:
         self, app
     ):
         # Given
-        user = users_factories.UserFactory()
-        user_offerer = offers_factories.UserOffererFactory(user=user)
+        user_offerer = offers_factories.UserOffererFactory()
         product = offers_factories.ThingProductFactory(name="Lire un livre", isNational=True)
         venue = offers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer, postalCode="34000", departementCode="34"
         )
         offer = offers_factories.ThingOfferFactory(product=product, venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        booking = bookings_factories.BookingFactory(stock=stock)
         not_processable_payment = factories.PaymentFactory(
             booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
         )

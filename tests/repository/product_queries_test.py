@@ -89,13 +89,13 @@ class DeleteUnwantedExistingProductTest:
     ):
         # Given
         isbn = "1111111111111"
-        user = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
         offerer = create_offerer(siren="775671464")
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
         product = create_product_with_thing_type(id_at_providers=isbn, is_gcu_compatible=True)
         offer = create_offer_with_thing_product(venue, product=product, is_active=True)
         stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user=user, is_cancelled=True, stock=stock)
+        booking = create_booking(user=beneficiary, is_cancelled=True, stock=stock)
         repository.save(venue, product, offer, stock, booking)
 
         # When
@@ -112,7 +112,6 @@ class DeleteUnwantedExistingProductTest:
     def test_should_delete_product_when_related_offer_has_mediation(self, app):
         # Given
         isbn = "1111111111111"
-        users_factories.UserFactory()
         offerer = create_offerer(siren="775671464")
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
         product = create_product_with_thing_type(id_at_providers=isbn)
@@ -135,14 +134,14 @@ class DeleteUnwantedExistingProductTest:
     def test_should_delete_product_when_related_offer_is_on_user_favorite_list(self, app):
         # Given
         isbn = "1111111111111"
-        user = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
         offerer = create_offerer(siren="775671464")
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
         product = create_product_with_thing_type(id_at_providers=isbn)
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer, price=0)
         mediation = create_mediation(offer=offer)
-        favorite = create_favorite(mediation=mediation, offer=offer, user=user)
+        favorite = create_favorite(mediation=mediation, offer=offer, user=beneficiary)
 
         repository.save(venue, product, offer, stock, mediation, favorite)
 

@@ -13,7 +13,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_current_user_changes_password(self, app):
         # given
-        user = users_factories.UserFactory(email="user@test.com")
+        user = users_factories.UserFactory(email="user@example.com")
         data = {
             "oldPassword": user.clearTextPassword,
             "newPassword": "N3W_p4ssw0rd",
@@ -38,7 +38,7 @@ class Returns400Test:
         api_errors = ApiErrors()
         api_errors.add_error("password", "missing password")
         api_errors.status_code = 400
-        user = users_factories.UserFactory(email="user@test.com")
+        user = users_factories.UserFactory(email="user@example.com")
         validate_change_password_request.side_effect = api_errors
         data = {}
 

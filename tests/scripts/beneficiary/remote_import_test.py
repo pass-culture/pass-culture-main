@@ -236,7 +236,7 @@ class RunTest:
         find_applications_ids_to_retry.return_value = []
 
         get_details.return_value = make_new_beneficiary_application_details(123, "closed")
-        user = users_factories.Beneficiary(email="john.doe@example.com")
+        user = users_factories.BeneficiaryFactory(email="john.doe@example.com")
         is_already_imported.return_value = False
         find_user_by_email.return_value = user
 

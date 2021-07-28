@@ -111,8 +111,8 @@ def test_stock_can_have_an_quantity_stock_equal_to_zero(app):
 def test_quantity_stocks_can_be_changed_even_when_bookings_with_cancellations_exceed_quantity(app):
     # Given
     stock = offers_factories.ThingStockFactory(quantity=2, price=0)
-    user1 = users_factories.UserFactory()
-    user2 = users_factories.UserFactory()
+    user1 = users_factories.BeneficiaryFactory()
+    user2 = users_factories.BeneficiaryFactory()
 
     bookings_factories.BookingFactory(user=user1, stock=stock, isCancelled=True, quantity=1)
     bookings_factories.BookingFactory(user=user1, stock=stock, isCancelled=True, quantity=1)
@@ -132,7 +132,7 @@ def test_quantity_stocks_can_be_changed_even_when_bookings_with_cancellations_ex
 def test_should_update_stock_quantity_when_value_is_more_than_sum_of_bookings_quantity(app):
     # Given
     stock = offers_factories.ThingStockFactory(quantity=2, price=0)
-    user = users_factories.UserFactory()
+    user = users_factories.BeneficiaryFactory()
     bookings_factories.BookingFactory(user=user, stock=stock, isCancelled=False, quantity=2)
     stock.quantity = 3
 
@@ -146,7 +146,7 @@ def test_should_update_stock_quantity_when_value_is_more_than_sum_of_bookings_qu
 @pytest.mark.usefixtures("db_session")
 def test_should_not_update_quantity_stock_when_value_is_less_than_booking_count(app):
     # given
-    user = users_factories.UserFactory()
+    user = users_factories.BeneficiaryFactory()
     stock = offers_factories.ThingStockFactory(price=0, quantity=10)
     bookings_factories.BookingFactory(user=user, stock=stock, quantity=5)
     stock.quantity = 4
@@ -225,7 +225,7 @@ class IsBookableTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_false_when_no_remaining_stock(self, app):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryFactory()
 
         # When
         stock = offers_factories.ThingStockFactory(price=0, quantity=10)

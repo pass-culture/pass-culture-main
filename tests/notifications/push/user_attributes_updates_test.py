@@ -5,6 +5,7 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.notifications.push.user_attributes_updates import BATCH_DATETIME_FORMAT
 from pcapi.notifications.push.user_attributes_updates import TRACKED_PRODUCT_IDS
@@ -18,13 +19,12 @@ MAX_BATCH_PARAMETER_SIZE = 30
 
 class GetUserAttributesTest:
     def test_get_attributes(self):
-        user = UserFactory(dateOfBirth=datetime(2000, 1, 1))
+        user = BeneficiaryFactory(dateOfBirth=datetime(2000, 1, 1))
         offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
         b1 = BookingFactory(user=user, amount=10, stock__offer=offer)
         b2 = BookingFactory(user=user, amount=10, dateUsed=datetime(2021, 5, 6), stock__offer=offer)
         b3 = BookingFactory(user=user, amount=100, isCancelled=True)
 
-        # repository.save(offer)
         n_query_get_user = 1
         n_query_get_bookings = 1
         n_query_get_deposit = 1

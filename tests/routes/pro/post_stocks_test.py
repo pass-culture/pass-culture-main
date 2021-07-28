@@ -334,7 +334,7 @@ class Returns400Test:
 class Returns403Test:
     def when_user_has_no_rights_and_creating_stock_from_offer_id(self, app, db_session):
         # Given
-        user = users_factories.UserFactory(email="wrong@example.com")
+        user = users_factories.ProFactory(email="wrong@example.com")
         offer = offers_factories.ThingOfferFactory()
         offers_factories.UserOffererFactory(user__email="right@example.com", offerer=offer.venue.managingOfferer)
         booking_datetime = datetime.utcnow()

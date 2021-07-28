@@ -8,6 +8,7 @@ import pytest
 from pcapi.core.offerers.factories import VirtualVenueTypeFactory
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.factories import OffererFactory
+from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import User
 from pcapi.models import UserOfferer
@@ -77,7 +78,7 @@ class CreateActivatedUserOffererTest:
 
     def test_returns_created_user_offerer(self, app):
         # given
-        blake = UserFactory(email="fblake@bletchley.co.uk", id=123)
+        blake = ProFactory(email="fblake@bletchley.co.uk", id=123)
         VirtualVenueTypeFactory()
         blakes_company = OffererFactory(siren="362521879", name="MyBletcheyCompany", id=234)
         self.find_user_query.side_effect = [blake]
@@ -113,7 +114,7 @@ class FillUserOffererFromTest:
 
     def test_returns_a_user_offerer_built_with_user_and_offerer_relative_to_csv_row(self):
         # given
-        blake = UserFactory(email="fblake@bletchley.co.uk", id=123)
+        blake = ProFactory(email="fblake@bletchley.co.uk", id=123)
         blakes_company = OffererFactory(siren="362521879", name="MyBletcheyCompany", id=234)
 
         # when
@@ -134,7 +135,7 @@ class FillUserOffererFromTest:
 
     def test_raise_error_when_offerer_relative_to_csv_not_created(self):
         # given
-        blake = UserFactory(email="fblake@bletchley.co.uk", id=123)
+        blake = ProFactory(email="fblake@bletchley.co.uk", id=123)
         blakes_company = Offerer(siren="362521879", name="MyBletcheyCompany")
 
         # when
@@ -212,7 +213,6 @@ class FillUserFromTest:
         assert user.isBeneficiary == False
         assert user.has_pro_role
         assert user.password != ""
-        # TODO: why do we want to check the token here ?
 
 
 @pytest.mark.usefixtures("db_session")

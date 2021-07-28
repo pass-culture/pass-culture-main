@@ -56,7 +56,7 @@ class FindAllOffererPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_payment_info_with_sent_status(self, app):
         # Given
-        user = users_factories.UserFactory(lastName="User", firstName="Plus")
+        beneficiary = users_factories.BeneficiaryFactory(lastName="User", firstName="Plus")
         stock = offers_factories.ThingStockFactory(
             offer__name="Test Book",
             offer__venue__managingOfferer__address="7 rue du livre",
@@ -66,7 +66,9 @@ class FindAllOffererPaymentsTest:
             price=10,
         )
         now = datetime.utcnow()
-        booking = bookings_factories.BookingFactory(user=user, stock=stock, isUsed=True, dateUsed=now, token="ABCDEF")
+        booking = bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, isUsed=True, dateUsed=now, token="ABCDEF"
+        )
 
         payment = payments_factories.PaymentFactory(
             amount=50,
@@ -109,7 +111,7 @@ class FindAllOffererPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_last_matching_status_based_on_date_for_each_payment(self, app):
         # Given
-        user = users_factories.UserFactory(lastName="User", firstName="Plus")
+        beneficiary = users_factories.BeneficiaryFactory(lastName="User", firstName="Plus")
         stock = offers_factories.ThingStockFactory(
             offer__name="Test Book",
             offer__venue__managingOfferer__address="7 rue du livre",
@@ -119,8 +121,12 @@ class FindAllOffererPaymentsTest:
             price=10,
         )
         now = datetime.utcnow()
-        booking1 = bookings_factories.BookingFactory(user=user, stock=stock, isUsed=True, dateUsed=now, token="ABCDEF")
-        booking2 = bookings_factories.BookingFactory(user=user, stock=stock, isUsed=True, dateUsed=now, token="ABCDFE")
+        booking1 = bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, isUsed=True, dateUsed=now, token="ABCDEF"
+        )
+        booking2 = bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, isUsed=True, dateUsed=now, token="ABCDFE"
+        )
 
         payment = payments_factories.PaymentFactory(
             amount=50,

@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 
 from pcapi.core.offers import exceptions
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.factories import ProFactory
 
 from tests.conftest import TestClient
 
@@ -15,7 +15,7 @@ class ValidateDistantImageTest:
     def test_ok(self, mock_check_image, mock_get_distant_image, app):
         # Given
         body = {"url": "https://example.com/exampleaaa.jpg"}
-        user = UserFactory()
+        user = ProFactory()
         auth_request = TestClient(app.test_client()).with_auth(email=user.email)
         mock_get_distant_image.return_value = b"aze"
         mock_check_image.return_value = None
@@ -34,7 +34,7 @@ class ValidateDistantImageTest:
     def test_unaccessible_file(self, mock_get_distant_image, app):
         # Given
         body = {"url": "https://example.com/bla"}
-        user = UserFactory()
+        user = ProFactory()
         auth_request = TestClient(app.test_client()).with_auth(email=user.email)
         mock_get_distant_image.side_effect = exceptions.FailureToRetrieve()
 
@@ -58,7 +58,7 @@ class ValidateDistantImageTest:
     def test_image_size_too_large(self, mock_get_distant_image, app):
         # Given
         body = {"url": "https://example.com/wallpaper.jpg"}
-        user = UserFactory()
+        user = ProFactory()
         auth_request = TestClient(app.test_client()).with_auth(email=user.email)
         mock_get_distant_image.side_effect = exceptions.FileSizeExceeded(max_size=10_000_000)
 
@@ -76,7 +76,7 @@ class ValidateDistantImageTest:
     def test_image_too_small(self, mock_get_distant_image, app):
         # Given
         body = {"url": "https://example.com/icon.jpeg"}
-        user = UserFactory()
+        user = ProFactory()
         auth_request = TestClient(app.test_client()).with_auth(email=user.email)
         mock_get_distant_image.side_effect = exceptions.ImageTooSmall(min_width=400, min_height=400)
 
@@ -97,7 +97,7 @@ class ValidateDistantImageTest:
     def test_wrong_format(self, mock_get_distant_image, app):
         # Given
         body = {"url": "https://example.com/meme.gif"}
-        user = UserFactory()
+        user = ProFactory()
         auth_request = TestClient(app.test_client()).with_auth(email=user.email)
         mock_get_distant_image.side_effect = exceptions.UnacceptedFileType(
             accepted_types=(

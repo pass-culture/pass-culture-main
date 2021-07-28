@@ -72,7 +72,7 @@ class SendBeneficiaryBookingCancellationEmailTest:
         self, mocked_make_beneficiary_booking_cancellation_email_data
     ):
         # given
-        beneficiary = users_factories.UserFactory()
+        beneficiary = users_factories.BeneficiaryFactory()
         booking = create_booking(beneficiary, idx=23)
 
         # when
@@ -92,7 +92,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         self, make_offerer_driven_cancellation_email_for_offerer
     ):
         # Given
-        user = users_factories.UserFactory.build(email="user@example.com")
+        user = users_factories.BeneficiaryFactory.build(email="user@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         venue.bookingEmail = "booking@example.com"
@@ -163,7 +163,7 @@ class SendBookingConfirmationEmailToBeneficiaryTest:
     )
     def when_called_calls_send_email(self, mocked_retrieve_data_for_beneficiary_booking_confirmation_email):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.BeneficiaryFactory()
         booking = create_booking(user=user, idx=23)
 
         # When
@@ -231,7 +231,7 @@ class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
 class SendProUserValidationEmailTest:
     def test_sends_email_to_pro_user(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.ProFactory()
         user.generate_validation_token()
 
         # When
@@ -245,7 +245,7 @@ class SendProUserValidationEmailTest:
 class SendAdminUserValidationEmailTest:
     def test_send_mail_to_admin_user(self):
         # Given
-        user = users_factories.UserFactory()
+        user = users_factories.AdminFactory()
         token = users_factories.ResetPasswordToken(user=user)
 
         # When
@@ -260,7 +260,7 @@ class SendActivationEmailTest:
     @patch("pcapi.emails.beneficiary_activation.get_activation_email_data")
     def test_send_activation_email(self, mocked_get_activation_email_data):
         # given
-        beneficiary = users_factories.UserFactory.build()
+        beneficiary = users_factories.BeneficiaryFactory.build()
         token = users_factories.EmailValidationToken.build(user=beneficiary)
         mocked_get_activation_email_data.return_value = {"Html-part": ""}
 
@@ -273,7 +273,7 @@ class SendActivationEmailTest:
 
     def test_send_activation_email_for_native(self):
         # given
-        beneficiary = users_factories.UserFactory.build()
+        beneficiary = users_factories.BeneficiaryFactory.build()
         token = users_factories.EmailValidationToken.build(user=beneficiary)
 
         # when
@@ -327,7 +327,7 @@ class SendResetPasswordProEmailTest:
         self, mock_retrieve_data_for_reset_password_pro_email, app
     ):
         # given
-        user = users_factories.UserFactory(email="pro@example.com")
+        user = users_factories.ProFactory(email="pro@example.com")
 
         # when
         send_reset_password_email_to_pro(user)
@@ -412,7 +412,7 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
 class SendExpiredBookingsRecapEmailToBeneficiaryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_send_email_to_beneficiary_when_expired_bookings_cancelled(self, app):
-        amnesiac_user = users_factories.UserFactory(email="dory@example.com")
+        amnesiac_user = users_factories.BeneficiaryFactory(email="dory@example.com")
         expired_today_dvd_booking = BookingFactory(
             user=amnesiac_user,
         )
@@ -488,12 +488,12 @@ class SendNewlyEligibleUserEmailTest:
     @override_features(APPLY_BOOKING_LIMITS_V2=False)
     def test_send_activation_email_before_opening(self):
         # given
-        beneficiary = users_factories.UserFactory(
+        user = users_factories.UserFactory(
             dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)), departementCode="93", isBeneficiary=False
         )
 
         # when
-        send_newly_eligible_user_email(beneficiary)
+        send_newly_eligible_user_email(user)
 
         # then
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2030056
@@ -508,12 +508,12 @@ class SendNewlyEligibleUserEmailTest:
     @override_features(APPLY_BOOKING_LIMITS_V2=True)
     def test_send_activation_email_after_opening(self):
         # given
-        beneficiary = users_factories.UserFactory(
+        user = users_factories.UserFactory(
             dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)), departementCode="93", isBeneficiary=False
         )
 
         # when
-        send_newly_eligible_user_email(beneficiary)
+        send_newly_eligible_user_email(user)
 
         # then
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2030056

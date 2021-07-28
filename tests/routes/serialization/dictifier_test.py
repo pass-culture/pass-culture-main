@@ -79,7 +79,7 @@ class AsDictTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_model_keys_on_joined_relationships(self, app):
         # given
-        user = users_factories.UserFactory.build()
+        user = users_factories.ProFactory.build()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         repository.save(user_offerer)
