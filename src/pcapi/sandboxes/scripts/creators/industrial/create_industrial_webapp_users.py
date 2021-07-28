@@ -7,6 +7,7 @@ import uuid
 import pcapi.core.bookings.conf as bookings_conf
 from pcapi.core.payments.api import create_deposit
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.models import TokenType
 from pcapi.repository import repository
 
 
@@ -80,9 +81,14 @@ def create_industrial_webapp_young_users():
             needsToFillCulturalSurvey=needs_to_fill_cultural_survey,
             postalCode="{}100".format(departement_code),
             publicName=f"PC Test Jeune {departement_code} {short_tag} {deposit_version}",
-            resetPasswordToken=reset_password_token,
-            resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
         )
+        if reset_password_token:
+            users_factories.TokenFactory.build(
+                user=user,
+                value=reset_password_token,
+                expirationDate=datetime.utcnow() + timedelta(hours=24),
+                type=TokenType.RESET_PASSWORD,
+            )
         user_key = f"jeune{departement_code} {tag} v{deposit_version}"
         users_by_name[user_key] = user
         deposit_versions[user_key] = deposit_version
@@ -142,8 +148,6 @@ def create_industrial_webapp_general_public_users():
             needsToFillCulturalSurvey=True,
             postalCode="{}100".format(departement_code),
             publicName=f"PC Test Grand Public {short_age} {deposit_version}",
-            resetPasswordToken=None,
-            resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
         )
         user_key = f"grandpublic{age}v{deposit_version}"
         users_by_name[user_key] = user

@@ -1,5 +1,3 @@
-from datetime import datetime
-from datetime import timedelta
 import logging
 
 from pcapi.core.offers.factories import UserOffererFactory
@@ -26,7 +24,6 @@ def create_industrial_pro_users(offerers_by_name: dict) -> dict:
         for pro_count in range(PROS_COUNT):
             email = "pctest.pro{}.{}@example.com".format(departement_code, pro_count)
             user = users_factories.ProFactory(
-                resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
                 dateOfBirth=None,
                 departementCode=str(departement_code),
                 email=email,

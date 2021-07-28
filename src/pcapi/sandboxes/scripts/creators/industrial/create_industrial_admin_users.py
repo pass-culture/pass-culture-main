@@ -1,5 +1,3 @@
-from datetime import datetime
-from datetime import timedelta
 import logging
 
 from pcapi.core.users import factories as users_factories
@@ -22,7 +20,6 @@ def create_industrial_admin_users():
         for admin_count in range(ADMINS_COUNT):
             email = "pctest.admin{}.{}@example.com".format(departement_code, admin_count)
             users_by_name["admin{} {}".format(departement_code, admin_count)] = users_factories.AdminFactory(
-                resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
                 departementCode=str(departement_code),
                 email=email,
                 firstName="PC Test Admin",

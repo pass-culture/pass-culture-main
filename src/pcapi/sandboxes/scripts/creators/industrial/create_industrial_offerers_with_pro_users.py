@@ -1,5 +1,3 @@
-from datetime import datetime
-from datetime import timedelta
 import logging
 
 from pcapi.core.users import factories as users_factories
@@ -63,7 +61,6 @@ def create_industrial_offerers_with_pro_users():
         email = get_email(first_name, last_name, domain)
         user_name = "{} {}".format(first_name, last_name)
         user = users_factories.ProFactory(
-            resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
             departementCode=str(departement_code),
             email=email,
             firstName=first_name,
@@ -136,7 +133,6 @@ def create_industrial_offerers_with_pro_users():
             offerer.generate_validation_token()
 
         user = users_factories.ProFactory(
-            resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
             departementCode=str(departement_code),
             email=email,
             firstName=first_name,
@@ -170,7 +166,6 @@ def create_industrial_offerers_with_pro_users():
                 user_validation_token = "{}{}".format(user_validation_prefix, user_validation_suffix)
             user_name = "{} {}".format(first_name, last_name)
             user = users_factories.ProFactory(
-                resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
                 departementCode=str(departement_code),
                 email=email,
                 firstName=first_name,
