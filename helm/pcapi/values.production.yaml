@@ -71,10 +71,18 @@ api:
       - host: backend.passculture.beta.gouv.fr
         paths:
           - path: /
+      - host: backend.passculture.app
+        paths:
+          - path: /
+      - host: backend.passculture.pro
+        paths:
+          - path: /
     tls:
     - secretName: pcapi-ingress-cert
       hosts:
       - backend.passculture.beta.gouv.fr
+      - backend.passculture.app
+      - backend.passculture.pro
 
 ### High Latency API deployment ###
 highLatencyApi:
@@ -123,10 +131,30 @@ highLatencyApi:
           - path: /venues$
           - path: /venues/(.*)/stats$
           - path: /venueProviders$
+      - host: backend.passculture.app
+        paths:
+          - path: /bookings/pro$
+          - path: /offers$
+          - path: /offers/all-active-status$
+          - path: /offerers$
+          - path: /venues$
+          - path: /venues/(.*)/stats$
+          - path: /venueProviders$
+      - host: backend.passculture.pro
+        paths:
+          - path: /bookings/pro$
+          - path: /offers$
+          - path: /offers/all-active-status$
+          - path: /offerers$
+          - path: /venues$
+          - path: /venues/(.*)/stats$
+          - path: /venueProviders$
     tls:
     - secretName: pcapi-ingress-cert
       hosts:
       - backend.passculture.beta.gouv.fr
+      - backend.passculture.app
+      - backend.passculture.pro
 
 ### Admin deployment ###
 admin:
@@ -162,10 +190,18 @@ admin:
       - host: backend.passculture.beta.gouv.fr
         paths:
           - path: /pc/back-office/
+      - host: backend.passculture.app
+        paths:
+          - path: /pc/back-office/
+      - host: backend.passculture.pro
+        paths:
+          - path: /pc/back-office/
     tls:
     - secretName: pcapi-ingress-cert
       hosts:
       - backend.passculture.beta.gouv.fr
+      - backend.passculture.app
+      - backend.passculture.pro
 
 ### Worker deployment ###
 workers:
@@ -313,10 +349,20 @@ cloudTaskIdcheck:
         paths:
           - path: /native/v1/identity_document$
           - path: /cloud-tasks/verify_identity_document$
+      - host: backend.passculture.app
+        paths:
+          - path: /native/v1/identity_document$
+          - path: /cloud-tasks/verify_identity_document$
+      - host: backend.passculture.pro
+        paths:
+          - path: /native/v1/identity_document$
+          - path: /cloud-tasks/verify_identity_document$
     tls:
     - secretName: pcapi-ingress-cert
       hosts:
       - backend.passculture.beta.gouv.fr
+      - backend.passculture.app
+      - backend.passculture.pro
 
 aide:
   enabled: true
