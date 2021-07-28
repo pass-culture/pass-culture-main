@@ -10,6 +10,7 @@ from flask import request
 from flask import url_for
 from flask_admin.actions import action
 from flask_admin.base import expose
+from flask_admin.contrib.sqla.filters import FilterEqual
 from flask_admin.form import SecureForm
 from flask_admin.helpers import get_form_data
 from flask_admin.helpers import is_form_submitted
@@ -57,6 +58,11 @@ def offer_category_formatter(view, context, model, name) -> str:
     return subcategories.ALL_SUBCATEGORIES_DICT[model.subcategoryId].category_id
 
 
+class ExtraDataFilterEqual(FilterEqual):
+    def get_column(self, alias: str) -> str:
+        return super().get_column(alias).astext
+
+
 class OfferView(BaseAdminView):
     can_create = False
     can_edit = True
@@ -91,12 +97,16 @@ class OfferView(BaseAdminView):
     column_filters = [
         "id",
         "type",
+        "subcategoryId",
         "criteria.name",
         "name",
         "rankingWeight",
         "validation",
         "lastValidationDate",
         "isEducational",
+        ExtraDataFilterEqual(column=Offer.extraData["isbn"], name="ISBN"),
+        ExtraDataFilterEqual(column=Offer.extraData["visa"], name="Visa d'exploitation"),
+        ExtraDataFilterEqual(column=Offer.extraData["theater"]["allocine_room_id"], name="Identifiant Allociné"),
     ]
     form_columns = ["criteria", "rankingWeight", "isEducational"]
     simple_list_pager = True
