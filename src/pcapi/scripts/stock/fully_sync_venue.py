@@ -43,7 +43,7 @@ def fully_sync_venue(venue: Venue) -> None:
     logger.info("Resetting all stock quantity for full resync", extra={"venue": venue.id})
     _reset_stock_quantity(venue)
 
-    venue_provider = VenueProvider.query.filter_by(venueId=venue.id).one()
+    venue_provider = VenueProvider.query.filter_by(venueId=venue.id, isActive=True).one()
     venue_provider.lastSyncDate = None
     repository.save(venue_provider)
 
