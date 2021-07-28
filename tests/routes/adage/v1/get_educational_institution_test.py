@@ -5,7 +5,7 @@ from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.factories import InstitutionalProjectRedactorFactory
 from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.utils.human_ids import humanize
 
@@ -15,7 +15,7 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_get_educational_institution(self, app) -> None:
-        redactor = UserFactory(civility="M.")
+        redactor = InstitutionalProjectRedactorFactory(civility="M.")
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
         EducationalDepositFactory(

@@ -4,7 +4,7 @@ from pcapi import settings
 from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.factories import InstitutionalProjectRedactorFactory
 from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.utils.human_ids import humanize
 
@@ -14,7 +14,7 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_get_prebookings_without_query_params(self, app) -> None:
-        redactor = UserFactory(civility="M.")
+        redactor = InstitutionalProjectRedactorFactory(civility="M.")
         educationalYear = EducationalYearFactory()
         educationalInstitution = EducationalInstitutionFactory()
         booking = EducationalBookingFactory(
@@ -85,8 +85,8 @@ class Returns200Test:
         }
 
     def test_get_prebookings_with_query_params(self, app) -> None:
-        redactor = UserFactory(civility="M.")
-        another_redactor = UserFactory(civility="M.")
+        redactor = InstitutionalProjectRedactorFactory(civility="M.")
+        another_redactor = InstitutionalProjectRedactorFactory(civility="M.")
         educationalYear = EducationalYearFactory()
         educationalInstitution = EducationalInstitutionFactory()
         booking = EducationalBookingFactory(
