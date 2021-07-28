@@ -23,7 +23,7 @@ from pcapi.repository import repository
 @pytest.mark.usefixtures("db_session")
 class CheckCanBookFreeOfferTest:
     def test_dont_raise(self):
-        user = users_factories.UserFactory(isBeneficiary=True)
+        user = users_factories.BeneficiaryFactory()
         stock = offers_factories.StockFactory()
         validation.check_can_book_free_offer(user, stock)  # should not raise
 

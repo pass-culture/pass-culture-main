@@ -1471,13 +1471,11 @@ class GetOffersBookedByFraudulentUsersTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_only_offers_booked_by_fraudulent_users(self):
         # Given
-        fraudulent_beneficiary_user = users_factories.UserFactory(
-            isBeneficiary=True, email="jesuisunefraude@example.com"
+        fraudulent_beneficiary_user = users_factories.BeneficiaryFactory(email="jesuisunefraude@example.com")
+        another_fraudulent_beneficiary_user = users_factories.BeneficiaryFactory(
+            email="jesuisuneautrefraude@example.com"
         )
-        another_fraudulent_beneficiary_user = users_factories.UserFactory(
-            isBeneficiary=True, email="jesuisuneautrefraude@example.com"
-        )
-        beneficiary_user = users_factories.UserFactory(isBeneficiary=True, email="jenesuispasunefraude@EXAmple.com")
+        beneficiary_user = users_factories.BeneficiaryFactory(email="jenesuispasunefraude@EXAmple.com")
         offer_booked_by_fraudulent_users = offers_factories.OfferFactory()
         offer_booked_by_non_fraudulent_users = offers_factories.OfferFactory()
         offer_booked_by_both = offers_factories.OfferFactory()
@@ -1507,13 +1505,11 @@ class FindBookingsByFraudulentUsersTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_only_bookings_by_fraudulent_users(self):
         # Given
-        fraudulent_beneficiary_user = users_factories.UserFactory(
-            isBeneficiary=True, email="jesuisunefraude@example.com"
+        fraudulent_beneficiary_user = users_factories.BeneficiaryFactoryFactory(email="jesuisunefraude@example.com")
+        another_fraudulent_beneficiary_user = users_factories.BeneficiaryFactoryFactory(
+            email="jesuisuneautrefraude@example.com"
         )
-        another_fraudulent_beneficiary_user = users_factories.UserFactory(
-            isBeneficiary=True, email="jesuisuneautrefraude@example.com"
-        )
-        beneficiary_user = users_factories.UserFactory(isBeneficiary=True, email="jenesuispasunefraude@EXAmple.com")
+        beneficiary_user = users_factories.BeneficiaryFactory(email="jenesuispasunefraude@EXAmple.com")
         offer_booked_by_fraudulent_users = offers_factories.OfferFactory()
         other_offer_booked_by_fraudulent_users = offers_factories.OfferFactory()
         offer_booked_by_non_fraudulent_users = offers_factories.OfferFactory()

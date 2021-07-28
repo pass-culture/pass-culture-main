@@ -49,24 +49,21 @@ def get_by_siren_stub(offerer):
 class GetUsersInformationFromStockBookingsTest:
     def test_returns_correct_users_information_from_bookings_stock(self):
         # Given
-        user_1 = users_factories.UserFactory.build(
-            isBeneficiary=True,
+        user_1 = users_factories.BeneficiaryFactory.build(
             departementCode="93",
             email="test@example.com",
             firstName="Jean",
             lastName="Dupont",
             publicName="Test",
         )
-        user_2 = users_factories.UserFactory.build(
-            isBeneficiary=True,
+        user_2 = users_factories.BeneficiaryFactory.build(
             departementCode="93",
             email="mail@example.com",
             firstName="Jaja",
             lastName="Dudu",
             publicName="Test",
         )
-        user_3 = users_factories.UserFactory.build(
-            isBeneficiary=True,
+        user_3 = users_factories.BeneficiaryFactory.build(
             departementCode="93",
             email="mail@example.com",
             firstName="Toto",

@@ -450,7 +450,7 @@ class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
     ):
         # given
         now = datetime.utcnow()
-        user = users_factories.UserFactory(email="isasimov@example.com", isBeneficiary=True, isAdmin=False)
+        user = users_factories.BeneficiaryFactory(email="isasimov@example.com")
         created_23_days_ago = now - timedelta(days=23)
 
         dvd = ProductFactory(type=str(offer_type.ThingType.AUDIOVISUEL))

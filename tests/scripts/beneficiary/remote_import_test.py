@@ -236,7 +236,7 @@ class RunTest:
         find_applications_ids_to_retry.return_value = []
 
         get_details.return_value = make_new_beneficiary_application_details(123, "closed")
-        user = users_factories.UserFactory(email="john.doe@example.com", isBeneficiary=True)
+        user = users_factories.Beneficiary(email="john.doe@example.com")
         is_already_imported.return_value = False
         find_user_by_email.return_value = user
 
@@ -383,7 +383,7 @@ class ProcessBeneficiaryApplicationTest:
         # given
         information = fraud_factories.DMSContentFactory(application_id=123)
 
-        create_beneficiary_from_application.return_value = users_factories.UserFactory.build(isBeneficiary=True)
+        create_beneficiary_from_application.return_value = users_factories.BeneficiaryFactory.build()
 
         # when
         remote_import.process_beneficiary_application(
@@ -779,7 +779,7 @@ class RunIntegrationTest:
     @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
     def test_import_duplicated_user(self, get_application_details, get_closed_application_ids_for_demarche_simplifiee):
         # given
-        user = users_factories.UserFactory(
+        user = users_factories.BeneficiaryFactory(
             firstName="john",
             lastName="doe",
             email="john.doe@example.com",
@@ -788,7 +788,6 @@ class RunIntegrationTest:
             idPieceNumber="121316",
             isEmailValidated=True,
             isActive=True,
-            isBeneficiary=True,
         )
 
         created_import = users_factories.BeneficiaryImportFactory(
@@ -876,8 +875,7 @@ class RunIntegrationTest:
         self, get_application_details, get_closed_application_ids_for_demarche_simplifiee, mocker
     ):
         applicant = users_factories.UserFactory(email=self.EMAIL, isBeneficiary=False)
-        beneficiary = users_factories.UserFactory(
-            isBeneficiary=True,
+        beneficiary = users_factories.BeneficiaryFactory(
             isEmailValidated=True,
             dateOfBirth=self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S"),
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
@@ -996,8 +994,7 @@ class RunIntegrationTest:
             lastName=information.last_name,
             email=information.email,
         )
-        beneficiary = users_factories.UserFactory(
-            isBeneficiary=True,
+        beneficiary = users_factories.BeneficiaryFactory(
             dateOfBirth=information.birth_date,
             firstName=information.first_name,
             lastName=information.last_name,

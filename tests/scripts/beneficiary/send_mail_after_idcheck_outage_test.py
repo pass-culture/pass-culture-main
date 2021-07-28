@@ -33,16 +33,15 @@ class SendMailAfterIdcheckOutageTest:
             postalCode="98712",
         )
         # Beneficiary
-        factories.UserFactory(
+        factories.BeneficiaryFactory(
             dateOfBirth=datetime(2000, 1, 1),
-            isBeneficiary=True,
             dateCreated=datetime.now(),
             postalCode="93000",
         )
         # Admin
         factories.AdminFactory(dateOfBirth=datetime(2000, 1, 1), **ELIGIBLE_CONDTIONS)
         # Pro
-        pro_user = factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), **ELIGIBLE_CONDTIONS)
+        pro_user = factories.ProFactory(dateOfBirth=datetime(2000, 1, 1), **ELIGIBLE_CONDTIONS)
         offers_factories.UserOffererFactory(user=pro_user)
         # User not yet 18
         factories.UserFactory(dateOfBirth=datetime(2000, 1, 2), **ELIGIBLE_CONDTIONS)

@@ -86,10 +86,9 @@ class JouveFraudCheckTest:
 
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     def test_jouve_update_duplicate_user(self, _get_raw_content, client):
-        existing_user = users_factories.UserFactory(
+        existing_user = users_factories.BeneficiaryFactory(
             firstName="Christophe",
             lastName="Dupo",
-            isBeneficiary=True,
             dateOfBirth=datetime.datetime(2002, 6, 8),
             idPieceNumber="140767100016",
         )
@@ -261,7 +260,7 @@ class CommonFraudCheckTest:
         assert fraud_item.status == fraud_models.FraudStatus.OK
 
     def test_duplicate_id_piece_number_suspicious(self):
-        user = users_factories.UserFactory(isBeneficiary=True)
+        user = users_factories.BeneficiaryFactory()
 
         fraud_item = fraud_api._duplicate_id_piece_number_fraud_item(user.idPieceNumber)
         assert fraud_item.status == fraud_models.FraudStatus.SUSPICIOUS
@@ -274,7 +273,7 @@ class CommonFraudCheckTest:
         assert fraud_item.status == fraud_models.FraudStatus.OK
 
     def test_duplicate_user_fraud_suspicious(self):
-        user = users_factories.UserFactory(isBeneficiary=True)
+        user = users_factories.BeneficiaryFactory()
         fraud_item = fraud_api._duplicate_user_fraud_item(
             first_name=user.firstName, last_name=user.lastName, birth_date=user.dateOfBirth.date()
         )
@@ -283,7 +282,7 @@ class CommonFraudCheckTest:
 
     @pytest.mark.parametrize("fraud_check_type", [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.JOUVE])
     def test_user_validation_is_beneficiary(self, fraud_check_type):
-        user = users_factories.UserFactory(isBeneficiary=True)
+        user = users_factories.BeneficiaryFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
         fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
@@ -324,7 +323,7 @@ class CommonFraudCheckTest:
     def test_previously_validated_user_with_retry(self, fraud_check_type):
         # The user is already beneficiary, and has already done all the checks but
         # for any circumstances, someone is trying to redo the validation
-        user = users_factories.UserFactory(isBeneficiary=True)
+        user = users_factories.BeneficiaryFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
         fraud_result = fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
 

@@ -27,7 +27,7 @@ class BeneficiaryUserViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_list_beneficiaries(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="admin@example.com")
-        users_factories.UserFactory.create_batch(3, isBeneficiary=True)
+        users_factories.BeneficiaryFactory.create_batch(3)
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")
         n_queries = testing.AUTHENTICATION_QUERIES

@@ -1018,8 +1018,8 @@ class SendPhoneValidationCodeTest:
         assert user.beneficiaryFraudResult.reason == expected_reason
 
     def test_send_phone_validation_code_already_beneficiary(self, app):
-        user = users_factories.UserFactory(
-            isEmailValidated=True, isBeneficiary=True, phoneNumber="+33601020304", roles=[UserRole.BENEFICIARY]
+        user = users_factories.BeneficiaryFactory(
+            isEmailValidated=True, phoneNumber="+33601020304", roles=[UserRole.BENEFICIARY]
         )
         access_token = create_access_token(identity=user.email)
 
@@ -1033,8 +1033,8 @@ class SendPhoneValidationCodeTest:
         assert not Token.query.filter_by(userId=user.id).first()
 
     def test_send_phone_validation_code_for_new_phone_with_already_beneficiary(self, app):
-        user = users_factories.UserFactory(
-            isEmailValidated=True, isBeneficiary=True, phoneNumber="+33601020304", roles=[UserRole.BENEFICIARY]
+        user = users_factories.BeneficiaryFactory(
+            isEmailValidated=True, phoneNumber="+33601020304", roles=[UserRole.BENEFICIARY]
         )
         access_token = create_access_token(identity=user.email)
 

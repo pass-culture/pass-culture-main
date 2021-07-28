@@ -176,7 +176,7 @@ class needsToSeeTutorialsTest:
     @pytest.mark.usefixtures("db_session")
     def test_beneficiary_has_to_see_tutorials_when_not_already_seen(self, app):
         # given
-        user = users_factories.UserFactory.build(isBeneficiary=True, hasSeenTutorials=False)
+        user = users_factories.BeneficiaryFactory.build(hasSeenTutorials=False)
         # when
         repository.save(user)
         # then
@@ -185,7 +185,7 @@ class needsToSeeTutorialsTest:
     @pytest.mark.usefixtures("db_session")
     def test_beneficiary_has_not_to_see_tutorials_when_already_seen(self, app):
         # given
-        user = users_factories.UserFactory.build(isBeneficiary=True, hasSeenTutorials=True)
+        user = users_factories.BeneficiaryFactory.build(hasSeenTutorials=True)
         # when
         repository.save(user)
         # then

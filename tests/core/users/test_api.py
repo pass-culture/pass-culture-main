@@ -278,7 +278,7 @@ class SuspendAccountTest:
         assert actor.isActive
 
     def test_suspend_beneficiary(self):
-        user = users_factories.UserFactory(isBeneficiary=True)
+        user = users_factories.BeneficiaryFactory()
         cancellable_booking = bookings_factories.BookingFactory(user=user)
         yesterday = datetime.now() - timedelta(days=1)
         confirmed_booking = bookings_factories.BookingFactory(

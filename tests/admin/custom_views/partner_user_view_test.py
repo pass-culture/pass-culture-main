@@ -124,7 +124,7 @@ class PartnerUserViewTest:
     def test_resend_validation_email_to_partner(
         self, mocked_request_email_confirmation, mocked_validate_csrf_token, app
     ):
-        admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        admin = users_factories.AdminFactory(email="admin@example.com")
         partner = users_factories.UserFactory(email="partner@example.com", isEmailValidated=False)
         client = TestClient(app.test_client()).with_auth(admin.email)
 

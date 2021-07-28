@@ -4,6 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 
+from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import User
 from pcapi.scripts.beneficiary import remote_tag_has_completed
@@ -19,7 +20,7 @@ ONE_WEEK_AGO = NOW - timedelta(days=7)
 def test_tag_user_had_completed_id_check():
     # given
     recieved_beneficiary = UserFactory(hasCompletedIdCheck=False, isBeneficiary=False)
-    already_beneficiary = UserFactory(hasCompletedIdCheck=True, isBeneficiary=True)
+    already_beneficiary = BeneficiaryFactory(hasCompletedIdCheck=True)
     initiated_beneficiary = UserFactory(hasCompletedIdCheck=False, isBeneficiary=False)
 
     get_all_application_ids = Mock(return_value=[123, 456, 789])
