@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.payments import factories as payments_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
@@ -164,6 +165,8 @@ class GetTest:
             yesterday = today - timedelta(days=1)
             tomorow = today + timedelta(days=1)
             user, test_client = utils.create_user_and_test_client(app)
+            user.add_beneficiary_role()
+            user.deposits = [payments_factories.DepositFactory()]
             offerer = offers_factories.OffererFactory()
             venue = offers_factories.VenueFactory(managingOfferer=offerer)
 

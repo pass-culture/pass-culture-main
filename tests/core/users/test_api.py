@@ -586,7 +586,7 @@ class FulfillAccountPasswordTest:
 class SetOffererDepartementCodeTest:
     def should_set_user_department_to_undefined_department_code_when_offerer_has_none(self):
         # Given
-        new_user = users_factories.UserFactory()
+        new_user = users_factories.ProFactory.build()
         offerer = create_offerer(postal_code=None)
 
         # When
@@ -597,7 +597,7 @@ class SetOffererDepartementCodeTest:
 
     def should_set_user_department_code_based_on_offerer(self):
         # Given
-        new_user = users_factories.UserFactory()
+        new_user = users_factories.ProFactory.build()
         offerer = create_offerer(postal_code="75019")
 
         # When
@@ -646,7 +646,7 @@ class UpdateUserInfoTest:
 @pytest.mark.usefixtures("db_session")
 class DomainsCreditTest:
     def test_get_domains_credit_v1(self):
-        user = users_factories.UserFactory(deposit__version=1)
+        user = users_factories.BeneficiaryFactory(deposit__version=1)
 
         # booking only in all domains
         bookings_factories.BookingFactory(
@@ -691,7 +691,7 @@ class DomainsCreditTest:
         )
 
     def test_get_domains_credit_v2(self):
-        user = users_factories.UserFactory(deposit__version=2)
+        user = users_factories.BeneficiaryFactory(deposit__version=2)
 
         # booking in physical domain
         bookings_factories.BookingFactory(
@@ -707,7 +707,7 @@ class DomainsCreditTest:
         )
 
     def test_get_domains_credit_deposit_expired(self):
-        user = users_factories.UserFactory(deposit__version=2)
+        user = users_factories.BeneficiaryFactory(deposit__version=2)
         bookings_factories.BookingFactory(
             user=user,
             amount=250,

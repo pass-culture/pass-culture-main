@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core.users.factories import AdminFactory
+from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.core.users.factories import FavoriteFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.models import Deposit
@@ -10,7 +11,7 @@ from pcapi.scripts.beneficiary.delete_or_suspend_account_from_file import suspen
 
 
 @pytest.mark.usefixtures("db_session")
-def test_delete_user():
+def test_delete_user_when_she_has_no_deposit():
     admin = AdminFactory()
     user_without_deposit = UserFactory(email="user_to_delete@example.com")
     FavoriteFactory(user=user_without_deposit)
@@ -24,9 +25,9 @@ def test_delete_user():
 
 
 @pytest.mark.usefixtures("db_session")
-def test_suspend_user():
+def test_suspend_user_when_he_has_deposit():
     admin = AdminFactory()
-    user_with_deposit = UserFactory(email="user_to_suspend@example.com")
+    user_with_deposit = BeneficiaryFactory(email="user_to_suspend@example.com")
 
     suspend_or_delete_from_file(
         "tests/scripts/beneficiary/users_to_delete_fixture.txt",

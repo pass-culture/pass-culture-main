@@ -2,14 +2,14 @@ import pytest
 
 from pcapi.core.users import testing
 from pcapi.core.users.external.sendinblue import update_contact_attributes
-from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.factories import BeneficiaryFactory
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def test_update_contact_attributes():
-    user = UserFactory()
+    user = BeneficiaryFactory()
     update_contact_attributes(user)
 
     assert testing.sendinblue_requests == [

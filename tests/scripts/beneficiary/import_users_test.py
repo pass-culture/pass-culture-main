@@ -17,7 +17,7 @@ Smisse,Jean,jean.smisse@example.com,0102030406,44,44000,2000-01-02
 @pytest.mark.usefixtures("db_session")
 class ReadFileTest:
     def test_read_file(self):
-        jean = users_factories.UserFactory(email="jean.smisse@example.com", lastName="Old name")
+        jean = users_factories.BeneficiaryFactory(email="jean.smisse@example.com", lastName="Old name")
         assert len(jean.deposits) == 1
 
         csv_file = io.StringIO(CSV)

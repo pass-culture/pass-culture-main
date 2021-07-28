@@ -31,8 +31,8 @@ class Returns204Test:
         book_offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=book_offer)
 
-        user = users_factories.UserFactory()
-        booking = create_booking(user=user, stock=stock, venue=venue)
+        beneficiary = users_factories.BeneficiaryFactory()
+        booking = create_booking(user=beneficiary, stock=stock, venue=venue)
 
         repository.save(booking, user_offerer)
 
@@ -59,7 +59,7 @@ class Returns204Test:
                 "body": 'Ta réservation "Test event" a été annulée par l\'offreur.',
                 "title": "Réservation annulée",
             },
-            "user_ids": [user.id],
+            "user_ids": [beneficiary.id],
         }
 
     @pytest.mark.usefixtures("db_session")

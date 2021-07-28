@@ -95,7 +95,7 @@ class AccountTest:
             "phoneNumber": "+33102030405",
             "needsToFillCulturalSurvey": True,
         }
-        user = users_factories.UserFactory(
+        user = users_factories.BeneficiaryFactory(
             dateOfBirth=datetime(2000, 1, 1),
             deposit__version=1,
             # The expiration date is taken in account in
@@ -158,17 +158,9 @@ class AccountTest:
         }
         user = users_factories.UserFactory(
             dateOfBirth=datetime(2000, 1, 1),
-            deposit__version=1,
-            # The expiration date is taken in account in
-            # `get_wallet_balance` and compared against the SQL
-            # `now()` function, which is NOT overriden by
-            # `freeze_time()`.
-            deposit__expirationDate=datetime(2040, 1, 1),
             notificationSubscriptions={"marketing_push": True},
             publicName="jdo",
             departementCode="92",
-            isBeneficiary=False,
-            roles=[],
             **USER_DATA,
         )
 
@@ -215,17 +207,9 @@ class AccountTest:
         }
         user = users_factories.UserFactory(
             dateOfBirth=datetime(2000, 1, 1),
-            deposit__version=1,
-            # The expiration date is taken in account in
-            # `get_wallet_balance` and compared against the SQL
-            # `now()` function, which is NOT overriden by
-            # `freeze_time()`.
-            deposit__expirationDate=datetime(2040, 1, 1),
             notificationSubscriptions={"marketing_push": True},
             publicName="jdo",
             departementCode="92",
-            isBeneficiary=False,
-            roles=[],
             **USER_DATA,
         )
 
@@ -261,7 +245,7 @@ class AccountTest:
         assert response.json == EXPECTED_DATA
 
     def test_get_user_not_beneficiary(self, app):
-        users_factories.UserFactory(email=self.identifier, deposit=None, isBeneficiary=False, roles=[])
+        users_factories.UserFactory(email=self.identifier)
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -273,9 +257,7 @@ class AccountTest:
         assert not response.json["domainsCredit"]
 
     def test_get_user_profile_empty_first_name(self, app):
-        users_factories.UserFactory(
-            email=self.identifier, firstName="", isBeneficiary=False, publicName=VOID_PUBLIC_NAME, roles=[]
-        )
+        users_factories.UserFactory(email=self.identifier, firstName="", publicName=VOID_PUBLIC_NAME)
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -291,7 +273,7 @@ class AccountTest:
         assert response.json["roles"] == []
 
     def test_has_completed_id_check(self, app):
-        user = users_factories.UserFactory(email=self.identifier, deposit=None, isBeneficiary=False, roles=[])
+        user = users_factories.UserFactory(email=self.identifier)
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -309,9 +291,7 @@ class AccountTest:
 
     @freeze_time("2021-06-01")
     def test_next_beneficiary_validation_step(self, app):
-        user = users_factories.UserFactory(
-            email=self.identifier, isBeneficiary=False, dateOfBirth=datetime(2003, 1, 1), roles=[]
-        )
+        user = users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2003, 1, 1))
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -338,9 +318,7 @@ class AccountTest:
 
     @freeze_time("2021-06-01")
     def test_next_beneficiary_validation_step_not_eligible(self, app):
-        users_factories.UserFactory(
-            email=self.identifier, isBeneficiary=False, dateOfBirth=datetime(2000, 1, 1), roles=[]
-        )
+        users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2000, 1, 1))
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -739,9 +717,7 @@ class ResendEmailValidationTest:
 @freeze_time("2018-06-01")
 class GetIdCheckTokenTest:
     def test_get_id_check_token_eligible(self, app):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False, roles=[]
-        )
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -752,9 +728,7 @@ class GetIdCheckTokenTest:
         assert get_id_check_token(response.json["token"])
 
     def test_get_id_check_token_not_eligible(self, app):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime(2001, 1, 1), departementCode="984", isBeneficiary=False, roles=[]
-        )
+        user = users_factories.UserFactory(dateOfBirth=datetime(2001, 1, 1), departementCode="984")
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -765,9 +739,7 @@ class GetIdCheckTokenTest:
         assert response.json == {"code": "USER_NOT_ELIGIBLE"}
 
     def test_get_id_check_token_limit_reached(self, app):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False, roles=[]
-        )
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
 
         expiration_date = datetime.now() + timedelta(hours=2)
         users_factories.IdCheckToken.create_batch(
@@ -797,9 +769,7 @@ class UploadIdentityDocumentTest:
         mocked_verify_identity_document,
         app,
     ):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False, roles=[]
-        )
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
         token = TokenFactory(user=user, type=TokenType.ID_CHECK)
         access_token = create_access_token(identity=user.email)
         mocked_random_token.return_value = "a_very_random_secret"
@@ -827,9 +797,7 @@ class UploadIdentityDocumentTest:
         )
 
     def test_ineligible_user(self, app):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime(2000, 1, 1), departementCode="984", isBeneficiary=False, roles=[]
-        )
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="984")
         access_token = create_access_token(identity=user.email)
         token = TokenFactory(user=user, type=TokenType.ID_CHECK)
 
@@ -844,9 +812,7 @@ class UploadIdentityDocumentTest:
         assert response.json == {"code": "USER_NOT_ELIGIBLE"}
 
     def test_token_expired(self, app):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False, roles=[]
-        )
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
         access_token = create_access_token(identity=user.email)
         token = TokenFactory(user=user, type=TokenType.ID_CHECK, expirationDate=datetime(2000, 1, 1))
 
@@ -861,9 +827,7 @@ class UploadIdentityDocumentTest:
         assert response.json == {"code": "EXPIRED_TOKEN", "message": "Token expiré"}
 
     def test_token_used(self, app):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False, roles=[]
-        )
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
         token = TokenFactory(user=user, type=TokenType.ID_CHECK, isUsed=True)
 
         thumb = (self.IMAGES_DIR / "pixel.png").read_bytes()
@@ -881,9 +845,7 @@ class UploadIdentityDocumentTest:
         assert response.json["code"] == "EXPIRED_TOKEN"
 
     def test_no_token_found(self, app):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False, roles=[]
-        )
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
         token = TokenFactory(user=user, type=TokenType.ID_CHECK, isUsed=True)
 
         thumb = (self.IMAGES_DIR / "pixel.png").read_bytes()
@@ -907,7 +869,7 @@ class ShowEligibleCardTest:
         date_of_birth = datetime.now() - relativedelta(years=age, days=5)
         date_of_creation = datetime.now() - relativedelta(years=4)
         user = users_factories.UserFactory.build(
-            dateOfBirth=date_of_birth, dateCreated=date_of_creation, isBeneficiary=False, departementCode="93", roles=[]
+            dateOfBirth=date_of_birth, dateCreated=date_of_creation, departementCode="93"
         )
         assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
 
@@ -933,26 +895,20 @@ class ShowEligibleCardTest:
         user = users_factories.UserFactory.build(
             dateOfBirth=date_of_birth,
             dateCreated=date_of_creation,
-            isBeneficiary=False,
             departementCode=departement,
-            roles=[],
         )
         assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
 
     def test_user_eligible_but_created_after_18(self):
         date_of_birth = datetime.now() - relativedelta(years=18, days=5)
         date_of_creation = datetime.now()
-        user = users_factories.UserFactory.build(
-            dateOfBirth=date_of_birth, dateCreated=date_of_creation, isBeneficiary=False, roles=[]
-        )
+        user = users_factories.UserFactory.build(dateOfBirth=date_of_birth, dateCreated=date_of_creation)
         assert account_serializers.UserProfileResponse._show_eligible_card(user) == False
 
 
 class SendPhoneValidationCodeTest:
     def test_send_phone_validation_code(self, app):
-        user = users_factories.UserFactory(
-            departementCode="93", isBeneficiary=False, phoneNumber="+33601020304", roles=[]
-        )
+        user = users_factories.UserFactory(departementCode="93", phoneNumber="+33601020304")
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -984,9 +940,7 @@ class SendPhoneValidationCodeTest:
 
     @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
     def test_send_phone_validation_code_too_many_attempts(self, app):
-        user = users_factories.UserFactory(
-            departementCode="93", isBeneficiary=False, phoneNumber="+33601020304", roles=[]
-        )
+        user = users_factories.UserFactory(departementCode="93", phoneNumber="+33601020304")
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -1050,9 +1004,7 @@ class SendPhoneValidationCodeTest:
         assert user.phoneNumber == "+33601020304"
 
     def test_send_phone_validation_code_for_new_phone_updates_phone(self, app):
-        user = users_factories.UserFactory(
-            isEmailValidated=True, isBeneficiary=False, phoneNumber="+33601020304", roles=[]
-        )
+        user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33601020304")
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -1067,10 +1019,8 @@ class SendPhoneValidationCodeTest:
         assert user.phoneNumber == "+33102030405"
 
     def test_send_phone_validation_code_for_new_unvalidated_duplicated_phone_number(self, app):
-        users_factories.UserFactory(isEmailValidated=True, isBeneficiary=False, phoneNumber="+33102030405", roles=[])
-        user = users_factories.UserFactory(
-            isEmailValidated=True, isBeneficiary=False, phoneNumber="+33601020304", roles=[]
-        )
+        users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33102030405")
+        user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33601020304")
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -1087,13 +1037,9 @@ class SendPhoneValidationCodeTest:
         orig_user = users_factories.UserFactory(
             isEmailValidated=True,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-            isBeneficiary=False,
             phoneNumber="+33102030405",
-            roles=[],
         )
-        user = users_factories.UserFactory(
-            isEmailValidated=True, isBeneficiary=False, phoneNumber="+33601020304", roles=[]
-        )
+        user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33601020304")
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -1122,9 +1068,7 @@ class SendPhoneValidationCodeTest:
 
     @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33607080900"})
     def test_update_phone_number_with_blocked_phone_number(self, app):
-        user = users_factories.UserFactory(
-            isEmailValidated=True, isBeneficiary=False, phoneNumber="+33601020304", roles=[]
-        )
+        user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33601020304")
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -1141,9 +1085,7 @@ class SendPhoneValidationCodeTest:
 
     def test_send_phone_validation_code_with_malformed_number(self, app):
         # user's phone number should be in international format (E.164): +33601020304
-        user = users_factories.UserFactory(
-            isEmailValidated=True, isBeneficiary=False, phoneNumber="0601020304", roles=[]
-        )
+        user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="0601020304")
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -1156,9 +1098,7 @@ class SendPhoneValidationCodeTest:
         assert not Token.query.filter_by(userId=user.id).first()
 
     def test_send_phone_validation_code_with_non_french_number(self, app):
-        user = users_factories.UserFactory(
-            isEmailValidated=True, isBeneficiary=False, phoneNumber="+46766123456", roles=[]
-        )
+        user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+46766123456")
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -1171,9 +1111,7 @@ class SendPhoneValidationCodeTest:
         assert not Token.query.filter_by(userId=user.id).first()
 
     def test_update_phone_number_with_non_french_number(self, app):
-        user = users_factories.UserFactory(
-            isEmailValidated=True, isBeneficiary=False, phoneNumber="+46766123456", roles=[]
-        )
+        user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+46766123456")
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -1190,9 +1128,7 @@ class SendPhoneValidationCodeTest:
 
     @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33601020304"})
     def test_blocked_phone_number(self, app):
-        user = users_factories.UserFactory(
-            departementCode="93", isBeneficiary=False, phoneNumber="+33601020304", roles=[]
-        )
+        user = users_factories.UserFactory(departementCode="93", phoneNumber="+33601020304")
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -1222,7 +1158,7 @@ class SendPhoneValidationCodeTest:
 
 class ValidatePhoneNumberTest:
     def test_validate_phone_number(self, app):
-        user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="+33607080900", roles=[])
+        user = users_factories.UserFactory(phoneNumber="+33607080900")
         access_token = create_access_token(identity=user.email)
         token = create_phone_validation_token(user)
 
@@ -1246,7 +1182,7 @@ class ValidatePhoneNumberTest:
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 2
 
     def test_validate_phone_number_and_become_beneficiary(self, app):
-        user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="+33607080900", roles=[])
+        user = users_factories.UserFactory(phoneNumber="+33607080900")
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.CREATED)
@@ -1267,7 +1203,7 @@ class ValidatePhoneNumberTest:
 
     @override_settings(MAX_PHONE_VALIDATION_ATTEMPTS=1)
     def test_validate_phone_number_too_many_attempts(self, app):
-        user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="+33607080900", roles=[])
+        user = users_factories.UserFactory(phoneNumber="+33607080900")
         access_token = create_access_token(identity=user.email)
         token = create_phone_validation_token(user)
 
@@ -1306,7 +1242,7 @@ class ValidatePhoneNumberTest:
         assert user.beneficiaryFraudResult.reason == expected_reason
 
     def test_wrong_code(self, app):
-        user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="+33607080900", roles=[])
+        user = users_factories.UserFactory(phoneNumber="+33607080900")
         access_token = create_access_token(identity=user.email)
         create_phone_validation_token(user)
 
@@ -1322,7 +1258,7 @@ class ValidatePhoneNumberTest:
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
     def test_expired_code(self, app):
-        user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="+33607080900", roles=[])
+        user = users_factories.UserFactory(phoneNumber="+33607080900")
         token = create_phone_validation_token(user)
 
         with freeze_time(datetime.now() + timedelta(minutes=20)):
@@ -1339,7 +1275,7 @@ class ValidatePhoneNumberTest:
 
     @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33607080900"})
     def test_blocked_phone_number(self, app):
-        user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="+33607080900", roles=[])
+        user = users_factories.UserFactory(phoneNumber="+33607080900")
         token = create_phone_validation_token(user)
 
         access_token = create_access_token(identity=user.email)
@@ -1354,7 +1290,7 @@ class ValidatePhoneNumberTest:
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
     def test_validate_phone_number_with_non_french_number(self, app):
-        user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="+46766123456", roles=[])
+        user = users_factories.UserFactory(phoneNumber="+46766123456")
         token = create_phone_validation_token(user)
 
         access_token = create_access_token(identity=user.email)
@@ -1370,9 +1306,9 @@ class ValidatePhoneNumberTest:
 
     def test_validate_phone_number_with_already_validated_phone(self, app):
         users_factories.UserFactory(
-            isBeneficiary=False, phoneValidationStatus=PhoneValidationStatusType.VALIDATED, phoneNumber="+33607080900"
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED, phoneNumber="+33607080900"
         )
-        user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="+33607080900", roles=[])
+        user = users_factories.UserFactory(phoneNumber="+33607080900")
         access_token = create_access_token(identity=user.email)
         token = create_phone_validation_token(user)
 
@@ -1416,14 +1352,12 @@ class UpdateBeneficiaryInformationTest:
             * send a request to Batch to update the user's information
         """
         user = users_factories.UserFactory(
-            isBeneficiary=False,
             address=None,
             city=None,
             postalCode=None,
             activity=None,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
             phoneNumber="+33609080706",
-            roles=[],
         )
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
@@ -1471,13 +1405,11 @@ class UpdateBeneficiaryInformationTest:
             * send a request to Batch to update the user's information
         """
         user = users_factories.UserFactory(
-            isBeneficiary=False,
             address=None,
             city=None,
             postalCode=None,
             activity=None,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-            roles=[],
         )
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
@@ -1526,13 +1458,11 @@ class UpdateBeneficiaryInformationTest:
             * send a request to Batch to update the user's information
         """
         user = users_factories.UserFactory(
-            isBeneficiary=False,
             address=None,
             city=None,
             postalCode=None,
             activity=None,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-            roles=[],
         )
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
@@ -1574,10 +1504,7 @@ class ProfilingFraudScoreTest:
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     def test_profiling_fraud_score_call(self, client, requests_mock):
-        user = users_factories.UserFactory(
-            isBeneficiary=False,
-            roles=[],
-        )
+        user = users_factories.UserFactory()
         session_id = "arbitrarysessionid"
         matcher = requests_mock.register_uri(
             "POST",
@@ -1593,10 +1520,7 @@ class ProfilingFraudScoreTest:
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     def test_profiling_fraud_score_call_error(self, client, requests_mock, caplog):
-        user = users_factories.UserFactory(
-            isBeneficiary=False,
-            roles=[],
-        )
+        user = users_factories.UserFactory()
         matcher = requests_mock.register_uri(
             "POST",
             settings.USER_PROFILING_URL,
@@ -1613,11 +1537,7 @@ class ProfilingFraudScoreTest:
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     def test_profiling_fraud_score_user_without_birth_date(self, client, requests_mock, caplog):
-        user = users_factories.UserFactory(
-            isBeneficiary=False,
-            dateOfBirth=None,
-            roles=[],
-        )
+        user = users_factories.UserFactory(dateOfBirth=None)
         matcher = requests_mock.register_uri(
             "POST",
             settings.USER_PROFILING_URL,
@@ -1640,10 +1560,7 @@ class ProfilingFraudScoreTest:
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     def test_profiling_session_id_invalid(self, client, requests_mock):
-        user = users_factories.UserFactory(
-            isBeneficiary=False,
-            roles=[],
-        )
+        user = users_factories.UserFactory()
         matcher = requests_mock.register_uri(
             "POST",
             settings.USER_PROFILING_URL,

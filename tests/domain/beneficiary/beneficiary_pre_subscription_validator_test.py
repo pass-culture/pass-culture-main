@@ -29,7 +29,7 @@ def test_should_not_raise_exception_for_valid_beneficiary(app):
 def test_raises_if_email_already_taken_by_beneficiary(app):
     # Given
     email = "email@example.org"
-    existing_user = users_factories.UserFactory(email=email)
+    existing_user = users_factories.BeneficiaryFactory(email=email)
 
     beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(email=email)
 
@@ -73,7 +73,9 @@ def test_raises_if_duplicate(app):
     first_name = "John"
     last_name = "Doe"
     date_of_birth = datetime(1993, 2, 2)
-    existing_user = users_factories.UserFactory(firstName=first_name, lastName=last_name, dateOfBirth=date_of_birth)
+    existing_user = users_factories.BeneficiaryFactory(
+        firstName=first_name, lastName=last_name, dateOfBirth=date_of_birth
+    )
 
     beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(
         first_name=first_name, last_name=last_name, date_of_birth=date_of_birth

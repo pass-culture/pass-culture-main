@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.core.users.factories import UserFactory
 import pcapi.notifications.push.testing as push_testing
 from pcapi.notifications.push.user_attributes_updates import BATCH_DATETIME_FORMAT
@@ -40,7 +41,7 @@ def test_run():
 
 @pytest.mark.usefixtures("db_session")
 def test_format_user():
-    user = UserFactory()
+    user = BeneficiaryFactory()
     booking = BookingFactory(user=user)
 
     res = format_users([user])

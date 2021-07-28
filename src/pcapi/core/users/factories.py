@@ -23,28 +23,24 @@ class UserFactory(BaseFactory):
     class Meta:
         model = pcapi.core.users.models.User
 
-    email = factory.Sequence("jeanne.doux{}@example.com".format)
-    address = factory.Sequence("{} rue des machines".format)
-    city = "Paris"
-    dateOfBirth = datetime.datetime(2000, 1, 1)
+    email = factory.Sequence("jean.neige{}@example.com".format)
+    address = factory.Sequence("{} place des noces rouges".format)
+    city = "La Rochelle"
+    dateOfBirth = datetime.datetime(1980, 1, 1)
     departementCode = "75"
-    firstName = "Jeanne"
-    lastName = "Doux"
-    publicName = "Jeanne Doux"
+    firstName = "Jean"
+    lastName = "Neige"
+    publicName = "Jean Neige"
     isEmailValidated = True
-    isBeneficiary = True
-    roles = [pcapi.core.users.models.UserRole.BENEFICIARY]
+    isBeneficiary = False
+    isAdmin = False
+    roles = []
     hasSeenProTutorials = True
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
-        # Let us just say `UserFactory(isAdmin=True)` and not have to
-        # mention `isBeneficiary=False` (because it's enforced by a
-        # database constraint anyway).
-        if kwargs.get("isAdmin"):
-            kwargs["isBeneficiary"] = False
         instance = super()._create(model_class, *args, **kwargs)
         instance.clearTextPassword = DEFAULT_PASSWORD
         return instance
@@ -56,16 +52,6 @@ class UserFactory(BaseFactory):
         instance = super()._build(model_class, *args, **kwargs)
         instance.clearTextPassword = DEFAULT_PASSWORD
         return instance
-
-    @factory.post_generation
-    def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
-        from pcapi.core.payments.factories import DepositFactory
-
-        if not create:
-            return None
-        if obj.isAdmin or not obj.isBeneficiary:
-            return None
-        return DepositFactory(user=obj, **kwargs)
 
 
 class AdminFactory(BaseFactory):
@@ -89,13 +75,17 @@ class AdminFactory(BaseFactory):
     def _create(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
-        return super()._create(model_class, *args, **kwargs)
+        instance = super()._create(model_class, *args, **kwargs)
+        instance.clearTextPassword = DEFAULT_PASSWORD
+        return instance
 
     @classmethod
     def _build(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
-        return super()._build(model_class, *args, **kwargs)
+        instance = super()._build(model_class, *args, **kwargs)
+        instance.clearTextPassword = DEFAULT_PASSWORD
+        return instance
 
 
 class BeneficiaryFactory(BaseFactory):
@@ -120,13 +110,17 @@ class BeneficiaryFactory(BaseFactory):
     def _create(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
-        return super()._create(model_class, *args, **kwargs)
+        instance = super()._create(model_class, *args, **kwargs)
+        instance.clearTextPassword = DEFAULT_PASSWORD
+        return instance
 
     @classmethod
     def _build(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
-        return super()._build(model_class, *args, **kwargs)
+        instance = super()._build(model_class, *args, **kwargs)
+        instance.clearTextPassword = DEFAULT_PASSWORD
+        return instance
 
     @factory.post_generation
     def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
@@ -158,13 +152,17 @@ class ProFactory(BaseFactory):
     def _create(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
-        return super()._create(model_class, *args, **kwargs)
+        instance = super()._create(model_class, *args, **kwargs)
+        instance.clearTextPassword = DEFAULT_PASSWORD
+        return instance
 
     @classmethod
     def _build(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
-        return super()._build(model_class, *args, **kwargs)
+        instance = super()._build(model_class, *args, **kwargs)
+        instance.clearTextPassword = DEFAULT_PASSWORD
+        return instance
 
 
 class InstitutionalProjectRedactorFactory(UserFactory):

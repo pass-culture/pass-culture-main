@@ -3,9 +3,9 @@ from datetime import datetime
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import BeneficiaryFactory
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.users.factories import ProFactory
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer

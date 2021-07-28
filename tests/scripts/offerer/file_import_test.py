@@ -199,7 +199,7 @@ class FillUserFromTest:
 
     def test_returns_the_given_user_with_modified_data_from_the_csv(self):
         # given
-        existing_user = UserFactory(email="pmortimer@bletchley.co.uk", id=123)
+        existing_user = UserFactory.build(email="pmortimer@bletchley.co.uk", id=123)
 
         # when
         user = fill_user_from(self.csv_row, existing_user)

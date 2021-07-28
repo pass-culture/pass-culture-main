@@ -216,7 +216,7 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
 def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     # Given
     email = "rennes@example.org"
-    user = users_factories.UserFactory(email=email, id=4)
+    users_factories.BeneficiaryFactory(email=email, id=4)
 
     # When
     create_beneficiary_from_application.execute(APPLICATION_ID)
@@ -243,7 +243,7 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     date_of_birth = datetime(1995, 5, 22)
     existing_user_id = 4
 
-    user = users_factories.UserFactory(
+    users_factories.BeneficiaryFactory(
         firstName=first_name, lastName=last_name, dateOfBirth=date_of_birth, id=existing_user_id
     )
 

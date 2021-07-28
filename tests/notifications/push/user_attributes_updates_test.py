@@ -6,7 +6,6 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.factories import BeneficiaryFactory
-from pcapi.core.users.factories import UserFactory
 from pcapi.notifications.push.user_attributes_updates import BATCH_DATETIME_FORMAT
 from pcapi.notifications.push.user_attributes_updates import TRACKED_PRODUCT_IDS
 from pcapi.notifications.push.user_attributes_updates import get_user_attributes
@@ -56,7 +55,7 @@ class GetUserAttributesTest:
             assert len(parameter_name) <= MAX_BATCH_PARAMETER_SIZE
 
     def test_get_attributes_without_bookings(self):
-        user = UserFactory()
+        user = BeneficiaryFactory()
 
         n_query_get_user = 1
         n_query_get_bookings = 1

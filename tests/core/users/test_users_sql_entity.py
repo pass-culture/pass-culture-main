@@ -60,7 +60,6 @@ class WalletBalanceTest:
     def test_balance_is_0_with_no_deposits_and_no_bookings(self):
         # given
         user = users_factories.UserFactory()
-        repository.delete(user.deposit)
 
         # then
         assert user.wallet_balance == 0
@@ -69,7 +68,7 @@ class WalletBalanceTest:
     @pytest.mark.usefixtures("db_session")
     def test_balance_is_the_sum_of_deposits_if_no_bookings(self):
         # given
-        user = users_factories.UserFactory(deposit__version=1)
+        user = users_factories.BeneficiaryFactory(deposit__version=1)
         payments_factories.DepositFactory(user=user, version=1)
 
         # then
@@ -79,7 +78,7 @@ class WalletBalanceTest:
     @pytest.mark.usefixtures("db_session")
     def test_balance_count_non_expired_deposits(self):
         # given
-        user = users_factories.UserFactory(deposit__version=1, deposit__expirationDate=None)
+        user = users_factories.BeneficiaryFactory(deposit__version=1, deposit__expirationDate=None)
 
         # then
         assert user.wallet_balance == 500
@@ -88,7 +87,7 @@ class WalletBalanceTest:
     @pytest.mark.usefixtures("db_session")
     def test_balance_ignores_expired_deposits(self):
         # given
-        user = users_factories.UserFactory(deposit__version=1, deposit__expirationDate=datetime(2000, 1, 1))
+        user = users_factories.BeneficiaryFactory(deposit__version=1, deposit__expirationDate=datetime(2000, 1, 1))
 
         # then
         assert user.wallet_balance == 0
@@ -97,7 +96,7 @@ class WalletBalanceTest:
     @pytest.mark.usefixtures("db_session")
     def test_balance(self):
         # given
-        user = users_factories.UserFactory(deposit__version=1)
+        user = users_factories.BeneficiaryFactory(deposit__version=1)
         bookings_factories.BookingFactory(user=user, isUsed=True, status=BookingStatus.USED, quantity=1, amount=10)
         bookings_factories.BookingFactory(user=user, isUsed=True, status=BookingStatus.USED, quantity=2, amount=20)
         bookings_factories.BookingFactory(user=user, isUsed=False, quantity=3, amount=30)
@@ -112,7 +111,7 @@ class WalletBalanceTest:
     @pytest.mark.usefixtures("db_session")
     def test_real_balance_with_only_used_bookings(self):
         # given
-        user = users_factories.UserFactory(deposit__version=1)
+        user = users_factories.BeneficiaryFactory(deposit__version=1)
         bookings_factories.BookingFactory(user=user, isUsed=False, quantity=1, amount=30)
 
         # then
@@ -122,7 +121,7 @@ class WalletBalanceTest:
     @pytest.mark.usefixtures("db_session")
     def test_balance_should_not_be_negative(self):
         # given
-        user = users_factories.UserFactory(deposit__version=1)
+        user = users_factories.BeneficiaryFactory(deposit__version=1)
         bookings_factories.BookingFactory(user=user, isUsed=True, quantity=1, amount=10)
         deposit = user.deposit
         deposit.expirationDate = datetime(2000, 1, 1)
@@ -226,7 +225,7 @@ class CalculateAgeTest:
 class DepositVersionTest:
     def test_return_the_deposit(self):
         # given
-        user = users_factories.UserFactory(deposit__version=1)
+        user = users_factories.BeneficiaryFactory(deposit__version=1)
 
         # then
         assert user.deposit_version == 1
