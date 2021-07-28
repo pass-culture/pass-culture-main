@@ -24,7 +24,7 @@ class DepositFactory(BaseFactory):
     class Meta:
         model = models.Deposit
 
-    user = factory.SubFactory(users_factories.UserFactory)
+    user = factory.SubFactory(users_factories.BeneficiaryFactory)
     source = "public"
     version = 1
     expirationDate = factory.LazyFunction(api._get_expiration_date)

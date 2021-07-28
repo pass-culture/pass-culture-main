@@ -34,7 +34,7 @@ def create_future_beneficiaries() -> None:
 
 def create_expiring_beneficiary() -> None:
     coming_saturday = datetime.now() + relativedelta(weekday=SA)
-    users_factories.UserFactory(
+    users_factories.BeneficiaryFactory(
         email="pctest.beneficiary.deposit-expires-soon@example.com",
         deposit__expirationDate=coming_saturday,
         deposit__source="sandbox",
@@ -46,7 +46,7 @@ def create_expiring_beneficiary() -> None:
 
 
 def create_beneficiary_with_empty_deposit() -> None:
-    beneficiary_user = users_factories.UserFactory(
+    beneficiary_user = users_factories.BeneficiaryFactory(
         email="pctest.beneficiary.no-more-deposit@example.com",
         deposit__source="sandbox",
         needsToFillCulturalSurvey=False,
@@ -58,7 +58,7 @@ def create_beneficiary_with_empty_deposit() -> None:
 
 
 def create_beneficiary_with_specific_address() -> None:
-    users_factories.UserFactory(
+    users_factories.BeneficiaryFactory(
         email="pctest.beneficiary.adress-specified@example.com",
         address="182 rue Saint-Honoré",
         city="Paris",

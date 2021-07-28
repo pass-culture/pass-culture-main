@@ -111,7 +111,7 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
     class Meta:
         model = models.BeneficiaryFraudCheck
 
-    user = factory.SubFactory(users_factories.UserFactory)
+    user = factory.SubFactory(users_factories.BeneficiaryFactory)
     type = factory.LazyAttribute(lambda o: random.choice(list(models.FraudCheckType)))
     thirdPartyId = factory.Sequence("ThirdPartyIdentifier-{0}".format)
     resultContent = factory.SubFactory(JouveContentFactory)
@@ -133,7 +133,7 @@ class BeneficiaryFraudResultFactory(testing.BaseFactory):
     class Meta:
         model = models.BeneficiaryFraudResult
 
-    user = factory.SubFactory(users_factories.UserFactory)
+    user = factory.SubFactory(users_factories.BeneficiaryFactory)
     status = factory.LazyAttribute(lambda o: random.choice(list(models.FraudStatus)).value)
     reason = factory.Sequence("Fraud Result excuse #{0}".format)
 
