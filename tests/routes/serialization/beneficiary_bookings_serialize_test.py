@@ -3,7 +3,6 @@ from unittest.mock import patch
 
 from freezegun import freeze_time
 
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from pcapi.domain.beneficiary_bookings.stock import Stock
@@ -38,7 +37,6 @@ class BeneficiaryBookingsSerializeTest:
                 id=4,
                 isCancelled=False,
                 isUsed=True,
-                status=BookingStatus.USED,
                 quantity=2,
                 stockId=56,
                 token="TOKEN",
@@ -92,7 +90,6 @@ class BeneficiaryBookingsSerializeTest:
                     "isEventExpired": False,
                     "isUsed": True,
                     "quantity": 2,
-                    "status": BookingStatus.USED,
                     "displayAsEnded": False,
                     "stock": {
                         "beginningDatetime": "2019-03-08T00:00:00Z",
@@ -193,7 +190,6 @@ class BeneficiaryBookingsSerializeTest:
                 id=4,
                 isCancelled=False,
                 isUsed=True,
-                status=BookingStatus.USED,
                 quantity=2,
                 stockId=56,
                 token="TOKEN",
@@ -248,7 +244,6 @@ class BeneficiaryBookingsSerializeTest:
                     "isUsed": True,
                     "qrCode": "fake_qr_code",
                     "quantity": 2,
-                    "status": BookingStatus.USED,
                     "displayAsEnded": False,
                     "stock": {
                         "beginningDatetime": "2019-03-08T00:00:00Z",
@@ -348,7 +343,6 @@ class BeneficiaryBookingsSerializeTest:
                 id=4,
                 isCancelled=False,
                 isUsed=True,
-                status=BookingStatus.USED,
                 quantity=2,
                 stockId=56,
                 token="TOKEN",
@@ -400,7 +394,6 @@ class BeneficiaryBookingsSerializeTest:
                     "isEventExpired": False,
                     "isUsed": True,
                     "quantity": 2,
-                    "status": BookingStatus.USED,
                     "displayAsEnded": False,
                     "stock": {
                         "beginningDatetime": "2019-03-08T00:00:00Z",
@@ -512,7 +505,6 @@ class BeneficiaryBookingsSerializeTest:
                 id=4,
                 isCancelled=False,
                 isUsed=True,
-                status=BookingStatus.USED,
                 quantity=2,
                 stockId=56,
                 token="TOKEN",
@@ -593,7 +585,6 @@ class BeneficiaryBookingsSerializeTest:
                 id=4,
                 isCancelled=False,
                 isUsed=True,
-                status=BookingStatus.USED,
                 quantity=2,
                 stockId=56,
                 token="TOKEN",

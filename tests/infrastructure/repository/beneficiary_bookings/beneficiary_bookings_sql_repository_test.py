@@ -52,7 +52,6 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert expected_booking.id == booking.id
         assert expected_booking.isCancelled is False
         assert expected_booking.isUsed is True
-        assert expected_booking.status is BookingStatus.USED
         assert expected_booking.quantity == 2
         assert expected_booking.stockId == stock.id
         assert expected_booking.token == booking.token

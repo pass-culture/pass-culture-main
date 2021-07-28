@@ -1,7 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
 
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.domain.beneficiary_bookings.active_mediation import ActiveMediation
 from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
 
@@ -18,7 +17,6 @@ class BeneficiaryBookingTest:
                 id=4,
                 isCancelled=False,
                 isUsed=True,
-                status=BookingStatus.USED,
                 quantity=2,
                 stockId=56,
                 token="ABCDEF",
@@ -69,7 +67,6 @@ class BeneficiaryBookingTest:
                 id=4,
                 isCancelled=False,
                 isUsed=True,
-                status=BookingStatus.USED,
                 quantity=2,
                 stockId=56,
                 token="TOKEN",
@@ -119,7 +116,6 @@ class BeneficiaryBookingTest:
                 id=4,
                 isCancelled=False,
                 isUsed=True,
-                status=BookingStatus.USED,
                 quantity=2,
                 stockId=56,
                 token="TOKEN",
@@ -169,7 +165,6 @@ class BeneficiaryBookingTest:
                 id=4,
                 isCancelled=False,
                 isUsed=True,
-                status=BookingStatus.USED,
                 quantity=2,
                 stockId=56,
                 token="TOKEN",
@@ -220,7 +215,6 @@ class BeneficiaryBookingTest:
                 id=4,
                 isCancelled=False,
                 isUsed=True,
-                status=BookingStatus.USED,
                 quantity=2,
                 stockId=56,
                 token="TOKEN",
@@ -267,7 +261,6 @@ class BeneficiaryBookingTest:
                 id=4,
                 isCancelled=False,
                 isUsed=True,
-                status=BookingStatus.USED,
                 quantity=2,
                 stockId=56,
                 token="TOKEN",

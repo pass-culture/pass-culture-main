@@ -631,13 +631,6 @@ class MarkAsUnusedTest:
         assert not booking.isUsed  # unchanged
         assert booking.status is not BookingStatus.USED
 
-    def test_raise_if_cancelled(self):
-        booking = factories.BookingFactory(isUsed=False, isCancelled=True, status=BookingStatus.CANCELLED)
-        with pytest.raises(api_errors.ResourceGoneError):
-            api.mark_as_unused(booking)
-        assert not booking.isUsed  # unchanged
-        assert booking.status is not BookingStatus.USED
-
     def test_raise_if_has_payment(self):
         booking = factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
         payments_factories.PaymentFactory(booking=booking)

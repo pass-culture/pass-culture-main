@@ -28,10 +28,10 @@ def test_total_amount():
 def test_save_cancellation_date_postgresql_function():
     # In this test, we manually COMMIT so that save_cancellation_date
     # PotsgreSQL function is triggered.
-    booking = factories.BookingFactory(status=BookingStatus.PENDING)
+    booking = factories.BookingFactory()
     assert booking.cancellationDate is None
 
-    booking.cancelBooking()
+    booking.isCancelled = True
     db.session.commit()
     assert booking.cancellationDate is not None
 
@@ -41,7 +41,7 @@ def test_save_cancellation_date_postgresql_function():
     db.session.commit()
     assert booking.cancellationDate == previous
 
-    booking.unCancelBooking()
+    booking.isCancelled = False
     db.session.commit()
     assert booking.cancellationDate is None
 

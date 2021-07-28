@@ -199,6 +199,32 @@ class Returns403Test:
             assert response.status_code == 403
             assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
+        @pytest.mark.usefixtures("db_session")
+        def test_when_api_key_is_provided_and_booking_has_been_cancelled_already(self, app):
+            # Given
+            booking = BookingFactory(
+                isUsed=False,
+                isCancelled=True,
+                status=BookingStatus.CANCELLED,
+            )
+            offerer = booking.stock.offer.venue.managingOfferer
+
+            ApiKeyFactory(offerer=offerer)
+            url = f"/v2/bookings/keep/token/{booking.token}"
+            user2_api_key = f"Bearer {DEFAULT_CLEAR_API_KEY}"
+
+            # When
+            response = TestClient(app.test_client()).patch(
+                url, headers={"Authorization": user2_api_key, "Origin": "http://localhost"}
+            )
+
+            # Then
+            booking = Booking.query.get(booking.id)
+            assert response.status_code == 403
+            assert response.json["booking"] == ["Cette réservation a été annulée"]
+            assert booking.isUsed is False
+            assert booking.status is BookingStatus.CANCELLED
+
     class WithBasicAuthTest:
         @pytest.mark.usefixtures("db_session")
         def test_when_user_is_not_attached_to_linked_offerer(self, app):
@@ -220,6 +246,23 @@ class Returns403Test:
             assert response.status_code == 403
             assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
             assert Booking.query.get(booking.id).isUsed is False
+
+        @pytest.mark.usefixtures("db_session")
+        def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
+            # Given
+            admin = users_factories.UserFactory(isAdmin=True)
+            booking = BookingFactory(isCancelled=True, isUsed=False, status=BookingStatus.CANCELLED)
+            url = f"/v2/bookings/keep/token/{booking.token}"
+
+            # When
+            response = TestClient(app.test_client()).with_auth(admin.email).patch(url)
+
+            # Then
+            booking = Booking.query.get(booking.id)
+            assert response.status_code == 403
+            assert response.json["booking"] == ["Cette réservation a été annulée"]
+            assert booking.isUsed is False
+            assert booking.status is BookingStatus.CANCELLED
 
 
 class Returns404Test:

@@ -333,7 +333,7 @@ class InsufficientFundsSQLCheckTest:
 
         # The backend should not do that, but if it does, the database
         # should prevent it.
-        booking.unCancelBooking()
+        booking.uncancel_booking()
         with pytest.raises(sqlalchemy.exc.InternalError) as exc:
             db.session.add(booking)
             db.session.flush()

@@ -282,7 +282,7 @@ class SuspendAccountTest:
         cancellable_booking = bookings_factories.BookingFactory(user=user)
         yesterday = datetime.now() - timedelta(days=1)
         confirmed_booking = bookings_factories.BookingFactory(
-            user=user, confirmation_date=yesterday, status=BookingStatus.CONFIRMED
+            user=user, cancellation_limit_date=yesterday, status=BookingStatus.CONFIRMED
         )
         used_booking = bookings_factories.BookingFactory(user=user, isUsed=True, status=BookingStatus.USED)
         actor = users_factories.UserFactory(isAdmin=True)

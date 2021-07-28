@@ -13,10 +13,6 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
-class BookingStat:
-    pass
-
-
 class Returns200Test:
     @patch("pcapi.routes.webapp.bookings.FeatureToggle.is_active", return_value=False)
     @pytest.mark.usefixtures("db_session")
@@ -59,7 +55,6 @@ class Returns200Test:
             "isEventExpired": False,
             "isUsed": False,
             "quantity": 1,
-            "status": "BookingStatus.CONFIRMED",
             "stock": {
                 "beginningDatetime": None,
                 "id": humanize(stock.id),
