@@ -159,7 +159,7 @@ class SynchronizeStocksTest:
 
         existing_offers_by_provider_reference = {"offer_ref1"}
         provider = offerers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
-        venue = VenueFactory(bookingEmail="booking_email")
+        venue = VenueFactory(bookingEmail="booking_email", withdrawalDetails="My withdrawal details")
         product = Product(
             id=456, name="product_name", description="product_desc", extraData="extra", type="product_type"
         )
@@ -186,6 +186,7 @@ class SynchronizeStocksTest:
                 productId=456,
                 venueId=venue.id,
                 type="product_type",
+                withdrawalDetails=venue.withdrawalDetails,
             ),
         ]
         new_offer = new_offers[0]
@@ -199,6 +200,7 @@ class SynchronizeStocksTest:
         assert new_offer.productId == 456
         assert new_offer.venueId == venue.id
         assert new_offer.type == "product_type"
+        assert new_offer.withdrawalDetails == venue.withdrawalDetails
 
     def test_get_stocks_to_upsert(self):
         # Given
