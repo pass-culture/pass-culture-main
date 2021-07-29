@@ -38,7 +38,7 @@ class Category(Enum):
     def __str__(self) -> str:
         return str(self.value)
 
-    OFFRES_STRUCTURES_LIEUX = "Offre, Lieux & Structure"
+    OFFRES_STRUCTURES_LIEUX = "Offres, Lieux & Structures"
     USERS = "Utilisateurs"
     CUSTOM_OPERATIONS = "Autres fonctionnalités"
     FRAUD = "Anti Fraude"
