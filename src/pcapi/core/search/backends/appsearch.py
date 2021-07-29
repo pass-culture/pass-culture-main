@@ -229,7 +229,7 @@ class AppSearchBackend(base.SearchBackend):
             position = None
 
         return {
-            "artist": artist,
+            "artist": artist.strip() or None,
             "category": offer.offer_category_name_for_app,
             "date_created": offer.dateCreated,  # used only to rank results
             "dates": dates,

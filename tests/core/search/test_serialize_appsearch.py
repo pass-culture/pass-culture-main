@@ -63,6 +63,16 @@ def test_serialize():
     }
 
 
+def test_serialize_artist_strip():
+    offer = offers_factories.OfferFactory(extraData={"author": "Author"})
+    serialized = appsearch.AppSearchBackend().serialize_offer(offer)
+    assert serialized["artist"] == "Author"
+
+def test_serialize_artist_empty():
+    offer = offers_factories.OfferFactory(extraData={})
+    serialized = appsearch.AppSearchBackend().serialize_offer(offer)
+    assert serialized["artist"] is None
+
 def test_serialize_dates_and_times():
     offer = offers_factories.OfferFactory(type="EventType.CINEMA")
     dt = datetime.datetime(2032, 1, 1, 12, 15)
