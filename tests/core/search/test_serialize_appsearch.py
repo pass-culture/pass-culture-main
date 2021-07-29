@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import json
 
 import pytest
 from sqlalchemy.orm import joinedload
@@ -51,7 +52,7 @@ def test_serialize():
         "id": offer.id,
         "prices": [1000],
         "ranking_weight": 2,
-        "stocks_date_created": [stock.dateCreated.timestamp()],
+        "stocks_date_created": [stock.dateCreated],
         "tags": [],
         "times": [],
         "thumb_url": None,
@@ -68,17 +69,20 @@ def test_serialize_artist_strip():
     serialized = appsearch.AppSearchBackend().serialize_offer(offer)
     assert serialized["artist"] == "Author"
 
+
 def test_serialize_artist_empty():
     offer = offers_factories.OfferFactory(extraData={})
     serialized = appsearch.AppSearchBackend().serialize_offer(offer)
     assert serialized["artist"] is None
+
 
 def test_serialize_dates_and_times():
     offer = offers_factories.OfferFactory(type="EventType.CINEMA")
     dt = datetime.datetime(2032, 1, 1, 12, 15)
     offers_factories.EventStockFactory(offer=offer, beginningDatetime=dt)
     serialized = appsearch.AppSearchBackend().serialize_offer(offer)
-    assert serialized["dates"] == [dt.timestamp()]
+    assert serialized["date_created"] == offer.dateCreated
+    assert serialized["dates"] == [dt]
     assert serialized["times"] == [12 * 60 * 60 + 15 * 60]
 
 
@@ -105,6 +109,15 @@ def test_serialize_thumb_url():
     offer = offers_factories.OfferFactory(product__thumbCount=1)
     serialized = appsearch.AppSearchBackend().serialize_offer(offer)
     assert serialized["thumb_url"] == f"/storage/thumbs/products/{humanize(offer.productId)}"
+
+
+def test_app_search_json_encoder_dates():
+    dt = datetime.datetime(2032, 1, 1, 12, 15)
+    data = json.dumps({"date_created": dt}, cls=appsearch.AppSearchJsonEncoder)
+    assert data == '{"date_created": "2032-01-01T12:15:00Z"}'
+
+    data = json.dumps({"dates": [dt]}, cls=appsearch.AppSearchJsonEncoder)
+    assert data == '{"dates": ["2032-01-01T12:15:00Z"]}'
 
 
 def test_check_number_of_sql_queries():

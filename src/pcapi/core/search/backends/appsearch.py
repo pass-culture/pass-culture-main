@@ -31,7 +31,7 @@ SCHEMA = {
     "artist": "text",
     "category": "text",
     "date_created": "date",
-    "dates": "number",  # easier to work with as a number in the frontend
+    "dates": "date",
     "description": "text",
     "group": "text",
     "is_digital": "number",
@@ -44,7 +44,7 @@ SCHEMA = {
     # "id": "number",  must not be provided when creating the schema.
     "prices": "number",
     "ranking_weight": "number",
-    "stocks_date_created": "number",  # easier to work with as a number in the frontend
+    "stocks_date_created": "date",
     "tags": "text",
     "times": "number",
     "thumb_url": "text",
@@ -199,13 +199,12 @@ class AppSearchBackend(base.SearchBackend):
         self.appsearch_client.delete_all_documents()
 
     def serialize_offer(self, offer: offers_models.Offer) -> dict:
+        stocks = offer.bookableStocks
         dates = []
         times = []
         if offer.isEvent:
-            dates = [stock.beginningDatetime.timestamp() for stock in offer.bookableStocks]
-            times = [
-                date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime) for stock in offer.bookableStocks
-            ]
+            dates = [stock.beginningDatetime for stock in stocks]
+            times = [date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime) for stock in stocks]
 
         extra_data = offer.extraData or {}
         # This field is used to show a single search result when
@@ -243,9 +242,9 @@ class AppSearchBackend(base.SearchBackend):
             "label": offer.offerType["appLabel"],
             "name": offer.name,
             "id": offer.id,
-            "prices": [int(stock.price * 100) for stock in offer.bookableStocks],
+            "prices": [int(stock.price * 100) for stock in stocks],
             "ranking_weight": offer.rankingWeight or 0,
-            "stocks_date_created": [stock.dateCreated.timestamp() for stock in offer.bookableStocks],
+            "stocks_date_created": [stock.dateCreated for stock in stocks],
             "tags": [criterion.name for criterion in offer.criteria],
             "times": times,
             "thumb_url": url_path(offer.thumbUrl),
