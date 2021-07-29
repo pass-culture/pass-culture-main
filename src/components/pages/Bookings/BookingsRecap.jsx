@@ -9,13 +9,12 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
 import ChoosePreFiltersMessage from './ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import NoBookingsForPreFiltersMessage from './NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
-import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
 import { DEFAULT_PRE_FILTERS } from './PreFilters/_constants'
 import PreFilters from './PreFilters/PreFilters'
 
 const MAX_LOADED_PAGES = 5
 
-const BookingsRecap = ({ isUserAdmin, location, showInformationNotification }) => {
+const BookingsRecap = ({ location, showInformationNotification }) => {
   const [appliedPreFilters, setAppliedPreFilters] = useState({
     bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
     bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
@@ -101,8 +100,6 @@ const BookingsRecap = ({ isUserAdmin, location, showInformationNotification }) =
     setAppliedPreFilters({ ...DEFAULT_PRE_FILTERS })
   }, [])
 
-  if (isUserAdmin) return <NoBookingsMessage />
-
   return (
     <div className="bookings-page">
       <PageTitle title="Vos réservations" />
@@ -146,7 +143,6 @@ const BookingsRecap = ({ isUserAdmin, location, showInformationNotification }) =
 }
 
 BookingsRecap.propTypes = {
-  isUserAdmin: PropTypes.bool.isRequired,
   location: PropTypes.shape({
     state: PropTypes.shape({
       venueId: PropTypes.string,

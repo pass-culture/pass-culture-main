@@ -3,15 +3,8 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import { showNotification } from 'store/reducers/notificationReducer'
-import { selectIsUserAdmin } from 'store/selectors/data/usersSelectors'
 
 import BookingsRecap from './BookingsRecap'
-
-export function mapStateToProps(state) {
-  return {
-    isUserAdmin: selectIsUserAdmin(state),
-  }
-}
 
 const mapDispatchToProps = dispatch => ({
   showInformationNotification: () =>
@@ -24,4 +17,4 @@ const mapDispatchToProps = dispatch => ({
     ),
 })
 
-export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(BookingsRecap)
+export default compose(withRouter, connect(null, mapDispatchToProps))(BookingsRecap)
