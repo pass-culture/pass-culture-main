@@ -1,4 +1,4 @@
-// disable-next-line import/no-unresolve
+// disable-next-line import/no-unresolved
 import * as ElasticAppSearch from '@elastic/app-search-javascript'
 
 import { APP_SEARCH_KEY, APP_SEARCH_ENDPOINT } from '../../utils/config'

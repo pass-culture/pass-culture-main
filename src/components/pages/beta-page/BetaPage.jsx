@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import Icon from '../../layout/Icon/Icon'
-import SmartBanner from 'react-smartbanner'
 import { Link } from 'react-router-dom'
 import {
   APP_NATIVE_DYNAMIC_LINK,
@@ -26,14 +25,6 @@ const BetaPage = () => {
 
   return (
     <div className="beta-page">
-      <SmartBanner
-        button="Voir"
-        daysHidden={1}
-        position="top"
-        price={{ ios: 'GRATUIT', android: 'GRATUIT' }}
-        storeText={{ ios: "Sur l'App Store", android: 'Sur Google Play' }}
-        title="pass Culture"
-      />
       <Icon
         alt=""
         className="bp-logo"

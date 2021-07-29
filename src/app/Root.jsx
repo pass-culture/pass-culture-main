@@ -10,11 +10,13 @@ import routes from '../components/router/routes'
 import Tracking from '../components/tracking/Tracking'
 import { configureStore } from '../utils/store'
 import AppContainer from './App/AppContainer'
+import SmartBanner from './SmartBanner'
 
 const { store, persistor } = configureStore()
 
 const Root = () => (
   <StrictMode>
+    <SmartBanner />
     <Provider store={store}>
       <PersistGate
         loading={null}
