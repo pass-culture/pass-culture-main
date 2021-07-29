@@ -16,6 +16,7 @@ from pcapi.connectors.serialization.api_adage_serializers import InstitutionalPr
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.fraud.factories as fraud_factories
+import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.payments.api import DEPOSIT_VALIDITY_IN_YEARS
@@ -940,7 +941,7 @@ class VerifyIdentityDocumentInformationsTest:
     @patch("pcapi.core.users.api.ask_for_identity_document_verification")
     @patch("pcapi.core.users.api._get_identity_document_informations")
     def test_email_sent_when_document_is_invalid(
-        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
+        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app, caplog
     ):
         # Given
         mocked_get_identity_informations.return_value = ("py@test.com", b"")
@@ -953,6 +954,32 @@ class VerifyIdentityDocumentInformationsTest:
 
         assert sent_data["Vars"]["url"] == settings.DMS_USER_URL
         assert sent_data["MJ-TemplateID"] == 2958563
+        assert caplog.records[0].message == "fraud internal validation : Cannot find user with email py@test.com"
+
+    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.api.ask_for_identity_document_verification")
+    @patch("pcapi.core.users.api._get_identity_document_informations")
+    def test_known_user_email_sent_when_document_is_invalid(
+        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
+    ):
+        # Given
+        existing_user = users_factories.BeneficiaryFactory(isBeneficiary=False)
+        mocked_get_identity_informations.return_value = (existing_user.email, b"")
+        mocked_ask_for_identity.return_value = (False, "invalid-document-date")
+
+        users_api.verify_identity_document_informations("some_path")
+
+        assert len(mails_testing.outbox) == 1
+        sent_data = mails_testing.outbox[0].sent_data
+
+        assert sent_data["Vars"]["url"] == settings.DMS_USER_URL
+        assert sent_data["MJ-TemplateID"] == 2958563
+
+        assert len(existing_user.beneficiaryFraudChecks) == 1
+        fraud_check = existing_user.beneficiaryFraudChecks[0]
+        assert fraud_check.type == fraud_models.FraudCheckType.INTERNAL_REVIEW
+        assert fraud_check.resultContent["message"] == "Erreur de lecture du document : invalid-document-date"
+        assert fraud_check.resultContent["source"] == fraud_models.InternalReviewSource.DOCUMENT_VALIDATION_ERROR.value
 
     @patch("pcapi.core.users.api.delete_object")
     @patch("pcapi.core.users.api.ask_for_identity_document_verification")

@@ -860,6 +860,7 @@ def verify_identity_document_informations(image_storage_path: str) -> None:
     valid, code = ask_for_identity_document_verification(email, image)
     if not valid:
         user_emails.send_document_verification_error_email(email, code)
+        fraud_api.handle_document_validation_error(email, code)
     delete_object(image_storage_path)
 
 

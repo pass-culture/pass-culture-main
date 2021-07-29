@@ -343,6 +343,18 @@ def handle_phone_validation_attempts_limit_reached(user: User, attempts_count: i
     return upsert_suspicious_fraud_result(user, reason)
 
 
+def handle_document_validation_error(email: str, code: str) -> None:
+    user = User.query.filter(User.email == email).one_or_none()
+    if user:
+        fraud_check_data = models.InternalReviewFraudData(
+            source=models.InternalReviewSource.DOCUMENT_VALIDATION_ERROR,
+            message=f"Erreur de lecture du document : {code}",
+        )
+        create_internal_review_fraud_check(user, fraud_check_data)
+    else:
+        logger.warning("fraud internal validation : Cannot find user with email %s", email)
+
+
 def validate_frauds(user: User, fraud_items: list[models.FraudItem]) -> models.BeneficiaryFraudResult:
     if all(fraud_item.status == models.FraudStatus.OK for fraud_item in fraud_items):
         status = models.FraudStatus.OK

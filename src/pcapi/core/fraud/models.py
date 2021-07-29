@@ -148,12 +148,13 @@ class InternalReviewSource(enum.Enum):
     PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED = "phone_validation_attempts_limit_reached"
     PHONE_ALREADY_EXISTS = "phone_already_exists"
     BLACKLISTED_PHONE_NUMBER = "blacklisted_phone_number"
+    DOCUMENT_VALIDATION_ERROR = "document_validation_error"
 
 
 class InternalReviewFraudData(pydantic.BaseModel):
     source: InternalReviewSource
     message: str
-    phone_number: str
+    phone_number: typing.Optional[str]
 
 
 class BeneficiaryFraudCheck(PcObject, Model):
