@@ -6,7 +6,7 @@ Ces API ont vocation à être appelées immédiatement lorsqu'un acteur culturel
 
 Seule l'API pour les stocks de livre est à ce jour accessible.
 
-Avant de développer un interfaçage, merci de contacter produit@passculture.app afin d’être référencé comme fournisseur pass Culture.
+Avant de développer un interfaçage, merci de contacter contact.api@passculture.app afin d’être référencé comme fournisseur pass Culture.
 
 ## Règles API Stocks (valable pour les livres)
 
