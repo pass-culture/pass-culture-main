@@ -1,8 +1,7 @@
-from rq.decorators import job
-
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer
 from pcapi.workers import worker
+from pcapi.workers.decorators import job
 
 
 @job(worker.low_queue)
