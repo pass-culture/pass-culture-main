@@ -98,6 +98,11 @@ def url_path(url):
     return path
 
 
+def get_batches(iterable, size=1):
+    for i in range(0, len(iterable), size):
+        yield iterable[i : i + size]
+
+
 class AppSearchBackend(base.SearchBackend):
     def __init__(self):
         super().__init__()
@@ -301,12 +306,8 @@ class AppSearchApiClient:
         return f"{self.host}{path}"
 
     def create_or_update_documents(self, documents: Iterable[dict]):
-        batches = [
-            documents[i : i + DOCUMENTS_PER_REQUEST_LIMIT]
-            for i in range(0, len(documents), DOCUMENTS_PER_REQUEST_LIMIT)
-        ]
         # Error handling is done by the caller.
-        for batch in batches:
+        for batch in get_batches(documents, size=DOCUMENTS_PER_REQUEST_LIMIT):
             data = json.dumps(batch, cls=AppSearchJsonEncoder)
             response = requests.post(self.documents_url, headers=self.headers, data=data)
             response.raise_for_status()
@@ -320,12 +321,8 @@ class AppSearchApiClient:
                 logger.error("Some offers could not be indexed, possible typing bug", extra={"errors": errors})
 
     def delete_documents(self, offer_ids: Iterable[int]):
-        batches = [
-            offer_ids[i : i + DOCUMENTS_PER_REQUEST_LIMIT]
-            for i in range(0, len(offer_ids), DOCUMENTS_PER_REQUEST_LIMIT)
-        ]
         # Error handling is done by the caller.
-        for batch in batches:
+        for batch in get_batches(offer_ids, size=DOCUMENTS_PER_REQUEST_LIMIT):
             data = json.dumps(batch)
             response = requests.delete(self.documents_url, headers=self.headers, data=data)
             response.raise_for_status()
