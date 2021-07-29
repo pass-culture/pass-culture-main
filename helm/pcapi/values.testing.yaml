@@ -66,6 +66,12 @@ api:
       nginx.ingress.kubernetes.io/use-regex: "true"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
       nginx.ingress.kubernetes.io/proxy-body-size: 10m
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        if ($http_origin ~* "^https?://((pro\.passculture-testing\.beta\.gouv\.fr)|(pro\.testing\.passculture\.team))$" ) {
+          more_set_headers -s 503 'Access-Control-Allow-Headers: AppName,AppVersion,X-Request-ID,Content-Type';
+          more_set_headers -s 503 'Access-Control-Allow-Origin: $http_origin';
+          more_set_headers -s 503 'Access-Control-Allow-Credentials: true';
+        }
       cert-manager.io/cluster-issuer: letsencrypt-production
     hosts:
       - host: backend.passculture-testing.beta.gouv.fr
@@ -113,11 +119,15 @@ highLatencyApi:
     enabled: true
     annotations:
       kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/enable-cors: "true"
-      nginx.ingress.kubernetes.io/cors-allow-headers: AppName,AppVersion,X-Request-ID,content-type
       nginx.ingress.kubernetes.io/use-regex: "true"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
       nginx.ingress.kubernetes.io/proxy-body-size: 10m
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        if ($http_origin ~* "^https?://((pro\.passculture-testing\.beta\.gouv\.fr)|(pro\.testing\.passculture\.team))$" ) {
+          more_set_headers -s 503 'Access-Control-Allow-Headers: AppName,AppVersion,X-Request-ID,Content-Type';
+          more_set_headers -s 503 'Access-Control-Allow-Origin: $http_origin';
+          more_set_headers -s 503 'Access-Control-Allow-Credentials: true';
+        }
       cert-manager.io/cluster-issuer: letsencrypt-production
     hosts:
       - host: backend.passculture-testing.beta.gouv.fr
@@ -172,6 +182,12 @@ admin:
       nginx.ingress.kubernetes.io/use-regex: "true"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
       nginx.ingress.kubernetes.io/proxy-body-size: 10m
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        if ($http_origin ~* "^https?://((pro\.passculture-testing\.beta\.gouv\.fr)|(pro\.testing\.passculture\.team))$" ) {
+          more_set_headers -s 503 'Access-Control-Allow-Headers: AppName,AppVersion,X-Request-ID,Content-Type';
+          more_set_headers -s 503 'Access-Control-Allow-Origin: $http_origin';
+          more_set_headers -s 503 'Access-Control-Allow-Credentials: true';
+        }
       cert-manager.io/cluster-issuer: letsencrypt-production
     hosts:
       - host: backend.passculture-testing.beta.gouv.fr
