@@ -462,32 +462,7 @@ jobs:
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
           when: on_fail
 
-  deploy-pro-netlify:
-    machine:
-      image: ubuntu-2004:202101-01
-    working_directory: ~/pass-culture
-    steps:
-      - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
-      - run: ./install_lib_ci.sh
-      - run:
-          name: Build and Deploy Pro
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
-            cd pro
-            nvm install
-            yarn install
-
-            set -a; source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}"
-
-            yarn build:${CIRCLE_BRANCH}
-
-            npm install -g netlify-cli@2.46.0
-            netlify deploy -s "${NETLIFY_SITE_ID_PRO}" -a "${NETLIFY_TOKEN}" -d build/ --prod
-
-  deploy-pro-cloudstorage:
+  deploy-pro:
     executor: node-gcp-14
     steps:
       - checkout
@@ -677,22 +652,19 @@ workflows:
           context:
             - GCP
             - GCP_EHP
-      - deploy-pro-cloudstorage:
+      - deploy-pro:
           requires:
             - deploy-pcapi
           context:
             - GCP
             - GCP_EHP
-      - deploy-pro-netlify:
-          requires:
-            - deploy-pcapi
       - deploy-webapp:
           requires:
             - deploy-pcapi
       - release-synthesis:
           requires:
             - restart-pcapi
-            - deploy-pro-netlify
+            - deploy-pro
             - deploy-webapp
       - restart-pcapi:
           requires:
@@ -725,9 +697,6 @@ workflows:
           context:
             - GCP
             - GCP_PROD
-      - deploy-pro-netlify:
-          requires:
-            - deploy-pcapi
       - deploy-webapp:
           requires:
             - deploy-pcapi
@@ -737,7 +706,7 @@ workflows:
           context:
             - GCP
             - GCP_PROD
-      - deploy-pro-cloudstorage:
+      - deploy-pro:
           requires:
             - deploy-pcapi
           context:
@@ -746,7 +715,7 @@ workflows:
       - release-synthesis:
           requires:
             - restart-pcapi
-            - deploy-pro-cloudstorage
+            - deploy-pro
             - deploy-webapp
       - restart-pcapi:
           requires:
