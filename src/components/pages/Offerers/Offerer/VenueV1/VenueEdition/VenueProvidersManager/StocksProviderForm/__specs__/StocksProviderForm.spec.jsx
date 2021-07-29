@@ -80,6 +80,13 @@ describe('src | StocksProviderForm', () => {
       await fireEvent.click(submitButton)
 
       // then
+      expect(
+        screen.getByText('Certains ouvrages seront exclus de la synchronisation automatique.')
+      ).toBeInTheDocument()
+
+      const confirmImportButton = screen.getByRole('button', { name: 'Continuer' })
+      await fireEvent.click(confirmImportButton)
+
       expect(screen.getByText('Vérification de votre rattachement')).toBeInTheDocument()
       expect(pcapi.createVenueProvider).toHaveBeenCalledWith({
         providerId: provider.id,
@@ -105,6 +112,13 @@ describe('src | StocksProviderForm', () => {
       await fireEvent.click(submitButton)
 
       // then
+      expect(
+        screen.getByText('Certains ouvrages seront exclus de la synchronisation automatique.')
+      ).toBeInTheDocument()
+
+      const confirmImportButton = screen.getByRole('button', { name: 'Continuer' })
+      await fireEvent.click(confirmImportButton)
+
       const successNotification = await screen.findByText('La synchronisation a bien été initiée.')
       expect(successNotification).toBeInTheDocument()
       expect(screen.queryByText('Vérification de votre rattachement')).not.toBeInTheDocument()
@@ -124,6 +138,13 @@ describe('src | StocksProviderForm', () => {
       await fireEvent.click(submitButton)
 
       // then
+      expect(
+        screen.getByText('Certains ouvrages seront exclus de la synchronisation automatique.')
+      ).toBeInTheDocument()
+
+      const confirmImportButton = screen.getByRole('button', { name: 'Continuer' })
+      await fireEvent.click(confirmImportButton)
+
       const errorNotification = await screen.findByText(apiError.errors.provider[0])
       expect(errorNotification).toBeInTheDocument()
       const providersSelect = screen.queryByRole('combobox')
