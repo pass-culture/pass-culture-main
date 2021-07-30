@@ -43,6 +43,15 @@ class BookingStatus(enum.Enum):
     CANCELLED = "CANCELLED"
 
 
+class IndividualBooking(Model):
+    __tablename__ = "individual_booking"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+
+    userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
+    user = relationship("User", foreign_keys=[userId], backref="userIndividualBookings")
+
+
 class Booking(PcObject, Model):
     __tablename__ = "booking"
 
@@ -97,14 +106,33 @@ class Booking(PcObject, Model):
 
     status = Column("status", Enum(BookingStatus), nullable=True, default=BookingStatus.CONFIRMED)
 
-    educationalBookingId = Column(BigInteger, ForeignKey("educational_booking.id"), nullable=True, unique=True)
+    educationalBookingId = Column(
+        BigInteger,
+        ForeignKey("educational_booking.id"),
+        nullable=True,
+        unique=True,
+        index=True,
+    )
     educationalBooking = relationship(
         EducationalBooking,
         backref="booking",
         uselist=False,
     )
 
-    def mark_as_used(self):
+    individualBookingId = Column(
+        BigInteger,
+        ForeignKey("individual_booking.id"),
+        nullable=True,
+        unique=True,
+        index=True,
+    )
+    individualBooking = relationship(
+        IndividualBooking,
+        backref="booking",
+        uselist=False,
+    )
+
+    def mark_as_used(self) -> None:
         if self.status is BookingStatus.USED or self.isUsed:
             raise BookingHasAlreadyBeenUsed()
         if self.status is BookingStatus.CANCELLED or self.isCancelled:
@@ -113,7 +141,7 @@ class Booking(PcObject, Model):
         self.dateUsed = datetime.utcnow()
         self.status = BookingStatus.USED
 
-    def mark_as_unused(self):
+    def mark_as_unused(self) -> None:
         self.isUsed = False
         self.dateUsed = None
         self.status = None

@@ -36,7 +36,8 @@ SET search_path = public, pg_catalog;
 --
 -- Name: SCHEMA topology; Type: COMMENT; Schema: -; Owner: pass_culture
 --
-
+CREATE SCHEMA IF NOT EXISTS tiger;
+CREATE SCHEMA IF NOT EXISTS topology;
 COMMENT ON SCHEMA topology IS 'PostGIS Topology schema';
 
 
