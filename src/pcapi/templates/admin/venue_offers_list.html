@@ -1,5 +1,53 @@
 {% extends 'admin/model/list.html' %}
-{% block body %}
+{% import 'admin/custom_model_layout.html' as custom_model_layout with context %}
+{% block model_menu_bar %}
 <h1>Liste des offres du lieu {{ venue_name }}</h1>
-{{ super() }}
+{# ul taken from https://github.com/flask-admin/flask-admin/blob/master/flask_admin/templates/bootstrap3/admin/model/list.html #}
+<ul class="nav nav-tabs actions-nav">
+    <li class="active">
+        <a href="javascript:void(0)">{{ _gettext('List') }}{% if count %} ({{ count }}){% endif %}</a>
+    </li>
+
+    {% if admin_view.can_create %}
+    <li>
+        {%- if admin_view.create_modal -%}
+        {{ lib.add_modal_button(url=get_url('.create_view', url=return_url, modal=True), title=_gettext('Create New Record'), content=_gettext('Create')) }}
+        {% else %}
+        <a href="{{ get_url('.create_view', url=return_url) }}" title="{{ _gettext('Create New Record') }}">{{ _gettext('Create') }}</a>
+        {%- endif -%}
+    </li>
+    {% endif %}
+
+    {% if admin_view.can_export %}
+        {{ model_layout.export_options() }}
+    {% endif %}
+
+    {% block model_menu_bar_before_filters %}{% endblock %}
+
+    {% if filters %}
+    <li class="dropdown">
+        {{ model_layout.filter_options() }}
+    </li>
+    {% endif %}
+
+    {% if can_set_page_size %}
+    <li class="dropdown">
+        {{ model_layout.page_size_form(page_size_url) }}
+    </li>
+    {% endif %}
+
+    {% if actions %}
+    <li class="dropdown">
+        {{ actionlib.dropdown(actions) }}
+    </li>
+    {% endif %}
+
+    {% if search_supported %}
+    {# This is the custom part #}
+    <li>
+        {{ custom_model_layout.search_form() }}
+    </li>
+    {% endif %}
+    {% block model_menu_bar_after_filters %}{% endblock %}
+</ul>
 {% endblock %}
