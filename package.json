@@ -86,6 +86,7 @@
     "redux-saga-data": "^3.3.0",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
+    "sass-resources-loader": "^2.2.3",
     "smoothscroll-polyfill": "^0.4.4"
   },
   "devDependencies": {

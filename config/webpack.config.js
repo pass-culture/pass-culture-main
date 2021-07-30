@@ -69,6 +69,17 @@ const hasJsxRuntime = (() => {
   }
 })()
 
+const sassResourcesLoader = {
+  loader: 'sass-resources-loader',
+  options: {
+    hoistUseStatements: true,
+    resources: [
+      path.resolve(paths.appSrc, './styles/variables/index.scss'),
+      path.resolve(paths.appSrc, './styles/mixins/index.scss'),
+    ]
+  },
+}
+
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
 module.exports = function (webpackEnv) {
@@ -143,6 +154,9 @@ module.exports = function (webpackEnv) {
           },
         }
       )
+      if (preProcessor === 'sass-loader') {
+        loaders.push(sassResourcesLoader)
+      }
     }
     return loaders
   }
@@ -469,7 +483,7 @@ module.exports = function (webpackEnv) {
                   importLoaders: 3,
                   sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
                 },
-                'sass-loader'
+                'sass-loader',
               ),
               // Don't consider CSS imports dead code even if the
               // containing package claims to have no side effects.
@@ -489,7 +503,7 @@ module.exports = function (webpackEnv) {
                     getLocalIdent: getCSSModuleLocalIdent,
                   },
                 },
-                'sass-loader'
+                'sass-loader',
               ),
             },
             // "file" loader makes sure those assets get served by WebpackDevServer.

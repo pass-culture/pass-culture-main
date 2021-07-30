@@ -11,6 +11,9 @@ import StocksProviderForm from './StocksProviderForm/StocksProviderForm'
 import { DEFAULT_PROVIDER_OPTION } from './utils/_constants'
 import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
 
+import './VenueProvidersManager.scss'
+
+
 const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) => {
   const [isCreationMode, setIsCreationMode] = useState(false)
   const [selectedProviderId, setSelectedProviderId] = useState(DEFAULT_PROVIDER_OPTION.id)

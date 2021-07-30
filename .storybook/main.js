@@ -12,6 +12,17 @@ const aliases = {
   'icons': resolve('../src/icons'),
 }
 
+const sassResourcesLoader = {
+  loader: 'sass-resources-loader',
+  options: {
+    hoistUseStatements: true,
+    resources: [
+      path.resolve(configPaths.appSrc, './styles/variables/index.scss'),
+      path.resolve(configPaths.appSrc, './styles/mixins/index.scss'),
+    ]
+  },
+}
+
 module.exports = {
   "stories": [
     "../src/**/*.stories.mdx",
@@ -36,7 +47,8 @@ module.exports = {
               root: configPaths.appSrc,
             },
           },
-          'sass-loader'
+          'sass-loader',
+          sassResourcesLoader,
         ],
         include: path.resolve(__dirname, '../'),
       },
