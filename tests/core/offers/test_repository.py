@@ -167,7 +167,7 @@ class GetCappedOffersForFiltersTest:
     @pytest.mark.usefixtures("db_session")
     def should_not_return_event_offers_with_only_deleted_stock_if_filtering_by_time_period(self):
         # given
-        pro = users_factories.AdminFactory()
+        pro = users_factories.ProFactory()
         offer_in_requested_time_period = offers_factories.OfferFactory()
         offers_factories.EventStockFactory(
             offer=offer_in_requested_time_period, beginningDatetime=datetime(2020, 1, 2), isSoftDeleted=True

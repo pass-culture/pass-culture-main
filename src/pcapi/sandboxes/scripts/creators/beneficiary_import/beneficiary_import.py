@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def create_beneficiary_user() -> users_models.User:
     import_status = ImportStatus.CREATED
-    beneficiary_user = users_factories.BeneficiaryFactory(email=f"{str(import_status)}@email.com")
+    beneficiary_user = users_factories.BeneficiaryFactory(email=f"{import_status.value}@email.com")
 
     logger.info("created 1 beneficiary user")
 
