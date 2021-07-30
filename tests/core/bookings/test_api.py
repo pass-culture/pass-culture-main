@@ -129,6 +129,8 @@ class BookOfferTest:
         assert data["attribute_values"]["date(u.last_booking_date)"] == expected_date
 
         assert booking.quantity == 1
+        assert booking.individualBookingId is not None
+        assert booking.individualBooking.userId == beneficiary.id
         assert booking.amount == 10
         assert booking.stock == stock
         assert len(booking.token) == 6

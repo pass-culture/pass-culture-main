@@ -14,6 +14,7 @@ from pcapi.core.bookings import conf
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
@@ -79,7 +80,9 @@ def book_offer(
         # where exceptions are caught. Since we are using flask-sqlalchemy,
         # I don't think that we should use autoflush, nor should we use
         # the `pcapi.repository.repository` module.
+        individual_booking = IndividualBooking(userId=beneficiary.id)
         booking = Booking(
+            individualBooking=individual_booking,
             userId=beneficiary.id,
             stockId=stock.id,
             amount=stock.price,
