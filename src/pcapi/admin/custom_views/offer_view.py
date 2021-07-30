@@ -31,6 +31,7 @@ from pcapi.connectors.api_entreprises import get_offerer_legal_category
 from pcapi.core import search
 from pcapi.core.bookings.api import cancel_bookings_from_rejected_offer
 from pcapi.core.categories import subcategories
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers.api import import_offer_validation_config
@@ -324,10 +325,22 @@ class ValidationView(BaseAdminView):
         return formatters
 
     def get_query(self):
-        return self.session.query(self.model).filter(self.model.validation == OfferValidationStatus.PENDING)
+        return (
+            self.session.query(Offer)
+            .join(Venue)
+            .join(Offerer)
+            .filter(Offerer.validationToken.is_(None))
+            .filter(Offer.validation == OfferValidationStatus.PENDING)
+        )
 
     def get_count_query(self):
-        return self.session.query(func.count("*")).filter(self.model.validation == OfferValidationStatus.PENDING)
+        return (
+            self.session.query(func.count(Offer.id))
+            .join(Venue)
+            .join(Offerer)
+            .filter(Offerer.validationToken.is_(None))
+            .filter(Offer.validation == OfferValidationStatus.PENDING)
+        )
 
     def _batch_validate(self, offers, validation_status):
         count = 0

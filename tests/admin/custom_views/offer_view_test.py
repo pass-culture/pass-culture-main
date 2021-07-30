@@ -5,6 +5,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.admin.custom_views.offer_view import OfferView
+from pcapi.admin.custom_views.offer_view import ValidationView
 import pcapi.core.bookings.factories as booking_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.api import import_offer_validation_config
@@ -420,6 +421,25 @@ class OfferValidationViewTest:
 
         assert response.status_code == 302
         assert response.headers["location"] == "http://localhost/pc/back-office/"
+
+    def test_get_query_and_count(self, db_session):
+        offer_view = ValidationView(model=Offer, session=db_session)
+        validated_offerer = offers_factories.OffererFactory()
+        non_validated_offerer = offers_factories.OffererFactory(validationToken="token")
+        offer_1 = offers_factories.OfferFactory(
+            validation=OfferValidationStatus.PENDING,
+            venue__managingOfferer=validated_offerer,
+        )
+        offers_factories.OfferFactory(
+            validation=OfferValidationStatus.PENDING,
+            venue__managingOfferer=non_validated_offerer,
+        )
+
+        get_query_offers_list = offer_view.get_query().all()
+        get_count_query_scalar = offer_view.get_count_query().scalar()
+
+        assert get_query_offers_list == [offer_1]
+        assert get_count_query_scalar == 1
 
 
 class GetOfferValidationViewTest:
