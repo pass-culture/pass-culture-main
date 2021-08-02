@@ -1,5 +1,6 @@
 import { computeTimeRangeFromHoursToSeconds, TIMESTAMP } from '../time'
 
+// TODO(antoinewg) remove these functions once the migration to AppSearch is complete.
 describe('time', () => {
   let dateSpyOffset
   let dateSpyNow
@@ -14,7 +15,9 @@ describe('time', () => {
       // Given
       const january_01_2020_ten_am_utc = new Date(2020, 0, 1, 10, 0, 0)
       dateSpyOffset = jest.spyOn(january_01_2020_ten_am_utc, 'getTimezoneOffset').mockReturnValue(0)
-      dateSpyNow = jest.spyOn(global, 'Date').mockImplementationOnce(() => january_01_2020_ten_am_utc)
+      dateSpyNow = jest
+        .spyOn(global, 'Date')
+        .mockImplementationOnce(() => january_01_2020_ten_am_utc)
 
       // When
       const timeRangeInSeconds = computeTimeRangeFromHoursToSeconds([18, 22])

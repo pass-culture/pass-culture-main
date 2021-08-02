@@ -1,5 +1,6 @@
 import { DATE } from '../date'
 
+// TODO(antoinewg) remove these functions once the migration to AppSearch is complete.
 describe('getDatesFromTimeRangeAndDate', () => {
   describe('utc', () => {
     it('should return dates with beginning and ending times for given date and timerange', () => {
@@ -26,7 +27,9 @@ describe('getDatesFromTimeRangeAndDate', () => {
       // Given
       const from_midnight_to_twenty_two = [0, 24]
       const tuesday_april_28_2020_eleven_thirty_four_am = new Date(2020, 3, 28, 11, 34, 23, 234)
-      jest.spyOn(tuesday_april_28_2020_eleven_thirty_four_am, 'getTimezoneOffset').mockReturnValue(0)
+      jest
+        .spyOn(tuesday_april_28_2020_eleven_thirty_four_am, 'getTimezoneOffset')
+        .mockReturnValue(0)
 
       // When
       const dateWithBeginningAndEndingTimes = DATE.getAllFromTimeRangeAndDate(

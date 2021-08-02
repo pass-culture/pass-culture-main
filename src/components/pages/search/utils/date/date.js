@@ -1,5 +1,6 @@
 import { MILLISECONDS_IN_A_DAY } from './time'
 
+// TODO(antoinewg) remove these functions once the migration to AppSearch is complete.
 export const DAYS_IN_A_WEEK = 7
 export const SATURDAY_INDEX_IN_A_WEEK = 6
 export const SUNDAY_INDEX_IN_A_WEEK = 0
