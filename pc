@@ -305,11 +305,6 @@ elif [[ "$CMD" == "start-webapp" ]] || [[ "$CMD" == "start-pro" ]]; then
   fi
   RUN="$RUN"' && yarn start'
 
-# Create symlink for shared folder in webapp & pro
-elif [[ "$CMD" == "shared" ]]; then
-  RUN='cd $ROOT_PATH/shared && yarn run compile;
-    cd $ROOT_PATH/webapp/node_modules && ln -sf ../../shared pass-culture-shared;
-    cd $ROOT_PATH/pro/node_modules && ln -sf ../../shared pass-culture-shared;'
 
 # Run tests for API
 # Need start-backend to be successful and delete all data
@@ -555,19 +550,9 @@ elif [[ "$CMD" == "install" ]]; then
     git submodule init;
     git submodule update;
     git submodule foreach git checkout master;
-    cd $ROOT_PATH/shared && yarn;
     cd $ROOT_PATH/webapp && yarn;
     cd $ROOT_PATH/pro && yarn;
-    cd $ROOT_PATH && ./pc install-private;
     ./pc install-hooks'
-
-# Decrypt data from gpg private file
-elif [[ "$CMD" == "install-private" ]]; then
-  RUN='cd $ROOT_PATH/api;
-    rm -rf private;
-    gpg --passphrase $PC_GPG_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg;
-    tar xf private.tar.gz;
-    rm private.tar.gz'
 
 # Install pre-push and pre-commit hooks in the api submodule
 elif [[ "$CMD" == "install-hooks" ]]; then
