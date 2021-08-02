@@ -47,6 +47,11 @@ class NoActivationCodeAvailable(ClientError):
         super().__init__("noActivationCodeAvailable", "Ce stock ne contient plus de code d'activation disponible.")
 
 
+class EducationalOfferCannotBeBooked(ClientError):
+    def __init__(self):
+        super().__init__("offerId", "Cette offre est réservée aux rédacteurs de projets")
+
+
 class UserHasInsufficientFunds(ClientError):
     def __init__(self):
         super().__init__("insufficientFunds", "Le solde de votre pass est insuffisant pour réserver cette offre.")

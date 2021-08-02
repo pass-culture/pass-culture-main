@@ -17,6 +17,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import payment_queries
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
+from .exceptions import EducationalOfferCannotBeBooked
 from .exceptions import NoActivationCodeAvailable
 
 
@@ -187,6 +188,11 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         raise gone
 
 
-def check_activation_code_available(stock) -> None:
+def check_activation_code_available(stock: Stock) -> None:
     if offers_repository.get_available_activation_code(stock) is None:
         raise NoActivationCodeAvailable()
+
+
+def check_offer_is_not_educational(stock: Stock) -> None:
+    if stock.offer.isEducational:
+        raise EducationalOfferCannotBeBooked()

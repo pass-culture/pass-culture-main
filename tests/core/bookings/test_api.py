@@ -272,6 +272,14 @@ class BookOfferTest:
                 quantity=2,
             )
 
+    def test_raise_if_offer_is_educational(self):
+        with pytest.raises(exceptions.EducationalOfferCannotBeBooked):
+            api.book_offer(
+                beneficiary=users_factories.BeneficiaryFactory(),
+                stock_id=offers_factories.StockFactory(offer__isEducational=True).id,
+                quantity=2,
+            )
+
     class WhenBookingWithActivationCodeTest:
         @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_book_offer_with_first_activation_code_available(self):
