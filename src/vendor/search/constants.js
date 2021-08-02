@@ -11,6 +11,7 @@ export const AppSearchFields = {
   group: 'group',
   is_digital: 'is_digital',
   is_duo: 'is_duo',
+  is_educational: 'is_educational',
   is_event: 'is_event',
   is_thing: 'is_thing',
   label: 'label',
@@ -22,10 +23,9 @@ export const AppSearchFields = {
   tags: 'tags',
   times: 'times',
   thumb_url: 'thumb_url',
-  type: 'type',
   offerer_name: 'offerer_name',
-  venue_city: 'venue_city',
   venue_department_code: 'venue_department_code',
+  venue_id: 'venue_id',
   venue_name: 'venue_name',
   venue_position: 'venue_position',
   venue_public_name: 'venue_public_name',
@@ -47,3 +47,9 @@ export const RESULT_FIELDS = {
   [AppSearchFields.venue_position]: { raw: {} },
   [AppSearchFields.venue_public_name]: { raw: {} },
 }
+
+export const SORT_OPTIONS = [
+  { _score: 'desc' },
+  { [AppSearchFields.ranking_weight]: 'desc' },
+  { [AppSearchFields.date_created]: 'asc' },
+]

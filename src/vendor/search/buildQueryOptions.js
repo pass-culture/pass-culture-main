@@ -1,4 +1,4 @@
-import { AppSearchFields, RESULT_FIELDS } from './constants'
+import { AppSearchFields, RESULT_FIELDS, SORT_OPTIONS } from './constants'
 import { buildFacetFilters } from './filters/buildFacetFilters'
 import { buildGeolocationFilter } from './filters/buildGeolocationFilter'
 import { buildNumericFilters } from './filters/buildNumericFilters'
@@ -27,6 +27,7 @@ export const buildQueryOptions = (params, page) => {
       current: typeof page === 'number' ? page + 1 : 1,
       size: params.hitsPerPage || 20,
     },
+    sort: SORT_OPTIONS,
   }
 
   const boosts = buildBoosts(params.geolocation)
