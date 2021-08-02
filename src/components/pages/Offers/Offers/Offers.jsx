@@ -11,9 +11,8 @@ import Titles from 'components/layout/Titles/Titles'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
-import { selectOffersByPage } from 'store/offers/selectors'
-import { loadOffers } from 'store/offers/thunks'
 import { mapApiToBrowser, mapBrowserToApi, translateQueryParamsToApiParams } from 'utils/translate'
 
 import {
@@ -57,24 +56,28 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
   }, [dispatch, query])
   const [isLoading, setIsLoading] = useState(true)
   const [offersCount, setOffersCount] = useState(0)
-  const [pageNumber, setPageNumber] = useState(DEFAULT_PAGE)
+  const [currentPageNumber, setCurrentPageNumber] = useState(DEFAULT_PAGE)
   const [pageCount, setPageCount] = useState(null)
   const [searchFilters, setSearchFilters] = useState({ ...DEFAULT_SEARCH_FILTERS })
   const [offerer, setOfferer] = useState(null)
   const [isStatusFiltersVisible, setIsStatusFiltersVisible] = useState(false)
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
 
+  const [offers, setOffers] = useState([])
   const [selectedOfferIds, setSelectedOfferIds] = useState([])
   const savedSearchFilters = useSelector(state => state.offers.searchFilters)
   const savedPageNumber = useSelector(state => state.offers.pageNumber)
-  const offers = useSelector(state => selectOffersByPage(state, pageNumber))
+  const currentPageOffersSubset = offers.slice(
+    (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
+    currentPageNumber * NUMBER_OF_OFFERS_PER_PAGE
+  )
 
   useEffect(() => {
     setSearchFilters({ ...savedSearchFilters })
   }, [savedSearchFilters])
 
   useEffect(() => {
-    setPageNumber(savedPageNumber)
+    setCurrentPageNumber(savedPageNumber)
   }, [savedPageNumber])
 
   useEffect(() => {
@@ -128,20 +131,20 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
     [query, savedSearchFilters, savedPageNumber]
   )
 
-  const loadAndUpdateOffers = useCallback(
-    filters => {
-      dispatch(loadOffers({ ...filters }))
-        .then(offersCount => {
-          setIsLoading(false)
-          setOffersCount(offersCount)
-          const pageCount = Math.ceil(offersCount / NUMBER_OF_OFFERS_PER_PAGE)
-          const cappedPageCount = Math.min(pageCount, MAX_TOTAL_PAGES)
-          setPageCount(cappedPageCount)
-        })
-        .catch(() => setIsLoading(false))
-    },
-    [dispatch]
-  )
+  const loadAndUpdateOffers = useCallback(filters => {
+    pcapi
+      .loadFilteredOffers({ ...filters })
+      .then(offers => {
+        const offersCount = offers.length
+        setIsLoading(false)
+        setOffersCount(offersCount)
+        const pageCount = Math.ceil(offersCount / NUMBER_OF_OFFERS_PER_PAGE)
+        const cappedPageCount = Math.min(pageCount, MAX_TOTAL_PAGES)
+        setPageCount(cappedPageCount)
+        setOffers(offers)
+      })
+      .catch(() => setIsLoading(false))
+  }, [])
 
   useEffect(() => {
     Object.keys(savedSearchFilters).length > 0 && loadAndUpdateOffers(savedSearchFilters)
@@ -199,7 +202,7 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
   }, [])
 
   const onPreviousPageClick = useCallback(() => {
-    setPageNumber(currentPageNumber => {
+    setCurrentPageNumber(currentPageNumber => {
       const newPageNumber = currentPageNumber - 1
       dispatch(savePageNumber(newPageNumber))
       return newPageNumber
@@ -207,7 +210,7 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
   }, [dispatch])
 
   const onNextPageClick = useCallback(() => {
-    setPageNumber(currentPageNumber => {
+    setCurrentPageNumber(currentPageNumber => {
       const newPageNumber = currentPageNumber + 1
       dispatch(savePageNumber(newPageNumber))
       return newPageNumber
@@ -231,21 +234,24 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
     setAreAllOffersSelected(currentValue => !currentValue)
   }, [])
 
-  const selectAllOffers = useCallback(() => {
+  function selectAllOffers() {
     setSelectedOfferIds(
       areAllOffersSelected
         ? []
-        : offers.filter(offer => !isOfferDisabled(offer.status)).map(offer => offer.id)
+        : currentPageOffersSubset
+          .filter(offer => !isOfferDisabled(offer.status))
+          .map(offer => offer.id)
     )
 
     toggleSelectAllCheckboxes()
-  }, [areAllOffersSelected, offers, toggleSelectAllCheckboxes])
+  }
 
   const clearSelectedOfferIds = useCallback(() => {
     setSelectedOfferIds([])
   }, [])
 
   const resetFilters = useCallback(() => {
+    setIsLoading(true)
     setOfferer(null)
     dispatch(
       saveSearchFilters({
@@ -256,7 +262,7 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
   }, [dispatch])
 
   const { isAdmin } = currentUser || {}
-  const hasOffers = offers.length > 0
+  const hasOffers = currentPageOffersSubset.length > 0
   const userHasNoOffers = !isLoading && !hasOffers && !hasSearchFilters(savedSearchFilters)
 
   const actionLink =
@@ -272,7 +278,7 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
 
   const nbSelectedOffers = areAllOffersSelected ? offersCount : selectedOfferIds.length
 
-  const isLastPage = pageNumber === pageCount
+  const isLastPage = currentPageNumber === pageCount
 
   useEffect(() => {
     const hasMoreOffersToFetch = offersCount > MAX_OFFERS_TO_DISPLAY
@@ -359,7 +365,7 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
                   />
                   <OffersTableBody
                     areAllOffersSelected={areAllOffersSelected}
-                    offers={offers}
+                    offers={currentPageOffersSubset}
                     selectOffer={selectOffer}
                     selectedOfferIds={selectedOfferIds}
                   />
@@ -367,7 +373,7 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
                 {hasOffers && (
                   <div className="pagination">
                     <button
-                      disabled={pageNumber === 1}
+                      disabled={currentPageNumber === 1}
                       onClick={onPreviousPageClick}
                       type="button"
                     >
@@ -377,7 +383,7 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
                       />
                     </button>
                     <span>
-                      {`Page ${pageNumber}/${pageCount}`}
+                      {`Page ${currentPageNumber}/${pageCount}`}
                     </span>
                     <button
                       disabled={isLastPage}

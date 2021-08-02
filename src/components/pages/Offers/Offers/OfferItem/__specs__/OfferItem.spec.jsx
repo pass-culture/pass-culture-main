@@ -34,6 +34,12 @@ describe('src | components | pages | Offers | OfferItem', () => {
       name: 'My little offer',
       thumbUrl: '/my-fake-thumb',
       status: 'ACTIVE',
+      stocks: [],
+      venue: {
+        isVirtual: false,
+        name: 'Paris',
+        departementCode: '973',
+      },
     }
 
     props = {
@@ -43,12 +49,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
         search: '?orderBy=offer.id+desc',
       },
       selectOffer: jest.fn(),
-      stocks: [],
-      venue: {
-        isVirtual: false,
-        name: 'Paris',
-        departementCode: '973',
-      },
       trackActivateOffer: jest.fn(),
       trackDeactivateOffer: jest.fn(),
       refreshOffers: jest.fn(),
@@ -134,7 +134,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
     it('should display the venue name when venue public name is not given', () => {
       // given
-      props.venue = {
+      props.offer.venue = {
         name: 'Paris',
         isVirtual: false,
       }
@@ -143,12 +143,12 @@ describe('src | components | pages | Offers | OfferItem', () => {
       renderOfferItem(props)
 
       // then
-      expect(screen.queryByText(props.venue.name)).toBeInTheDocument()
+      expect(screen.queryByText(props.offer.venue.name)).toBeInTheDocument()
     })
 
     it('should display the venue public name when is given', () => {
       // given
-      props.venue = {
+      props.offer.venue = {
         name: 'Paris',
         publicName: 'lieu de ouf',
         isVirtual: false,
@@ -158,12 +158,12 @@ describe('src | components | pages | Offers | OfferItem', () => {
       renderOfferItem(props)
 
       // then
-      expect(screen.queryByText(props.venue.publicName)).toBeInTheDocument()
+      expect(screen.queryByText(props.offer.venue.publicName)).toBeInTheDocument()
     })
 
     it('should display the offerer name with "- Offre numérique" when venue is virtual', () => {
       // given
-      props.venue = {
+      props.offer.venue = {
         isVirtual: true,
         name: 'Gaumont Montparnasse',
         offererName: 'Gaumont',
@@ -199,7 +199,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should be the sum of offer stocks remaining quantity', () => {
         // given
-        props.stocks = [
+        props.offer.stocks = [
           { remainingQuantity: 0 },
           { remainingQuantity: 2 },
           { remainingQuantity: 3 },
@@ -214,7 +214,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should be "illimité" when at least one stock is unlimited', () => {
         // given
-        props.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 'unlimited' }]
+        props.offer.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 'unlimited' }]
 
         // when
         renderOfferItem(props)
@@ -227,7 +227,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
     describe('when offer is an event product', () => {
       it('should display the correct text "2 dates"', () => {
         // given
-        props.stocks = [{ remainingQuantity: 'unlimited' }, { remainingQuantity: 'unlimited' }]
+        props.offer.stocks = [
+          { remainingQuantity: 'unlimited' },
+          { remainingQuantity: 'unlimited' },
+        ]
 
         // when
         renderOfferItem(props)
@@ -238,7 +241,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should display the beginning date time when only one date', () => {
         // given
-        props.stocks = [{ beginningDatetime: '2021-05-27T20:00:00Z', remainingQuantity: 10 }]
+        props.offer.stocks = [{ beginningDatetime: '2021-05-27T20:00:00Z', remainingQuantity: 10 }]
 
         // when
         renderOfferItem(props)
@@ -249,7 +252,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should not display a warning when no stocks are sold out', () => {
         // given
-        props.stocks = [{ remainingQuantity: 'unlimited' }, { remainingQuantity: 13 }]
+        props.offer.stocks = [{ remainingQuantity: 'unlimited' }, { remainingQuantity: 13 }]
 
         // when
         renderOfferItem(props)
@@ -261,7 +264,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should not display a warning when all stocks are sold out', () => {
         // given
-        props.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 0 }]
+        props.offer.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 0 }]
         eventOffer.status = 'SOLD_OUT'
 
         // when
@@ -274,7 +277,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should display a warning with number of stocks sold out when at least one stock is sold out', () => {
         // given
-        props.stocks = [
+        props.offer.stocks = [
           { remainingQuantity: 0, hasBookingLimitDatetimePassed: false },
           { remainingQuantity: 'unlimited', hasBookingLimitDatetimePassed: false },
         ]
@@ -293,7 +296,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should pluralize number of stocks sold out when at least two stocks are sold out', () => {
         // given
-        props.stocks = [
+        props.offer.stocks = [
           { remainingQuantity: 0, hasBookingLimitDatetimePassed: false },
           { remainingQuantity: 0, hasBookingLimitDatetimePassed: false },
           { remainingQuantity: 12, hasBookingLimitDatetimePassed: false },

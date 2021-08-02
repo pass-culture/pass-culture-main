@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -75,13 +76,6 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadTypes: jest.fn().mockResolvedValue(offerTypes),
 }))
 
-jest.mock('store/selectors/data/venuesSelectors', () => ({
-  selectVenueById: jest.fn().mockReturnValue({
-    isVirtual: true,
-    offererName: 'Offerer name',
-  }),
-}))
-
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
   getToday: jest.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
@@ -118,7 +112,7 @@ describe('src | components | pages | Offers | Offers', () => {
         users: [currentUser],
       },
     })
-    offersRecap = [offerFactory()]
+    offersRecap = [offerFactory({ venue: proVenues[0] })]
 
     pcapi.loadFilteredOffers.mockResolvedValue(offersRecap)
 
@@ -255,17 +249,20 @@ describe('src | components | pages | Offers | Offers', () => {
         ]
 
         // When
-        await renderOffers(props, store)
+        renderOffers(props, store)
 
         // Then
-        const venueSelect = screen.getByLabelText('Lieu')
         const defaultOption = screen.getByDisplayValue(expectedSelectOptions[0].value)
         expect(defaultOption).toBeInTheDocument()
 
-        const firstVenueOption = within(venueSelect).getByText(expectedSelectOptions[1].value)
+        const firstVenueOption = await screen.findByRole('option', {
+          name: expectedSelectOptions[1].value,
+        })
         expect(firstVenueOption).toBeInTheDocument()
 
-        const secondVenueOption = within(venueSelect).getByText(expectedSelectOptions[2].value)
+        const secondVenueOption = await screen.findByRole('option', {
+          name: expectedSelectOptions[2].value,
+        })
         expect(secondVenueOption).toBeInTheDocument()
       })
 
@@ -595,11 +592,12 @@ describe('src | components | pages | Offers | Offers', () => {
           it('should enable status filters when venue is selected but filter is not applied', async () => {
             // Given
             renderOffers(props, store)
+            const venueOptionToSelect = await screen.findByRole('option', {
+              name: proVenues[0].name,
+            })
 
             // When
-            await fireEvent.change(await screen.findByDisplayValue('Tous les lieux'), {
-              target: { value: 'JI' },
-            })
+            userEvent.selectOptions(screen.getByLabelText('Lieu'), venueOptionToSelect)
 
             // Then
             const statusFiltersIcon = screen.getByAltText(
@@ -782,10 +780,9 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should load offers with selected venue filter', async () => {
       // Given
       await renderOffers(props, store)
-      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
-        selector: 'select[name="lieu"]',
-      })
-      fireEvent.change(venueSelect, { target: { value: proVenues[0].id } })
+      const firstVenueOption = await screen.findByRole('option', { name: proVenues[0].name })
+      const venueSelect = screen.getByLabelText('Lieu')
+      userEvent.selectOptions(venueSelect, firstVenueOption)
 
       // When
       fireEvent.click(screen.getByText('Lancer la recherche'))
@@ -806,10 +803,11 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should load offers with selected type filter', async () => {
       // Given
       await renderOffers(props, store)
+      const firstTypeOption = await screen.findByRole('option', { name: offerTypes[0].proLabel })
       const typeSelect = screen.getByDisplayValue(ALL_TYPES_OPTION.displayName, {
         selector: 'select[name="type"]',
       })
-      fireEvent.change(typeSelect, { target: { value: offerTypes[0].value } })
+      userEvent.selectOptions(typeSelect, firstTypeOption)
 
       // When
       fireEvent.click(screen.getByText('Lancer la recherche'))
@@ -1071,12 +1069,11 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should have venue value when user filters by venue', async () => {
       // Given
       await renderOffers(props, store)
-      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
-        selector: 'select[name="lieu"]',
-      })
+      const firstVenueOption = await screen.findByRole('option', { name: proVenues[0].name })
+      const venueSelect = screen.getByLabelText('Lieu')
 
       // When
-      fireEvent.change(venueSelect, { target: { value: proVenues[0].id } })
+      userEvent.selectOptions(venueSelect, firstVenueOption)
       await fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
@@ -1101,12 +1098,13 @@ describe('src | components | pages | Offers | Offers', () => {
       ])
 
       await renderOffers(props, store)
+      const firstTypeOption = await screen.findByRole('option', { name: 'My test value' })
       const typeSelect = screen.getByDisplayValue(ALL_TYPES_OPTION.displayName, {
         selector: 'select[name="type"]',
       })
 
       // When
-      fireEvent.change(typeSelect, { target: { value: 'test_id_1' } })
+      userEvent.selectOptions(typeSelect, firstTypeOption)
       await fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
@@ -1467,10 +1465,11 @@ describe('src | components | pages | Offers | Offers', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
       pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap).mockResolvedValueOnce([])
       await renderOffers(props, store)
+      const firstVenueOption = await screen.findByRole('option', { name: proVenues[0].name })
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
         selector: 'select[name="lieu"]',
       })
-      fireEvent.change(venueSelect, { target: { value: proVenues[0].id } })
+      userEvent.selectOptions(venueSelect, firstVenueOption)
 
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledTimes(1)
       expect(pcapi.loadFilteredOffers).toHaveBeenNthCalledWith(1, {
@@ -1496,10 +1495,11 @@ describe('src | components | pages | Offers | Offers', () => {
     it('when clicking on "Réinitialiser les filtres"', async () => {
       pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap).mockResolvedValueOnce([])
       await renderOffers(props, store)
+      const venueOptionToSelect = await screen.findByRole('option', { name: proVenues[0].name })
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
         selector: 'select[name="lieu"]',
       })
-      fireEvent.change(venueSelect, { target: { value: proVenues[0].id } })
+      userEvent.selectOptions(venueSelect, venueOptionToSelect)
 
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledTimes(1)
       expect(pcapi.loadFilteredOffers).toHaveBeenNthCalledWith(1, {

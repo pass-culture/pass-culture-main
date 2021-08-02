@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import OfferItemContainer from '../OfferItem/OfferItemContainer'
+import OfferItem from '../OfferItem/OfferItem'
 
 const OffersTableBody = ({ areAllOffersSelected, offers, selectOffer, selectedOfferIds }) => (
   <tbody className="offers-list">
     {offers.map(offer => (
-      <OfferItemContainer
+      <OfferItem
         disabled={areAllOffersSelected}
         isSelected={selectedOfferIds.includes(offer.id)}
         key={offer.id}

@@ -3,7 +3,6 @@ import { compose } from 'redux'
 
 import { withQueryRouter } from 'components/hocs/with-query-router/withQueryRouter'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { loadOffers } from 'store/offers/thunks'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
@@ -17,7 +16,6 @@ export const mapStateToProps = state => {
 }
 
 export const mapDispatchToProps = dispatch => ({
-  loadOffers: filters => dispatch(loadOffers(filters)),
   showInformationNotification: information =>
     dispatch(
       showNotification({

@@ -11,7 +11,9 @@ import { computeVenueDisplayName } from 'repository/venuesService'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
-const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) => {
+const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
+  const { venue, stocks } = offer
+
   function handleOnChangeSelected() {
     selectOffer(offer.id, !isSelected)
   }
@@ -145,16 +147,31 @@ OfferItem.defaultProps = {
 OfferItem.propTypes = {
   disabled: PropTypes.bool,
   isSelected: PropTypes.bool,
-  offer: PropTypes.shape().isRequired,
-  selectOffer: PropTypes.func.isRequired,
-  stocks: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  venue: PropTypes.shape({
-    departementCode: PropTypes.string.isRequired,
-    isVirtual: PropTypes.bool.isRequired,
+  offer: PropTypes.shape({
+    venue: PropTypes.shape({
+      name: PropTypes.string,
+      publicName: PropTypes.string,
+      offererName: PropTypes.string,
+      isVirtual: PropTypes.bool,
+      departementCode: PropTypes.string,
+    }),
+    stocks: PropTypes.arrayOf(
+      PropTypes.shape({
+        beginningDatetime: PropTypes.string,
+        remainingQuantity: PropTypes.number,
+      })
+    ),
+    id: PropTypes.string,
+    isEditable: PropTypes.bool,
+    isActive: PropTypes.bool,
+    hasBookingLimitDatetimesPassed: PropTypes.bool,
+    status: PropTypes.string,
+    thumbUrl: PropTypes.string,
     name: PropTypes.string,
-    offererName: PropTypes.string,
-    publicName: PropTypes.string,
+    isEvent: PropTypes.bool,
+    productIsbn: PropTypes.string,
   }).isRequired,
+  selectOffer: PropTypes.func.isRequired,
 }
 
 export default OfferItem
