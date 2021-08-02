@@ -40,7 +40,7 @@ const Reimbursements = () => (
         target="_blank"
       >
         <Icon svg="ico-external-site" />
-        {'Les modalités de remboursements'}
+        {'Les modalités de remboursement'}
       </a>
     </Banner>
     <p className="advice">

@@ -69,7 +69,7 @@ describe('src | components | pages | Reimbursements', () => {
       expect(links.at(1).prop('href')).toBe(
         'https://aide.passculture.app/fr/articles/5096171-acteurs-culturels-comment-determiner-ses-modalites-de-remboursement'
       )
-      expect(links.at(1).prop('children')).toContain('Les modalités de remboursements')
+      expect(links.at(1).prop('children')).toContain('Les modalités de remboursement')
       expect(links.at(1).find('Icon').prop('svg')).toBe('ico-external-site')
     })
   })
