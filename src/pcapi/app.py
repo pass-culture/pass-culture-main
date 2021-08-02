@@ -11,6 +11,7 @@ from pcapi.flask_app import db
 from pcapi.local_providers.install import install_local_providers
 from pcapi.routes import install_routes
 from pcapi.routes.adage.v1.blueprint import adage_v1
+from pcapi.routes.adage_iframe.blueprint import adage_iframe
 from pcapi.routes.native.v1.blueprint import native_v1
 from pcapi.routes.pro.blueprints import pro_api_v2
 from pcapi.tasks import install_handlers
@@ -43,6 +44,7 @@ with app.app_context():
     app.register_blueprint(adage_v1, url_prefix="/adage/v1")
     app.register_blueprint(native_v1, url_prefix="/native/v1")
     app.register_blueprint(pro_api_v2, url_prefix="/v2")
+    app.register_blueprint(adage_iframe, url_prefix="/adage-iframe")
     app.register_blueprint(cloud_task_api)
 
 if __name__ == "__main__":

@@ -1,0 +1,2 @@
+VALID_RSA_PRIVATE_KEY_PATH = "tests/routes/adage_iframe/private_keys_for_tests/valid_rsa_private_key"
+INVALID_RSA_PRIVATE_KEY_PATH = "tests/routes/adage_iframe/private_keys_for_tests/invalid_rsa_private_key"

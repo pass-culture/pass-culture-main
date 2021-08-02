@@ -49,6 +49,7 @@ from pcapi.utils import crypto
 
 
 ALGORITHM_HS_256 = "HS256"
+ALGORITHM_RS_256 = "RS256"
 
 VOID_FIRST_NAME = ""
 VOID_PUBLIC_NAME = "   "

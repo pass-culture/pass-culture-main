@@ -9,6 +9,7 @@ beautifulsoup4==4.9.3
 black
 blinker==1.4
 coveralls==2.1.2
+cryptography==3.4.7
 debugpy
 factory-boy
 Flask==1.1.*

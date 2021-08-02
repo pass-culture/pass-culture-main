@@ -16,11 +16,13 @@ from pcapi.core.users.constants import PHONE_PREFIX_BY_DEPARTEMENT_CODE
 from pcapi.core.users.exceptions import InvalidPhoneNumber
 from pcapi.core.users.exceptions import UserWithoutPhoneNumberException
 from pcapi.core.users.models import ALGORITHM_HS_256
+from pcapi.core.users.models import ALGORITHM_RS_256
 from pcapi.core.users.models import User
 from pcapi.domain.postal_code.postal_code import PostalCode
 
 
 logger = logging.getLogger(__name__)
+JWT_ADAGE_PUBLIC_KEY_PATH = f"src/pcapi/routes/adage_iframe/public_key/{settings.JWT_ADAGE_PUBLIC_KEY_FILENAME}"
 
 
 def encode_jwt_payload(token_payload: dict, expiration_date: Optional[datetime] = None) -> str:
@@ -32,11 +34,17 @@ def encode_jwt_payload(token_payload: dict, expiration_date: Optional[datetime] 
         token_payload,
         settings.JWT_SECRET_KEY,  # type: ignore # known as str in build assertion
         algorithm=ALGORITHM_HS_256,
-    ).decode("ascii")
+    )
 
 
 def decode_jwt_token(jwt_token: str) -> dict:
-    return jwt.decode(jwt_token, settings.JWT_SECRET_KEY, algorithms=ALGORITHM_HS_256)  # type: ignore # known as str in build assertion
+    return jwt.decode(jwt_token, settings.JWT_SECRET_KEY, algorithms=[ALGORITHM_HS_256])  # type: ignore # known as str in build assertion
+
+
+def decode_jwt_token_rs256(jwt_token: str) -> dict:
+    with open(JWT_ADAGE_PUBLIC_KEY_PATH, "rb") as reader:
+        payload = jwt.decode(jwt_token, key=reader.read(), algorithms=[ALGORITHM_RS_256])  # type: ignore # known as str in build assertion
+    return payload
 
 
 def sanitize_email(email: str) -> str:
