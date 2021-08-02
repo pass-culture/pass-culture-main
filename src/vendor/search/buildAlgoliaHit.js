@@ -2,7 +2,7 @@ import { AppSearchFields, TRUE } from './constants'
 
 // TODO(antoinewg) We need this function temporarily but delete when we migrate completely to App Search
 export const buildAlgoliaHit = searchHit => {
-  const dates = searchHit.getRaw(AppSearchFields.dates).map(ts => +ts)
+  const dates = searchHit.getRaw(AppSearchFields.dates).map(ts => new Date(ts).getTime() / 1000)
   const prices = searchHit.getRaw(AppSearchFields.prices).map(p => +p / 100)
   const priceMax = Math.max(...prices)
   const priceMin = Math.min(...prices)

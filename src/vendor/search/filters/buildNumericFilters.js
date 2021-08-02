@@ -1,9 +1,6 @@
 import { DATE_FILTER } from '../../../components/pages/search/Filters/filtersEnums'
-import {
-  computeTimeRangeFromHoursToSeconds,
-  TIMESTAMP,
-} from '../../../components/pages/search/utils/date/time'
 import { AppSearchFields } from '../constants'
+import { TIME } from './timeFilters'
 
 export const buildNumericFilters = params => {
   return [
@@ -16,7 +13,6 @@ export const buildNumericFilters = params => {
 
 const MAX_PRICE = 30000
 
-// Filter okey on search a long as we store prices as cents
 const buildOfferPriceRangePredicate = params => {
   const { offerIsFree, priceRange } = params
   if (offerIsFree) return [{ [AppSearchFields.prices]: { to: 1 } }] // to is exclusive
@@ -41,15 +37,16 @@ const buildHomepageDatePredicate = params => {
   if (!beginningDatetime && !endingDatetime) return []
 
   const filter = {}
-  if (beginningDatetime) filter['from'] = TIMESTAMP.getFromDate(beginningDatetime)
-  if (endingDatetime) filter['to'] = TIMESTAMP.getFromDate(endingDatetime)
+  if (beginningDatetime)
+    filter['from'] = TIME.roundToNearestFiveMinutes(beginningDatetime).toISOString()
+  if (endingDatetime) filter['to'] = TIME.roundToNearestFiveMinutes(endingDatetime).toISOString()
 
   return [{ [AppSearchFields.dates]: filter }]
 }
 
 const buildTimeOnlyPredicate = timeRange => {
   if (timeRange.length === 0) return []
-  const [from, to] = computeTimeRangeFromHoursToSeconds(timeRange)
+  const [from, to] = TIME.computeTimeRangeFromHoursToSeconds(timeRange)
   return [{ [AppSearchFields.times]: { from, to } }]
 }
 
@@ -58,50 +55,63 @@ const buildDateAndTimePredicate = ({ date, timeRange }) => {
   let dateFilter
   switch (date.option) {
     case DATE_FILTER.CURRENT_WEEK.value:
-      dateFilter = TIMESTAMP.WEEK.getAllFromTimeRangeAndDate(date.selectedDate, timeRange)
+      dateFilter = TIME.WEEK.getAllFromTimeRangeAndDate(date.selectedDate, timeRange)
       break
     case DATE_FILTER.CURRENT_WEEK_END.value:
-      dateFilter = TIMESTAMP.WEEK_END.getAllFromTimeRangeAndDate(date.selectedDate, timeRange)
+      dateFilter = TIME.WEEK_END.getAllFromTimeRangeAndDate(date.selectedDate, timeRange)
       break
     default:
-      dateFilter = [TIMESTAMP.getAllFromTimeRangeAndDate(date.selectedDate, timeRange)]
+      dateFilter = [TIME.getAllFromTimeRangeAndDate(date.selectedDate, timeRange)]
   }
 
-  return dateFilter.map(([from, to]) => ({ [AppSearchFields.dates]: { from, to } }))
+  return dateFilter.map(([from, to]) => ({
+    [AppSearchFields.dates]: {
+      from: new Date(from).toISOString(),
+      to: new Date(to).toISOString(),
+    },
+  }))
 }
 
 const buildDateOnlyPredicate = date => {
   let from, to
   switch (date.option) {
     case DATE_FILTER.TODAY.value:
-      from = TIMESTAMP.getFromDate(date.selectedDate)
-      to = TIMESTAMP.getLastOfDate(date.selectedDate)
+      from = date.selectedDate
+      to = TIME.getEndOfDay(date.selectedDate)
       break
     case DATE_FILTER.CURRENT_WEEK.value:
-      from = TIMESTAMP.getFromDate(date.selectedDate)
-      to = TIMESTAMP.WEEK.getLastFromDate(date.selectedDate)
+      from = date.selectedDate
+      to = TIME.getEndOfWeek(date.selectedDate)
       break
     case DATE_FILTER.CURRENT_WEEK_END.value:
-      from = TIMESTAMP.WEEK_END.getFirstFromDate(date.selectedDate)
-      to = TIMESTAMP.WEEK.getLastFromDate(date.selectedDate)
+      from = TIME.getStartOfWeekEnd(date.selectedDate)
+      to = TIME.getEndOfWeek(date.selectedDate)
       break
     case DATE_FILTER.USER_PICK.value:
-      from = TIMESTAMP.getFirstOfDate(date.selectedDate)
-      to = TIMESTAMP.getLastOfDate(date.selectedDate)
+      from = TIME.getStartOfDay(date.selectedDate)
+      to = TIME.getEndOfDay(date.selectedDate)
       break
   }
 
-  return [{ [AppSearchFields.dates]: { from, to } }]
+  return [
+    {
+      [AppSearchFields.dates]: {
+        from: new Date(from).toISOString(),
+        to: new Date(to).toISOString(),
+      },
+    },
+  ]
 }
 
 const buildNewestOffersPredicate = params => {
   const { offerIsNew } = params
   if (!offerIsNew) return []
 
-  const now = new Date()
-  const fifteenDaysAgo = new Date().setDate(now.getDate() - 15)
-  const from = TIMESTAMP.getFromDate(new Date(fifteenDaysAgo))
-  const to = TIMESTAMP.getFromDate(now)
+  const now = TIME.roundToNearestFiveMinutes(new Date())
+  const to = now.toISOString()
+
+  const fifteenDaysAgo = new Date(now.setDate(now.getDate() - 15))
+  const from = fifteenDaysAgo.toISOString()
 
   return [{ [AppSearchFields.stocks_date_created]: { from, to } }]
 }
