@@ -55,3 +55,14 @@ class BookingFactory(BaseFactory):
 class EducationalBookingFactory(BookingFactory):
     educationalBooking = factory.SubFactory(EducationalBookingSubFactory)
     stock = factory.SubFactory(offers_factories.EventStockFactory)
+
+
+class IndividualBookingSubFactory(BookingFactory):
+    class Meta:
+        model = models.IndividualBooking
+
+    user = factory.SubFactory(users_factories.BeneficiaryFactory)
+
+
+class IndividualBookingFactory(BookingFactory):
+    individualBooking = factory.SubFactory(IndividualBookingSubFactory)
