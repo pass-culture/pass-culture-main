@@ -50,8 +50,6 @@ def find_not_processable_with_bank_information() -> list[Payment]:
     not_processable_payments_with_bank_information = (
         Payment.query.filter(Payment.id.in_(not_processable_payment_ids))
         .join(Booking)
-        .join(Stock)
-        .join(Offer)
         .join(Venue)
         .join(Offerer)
         .join(BankInformation, predicate_matches_venue_or_offerer)
