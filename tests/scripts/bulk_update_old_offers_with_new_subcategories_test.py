@@ -9,11 +9,14 @@ class UpdateOffersSubcatTest:
     @pytest.mark.usefixtures("db_session")
     def test_update_offers_subcategory(self):
         # Given
-        # OfferFactory.create_batch(size=10, subcategoryId=None, type=offer_type.ThingType.LIVRE_EDITION.value)
-        OfferFactory()
+        created_offers = OfferFactory.create_batch(
+            size=3, subcategoryId=None, type=str(offer_type.ThingType.LIVRE_EDITION)
+        )
         # When
 
-        # bulk_update_old_offers_with_new_subcategories()
+        bulk_update_old_offers_with_new_subcategories()
 
         # Then
-        pass
+        assert created_offers[0].subcategoryId == "LIVRE_PAPIER"
+        assert created_offers[1].subcategoryId == "LIVRE_PAPIER"
+        assert created_offers[2].subcategoryId == "LIVRE_PAPIER"
