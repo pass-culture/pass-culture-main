@@ -390,7 +390,7 @@ export const showOptionsTree = [
   },
   {
     code: 1500,
-    label: 'Autre (spectacle sur glace, historique, aquatique, …)  ',
+    label: 'Autre (spectacle sur glace, historique, aquatique…)  ',
     children: [
       { code: 1501, label: 'Son et lumière' },
       { code: 1502, label: 'Spectacle sur glace' },
