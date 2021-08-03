@@ -59,6 +59,7 @@ class FeatureToggle(enum.Enum):
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
     ENABLE_VENUE_WITHDRAWAL_DETAILS = "Active les modalités de retrait sur la page lieu"
     PERF_VENUE_STATS = "Permet de basculer vers une nouvelle implémentation performante de la page d'accueil pro contenant les indicateurs statistiques par venue"
+    WEBAPP_V2_ENABLED = "Utiliser la nouvelle web app (décli web/v2) au lieu de l'ancienne"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -101,6 +102,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS,
     FeatureToggle.PERF_VENUE_STATS,
+    FeatureToggle.WEBAPP_V2_ENABLED,
 )
 
 

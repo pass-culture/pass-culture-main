@@ -17,6 +17,7 @@ class SettingsTest:
         ENABLE_NATIVE_ID_CHECK_VERSION=False,
         ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING=False,
         ENABLE_ID_CHECK_RETENTION=False,
+        WEBAPP_V2_ENABLED=False,
         ENABLE_PHONE_VALIDATION=True,
         WHOLE_FRANCE_OPENING=True,
         DISPLAY_DMS_REDIRECTION=True,
@@ -40,6 +41,7 @@ class SettingsTest:
             "displayDmsRedirection": True,
             "useAppSearch": True,
             "idCheckAddressAutocompletion": True,
+            "isWebappV2Enabled": False,
         }
 
     @override_features(
@@ -50,6 +52,7 @@ class SettingsTest:
         ENABLE_ID_CHECK_RETENTION=True,
         AUTO_ACTIVATE_DIGITAL_BOOKINGS=True,
         ENABLE_NATIVE_ID_CHECK_VERSION=True,
+        WEBAPP_V2_ENABLED=True,
         ENABLE_PHONE_VALIDATION=False,
         WHOLE_FRANCE_OPENING=False,
         DISPLAY_DMS_REDIRECTION=False,
@@ -73,4 +76,5 @@ class SettingsTest:
             "displayDmsRedirection": False,
             "useAppSearch": False,
             "idCheckAddressAutocompletion": False,
+            "isWebappV2Enabled": True,
         }
