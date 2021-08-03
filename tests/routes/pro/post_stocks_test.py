@@ -294,7 +294,6 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        print(response.json)
         assert response.json["activationCodesExpirationDatetime"] == [
             (
                 "La date limite de validité des codes d'activation doit être ultérieure"

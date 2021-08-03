@@ -75,7 +75,7 @@ class Returns204Test:
             token_payload,
             settings.JWT_SECRET_KEY,  # type: ignore # known as str in build assertion
             algorithm=ALGORITHM_HS_256,
-        ).decode("ascii")
+        )
 
         data = {"token": token}
 

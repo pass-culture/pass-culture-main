@@ -1,7 +1,7 @@
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
 from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_refresh_token_required
+from flask_jwt_extended import jwt_required
 
 from pcapi.connectors import api_recaptcha
 from pcapi.core.users import api as users_api
@@ -30,7 +30,7 @@ from .serialization import authentication
 
 
 def create_user_access_token(user: User) -> str:
-    return create_access_token(identity=user.email, user_claims={"user_id": user.id})
+    return create_access_token(identity=user.email, additional_claims={"user_claims": {"user_id": user.id}})
 
 
 @blueprint.native_v1.route("/signin", methods=["POST"])
@@ -56,7 +56,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
 
 
 @blueprint.native_v1.route("/refresh_access_token", methods=["POST"])
-@jwt_refresh_token_required
+@jwt_required(refresh=True)
 @spectree_serialize(response_model=authentication.RefreshResponse, api=blueprint.api)  # type: ignore
 def refresh() -> authentication.RefreshResponse:
     email = get_jwt_identity()

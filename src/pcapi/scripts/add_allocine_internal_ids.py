@@ -20,7 +20,6 @@ def add_allocine_internal_ids() -> None:
     logger.info("%d allocine pivots found", len(allocine_pivots))
 
     for allocine_pivot in allocine_pivots:
-        print(allocine_pivot.theaterId)
         decoded_id = base64.b64decode(allocine_pivot.theaterId).decode("ascii")
         internal_id = decoded_id.split("Theater:")[1]
         allocine_pivot.internalId = internal_id

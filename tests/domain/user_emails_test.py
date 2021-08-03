@@ -497,7 +497,6 @@ class SendNewlyEligibleUserEmailTest:
 
         # then
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2030056
-        print(mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"])
         assert (
             mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"][:111]
             == "https://passcultureapptestauto.page.link/?link=https%3A%2F%2Fapp.passculture-testing.beta.gouv.fr%2Fid-check%3F"

@@ -20,7 +20,7 @@ def authenticated_user_required(route_function):  # type: ignore
     add_security_scheme(route_function, JWT_AUTH)
 
     @wraps(route_function)
-    @jwt_required
+    @jwt_required()
     def retrieve_authenticated_user(*args, **kwargs):  # type: ignore
         email = get_jwt_identity()
         user = find_user_by_email(email)
