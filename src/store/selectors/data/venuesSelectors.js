@@ -21,21 +21,6 @@ export const selectVenuesByOffererId = createCachedSelector(
   }
 )((state, offererId = '') => offererId)
 
-export const selectVenuesByOffererIdAndOfferType = createCachedSelector(
-  selectVenuesByOffererId,
-  (state, offererId, offerType = null) => offerType,
-  (venuesByOfferId, offerType) => {
-    if (offerType) {
-      if (offerType.offlineOnly) {
-        return venuesByOfferId.filter(venue => !venue.isVirtual)
-      } else if (offerType.onlineOnly) {
-        return venuesByOfferId.filter(venue => venue.isVirtual)
-      }
-    }
-    return venuesByOfferId
-  }
-)((state, offererId = '', offerType = '') => `${offererId}/${offerType}`)
-
 export const selectPhysicalVenuesByOffererId = createCachedSelector(
   selectVenuesByOffererId,
   venues => venues.filter(venue => !venue.isVirtual)
