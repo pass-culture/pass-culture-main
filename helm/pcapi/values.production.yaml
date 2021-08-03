@@ -34,7 +34,7 @@ serviceAccount:
 api:
   enabled: true
 
-  containerPort : 5000
+  containerPort: 5000
 
   probePath: /health/api
 
@@ -78,17 +78,17 @@ api:
         paths:
           - path: /
     tls:
-    - secretName: pcapi-ingress-cert
-      hosts:
-      - backend.passculture.beta.gouv.fr
-      - backend.passculture.app
-      - backend.passculture.pro
+      - secretName: pcapi-ingress-cert
+        hosts:
+          - backend.passculture.beta.gouv.fr
+          - backend.passculture.app
+          - backend.passculture.pro
 
 ### High Latency API deployment ###
 highLatencyApi:
   enabled: true
 
-  containerPort : 5000
+  containerPort: 5000
 
   probePath: /health/api
 
@@ -150,17 +150,17 @@ highLatencyApi:
           - path: /venues/(.*)/stats$
           - path: /venueProviders$
     tls:
-    - secretName: pcapi-ingress-cert
-      hosts:
-      - backend.passculture.beta.gouv.fr
-      - backend.passculture.app
-      - backend.passculture.pro
+      - secretName: pcapi-ingress-cert
+        hosts:
+          - backend.passculture.beta.gouv.fr
+          - backend.passculture.app
+          - backend.passculture.pro
 
 ### Admin deployment ###
 admin:
   enabled: true
 
-  containerPort : 5000
+  containerPort: 5000
 
   probePath: /health/api
 
@@ -197,11 +197,11 @@ admin:
         paths:
           - path: /pc/back-office/
     tls:
-    - secretName: pcapi-ingress-cert
-      hosts:
-      - backend.passculture.beta.gouv.fr
-      - backend.passculture.app
-      - backend.passculture.pro
+      - secretName: pcapi-ingress-cert
+        hosts:
+          - backend.passculture.beta.gouv.fr
+          - backend.passculture.app
+          - backend.passculture.pro
 
 ### Worker deployment ###
 workers:
@@ -252,7 +252,6 @@ workers:
 
 ### Cron deployments ###
 crons:
-
   replicaCount: 1
 
   resources:
@@ -311,7 +310,7 @@ console:
 cloudTaskIdcheck:
   enabled: true
 
-  containerPort : 5000
+  containerPort: 5000
 
   probePath: /health/api
 
@@ -358,11 +357,11 @@ cloudTaskIdcheck:
           - path: /native/v1/identity_document$
           - path: /cloud-tasks/verify_identity_document$
     tls:
-    - secretName: pcapi-ingress-cert
-      hosts:
-      - backend.passculture.beta.gouv.fr
-      - backend.passculture.app
-      - backend.passculture.pro
+      - secretName: pcapi-ingress-cert
+        hosts:
+          - backend.passculture.beta.gouv.fr
+          - backend.passculture.app
+          - backend.passculture.pro
 
 aide:
   enabled: true
@@ -383,18 +382,17 @@ aide:
         paths:
           - path: /
     tls:
-    - secretName: aide-intercom-ingress-cert
-      hosts:
-      - aide.passculture.app
+      - secretName: aide-intercom-ingress-cert
+        hosts:
+          - aide.passculture.app
 
 configmapApi:
-   DATABASE_STATEMENT_TIMEOUT: 60000
+  DATABASE_STATEMENT_TIMEOUT: 60000
 
 configmap:
   ENV: production
   NLTK_DATA: /root/nltk_data
   FIREBASE_DYNAMIC_LINKS_URL: https://passcultureapp.page.link
-  NATIVE_APP_URL: https://passculture.app
   GCP_BUCKET_NAME: passculture-metier-prod-production-assets
   GUNICORN_PORT: 5000
   GUNICORN_MAX_REQUESTS: 3000
@@ -409,7 +407,7 @@ configmap:
   NATIVE_APP_MINIMAL_CLIENT_VERSION: "1.142.0"
 
 configmapCloudTaskIdcheck:
-  GUNICORN_THREADS : 10
+  GUNICORN_THREADS: 10
 
 secrets:
   - name: ADMINISTRATION_EMAIL_ADDRESS
