@@ -1,4 +1,5 @@
 from datetime import datetime
+import decimal
 import enum
 
 from sqlalchemy import BigInteger
@@ -13,6 +14,7 @@ from sqlalchemy.sql.schema import Index
 from sqlalchemy.sql.sqltypes import Boolean
 from sqlalchemy.sql.sqltypes import Numeric
 
+from pcapi.core.educational import exceptions
 from pcapi.models.db import Model
 
 
@@ -43,6 +45,9 @@ class EducationalYear(Model):
 
 class EducationalDeposit(Model):
     __tablename__ = "educational_deposit"
+
+    TEMPORARY_FUND_AVAILABLE_RATIO = 0.8
+
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     educationalInstitutionId = Column(BigInteger, ForeignKey("educational_institution.id"), index=True, nullable=False)
@@ -60,6 +65,22 @@ class EducationalDeposit(Model):
     dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
 
     isFinal = Column(Boolean, nullable=False, default=True)
+
+    def get_amount(self) -> decimal.Decimal:
+        return (
+            round(self.amount * decimal.Decimal(self.TEMPORARY_FUND_AVAILABLE_RATIO), 2)
+            if not self.isFinal
+            else self.amount
+        )
+
+    def check_has_enough_fund(self, total_amount_after_booking: decimal.Decimal) -> None:
+        if self.amount < total_amount_after_booking:
+            raise exceptions.InsufficientFund()
+
+        if self.get_amount() < total_amount_after_booking and not self.isFinal:
+            raise exceptions.InsufficientTemporaryFund()
+
+        return
 
 
 class EducationalBooking(Model):
