@@ -24,6 +24,7 @@ from pcapi.domain.payments import generate_message_file
 from pcapi.domain.payments import generate_payment_details_csv
 from pcapi.domain.payments import generate_venues_csv
 from pcapi.domain.payments import generate_wallet_balances_csv
+from pcapi.domain.payments import make_transaction_label
 from pcapi.domain.payments import validate_message_file_structure
 from pcapi.domain.reimbursement import find_all_booking_reimbursements
 from pcapi.models.db import db
@@ -177,7 +178,7 @@ def send_transactions(
     logger.info(
         "[BATCH][PAYMENTS] Sending file with message ID [%s] and checksum [%s]", message.name, message.checksum.hex()
     )
-    logger.info("[BATCH][PAYMENTS] Recipients of email : %s", recipients)
+    logger.info("[BATCH][PAYMENTS] Recipients of email: %s", recipients)
 
     venues_csv_path = _save_file_on_disk("venues", venues_csv, "csv")
     xml_path = _save_file_on_disk("banque_de_france", xml_file, "xml")
@@ -202,7 +203,7 @@ def send_payments_details(payment_query, recipients: list[str]) -> None:
 
     csv = generate_payment_details_csv(payment_query)
     logger.info("[BATCH][PAYMENTS] Sending CSV details of %s payments", count)
-    logger.info("[BATCH][PAYMENTS] Recipients of email : %s", recipients)
+    logger.info("[BATCH][PAYMENTS] Recipients of email: %s", recipients)
     path = _save_file_on_disk("payments_details", csv, "csv")
     if not send_payment_details_email(csv, recipients):
         # FIXME (dbaty, 2021-06-16): we are likely to end up here
@@ -218,7 +219,7 @@ def send_wallet_balances(recipients: list[str]) -> None:
     balances = get_all_users_wallet_balances()
     csv = generate_wallet_balances_csv(balances)
     logger.info("[BATCH][PAYMENTS] Sending %s wallet balances", len(balances))
-    logger.info("[BATCH][PAYMENTS] Recipients of email : %s", recipients)
+    logger.info("[BATCH][PAYMENTS] Recipients of email: %s", recipients)
     try:
         send_wallet_balances_email(csv, recipients)
     except MailServiceException as exception:
@@ -241,7 +242,7 @@ def send_payments_report(batch_date: datetime, recipients: list[str]) -> None:
         "[BATCH][PAYMENTS] Sending report on %d payments NOT_PROCESSABLE",
         not_processable_payments.count(),
     )
-    logger.info("[BATCH][PAYMENTS] Recipients of email : %s", recipients)
+    logger.info("[BATCH][PAYMENTS] Recipients of email: %s", recipients)
 
     not_processable_csv = generate_payment_details_csv(not_processable_payments)
 
@@ -272,5 +273,6 @@ def set_not_processable_payments_with_bank_information_to_retry(batch_date: date
             payment.bic = payment.booking.stock.offer.venue.managingOfferer.bic
             payment.iban = payment.booking.stock.offer.venue.managingOfferer.iban
         payment.batchDate = batch_date
+        payment.transactionLabel = make_transaction_label(datetime.utcnow())
         payment.setStatus(TransactionStatus.RETRY)
     repository.save(*payments_to_retry)

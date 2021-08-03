@@ -1,4 +1,5 @@
 import datetime
+from unittest import mock
 
 from lxml.etree import DocumentInvalid
 import pytest
@@ -9,7 +10,6 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import override_settings
-from pcapi.core.users.factories import UserFactory
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
@@ -237,18 +237,21 @@ def test_send_payments_report_sends_one_csv_attachment_if_some_payments_are_not_
 
 class SetNotProcessablePaymentsWithBankInformationToRetryTest:
     @pytest.mark.usefixtures("db_session")
+    @mock.patch("pcapi.scripts.payment.batch_steps.make_transaction_label")
     def test_should_set_not_processable_payments_to_retry_and_update_payments_bic_and_iban_using_offerer_information(
-        self,
+        self, make_transaction_label_stub
     ):
         # Given
-        user = UserFactory(email="user@example.com")
         offerer = offers_factories.OffererFactory(name="first offerer")
-        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
-        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        stock = offers_factories.ThingStockFactory(offer__venue__managingOfferer=offerer)
+        booking = bookings_factories.BookingFactory(stock=stock)
         offers_factories.BankInformationFactory(offerer=offerer, iban="FR7611808009101234567890147", bic="CCBPFRPPVER")
         not_processable_payment = payments_factories.PaymentFactory(
-            booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
+            amount=10,
+            booking=booking,
+            bic="QSDFGH8Z555",
+            iban="CF13QSDFGH456789",
+            transactionLabel="My old transaction label",
         )
         payments_factories.PaymentStatusFactory(
             payment=not_processable_payment, status=TransactionStatus.NOT_PROCESSABLE
@@ -258,6 +261,8 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
         payments_factories.PaymentStatusFactory(payment=sent_payment, status=TransactionStatus.SENT)
 
         new_batch_date = datetime.datetime.now()
+        new_transaction_label = "My new transaction label"
+        make_transaction_label_stub.return_value = new_transaction_label
 
         # When
         set_not_processable_payments_with_bank_information_to_retry(new_batch_date)
@@ -268,17 +273,16 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
         assert queried_not_processable_payment.iban == "FR7611808009101234567890147"
         assert queried_not_processable_payment.bic == "CCBPFRPPVER"
         assert queried_not_processable_payment.batchDate == new_batch_date
+        assert queried_not_processable_payment.transactionLabel == new_transaction_label
         assert queried_not_processable_payment.currentStatus.status == TransactionStatus.RETRY
         assert queried_sent_payment.currentStatus.status == TransactionStatus.SENT
 
     @pytest.mark.usefixtures("db_session")
     def test_should_not_set_not_processable_payments_to_retry_when_bank_information_status_is_not_accepted(self):
         # Given
-        user = UserFactory(email="user@example.com")
         offerer = offers_factories.OffererFactory(name="first offerer")
-        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
-        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        stock = offers_factories.ThingStockFactory(offer__venue__managingOfferer=offerer)
+        booking = bookings_factories.BookingFactory(stock=stock)
         offers_factories.BankInformationFactory(
             offerer=offerer, iban=None, bic=None, status=BankInformationStatus.DRAFT
         )
@@ -310,11 +314,9 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
         self,
     ):
         # Given
-        user = UserFactory(email="user@example.com")
         offerer = offers_factories.OffererFactory(name="first offerer")
-        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
-        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        stock = offers_factories.ThingStockFactory(offer__venue__managingOfferer=offerer)
+        booking = bookings_factories.BookingFactory(stock=stock)
         offers_factories.BankInformationFactory(offerer=offerer, iban="FR7611808009101234567890147", bic="CCBPFRPPVER")
         not_processable_payment = payments_factories.PaymentFactory(booking=booking, amount=10, iban=None, bic=None)
         payments_factories.PaymentStatusFactory(

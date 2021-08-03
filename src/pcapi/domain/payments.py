@@ -200,9 +200,9 @@ def generate_message_file(
     message_name: str,
     remittance_code: str,
 ) -> str:
-    logger.info("Setting transactionEndToEndId on all payments to send")
+    logger.info("[BATCH][PAYMENTS] Setting transactionEndToEndId on all payments to send")
     transactions = _set_end_to_end_id_and_group_into_transactions(payment_query, batch_date)
-    logger.info("Set transactionEndToEndId on all payments to send")
+    logger.info("[BATCH][PAYMENTS] Set transactionEndToEndId on all payments to send")
     total_amount = sum(transaction.amount for transaction in transactions)
     now = datetime.utcnow()
 
