@@ -23,7 +23,7 @@ const ConfirmDialog = ({ onConfirm, onCancel }) => {
       <div className="explanation">
         <p>
           {
-            'Vous pouvez retrouvez la liste des catégories de livres qui ne sont pas éligibles au pass Culture sur le lien suivant : '
+            'Vous pouvez retrouver la liste des catégories de livres qui ne sont pas éligibles au pass Culture sur le lien suivant : '
           }
           <a
             className="tertiary-link"
