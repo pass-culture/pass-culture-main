@@ -28,6 +28,7 @@ def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Ve
         "withdrawalDetails": venue.withdrawalDetails,
         "isEmailAppliedOnAllOffers": False,
         "isWithdrawalAppliedOnAllOffers": False,
+        "contact": {"email": "no.contact.field@is.mandatory.com"},
         **venue_data,
     }
 
@@ -37,10 +38,7 @@ class Returns200Test:
     def test_should_update_venue(self, app) -> None:
         # given
         user_offerer = offers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(
-            name="old name",
-            managingOfferer=user_offerer.offerer,
-        )
+        venue = offers_factories.VenueFactory(name="old name", managingOfferer=user_offerer.offerer)
 
         venue_type = offerers_factories.VenueTypeFactory(label="Musée")
         venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")

@@ -4,12 +4,14 @@ from typing import Optional
 
 from pcapi import settings
 from pcapi.core import search
+from pcapi.core.offerers import models
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueType
 from pcapi.core.users.models import User
 from pcapi.models.db import db
 from pcapi.repository import repository
+from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 from pcapi.utils import crypto
 
@@ -54,6 +56,24 @@ def update_venue(venue: Venue, **attrs: typing.Any) -> Venue:
     if indexing_modifications_fields:
         search.async_index_venue_ids([venue.id])
 
+    return venue
+
+
+def upsert_venue_contact(venue: Venue, contact_data: venues_serialize.VenueContactModel) -> models.Venue:
+    """
+    Create and attach a VenueContact to a Venue if it has none.
+    Update (replace) an existing VenueContact otherwise.
+    """
+    venue_contact = venue.contact
+    if not venue_contact:
+        venue_contact = models.VenueContact(venue=venue)
+
+    venue_contact.email = contact_data.email
+    venue_contact.website = contact_data.website
+    venue_contact.phone_number = contact_data.phone_number
+    venue_contact.social_medias = contact_data.social_medias or {}
+
+    repository.save(venue_contact)
     return venue
 
 

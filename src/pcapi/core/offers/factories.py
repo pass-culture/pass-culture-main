@@ -58,6 +58,8 @@ class VenueFactory(BaseFactory):
     venueTypeCode = offerers_models.VenueTypeCode.OTHER.value
     description = factory.Faker("text", max_nb_chars=64)
 
+    contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")
+
 
 class VirtualVenueFactory(VenueFactory):
     isVirtual = True

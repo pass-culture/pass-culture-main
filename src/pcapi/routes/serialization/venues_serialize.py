@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 from decimal import InvalidOperation
+import typing
 from typing import Optional
 from typing import Union
 
@@ -12,6 +13,7 @@ from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import string_to_boolean_field
 from pcapi.serialization.utils import to_camel
+from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -104,6 +106,34 @@ class GetVenueManagingOffererResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
+SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
+SocialMedias = dict[SocialMedia, pydantic.HttpUrl]  # type: ignore
+
+
+class VenueContactModel(BaseModel):
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
+        anystr_strip_whitespace = True
+        extra = pydantic.Extra.forbid
+
+    email: Optional[pydantic.EmailStr]
+    website: Optional[pydantic.HttpUrl]
+    phone_number: Optional[str]
+    social_medias: Optional[SocialMedias]
+
+    @validator("phone_number")
+    def validate_phone_number(cls, phone_number: str) -> str:  # pylint: disable=no-self-argument
+        if phone_number is None:
+            return phone_number
+
+        try:
+            return phone_number_utils.ParsedPhoneNumber(phone_number, "FR").phone_number
+        except Exception:
+            raise ValueError(f"numéro de téléphone invalide: {phone_number}")
+
+
 class GetVenueResponseModel(BaseModel):
     address: Optional[str]
     bic: Optional[str]
@@ -132,6 +162,7 @@ class GetVenueResponseModel(BaseModel):
     venueLabelId: Optional[str]
     venueTypeId: Optional[str]
     withdrawalDetails: Optional[str]
+    contact: Optional[VenueContactModel]
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
@@ -164,6 +195,7 @@ class EditVenueBodyModel(BaseModel):
     mentalDisabilityCompliant: Optional[bool]
     motorDisabilityCompliant: Optional[bool]
     visualDisabilityCompliant: Optional[bool]
+    contact: Optional[VenueContactModel]
 
     _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
     _dehumanize_venue_type_id = dehumanize_field("venueTypeId")

@@ -3,11 +3,13 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import ApiKey
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import api_errors
+from pcapi.routes.serialization import venues_serialize
 from pcapi.utils.token import random_token
 
 
@@ -186,6 +188,40 @@ class EditVenueTest:
         # nothing has changed => nothing to save nor update
         with assert_num_queries(0):
             offerers_api.update_venue(venue, **venue_data)
+
+
+@pytest.mark.usefixtures("db_session")
+class EditVenueContactTest:
+    def test_create_venue_contact(self, app):
+        user_offerer = offers_factories.UserOffererFactory(
+            user__email="user.pro@test.com",
+        )
+        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        contact_data = offerers_factories.VenueContactFactory.build(venue=None)
+
+        venue = offerers_api.upsert_venue_contact(venue, contact_data)
+
+        assert venue.contact
+        assert venue.contact.email == contact_data.email
+        assert venue.contact.phone_number == contact_data.phone_number
+        assert venue.contact.social_medias == contact_data.social_medias
+
+    def test_update_venue_contact(self, app):
+        user_offerer = offers_factories.UserOffererFactory(
+            user__email="user.pro@test.com",
+        )
+        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+        contact_data = venues_serialize.VenueContactModel(
+            email="other.contact@venue.com", socialMedias={"instagram": "https://instagram.com/@venue"}
+        )
+
+        venue = offerers_api.upsert_venue_contact(venue, contact_data)
+
+        assert venue.contact
+        assert venue.contact.email == contact_data.email
+        assert venue.contact.social_medias == contact_data.social_medias
+        assert not venue.contact.phone_number
 
 
 @pytest.mark.usefixtures("db_session")

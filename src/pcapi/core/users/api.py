@@ -46,9 +46,7 @@ from pcapi.core.users.repository import get_beneficiary_import_for_beneficiary
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import delete_object
 from pcapi.core.users.utils import encode_jwt_payload
-from pcapi.core.users.utils import get_formatted_phone_number
 from pcapi.core.users.utils import get_object
-from pcapi.core.users.utils import parse_phone_number
 from pcapi.core.users.utils import sanitize_email
 from pcapi.core.users.utils import store_object
 from pcapi.domain import user_emails
@@ -73,6 +71,7 @@ from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks.account import VerifyIdentityDocumentRequest
 from pcapi.tasks.account import verify_identity_document
+from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.token import random_token
 from pcapi.utils.urls import get_webapp_url
 from pcapi.workers.apps_flyer_job import log_user_becomes_beneficiary_event_job
@@ -691,7 +690,7 @@ def set_pro_tuto_as_seen(user: User) -> None:
 def change_user_phone_number(user: User, phone_number: str) -> None:
     _check_phone_number_validation_is_authorized(user)
 
-    phone_data = ParsedPhoneNumber(phone_number)
+    phone_data = phone_number_utils.ParsedPhoneNumber(phone_number)
     with fraud_manager(user=user, phone_number=phone_data.phone_number):
         check_phone_number_is_legit(phone_data.phone_number, phone_data.country_code)
         check_phone_number_not_used(phone_data.phone_number)
@@ -704,7 +703,7 @@ def change_user_phone_number(user: User, phone_number: str) -> None:
 def send_phone_validation_code(user: User) -> None:
     _check_phone_number_validation_is_authorized(user)
 
-    phone_data = ParsedPhoneNumber(user.phoneNumber)
+    phone_data = phone_number_utils.ParsedPhoneNumber(user.phoneNumber)
     with fraud_manager(user=user, phone_number=phone_data.phone_number):
         check_phone_number_is_legit(phone_data.phone_number, phone_data.country_code)
         check_phone_number_not_used(phone_data.phone_number)
@@ -722,7 +721,7 @@ def send_phone_validation_code(user: User) -> None:
 def validate_phone_number(user: User, code: str) -> None:
     _check_phone_number_validation_is_authorized(user)
 
-    phone_data = ParsedPhoneNumber(user.phoneNumber)
+    phone_data = phone_number_utils.ParsedPhoneNumber(user.phoneNumber)
     with fraud_manager(user=user, phone_number=phone_data.phone_number):
         check_phone_number_is_legit(phone_data.phone_number, phone_data.country_code)
         check_and_update_phone_validation_attempts(app.redis_client, user)
@@ -863,13 +862,6 @@ def verify_identity_document_informations(image_storage_path: str) -> None:
         user_emails.send_document_verification_error_email(email, code)
         fraud_api.handle_document_validation_error(email, code)
     delete_object(image_storage_path)
-
-
-class ParsedPhoneNumber:
-    def __init__(self, base_phone_number: str):
-        self.parsed_phone_number = parse_phone_number(base_phone_number)
-        self.phone_number = get_formatted_phone_number(self.parsed_phone_number)
-        self.country_code = self.parsed_phone_number.country_code
 
 
 @contextmanager

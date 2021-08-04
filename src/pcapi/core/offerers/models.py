@@ -19,9 +19,11 @@ from sqlalchemy import and_
 from sqlalchemy import case
 from sqlalchemy import cast
 from sqlalchemy import func
+from sqlalchemy.dialects.postgresql.json import JSONB
 from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
@@ -176,6 +178,8 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     description = Column(Text, nullable=True)
 
+    contact = relationship("VenueContact", back_populates="venue", uselist=False)
+
     def store_departement_code(self) -> None:
         self.departementCode = PostalCode(self.postalCode).get_departement_code()
 
@@ -258,6 +262,33 @@ class VenueType(PcObject, Model):
     label = Column(String(100), nullable=False)
 
     venue = relationship("Venue")
+
+
+class VenueContact(PcObject, Model):
+    __tablename__ = "venue_contact"
+
+    id = Column(BigInteger, primary_key=True)
+
+    venueId = Column(BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True)
+
+    venue = relationship("Venue", foreign_keys=[venueId], back_populates="contact")
+
+    email = Column(String(256), nullable=True)
+
+    website = Column(String(256), nullable=True)
+
+    phone_number = Column(String(64), nullable=True)
+
+    social_medias = Column(MutableDict.as_mutable(JSONB), nullable=False, default={}, server_default="{}")
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}"
+            f"(venueid={self.venueId!r}, "
+            f"email={self.email!r}, "
+            f"phone_number={self.phone_number!r}, "
+            f"social_medias={self.social_medias!r})"
+        )
 
 
 @listens_for(Venue, "before_insert")

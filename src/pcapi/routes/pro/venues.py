@@ -85,8 +85,10 @@ def edit_venue(venue_id: str, body: EditVenueBodyModel) -> GetVenueResponseModel
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
-    not_venue_fields = {"isEmailAppliedOnAllOffers", "isWithdrawalAppliedOnAllOffers"}
+    not_venue_fields = {"isEmailAppliedOnAllOffers", "isWithdrawalAppliedOnAllOffers", "contact"}
     venue = offerers_api.update_venue(venue, **body.dict(exclude=not_venue_fields, exclude_unset=True))
+    if body.contact:
+        venue = offerers_api.upsert_venue_contact(venue, body.contact)
 
     if FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS.is_active():
         if body.withdrawalDetails and body.isWithdrawalAppliedOnAllOffers:

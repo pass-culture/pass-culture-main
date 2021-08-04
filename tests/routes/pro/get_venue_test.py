@@ -21,6 +21,12 @@ class Returns200Test:
             "bic": bank_information.bic,
             "bookingEmail": venue.bookingEmail,
             "city": venue.city,
+            "contact": {
+                "email": venue.contact.email,
+                "website": venue.contact.website,
+                "phoneNumber": venue.contact.phone_number,
+                "socialMedias": venue.contact.social_medias,
+            },
             "comment": venue.comment,
             "dateCreated": format_into_utc_date(venue.dateCreated),
             "dateModifiedAtLastProvider": format_into_utc_date(venue.dateModifiedAtLastProvider),

@@ -1,5 +1,6 @@
 import factory
 
+from pcapi.core.offerers import models
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import VenueLabel
 from pcapi.core.offerers.models import VenueType
@@ -92,6 +93,17 @@ class VenueLabelFactory(BaseFactory):
         model = VenueLabel
 
     label = "Cinéma d'art et d'essai"
+
+
+class VenueContactFactory(BaseFactory):
+    class Meta:
+        model = models.VenueContact
+
+    venue = factory.SubFactory(VenueFactory)
+    email = "contact@venue.com"
+    website = "https://my@website.com"
+    phone_number = "+33102030405"
+    social_medias = {"instagram": "http://instagram.com/@venue"}
 
 
 DEFAULT_PREFIX = "development_prefix"

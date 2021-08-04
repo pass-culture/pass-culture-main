@@ -6,14 +6,10 @@ from google.cloud.storage import Client
 from google.cloud.storage.blob import Blob
 from google.cloud.storage.bucket import Bucket
 import jwt
-import phonenumbers
-from phonenumbers import PhoneNumber
-from phonenumbers.phonenumberutil import NumberParseException
 
 from pcapi import settings
 from pcapi.core.users.constants import METROPOLE_PHONE_PREFIX
 from pcapi.core.users.constants import PHONE_PREFIX_BY_DEPARTEMENT_CODE
-from pcapi.core.users.exceptions import InvalidPhoneNumber
 from pcapi.core.users.exceptions import UserWithoutPhoneNumberException
 from pcapi.core.users.models import ALGORITHM_HS_256
 from pcapi.core.users.models import ALGORITHM_RS_256
@@ -71,31 +67,6 @@ def format_phone_number_with_country_code(user: User) -> str:
         )
 
     return build_internationalized_phone_number(user, user.phoneNumber)
-
-
-def parse_phone_number(phone_number: Optional[str]) -> PhoneNumber:
-    """
-    Phone number must be correctly formatted in international format (E.164)
-    and be valid (number of digits, digit sequence)
-
-    Raises:
-        InvalidPhoneNumber
-    """
-    try:
-        parsed_phone_number = phonenumbers.parse(phone_number)
-    except NumberParseException as error:
-        raise InvalidPhoneNumber(str(phone_number)) from error
-    except TypeError as error:
-        raise InvalidPhoneNumber(str(phone_number)) from error
-
-    if not phonenumbers.is_valid_number(parsed_phone_number):
-        raise InvalidPhoneNumber(str(phone_number))
-
-    return parsed_phone_number
-
-
-def get_formatted_phone_number(phone_number: PhoneNumber) -> str:
-    return phonenumbers.format_number(phone_number, phonenumbers.PhoneNumberFormat.E164)
 
 
 def get_encrypted_gcp_storage_client_bucket() -> Bucket:
