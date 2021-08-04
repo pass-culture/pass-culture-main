@@ -106,3 +106,11 @@ class EducationalBooking(Model):
 
     confirmationDate = Column(DateTime, nullable=True)
     confirmationLimitDate = Column(DateTime, nullable=True)
+
+    booking = relationship(
+        "Booking",
+        back_populates="educationalBooking",
+        uselist=False,
+        lazy="joined",
+        innerjoin=True,
+    )

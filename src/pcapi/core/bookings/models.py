@@ -115,7 +115,7 @@ class Booking(PcObject, Model):
     )
     educationalBooking = relationship(
         EducationalBooking,
-        backref="booking",
+        back_populates="booking",
         uselist=False,
     )
 
