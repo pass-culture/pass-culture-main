@@ -13,8 +13,7 @@ describe('offer', () => {
   beforeEach(() => {
     props = {
       match: {
-        path:
-          '/offre/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId(vide|[A-Z0-9]+)?',
+        path: '/offre/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId(vide|[A-Z0-9]+)?',
       },
     }
   })
@@ -37,6 +36,12 @@ describe('offer', () => {
           features: [],
           mediations: [],
           users: [],
+          categories: [
+            {
+              categories: [],
+              subcategories: [],
+            },
+          ],
         }
       ) => state,
       geolocation: (

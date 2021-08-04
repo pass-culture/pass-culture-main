@@ -26,6 +26,7 @@ class VersoContentOffer extends PureComponent {
         <h3>
           {'Et en détails ?'}
         </h3>
+
         <pre
           className="is-raw-description"
           id="verso-offer-description"
@@ -37,10 +38,10 @@ class VersoContentOffer extends PureComponent {
   }
 
   renderOfferWhat() {
-    const { offer, style } = this.props
-    const { durationMinutes, extraData, offerType } = offer
+    const { offer, style, subcategory } = this.props
+    const { durationMinutes, extraData } = offer
     const { author, performer, speaker, stageDirector } = extraData || {}
-    const { appLabel } = offerType || {}
+    const { appLabel } = subcategory || {}
     const duration = getDurationFromMinutes(durationMinutes)
 
     return (
@@ -48,6 +49,7 @@ class VersoContentOffer extends PureComponent {
         <h3>
           {'Quoi ?'}
         </h3>
+
         <div>
           <span
             className="is-bold"
@@ -55,37 +57,44 @@ class VersoContentOffer extends PureComponent {
           >
             {appLabel}
           </span>
+
           {durationMinutes && (
             <span>
               {` - Durée ${duration}`}
             </span>
           )}
         </div>
+
         {style && (
           <div>
             {`Genre : ${style}`}
           </div>
         )}
+
         {author && (
           <div>
             {`Auteur : ${author}`}
           </div>
         )}
+
         {performer && (
           <div>
             {`Interprète : ${performer}`}
           </div>
         )}
+
         {speaker && (
           <div>
             {`Intervenant : ${speaker}`}
           </div>
         )}
+
         {stageDirector && (
           <div>
             {`Metteur en scène : ${stageDirector}`}
           </div>
         )}
+
         {offer.id && (
           <DuoOfferContainer
             label="Tu peux réserver deux places."
@@ -106,11 +115,13 @@ class VersoContentOffer extends PureComponent {
         {slicedBookables.map(bookable => (
           <li key={bookable.id}>
             {capitalize(bookable.humanBeginningDate)}
+
             {!bookable.userHasCancelledThisDate &&
               bookable.userHasAlreadyBookedThisDate &&
               ' (réservé)'}
           </li>
         ))}
+
         {hasMoreBookables && (
           <li>
             {'Cliquez sur "j’y vais" pour voir plus de dates.'}
@@ -145,6 +156,7 @@ class VersoContentOffer extends PureComponent {
         <h3>
           {'Quand ?'}
         </h3>
+
         <ul className="dates-info">
           {!isBookable ? (
             <li>
@@ -168,40 +180,51 @@ class VersoContentOffer extends PureComponent {
           <h3>
             {'Où ?'}
           </h3>
+
           {isNotDigitalOffer && distance && (
             <span className="vco-distance">
               <Icon
                 className="vco-geolocation-icon"
                 svg="ico-geoloc"
               />
+
               <span>
                 {`À ${distance}`}
               </span>
             </span>
           )}
         </div>
+
         <address>
           {publicName || name}
+
           <br />
+
           {address && (
             <Fragment>
               {address}
+
               <br />
             </Fragment>
           )}
+
           {postalCode && (
             <Fragment>
               {postalCode}
+
               <br />
             </Fragment>
           )}
+
           {city && (
             <Fragment>
               {city}
+
               <br />
             </Fragment>
           )}
         </address>
+
         {isNotDigitalOffer && (
           <a
             className="vco-itinerary"
@@ -214,6 +237,7 @@ class VersoContentOffer extends PureComponent {
               className="vco-geolocation-icon"
               svg="ico-go"
             />
+
             <span>
               {'Itinéraire'}
             </span>
@@ -233,6 +257,7 @@ class VersoContentOffer extends PureComponent {
         <h3>
           {'Modalités de retrait'}
         </h3>
+
         <div>
           {withdrawalDetails}
         </div>
@@ -250,10 +275,15 @@ class VersoContentOffer extends PureComponent {
         {isCancelled === false && booking.completedUrl && (
           <VersoActionsBar url={booking.completedUrl} />
         )}
+
         {this.renderOfferWhat()}
+
         {this.renderOfferDetails()}
+
         {this.renderOfferWhen()}
+
         {this.renderOfferWhere()}
+
         {this.renderOfferWithdraw()}
       </div>
     )
@@ -294,10 +324,11 @@ VersoContentOffer.propTypes = {
       speaker: PropTypes.string,
       stageDirector: PropTypes.string,
     }),
-    offerType: PropTypes.shape({ appLabel: PropTypes.string }),
+    subcategoryId: PropTypes.string,
     withdrawalDetails: PropTypes.string,
   }),
   style: PropTypes.string,
+  subcategory: PropTypes.shape().isRequired,
   userGeolocation: PropTypes.shape().isRequired,
 }
 

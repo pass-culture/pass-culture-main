@@ -17,6 +17,7 @@ describe('src | components | router | FeaturedRoute', () => {
         isRouteDisabled: false,
         featuresFetchFailed: false,
         requestGetFeatures: jest.fn(),
+        handleRequestCategories: jest.fn(),
       }
 
       // when
@@ -34,6 +35,7 @@ describe('src | components | router | FeaturedRoute', () => {
         component: Foo,
         isRouteDisabled: false,
         requestGetFeatures: jest.fn(),
+        handleRequestCategories: jest.fn(),
       }
 
       // when

@@ -8,13 +8,19 @@ import PageNotFoundContainer from '../layout/ErrorBoundaries/ErrorsPage/PageNotF
 const PAGES_WORKING_WITHOUT_FEATURES = ['/', '', '/beta', '/verification-eligibilite']
 class FeaturedRoute extends PureComponent {
   componentDidMount() {
-    const { areFeaturesLoaded, requestGetFeatures, featuresFetchFailed } = this.props
+    const {
+      areFeaturesLoaded,
+      handleRequestCategories,
+      requestGetFeatures,
+      featuresFetchFailed,
+    } = this.props
 
     if (areFeaturesLoaded || featuresFetchFailed) {
       return
     }
 
     requestGetFeatures()
+    handleRequestCategories()
   }
 
   render() {
@@ -47,6 +53,7 @@ class FeaturedRoute extends PureComponent {
 FeaturedRoute.propTypes = {
   areFeaturesLoaded: PropTypes.bool.isRequired,
   featuresFetchFailed: PropTypes.bool.isRequired,
+  handleRequestCategories: PropTypes.func.isRequired,
   isRouteDisabled: PropTypes.bool.isRequired,
   requestGetFeatures: PropTypes.func.isRequired,
 }

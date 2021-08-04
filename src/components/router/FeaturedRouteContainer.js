@@ -28,6 +28,14 @@ export const mapDispatchToProps = dispatch => ({
     dispatch(
       requestData({ apiPath: '/features', handleFail: handleFeaturesFetchFailed(dispatch) })
     ),
+  handleRequestCategories: () => {
+    dispatch(
+      requestData({
+        apiPath: '/offers/categories',
+        stateKey: 'categories',
+      })
+    )
+  },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(FeaturedRoute)

@@ -2192,6 +2192,12 @@ describe('components | Results', () => {
             features: [],
             mediations: [],
             users: [],
+            categories: [
+              {
+                categories: [],
+                subcategories: [],
+              },
+            ],
           }
         ) => state,
         geolocation: (
@@ -2406,6 +2412,12 @@ describe('components | Results', () => {
               features: [],
               mediations: [],
               users: [],
+              categories: [
+                {
+                  categories: [],
+                  subcategories: [],
+                },
+              ],
             }
           ) => state,
           geolocation: (

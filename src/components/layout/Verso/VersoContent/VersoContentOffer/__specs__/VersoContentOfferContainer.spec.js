@@ -7,6 +7,12 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
       const state = {
         data: {
           bookings: [],
+          categories: [
+            {
+              categories: [],
+              subcategories: [],
+            },
+          ],
           favorites: [],
           mediations: [
             {

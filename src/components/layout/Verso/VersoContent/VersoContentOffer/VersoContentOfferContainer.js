@@ -3,9 +3,13 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import { selectBookingByRouterMatch } from '../../../../../redux/selectors/data/bookingsSelectors'
+import { selectSubcategory } from '../../../../../redux/selectors/data/categoriesSelectors'
 import { selectOfferByRouterMatch } from '../../../../../redux/selectors/data/offersSelectors'
 import { selectBookables } from '../../../../../redux/selectors/data/stocksSelectors'
-import { selectDistanceByRouterMatch, selectUserGeolocation } from '../../../../../redux/selectors/geolocationSelectors'
+import {
+  selectDistanceByRouterMatch,
+  selectUserGeolocation,
+} from '../../../../../redux/selectors/geolocationSelectors'
 import { requestData } from '../../../../../utils/fetch-normalize-data/requestData'
 import getStyle from './utils/getStyle'
 import VersoContentOffer from './VersoContentOffer'
@@ -21,6 +25,7 @@ export const mapStateToProps = (state, ownProps) => {
   const distance = selectDistanceByRouterMatch(state, match)
   const userGeolocation = selectUserGeolocation(state)
   const isCancelled = booking && booking.isCancelled
+  const subcategory = selectSubcategory(state, offer)
 
   return {
     bookables,
@@ -30,6 +35,7 @@ export const mapStateToProps = (state, ownProps) => {
     isBookable,
     offer,
     style,
+    subcategory,
     userGeolocation,
   }
 }
@@ -56,10 +62,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   },
 })
 
-export default compose(
-  withRouter,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(VersoContentOffer)
+export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(VersoContentOffer)

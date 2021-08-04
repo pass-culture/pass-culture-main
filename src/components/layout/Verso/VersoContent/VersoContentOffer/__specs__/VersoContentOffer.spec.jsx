@@ -19,9 +19,6 @@ describe('components | VersoContentOffer', () => {
       id: 'X9',
       isEvent: false,
       isThing: true,
-      offerType: {
-        appLabel: 'Presse — Abonnements',
-      },
       product: {
         description: 'fake description do not use',
       },
@@ -45,10 +42,12 @@ describe('components | VersoContentOffer', () => {
     const props = {
       bookables: [],
       distance: '1',
+      handleRequestCategories: jest.fn(),
       handleRequestMusicAndShowTypes: jest.fn(),
       isBookable: true,
       maxShownDates: 7,
       offer,
+      subcategory: {},
       userGeolocation: {
         latitude: null,
         longitude: null,
@@ -67,10 +66,14 @@ describe('components | VersoContentOffer', () => {
     const props = {
       bookables: [],
       distance: '1',
+      handleRequestCategories: jest.fn(),
       handleRequestMusicAndShowTypes: jest.fn(),
       isBookable: true,
       maxShownDates: 7,
       offer,
+      subcategory: {
+        appLabel: 'Presse — Abonnements',
+      },
       userGeolocation: {
         latitude: null,
         longitude: null,
@@ -92,10 +95,12 @@ describe('components | VersoContentOffer', () => {
     const props = {
       bookables: [{ id: 1 }, { id: 2 }, { id: 3 }],
       distance: '1',
+      handleRequestCategories: jest.fn(),
       handleRequestMusicAndShowTypes: jest.fn(),
       isBookable: true,
       maxShownDates: 1,
       offer,
+      subcategory: {},
       userGeolocation: {
         latitude: null,
         longitude: null,
@@ -118,10 +123,12 @@ describe('components | VersoContentOffer', () => {
         { bookinglimitDatetime: '2019-04-09', id: 2 },
       ],
       distance: '1',
+      handleRequestCategories: jest.fn(),
       handleRequestMusicAndShowTypes: jest.fn(),
       isBookable: true,
       maxShownDates: 1,
       offer,
+      subcategory: {},
       userGeolocation: {
         latitude: null,
         longitude: null,
@@ -144,10 +151,12 @@ describe('components | VersoContentOffer', () => {
         { bookinglimitDatetime: undefined, id: 2 },
       ],
       distance: '1',
+      handleRequestCategories: jest.fn(),
       handleRequestMusicAndShowTypes: jest.fn(),
       isBookable: true,
       maxShownDates: 1,
       offer,
+      subcategory: {},
       userGeolocation: {
         latitude: null,
         longitude: null,
@@ -167,10 +176,12 @@ describe('components | VersoContentOffer', () => {
     const props = {
       bookables: [],
       distance: '1',
+      handleRequestCategories: jest.fn(),
       handleRequestMusicAndShowTypes: jest.fn(),
       isBookable: true,
       maxShownDates: 1,
       offer,
+      subcategory: {},
       userGeolocation: {
         latitude: null,
         longitude: null,
@@ -190,10 +201,12 @@ describe('components | VersoContentOffer', () => {
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
       distance: '1',
+      handleRequestCategories: jest.fn(),
       handleRequestMusicAndShowTypes: jest.fn(),
       isBookable: false,
       maxShownDates: 1,
       offer,
+      subcategory: {},
       userGeolocation: {
         latitude: null,
         longitude: null,
@@ -213,10 +226,12 @@ describe('components | VersoContentOffer', () => {
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
       distance: '1',
+      handleRequestCategories: jest.fn(),
       handleRequestMusicAndShowTypes: jest.fn(),
       isBookable: false,
       maxShownDates: 1,
       offer,
+      subcategory: {},
       userGeolocation: {
         latitude: null,
         longitude: null,
@@ -227,10 +242,7 @@ describe('components | VersoContentOffer', () => {
     const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
-    const address = wrapper
-      .find('address')
-      .at(0)
-      .text()
+    const address = wrapper.find('address').at(0).text()
     expect(address).toBe('fake publicName72 rue Carnot93230ROMAINVILLE')
   })
 
@@ -240,10 +252,12 @@ describe('components | VersoContentOffer', () => {
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
       distance: '1',
+      handleRequestCategories: jest.fn(),
       handleRequestMusicAndShowTypes: jest.fn(),
       isBookable: false,
       maxShownDates: 1,
       offer,
+      subcategory: {},
       userGeolocation: {
         latitude: null,
         longitude: null,
@@ -254,10 +268,7 @@ describe('components | VersoContentOffer', () => {
     const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
-    const address = wrapper
-      .find('address')
-      .at(0)
-      .text()
+    const address = wrapper.find('address').at(0).text()
     expect(address).toBe('fake name72 rue Carnot93230ROMAINVILLE')
   })
 
@@ -266,10 +277,12 @@ describe('components | VersoContentOffer', () => {
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
       distance: null,
+      handleRequestCategories: jest.fn(),
       handleRequestMusicAndShowTypes: jest.fn(),
       isBookable: false,
       maxShownDates: 1,
       offer,
+      subcategory: {},
       userGeolocation: {
         latitude: null,
         longitude: null,
@@ -289,10 +302,12 @@ describe('components | VersoContentOffer', () => {
     const props = {
       bookables: [{ id: 1 }, { id: 2 }],
       distance: '20km',
+      handleRequestCategories: jest.fn(),
       handleRequestMusicAndShowTypes: jest.fn(),
       isBookable: false,
       maxShownDates: 1,
       offer,
+      subcategory: {},
       userGeolocation: {
         latitude: null,
         longitude: null,
@@ -312,10 +327,12 @@ describe('components | VersoContentOffer', () => {
     const props = {
       bookables: [],
       distance: '1',
+      handleRequestCategories: jest.fn(),
       handleRequestMusicAndShowTypes: jest.fn(),
       isBookable: true,
       maxShownDates: 7,
       offer,
+      subcategory: {},
       userGeolocation: {
         latitude: null,
         longitude: null,
@@ -337,10 +354,12 @@ describe('components | VersoContentOffer', () => {
     const props = {
       bookables: [],
       distance: '1',
+      handleRequestCategories: jest.fn(),
       handleRequestMusicAndShowTypes: jest.fn(),
       isBookable: true,
       maxShownDates: 7,
       offer: { ...offer, withdrawalDetails: null },
+      subcategory: {},
       userGeolocation: {
         latitude: null,
         longitude: null,
@@ -362,8 +381,10 @@ describe('components | VersoContentOffer', () => {
         const props = {
           bookables: [{ id: 1 }, { id: 2 }],
           distance: '1',
+          handleRequestCategories: jest.fn(),
           handleRequestMusicAndShowTypes: jest.fn(),
           offer,
+          subcategory: {},
           userGeolocation: {
             latitude: null,
             longitude: null,
@@ -382,8 +403,10 @@ describe('components | VersoContentOffer', () => {
         const props = {
           bookables: [{ id: 1 }, { id: 2 }],
           distance: '1 km',
+          handleRequestCategories: jest.fn(),
           handleRequestMusicAndShowTypes: jest.fn(),
           offer,
+          subcategory: {},
           userGeolocation: {
             latitude: null,
             longitude: null,
@@ -396,10 +419,7 @@ describe('components | VersoContentOffer', () => {
 
         // then
         const venueDistance = wrapper.find({ children: 'À 1 km' })
-        const iconComponent = wrapper
-          .find(Icon)
-          .at(0)
-          .find(Icon)
+        const iconComponent = wrapper.find(Icon).at(0).find(Icon)
         expect(venueDistance).toHaveLength(1)
         expect(iconComponent.prop('svg')).toBeDefined()
         expect(iconComponent.prop('alt')).toBe('')
@@ -410,8 +430,10 @@ describe('components | VersoContentOffer', () => {
         const props = {
           bookables: [],
           distance: '1',
+          handleRequestCategories: jest.fn(),
           handleRequestMusicAndShowTypes: jest.fn(),
           offer,
+          subcategory: {},
           userGeolocation: {
             latitude: null,
             longitude: null,
@@ -431,8 +453,10 @@ describe('components | VersoContentOffer', () => {
         const props = {
           bookables: [{ id: 1 }, { id: 2 }],
           distance: '1',
+          handleRequestCategories: jest.fn(),
           handleRequestMusicAndShowTypes: jest.fn(),
           offer,
+          subcategory: {},
           userGeolocation: {
             latitude: null,
             longitude: null,
@@ -460,8 +484,10 @@ describe('components | VersoContentOffer', () => {
         const props = {
           bookables: [],
           distance: '1',
+          handleRequestCategories: jest.fn(),
           handleRequestMusicAndShowTypes: jest.fn(),
           offer,
+          subcategory: {},
           userGeolocation: {
             latitude: null,
             longitude: null,
@@ -488,8 +514,10 @@ describe('components | VersoContentOffer', () => {
         const props = {
           bookables: [{ id: 1 }, { id: 2 }],
           distance: '1',
+          handleRequestCategories: jest.fn(),
           handleRequestMusicAndShowTypes: jest.fn(),
           offer: offerWithoutCoordinates,
+          subcategory: {},
           userGeolocation: {
             latitude: null,
             longitude: null,
@@ -512,10 +540,12 @@ describe('components | VersoContentOffer', () => {
         bookables: [],
         isCancelled: false,
         distance: '1',
+        handleRequestCategories: jest.fn(),
         handleRequestMusicAndShowTypes: jest.fn(),
         booking: {
           completedUrl: 'http://myfakeurl',
         },
+        subcategory: {},
         userGeolocation: {
           latitude: null,
           longitude: null,
@@ -540,10 +570,12 @@ describe('components | VersoContentOffer', () => {
         bookables: [],
         isCancelled: null,
         distance: '1',
+        handleRequestCategories: jest.fn(),
         handleRequestMusicAndShowTypes: jest.fn(),
         offer: {
           id: 'ID',
         },
+        subcategory: {},
         userGeolocation: {
           latitude: null,
           longitude: null,
@@ -567,10 +599,12 @@ describe('components | VersoContentOffer', () => {
         bookables: [],
         isCancelled: true,
         distance: '1',
+        handleRequestCategories: jest.fn(),
         handleRequestMusicAndShowTypes: jest.fn(),
         offer: {
           id: 'ID',
         },
+        subcategory: {},
         userGeolocation: {
           latitude: null,
           longitude: null,
