@@ -76,6 +76,14 @@ class GetAllBookingsTest:
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
+    def when_user_is_admin(self, app):
+        admin = users_factories.AdminFactory()
+
+        client = TestClient(app.test_client()).with_auth(admin.email)
+        response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+
+        assert response.status_code == 200
+
     def when_user_is_linked_to_a_valid_offerer(self, app):
         booking = bookings_factories.BookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
@@ -218,17 +226,6 @@ class Returns400Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns401Test:
-    def when_user_is_admin(self, app):
-        admin = users_factories.AdminFactory()
-
-        client = TestClient(app.test_client()).with_auth(admin.email)
-        response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
-
-        assert response.status_code == 401
-        assert response.json == {
-            "global": ["Le statut d'administrateur ne permet pas d'accéder au suivi des réservations"]
-        }
-
     @override_features(DISABLE_BOOKINGS_RECAP_FOR_SOME_PROS=True)
     def when_user_is_blacklisted(self, app):
         pro = users_factories.ProFactory(offerers=[offers_factories.OffererFactory(siren="334473352")])

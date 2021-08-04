@@ -8,7 +8,6 @@ from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.core.bookings.validation as bookings_validation
 from pcapi.domain.users import UnauthorizedForAdminUser
-from pcapi.domain.users import check_is_authorized_to_access_bookings_recap
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
 from pcapi.models import EventType
@@ -76,8 +75,6 @@ def get_all_bookings(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     venue_id = query.venue_id
     event_date = query.event_date
     booking_period = (query.booking_period_beginning_date, query.booking_period_ending_date)
-
-    check_is_authorized_to_access_bookings_recap(current_user)
 
     # FIXME: due to generalisation, the performance issue has led to DDOS many
     # users checking the many bookings of these offerers

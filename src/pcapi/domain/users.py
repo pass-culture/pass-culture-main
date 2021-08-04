@@ -1,11 +1,3 @@
-from pcapi.core.users.models import User
-
-
-def check_is_authorized_to_access_bookings_recap(user: User):
-    if user.isAdmin:
-        raise UnauthorizedForAdminUser()
-
-
 class ClientError(Exception):
     def __init__(self, field: str, error: str):
         super().__init__()
