@@ -6,7 +6,7 @@ function start_backend {
         echo "This script requires docker-compose 1.24 or greater"
         exit 1
     fi
-    RUN='cd $ROOT_PATH && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml build && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml up'
+    RUN='cd $ROOT_PATH && docker-sync start && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml build && docker-compose -f "$ROOT_PATH"/docker-compose-app.yml up'
 }
 
 function restart_backend {

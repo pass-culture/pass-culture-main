@@ -1,0 +1,17 @@
+version: 2
+syncs:
+  appcode-native-osx-sync:
+    src: './api'
+    sync_strategy: 'native_osx'
+    host_disk_mount_mode: 'delegated'
+    sync_excludes:
+      - '.mypy_cache'
+      - '.git'
+      - '.git-blame-ignore-revs'
+      - '.pytest_cache'
+      - 'venv'
+      - 'helm'
+      - '.vscode'
+      - '.github'
+      - 'tests'
+      - '__pycache__'
