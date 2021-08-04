@@ -187,9 +187,8 @@ class DigitalOffersTest:
         )
         assert email_data == expected
 
-    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     @pytest.mark.usefixtures("db_session")
-    def test_hide_cancellation_policy_when_auto_validation_activated_on_bookings_with_activation_code(self):
+    def test_hide_cancellation_policy_on_bookings_with_activation_code(self):
         offer = offers_factories.OfferFactory(
             venue__name="Lieu de l'offreur",
             venue__managingOfferer__name="Théâtre du coin",
@@ -235,6 +234,7 @@ class DigitalOffersTest:
         assert email_data == expected
 
 
+@override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=False)
 @pytest.mark.usefixtures("db_session")
 def test_use_activation_code_instead_of_token_if_possible():
     booking = make_booking(
@@ -271,6 +271,7 @@ def test_use_activation_code_instead_of_token_if_possible():
     assert email_data == expected
 
 
+@override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=False)
 @pytest.mark.usefixtures("db_session")
 def test_add_expiration_date_from_activation_code():
     booking = make_booking(

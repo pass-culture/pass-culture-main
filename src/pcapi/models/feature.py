@@ -89,8 +89,6 @@ class Feature(PcObject, Model, DeactivableMixin):
 
 
 FEATURES_DISABLED_BY_DEFAULT = (
-    FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS,
-    FeatureToggle.ENABLE_ACTIVATION_CODES,
     FeatureToggle.DISABLE_BOOKINGS_RECAP_FOR_SOME_PROS,
     FeatureToggle.FORCE_PHONE_VALIDATION,
     FeatureToggle.ENABLE_NEW_VENUE_PAGES,
