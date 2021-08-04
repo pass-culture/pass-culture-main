@@ -32,7 +32,8 @@ const renderVenueProvidersManager = async props => {
 
 describe('src | components | pages | Venue | VenueProvidersManager | VenueProviderItem', () => {
   let props
-  let venueProvider
+  let titeliveVenueProvider
+  let allocineVenueProvider
 
   beforeEach(async () => {
     const venue = {
@@ -41,7 +42,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       name: 'Le lieu',
       siret: '12345678901234',
     }
-    venueProvider = {
+    titeliveVenueProvider = {
       id: 'venueProviderId',
       isActive: true,
       lastSyncDate: '2018-01-01T10:00:00',
@@ -52,12 +53,26 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       venueId: venue.id,
       venueIdAtOfferProvider: 'venueIdAtOfferProvider',
     }
+    allocineVenueProvider = {
+      id: 'venueProviderId',
+      isActive: true,
+      isDuo: true,
+      lastSyncDate: '2018-01-01T10:00:00',
+      nOffers: 35,
+      price: 10,
+      provider: {
+        name: 'Allociné',
+      },
+      quantity: 30,
+      venueId: venue.id,
+      venueIdAtOfferProvider: 'venueIdAtOfferProvider',
+    }
 
     props = {
       venue,
     }
 
-    pcapi.loadVenueProviders.mockResolvedValue([venueProvider])
+    pcapi.loadVenueProviders.mockResolvedValue([titeliveVenueProvider])
     pcapi.loadProviders.mockResolvedValue([])
   })
 
@@ -73,7 +88,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
 
   it('should display import message when venue provider is not synced yet', async () => {
     // given
-    venueProvider.lastSyncDate = null
+    titeliveVenueProvider.lastSyncDate = null
 
     // when
     await renderVenueProvidersManager(props)
@@ -83,7 +98,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       'Importation en cours. Cette étape peut durer plusieurs dizaines de minutes. Vous pouvez fermer votre navigateur et revenir plus tard.'
     )
     expect(importMessage).toBeInTheDocument()
-    const numberOfOffersLabel = screen.queryByText(`${venueProvider.nOffers} offres`)
+    const numberOfOffersLabel = screen.queryByText(`${titeliveVenueProvider.nOffers} offres`)
     expect(numberOfOffersLabel).not.toBeInTheDocument()
   })
 
@@ -94,7 +109,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
     // then
     const venueIdAtOfferProvider = queryByTextTrimHtml(
       screen,
-      `Compte : ${venueProvider.venueIdAtOfferProvider}`
+      `Compte : ${titeliveVenueProvider.venueIdAtOfferProvider}`
     )
     expect(venueIdAtOfferProvider).toBeInTheDocument()
   })
@@ -104,13 +119,13 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
     await renderVenueProvidersManager(props)
 
     // then
-    const numberOfOffersLabel = screen.getByText(`${venueProvider.nOffers} offres`)
+    const numberOfOffersLabel = screen.getByText(`${titeliveVenueProvider.nOffers} offres`)
     expect(numberOfOffersLabel).toBeInTheDocument()
   })
 
   it('should render zero offers label when data of provider were already synced and no offers', async () => {
     // given
-    venueProvider.nOffers = 0
+    titeliveVenueProvider.nOffers = 0
 
     // when
     await renderVenueProvidersManager(props)
@@ -118,5 +133,30 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
     // then
     const numberOfOffersLabel = screen.getByText(`0 offre`)
     expect(numberOfOffersLabel).toBeInTheDocument()
+  })
+
+  it('should show synchronization modalities when venue provider is allocine', async () => {
+    // given
+    pcapi.loadVenueProviders.mockResolvedValue([allocineVenueProvider])
+
+    // when
+    await renderVenueProvidersManager(props)
+
+    // then
+    const price = queryByTextTrimHtml(
+      screen,
+      `Prix de vente/place : ${allocineVenueProvider.price} €`
+    )
+    expect(price).toBeInTheDocument()
+    const quantity = queryByTextTrimHtml(
+      screen,
+      `Nombre de places/séance : ${allocineVenueProvider.quantity}`
+    )
+    expect(quantity).toBeInTheDocument()
+    const isDuo = queryByTextTrimHtml(
+      screen,
+      `Accepter les offres DUO : ${allocineVenueProvider.isDuo ? 'Oui' : 'Non'}`
+    )
+    expect(isDuo).toBeInTheDocument()
   })
 })

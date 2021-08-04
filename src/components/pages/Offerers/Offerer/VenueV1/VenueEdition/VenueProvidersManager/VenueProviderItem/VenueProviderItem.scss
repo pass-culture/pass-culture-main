@@ -1,8 +1,14 @@
 .venue-provider-row {
   align-items: center;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: 100%;
+
+  .venue-provider-item-info {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
 
   .provider-name-container {
     @include caption();
@@ -55,5 +61,19 @@
     flex: 1.5;
     justify-content: flex-end;
     padding-top: rem(8px);
+  }
+
+  .allocine-provider-synchro-modalities {
+    align-items: start;
+    display: flex;
+    width: 100%;
+
+    li {
+      margin-top: rem(8px);
+
+      :first-child {
+        color: $grey-dark;
+      }
+    }
   }
 }
