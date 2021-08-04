@@ -73,6 +73,7 @@ from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks.account import verify_identity_document
 from pcapi.utils.token import random_token
+from pcapi.utils.urls import get_webapp_url
 from pcapi.workers.apps_flyer_job import log_user_becomes_beneficiary_event_job
 
 
@@ -531,9 +532,7 @@ def _build_link_for_email_change(current_email: str, new_email: str) -> str:
     expiration_date = datetime.now() + constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
     token = encode_jwt_payload(dict(current_email=current_email, new_email=new_email), expiration_date)
 
-    return (
-        f"{settings.WEBAPP_URL}/changement-email?token={token}&expiration_timestamp={int(expiration_date.timestamp())}"
-    )
+    return f"{get_webapp_url()}/changement-email?token={token}&expiration_timestamp={int(expiration_date.timestamp())}"
 
 
 def get_domains_credit(user: User, bookings: list[Booking] = None) -> Optional[DomainsCredit]:

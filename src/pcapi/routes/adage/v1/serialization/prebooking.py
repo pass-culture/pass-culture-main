@@ -5,7 +5,6 @@ from typing import Union
 from pydantic import BaseModel
 from pydantic.fields import Field
 
-from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.models import EducationalBookingStatus
@@ -15,6 +14,7 @@ from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
 from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.human_ids import humanize
+from pcapi.utils.urls import get_webapp_url
 
 
 class GetPreBookingsRequest(BaseModel):
@@ -124,7 +124,7 @@ def get_prebookings_serialized(bookings: list[Booking]) -> list[PreBookingRespon
             status=get_education_booking_status(booking),
             venueTimezone=venue.timezone,
             totalAmount=booking.amount * booking.quantity,
-            url=f"{settings.WEBAPP_URL}/accueil/details/{humanize(offer.id)}",
+            url=f"{get_webapp_url()}/accueil/details/{humanize(offer.id)}",
             withdrawalDetails=offer.withdrawalDetails,
         )
         prebookings.append(prebooking_response)

@@ -252,9 +252,10 @@ class SendOfferWebAppLinkTest:
         # expected queries:
         #   * get User
         #   * find Offer
+        #   * find FeatureToggle WEBAPP_V2_ENABLED (to build URL)
         #   * save email to DB (testing backend)
         #   * release savepoint after saving email
-        with assert_num_queries(4):
+        with assert_num_queries(5):
             response = test_client.post(f"/native/v1/send_offer_webapp_link_by_email/{offer_id}")
             assert response.status_code == 204
 
@@ -291,7 +292,8 @@ class SendOfferLinkNotificationTest:
         # expected queries:
         #   * get user
         #   * get offer
-        with assert_num_queries(2):
+        #   * get FeatureToggle WEBAPP_V2_ENABLED (to build URL)
+        with assert_num_queries(3):
             response = test_client.post(f"/native/v1/send_offer_link_by_push/{offer_id}")
             assert response.status_code == 204
 

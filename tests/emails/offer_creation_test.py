@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import pytest
 
+from pcapi import settings
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
@@ -39,7 +40,7 @@ class MakeOfferCreationNotificationEmailTest:
         webapp_offer_link = str(parsed_email.find("p", {"id": "webapp_offer_link"}))
         assert (
             f"Lien vers l'offre dans la Webapp :"
-            f" http://localhost:3000/offre/details/{humanize(offer.id)}" in webapp_offer_link
+            f" {settings.WEBAPP_URL}/offre/details/{humanize(offer.id)}" in webapp_offer_link
         )
 
         pro_offer_link = str(parsed_email.find("p", {"id": "pro_offer_link"}))

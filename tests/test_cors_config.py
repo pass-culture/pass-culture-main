@@ -22,8 +22,32 @@ def build_permutations(request_origins):
     permutations = []
     for origin in request_origins:
         base_url = "{0.scheme}://{0.netloc}".format(urlsplit(origin))
-        bypass = ["", "-", '"', "{", "}", "+", "_", "^", "%60", "!", "~", "`", ";", "|", "&", "'", "(", ")", "*", ",",
-                  "$", "=", "+", "%0b"]  # fmt: skip
+        bypass = [
+            "",
+            "-",
+            '"',
+            "{",
+            "}",
+            "+",
+            "_",
+            "^",
+            "%60",
+            "!",
+            "~",
+            "`",
+            ";",
+            "|",
+            "&",
+            "'",
+            "(",
+            ")",
+            "*",
+            ",",
+            "$",
+            "=",
+            "+",
+            "%0b",
+        ]  # fmt: skip
         domains = ["https://localhost", "http://localhost", base_url]
         permutations = [base_url + "evil.com", base_url + "evil.com"]
         for r in itertools.product(domains, bypass):

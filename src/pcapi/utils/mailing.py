@@ -19,6 +19,7 @@ from pcapi.models import UserOfferer
 from pcapi.utils.date import format_datetime
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
+from pcapi.utils.urls import get_webapp_url
 
 
 class MailServiceException(Exception):
@@ -42,7 +43,7 @@ def build_pc_pro_reset_password_link(token_value: str) -> str:
 
 
 def build_pc_webapp_reset_password_link(token_value: str) -> str:
-    return f"{settings.WEBAPP_URL}/mot-de-passe-perdu?token={token_value}"
+    return f"{get_webapp_url()}/mot-de-passe-perdu?token={token_value}"
 
 
 def extract_users_information_from_bookings(bookings: list[Booking]) -> list[dict]:
@@ -239,7 +240,7 @@ def make_wallet_balances_email(csv: str) -> dict:
 def make_offer_creation_notification_email(offer: Offer) -> dict:
     author = offer.author or offer.venue.managingOfferer.UserOfferers[0].user
     pro_link_to_offer = f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition"
-    webapp_link_to_offer = f"{settings.WEBAPP_URL}/offre/details/{humanize(offer.id)}"
+    webapp_link_to_offer = f"{get_webapp_url()}/offre/details/{humanize(offer.id)}"
     venue = offer.venue
     pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
     html = render_template(
