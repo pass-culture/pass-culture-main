@@ -43,7 +43,7 @@ const Reimbursements = () => (
         {'Les modalités de remboursement'}
       </a>
     </Banner>
-    <p className="advice">
+    <p>
       {'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'}
     </p>
     <hr />
