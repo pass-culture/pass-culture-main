@@ -1,6 +1,5 @@
 import pytest
 
-from pcapi import settings
 from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
@@ -15,11 +14,10 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_get_prebookings_without_query_params(self, app) -> None:
-        redactor = InstitutionalProjectRedactorFactory(civility="M.")
+        InstitutionalProjectRedactorFactory(civility="M.")
         educationalYear = EducationalYearFactory()
         educationalInstitution = EducationalInstitutionFactory()
         booking = EducationalBookingFactory(
-            user=redactor,
             educationalBooking__educationalYear=educationalYear,
             educationalBooking__educationalInstitution=educationalInstitution,
         )
@@ -38,7 +36,7 @@ class Returns200Test:
         stock = booking.stock
         offer = stock.offer
         venue = offer.venue
-        user = booking.user
+        educational_booking = booking.educationalBooking
         assert response.json == {
             "prebookings": [
                 {
@@ -48,10 +46,10 @@ class Returns200Test:
                     "cancellationLimitDate": booking.cancellationLimitDate.isoformat(),
                     "category": get_serialized_offer_category(offer),
                     "city": venue.city,
-                    "confirmationDate": booking.educationalBooking.confirmationDate.isoformat()
-                    if booking.educationalBooking.confirmationDate
+                    "confirmationDate": educational_booking.confirmationDate.isoformat()
+                    if educational_booking.confirmationDate
                     else None,
-                    "confirmationLimitDate": booking.educationalBooking.confirmationLimitDate.isoformat(),
+                    "confirmationLimitDate": educational_booking.confirmationLimitDate.isoformat(),
                     "coordinates": {
                         "latitude": float(venue.latitude),
                         "longitude": float(venue.longitude),
@@ -60,7 +58,7 @@ class Returns200Test:
                     "description": offer.description,
                     "durationMinutes": offer.durationMinutes,
                     "expirationDate": booking.expirationDate,
-                    "id": booking.educationalBooking.id,
+                    "id": educational_booking.id,
                     "image": {"url": offer.image.url, "credit": offer.image.credit} if offer.image else None,
                     "isDigital": offer.isDigital,
                     "venueName": venue.name,
@@ -69,13 +67,13 @@ class Returns200Test:
                     "price": booking.amount,
                     "quantity": booking.quantity,
                     "redactor": {
-                        "email": user.email,
-                        "redactorFirstName": user.firstName,
-                        "redactorLastName": user.lastName,
-                        "redactorCivility": user.civility,
+                        "email": "jeanne.doux@versailles.fr",
+                        "redactorFirstName": "Jeanne",
+                        "redactorLastName": "Doux",
+                        "redactorCivility": "Mme",
                     },
-                    "UAICode": booking.educationalBooking.educationalInstitution.institutionId,
-                    "yearId": int(booking.educationalBooking.educationalYearId),
+                    "UAICode": educational_booking.educationalInstitution.institutionId,
+                    "yearId": int(educational_booking.educationalYearId),
                     "status": "CONFIRMED",
                     "venueTimezone": venue.timezone,
                     "totalAmount": booking.amount * booking.quantity,
@@ -120,7 +118,7 @@ class Returns200Test:
         stock = booking.stock
         offer = stock.offer
         venue = offer.venue
-        user = booking.user
+        educational_booking = booking.educationalBooking
         assert response.json == {
             "prebookings": [
                 {
@@ -130,10 +128,10 @@ class Returns200Test:
                     "cancellationLimitDate": booking.cancellationLimitDate.isoformat(),
                     "category": get_serialized_offer_category(offer),
                     "city": venue.city,
-                    "confirmationDate": booking.educationalBooking.confirmationDate.isoformat()
-                    if booking.educationalBooking.confirmationDate
+                    "confirmationDate": educational_booking.confirmationDate.isoformat()
+                    if educational_booking.confirmationDate
                     else None,
-                    "confirmationLimitDate": booking.educationalBooking.confirmationLimitDate.isoformat(),
+                    "confirmationLimitDate": educational_booking.confirmationLimitDate.isoformat(),
                     "coordinates": {
                         "latitude": float(venue.latitude),
                         "longitude": float(venue.longitude),
@@ -142,7 +140,7 @@ class Returns200Test:
                     "description": offer.description,
                     "durationMinutes": offer.durationMinutes,
                     "expirationDate": booking.expirationDate,
-                    "id": booking.educationalBooking.id,
+                    "id": educational_booking.id,
                     "image": {"url": offer.image.url, "credit": offer.image.credit} if offer.image else None,
                     "isDigital": offer.isDigital,
                     "venueName": venue.name,
@@ -151,13 +149,13 @@ class Returns200Test:
                     "price": booking.amount,
                     "quantity": booking.quantity,
                     "redactor": {
-                        "email": user.email,
-                        "redactorFirstName": user.firstName,
-                        "redactorLastName": user.lastName,
-                        "redactorCivility": user.civility,
+                        "email": "jeanne.doux@versailles.fr",
+                        "redactorFirstName": "Jeanne",
+                        "redactorLastName": "Doux",
+                        "redactorCivility": "Mme",
                     },
-                    "UAICode": booking.educationalBooking.educationalInstitution.institutionId,
-                    "yearId": int(booking.educationalBooking.educationalYearId),
+                    "UAICode": educational_booking.educationalInstitution.institutionId,
+                    "yearId": int(educational_booking.educationalYearId),
                     "status": "USED_BY_INSTITUTE",
                     "venueTimezone": venue.timezone,
                     "totalAmount": booking.amount * booking.quantity,

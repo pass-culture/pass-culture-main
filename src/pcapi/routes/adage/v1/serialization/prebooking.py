@@ -84,52 +84,55 @@ class PreBookingsResponse(BaseModel):
 def get_prebookings_serialized(bookings: list[Booking]) -> list[PreBookingResponse]:
     prebookings = []
     for booking in bookings:
-        stock = booking.stock
-        offer = stock.offer
-        venue = offer.venue
-        user = booking.user
-        prebooking_response = PreBookingResponse(
-            address=venue.address,
-            beginningDatetime=stock.beginningDatetime,
-            cancellationDate=booking.cancellationDate,
-            cancellationLimitDate=booking.cancellationLimitDate,
-            category=get_serialized_offer_category(offer),
-            city=venue.city,
-            confirmationDate=booking.educationalBooking.confirmationDate,
-            confirmationLimitDate=booking.educationalBooking.confirmationLimitDate,
-            coordinates={
-                "latitude": venue.latitude,
-                "longitude": venue.longitude,
-            },
-            creationDate=booking.dateCreated,
-            description=offer.description,
-            durationMinutes=offer.durationMinutes,
-            expirationDate=booking.expirationDate,
-            id=booking.educationalBooking.id,
-            image={"url": offer.image.url, "credit": offer.image.credit} if offer.image else None,
-            isDigital=offer.isDigital,
-            venueName=venue.name,
-            name=offer.name,
-            postalCode=venue.postalCode,
-            price=booking.amount,
-            quantity=booking.quantity,
-            redactor={
-                "email": user.email,
-                "redactorFirstName": user.firstName,
-                "redactorLastName": user.lastName,
-                "redactorCivility": user.civility,
-            },
-            UAICode=booking.educationalBooking.educationalInstitution.institutionId,
-            yearId=booking.educationalBooking.educationalYearId,
-            status=get_education_booking_status(booking),
-            venueTimezone=venue.timezone,
-            totalAmount=booking.amount * booking.quantity,
-            url=f"{get_webapp_url()}/accueil/details/{humanize(offer.id)}",
-            withdrawalDetails=offer.withdrawalDetails,
-        )
-        prebookings.append(prebooking_response)
+        prebookings.append(get_prebooking_serialized(booking))
 
     return prebookings
+
+
+def get_prebooking_serialized(booking: Booking) -> PreBookingResponse:
+    stock = booking.stock
+    offer = stock.offer
+    venue = offer.venue
+    educational_booking = booking.educationalBooking
+    return PreBookingResponse(
+        address=venue.address,
+        beginningDatetime=stock.beginningDatetime,
+        cancellationDate=booking.cancellationDate,
+        cancellationLimitDate=booking.cancellationLimitDate,
+        category=get_serialized_offer_category(offer),
+        city=venue.city,
+        confirmationDate=educational_booking.confirmationDate,
+        confirmationLimitDate=educational_booking.confirmationLimitDate,
+        coordinates={
+            "latitude": venue.latitude,
+            "longitude": venue.longitude,
+        },
+        creationDate=booking.dateCreated,
+        description=offer.description,
+        durationMinutes=offer.durationMinutes,
+        expirationDate=booking.expirationDate,
+        id=educational_booking.id,
+        image={"url": offer.image.url, "credit": offer.image.credit} if offer.image else None,
+        isDigital=offer.isDigital,
+        venueName=venue.name,
+        name=offer.name,
+        postalCode=venue.postalCode,
+        price=booking.amount,
+        quantity=booking.quantity,
+        redactor={
+            "email": "jeanne.doux@versailles.fr",
+            "redactorFirstName": "Jeanne",
+            "redactorLastName": "Doux",
+            "redactorCivility": "Mme",
+        },
+        UAICode=educational_booking.educationalInstitution.institutionId,
+        yearId=educational_booking.educationalYearId,
+        status=get_education_booking_status(booking),
+        venueTimezone=venue.timezone,
+        totalAmount=booking.total_amount,
+        url=f"{get_webapp_url()}/accueil/details/{humanize(offer.id)}",
+        withdrawalDetails=offer.withdrawalDetails,
+    )
 
 
 def get_education_booking_status(booking: Booking) -> Union[EducationalBookingStatus, BookingStatus]:
