@@ -25,6 +25,7 @@ class VenuesTest:
             "withdrawalDetails": venue.withdrawalDetails,
             "address": venue.address,
             "postalCode": venue.postalCode,
+            "venueTypeCode": venue.venueTypeCode.value,
         }
 
     def test_get_non_existing_venue(self, client):

@@ -1,6 +1,8 @@
 from datetime import datetime
+import enum
 from typing import Optional
 
+import sqlalchemy as sa
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
 from sqlalchemy import CheckConstraint
@@ -79,6 +81,27 @@ CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
 """
 
 
+class VenueTypeCode(enum.Enum):
+    VISUAL_ARTS = "VISUAL_ARTS"
+    CULTURAL_CENTRE = "CULTURAL_CENTRE"
+    ARTISTIC_COURSE = "ARTISTIC_COURSE"
+    SCIENTIFIC_CULTURE = "SCIENTIFIC_CULTURE"
+    FESTIVAL = "FESTIVAL"
+    GAMES = "GAMES"
+    BOOKSTORE = "BOOKSTORE"
+    LIBRARY = "LIBRARY"
+    MUSEUM = "MUSEUM"
+    RECORD_STORE = "RECORD_STORE"
+    MUSICAL_INSTRUMENT_STORE = "MUSICAL_INSTRUMENT_STORE"
+    CONCERT_HALL = "CONCERT_HALL"
+    DIGITAL = "DIGITAL"
+    PATRIMONY_TOURISM = "PATRIMONY_TOURISM"
+    MOVIE = "MOVIE"
+    PERFORMING_ARTS = "PERFORMING_ARTS"
+    CREATIVE_ARTS_STORE = "CREATIVE_ARTS_STORE"
+    OTHER = "OTHER"
+
+
 class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, NeedsValidationMixin):
     __tablename__ = "venue"
 
@@ -133,6 +156,8 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
     venueTypeId = Column(Integer, ForeignKey("venue_type.id"), nullable=True)
 
     venueType = relationship("VenueType", foreign_keys=[venueTypeId])
+
+    venueTypeCode = Column(sa.Enum(VenueTypeCode, create_constraint=False), nullable=True, default=VenueTypeCode.OTHER)
 
     venueLabelId = Column(Integer, ForeignKey("venue_label.id"), nullable=True)
 

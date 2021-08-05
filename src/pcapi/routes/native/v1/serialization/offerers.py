@@ -1,5 +1,6 @@
 import typing
 
+from pcapi.core.offerers import models as offerers_models
 from pcapi.serialization.utils import to_camel
 
 from . import BaseModel
@@ -22,3 +23,4 @@ class VenueResponse(BaseModel):
     withdrawalDetails: typing.Optional[str]
     address: typing.Optional[str]
     postalCode: typing.Optional[str]
+    venueTypeCode: typing.Optional[offerers_models.VenueTypeCode]

@@ -4,7 +4,7 @@ import uuid
 import factory
 
 from pcapi import models
-import pcapi.core.offerers.models
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers.models import OfferReport
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.testing import BaseFactory
@@ -19,7 +19,7 @@ ALL_TYPES = {
 
 class OffererFactory(BaseFactory):
     class Meta:
-        model = pcapi.core.offerers.models.Offerer
+        model = offerers_models.Offerer
 
     name = factory.Sequence("Le Petit Rintintin Management {}".format)
     address = "1 boulevard Poissonnière"
@@ -51,6 +51,7 @@ class VenueFactory(BaseFactory):
     publicName = factory.SelfAttribute("name")
     siret = factory.LazyAttributeSequence(lambda o, n: f"{o.managingOfferer.siren}{n:05}")
     isVirtual = False
+    venueTypeCode = offerers_models.VenueTypeCode.OTHER.value
 
 
 class VirtualVenueFactory(VenueFactory):
