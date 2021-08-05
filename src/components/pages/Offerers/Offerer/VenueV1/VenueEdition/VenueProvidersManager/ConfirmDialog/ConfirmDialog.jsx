@@ -27,7 +27,7 @@ const ConfirmDialog = ({ onConfirm, onCancel }) => {
           }
           <a
             className="tertiary-link"
-            href="https://aide.passculture.app/fr/articles/5096127-acteurs-culturels-quelles-sont-les-informations-generales-pour-les-librairies#h_69ebe1fa90"
+            href="https://aide.passculture.app/fr/articles/5394935-acteurs-culturels-pourquoi-la-remontee-de-mes-stocks-n-integre-pas-toutes-les-references"
             rel="noopener noreferrer"
             target="_blank"
           >
