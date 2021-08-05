@@ -1,4 +1,5 @@
 from collections import namedtuple
+from typing import Optional
 
 from sqlalchemy import subquery
 from sqlalchemy.orm import aliased
@@ -13,10 +14,9 @@ from pcapi.models import Venue
 from pcapi.models.payment import Payment
 
 
-def find_all_offerer_payments(offerer_id: int) -> list[namedtuple]:
+def find_all_offerer_payments(offerer_id: int, venue_id: Optional[int] = None) -> list[namedtuple]:
     payment_status_query = _build_payment_status_subquery()
-
-    return (
+    payment_query = (
         Payment.query.join(payment_status_query)
         .reset_joinpoint()
         .join(Booking)
@@ -26,7 +26,12 @@ def find_all_offerer_payments(offerer_id: int) -> list[namedtuple]:
         .join(Offer)
         .join(Venue)
         .filter(Venue.managingOffererId == offerer_id)
-        .join(Offerer)
+    )
+    if venue_id:
+        payment_query = payment_query.filter(Venue.id == venue_id)
+
+    return (
+        payment_query.join(Offerer)
         .distinct(payment_status_query.c.paymentId)
         .order_by(payment_status_query.c.paymentId.desc(), payment_status_query.c.date.desc())
         .with_entities(

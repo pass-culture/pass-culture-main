@@ -6,6 +6,8 @@ import pytest
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers.factories import OffererFactory
+from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.payments import factories as payments_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.models.payment_status import TransactionStatus
@@ -195,3 +197,34 @@ class FindAllOffererPaymentsTest:
             TransactionStatus.SENT,
             "All good",
         )
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_payments_from_multiple_venues(self, app):
+        # Given
+        offerer = OffererFactory()
+        payments_factories.PaymentFactory(booking__stock__offer__venue__managingOfferer=offerer)
+        payments_factories.PaymentFactory(booking__stock__offer__venue__managingOfferer=offerer)
+
+        # When
+        payments = find_all_offerer_payments(offerer.id)
+
+        # Then
+        assert len(payments) == 2
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_payments_filtered_by_venue(self, app):
+        # Given
+        offerer = OffererFactory()
+        venue_1 = VenueFactory(managingOfferer=offerer)
+        venue_2 = VenueFactory(managingOfferer=offerer)
+
+        payment_1 = payments_factories.PaymentFactory(booking__stock__offer__venue=venue_1)
+        payments_factories.PaymentFactory(booking__stock__offer__venue=venue_2)
+
+        # When
+        payments = find_all_offerer_payments(offerer.id, venue_1.id)
+
+        # Then
+        assert len(payments) == 1
+        assert payments[0][2] == payment_1.booking.token
+        assert payments[0][8] == venue_1.name

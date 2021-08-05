@@ -1,6 +1,7 @@
 from collections import namedtuple
 import csv
 from io import StringIO
+from typing import Optional
 
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository.reimbursement_queries import find_all_offerer_payments
@@ -112,8 +113,10 @@ def generate_reimbursement_details_csv(reimbursement_details: list[Reimbursement
     return output.getvalue()
 
 
-def find_all_offerer_reimbursement_details(offerer_id: int) -> list[ReimbursementDetails]:
-    offerer_payments = find_all_offerer_payments(offerer_id)
+def find_all_offerer_reimbursement_details(
+    offerer_id: int, venue_id: Optional[int] = None
+) -> list[ReimbursementDetails]:
+    offerer_payments = find_all_offerer_payments(offerer_id, venue_id)
     reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerer_payments]
 
     return reimbursement_details
