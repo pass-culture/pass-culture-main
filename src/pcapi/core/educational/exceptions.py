@@ -8,3 +8,7 @@ class InsufficientTemporaryFund(Exception):
 
 class EducationalDepositNotFound(Exception):
     pass
+
+
+class EducationalBookingNotFound(Exception):
+    pass
