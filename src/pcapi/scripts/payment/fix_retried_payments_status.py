@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 def _get_execution_dates() -> list[datetime.datetime]:
     response = (
         Payment.query.join(PaymentStatus)
-        .filter(PaymentStatus.status == TransactionStatus.UNDER_REVIEW)
+        .filter(PaymentStatus.status == TransactionStatus.PENDING)
         .with_entities(func.date_trunc("day", PaymentStatus.date).label("day"))
         .distinct("day")
         .order_by("day")
@@ -25,7 +25,7 @@ def _get_execution_dates() -> list[datetime.datetime]:
     return [execution_date for (execution_date,) in response]
 
 
-def _get_retried_payments_by_execution_date(execution_date: datetime) -> list[Payment]:
+def _get_retried_payments_by_execution_date(execution_date: datetime.datetime) -> list[Payment]:
     return (
         Payment.query.join(PaymentStatus)
         .filter(PaymentStatus.status == TransactionStatus.RETRY)
@@ -35,8 +35,8 @@ def _get_retried_payments_by_execution_date(execution_date: datetime) -> list[Pa
 
 
 def _get_sent_date_by_execution_date(
-    execution_date: datetime,
-) -> datetime:
+    execution_date: datetime.datetime,
+) -> datetime.datetime:
     transaction_label = make_transaction_label(execution_date.date())
 
     sent_payments_for_transaction_label = (
@@ -50,7 +50,7 @@ def _get_sent_date_by_execution_date(
     first_adequate_payment = (
         Payment.query.join(PaymentStatus)
         .filter(Payment.transactionLabel == transaction_label)
-        .filter(PaymentStatus.status == TransactionStatus.UNDER_REVIEW)
+        .filter(PaymentStatus.status == TransactionStatus.PENDING)
         .filter(func.date_trunc("day", PaymentStatus.date) == execution_date)
         .filter(Payment.id.in_(sent_payments_for_transaction_label))
         .first()
