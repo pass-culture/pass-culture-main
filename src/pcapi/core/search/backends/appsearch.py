@@ -64,17 +64,8 @@ SYNONYM_SET = (
     {"micro", "musique"},
     {"audible", "j'écoute malin j'écoute audible"},
     {"canal", "canal+", "canal +", "canal plus", "netflix"},
+    {"tome", "T."},
 )
-
-
-def _build_synonyms_for_tome():
-    global SYNONYM_SET  # pylint: disable=global-statement
-    SYNONYM_SET += ({"T.", "tome"},)
-    for n in range(1, 41):
-        SYNONYM_SET += ({f"{n}", f"T{n}", f"T.{n}"},)
-
-
-_build_synonyms_for_tome()
 
 
 logger = logging.getLogger(__name__)
