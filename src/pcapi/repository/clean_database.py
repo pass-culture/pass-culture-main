@@ -29,8 +29,6 @@ from pcapi.models import Booking
 from pcapi.models import Criterion
 from pcapi.models import Deposit
 from pcapi.models import Favorite
-from pcapi.models import IrisFrance
-from pcapi.models import IrisVenues
 from pcapi.models import LocalProviderEvent
 from pcapi.models import Offer
 from pcapi.models import OfferCriterion
@@ -67,8 +65,6 @@ def clean_all_database(*args, **kwargs):
     Offer.query.delete()
     Product.query.delete()
     BankInformation.query.delete()
-    IrisVenues.query.delete()
-    IrisFrance.query.delete()
     Venue.query.delete()
     UserOfferer.query.delete()
     ApiKey.query.delete()

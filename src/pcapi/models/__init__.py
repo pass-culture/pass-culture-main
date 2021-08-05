@@ -37,7 +37,6 @@ from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.feature import Feature
 from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
-from pcapi.models.iris_venues import IrisVenues
 from pcapi.models.local_provider_event import LocalProviderEvent
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.offer_criterion import OfferCriterion
@@ -52,9 +51,6 @@ from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
 
-
-# FIXME (dbaty, 2021-06-07): fix circular import
-from pcapi.models.iris_france import IrisFrance  # isort:skip
 
 __all__ = (
     "ActivationCode",
@@ -78,8 +74,6 @@ __all__ = (
     "Feature",
     "HasAddressMixin",
     "HasThumbMixin",
-    "IrisFrance",
-    "IrisVenues",
     "BookFormat",
     "NeedsValidationMixin",
     "ProvidableMixin",
@@ -140,7 +134,5 @@ models = (
     CustomReimbursementRule,
     Payment,
     PaymentStatus,
-    IrisFrance,
-    IrisVenues,
     Token,
 )
