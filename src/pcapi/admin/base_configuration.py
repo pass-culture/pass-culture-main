@@ -19,6 +19,10 @@ class BaseAdminMixin:
     # for us because we want the form to be different depending on the
     # logged-in user's privileges (see `form_columns()`). Thus, we
     # don't use the cache.
+    @property
+    def column_formatters(self):
+        return {}
+
     def create_form(self, obj=None):
         form_class = self.get_create_form()
         return form_class(get_form_data(), obj=obj)

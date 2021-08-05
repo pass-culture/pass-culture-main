@@ -129,7 +129,7 @@ class OfferView(BaseAdminView):
 
     @property
     def column_formatters(self):
-        formatters = super().column_formatters.copy()
+        formatters = super().column_formatters
         formatters.update(
             {
                 "categoryId": offer_category_formatter,

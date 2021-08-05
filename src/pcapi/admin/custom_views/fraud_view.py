@@ -112,7 +112,7 @@ class FraudView(base_configuration.BaseAdminView):
 
     @property
     def column_formatters(self):
-        formatters = super().column_formatters.copy()
+        formatters = super().column_formatters
         formatters.update(
             {
                 "beneficiaryFraudChecks": beneficiary_fraud_checks_formatter,
