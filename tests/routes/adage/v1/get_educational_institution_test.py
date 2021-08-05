@@ -125,7 +125,7 @@ class Returns200Test:
 
 
 class Returns404Test:
-    def test_get_educational_institution_not_found(self, app) -> None:
+    def test_get_educational_institution_not_found(self, app, db_session) -> None:
         educational_year = EducationalYearFactory()
         EducationalInstitutionFactory()
 

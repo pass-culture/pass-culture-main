@@ -4,6 +4,8 @@ from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.educational import exceptions
+from pcapi.core.educational.api import confirm_educational_booking
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalInstitution
@@ -11,11 +13,13 @@ from pcapi.core.educational.models import EducationalYear
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.educational_institution import educational_institution_path
 from pcapi.routes.adage.v1.serialization.prebooking import GetPreBookingsRequest
 from pcapi.routes.adage.v1.serialization.prebooking import PreBookingResponse
 from pcapi.routes.adage.v1.serialization.prebooking import PreBookingsResponse
+from pcapi.routes.adage.v1.serialization.prebooking import get_prebooking_serialized
 from pcapi.routes.adage.v1.serialization.prebooking import get_prebookings_serialized
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -61,15 +65,24 @@ def get_pre_bookings(query: GetPreBookingsRequest, year_id: str, uai_code: str) 
     return PreBookingsResponse(prebookings=get_prebookings_serialized(bookings))
 
 
-@blueprint.adage_v1.route("/prebookings/<int:pre_booking_id>/confirm", methods=["POST"])
+@blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/confirm", methods=["POST"])
 @spectree_serialize(
     api=blueprint.api, response_model=PreBookingResponse, on_error_statuses=[404, 422], tags=("change prebookings",)
 )
 @adage_api_key_required
-def confirm_pre_booking() -> PreBookingResponse:
-    """Confirm a prebooking
+def confirm_prebooking(educational_booking_id: int) -> PreBookingResponse:
+    try:
+        booking = confirm_educational_booking(educational_booking_id)
+    except exceptions.InsufficientFund:
+        raise ApiErrors({"deposit": "Fond insuffisant pour confirmer cette réservation"}, status_code=422)
+    except exceptions.InsufficientTemporaryFund:
+        raise ApiErrors({"deposit": "Montant du fond définitif en attente de validation"}, status_code=422)
+    except exceptions.EducationalBookingNotFound:
+        raise ApiErrors({"id": "Aucune réservation n'a été trouvée avec cet identifiant"}, status_code=404)
+    except exceptions.EducationalDepositNotFound:
+        raise ApiErrors({"deposit": "Aucun budget n'a été trouvé pour valider cette réservation"}, status_code=404)
 
-    Can only work if the prebooking is not confirmed yet."""
+    return get_prebooking_serialized(booking)
 
 
 @blueprint.adage_v1.route("/prebookings/<int:pre_booking_id>/refuse", methods=["POST"])
