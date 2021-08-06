@@ -7,7 +7,7 @@ from pcapi import models
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
-import pcapi.core.offerers.models
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers.models import OfferReport
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.testing import BaseFactory
