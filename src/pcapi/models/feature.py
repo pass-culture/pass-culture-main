@@ -60,6 +60,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_VENUE_WITHDRAWAL_DETAILS = "Active les modalités de retrait sur la page lieu"
     PERF_VENUE_STATS = "Permet de basculer vers une nouvelle implémentation performante de la page d'accueil pro contenant les indicateurs statistiques par venue"
     WEBAPP_V2_ENABLED = "Utiliser la nouvelle web app (décli web/v2) au lieu de l'ancienne"
+    PRO_REIMBURSEMENTS_FILTERS = "Permet de filtrer la liste de remboursements"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -103,6 +104,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS,
     FeatureToggle.PERF_VENUE_STATS,
     FeatureToggle.WEBAPP_V2_ENABLED,
+    FeatureToggle.PRO_REIMBURSEMENTS_FILTERS,
 )
 
 
