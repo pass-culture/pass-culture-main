@@ -160,6 +160,10 @@ class Booking(PcObject, Model):
         self.status = None
         self.cancellationDate = None
 
+    def mark_as_confirmed(self) -> None:
+        self.status = BookingStatus.CONFIRMED
+        self.educationalBooking.confirmationDate = datetime.utcnow()
+
     @property
     def expirationDate(self) -> Optional[datetime]:
         if self.isCancelled or self.isUsed:
