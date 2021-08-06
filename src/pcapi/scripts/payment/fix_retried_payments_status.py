@@ -62,7 +62,11 @@ def fix_retried_payments_status() -> None:
     logger.info("Begin script", extra={"script": "fix_retried_payments_status"})
     execution_dates = _get_execution_dates()
     logger.info(
-        "Execution dates retrieved", extra={"executionDates": execution_dates, "script": "fix_retried_payments_status"}
+        "Execution dates retrieved",
+        extra={
+            "executionDates": [execution_date.strftime("%Y-%m-%d") for execution_date in execution_dates],
+            "script": "fix_retried_payments_status",
+        },
     )
     updated_payments_count = 0
     for execution_date in execution_dates:
@@ -73,9 +77,9 @@ def fix_retried_payments_status() -> None:
         logger.info(
             "Fix given execution date",
             extra={
-                "executionDate": execution_date,
+                "executionDate": execution_date.strftime("%Y-%m-%d"),
                 "transactionLabel": transaction_label,
-                "sentDate": sent_date,
+                "sentDate": sent_date.strftime("%Y-%m-%d %H:%M:%S") if sent_date else None,
                 "retriedPaymentsCount": len(retried_payments),
                 "script": "fix_retried_payments_status",
             },
