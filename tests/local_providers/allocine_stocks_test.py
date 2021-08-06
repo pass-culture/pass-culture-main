@@ -337,8 +337,8 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_offers = Offer.query.order_by('id').all()
-        created_products = Product.query.order_by('id').all()
+        created_offers = Offer.query.order_by("id").all()
+        created_products = Product.query.order_by("id").all()
 
         assert len(created_offers) == 2
         assert len(created_products) == 1
@@ -496,7 +496,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        existing_offers = Offer.query.order_by('id').all()
+        existing_offers = Offer.query.order_by("id").all()
         existing_product = Product.query.one()
 
         assert len(existing_offers) == 2
@@ -852,7 +852,7 @@ class UpdateObjectsTest:
         # Then
         created_product = Product.query.all()
         created_offer = Offer.query.all()
-        created_stock = Stock.query.order_by('id').all()
+        created_stock = Stock.query.order_by("id").all()
 
         first_stock = created_stock[0]
         second_stock = created_stock[1]
@@ -945,8 +945,8 @@ class UpdateObjectsTest:
 
         # Then
         created_product = Product.query.all()
-        created_offer = Offer.query.order_by('id').all()
-        created_stock = Stock.query.order_by('id').all()
+        created_offer = Offer.query.order_by("id").all()
+        created_stock = Stock.query.order_by("id").all()
 
         vo_offer = created_offer[0]
         vf_offer = created_offer[1]
