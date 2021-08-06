@@ -146,6 +146,7 @@ class AllocineStocks(LocalProvider):
     def fill_offer_attributes(self, allocine_offer: Offer) -> None:
         allocine_offer.venueId = self.venue.id
         allocine_offer.bookingEmail = self.venue.bookingEmail
+        allocine_offer.withdrawalDetails = self.venue.withdrawalDetails
 
         self.update_from_movie_information(allocine_offer, self.movie_information)
 

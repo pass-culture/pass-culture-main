@@ -22,6 +22,7 @@ from pcapi.models import Stock
 from pcapi.repository import repository
 import pcapi.sandboxes
 from pcapi.utils.human_ids import humanize
+from src.pcapi.core.offers.factories import VenueFactory
 
 
 MOVIE_INFO = {
@@ -206,7 +207,13 @@ class UpdateObjectsTest:
         )
 
         offerer = create_offerer(siren="775671464")
-        venue = create_venue(offerer, name="Cinema Allocine", siret="77567146400110", booking_email="toto@example.com")
+        venue = VenueFactory(
+            managingOfferer=offerer,
+            name="Cinema Allocine",
+            siret="77567146400110",
+            bookingEmail="toto@example.com",
+            withdrawalDetails="Modalités",
+        )
 
         allocine_provider = activate_provider("AllocineStocks")
         allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider)
@@ -247,6 +254,7 @@ class UpdateObjectsTest:
         assert created_offer.name == "Les Contes de la mère poule - VF"
         assert created_offer.product == created_product
         assert created_offer.type == str(EventType.CINEMA)
+        assert created_offer.withdrawalDetails == venue.withdrawalDetails
 
         assert (
             created_product.description == "synopsis du film\nTous les détails du film sur AlloCiné:"
