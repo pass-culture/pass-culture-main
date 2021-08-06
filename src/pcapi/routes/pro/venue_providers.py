@@ -1,3 +1,5 @@
+from typing import Union
+
 from flask_login import login_required
 
 from pcapi.core.providers import api
@@ -16,6 +18,9 @@ from pcapi.workers.venue_provider_job import venue_provider_job
 @spectree_serialize(on_success_status=200, response_model=ListVenueProviderResponse)
 def list_venue_providers(query: ListVenueProviderQuery) -> ListVenueProviderResponse:
     venue_provider_list = repository.get_venue_provider_list(query.venue_id)
+    for venue_provider in venue_provider_list:
+        if venue_provider.isFromAllocineProvider:
+            venue_provider.price = _allocine_venue_provider_price(venue_provider)
     return ListVenueProviderResponse(
         venue_providers=[VenueProviderResponse.from_orm(venue_provider) for venue_provider in venue_provider_list]
     )
@@ -31,3 +36,10 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     venue_provider_job.delay(new_venue_provider.id)
 
     return VenueProviderResponse.from_orm(new_venue_provider)
+
+
+def _allocine_venue_provider_price(venue_provider) -> Union[float, None]:
+    for price_rule in venue_provider.priceRules:
+        if price_rule.priceRule():
+            return price_rule.price
+    return None

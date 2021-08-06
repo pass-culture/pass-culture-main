@@ -47,6 +47,9 @@ class VenueProviderResponse(BaseModel):
     provider: ProviderResponse
     # TODO(asaunier): Check if this field is necessary
     fieldsUpdated: List[str]
+    quantity: Optional[int]
+    isDuo: Optional[bool]
+    price: Optional[float]
 
     _humanize_id = humanize_field("id")
     _humanize_venue_id = humanize_field("venueId")

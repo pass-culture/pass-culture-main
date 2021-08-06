@@ -33,7 +33,7 @@ class Returns200Test:
         # given
         user = users_factories.ProFactory()
         allocine_stocks_provider = get_provider_by_local_class("AllocineStocks")
-        allocine_venue_provider = offerers_factories.VenueProviderFactory(
+        allocine_venue_provider = offerers_factories.AllocineVenueProviderFactory(
             venue__name="Whatever cinema",
             provider=allocine_stocks_provider,
         )
