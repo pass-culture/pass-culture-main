@@ -13,8 +13,8 @@ from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
 
 @blueprint.adage_iframe.route("/", methods=["GET"])
 @adage_jwt_required
-def get_home_test(user_email: str = None) -> str:
-    return {"user_email": user_email}
+def get_home_test(authenticated_email: str = None) -> str:
+    return {"user_email": authenticated_email}
 
 
 class Returns200Test:

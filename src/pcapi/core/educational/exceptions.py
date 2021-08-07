@@ -1,3 +1,33 @@
+from pcapi.domain.client_exceptions import ClientError
+
+
+class EducationalInstitutionUnknown(ClientError):
+    def __init__(self) -> None:
+        super().__init__("educationalInstitution", "Cette institution est inconnue")
+
+
+class NoStockLeftError(ClientError):
+    def __init__(self, stock_id) -> None:
+        super().__init__("stock", f"Le stock {stock_id} n'est plus disponible")
+
+
+class EducationalYearNotFound(ClientError):
+    def __init__(self) -> None:
+        super().__init__(
+            "educationalYear", "Aucune année scolaire correspondant à la réservation demandée n'a été trouvée"
+        )
+
+
+class OfferIsNotEducational(ClientError):
+    def __init__(self, offer_id) -> None:
+        super().__init__("offer", f"L'offre {offer_id} n'est pas une offre éducationnelle")
+
+
+class OfferIsNotEvent(ClientError):
+    def __init__(self, offer_id) -> None:
+        super().__init__("offer", f"L'offre {offer_id} n'est pas une offre évènementielle")
+
+
 class InsufficientFund(Exception):
     pass
 

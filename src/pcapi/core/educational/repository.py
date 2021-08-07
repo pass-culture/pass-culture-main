@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 from operator import and_
 from typing import Optional
@@ -9,6 +10,9 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.exceptions import EducationalDepositNotFound
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalDeposit
+from pcapi.core.educational.models import EducationalInstitution
+from pcapi.core.educational.models import EducationalYear
+from pcapi.core.offers.models import Stock
 
 
 def get_and_lock_educational_deposit(educational_institution_id: int, educational_year_id: str) -> EducationalDeposit:
@@ -49,3 +53,18 @@ def get_confirmed_educational_bookings_amount(
 
 def find_educational_booking_by_id(educational_booking_id: int) -> Optional[EducationalBooking]:
     return EducationalBooking.query.filter(EducationalBooking.id == educational_booking_id).join(Booking).one_or_none()
+
+
+def find_educational_year_by_date(date: datetime) -> EducationalYear:
+    return EducationalYear.query.filter(
+        date >= EducationalYear.beginningDate,
+        date <= EducationalYear.expirationDate,
+    ).first()
+
+
+def find_educational_institution_by_uai_code(uai_code: str) -> EducationalInstitution:
+    return EducationalInstitution.query.filter_by(institutionId=uai_code).first()
+
+
+def find_stock_by_id(stock_id: int) -> Stock:
+    return Stock.query.filter_by(id=stock_id).first()
