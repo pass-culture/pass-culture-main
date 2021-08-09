@@ -1,15 +1,9 @@
 import logging
 from typing import Optional
 
-from sqlalchemy.orm import joinedload
-
-from pcapi.core.bookings.models import Booking
-from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
-from pcapi.core.educational.models import EducationalYear
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
+from pcapi.core.educational.repository import find_educational_bookings_for_adage
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.serialization.educational_institution import EducationalInstitutionResponse
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_bookings
@@ -37,23 +31,7 @@ def get_educational_institution(year_id: str, uai_code: str) -> EducationalInsti
         EducationalInstitution.institutionId == uai_code
     ).first_or_404()
 
-    bookings = (
-        Booking.query.join(EducationalBooking)
-        .join(EducationalInstitution)
-        .join(EducationalYear)
-        .options(joinedload(Booking.user, innerjoin=True))
-        .options(
-            joinedload(Booking.stock, innerjoin=True)
-            .joinedload(Stock.offer, innerjoin=True)
-            .joinedload(Offer.venue, innerjoin=True)
-        )
-        .options(
-            joinedload(Booking.educationalBooking).joinedload(EducationalBooking.educationalInstitution, innerjoin=True)
-        )
-        .filter(EducationalInstitution.institutionId == uai_code)
-        .filter(EducationalYear.adageId == year_id)
-        .all()
-    )
+    educational_bookings = find_educational_bookings_for_adage(uai_code=uai_code, year_id=year_id)
 
     educational_deposit: Optional[EducationalDeposit] = (
         EducationalDeposit.query.filter(EducationalDeposit.educationalYearId == year_id)
@@ -64,5 +42,5 @@ def get_educational_institution(year_id: str, uai_code: str) -> EducationalInsti
     return EducationalInstitutionResponse(
         credit=educational_deposit.amount if educational_deposit else 0,
         isFinal=educational_deposit.isFinal if educational_deposit else False,
-        prebookings=serialize_educational_bookings([booking.educationalBooking for booking in bookings]),
+        prebookings=serialize_educational_bookings(educational_bookings),
     )

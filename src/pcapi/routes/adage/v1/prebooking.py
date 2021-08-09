@@ -1,18 +1,8 @@
 import logging
 
-from sqlalchemy.orm import joinedload
-
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import api
 from pcapi.core.educational import exceptions
-from pcapi.core.educational.models import EducationalBooking
-from pcapi.core.educational.models import EducationalBookingStatus
-from pcapi.core.educational.models import EducationalInstitution
-from pcapi.core.educational.models import EducationalYear
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
-from pcapi.core.users.models import User
+from pcapi.core.educational.repository import find_educational_bookings_for_adage
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.educational_institution import educational_institution_path
@@ -79,7 +69,7 @@ def get_educational_bookings(
 @adage_api_key_required
 def confirm_prebooking(educational_booking_id: int) -> EducationalBookingResponse:
     try:
-        booking = api.confirm_educational_booking(educational_booking_id)
+        educational_booking = api.confirm_educational_booking(educational_booking_id)
     except exceptions.InsufficientFund:
         raise ApiErrors({"deposit": "Fond insuffisant pour confirmer cette réservation"}, status_code=422)
     except exceptions.InsufficientTemporaryFund:
@@ -89,7 +79,7 @@ def confirm_prebooking(educational_booking_id: int) -> EducationalBookingRespons
     except exceptions.EducationalDepositNotFound:
         raise ApiErrors({"deposit": "Aucun budget n'a été trouvé pour valider cette réservation"}, status_code=404)
 
-    return serialize_educational_booking(booking)
+    return serialize_educational_booking(educational_booking)
 
 
 @blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/refuse", methods=["POST"])

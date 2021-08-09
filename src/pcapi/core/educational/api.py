@@ -64,7 +64,7 @@ def book_educational_offer(redactor_email: str, uai_code: str, stock_id: int) ->
     return booking
 
 
-def confirm_educational_booking(educational_booking_id: int) -> bookings_models.Booking:
+def confirm_educational_booking(educational_booking_id: int) -> EducationalBooking:
     educational_booking = educational_repository.find_educational_booking_by_id(educational_booking_id)
     if educational_booking is None:
         raise EducationalBookingNotFound()
@@ -87,4 +87,5 @@ def confirm_educational_booking(educational_booking_id: int) -> bookings_models.
         )
         booking.mark_as_confirmed()
         repository.save(booking)
-        return booking
+
+        return educational_booking
