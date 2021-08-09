@@ -20,7 +20,6 @@ Flask-Login==0.5.0
 Flask-Script==2.0.6
 Flask-SQLAlchemy==2.4.4
 freezegun==0.3.12
-GeoAlchemy2==0.8.4
 google-auth==1.23.0
 google-cloud-storage==1.35.0
 google-cloud-tasks==2.3.0
@@ -50,7 +49,6 @@ python-keystoneclient==3.22.0
 pytest-mock==3.3.1
 pytest-dotenv==0.5.2
 python-dotenv==0.14.0
-python-json-logger==0.1.11
 python-swiftclient==3.10.1
 qrcode==6.1
 # FIXME (dbaty, 2021-04-28): as of version 1.9 [1], requests_mock
