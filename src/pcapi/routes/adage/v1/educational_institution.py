@@ -12,7 +12,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.serialization.educational_institution import EducationalInstitutionResponse
-from pcapi.routes.adage.v1.serialization.prebooking import get_prebookings_serialized
+from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_bookings
 from pcapi.serialization.decorator import spectree_serialize
 
 
@@ -64,5 +64,5 @@ def get_educational_institution(year_id: str, uai_code: str) -> EducationalInsti
     return EducationalInstitutionResponse(
         credit=educational_deposit.amount if educational_deposit else 0,
         isFinal=educational_deposit.isFinal if educational_deposit else False,
-        prebookings=get_prebookings_serialized(bookings),
+        prebookings=serialize_educational_bookings([booking.educationalBooking for booking in bookings]),
     )

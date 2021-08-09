@@ -5,8 +5,8 @@ from typing import Union
 from pydantic import BaseModel
 from pydantic.fields import Field
 
-from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferCategoryResponse
@@ -17,7 +17,7 @@ from pcapi.utils.human_ids import humanize
 from pcapi.utils.urls import get_webapp_url
 
 
-class GetPreBookingsRequest(BaseModel):
+class GetEducationalBookingsRequest(BaseModel):
     redactorEmail: Optional[str] = Field(description="Email of querying redactor")
     status: Optional[Union[EducationalBookingStatus, BookingStatus]] = Field(
         description="Status of retrieved preboookings"
@@ -37,7 +37,7 @@ class Redactor(BaseModel):
         alias_generator = to_camel
 
 
-class PreBookingResponse(BaseModel):
+class EducationalBookingResponse(BaseModel):
     address: str = Field(description="Adresse of event")
     beginningDatetime: datetime = Field(description="Beginnning date of event")
     cancellationDate: Optional[datetime] = Field(description="Date of cancellation if prebooking is cancelled")
@@ -74,27 +74,27 @@ class PreBookingResponse(BaseModel):
         allow_population_by_field_name = True
 
 
-class PreBookingsResponse(BaseModel):
-    prebookings: list[PreBookingResponse]
+class EducationalBookingsResponse(BaseModel):
+    prebookings: list[EducationalBookingResponse]
 
     class Config:
         title = "List of prebookings"
 
 
-def get_prebookings_serialized(bookings: list[Booking]) -> list[PreBookingResponse]:
-    prebookings = []
-    for booking in bookings:
-        prebookings.append(get_prebooking_serialized(booking))
+def serialize_educational_bookings(educational_bookings: list[EducationalBooking]) -> list[EducationalBookingResponse]:
+    serialized_educational_bookings = []
+    for educational_booking in educational_bookings:
+        serialized_educational_bookings.append(serialize_educational_booking(educational_booking))
 
-    return prebookings
+    return serialized_educational_bookings
 
 
-def get_prebooking_serialized(booking: Booking) -> PreBookingResponse:
+def serialize_educational_booking(educational_booking: EducationalBooking) -> EducationalBookingResponse:
+    booking = educational_booking.booking
     stock = booking.stock
     offer = stock.offer
     venue = offer.venue
-    educational_booking = booking.educationalBooking
-    return PreBookingResponse(
+    return EducationalBookingResponse(
         address=venue.address,
         beginningDatetime=stock.beginningDatetime,
         cancellationDate=booking.cancellationDate,
@@ -127,7 +127,7 @@ def get_prebooking_serialized(booking: Booking) -> PreBookingResponse:
         },
         UAICode=educational_booking.educationalInstitution.institutionId,
         yearId=educational_booking.educationalYearId,
-        status=get_education_booking_status(booking),
+        status=get_education_booking_status(educational_booking),
         venueTimezone=venue.timezone,
         totalAmount=booking.total_amount,
         url=f"{get_webapp_url()}/accueil/details/{humanize(offer.id)}",
@@ -135,8 +135,10 @@ def get_prebooking_serialized(booking: Booking) -> PreBookingResponse:
     )
 
 
-def get_education_booking_status(booking: Booking) -> Union[EducationalBookingStatus, BookingStatus]:
-    if booking.educationalBooking.status and not booking.status == BookingStatus.USED:
-        return booking.educationalBooking.status.value
+def get_education_booking_status(
+    educational_booking: EducationalBooking,
+) -> Union[EducationalBookingStatus, BookingStatus]:
+    if educational_booking.status and not educational_booking.booking.status == BookingStatus.USED:
+        return educational_booking.status.value
 
-    return booking.status.value
+    return educational_booking.booking.status.value
