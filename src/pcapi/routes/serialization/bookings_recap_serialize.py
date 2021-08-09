@@ -5,10 +5,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecapStatus
-from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapCancelledHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
@@ -72,9 +70,12 @@ def _serialize_booking_status_history(booking_status_history: BookingRecapHistor
 def _serialize_booking_recap(booking_recap: BookingRecap) -> dict[str, Any]:
     serialized_booking_recap = {
         "stock": {
-            "type": "thing",
             "offer_name": booking_recap.offer_name,
             "offer_identifier": humanize(booking_recap.offer_identifier),
+            "event_beginning_datetime": format_into_timezoned_date(booking_recap.event_beginning_datetime)
+            if booking_recap.event_beginning_datetime
+            else None,
+            "offer_isbn": booking_recap.offer_isbn,
         },
         "beneficiary": {
             "lastname": booking_recap.beneficiary_lastname,
@@ -95,16 +96,6 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> dict[str, Any]:
             "name": booking_recap.venue_name,
         },
     }
-
-    if isinstance(booking_recap, EventBookingRecap):
-        serialized_booking_recap["stock"]["type"] = "event"
-        serialized_booking_recap["stock"]["event_beginning_datetime"] = format_into_timezoned_date(
-            booking_recap.event_beginning_datetime
-        )
-
-    if isinstance(booking_recap, BookBookingRecap):
-        serialized_booking_recap["stock"]["type"] = "book"
-        serialized_booking_recap["stock"]["offer_isbn"] = booking_recap.offer_isbn
 
     return serialized_booking_recap
 

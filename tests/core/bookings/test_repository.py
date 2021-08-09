@@ -16,8 +16,6 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.payments.factories import PaymentFactory
 from pcapi.core.payments.factories import PaymentStatusFactory
 import pcapi.core.users.factories as users_factories
-from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
-from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_payment
@@ -523,7 +521,6 @@ class FindByProUserIdTest:
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert not isinstance(expected_booking_recap, EventBookingRecap)
         assert expected_booking_recap.offer_identifier == stock.offer.id
         assert expected_booking_recap.offer_name == "Harry Potter"
         assert expected_booking_recap.beneficiary_firstname == "Ron"
@@ -562,7 +559,6 @@ class FindByProUserIdTest:
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert isinstance(expected_booking_recap, EventBookingRecap)
         assert expected_booking_recap.offer_identifier == stock.offer.id
         assert expected_booking_recap.offer_name == stock.offer.name
         assert expected_booking_recap.beneficiary_firstname == "Ron"
@@ -962,7 +958,6 @@ class FindByProUserIdTest:
 
         # Then
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert isinstance(expected_booking_recap, BookBookingRecap)
         assert expected_booking_recap.offer_isbn == "9876543234"
 
     @pytest.mark.usefixtures("db_session")

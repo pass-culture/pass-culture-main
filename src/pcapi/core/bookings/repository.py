@@ -20,10 +20,7 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
-from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
-from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
-from pcapi.domain.booking_recap.booking_recap import ThingBookingRecap
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import Booking
@@ -417,51 +414,41 @@ def _serialize_date_with_timezone(date_without_timezone: datetime, booking: Abst
 
 
 def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
-    kwargs = {
-        "offer_identifier": booking.offerId,
-        "offer_name": booking.offerName,
-        "offerer_name": booking.offererName,
-        "beneficiary_email": booking.beneficiaryEmail,
-        "beneficiary_phonenumber": booking.beneficiaryPhoneNumber,
-        "beneficiary_firstname": booking.beneficiaryFirstname,
-        "beneficiary_lastname": booking.beneficiaryLastname,
-        "booking_amount": booking.bookingAmount,
-        "booking_token": booking.bookingToken,
-        "booking_date": _serialize_date_with_timezone(booking.bookingDate, booking),
-        "booking_is_used": booking.isUsed,
-        "booking_is_cancelled": booking.isCancelled,
-        "booking_is_confirmed": False,
-        "booking_is_reimbursed": booking.paymentStatus == TransactionStatus.SENT,
-        "booking_is_duo": booking.quantity == DUO_QUANTITY,
-        "venue_identifier": booking.venueId,
-        "date_used": _serialize_date_with_timezone(booking.dateUsed, booking),
-        "payment_date": _serialize_date_with_timezone(booking.paymentDate, booking),
-        "cancellation_date": _serialize_date_with_timezone(booking.cancellationDate, booking=booking),
-        "cancellation_limit_date": None,
-        "venue_name": booking.venuePublicName if booking.venuePublicName else booking.venueName,
-        "venue_is_virtual": booking.venueIsVirtual,
-    }
-
-    if booking.stockBeginningDatetime:
-        klass = EventBookingRecap
-        kwargs.update(
-            event_beginning_datetime=_apply_departement_timezone(
-                booking.stockBeginningDatetime, booking.venueDepartementCode
-            ),
-            booking_is_confirmed=booking.isConfirmed,
-            cancellation_limit_date=_serialize_date_with_timezone(booking.cancellationLimitDate, booking),
+    return BookingRecap(
+        offer_identifier=booking.offerId,
+        offer_name=booking.offerName,
+        offerer_name=booking.offererName,
+        beneficiary_email=booking.beneficiaryEmail,
+        beneficiary_phonenumber=booking.beneficiaryPhoneNumber,
+        beneficiary_firstname=booking.beneficiaryFirstname,
+        beneficiary_lastname=booking.beneficiaryLastname,
+        booking_amount=booking.bookingAmount,
+        booking_token=booking.bookingToken,
+        booking_date=_serialize_date_with_timezone(booking.bookingDate, booking),
+        booking_is_used=booking.isUsed,
+        booking_is_cancelled=booking.isCancelled,
+        booking_is_confirmed=booking.isConfirmed,
+        booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
+        booking_is_duo=booking.quantity == DUO_QUANTITY,
+        venue_identifier=booking.venueId,
+        date_used=_serialize_date_with_timezone(booking.dateUsed, booking),
+        payment_date=_serialize_date_with_timezone(booking.paymentDate, booking),
+        cancellation_date=_serialize_date_with_timezone(booking.cancellationDate, booking=booking),
+        cancellation_limit_date=_serialize_date_with_timezone(booking.cancellationLimitDate, booking),
+        venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName,
+        venue_is_virtual=booking.venueIsVirtual,
+        event_beginning_datetime=_apply_departement_timezone(
+            booking.stockBeginningDatetime, booking.venueDepartementCode
         )
-
-    elif booking.offerExtraData and "isbn" in booking.offerExtraData:
-        klass = BookBookingRecap
-        kwargs["offer_isbn"] = booking.offerExtraData["isbn"]
-    else:
-        klass = ThingBookingRecap
-
-    return klass(**kwargs)
+        if booking.stockBeginningDatetime
+        else None,
+        offer_isbn=booking.offerExtraData["isbn"]
+        if booking.offerExtraData and "isbn" in booking.offerExtraData
+        else None,
+    )
 
 
-def _find_bookings_eligible_for_payment(cutoff_date: datetime) -> Query:
+def _find_bookings_eligible_for_payment(cutoff_date=datetime) -> Query:
     # fmt: off
     return (
         _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers()

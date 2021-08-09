@@ -38,6 +38,8 @@ class BookingRecap:
         date_used: Optional[datetime],
         offer_identifier: int,
         offer_name: str,
+        offer_isbn: Optional[str],
+        event_beginning_datetime: Optional[str],
         offerer_name: str,
         venue_identifier: int,
         venue_name: str,
@@ -57,6 +59,8 @@ class BookingRecap:
         self.booking_is_confirmed = booking_is_confirmed
         self.offer_identifier = offer_identifier
         self.offer_name = offer_name
+        self.offer_isbn = offer_isbn
+        self.event_beginning_datetime = event_beginning_datetime
         self.offerer_name = offerer_name
         self.venue_identifier = venue_identifier
         self.booking_status_history = self.build_status_history(
@@ -70,8 +74,6 @@ class BookingRecap:
         self.venue_is_virtual = venue_is_virtual
 
     def __new__(cls, *args, **kwargs):
-        if cls is BookingRecap:
-            raise TypeError("BookingRecap may not be instantiated")
         return object.__new__(cls)
 
     def _get_booking_token(self) -> Optional[str]:
@@ -124,22 +126,3 @@ class BookingRecap:
                 cancellation_limit_date=cancellation_limit_date,
             )
         return BookingRecapHistory(booking_date)
-
-
-class ThingBookingRecap(BookingRecap):
-    def _get_booking_token(self) -> Optional[str]:
-        if not self.booking_is_used and not self.booking_is_cancelled:
-            return None
-        return self._booking_token
-
-
-class EventBookingRecap(BookingRecap):
-    def __init__(self, event_beginning_datetime: datetime, **kwargs):
-        super().__init__(**kwargs)
-        self.event_beginning_datetime = event_beginning_datetime
-
-
-class BookBookingRecap(ThingBookingRecap):
-    def __init__(self, offer_isbn: str, **kwargs):
-        super().__init__(**kwargs)
-        self.offer_isbn = offer_isbn

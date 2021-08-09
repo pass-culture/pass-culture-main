@@ -4,9 +4,7 @@ from typing import Optional
 from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.offers.models import Mediation
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
-from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
-from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
-from pcapi.domain.booking_recap.booking_recap import ThingBookingRecap
+from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.models import Offer
 
@@ -69,9 +67,9 @@ def create_domain_thing_booking_recap(
     venue_identifier: int = 1,
     venue_name="Librairie Kléber",
     venue_is_virtual=False,
-) -> ThingBookingRecap:
+) -> BookingRecap:
     if offer_isbn:
-        return BookBookingRecap(
+        return BookingRecap(
             offer_identifier=offer_identifier,
             offer_name=offer_name,
             offerer_name=offerer_name,
@@ -96,7 +94,7 @@ def create_domain_thing_booking_recap(
             venue_name=venue_name,
             venue_is_virtual=venue_is_virtual,
         )
-    return ThingBookingRecap(
+    return BookingRecap(
         offer_identifier=offer_identifier,
         offer_name=offer_name,
         offerer_name=offerer_name,
@@ -145,8 +143,8 @@ def create_domain_event_booking_recap(
     venue_identifier: int = 1,
     venue_name="Librairie Kléber",
     venue_is_virtual=False,
-) -> EventBookingRecap:
-    return EventBookingRecap(
+) -> BookingRecap:
+    return BookingRecap(
         offer_identifier=offer_identifier,
         offer_name=offer_name,
         offerer_name=offerer_name,
