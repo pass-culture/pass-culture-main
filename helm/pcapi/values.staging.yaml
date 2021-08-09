@@ -423,6 +423,8 @@ secrets:
     version: 2
   - name: GCP_BUCKET_CREDENTIALS
     version: 1
+  - name: OBJECT_STORAGE_URL
+    version: 1
   - name: ID_CHECK_MIDDLEWARE_TOKEN
     version: 1
   - name: JOUVE_API_DOMAIN
