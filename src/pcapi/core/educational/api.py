@@ -1,19 +1,12 @@
-from typing import Optional
-
 from pcapi import repository
 from pcapi.core.bookings import models as booking_models
+from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
 from pcapi.core.educational.exceptions import EducationalBookingNotFound
-from pcapi.core.educational.models import EducationalBooking
-from pcapi.core.educational.repository import get_and_lock_educational_deposit
 
 
 def confirm_educational_booking(educational_booking_id: int) -> booking_models.Booking:
-    educational_booking: Optional[EducationalBooking] = (
-        EducationalBooking.query.filter(EducationalBooking.id == educational_booking_id)
-        .join(booking_models.Booking)
-        .one_or_none()
-    )
+    educational_booking = educational_repository.find_educational_booking_by_id(educational_booking_id)
     if educational_booking is None:
         raise EducationalBookingNotFound()
 
@@ -24,7 +17,9 @@ def confirm_educational_booking(educational_booking_id: int) -> booking_models.B
     educational_institution_id = educational_booking.educationalInstitutionId
     educational_year_id = educational_booking.educationalYearId
     with repository.transaction():
-        deposit = get_and_lock_educational_deposit(educational_institution_id, educational_year_id)
+        deposit = educational_repository.get_and_lock_educational_deposit(
+            educational_institution_id, educational_year_id
+        )
         validation.check_institution_fund(
             educational_institution_id,
             educational_year_id,

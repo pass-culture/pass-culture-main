@@ -1,5 +1,6 @@
 from decimal import Decimal
 from operator import and_
+from typing import Optional
 
 from sqlalchemy.orm import joinedload
 
@@ -44,3 +45,7 @@ def get_confirmed_educational_bookings_amount(
         .all()
     )
     return Decimal(sum([educational_booking.booking.total_amount for educational_booking in educational_bookings]))
+
+
+def find_educational_booking_by_id(educational_booking_id: int) -> Optional[EducationalBooking]:
+    return EducationalBooking.query.filter(EducationalBooking.id == educational_booking_id).join(Booking).one_or_none()
