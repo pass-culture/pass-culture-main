@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-const BookingOfferCellForThing = ({ offerId, offerName }) => (
+const BookingOfferCellForThing = ({ offerId, offerIsbn, offerName }) => (
   <a
     href={`/offres/${offerId}/edition`}
     rel="noopener noreferrer"
@@ -11,11 +11,21 @@ const BookingOfferCellForThing = ({ offerId, offerName }) => (
     <div className="booking-offer-name">
       {offerName}
     </div>
+    {offerIsbn && (
+      <div className="booking-offer-additional-info">
+        {offerIsbn}
+      </div>
+    )}
   </a>
 )
 
+BookingOfferCellForThing.defaultProps = {
+  offerIsbn: null,
+}
+
 BookingOfferCellForThing.propTypes = {
   offerId: PropTypes.string.isRequired,
+  offerIsbn: PropTypes.string,
   offerName: PropTypes.string.isRequired,
 }
 
