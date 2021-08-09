@@ -6,11 +6,7 @@ from pcapi.core.educational.repository import find_educational_bookings_for_adag
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.educational_institution import educational_institution_path
-from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
-from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingsResponse
-from pcapi.routes.adage.v1.serialization.prebooking import GetEducationalBookingsRequest
-from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
-from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_bookings
+from pcapi.routes.adage.v1.serialization import prebooking as prebooking_serialization
 from pcapi.serialization.decorator import spectree_serialize
 
 
@@ -20,54 +16,34 @@ from . import blueprint
 
 
 @blueprint.adage_v1.route(educational_institution_path + "/prebookings", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=EducationalBookingsResponse, tags=("get prebookings",))
+@spectree_serialize(
+    api=blueprint.api, response_model=prebooking_serialization.EducationalBookingsResponse, tags=("get prebookings",)
+)
 @adage_api_key_required
 def get_educational_bookings(
-    query: GetEducationalBookingsRequest, year_id: str, uai_code: str
-) -> EducationalBookingsResponse:
-    bookings_base_query = (
-        Booking.query.join(EducationalBooking, Booking.educationalBookingId == EducationalBooking.id)
-        .join(EducationalInstitution)
-        .join(EducationalYear)
-        .options(joinedload(Booking.user, innerjoin=True))
-        .options(
-            joinedload(Booking.stock, innerjoin=True)
-            .joinedload(Stock.offer, innerjoin=True)
-            .joinedload(Offer.venue, innerjoin=True)
-        )
-        .options(
-            joinedload(Booking.educationalBooking).joinedload(EducationalBooking.educationalInstitution, innerjoin=True)
-        )
-        .filter(EducationalInstitution.institutionId == uai_code)
-        .filter(EducationalYear.adageId == year_id)
+    query: prebooking_serialization.GetEducationalBookingsRequest, year_id: str, uai_code: str
+) -> prebooking_serialization.EducationalBookingsResponse:
+    educational_bookings = find_educational_bookings_for_adage(
+        uai_code=uai_code,
+        year_id=year_id,
+        redactor_email=query.redactorEmail,
+        status=query.status,
     )
 
-    if query.redactorEmail is not None:
-        bookings_base_query = bookings_base_query.join(User).filter(User.email == query.redactorEmail)
-
-    if query.status is not None:
-        if query.status in BookingStatus:
-            bookings_base_query = bookings_base_query.filter(Booking.status == query.status)
-
-        if query.status in EducationalBookingStatus:
-            bookings_base_query = bookings_base_query.filter(EducationalBooking.status == query.status)
-
-    bookings = bookings_base_query.all()
-
-    return EducationalBookingsResponse(
-        prebookings=serialize_educational_bookings([booking.educationalBooking for booking in bookings])
+    return prebooking_serialization.EducationalBookingsResponse(
+        prebookings=prebooking_serialization.serialize_educational_bookings(educational_bookings)
     )
 
 
 @blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/confirm", methods=["POST"])
 @spectree_serialize(
     api=blueprint.api,
-    response_model=EducationalBookingResponse,
+    response_model=prebooking_serialization.EducationalBookingResponse,
     on_error_statuses=[404, 422],
     tags=("change prebookings",),
 )
 @adage_api_key_required
-def confirm_prebooking(educational_booking_id: int) -> EducationalBookingResponse:
+def confirm_prebooking(educational_booking_id: int) -> prebooking_serialization.EducationalBookingResponse:
     try:
         educational_booking = api.confirm_educational_booking(educational_booking_id)
     except exceptions.InsufficientFund:
@@ -79,18 +55,18 @@ def confirm_prebooking(educational_booking_id: int) -> EducationalBookingRespons
     except exceptions.EducationalDepositNotFound:
         raise ApiErrors({"deposit": "Aucun budget n'a été trouvé pour valider cette réservation"}, status_code=404)
 
-    return serialize_educational_booking(educational_booking)
+    return prebooking_serialization.serialize_educational_booking(educational_booking)
 
 
 @blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/refuse", methods=["POST"])
 @spectree_serialize(
     api=blueprint.api,
-    response_model=EducationalBookingResponse,
+    response_model=prebooking_serialization.EducationalBookingResponse,
     on_error_statuses=[404, 422],
     tags=("change prebookings", "change bookings"),
 )
 @adage_api_key_required
-def refuse_pre_booking() -> EducationalBookingResponse:
+def refuse_pre_booking() -> prebooking_serialization.EducationalBookingResponse:
     """Refuse a prebooking confirmation
 
     Can only work if prebooking is confirmed or pending,
@@ -100,12 +76,12 @@ def refuse_pre_booking() -> EducationalBookingResponse:
 @blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/mark_as_used", methods=["POST"])
 @spectree_serialize(
     api=blueprint.api,
-    response_model=EducationalBookingResponse,
+    response_model=prebooking_serialization.EducationalBookingResponse,
     on_error_statuses=[404, 422],
     tags=("change bookings",),
 )
 @adage_api_key_required
-def mark_booking_as_used() -> EducationalBookingResponse:
+def mark_booking_as_used() -> prebooking_serialization.EducationalBookingResponse:
     """Mark a booking used by the educational institute
 
     Can only work if booking is in CONFIRMED status"""
