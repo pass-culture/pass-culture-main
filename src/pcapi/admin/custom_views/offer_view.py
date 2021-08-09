@@ -64,6 +64,16 @@ class ExtraDataFilterEqual(FilterEqual):
         return super().get_column(alias).astext
 
 
+class CategoryFilterEqual(FilterEqual):
+    def apply(self, filter_query, value, alias=None):
+        searched_subcategories = [
+            subcategory.id
+            for subcategory in subcategories.ALL_SUBCATEGORIES
+            if subcategory.category_id.upper() == value.upper()
+        ]
+        return filter_query.filter(self.get_column(alias).in_(searched_subcategories))
+
+
 class OfferView(BaseAdminView):
     can_create = False
     can_edit = True
@@ -105,6 +115,7 @@ class OfferView(BaseAdminView):
         "validation",
         "lastValidationDate",
         "isEducational",
+        CategoryFilterEqual(column=Offer.subcategoryId, name="Catégorie"),
         ExtraDataFilterEqual(column=Offer.extraData["isbn"], name="ISBN"),
         ExtraDataFilterEqual(column=Offer.extraData["visa"], name="Visa d'exploitation"),
         ExtraDataFilterEqual(column=Offer.extraData["theater"]["allocine_room_id"], name="Identifiant Allociné"),
