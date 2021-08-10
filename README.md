@@ -24,5 +24,5 @@ Yarn est prometteur, on vous conseille de l'utiliser. Tâchez de l'installer glo
 
 - ### Lancement des tests unitaires
   ```shell
-  yarn test:unit
+  yarn test
   ```
