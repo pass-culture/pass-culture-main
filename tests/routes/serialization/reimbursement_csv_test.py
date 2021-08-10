@@ -1,3 +1,6 @@
+from datetime import datetime
+from datetime import timedelta
+
 import pytest
 
 import pcapi.core.offers.factories as offers_factories
@@ -12,6 +15,11 @@ from pcapi.routes.serialization.reimbursement_csv_serialize import find_all_offe
 from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv
 
 
+today = datetime.utcnow().date()
+in_two_days = today + timedelta(days=2)
+reimbursement_period = (today, in_two_days)
+
+
 class ReimbursementDetailsTest:
     @pytest.mark.usefixtures("db_session")
     def test_reimbursementDetail_as_csv(self, app):
@@ -21,8 +29,11 @@ class ReimbursementDetailsTest:
             booking__amount=10.5,
             booking__quantity=2,
         )
+        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT)
 
-        payments_info = find_all_offerer_payments(payment.booking.stock.offer.venue.managingOfferer.id)
+        payments_info = find_all_offerer_payments(
+            payment.booking.stock.offer.venue.managingOfferer.id, reimbursement_period
+        )
 
         # when
         raw_csv = ReimbursementDetails(payments_info[0]).as_csv_row()
@@ -43,7 +54,7 @@ class ReimbursementDetailsTest:
         assert raw_csv[12] == "21,00"
         assert raw_csv[13] == f"{int(payment.reimbursementRate * 100)}%"
         assert raw_csv[14] == "21,00"
-        assert raw_csv[15] == "Remboursement en cours"
+        assert raw_csv[15] == "Remboursement envoyé"
 
     @pytest.mark.usefixtures("db_session")
     def test_reimbursementDetail_with_custom_rule_as_csv(self, app):
@@ -53,8 +64,11 @@ class ReimbursementDetailsTest:
             booking__amount=10.5,
             booking__quantity=2,
         )
+        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT)
 
-        payments_info = find_all_offerer_payments(payment.booking.stock.offer.venue.managingOfferer.id)
+        payments_info = find_all_offerer_payments(
+            payment.booking.stock.offer.venue.managingOfferer.id, reimbursement_period
+        )
 
         # when
         raw_csv = ReimbursementDetails(payments_info[0]).as_csv_row()
@@ -113,8 +127,9 @@ def test_generate_reimbursement_details_csv():
         iban="iban-1234",
         transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
     )
+    payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT)
     offerer = payment.booking.stock.offer.venue.managingOfferer
-    reimbursement_details = find_all_offerer_reimbursement_details(offerer.id)
+    reimbursement_details = find_all_offerer_reimbursement_details(offerer.id, reimbursement_period)
 
     # when
     csv = generate_reimbursement_details_csv(reimbursement_details)
@@ -127,7 +142,7 @@ def test_generate_reimbursement_details_csv():
     )
     assert (
         rows[1]
-        == '"2019";"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"iban-1234";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"";"21,00";"100%";"21,00";"Remboursement en cours"'
+        == '"2019";"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"iban-1234";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"";"21,00";"100%";"21,00";"Remboursement envoyé"'
     )
 
 
@@ -137,9 +152,11 @@ def test_find_all_offerer_reimbursement_details():
     venue1 = offers_factories.VenueFactory(managingOfferer=offerer)
     venue2 = offers_factories.VenueFactory(managingOfferer=offerer)
     label = ("pass Culture Pro - remboursement 1ère quinzaine 07-2019",)
-    payments_factories.PaymentFactory(booking__stock__offer__venue=venue1, transactionLabel=label)
-    payments_factories.PaymentFactory(booking__stock__offer__venue=venue2, transactionLabel=label)
+    payment_1 = payments_factories.PaymentFactory(booking__stock__offer__venue=venue1, transactionLabel=label)
+    payment_2 = payments_factories.PaymentFactory(booking__stock__offer__venue=venue2, transactionLabel=label)
+    payments_factories.PaymentStatusFactory(payment=payment_1, status=TransactionStatus.SENT)
+    payments_factories.PaymentStatusFactory(payment=payment_2, status=TransactionStatus.SENT)
 
-    reimbursement_details = find_all_offerer_reimbursement_details(offerer.id)
+    reimbursement_details = find_all_offerer_reimbursement_details(offerer.id, reimbursement_period)
 
     assert len(reimbursement_details) == 2

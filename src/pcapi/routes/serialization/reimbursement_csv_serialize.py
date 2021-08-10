@@ -1,10 +1,12 @@
 from collections import namedtuple
 import csv
+from datetime import date
 from io import StringIO
 from typing import Optional
 
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository.reimbursement_queries import find_all_offerer_payments
+from pcapi.repository.reimbursement_queries import legacy_find_all_offerer_payments
 from pcapi.utils.date import MONTHS_IN_FRENCH
 
 
@@ -49,8 +51,8 @@ class ReimbursementDetails:
             transfer_infos = payment_info.transactionLabel.replace("pass Culture Pro - ", "").split(" ")
             transfer_label = " ".join(transfer_infos[:-1])
 
-            date = transfer_infos[-1]
-            month_number, year = date.split("-")
+            transfer_date = transfer_infos[-1]
+            month_number, year = transfer_date.split("-")
             month_name = MONTHS_IN_FRENCH[int(month_number)]
 
             payment_current_status = payment_info.status
@@ -114,9 +116,17 @@ def generate_reimbursement_details_csv(reimbursement_details: list[Reimbursement
 
 
 def find_all_offerer_reimbursement_details(
-    offerer_id: int, venue_id: Optional[int] = None
+    offerer_id: int, reimbursements_period: tuple[date, date], venue_id: Optional[int] = None
 ) -> list[ReimbursementDetails]:
-    offerer_payments = find_all_offerer_payments(offerer_id, venue_id)
+    offerer_payments = find_all_offerer_payments(offerer_id, reimbursements_period, venue_id)
+    reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerer_payments]
+
+    return reimbursement_details
+
+
+# TODO : delete this legacy function when feature PRO_REIMBURSEMENTS_FILTERS is deleted or activate in production
+def legacy_find_all_offerer_reimbursement_details(offerer_id: int) -> list[ReimbursementDetails]:
+    offerer_payments = legacy_find_all_offerer_payments(offerer_id)
     reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerer_payments]
 
     return reimbursement_details
