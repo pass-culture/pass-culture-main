@@ -8,15 +8,14 @@ from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookin
 from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.human_ids import humanize
 
-from tests.domain_creators.generic_creators import create_domain_event_booking_recap
-from tests.domain_creators.generic_creators import create_domain_thing_booking_recap
+from tests.domain_creators.generic_creators import create_domain_booking_recap
 
 
 class SerializeBookingRecapTest:
     def test_should_return_json_with_all_parameters_for_thing_stock(self, app: fixture):
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
-        thing_booking_recap = create_domain_thing_booking_recap(
+        thing_booking_recap = create_domain_booking_recap(
             offer_identifier=1,
             offer_name="Fondation",
             offerer_name="Fondation de Caen",
@@ -28,7 +27,7 @@ class SerializeBookingRecapTest:
             booking_is_used=False,
             booking_amount=18,
         )
-        thing_booking_recap_2 = create_domain_thing_booking_recap(
+        thing_booking_recap_2 = create_domain_booking_recap(
             offer_identifier=2,
             offer_name="Fondation",
             offerer_name="Fondation de Paris",
@@ -51,9 +50,10 @@ class SerializeBookingRecapTest:
         expected_bookings_recap = [
             {
                 "stock": {
-                    "type": "thing",
                     "offer_name": "Fondation",
                     "offer_identifier": humanize(thing_booking_recap.offer_identifier),
+                    "event_beginning_datetime": None,
+                    "offer_isbn": None,
                 },
                 "beneficiary": {
                     "lastname": "Seldon",
@@ -77,9 +77,10 @@ class SerializeBookingRecapTest:
             },
             {
                 "stock": {
-                    "type": "thing",
                     "offer_name": "Fondation",
                     "offer_identifier": humanize(thing_booking_recap_2.offer_identifier),
+                    "event_beginning_datetime": None,
+                    "offer_isbn": None,
                 },
                 "beneficiary": {
                     "lastname": "Trevize",
@@ -111,7 +112,7 @@ class SerializeBookingRecapTest:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         day_after_booking_date = booking_date + timedelta(days=1)
-        event_booking_recap = create_domain_event_booking_recap(
+        event_booking_recap = create_domain_booking_recap(
             offer_name="Cirque du soleil",
             offerer_name="Fondation des cirques de France",
             beneficiary_firstname="Hari",
@@ -133,10 +134,10 @@ class SerializeBookingRecapTest:
         expected_response = [
             {
                 "stock": {
-                    "type": "event",
                     "offer_name": "Cirque du soleil",
                     "offer_identifier": humanize(event_booking_recap.offer_identifier),
                     "event_beginning_datetime": format_into_timezoned_date(day_after_booking_date),
+                    "offer_isbn": None,
                 },
                 "beneficiary": {
                     "lastname": "Seldon",
@@ -167,7 +168,7 @@ class SerializeBookingRecapTest:
     def test_should_return_json_with_offer_isbn_additional_parameter_for_thing_stock(self, app: fixture):
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
-        thing_booking_recap = create_domain_thing_booking_recap(
+        thing_booking_recap = create_domain_booking_recap(
             offer_identifier=1,
             offer_name="Martine a la playa",
             offer_isbn="987654345678",
@@ -190,7 +191,7 @@ class SerializeBookingRecapTest:
         expected_response = [
             {
                 "stock": {
-                    "type": "book",
+                    "event_beginning_datetime": None,
                     "offer_name": "Martine a la playa",
                     "offer_identifier": humanize(thing_booking_recap.offer_identifier),
                     "offer_isbn": "987654345678",
@@ -227,7 +228,7 @@ class SerializeBookingRecapHistoryTest:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         bookings_recap = [
-            create_domain_thing_booking_recap(
+            create_domain_booking_recap(
                 offer_name="Martine a la playa",
                 offer_isbn="987654345678",
                 beneficiary_firstname="Hari",
@@ -263,7 +264,7 @@ class SerializeBookingRecapHistoryTest:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         bookings_recap = [
-            create_domain_thing_booking_recap(
+            create_domain_booking_recap(
                 offer_name="Martine a la playa",
                 offer_isbn="987654345678",
                 beneficiary_firstname="Hari",
@@ -305,7 +306,7 @@ class SerializeBookingRecapHistoryTest:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         bookings_recap = [
-            create_domain_thing_booking_recap(
+            create_domain_booking_recap(
                 offer_name="Martine a la playa",
                 offer_isbn="987654345678",
                 beneficiary_firstname="Hari",
@@ -341,7 +342,7 @@ class SerializeBookingRecapHistoryTest:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         bookings_recap = [
-            create_domain_thing_booking_recap(
+            create_domain_booking_recap(
                 offer_name="Martine a la playa",
                 offer_isbn="987654345678",
                 beneficiary_firstname="Hari",
@@ -373,7 +374,7 @@ class SerializeBookingRecapHistoryTest:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         bookings_recap = [
-            create_domain_thing_booking_recap(
+            create_domain_booking_recap(
                 offer_name="Martine a la playa",
                 offer_isbn="987654345678",
                 beneficiary_firstname="Hari",

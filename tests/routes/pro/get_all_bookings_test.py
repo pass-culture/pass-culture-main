@@ -116,9 +116,10 @@ class Returns200Test:
         expected_bookings_recap = [
             {
                 "stock": {
-                    "type": "thing",
                     "offer_name": booking.stock.offer.name,
                     "offer_identifier": humanize(booking.stock.offer.id),
+                    "event_beginning_datetime": None,
+                    "offer_isbn": None,
                 },
                 "beneficiary": {
                     "email": "beneficiary@example.com",

@@ -39,11 +39,11 @@ class BookingRecap:
         offer_identifier: int,
         offer_name: str,
         offer_isbn: Optional[str],
-        event_beginning_datetime: Optional[str],
         offerer_name: str,
         venue_identifier: int,
         venue_name: str,
         venue_is_virtual: bool,
+        event_beginning_datetime: Optional[str],
     ):
         self.booking_amount = booking_amount
         self.beneficiary_lastname = beneficiary_lastname
@@ -60,7 +60,6 @@ class BookingRecap:
         self.offer_identifier = offer_identifier
         self.offer_name = offer_name
         self.offer_isbn = offer_isbn
-        self.event_beginning_datetime = event_beginning_datetime
         self.offerer_name = offerer_name
         self.venue_identifier = venue_identifier
         self.booking_status_history = self.build_status_history(
@@ -72,11 +71,14 @@ class BookingRecap:
         )
         self.venue_name = venue_name
         self.venue_is_virtual = venue_is_virtual
+        self.event_beginning_datetime = event_beginning_datetime
 
     def __new__(cls, *args, **kwargs):
         return object.__new__(cls)
 
     def _get_booking_token(self) -> Optional[str]:
+        if not self.event_beginning_datetime and not self.booking_is_used and not self.booking_is_cancelled:
+            return None
         return self._booking_token
 
     def _set_booking_token(self, booking_token: str) -> None:

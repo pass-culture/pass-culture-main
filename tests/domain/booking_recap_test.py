@@ -7,8 +7,7 @@ from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapReimbursedHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapValidatedHistory
 
-from tests.domain_creators.generic_creators import create_domain_event_booking_recap
-from tests.domain_creators.generic_creators import create_domain_thing_booking_recap
+from tests.domain_creators.generic_creators import create_domain_booking_recap
 
 
 class BookingRecapTest:
@@ -16,7 +15,7 @@ class BookingRecapTest:
         class WhenBookingHasNoPaymentsTest:
             def test_should_return_booked_status_when_booking_is_not_cancelled_nor_used(self):
                 # Given
-                booking_recap = create_domain_thing_booking_recap(
+                booking_recap = create_domain_booking_recap(
                     booking_is_used=False,
                     booking_is_cancelled=False,
                     booking_is_confirmed=False,
@@ -31,7 +30,7 @@ class BookingRecapTest:
 
             def test_should_return_validated_status_when_booking_is_used_and_not_cancelled(self):
                 # Given
-                booking_recap = create_domain_thing_booking_recap(
+                booking_recap = create_domain_booking_recap(
                     booking_is_used=True, booking_is_cancelled=False, booking_is_reimbursed=False
                 )
 
@@ -43,7 +42,7 @@ class BookingRecapTest:
 
             def test_should_return_validated_status_when_booking_is_for_a_thing_and_not_cancellable(self):
                 # Given
-                booking_recap = create_domain_thing_booking_recap(
+                booking_recap = create_domain_booking_recap(
                     booking_is_used=True, booking_is_cancelled=False, booking_is_reimbursed=False
                 )
 
@@ -57,11 +56,12 @@ class BookingRecapTest:
                 self,
             ):
                 # Given
-                booking_recap = create_domain_event_booking_recap(
+                booking_recap = create_domain_booking_recap(
                     booking_is_used=True,
                     booking_is_cancelled=False,
                     booking_is_confirmed=True,
                     booking_is_reimbursed=False,
+                    event_beginning_datetime=datetime(2021, 3, 5),
                 )
 
                 # When
@@ -72,11 +72,12 @@ class BookingRecapTest:
 
             def test_should_return_confirmed_status_when_booking_is_for_an_event_and_not_cancellable(self):
                 # Given
-                booking_recap = create_domain_event_booking_recap(
+                booking_recap = create_domain_booking_recap(
                     booking_is_used=False,
                     booking_is_cancelled=False,
                     booking_is_confirmed=True,
                     booking_is_reimbursed=False,
+                    event_beginning_datetime=datetime(2021, 3, 5),
                 )
 
                 # When
@@ -87,7 +88,7 @@ class BookingRecapTest:
 
             def test_should_return_cancelled_status_when_booking_is_cancelled_but_not_used(self):
                 # Given
-                booking_recap = create_domain_thing_booking_recap(
+                booking_recap = create_domain_booking_recap(
                     booking_is_used=False, booking_is_cancelled=True, booking_is_reimbursed=False
                 )
 
@@ -99,7 +100,7 @@ class BookingRecapTest:
 
             def test_should_return_cancelled_status_when_booking_is_cancelled_and_used(self):
                 # Given
-                booking_recap = create_domain_thing_booking_recap(
+                booking_recap = create_domain_booking_recap(
                     booking_is_used=True, booking_is_cancelled=True, booking_is_reimbursed=False
                 )
 
@@ -112,7 +113,7 @@ class BookingRecapTest:
         class WhenBookingIsReimbursedTest:
             def test_should_return_reimbursed_status_when_booking_is_not_cancelled_nor_used(self):
                 # Given
-                booking_recap = create_domain_thing_booking_recap(
+                booking_recap = create_domain_booking_recap(
                     booking_is_used=False, booking_is_cancelled=False, booking_is_reimbursed=True
                 )
 
@@ -124,7 +125,7 @@ class BookingRecapTest:
 
             def test_should_return_reimbursed_status_when_booking_is_used_and_not_cancelled(self):
                 # Given
-                booking_recap = create_domain_thing_booking_recap(
+                booking_recap = create_domain_booking_recap(
                     booking_is_used=True, booking_is_cancelled=False, booking_is_reimbursed=True
                 )
 
@@ -136,7 +137,7 @@ class BookingRecapTest:
 
             def test_should_return_reimbursed_status_when_booking_is_used_and_cancelled(self):
                 # Given
-                booking_recap = create_domain_thing_booking_recap(
+                booking_recap = create_domain_booking_recap(
                     booking_is_used=True, booking_is_cancelled=True, booking_is_reimbursed=True
                 )
 
@@ -149,7 +150,7 @@ class BookingRecapTest:
     class TokenTest:
         def test_should_not_return_token_when_offer_is_thing_and_booking_is_not_used_nor_cancelled(self):
             # Given
-            booking_recap = create_domain_thing_booking_recap(
+            booking_recap = create_domain_booking_recap(
                 booking_token="ABCDE", booking_is_used=False, booking_is_cancelled=False
             )
 
@@ -161,7 +162,7 @@ class BookingRecapTest:
 
         def test_should_return_token_when_offer_is_thing_and_booking_is_used_and_not_cancelled(self):
             # Given
-            booking_recap = create_domain_thing_booking_recap(
+            booking_recap = create_domain_booking_recap(
                 booking_token="ABCDE", booking_is_used=True, booking_is_cancelled=False
             )
 
@@ -173,7 +174,7 @@ class BookingRecapTest:
 
         def test_should_return_token_when_offer_is_thing_and_booking_is_not_used_and_is_cancelled(self):
             # Given
-            booking_recap = create_domain_thing_booking_recap(
+            booking_recap = create_domain_booking_recap(
                 booking_token="ABCDE", booking_is_used=False, booking_is_cancelled=True
             )
 
@@ -185,7 +186,7 @@ class BookingRecapTest:
 
         def test_should_return_token_when_offer_is_thing_and_booking_is_used_and_cancelled(self):
             # Given
-            booking_recap = create_domain_thing_booking_recap(
+            booking_recap = create_domain_booking_recap(
                 booking_token="ABCDE", booking_is_used=True, booking_is_cancelled=True
             )
 
@@ -197,8 +198,11 @@ class BookingRecapTest:
 
         def test_should_return_token_when_offer_is_event_and_booking_is_not_used_nor_cancelled(self):
             # Given
-            booking_recap = create_domain_event_booking_recap(
-                booking_token="ABCDE", booking_is_used=False, booking_is_cancelled=False
+            booking_recap = create_domain_booking_recap(
+                booking_token="ABCDE",
+                booking_is_used=False,
+                booking_is_cancelled=False,
+                event_beginning_datetime=datetime(2021, 3, 5),
             )
 
             # When
@@ -210,7 +214,7 @@ class BookingRecapTest:
     class BuildHistoryTest:
         def test_should_return_booking_recap_history(self):
             # Given
-            booking_recap = create_domain_thing_booking_recap(
+            booking_recap = create_domain_booking_recap(
                 booking_token="ABCDE",
                 booking_is_used=True,
                 booking_is_cancelled=False,
@@ -227,7 +231,7 @@ class BookingRecapTest:
 
         def test_should_return_booking_recap_history_with_cancellation(self):
             # Given
-            booking_recap = create_domain_thing_booking_recap(
+            booking_recap = create_domain_booking_recap(
                 booking_token="ABCDE",
                 booking_is_used=True,
                 booking_is_cancelled=True,
@@ -246,7 +250,7 @@ class BookingRecapTest:
 
         def test_should_return_booking_recap_history_with_validation(self):
             # Given
-            booking_recap = create_domain_thing_booking_recap(
+            booking_recap = create_domain_booking_recap(
                 booking_token="ABCDE",
                 booking_is_used=True,
                 booking_is_cancelled=False,
@@ -265,7 +269,7 @@ class BookingRecapTest:
 
         def test_should_return_booking_recap_history_with_confirmation(self):
             # Given
-            booking_recap = create_domain_event_booking_recap(
+            booking_recap = create_domain_booking_recap(
                 booking_token="ABCDE",
                 booking_is_used=True,
                 booking_is_cancelled=False,
@@ -283,7 +287,7 @@ class BookingRecapTest:
 
         def test_should_return_booking_recap_history_with_payment(self):
             # Given
-            booking_recap = create_domain_thing_booking_recap(
+            booking_recap = create_domain_booking_recap(
                 booking_token="ABCDE",
                 booking_is_used=True,
                 booking_is_cancelled=False,
@@ -305,7 +309,7 @@ class BookingRecapTest:
 
         def test_should_return_booking_recap_history_with_payment_even_if_cancelled(self):
             # Given
-            booking_recap = create_domain_thing_booking_recap(
+            booking_recap = create_domain_booking_recap(
                 booking_token="ABCDE",
                 booking_is_used=True,
                 booking_is_cancelled=True,
