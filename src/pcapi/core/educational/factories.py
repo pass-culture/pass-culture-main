@@ -38,6 +38,16 @@ class EducationalDepositFactory(BaseFactory):
     isFinal = True
 
 
+class EducationalRedactorFactory(BaseFactory):
+    class Meta:
+        model = models.EducationalRedactor
+
+    email = factory.Sequence("reda.khteur{}@example.com".format)
+    firstName = "Reda"
+    lastName = "Khteur"
+    civility = "M."
+
+
 class EducationalBookingFactory(BaseFactory):
     class Meta:
         model = models.EducationalBooking
@@ -45,3 +55,4 @@ class EducationalBookingFactory(BaseFactory):
     confirmationLimitDate = datetime.datetime.utcnow()
     educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
     educationalYear = factory.SubFactory(EducationalYearFactory)
+    educationalRedactor = factory.SubFactory(EducationalRedactorFactory)

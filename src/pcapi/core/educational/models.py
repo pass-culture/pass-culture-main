@@ -83,6 +83,26 @@ class EducationalDeposit(Model):
         return
 
 
+class EducationalRedactor(Model):
+
+    __tablename__ = "educational_redactor"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+
+    email = Column(String(120), nullable=False, unique=True, index=True)
+
+    firstName = Column(String(128), nullable=False)
+
+    lastName = Column(String(128), nullable=False)
+
+    civility = Column(String(20), nullable=False)
+
+    educationalBookings = relationship(
+        "EducationalBooking",
+        back_populates="educationalRedactor",
+    )
+
+
 class EducationalBooking(Model):
     __tablename__ = "educational_booking"
 
@@ -113,4 +133,16 @@ class EducationalBooking(Model):
         uselist=False,
         lazy="joined",
         innerjoin=True,
+    )
+
+    educationalRedactorId = Column(
+        BigInteger,
+        ForeignKey("educational_redactor.id"),
+        nullable=True,
+        index=True,
+    )
+    educationalRedactor = relationship(
+        EducationalRedactor,
+        back_populates="educationalBookings",
+        uselist=False,
     )
