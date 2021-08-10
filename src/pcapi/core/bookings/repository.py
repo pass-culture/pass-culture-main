@@ -71,6 +71,7 @@ def find_by_pro_user_id(
     venue_id: Optional[int] = None,
     page: int = 1,
     per_page_limit: int = 1000,
+    is_user_admin: bool = False,
 ) -> BookingsRecapPaginated:
     if page == 1:
         total_bookings_recap_count_query = _filter_bookings_recap_query(
@@ -84,7 +85,9 @@ def find_by_pro_user_id(
     else:
         total_bookings_recap = 0
 
-    bookings_recap_query = _filter_bookings_recap_query(Booking.query, user_id, booking_period, event_date, venue_id)
+    bookings_recap_query = _filter_bookings_recap_query(
+        Booking.query, user_id, booking_period, event_date, venue_id, is_user_admin
+    )
     bookings_recap_query = _build_bookings_recap_query(bookings_recap_query)
     bookings_recap_query_with_duplicates = _duplicate_booking_when_quantity_is_two(bookings_recap_query)
     paginated_bookings = (
@@ -310,6 +313,7 @@ def _filter_bookings_recap_query(
     booking_period: tuple[date, date],
     event_date: Optional[date],
     venue_id: Optional[int],
+    is_user_admin: bool = False,
 ) -> Query:
     booking_date = cast(func.timezone(Venue.timezone, func.timezone("UTC", Booking.dateCreated)), Date)
     query = (
@@ -321,9 +325,13 @@ def _filter_bookings_recap_query(
         .join(Venue)
         .join(Offerer)
         .join(UserOfferer)
-        .filter(UserOfferer.userId == user_id)
-        .filter(UserOfferer.validationToken.is_(None))
-        .filter(booking_date.between(*booking_period, symmetric=True))
+    )
+
+    if not is_user_admin:
+        query = query.filter(UserOfferer.userId == user_id)
+
+    query = query.filter(UserOfferer.validationToken.is_(None)).filter(
+        booking_date.between(*booking_period, symmetric=True)
     )
 
     if venue_id:

@@ -37,6 +37,7 @@ class GetAllBookingsTest:
             event_date=None,
             venue_id=None,
             page=3,
+            is_user_admin=False,
         )
 
     @pytest.mark.usefixtures("db_session")
@@ -50,6 +51,7 @@ class GetAllBookingsTest:
             event_date=None,
             venue_id=None,
             page=1,
+            is_user_admin=False,
         )
 
     @pytest.mark.usefixtures("db_session")
@@ -71,6 +73,7 @@ class GetAllBookingsTest:
             event_date=None,
             venue_id=venue.id,
             page=1,
+            is_user_admin=False,
         )
 
 
@@ -78,11 +81,17 @@ class GetAllBookingsTest:
 class Returns200Test:
     def when_user_is_admin(self, app):
         admin = users_factories.AdminFactory()
+        user_offerer = offers_factories.UserOffererFactory()
+        bookings_factories.BookingFactory(
+            dateCreated=datetime(2020, 8, 11, 12, 0, 0),
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
+        )
 
         client = TestClient(app.test_client()).with_auth(admin.email)
         response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
 
         assert response.status_code == 200
+        assert len(response.json["bookings_recap"]) == 1
 
     def when_user_is_linked_to_a_valid_offerer(self, app):
         booking = bookings_factories.BookingFactory(

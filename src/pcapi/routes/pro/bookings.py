@@ -94,6 +94,7 @@ def get_all_bookings(query: ListBookingsQueryModel) -> ListBookingsResponseModel
         event_date=event_date,
         venue_id=venue_id,
         page=int(page),
+        is_user_admin=current_user.isAdmin,
     )
 
     return ListBookingsResponseModel(
