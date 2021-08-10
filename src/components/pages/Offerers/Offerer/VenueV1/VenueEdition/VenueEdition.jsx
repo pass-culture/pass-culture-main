@@ -98,6 +98,7 @@ class VenueEdition extends PureComponent {
     const canSubmit = getCanSubmit(formProps)
     const { form, handleSubmit, values } = formProps
     const {
+      bookingEmail,
       isLocationFrozen: formIsLocationFrozen,
       latitude: formLatitude,
       longitude: formLongitude,
@@ -106,6 +107,7 @@ class VenueEdition extends PureComponent {
       venueLabelId,
     } = values
 
+    const isDirtyFieldBookingEmail = bookingEmail !== venue.bookingEmail
     const siretValidOnModification = initialSiret !== null
     const fieldReadOnlyBecauseFrozenFormSiret = !readOnly && siretValidOnModification
 
@@ -118,6 +120,7 @@ class VenueEdition extends PureComponent {
           fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
           formSiret={formSiret}
           initialSiret={initialSiret}
+          isDirtyFieldBookingEmail={isDirtyFieldBookingEmail}
           readOnly={readOnly}
           venueLabelId={venueLabelId}
           venueLabels={venueLabels}

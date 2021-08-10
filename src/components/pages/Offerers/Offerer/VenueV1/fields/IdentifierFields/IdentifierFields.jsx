@@ -100,6 +100,7 @@ class IdentifierFields extends PureComponent {
       fieldReadOnlyBecauseFrozenFormSiret,
       initialSiret,
       isCreatedEntity,
+      isDirtyFieldBookingEmail,
       readOnly,
       venueLabels,
       venueLabelId,
@@ -159,11 +160,11 @@ class IdentifierFields extends PureComponent {
             required
             type="email"
           />
-          {!readOnly && (
+          {!isCreatedEntity && !readOnly && isDirtyFieldBookingEmail && (
             <CheckboxField
               checked={false}
               id="isEmailAppliedOnAllOffers"
-              label="Appliquer le changement à toutes les offres déjà existantes."
+              label="Utiliser cet email pour me notifier des réservations de toutes les offres déjà postées dans ce lieu."
               labelAligned
               name="isEmailAppliedOnAllOffers"
               readOnly
@@ -295,6 +296,7 @@ IdentifierFields.defaultProps = {
   formSiret: null,
   initialSiret: null,
   isCreatedEntity: false,
+  isDirtyFieldBookingEmail: false,
   readOnly: true,
   venueLabelId: null,
   venueTypeId: null,
@@ -305,6 +307,7 @@ IdentifierFields.propTypes = {
   formSiret: PropTypes.string,
   initialSiret: PropTypes.string,
   isCreatedEntity: PropTypes.bool,
+  isDirtyFieldBookingEmail: PropTypes.bool,
   readOnly: PropTypes.bool,
   venueLabelId: PropTypes.string,
   venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,

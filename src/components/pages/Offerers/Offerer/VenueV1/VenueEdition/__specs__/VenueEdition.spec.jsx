@@ -147,6 +147,53 @@ describe('src | components | pages | VenueEdition', () => {
         // then
         expect(addressField.prop('value')).toBe('Addresse de test')
       })
+
+      it('should show apply booking checkbox on all existing offers when booking email field is edited', async () => {
+        // given
+        jest
+          .spyOn(usersSelectors, 'selectCurrentUser')
+          .mockReturnValue({ currentUser: 'fakeUser', publicName: 'fakeName' })
+
+        props = {
+          ...props,
+          venue: {
+            publicName: 'fake public name',
+            id: 'TR',
+            siret: '12345678901234',
+          },
+        }
+
+        const store = configureTestStore()
+        const history = createBrowserHistory()
+        history.push(`/structures/AE/lieux/TR?modification`)
+
+        // when
+        let wrapper = mount(
+          <Provider store={store}>
+            <Router history={history}>
+              <VenueEdition {...props} />
+            </Router>
+          </Provider>
+        )
+
+        // then
+        let applyEmailBookingOnAllOffersLabel = wrapper.find({
+          children:
+            'Utiliser cet email pour me notifier des réservations de toutes les offres déjà postées dans ce lieu.',
+        })
+        expect(applyEmailBookingOnAllOffersLabel).toHaveLength(0)
+        let emailBookingField = wrapper.find('input[name="bookingEmail"]').first()
+
+        emailBookingField.simulate('change', { target: { value: 'newbookingemail@example.com' } })
+
+        wrapper = wrapper.update()
+
+        applyEmailBookingOnAllOffersLabel = wrapper.find({
+          children:
+            'Utiliser cet email pour me notifier des réservations de toutes les offres déjà postées dans ce lieu.',
+        })
+        expect(applyEmailBookingOnAllOffersLabel).toHaveLength(1)
+      })
     })
 
     describe('when reading', () => {
