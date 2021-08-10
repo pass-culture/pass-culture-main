@@ -3,6 +3,7 @@ from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
+from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.educational.models import EducationalYear
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
 from pcapi.core.fraud.models import BeneficiaryFraudResult
@@ -91,6 +92,7 @@ def clean_all_database(*args, **kwargs):
     EducationalDeposit.query.delete()
     EducationalInstitution.query.delete()
     EducationalYear.query.delete()
+    EducationalRedactor.query.delete()
 
     # Dans le cadre du projet EAC, notre partenaire Adage requête notre api sur le endpoint get_pre_bookings.
     # Ils récupèrent les pré-réservations EAC liées à un utilisateur EAC et stockent les ids en base.

@@ -75,9 +75,12 @@ def create_industrial_educational_bookings() -> None:
             )
         )
 
+    educational_redactor = educational_factories.EducationalRedactorFactory(email="compte.test@education.gouv.fr")
+
     for i in range(3):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
+                educationalBooking__educationalRedactor=educational_redactor,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_current_year,
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=10),
@@ -89,6 +92,7 @@ def create_industrial_educational_bookings() -> None:
     for i in range(3):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
+                educationalBooking__educationalRedactor=educational_redactor,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_next_year,
                 status=BookingStatus.PENDING,
@@ -98,6 +102,7 @@ def create_industrial_educational_bookings() -> None:
     for i in range(3):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
+                educationalBooking__educationalRedactor=educational_redactor,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_current_year,
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=3),
@@ -108,6 +113,7 @@ def create_industrial_educational_bookings() -> None:
     for i in range(3):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
+                educationalBooking__educationalRedactor=educational_redactor,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_current_year,
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=10),
@@ -120,6 +126,7 @@ def create_industrial_educational_bookings() -> None:
     for i in range(2):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
+                educationalBooking__educationalRedactor=educational_redactor,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_current_year,
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=10),
@@ -134,6 +141,7 @@ def create_industrial_educational_bookings() -> None:
     for i in range(2):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
+                educationalBooking__educationalRedactor=educational_redactor,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_current_year,
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=10),
@@ -149,6 +157,7 @@ def create_industrial_educational_bookings() -> None:
     for i in range(2):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
+                educationalBooking__educationalRedactor=educational_redactor,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_current_year,
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=10),
@@ -162,6 +171,7 @@ def create_industrial_educational_bookings() -> None:
     for i in range(2):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
+                educationalBooking__educationalRedactor=educational_redactor,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_current_year,
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=10),
