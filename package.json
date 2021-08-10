@@ -1,6 +1,6 @@
 {
   "name": "pass-culture-adage-front",
-  "version": "0.1.0",
+  "version": "147.0.0",
   "private": true,
   "dependencies": {
     "react": "^17.0.2",
@@ -35,7 +35,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-testing-library": "^4.10.1",
     "eslint-webpack-plugin": "^3.0.1",
-    "husky": "^7.0.1",
+    "husky": "^7.0.0",
     "jest": "^27.0.3",
     "lint-staged": "^11.1.2",
     "postcss-flexbugs-fixes": "^5.0.2",
@@ -62,7 +62,8 @@
     "lint:scss": "stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "./public/**/*.svg": "svgo",
