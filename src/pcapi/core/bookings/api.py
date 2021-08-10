@@ -177,7 +177,7 @@ def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons
             try:
                 booking.cancel_booking()
             except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
-                logger.info(str(e), extra={"booking": booking.id, "reason": reason})
+                logger.info(str(e), extra={"booking": booking.id, "reason": str(reason)})
             else:
                 booking.cancellationReason = reason
                 stock.dnBookedQuantity -= booking.quantity
