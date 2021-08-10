@@ -347,7 +347,7 @@ class ReportOfferTest:
         assert len(mails_testing.outbox) == 1
 
         email = mails_testing.outbox[0]
-        assert email.sent_data["To"] == settings.SUPPORT_EMAIL_ADDRESS
+        assert email.sent_data["To"] == settings.COMPLIANCE_EMAIL_ADDRESS
         assert email.sent_data["Vars"]["user_id"] == user.id
         assert email.sent_data["Vars"]["offer_id"] == offer.id
 
@@ -379,7 +379,7 @@ class ReportOfferTest:
         assert len(mails_testing.outbox) == 1
 
         email = mails_testing.outbox[0]
-        assert email.sent_data["To"] == settings.SUPPORT_EMAIL_ADDRESS
+        assert email.sent_data["To"] == settings.COMPLIANCE_EMAIL_ADDRESS
         assert email.sent_data["Vars"]["user_id"] == user.id
         assert email.sent_data["Vars"]["offer_id"] == offer.id
         assert "saynul" in email.sent_data["Vars"]["reason"]
