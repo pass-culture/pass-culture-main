@@ -55,6 +55,8 @@ class BookingFactory(BaseFactory):
 class EducationalBookingFactory(BookingFactory):
     educationalBooking = factory.SubFactory(EducationalBookingSubFactory)
     stock = factory.SubFactory(offers_factories.EventStockFactory)
+    userId = None
+    user = None
 
 
 class IndividualBookingSubFactory(BookingFactory):

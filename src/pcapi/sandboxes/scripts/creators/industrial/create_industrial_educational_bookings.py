@@ -6,8 +6,6 @@ import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
-from pcapi.core.users.factories import UserFactory
-from pcapi.core.users.models import UserRole
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 
 
@@ -27,13 +25,6 @@ def create_industrial_educational_bookings() -> None:
     ]
 
     now = datetime.datetime.now(datetime.timezone.utc)
-
-    educational_test_user = UserFactory(
-        email="compte.test@education.gouv.fr",
-        isBeneficiary=False,
-        roles=[UserRole.INSTITUTIONAL_PROJECT_REDACTOR],
-        civility="Mme",
-    )
 
     stocks = [
         EventStockFactory(
@@ -87,7 +78,6 @@ def create_industrial_educational_bookings() -> None:
     for i in range(3):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
-                user=educational_test_user,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_current_year,
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=10),
@@ -99,7 +89,6 @@ def create_industrial_educational_bookings() -> None:
     for i in range(3):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
-                user=educational_test_user,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_next_year,
                 status=BookingStatus.PENDING,
@@ -109,7 +98,6 @@ def create_industrial_educational_bookings() -> None:
     for i in range(3):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
-                user=educational_test_user,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_current_year,
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=3),
@@ -120,7 +108,6 @@ def create_industrial_educational_bookings() -> None:
     for i in range(3):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
-                user=educational_test_user,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_current_year,
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=10),
@@ -133,7 +120,6 @@ def create_industrial_educational_bookings() -> None:
     for i in range(2):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
-                user=educational_test_user,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_current_year,
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=10),
@@ -148,7 +134,6 @@ def create_industrial_educational_bookings() -> None:
     for i in range(2):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
-                user=educational_test_user,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_current_year,
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=10),
@@ -164,7 +149,6 @@ def create_industrial_educational_bookings() -> None:
     for i in range(2):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
-                user=educational_test_user,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_current_year,
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=10),
@@ -178,7 +162,6 @@ def create_industrial_educational_bookings() -> None:
     for i in range(2):
         for _, educational_institution in enumerate(educational_institutions):
             EducationalBookingFactory(
-                user=educational_test_user,
                 educationalBooking__educationalInstitution=educational_institution,
                 educationalBooking__educationalYear=educational_current_year,
                 educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=10),

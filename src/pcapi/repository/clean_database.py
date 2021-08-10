@@ -1,4 +1,5 @@
 from pcapi import settings
+from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
@@ -48,6 +49,7 @@ def clean_all_database(*args, **kwargs):
     """Order of deletions matters because of foreign key constraints"""
     if settings.ENV not in ("development", "testing"):
         raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")
+    IndividualBooking.query.delete()
     LocalProviderEvent.query.delete()
     ActivationCode.query.delete()
     AllocineVenueProviderPriceRule.query.delete()
