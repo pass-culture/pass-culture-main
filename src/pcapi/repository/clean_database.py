@@ -50,7 +50,6 @@ def clean_all_database(*args, **kwargs):
     """Order of deletions matters because of foreign key constraints"""
     if settings.ENV not in ("development", "testing"):
         raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")
-    IndividualBooking.query.delete()
     LocalProviderEvent.query.delete()
     ActivationCode.query.delete()
     AllocineVenueProviderPriceRule.query.delete()
@@ -60,6 +59,7 @@ def clean_all_database(*args, **kwargs):
     Payment.query.delete()
     PaymentMessage.query.delete()
     Booking.query.delete()
+    IndividualBooking.query.delete()
     Stock.query.delete()
     Favorite.query.delete()
     Mediation.query.delete()
