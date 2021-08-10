@@ -5,7 +5,7 @@ import { IS_PROD } from 'utils/config'
 
 const webappOfferUrl = (offerId, mediationId) => {
   const webappUrl = IS_PROD
-    ? window.location.href.split('offres')[0].replace('pro', 'app')
+    ? window.location.href.split('offres')[0].replace('pro', 'web')
     : 'http://localhost:3000/'
   const urlWithOfferId = `${webappUrl}offre/details/${offerId}`
 
