@@ -52,7 +52,7 @@ def _define_handler(f, path, payload_type):
         try:
             f(body)
         except Exception as e:  # pylint: disable=broad-except
-            logger.exception("Exception caught when executing cloud task", extra={**job_details, "error": e})
+            logger.exception("Exception caught when executing cloud task", extra={**job_details, "error": str(e)})
         else:
             logger.info("Successfully executed cloud task", extra=job_details)
 
