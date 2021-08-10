@@ -72,3 +72,4 @@ Werkzeug==1.0.1
 wheel==0.35.1
 WTForms-SQLAlchemy
 phonenumberslite==8.12.23
+tabulate==0.8.9

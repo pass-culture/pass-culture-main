@@ -35,7 +35,8 @@ Il existe une ancienne api très incomplète et non utilisable (A décommissione
     
   - Lancement des tests depuis la ligne de commande
     ```shell
-    python -m pytest
+    python -m pytest # Pour lancer tous les tests
+    python -m pytest tests/scripts/offerer/generate_and_save_api_key_for_offerer_test.py # Pour lancer un test en particulier
     ```
   
   - Lancement des tests depuis PyCharm(IntelliJ)
