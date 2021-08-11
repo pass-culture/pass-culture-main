@@ -12,10 +12,10 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import EducationalDepositNotFound
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalInstitution
+from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.educational.models import EducationalYear
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.users.models import User
 
 
 def get_and_lock_educational_deposit(
@@ -97,8 +97,8 @@ def find_educational_bookings_for_adage(
     )
 
     if redactor_email is not None:
-        educational_bookings_base_query = educational_bookings_base_query.join(User).filter(
-            User.email == redactor_email
+        educational_bookings_base_query = educational_bookings_base_query.join(EducationalRedactor).filter(
+            EducationalRedactor.email == redactor_email
         )
 
     if status is not None:
@@ -111,3 +111,7 @@ def find_educational_bookings_for_adage(
             )
 
     return educational_bookings_base_query.all()
+
+
+def find_redactor_by_email(redactor_email: str) -> Optional[EducationalRedactor]:
+    return EducationalRedactor.query.filter(EducationalRedactor.email == redactor_email).one_or_none()
