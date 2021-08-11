@@ -1,0 +1,121 @@
+version: 2.1
+
+###################
+#  EXECUTORS
+###################
+
+executors:
+
+  node-gcp:
+    docker:
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/node-gcp:14
+        auth:
+          username: _json_key  # default username when using a JSON key file to authenticate
+          password: $GCP_INFRA_KEY
+
+###################
+#  REFERENCES
+###################
+
+references:
+
+  working_directory: &working_directory
+    ~/pass-culture-main/adage-front
+
+###################
+#  JOBS
+###################
+
+jobs:
+  quality:
+    machine:
+      image: ubuntu-2004:202101-01
+    working_directory: ~/
+    steps:
+      - run:
+          name: Initialization environment
+          command: |
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/pass-culture/pass-culture-main.git pass-culture-main || git clone https://github.com/pass-culture/pass-culture-main.git pass-culture-main
+            cd pass-culture-main
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/pass-culture/pass-culture-api.git api || git clone https://github.com/pass-culture/pass-culture-api.git api
+            ./install_lib_ci.sh
+      - checkout:
+          path: *working_directory
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "~/pass-culture-main/adage-front/yarn.lock" }}
+      - run:
+          name: Install dependencies
+          working_directory: *working_directory
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install
+            yarn install
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "~/pass-culture-main/adage-front/yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+      - run:
+          name: Running linter
+          working_directory: *working_directory
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install
+            yarn lint:js
+
+  unit-tests:
+    machine:
+      image: ubuntu-2004:202101-01
+    working_directory: ~/
+    steps:
+      - run:
+          name: Initialization environment
+          command: |
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/pass-culture/pass-culture-main.git pass-culture-main || git clone https://github.com/pass-culture/pass-culture-main.git pass-culture-main
+            cd pass-culture-main
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/pass-culture/pass-culture-api.git api || git clone https://github.com/pass-culture/pass-culture-api.git api
+            ./install_lib_ci.sh
+      - checkout:
+          path: *working_directory
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "~/pass-culture-main/adage-front/yarn.lock" }}
+      - run:
+          name: Install dependencies
+          working_directory: *working_directory
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install
+            yarn install
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "~/pass-culture-main/adage-front/yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+      - run:
+          name: Running Unit Tests
+          working_directory: *working_directory
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install
+            yarn test:unit --coverage --silent
+            yarn coveralls
+            bash <(curl -s https://codecov.io/bash)
+
+###################
+#  WORKFLOWS
+###################
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - unit-tests
+      - quality

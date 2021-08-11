@@ -9,6 +9,7 @@
     "build:testing": "ENV=testing yarn build",
     "build:staging": "ENV=staging yarn build",
     "build:production": "ENV=production yarn build",
+    "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
     "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx}' --max-warnings=0",
     "lint:js:fix": "yarn lint:js --fix",
     "lint:scss": "stylelint '**/*.scss'",
