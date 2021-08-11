@@ -107,18 +107,18 @@ class OfferView(BaseAdminView):
     # use the filters feature instead
     column_filters = [
         "id",
+        "name",
         "type",
         CategoryFilterEqual(column=Offer.subcategoryId, name="Catégorie"),
         "subcategoryId",
         "criteria.name",
-        "name",
         "rankingWeight",
         "validation",
         "lastValidationDate",
         "isEducational",
         ExtraDataFilterEqual(column=Offer.extraData["isbn"], name="ISBN"),
         ExtraDataFilterEqual(column=Offer.extraData["visa"], name="Visa d'exploitation"),
-        ExtraDataFilterEqual(column=Offer.extraData["theater"]["allocine_room_id"], name="Identifiant Allociné"),
+        ExtraDataFilterEqual(column=Offer.extraData["theater"]["allocine_movie_id"], name="Identifiant Allociné"),
     ]
     form_columns = ["criteria", "rankingWeight", "isEducational"]
     simple_list_pager = True
