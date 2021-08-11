@@ -10,10 +10,11 @@ class CsvTableButton extends PureComponent {
   }
 
   render() {
-    const { children } = this.props
+    const { children, isDisabled } = this.props
     return (
       <button
         className="secondary-button"
+        disabled={isDisabled}
         onClick={this.handleRedirectToUrl}
         type="button"
       >
@@ -25,12 +26,14 @@ class CsvTableButton extends PureComponent {
 
 CsvTableButton.defaultProps = {
   children: '',
+  isDisabled: false,
 }
 
 CsvTableButton.propTypes = {
   children: PropTypes.string,
   history: PropTypes.shape().isRequired,
   href: PropTypes.string.isRequired,
+  isDisabled: PropTypes.bool,
   location: PropTypes.shape().isRequired,
 }
 

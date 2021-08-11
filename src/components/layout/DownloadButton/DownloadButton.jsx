@@ -17,7 +17,7 @@ class DownloadButton extends PureComponent {
   }
 
   render() {
-    const { children } = this.props
+    const { children, isDisabled } = this.props
     const { isLoading } = this.state
 
     return (
@@ -25,7 +25,7 @@ class DownloadButton extends PureComponent {
         className={classnames('primary-button', {
           'is-loading': isLoading,
         })}
-        disabled={isLoading}
+        disabled={isLoading || isDisabled}
         download
         onClick={this.handleOnClick}
         type="button"
@@ -38,11 +38,13 @@ class DownloadButton extends PureComponent {
 
 DownloadButton.defaultProps = {
   children: '',
+  isDisabled: false,
 }
 
 DownloadButton.propTypes = {
   children: PropTypes.string,
   downloadFileOrNotifyAnError: PropTypes.func.isRequired,
+  isDisabled: PropTypes.bool,
 }
 
 export default DownloadButton
