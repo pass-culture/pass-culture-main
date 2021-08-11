@@ -1,0 +1,26 @@
+@import "sass-rem";
+
+header {
+  background-image: linear-gradient(to right, #eb0055, #320096);
+  grid-column-end: end-line;
+  grid-column-start: col-start;
+  grid-row-start: row-header;
+  text-align: center;
+
+  h1 {
+    color: white;
+  }
+}
+
+main {
+  grid-column-start: col-main;
+  grid-row-start: row-main;
+  margin-top: rem(24px);
+}
+
+footer {
+  background-image: linear-gradient(to left, #eb0055, #320096);
+  grid-column-end: end-line;
+  grid-column-start: col-start;
+  grid-row-start: row-footer;
+}

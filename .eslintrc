@@ -65,6 +65,7 @@
     "react/destructuring-assignment": "off",
     "react/require-optimization": "off",
     "react/static-property-placement": "off",
+    "react/jsx-no-literals": "off",
     "semi": [
       "warn",
       "never"

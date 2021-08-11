@@ -1,0 +1,17 @@
+@import "sass-rem";
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  display: grid;
+  grid-template-columns: [col-start] 1fr [col-main] rem(850px)  1fr;
+  grid-template-rows: [row-header] rem(80px) [row-main] minmax(0, 1fr) [row-footer] rem(48px);
+  min-height: 100%;
+}
