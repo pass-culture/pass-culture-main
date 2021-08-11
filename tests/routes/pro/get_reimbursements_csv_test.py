@@ -150,3 +150,23 @@ def test_with_reimbursement_period_filter(app):
     assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
     rows = response.data.decode("utf-8").splitlines()
     assert len(rows) == 1 + 2  # header + payments
+
+
+@pytest.mark.usefixtures("db_session")
+@override_features(PRO_REIMBURSEMENTS_FILTERS=True)
+def test_with_non_given_reimbursement_period(app):
+    user_offerer = offers_factories.UserOffererFactory()
+    pro = user_offerer.user
+
+    # When
+    client = TestClient(app.test_client()).with_auth(pro.email)
+    response = client.get("/reimbursements/csv")
+
+    # Then
+    assert response.status_code == 400
+    assert response.json["reimbursementPeriodBeginningDate"] == [
+        "Vous devez renseigner une date au format ISO (ex. 2021-12-24)"
+    ]
+    assert response.json["reimbursementPeriodEndingDate"] == [
+        "Vous devez renseigner une date au format ISO (ex. 2021-12-24)"
+    ]

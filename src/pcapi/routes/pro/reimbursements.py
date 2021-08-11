@@ -1,4 +1,3 @@
-from datetime import date
 from itertools import chain
 
 from flask import request
@@ -12,6 +11,7 @@ from pcapi.repository.user_offerer_queries import filter_query_where_user_is_use
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_all_offerer_reimbursement_details
 from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv
 from pcapi.routes.serialization.reimbursement_csv_serialize import legacy_find_all_offerer_reimbursement_details
+from pcapi.routes.serialization.reimbursement_csv_serialize import validate_reimbursement_period
 from pcapi.utils.human_ids import dehumanize
 
 
@@ -32,8 +32,10 @@ def get_reimbursements_csv():
             all_validated_offerers_for_the_current_user = []
 
     if FeatureToggle.PRO_REIMBURSEMENTS_FILTERS.is_active():
-        reimbursement_period_beginning_date = date.fromisoformat(request.args.get("reimbursementPeriodBeginningDate"))
-        reimbursement_period_ending_date = date.fromisoformat(request.args.get("reimbursementPeriodEndingDate"))
+        reimbursement_period_field_names = ("reimbursementPeriodBeginningDate", "reimbursementPeriodEndingDate")
+        reimbursement_period_beginning_date, reimbursement_period_ending_date = validate_reimbursement_period(
+            reimbursement_period_field_names, request.args.get
+        )
         venue_id = dehumanize(request.args.get("venueId"))
 
         reimbursement_details = chain(

@@ -2,8 +2,10 @@ from collections import namedtuple
 import csv
 from datetime import date
 from io import StringIO
+from typing import Callable
 from typing import Optional
 
+from pcapi.models import ApiErrors
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository.reimbursement_queries import find_all_offerer_payments
 from pcapi.repository.reimbursement_queries import legacy_find_all_offerer_payments
@@ -139,3 +141,18 @@ def _get_reimbursement_current_status_in_details(current_status: str, current_st
         return human_friendly_status
 
     return f"{human_friendly_status} : {current_status_details}"
+
+
+def validate_reimbursement_period(
+    reimbursement_period_field_names: tuple[str, str], get_query_param: Callable
+) -> list[date]:
+    api_errors = ApiErrors()
+    reimbursement_period_dates = []
+    for field_name in reimbursement_period_field_names:
+        try:
+            reimbursement_period_dates.append(date.fromisoformat(get_query_param(field_name)))
+        except (TypeError, ValueError):
+            api_errors.add_error(field_name, "Vous devez renseigner une date au format ISO (ex. 2021-12-24)")
+    if len(api_errors.errors) > 0:
+        raise api_errors
+    return reimbursement_period_dates or [None, None]
