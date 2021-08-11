@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_features
 from pcapi.models import Venue
@@ -11,28 +12,23 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
-def populate_missing_data_from_venue(venue_data, venue):
+def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Venue) -> dict:
     return {
-        "address": venue_data["address"] if "address" in venue_data else venue.address,
-        "bookingEmail": venue_data["bookingEmail"] if "bookingEmail" in venue_data else venue.bookingEmail,
-        "city": venue_data["city"] if "city" in venue_data else venue.city,
-        "latitude": venue_data["latitude"] if "latitude" in venue_data else venue.latitude,
-        "longitude": venue_data["longitude"] if "longitude" in venue_data else venue.longitude,
-        "name": venue_data["name"] if "name" in venue_data else venue.name,
-        "postalCode": venue_data["postalCode"] if "postalCode" in venue_data else venue.postalCode,
-        "publicName": venue_data["publicName"] if "publicName" in venue_data else venue.publicName,
-        "siret": venue_data["siret"] if "siret" in venue_data else venue.siret,
-        "venueTypeId": venue_data["venueTypeId"] if "venueTypeId" in venue_data else humanize(venue.venueTypeId),
-        "venueLabelId": venue_data["venueLabelId"] if "venueLabelId" in venue_data else humanize(venue.venueLabelId),
-        "withdrawalDetails": venue_data["withdrawalDetails"]
-        if "withdrawalDetails" in venue_data
-        else venue.withdrawalDetails,
-        "isEmailAppliedOnAllOffers": venue_data["isEmailAppliedOnAllOffers"]
-        if "isEmailAppliedOnAllOffers" in venue_data
-        else False,
-        "isWithdrawalAppliedOnAllOffers": venue_data["isWithdrawalAppliedOnAllOffers"]
-        if "isWithdrawalAppliedOnAllOffers" in venue_data
-        else False,
+        "address": venue.address,
+        "bookingEmail": venue.bookingEmail,
+        "city": venue.city,
+        "latitude": venue.latitude,
+        "longitude": venue.longitude,
+        "name": venue.name,
+        "postalCode": venue.postalCode,
+        "publicName": venue.publicName,
+        "siret": venue.siret,
+        "venueTypeId": humanize(venue.venueTypeId),
+        "venueLabelId": humanize(venue.venueLabelId),
+        "withdrawalDetails": venue.withdrawalDetails,
+        "isEmailAppliedOnAllOffers": False,
+        "isWithdrawalAppliedOnAllOffers": False,
+        **venue_data,
     }
 
 
@@ -162,3 +158,20 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert response.json["siret"] == venue.siret
+
+
+@pytest.mark.usefixtures("db_session")
+def test_update_venue_description_too_long(app, client):
+    user_offerer = offers_factories.UserOffererFactory()
+    venue = offers_factories.VenueFactory(
+        managingOfferer=user_offerer.offerer,
+    )
+
+    data = {"description": "a" * 1024}
+
+    client = client.with_auth(user_offerer.user.email)
+    venue_id = humanize(venue.id)
+    response = client.patch(f"/venues/{venue_id}", json=data)
+
+    assert response.status_code == 400
+    assert "description" in response.json

@@ -1,5 +1,6 @@
 from datetime import datetime
 import enum
+import typing
 from typing import Optional
 
 import sqlalchemy as sa
@@ -165,6 +166,16 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     withdrawalDetails = Column(Text, nullable=True)
 
+    audioDisabilityCompliant = Column(Boolean, nullable=True)
+
+    mentalDisabilityCompliant = Column(Boolean, nullable=True)
+
+    motorDisabilityCompliant = Column(Boolean, nullable=True)
+
+    visualDisabilityCompliant = Column(Boolean, nullable=True)
+
+    description = Column(Text, nullable=True)
+
     def store_departement_code(self) -> None:
         self.departementCode = PostalCode(self.postalCode).get_departement_code()
 
@@ -228,6 +239,11 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
             ],
             else_=case(CUSTOM_TIMEZONES, value=cls.departementCode, else_=METROPOLE_TIMEZONE),
         )
+
+    def field_exists_and_has_changed(self, field: str, value: typing.Any) -> typing.Any:
+        if field not in type(self).__table__.columns:
+            raise ValueError(f"Unknown field {field} for model {type(self)}")
+        return getattr(self, field) != value
 
 
 class VenueLabel(PcObject, Model):

@@ -4,6 +4,7 @@ from decimal import InvalidOperation
 from typing import Optional
 from typing import Union
 
+import pydantic
 from pydantic import BaseModel
 from pydantic import validator
 
@@ -158,6 +159,11 @@ class EditVenueBodyModel(BaseModel):
     withdrawalDetails: Optional[str]
     isWithdrawalAppliedOnAllOffers: Optional[bool]
     isEmailAppliedOnAllOffers: Optional[bool]
+    description: Optional[pydantic.constr(max_length=1000, strip_whitespace=True)]  # type: ignore
+    audioDisabilityCompliant: Optional[bool]
+    mentalDisabilityCompliant: Optional[bool]
+    motorDisabilityCompliant: Optional[bool]
+    visualDisabilityCompliant: Optional[bool]
 
     _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
     _dehumanize_venue_type_id = dehumanize_field("venueTypeId")

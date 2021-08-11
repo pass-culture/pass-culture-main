@@ -3,8 +3,10 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import ApiKey
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.models import api_errors
 from pcapi.utils.token import random_token
 
@@ -147,6 +149,43 @@ class EditVenueTest:
         # Then
         assert error.value.errors["latitude"] == ["La latitude doit être comprise entre -90.0 et +90.0"]
         assert error.value.errors["longitude"] == ["Format incorrect"]
+
+    @pytest.mark.usefixtures("db_session")
+    def test_accessibility_fields_are_updated(self, app) -> None:
+        # given
+        venue = offers_factories.VenueFactory()
+
+        # when
+        venue_data = {
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+        }
+
+        offerers_api.update_venue(venue, **venue_data)
+
+        venue = offerers_models.Venue.query.get(venue.id)
+        assert venue.audioDisabilityCompliant
+        assert venue.mentalDisabilityCompliant
+        assert venue.motorDisabilityCompliant is False
+        assert venue.visualDisabilityCompliant is False
+
+    @pytest.mark.usefixtures("db_session")
+    def test_no_modifications(self, app) -> None:
+        # given
+        venue = offers_factories.VenueFactory()
+
+        # when
+        venue_data = {
+            "departementCode": venue.departementCode,
+            "city": venue.city,
+            "motorDisabilityCompliant": venue.motorDisabilityCompliant,
+        }
+
+        # nothing has changed => nothing to save nor update
+        with assert_num_queries(0):
+            offerers_api.update_venue(venue, **venue_data)
 
 
 @pytest.mark.usefixtures("db_session")

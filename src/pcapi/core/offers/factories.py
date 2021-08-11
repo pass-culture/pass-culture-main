@@ -56,6 +56,7 @@ class VenueFactory(BaseFactory):
     siret = factory.LazyAttributeSequence(lambda o, n: f"{o.managingOfferer.siren}{n:05}")
     isVirtual = False
     venueTypeCode = offerers_models.VenueTypeCode.OTHER.value
+    description = factory.Faker("text", max_nb_chars=64)
 
 
 class VirtualVenueFactory(VenueFactory):

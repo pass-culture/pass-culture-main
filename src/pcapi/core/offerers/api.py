@@ -1,4 +1,5 @@
 import secrets
+import typing
 from typing import Optional
 
 from pcapi import settings
@@ -36,36 +37,10 @@ def _get_digital_venue_type_id() -> int:
     return VenueType.query.filter_by(label="Offre numérique").one().id
 
 
-def update_venue(
-    venue: Venue,
-    address: str = UNCHANGED,
-    name: str = UNCHANGED,
-    siret: str = UNCHANGED,
-    latitude: float = UNCHANGED,
-    longitude: float = UNCHANGED,
-    bookingEmail: str = UNCHANGED,
-    postalCode: str = UNCHANGED,
-    city: str = UNCHANGED,
-    publicName: str = UNCHANGED,
-    comment: str = UNCHANGED,
-    venueTypeId: int = UNCHANGED,
-    venueLabelId: int = UNCHANGED,
-    withdrawalDetails: str = UNCHANGED,
-) -> Venue:
-    validation.validate_coordinates(
-        latitude if latitude is not UNCHANGED else None,
-        longitude if latitude is not UNCHANGED else None,
-    )
+def update_venue(venue: Venue, **attrs: typing.Any) -> Venue:
+    validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))
+    modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
 
-    # fmt: off
-    modifications = {
-        field: new_value
-        for field, new_value in locals().items()
-        if field != 'venue'
-        and new_value is not UNCHANGED  # has the user provided a value for this field
-        and getattr(venue, field) != new_value  # is the value different from what we have on database?
-    }
-    # fmt: on
     if not modifications:
         return venue
 
