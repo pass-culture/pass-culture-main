@@ -289,11 +289,13 @@ elif [[ "$CMD" == "start-backend" ]]; then
     start_backend
 
 # Start webapp or pro application
-elif [[ "$CMD" == "start-webapp" ]] || [[ "$CMD" == "start-pro" ]]; then
+elif [[ "$CMD" == "start-webapp" ]] || [[ "$CMD" == "start-pro" ]] || [[ "$CMD" == "start-adage-front" ]]; then
   if [[ "$CMD" == "start-webapp" ]]; then
     RUN='cd $ROOT_PATH/webapp'
-  else
+  elif [[ "$CMD" == "start-pro" ]]; then
     RUN='cd $ROOT_PATH/pro'
+  else
+    RUN='cd $ROOT_PATH/adage-front'
   fi
   if [[ "$BACKEND" == "testing" ]]; then
     RUN="$RUN"' && export THUMBS_URL=https://storage.gra3.cloud.ovh.net/v1/AUTH_810600e32fdc4cb49a8d15332b68d2cc/storage-pc/thumbs && export API_URL=https://backend.passculture-testing.beta.gouv.fr'
@@ -304,7 +306,6 @@ elif [[ "$CMD" == "start-webapp" ]] || [[ "$CMD" == "start-pro" ]]; then
     exit
   fi
   RUN="$RUN"' && yarn start'
-
 
 # Run tests for API
 # Need start-backend to be successful and delete all data
@@ -552,6 +553,7 @@ elif [[ "$CMD" == "install" ]]; then
     git submodule foreach git checkout master;
     cd $ROOT_PATH/webapp && yarn;
     cd $ROOT_PATH/pro && yarn;
+    cd $ROOT_PATH/adage-front && yarn;
     ./pc install-hooks'
 
 # Install pre-push and pre-commit hooks in the api submodule
