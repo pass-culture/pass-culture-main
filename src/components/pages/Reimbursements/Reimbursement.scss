@@ -1,0 +1,68 @@
+
+.reimbursements-page {
+  .header {
+    display: flex;
+    justify-content: space-between;
+    margin-top: rem(34px);
+    padding-bottom: rem(36px);
+
+    &-title {
+      @include title3();
+    }
+
+    &-initialize-filters-button {
+      @include unstyle-button;
+      @include bold;
+
+      color: $grey-dark;
+    }
+  }
+
+  .filters {
+    align-content: stretch;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: rem(32px);
+
+    .input-select {
+      flex: 1;
+      margin-right: rem(24px);
+
+      select {
+        width: 100%;
+      }
+    }
+
+    .period-filter-inputs {
+      margin-top: rem(8px);
+    }
+  }
+
+  .button-group {
+    margin-bottom: rem(32px);
+    position: relative;
+
+    &-buttons {
+      display: flex;
+      justify-content: center;
+      position: relative;
+
+      > button {
+        margin: 0 rem(12px);
+        width: rem(148px);
+      }
+    }
+
+    &-separator {
+      border-bottom: 1px solid $grey-medium;
+      display: block;
+      position: absolute;
+      top: 50%;
+      width: 100%;
+    }
+  }
+
+  .format-mention {
+    text-align: center;
+  }
+}
