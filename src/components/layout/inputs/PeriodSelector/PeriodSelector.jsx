@@ -25,6 +25,7 @@ const PeriodSelector = ({
               className="period-filter-input"
               customInput={(
                 <InputWithCalendar
+                  ariaLabel="début de la période"
                   customClass={`field-date-only field-date-begin ${isDisabled ? 'disabled' : ''}`}
                 />
               )}
@@ -45,6 +46,7 @@ const PeriodSelector = ({
               className="period-filter-input"
               customInput={(
                 <InputWithCalendar
+                  ariaLabel="fin de la période"
                   customClass={`field-date-only field-date-end ${isDisabled ? 'disabled' : ''}`}
                 />
               )}
