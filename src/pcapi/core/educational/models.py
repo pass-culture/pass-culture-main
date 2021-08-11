@@ -1,6 +1,7 @@
 from datetime import datetime
 import decimal
 import enum
+from typing import Optional
 
 from sqlalchemy import BigInteger
 from sqlalchemy import Column
@@ -109,12 +110,12 @@ class EducationalBooking(Model):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     educationalInstitutionId = Column(BigInteger, ForeignKey("educational_institution.id"), nullable=False)
-    educationalInstitution = relationship(
+    educationalInstitution: EducationalInstitution = relationship(
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="educationalBookings"
     )
 
     educationalYearId = Column(BigInteger, ForeignKey("educational_year.adageId"), nullable=False)
-    educationalYear = relationship(EducationalYear, foreign_keys=[educationalYearId])
+    educationalYear: EducationalYear = relationship(EducationalYear, foreign_keys=[educationalYearId])
 
     Index("ix_educational_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
 
@@ -124,7 +125,7 @@ class EducationalBooking(Model):
         nullable=True,
     )
 
-    confirmationDate = Column(DateTime, nullable=True)
+    confirmationDate: Optional[datetime] = Column(DateTime, nullable=True)
     confirmationLimitDate = Column(DateTime, nullable=True)
 
     booking = relationship(
@@ -141,7 +142,7 @@ class EducationalBooking(Model):
         nullable=True,
         index=True,
     )
-    educationalRedactor = relationship(
+    educationalRedactor: EducationalRedactor = relationship(
         EducationalRedactor,
         back_populates="educationalBookings",
         uselist=False,

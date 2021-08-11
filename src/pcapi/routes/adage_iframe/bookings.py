@@ -1,5 +1,7 @@
 import logging
 
+from pcapi.connectors.api_adage import AdageException
+from pcapi.connectors.api_adage import InstitutionalProjectRedactorNotFoundException
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -33,6 +35,27 @@ def book_educational_offer(
         booking = educational_api.book_educational_offer(
             redactor_email=(body.redactorEmail), uai_code=body.UAICode, stock_id=body.stockId
         )
+    except AdageException as exception:
+        logger.info(
+            "Could not book offer: adage api call failed",
+            extra={
+                "redactor_email": body.redactorEmail,
+                "status_code": str(exception.status_code),
+                "response_text": exception.response_text,
+            },
+        )
+        raise ApiErrors(
+            {"global": "La récupération des informations du rédacteur de projet via Adage a échoué"},
+            status_code=500,
+        )
+    except InstitutionalProjectRedactorNotFoundException:
+        logger.info(
+            "Could not book offer: redactor does not exist in Adage",
+            extra={
+                "redactor_email": body.redactorEmail,
+            },
+        )
+        raise ApiErrors({"global": "Le rédacteur de projet n'existe pas dans Adage"}, status_code=404)
     except offers_exceptions.StockDoesNotExist:
         logger.info("Could not book offer: stock does not exist", extra={"stock_id": body.stockId})
         raise ApiErrors({"stock": "stock introuvable"}, status_code=400)

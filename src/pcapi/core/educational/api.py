@@ -1,5 +1,6 @@
 import logging
 
+from pcapi.connectors.api_adage import get_institutional_project_redactor_by_email
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
@@ -7,6 +8,7 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
 from pcapi.core.educational.exceptions import EducationalBookingNotFound
 from pcapi.core.educational.models import EducationalBooking
+from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.offers import repository as offers_repository
 from pcapi.repository import repository
 from pcapi.repository import transaction
@@ -17,7 +19,23 @@ logger = logging.getLogger(__name__)
 EAC_DEFAULT_BOOKED_QUANTITY = 1
 
 
+def create_redactor_from_email(redactor_email: str) -> EducationalRedactor:
+    educational_redactor_information = get_institutional_project_redactor_by_email(redactor_email)
+    redactor = EducationalRedactor(
+        email=educational_redactor_information.email,
+        firstName=educational_redactor_information.first_name,
+        lastName=educational_redactor_information.last_name,
+        civility=educational_redactor_information.civility,
+    )
+    repository.save(redactor)
+    return redactor
+
+
 def book_educational_offer(redactor_email: str, uai_code: str, stock_id: int) -> EducationalBooking:
+    redactor = educational_repository.find_redactor_by_email(redactor_email)
+    if not redactor:
+        redactor = create_redactor_from_email(redactor_email)
+
     educational_institution = educational_repository.find_educational_institution_by_uai_code(uai_code)
     validation.check_institution_exists(educational_institution)
 
@@ -33,6 +51,7 @@ def book_educational_offer(redactor_email: str, uai_code: str, stock_id: int) ->
         educational_booking = EducationalBooking(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
+            educationalRedactor=redactor,
         )
 
         booking = bookings_models.Booking(

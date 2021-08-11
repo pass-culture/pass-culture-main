@@ -149,11 +149,11 @@ class BookEducationalOfferTest:
         educational_factories.EducationalYearFactory(
             beginningDate=datetime.datetime(2021, 9, 1), expirationDate=datetime.datetime(2022, 8, 31)
         )
-        redactor_email = "professeur@example.com"
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
 
         # When
         returned_booking = educational_api.book_educational_offer(
-            redactor_email=redactor_email,
+            redactor_email=educational_redactor.redactor_email,
             uai_code=educational_institution.institutionId,
             stock_id=stock.id,
         )
@@ -176,13 +176,13 @@ class BookEducationalOfferTest:
         )
         educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory()
-        redactor_email = "professeur@example.com"
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
         provided_institution_id = "AU3568Unknown"
 
         # When
         with pytest.raises(exceptions.EducationalInstitutionUnknown) as error:
             educational_api.book_educational_offer(
-                redactor_email=redactor_email,
+                redactor_email=educational_redactor.redactor_email,
                 uai_code=provided_institution_id,
                 stock_id=stock.id,
             )
@@ -199,13 +199,13 @@ class BookEducationalOfferTest:
         offers_factories.EventStockFactory(offer__isEducational=True, beginningDatetime=datetime.datetime(2021, 5, 15))
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory()
-        redactor_email = "professeur@example.com"
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
         requested_stock_id = 4875
 
         # When
         with pytest.raises(offers_exceptions.StockDoesNotExist):
             educational_api.book_educational_offer(
-                redactor_email=redactor_email,
+                redactor_email=educational_redactor.redactor_email,
                 uai_code=educational_institution.institutionId,
                 stock_id=requested_stock_id,
             )
@@ -250,12 +250,12 @@ class BookEducationalOfferTest:
         )
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory()
-        redactor_email = "professeur@example.com"
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
 
         # When
         with pytest.raises(exceptions.EducationalYearNotFound) as error:
             educational_api.book_educational_offer(
-                redactor_email=redactor_email,
+                redactor_email=educational_redactor.redactor_email,
                 uai_code=educational_institution.institutionId,
                 stock_id=stock.id,
             )
@@ -273,7 +273,7 @@ class BookEducationalOfferTest:
         # Given
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory()
-        redactor_email = "professeur@example.com"
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
         stock = offers_factories.EventStockFactory(
             offer__isEducational=False, beginningDatetime=datetime.datetime(2021, 5, 15)
         )
@@ -281,7 +281,7 @@ class BookEducationalOfferTest:
         # When
         with pytest.raises(exceptions.OfferIsNotEducational) as error:
             educational_api.book_educational_offer(
-                redactor_email=redactor_email,
+                redactor_email=educational_redactor.redactor_email,
                 uai_code=educational_institution.institutionId,
                 stock_id=stock.id,
             )
@@ -297,7 +297,7 @@ class BookEducationalOfferTest:
         # Given
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory()
-        redactor_email = "professeur@example.com"
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
         stock = offers_factories.ThingStockFactory(
             offer__isEducational=True, beginningDatetime=datetime.datetime(2021, 5, 15)
         )
@@ -305,7 +305,7 @@ class BookEducationalOfferTest:
         # When
         with pytest.raises(exceptions.OfferIsNotEvent) as error:
             educational_api.book_educational_offer(
-                redactor_email=redactor_email,
+                redactor_email=educational_redactor.redactor_email,
                 uai_code=educational_institution.institutionId,
                 stock_id=stock.id,
             )

@@ -2,8 +2,8 @@ import pytest
 
 from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
+from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
-from pcapi.core.users.factories import InstitutionalProjectRedactorFactory
 from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.urls import get_webapp_url
@@ -14,12 +14,18 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_get_prebookings_without_query_params(self, app) -> None:
-        InstitutionalProjectRedactorFactory(civility="M.")
+        redactor = EducationalRedactorFactory(
+            civility="M.",
+            firstName="Jean",
+            lastName="Doudou",
+            email="jean.doux@example.com",
+        )
         educationalYear = EducationalYearFactory()
         educationalInstitution = EducationalInstitutionFactory()
         booking = EducationalBookingFactory(
             educationalBooking__educationalYear=educationalYear,
             educationalBooking__educationalInstitution=educationalInstitution,
+            educationalBooking__educationalRedactor=redactor,
         )
         other_educational_year = EducationalYearFactory(adageId="toto")
         other_educational_institution = EducationalInstitutionFactory(institutionId="tata")
@@ -67,10 +73,10 @@ class Returns200Test:
                     "price": booking.amount,
                     "quantity": booking.quantity,
                     "redactor": {
-                        "email": "jeanne.doux@versailles.fr",
-                        "redactorFirstName": "Jeanne",
-                        "redactorLastName": "Doux",
-                        "redactorCivility": "Mme",
+                        "email": "jean.doux@example.com",
+                        "redactorFirstName": "Jean",
+                        "redactorLastName": "Doudou",
+                        "redactorCivility": "M.",
                     },
                     "UAICode": educational_booking.educationalInstitution.institutionId,
                     "yearId": int(educational_booking.educationalYearId),
@@ -84,26 +90,36 @@ class Returns200Test:
         }
 
     def test_get_prebookings_with_query_params(self, app) -> None:
-        redactor = InstitutionalProjectRedactorFactory(civility="M.")
-        another_redactor = InstitutionalProjectRedactorFactory(civility="M.")
+        redactor = EducationalRedactorFactory(
+            civility="M.",
+            firstName="Jean",
+            lastName="Doudou",
+            email="jean.doux@example.com",
+        )
+        another_redactor = EducationalRedactorFactory(
+            civility="Mme.",
+            firstName="Jeanne",
+            lastName="Dodu",
+            email="jeanne.dodu@example.com",
+        )
         educationalYear = EducationalYearFactory()
         educationalInstitution = EducationalInstitutionFactory()
         booking = EducationalBookingFactory(
-            user=redactor,
+            educationalBooking__educationalRedactor=redactor,
             educationalBooking__educationalYear=educationalYear,
             educationalBooking__educationalInstitution=educationalInstitution,
             educationalBooking__status="USED_BY_INSTITUTE",
             status="CONFIRMED",
         )
         EducationalBookingFactory(
-            user=another_redactor,
+            educationalBooking__educationalRedactor=another_redactor,
             educationalBooking__educationalYear=educationalYear,
             educationalBooking__educationalInstitution=educationalInstitution,
             educationalBooking__status="USED_BY_INSTITUTE",
             status="CONFIRMED",
         )
         EducationalBookingFactory(
-            user=redactor,
+            educationalBooking__educationalRedactor=redactor,
             educationalBooking__educationalYear=educationalYear,
             educationalBooking__educationalInstitution=educationalInstitution,
             status="PENDING",
@@ -149,10 +165,10 @@ class Returns200Test:
                     "price": booking.amount,
                     "quantity": booking.quantity,
                     "redactor": {
-                        "email": "jeanne.doux@versailles.fr",
-                        "redactorFirstName": "Jeanne",
-                        "redactorLastName": "Doux",
-                        "redactorCivility": "Mme",
+                        "email": "jean.doux@example.com",
+                        "redactorFirstName": "Jean",
+                        "redactorLastName": "Doudou",
+                        "redactorCivility": "M.",
                     },
                     "UAICode": educational_booking.educationalInstitution.institutionId,
                     "yearId": int(educational_booking.educationalYearId),

@@ -6,6 +6,7 @@ from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.factories import EducationalInstitutionFactory
+from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
@@ -18,6 +19,12 @@ from tests.conftest import TestClient
 class Returns200Test:
     @freeze_time("2021-10-15 09:00:00")
     def test_confirm_prebooking(self, app, db_session) -> None:
+        redactor = EducationalRedactorFactory(
+            civility="Mme",
+            firstName="Jeanne",
+            lastName="Dodu",
+            email="jeanne.dodu@example.com",
+        )
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory(adageId="1")
         EducationalDeposit(
@@ -39,6 +46,7 @@ class Returns200Test:
             quantity=20,
             educationalBooking__educationalInstitution=educational_institution,
             educationalBooking__educationalYear=educational_year,
+            educationalBooking__educationalRedactor=redactor,
             status=BookingStatus.PENDING,
         )
 
@@ -77,9 +85,9 @@ class Returns200Test:
             "price": booking.amount,
             "quantity": booking.quantity,
             "redactor": {
-                "email": "jeanne.doux@versailles.fr",
+                "email": "jeanne.dodu@example.com",
                 "redactorFirstName": "Jeanne",
-                "redactorLastName": "Doux",
+                "redactorLastName": "Dodu",
                 "redactorCivility": "Mme",
             },
             "UAICode": educational_booking.educationalInstitution.institutionId,

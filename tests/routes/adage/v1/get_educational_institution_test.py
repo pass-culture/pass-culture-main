@@ -4,8 +4,8 @@ from pcapi import settings
 from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
+from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
-from pcapi.core.users.factories import InstitutionalProjectRedactorFactory
 from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.utils.human_ids import humanize
 
@@ -15,7 +15,12 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_get_educational_institution(self, app) -> None:
-        redactor = InstitutionalProjectRedactorFactory(civility="M.")
+        redactor = EducationalRedactorFactory(
+            civility="M.",
+            firstName="Jean",
+            lastName="Doudou",
+            email="jean.doux@example.com",
+        )
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
         EducationalDepositFactory(
@@ -26,7 +31,7 @@ class Returns200Test:
         )
         EducationalInstitutionFactory()
         booking = EducationalBookingFactory(
-            user=redactor,
+            educationalBooking__educationalRedactor=redactor,
             educationalBooking__educationalYear=educational_year,
             educationalBooking__educationalInstitution=educational_institution,
         )
@@ -90,10 +95,10 @@ class Returns200Test:
                     "price": booking.amount,
                     "quantity": booking.quantity,
                     "redactor": {
-                        "email": "jeanne.doux@versailles.fr",
-                        "redactorFirstName": "Jeanne",
-                        "redactorLastName": "Doux",
-                        "redactorCivility": "Mme",
+                        "email": "jean.doux@example.com",
+                        "redactorFirstName": "Jean",
+                        "redactorLastName": "Doudou",
+                        "redactorCivility": "M.",
                     },
                     "UAICode": educational_booking.educationalInstitution.institutionId,
                     "yearId": int(educational_booking.educationalYearId),
