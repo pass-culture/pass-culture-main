@@ -1,31 +1,40 @@
+import { format } from 'date-fns-tz'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import BookingOfferCellForEvent from './BookingOfferCellForEvent'
-import BookingOfferCellForThing from './BookingOfferCellForThing'
+import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from '../../../../../utils/date'
 
 const BookingOfferCell = ({ offer }) => {
-  if (offer.event_beginning_datetime) {
-    return (
-      <BookingOfferCellForEvent
-        eventDatetime={offer.event_beginning_datetime}
-        offerId={offer.offer_identifier}
-        offerName={offer.offer_name}
-        venueDepartmentCode={offer.venue_department_code}
-      />
-    )
-  }
+  const eventBeginningDatetime = offer.event_beginning_datetime
+  const isbn = offer.offer_isbn
+
+  const eventDatetimeFormatted = eventBeginningDatetime
+    ? format(toDateStrippedOfTimezone(eventBeginningDatetime), FORMAT_DD_MM_YYYY_HH_mm)
+    : null
+
   return (
-    <BookingOfferCellForThing
-      offerId={offer.offer_identifier}
-      offerIsbn={offer.offer_isbn}
-      offerName={offer.offer_name}
-    />
+    <a
+      href={`/offres/${offer.offer_identifier}/edition`}
+      rel="noopener noreferrer"
+      target="_blank"
+      title={`${offer.offer_name} (ouverture dans un nouvel onglet)`}
+    >
+      <div className="booking-offer-name">
+        {offer.offer_name}
+      </div>
+      {isbn ||
+        (eventBeginningDatetime && (
+          <div className="booking-offer-additional-info">
+            {eventDatetimeFormatted || isbn}
+          </div>
+        ))}
+    </a>
   )
 }
 
 BookingOfferCell.defaultValues = {
   offer: {
+    event_beginning_datetime: null,
     offer_isbn: null,
   },
 }
@@ -34,9 +43,8 @@ BookingOfferCell.propTypes = {
   offer: PropTypes.shape({
     event_beginning_datetime: PropTypes.string,
     offer_isbn: PropTypes.string,
-    offer_identifier: PropTypes.string,
+    offer_identifier: PropTypes.string.isRequired,
     offer_name: PropTypes.string.isRequired,
-    venue_department_code: PropTypes.string,
   }).isRequired,
 }
 
