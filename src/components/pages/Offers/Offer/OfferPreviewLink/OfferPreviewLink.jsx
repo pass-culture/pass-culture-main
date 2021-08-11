@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
-import { IS_PROD } from 'utils/config'
+import { IS_PROD, WEBAPP_URL } from 'utils/config'
 
 const webappOfferUrl = (offerId, mediationId) => {
-  const webappUrl = IS_PROD
-    ? window.location.href.split('offres')[0].replace('pro', 'web')
-    : 'http://localhost:3000/'
-  const urlWithOfferId = `${webappUrl}offre/details/${offerId}`
+  const webappUrl = IS_PROD ? WEBAPP_URL : 'http://localhost:3000'
+  const urlWithOfferId = `${webappUrl}/offre/details/${offerId}`
 
   return mediationId ? `${urlWithOfferId}/${mediationId}` : urlWithOfferId
 }

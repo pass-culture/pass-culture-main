@@ -17,7 +17,16 @@ if (typeof window !== 'undefined') {
     ? process.env.API_URL_OLD
     : process.env.API_URL_NEW
 }
+
+let webappUrlBasedOnDomain
+if (typeof window !== 'undefined') {
+  webappUrlBasedOnDomain = window.location.hostname.includes('beta.gouv')
+    ? process.env.WEBAPP_URL_OLD
+    : process.env.WEBAPP_URL_NEW
+}
+
 export const API_URL = apiUrlBasedOnDomain || 'http://localhost'
+export const WEBAPP_URL = webappUrlBasedOnDomain || 'http://localhost'
 
 export const {
   ENVIRONMENT_NAME,
