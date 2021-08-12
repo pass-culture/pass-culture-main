@@ -113,6 +113,7 @@ test('Je peux supprimer un stock pour un événement', async t => {
 
   await t
     .click(deleteButton)
+    .click(Selector('div[title="Supprimer le stock"]'))
     .expect(deleteButtonConfirmation.exists)
     .ok()
     .click(deleteButtonConfirmation)
