@@ -20,7 +20,6 @@ def create_industrial_thing_offers(things_by_name, offerers_by_name, venues_by_n
     thing_index = 0
     offer_index = 0
     thing_items = list(things_by_name.items())
-
     for offerer in offerers_by_name.values():
 
         virtual_venue = [venue for venue in offerer.managedVenues if venue.isVirtual][0]
@@ -38,9 +37,10 @@ def create_industrial_thing_offers(things_by_name, offerers_by_name, venues_by_n
 
                 if thing.offerType["offlineOnly"]:
                     thing_venue = physical_venue
-                elif thing.offerType["onlineOnly"]:
+                elif thing.offerType["onlineOnly"] and thing.url:
                     thing_venue = virtual_venue
                 else:
+
                     thing_venue = physical_venue
 
                 thing_index += 1
