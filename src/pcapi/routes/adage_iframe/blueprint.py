@@ -1,11 +1,16 @@
 from flask import Blueprint
+from flask_cors.extension import CORS
 
+from pcapi import settings
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
 adage_iframe = Blueprint("adage_iframe", __name__)
-
+CORS(
+    adage_iframe,
+    origins=settings.CORS_ALLOWED_ORIGINS_ADAGE_IFRAME,
+)
 
 JWT_AUTH = "JWTAuth"
 
