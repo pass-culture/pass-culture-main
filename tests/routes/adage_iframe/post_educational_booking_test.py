@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import ByteString
 
+from freezegun.api import freeze_time
 import pytest
 
 from pcapi.core.bookings.models import Booking
@@ -14,6 +15,7 @@ from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_f
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@freeze_time("2020-11-17 15:00:00")
 class PostEducationalBookingTest:
     stock_date = datetime(2021, 5, 15)
     educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
@@ -28,9 +30,9 @@ class PostEducationalBookingTest:
         educational_year = educational_factories.EducationalYearFactory(
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
         )
-        redactor_email = "professeur.lycee@example.com"
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
 
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=redactor_email)
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=educational_redactor.email)
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -38,7 +40,7 @@ class PostEducationalBookingTest:
         response = test_client.post(
             "/adage-iframe/bookings",
             json={
-                "redactorEmail": redactor_email,
+                "redactorEmail": educational_redactor.email,
                 "stockId": stock.id,
                 "UAICode": educational_institution.institutionId,
             },
@@ -61,9 +63,9 @@ class PostEducationalBookingTest:
         educational_factories.EducationalYearFactory(
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
         )
-        redactor_email = "professeur.lycee@example.com"
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
 
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=redactor_email)
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=educational_redactor.email)
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -71,7 +73,7 @@ class PostEducationalBookingTest:
         response = test_client.post(
             "/adage-iframe/bookings",
             json={
-                "redactorEmail": redactor_email,
+                "redactorEmail": educational_redactor.email,
                 "stockId": stock.id,
                 "UAICode": "Unknown educational institution",
             },
@@ -90,9 +92,9 @@ class PostEducationalBookingTest:
         educational_factories.EducationalYearFactory(
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
         )
-        redactor_email = "professeur.lycee@example.com"
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
 
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=redactor_email)
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=educational_redactor.email)
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -100,7 +102,7 @@ class PostEducationalBookingTest:
         response = test_client.post(
             "/adage-iframe/bookings",
             json={
-                "redactorEmail": redactor_email,
+                "redactorEmail": educational_redactor.email,
                 "stockId": stock.id,
                 "UAICode": educational_institution.institutionId,
             },
@@ -117,7 +119,7 @@ class PostEducationalBookingTest:
         educational_factories.EducationalYearFactory(
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
         )
-        redactor_email = "professeur.lycee@example.com"
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
 
         adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email="fake@email.com")
         test_client = TestClient(app.test_client())
@@ -127,7 +129,7 @@ class PostEducationalBookingTest:
         response = test_client.post(
             "/adage-iframe/bookings",
             json={
-                "redactorEmail": redactor_email,
+                "redactorEmail": educational_redactor.email,
                 "stockId": stock.id,
                 "UAICode": educational_institution.institutionId,
             },
@@ -140,13 +142,13 @@ class PostEducationalBookingTest:
     def test_should_not_allow_booking_when_offer_is_not_educational(self, app):
         # Given
         stock = offer_factories.EventStockFactory(offer__isEducational=False, beginningDatetime=self.stock_date)
-        redactor_email = "professeur.lycee@example.com"
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory(
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
         )
 
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=redactor_email)
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=educational_redactor.email)
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -154,7 +156,7 @@ class PostEducationalBookingTest:
         response = test_client.post(
             "/adage-iframe/bookings",
             json={
-                "redactorEmail": redactor_email,
+                "redactorEmail": educational_redactor.email,
                 "stockId": stock.id,
                 "UAICode": educational_institution.institutionId,
             },
@@ -167,13 +169,13 @@ class PostEducationalBookingTest:
     def test_should_not_allow_booking_when_offer_is_not_an_event(self, app):
         # Given
         stock = offer_factories.ThingStockFactory(offer__isEducational=True, beginningDatetime=self.stock_date)
-        redactor_email = "professeur.lycee@example.com"
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory(
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
         )
 
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=redactor_email)
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=educational_redactor.email)
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -181,7 +183,7 @@ class PostEducationalBookingTest:
         response = test_client.post(
             "/adage-iframe/bookings",
             json={
-                "redactorEmail": redactor_email,
+                "redactorEmail": educational_redactor.email,
                 "stockId": stock.id,
                 "UAICode": educational_institution.institutionId,
             },

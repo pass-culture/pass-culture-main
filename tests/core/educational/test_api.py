@@ -2,7 +2,9 @@ import datetime
 from decimal import Decimal
 from unittest import mock
 
+from freezegun.api import freeze_time
 import pytest
+import requests_mock
 from sqlalchemy import create_engine
 import sqlalchemy.exc
 from sqlalchemy.sql import text
@@ -15,8 +17,10 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.api import confirm_educational_booking
 from pcapi.core.educational.models import EducationalBooking
+from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.testing import override_settings
 
 from tests.conftest import clean_database
 
@@ -136,6 +140,7 @@ class ConfirmEducationalBookingTest:
             confirm_educational_booking(booking.educationalBookingId)
 
 
+@freeze_time("2020-11-17 15:00:00")
 @pytest.mark.usefixtures("db_session")
 class BookEducationalOfferTest:
     def test_should_create_educational_booking_on_requested_educational_offer(self):
@@ -154,7 +159,7 @@ class BookEducationalOfferTest:
 
         # When
         returned_booking = educational_api.book_educational_offer(
-            redactor_email=educational_redactor.redactor_email,
+            redactor_email=educational_redactor.email,
             uai_code=educational_institution.institutionId,
             stock_id=stock.id,
         )
@@ -168,6 +173,56 @@ class BookEducationalOfferTest:
         assert saved_educational_booking.educationalInstitution.institutionId == educational_institution.institutionId
         assert saved_educational_booking.educationalYear.adageId == educational_year.adageId
         assert saved_educational_booking.booking.status == BookingStatus.PENDING
+        # Assert we do not create an extra educational redactor when exist
+        assert EducationalRedactor.query.count() == 1
+
+    @override_settings(ADAGE_API_URL="https://adage-api-url")
+    @override_settings(ADAGE_API_KEY="adage-api-key")
+    def test_should_create_educational_redactor_when_it_does_not_exist(self):
+        # Given
+        stock = offers_factories.EventStockFactory(
+            offer__isEducational=True, beginningDatetime=datetime.datetime(2021, 5, 15)
+        )
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_factories.EducationalYearFactory(
+            beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
+        )
+        educational_factories.EducationalYearFactory(
+            beginningDate=datetime.datetime(2021, 9, 1), expirationDate=datetime.datetime(2022, 8, 31)
+        )
+
+        institutional_project_redactor_email = "turlupin@example.com"
+        response = {
+            "civilite": "Mme",
+            "nom": "Redactor",
+            "prenom": "Project",
+            "mail": institutional_project_redactor_email,
+            "etablissements": [{"uai": "XXXXXXXXX", "nom": "LYCÉE JEAN - SAINT-NAZAIRE"}],
+        }
+
+        # When
+        with requests_mock.Mocker() as request_mock:
+            request_mock.get(
+                f"https://adage-api-url/v1/redacteur-projet/{institutional_project_redactor_email}",
+                request_headers={
+                    "X-omogen-api-key": "adage-api-key",
+                },
+                json=response,
+            )
+            educational_api.book_educational_offer(
+                redactor_email=institutional_project_redactor_email,
+                uai_code=educational_institution.institutionId,
+                stock_id=stock.id,
+            )
+
+        # Then
+        saved_educational_booking = EducationalBooking.query.join(Booking).filter(Booking.stockId == stock.id).first()
+        assert saved_educational_booking.educationalRedactor.email == institutional_project_redactor_email
+        educational_redactor: EducationalRedactor = EducationalRedactor.query.one()
+        assert educational_redactor.email == institutional_project_redactor_email
+        assert educational_redactor.firstName == "Project"
+        assert educational_redactor.lastName == "Redactor"
+        assert educational_redactor.civility == "Mme"
 
     def test_should_not_create_educational_booking_when_educational_institution_unknown(self):
         # Given
@@ -182,7 +237,7 @@ class BookEducationalOfferTest:
         # When
         with pytest.raises(exceptions.EducationalInstitutionUnknown) as error:
             educational_api.book_educational_offer(
-                redactor_email=educational_redactor.redactor_email,
+                redactor_email=educational_redactor.email,
                 uai_code=provided_institution_id,
                 stock_id=stock.id,
             )
@@ -204,7 +259,7 @@ class BookEducationalOfferTest:
         # When
         with pytest.raises(offers_exceptions.StockDoesNotExist):
             educational_api.book_educational_offer(
-                redactor_email=educational_redactor.redactor_email,
+                redactor_email=educational_redactor.email,
                 uai_code=educational_institution.institutionId,
                 stock_id=requested_stock_id,
             )
@@ -236,6 +291,7 @@ class BookEducationalOfferTest:
         saved_bookings = EducationalBooking.query.join(Booking).filter(Booking.stockId == stock.id).all()
         assert len(saved_bookings) == 0
 
+    @freeze_time("2017-11-17 15:00:00")
     def test_should_not_create_educational_booking_when_educational_year_not_found(self):
         # Given
         date_before_education_year_beginning = datetime.datetime(2018, 9, 20)
@@ -249,7 +305,7 @@ class BookEducationalOfferTest:
         # When
         with pytest.raises(exceptions.EducationalYearNotFound) as error:
             educational_api.book_educational_offer(
-                redactor_email=educational_redactor.redactor_email,
+                redactor_email=educational_redactor.email,
                 uai_code=educational_institution.institutionId,
                 stock_id=stock.id,
             )
@@ -274,7 +330,7 @@ class BookEducationalOfferTest:
         # When
         with pytest.raises(exceptions.OfferIsNotEducational) as error:
             educational_api.book_educational_offer(
-                redactor_email=educational_redactor.redactor_email,
+                redactor_email=educational_redactor.email,
                 uai_code=educational_institution.institutionId,
                 stock_id=stock.id,
             )
@@ -297,7 +353,7 @@ class BookEducationalOfferTest:
         # When
         with pytest.raises(exceptions.OfferIsNotEvent) as error:
             educational_api.book_educational_offer(
-                redactor_email=educational_redactor.redactor_email,
+                redactor_email=educational_redactor.email,
                 uai_code=educational_institution.institutionId,
                 stock_id=stock.id,
             )

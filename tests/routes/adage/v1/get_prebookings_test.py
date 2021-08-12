@@ -119,7 +119,7 @@ class Returns200Test:
             status="CONFIRMED",
         )
         EducationalBookingFactory(
-            educationalBooking__educationalRedactor=redactor,
+            educationalBooking__educationalRedactorId=redactor,
             educationalBooking__educationalYear=educationalYear,
             educationalBooking__educationalInstitution=educationalInstitution,
             status="PENDING",
