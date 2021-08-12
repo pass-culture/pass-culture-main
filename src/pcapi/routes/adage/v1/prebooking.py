@@ -47,7 +47,7 @@ def confirm_prebooking(educational_booking_id: int) -> prebooking_serialization.
     try:
         educational_booking = api.confirm_educational_booking(educational_booking_id)
     except exceptions.InsufficientFund:
-        raise ApiErrors({"deposit": "Fond insuffisant pour confirmer cette réservation"}, status_code=422)
+        raise ApiErrors({"deposit": "Fonds insuffisant pour confirmer cette réservation"}, status_code=422)
     except exceptions.InsufficientTemporaryFund:
         raise ApiErrors({"deposit": "Montant du fond définitif en attente de validation"}, status_code=422)
     except exceptions.EducationalBookingNotFound:

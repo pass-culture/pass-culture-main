@@ -143,7 +143,7 @@ class ReturnsErrorTest:
         response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/confirm")
 
         assert response.status_code == 422
-        assert response.json == {"deposit": "Fond insuffisant pour confirmer cette réservation"}
+        assert response.json == {"deposit": "Fonds insuffisant pour confirmer cette réservation"}
 
     def test_insufficient_temporary_fund(self, app, db_session) -> None:
         educational_institution = EducationalInstitutionFactory()

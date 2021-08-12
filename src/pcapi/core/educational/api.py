@@ -90,7 +90,7 @@ def confirm_educational_booking(educational_booking_id: int) -> EducationalBooki
 
     booking: bookings_models.Booking = educational_booking.booking
     if booking.status == bookings_models.BookingStatus.CONFIRMED:
-        return booking
+        return educational_booking
 
     educational_institution_id = educational_booking.educationalInstitutionId
     educational_year_id = educational_booking.educationalYearId
