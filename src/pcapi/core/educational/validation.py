@@ -30,9 +30,9 @@ def check_educational_year_exists(educational_year: EducationalYear) -> None:
         raise exceptions.EducationalYearNotFound()
 
 
-def check_stock_is_bookable(stock: Stock, booked_quantity: int) -> None:
-    if (stock.quantity - stock.dnBookedQuantity) < booked_quantity:
-        raise exceptions.NoStockLeftError(stock.id)
+def check_stock_is_bookable(stock: Stock) -> None:
+    if not stock.isBookable:
+        raise exceptions.StockNotBookable(stock.id)
     if not stock.offer.isEducational:
         raise exceptions.OfferIsNotEducational(stock.offer.id)
     if not stock.offer.isEvent:

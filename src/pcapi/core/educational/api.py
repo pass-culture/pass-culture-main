@@ -43,7 +43,7 @@ def book_educational_offer(redactor_email: str, uai_code: str, stock_id: int) ->
     # on the stock if validation issues an exception
     with transaction():
         stock = offers_repository.get_and_lock_stock(stock_id=stock_id)
-        validation.check_stock_is_bookable(stock, EAC_DEFAULT_BOOKED_QUANTITY)
+        validation.check_stock_is_bookable(stock)
 
         educational_year = educational_repository.find_educational_year_by_date(stock.beginningDatetime)
         validation.check_educational_year_exists(educational_year)

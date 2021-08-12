@@ -1,5 +1,6 @@
 import datetime
 from decimal import Decimal
+from unittest import mock
 
 import pytest
 from sqlalchemy import create_engine
@@ -214,30 +215,26 @@ class BookEducationalOfferTest:
         saved_bookings = EducationalBooking.query.all()
         assert len(saved_bookings) == 0
 
-    @clean_database
-    def test_should_not_create_educational_booking_when_stock_is_fully_booked(self):
+    @mock.patch("pcapi.core.offers.repository.get_and_lock_stock")
+    def test_should_not_create_educational_booking_when_stock_is_not_bookable(self, mocked_get_and_lock_stock):
         # Given
-        stock = offers_factories.EventStockFactory(
-            offer__isEducational=True,
-            quantity=1,
-            beginningDatetime=datetime.datetime(2021, 5, 15),
-        )
-        bookings_factories.BookingFactory(stock=stock)
+        stock = mock.MagicMock()
+        stock.isBookable = False
+        stock.id = 1
+        mocked_get_and_lock_stock.return_value = stock
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
         educational_institution = educational_factories.EducationalInstitutionFactory()
-        educational_factories.EducationalYearFactory()
-        redactor_email = "professeur@example.com"
 
         # When
-        with pytest.raises(exceptions.NoStockLeftError) as error:
+        with pytest.raises(exceptions.StockNotBookable) as error:
             educational_api.book_educational_offer(
-                redactor_email=redactor_email,
+                redactor_email=educational_redactor.email,
                 uai_code=educational_institution.institutionId,
                 stock_id=stock.id,
             )
 
         # Then
-        assert error.value.errors == {"stock": [f"Le stock {stock.id} n'est plus disponible"]}
-
+        assert error.value.errors == {"stock": [f"Le stock {stock.id} n'est pas réservable"]}
         saved_bookings = EducationalBooking.query.join(Booking).filter(Booking.stockId == stock.id).all()
         assert len(saved_bookings) == 0
 

@@ -59,9 +59,9 @@ def book_educational_offer(
     except offers_exceptions.StockDoesNotExist:
         logger.info("Could not book offer: stock does not exist", extra={"stock_id": body.stockId})
         raise ApiErrors({"stock": "stock introuvable"}, status_code=400)
-    except exceptions.NoStockLeftError:
-        logger.info("Could not book offer: no stock left", extra={"stock_id": body.stockId})
-        raise ApiErrors({"stock": "Il n'y a plus de stock disponible à la réservation sur cette offre"})
+    except exceptions.StockNotBookable:
+        logger.info("Could not book offer: stock is not bookable", extra={"stock_id": body.stockId})
+        raise ApiErrors({"stock": "Cette offre n'est pas disponible à la réservation"})
     except exceptions.OfferIsNotEvent:
         logger.info("Could not book offer: offer is not an event", extra={"stock_id": body.stockId})
         raise ApiErrors({"offer": "L'offre n'est pas un évènement"})

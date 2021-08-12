@@ -6,9 +6,9 @@ class EducationalInstitutionUnknown(ClientError):
         super().__init__("educationalInstitution", "Cette institution est inconnue")
 
 
-class NoStockLeftError(ClientError):
+class StockNotBookable(ClientError):
     def __init__(self, stock_id) -> None:
-        super().__init__("stock", f"Le stock {stock_id} n'est plus disponible")
+        super().__init__("stock", f"Le stock {stock_id} n'est pas réservable")
 
 
 class EducationalYearNotFound(ClientError):

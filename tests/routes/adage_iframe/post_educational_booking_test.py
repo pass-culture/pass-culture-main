@@ -108,7 +108,7 @@ class PostEducationalBookingTest:
 
         # Then
         assert response.status_code == 400
-        assert response.json == {"stock": "Il n'y a plus de stock disponible à la réservation sur cette offre"}
+        assert response.json == {"stock": "Cette offre n'est pas disponible à la réservation"}
 
     def test_should_not_allow_booking_when_redactor_email_is_different_from_email_in_adage_jwt(self, app):
         # Given
