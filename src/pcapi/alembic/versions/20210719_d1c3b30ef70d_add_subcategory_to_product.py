@@ -1,7 +1,7 @@
 """add_subcategory_to_product
 
 Revision ID: d1c3b30ef70d
-Revises: ffce4944b6b7
+Revises: 1c5bec8d2aec
 Create Date: 2021-07-19 14:28:35.887679
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "d1c3b30ef70d"
-down_revision = "ffce4944b6b7"
+down_revision = "1c5bec8d2aec"
 branch_labels = None
 depends_on = None
 
