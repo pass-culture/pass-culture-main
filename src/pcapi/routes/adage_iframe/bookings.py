@@ -6,6 +6,7 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.routes.adage_iframe import blueprint
+from pcapi.routes.adage_iframe.security import AuthenticatedInformation
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization.educational_booking import BookEducationalOfferRequest
 from pcapi.routes.adage_iframe.serialization.educational_booking import BookEducationalOfferResponse
@@ -18,11 +19,13 @@ logger = logging.getLogger(__name__)
 @blueprint.adage_iframe.route("/bookings", methods=["POST"])
 @spectree_serialize(api=blueprint.api, response_model=BookEducationalOfferResponse, on_error_statuses=[400])
 @adage_jwt_required
-def book_educational_offer(authenticated_email: str, body: BookEducationalOfferRequest) -> BookEducationalOfferResponse:
-    if body.redactorEmail != authenticated_email:
+def book_educational_offer(
+    authenticated_information: AuthenticatedInformation, body: BookEducationalOfferRequest
+) -> BookEducationalOfferResponse:
+    if body.redactorEmail != authenticated_information.email:
         logger.info(
             "Authenticated email and redactor email do not match",
-            extra={"email_token": authenticated_email, "email_body": (body.redactorEmail)},
+            extra={"email_token": authenticated_information.email, "email_body": (body.redactorEmail)},
         )
         raise ForbiddenError({"Authorization": "Authenticated email and redactor email do not match"})
 
@@ -50,3 +53,10 @@ def book_educational_offer(authenticated_email: str, body: BookEducationalOfferR
         raise ApiErrors({"educationalYear": "Aucune année scolaire ne correspond à cet évènement"})
 
     return BookEducationalOfferResponse(bookingId=booking.id)
+
+
+@blueprint.adage_iframe.route("/authenticate", methods=["GET"])
+@spectree_serialize(api=blueprint.api, on_success_status=204)
+@adage_jwt_required
+def authenticate(authenticated_information: AuthenticatedInformation) -> None:
+    pass

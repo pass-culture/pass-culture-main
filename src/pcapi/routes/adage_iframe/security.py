@@ -15,6 +15,12 @@ from pcapi.serialization.spec_tree import add_security_scheme
 logger = logging.getLogger(__name__)
 
 
+class AuthenticatedInformation:
+    def __init__(self, email: str, uai_code: str):
+        self.email = email
+        self.uai_code = uai_code
+
+
 def adage_jwt_required(route_function):
     add_security_scheme(route_function, JWT_AUTH)
 
@@ -38,7 +44,11 @@ def adage_jwt_required(route_function):
                 logger.warning("Token does not contain an expiration date")
                 raise InvalidTokenError("No expiration date provided")
 
-            kwargs["authenticated_email"] = adage_jwt_decoded.get("email")
+            authenticated_information = AuthenticatedInformation(
+                email=adage_jwt_decoded.get("email"),
+                uai_code=adage_jwt_decoded.get("UAICode"),
+            )
+            kwargs["authenticated_information"] = authenticated_information
             return route_function(*args, **kwargs)
 
         raise ForbiddenError({"Authorization": ["Unrecognized token"]})

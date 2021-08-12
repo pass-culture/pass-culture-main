@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import ByteString
 
 import pytest
 
@@ -17,6 +18,9 @@ class PostEducationalBookingTest:
     stock_date = datetime(2021, 5, 15)
     educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
 
+    def _create_adage_valid_token_with_email(self, email: str) -> ByteString:
+        return create_adage_jwt_fake_valid_token(email=email, uai_code="EAU123")
+
     def test_post_educational_booking(self, app):
         # Given
         stock = offer_factories.EventStockFactory(offer__isEducational=True, beginningDatetime=self.stock_date)
@@ -26,7 +30,7 @@ class PostEducationalBookingTest:
         )
         redactor_email = "professeur.lycee@example.com"
 
-        adage_jwt_fake_valid_token = create_adage_jwt_fake_valid_token(user_email=redactor_email)
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=redactor_email)
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -59,7 +63,7 @@ class PostEducationalBookingTest:
         )
         redactor_email = "professeur.lycee@example.com"
 
-        adage_jwt_fake_valid_token = create_adage_jwt_fake_valid_token(user_email=redactor_email)
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=redactor_email)
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -88,7 +92,7 @@ class PostEducationalBookingTest:
         )
         redactor_email = "professeur.lycee@example.com"
 
-        adage_jwt_fake_valid_token = create_adage_jwt_fake_valid_token(user_email=redactor_email)
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=redactor_email)
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -115,7 +119,7 @@ class PostEducationalBookingTest:
         )
         redactor_email = "professeur.lycee@example.com"
 
-        adage_jwt_fake_valid_token = create_adage_jwt_fake_valid_token(user_email="fake@email.com")
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email="fake@email.com")
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -142,7 +146,7 @@ class PostEducationalBookingTest:
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
         )
 
-        adage_jwt_fake_valid_token = create_adage_jwt_fake_valid_token(user_email=redactor_email)
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=redactor_email)
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -169,7 +173,7 @@ class PostEducationalBookingTest:
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
         )
 
-        adage_jwt_fake_valid_token = create_adage_jwt_fake_valid_token(user_email=redactor_email)
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=redactor_email)
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
