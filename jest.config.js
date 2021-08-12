@@ -15,5 +15,7 @@ module.exports = {
     "^.+\\.module\\.(css|sass|scss)$",
   ],
   verbose: false,
-  resetMocks: true,
+  resetMocks: false,
+  clearMocks: true,
+  restoreMocks: true,
 }

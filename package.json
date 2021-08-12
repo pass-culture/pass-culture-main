@@ -96,6 +96,7 @@
     "identity-obj-proxy": "3.0.0",
     "jest": "^27.0.3",
     "jest-circus": "27.0.6",
+    "jest-fetch-mock": "^3.0.3",
     "jest-resolve": "27.0.6",
     "jest-watch-typeahead": "0.6.4",
     "lint-staged": "^11.1.2",

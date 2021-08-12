@@ -12,5 +12,9 @@ if (typeof window !== "undefined") {
 }
 export const API_URL = apiUrlBasedOnDomain || "http://localhost"
 
-export const { ENVIRONMENT_NAME, SENTRY_SAMPLE_RATE, SENTRY_SERVER_URL } =
-  process.env
+export const {
+  ENVIRONMENT_NAME,
+  URL_FOR_MAINTENANCE,
+  SENTRY_SAMPLE_RATE,
+  SENTRY_SERVER_URL,
+} = process.env
