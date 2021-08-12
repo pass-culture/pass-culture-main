@@ -60,6 +60,7 @@ def app_fixture():
 
     app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URL
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["SQLALCHEMY_ECHO"] = False
     app.config["SECRET_KEY"] = "@##&6cweafhv3426445"
     app.config["REMEMBER_COOKIE_HTTPONLY"] = False
     app.config["SESSION_COOKIE_HTTPONLY"] = False

@@ -24,9 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 def delete_cascade_offerer_by_id(offerer_id: int) -> None:
-    offerer_has_bookings = db.session.query(
-        Booking.query.join(Stock).join(Offer).join(Venue).join(Offerer).filter(Offerer.id == offerer_id).exists()
-    ).scalar()
+    offerer_has_bookings = db.session.query(Booking.query.filter(Booking.offererId == offerer_id).exists()).scalar()
 
     if offerer_has_bookings:
         raise CannotDeleteOffererWithBookingsException()
@@ -59,10 +57,16 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         Venue.managingOffererId == offerer_id,
     ).delete(synchronize_session=False)
 
-    offer_ids_to_delete = db.session.query(Offer.id).filter(
-        Offer.venueId == Venue.id, Venue.managingOffererId == offerer_id
+    offer_ids_to_delete = [
+        id[0]
+        for id in db.session.query(Offer.id)
+        .filter(Offer.venueId == Venue.id, Venue.managingOffererId == offerer_id)
+        .all()
+    ]
+
+    deleted_offers_count = Offer.query.filter(Offer.venueId == Venue.id, Venue.managingOffererId == offerer_id).delete(
+        synchronize_session=False
     )
-    deleted_offers_count = Offer.query.filter(Offer.id.in_(offer_ids_to_delete)).delete(synchronize_session=False)
 
     deleted_venue_providers_count = VenueProvider.query.filter(
         VenueProvider.venueId == Venue.id, Venue.managingOffererId == offerer_id
@@ -92,23 +96,25 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
     Offerer.query.filter(Offerer.id == offerer_id).delete()
 
     db.session.commit()
-    search.reindex_offer_ids(offer_ids_to_delete)
+    search.unindex_offer_ids(offer_ids_to_delete)
 
-    logger.info(
-        "Deleted offerer",
-        extra={
-            "offerer_id": offerer_id,
-            "deleted_api_key_count": deleted_api_key_count,
-            "deleted_user_offerers_count": deleted_user_offerers_count,
-            "deleted_bank_informations_count": deleted_bank_informations_count,
-            "deleted_product_count": deleted_product_count,
-            "deleted_venues_count": deleted_venues_count,
-            "deleted_venue_providers_count": deleted_venue_providers_count,
-            "deleted_allocine_venue_providers_count": deleted_allocine_venue_providers_count,
-            "deleted_offers_count": deleted_offers_count,
-            "deleted_mediations_count": deleted_mediations_count,
-            "deleted_favorites_count": deleted_favorites_count,
-            "deleted_offer_criteria_count": deleted_offer_criteria_count,
-            "deleted_stocks_count": deleted_stocks_count,
-        },
-    )
+    recap_data = {
+        "offer_ids_to_unindex": offer_ids_to_delete,
+        "offerer_id": offerer_id,
+        "deleted_api_key_count": deleted_api_key_count,
+        "deleted_user_offerers_count": deleted_user_offerers_count,
+        "deleted_bank_informations_count": deleted_bank_informations_count,
+        "deleted_product_count": deleted_product_count,
+        "deleted_venues_count": deleted_venues_count,
+        "deleted_venue_providers_count": deleted_venue_providers_count,
+        "deleted_allocine_venue_providers_count": deleted_allocine_venue_providers_count,
+        "deleted_offers_count": deleted_offers_count,
+        "deleted_mediations_count": deleted_mediations_count,
+        "deleted_favorites_count": deleted_favorites_count,
+        "deleted_offer_criteria_count": deleted_offer_criteria_count,
+        "deleted_stocks_count": deleted_stocks_count,
+    }
+
+    logger.info("Deleted offerer", extra=recap_data)
+
+    return recap_data

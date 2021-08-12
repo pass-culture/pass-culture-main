@@ -46,18 +46,21 @@ def test_delete_cascade_venue_should_abort_when_offerer_has_any_bookings():
 def test_delete_cascade_venue_should_remove_offers_and_stocks():
     # Given
     venue_to_delete = offers_factories.VenueFactory()
-    offers_factories.OfferFactory(venue=venue_to_delete)
-    offers_factories.StockFactory(offer__venue=venue_to_delete)
+    offer_1 = offers_factories.OfferFactory(venue=venue_to_delete)
+    offer_2 = offers_factories.OfferFactory(venue=venue_to_delete)
+    stock = offers_factories.StockFactory(offer__venue=venue_to_delete)
     offers_factories.StockFactory(offer__venue__managingOfferer=venue_to_delete.managingOfferer)
+    items_to_delete = [offer_1.id, offer_2.id, stock.offerId]
 
     # When
-    delete_cascade_venue_by_id(venue_to_delete.id)
+    recap_data = delete_cascade_venue_by_id(venue_to_delete.id)
 
     # Then
     assert Offerer.query.count() == 1
     assert Venue.query.count() == 1
     assert Offer.query.count() == 1
     assert Stock.query.count() == 1
+    assert sorted(recap_data["offer_ids_to_unindex"]) == sorted(items_to_delete)
 
 
 @pytest.mark.usefixtures("db_session")

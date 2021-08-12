@@ -130,6 +130,24 @@ def test_delete_cascade_offerer_should_remove_bank_informations_of_offerer():
 
 
 @pytest.mark.usefixtures("db_session")
+def test_delete_cascade_offerer_should_remove_offers_of_offerer():
+    # Given
+    offerer_to_delete = offers_factories.OffererFactory()
+    venue = offers_factories.VenueFactory(managingOfferer=offerer_to_delete)
+    event_offer = offers_factories.EventOfferFactory(venue=venue)
+    thing_offer = offers_factories.ThingOfferFactory(venue=venue)
+    items_to_delete = [event_offer.id, thing_offer.id]
+
+    # When
+    recap_data = delete_cascade_offerer_by_id(offerer_to_delete.id)
+
+    # Then
+    assert Offerer.query.count() == 0
+    assert Offer.query.count() == 0
+    assert sorted(recap_data["offer_ids_to_unindex"]) == sorted(items_to_delete)
+
+
+@pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_bank_informations_of_managed_venue():
     # Given
     venue = offers_factories.VenueFactory()
