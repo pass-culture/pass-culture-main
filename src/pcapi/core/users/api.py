@@ -165,6 +165,7 @@ def create_account(
     marketing_email_subscription: bool = False,
     is_email_validated: bool = False,
     send_activation_mail: bool = True,
+    remote_updates: bool = True,
     postal_code: str = None,
     phone_number: str = None,
     apps_flyer_user_id: str = None,
@@ -200,8 +201,9 @@ def create_account(
     repository.save(user)
     logger.info("Created user account", extra={"user": user.id})
 
-    update_user_attributes_job.delay(user.id)
-    update_external_user(user)
+    if remote_updates:
+        update_user_attributes_job.delay(user.id)
+        update_external_user(user)
 
     if not is_email_validated and send_activation_mail:
         request_email_confirmation(user)

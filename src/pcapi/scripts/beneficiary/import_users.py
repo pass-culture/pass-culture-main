@@ -39,6 +39,7 @@ def create_or_update_users(rows: Iterable[dict]) -> list[User]:
                 birthdate=birthdate,
                 is_email_validated=True,
                 send_activation_mail=False,
+                remote_updates=False,
             )
             deposit = payments_api.create_deposit(user, "import_users (csv)")
             repository.save(deposit)
@@ -63,6 +64,7 @@ def create_or_update_users(rows: Iterable[dict]) -> list[User]:
             birthdate=datetime(1946, 12, 24),
             is_email_validated=True,
             send_activation_mail=False,
+            remote_updates=False,
         )
     admin.setPassword(settings.STAGING_TEST_USER_PASSWORD)
     admin.remove_beneficiary_role()
