@@ -136,8 +136,8 @@ class ConfirmEducationalBookingTest:
             confirm_educational_booking(booking.educationalBookingId)
 
 
+@pytest.mark.usefixtures("db_session")
 class BookEducationalOfferTest:
-    @clean_database
     def test_should_create_educational_booking_on_requested_educational_offer(self):
         # Given
         stock = offers_factories.EventStockFactory(
@@ -169,7 +169,6 @@ class BookEducationalOfferTest:
         assert saved_educational_booking.educationalYear.adageId == educational_year.adageId
         assert saved_educational_booking.booking.status == BookingStatus.PENDING
 
-    @clean_database
     def test_should_not_create_educational_booking_when_educational_institution_unknown(self):
         # Given
         stock = offers_factories.EventStockFactory(
@@ -194,7 +193,6 @@ class BookEducationalOfferTest:
         saved_bookings = EducationalBooking.query.join(Booking).filter(Booking.stockId == stock.id).all()
         assert len(saved_bookings) == 0
 
-    @clean_database
     def test_should_not_create_educational_booking_when_stock_does_not_exist(self):
         # Given
         offers_factories.EventStockFactory(offer__isEducational=True, beginningDatetime=datetime.datetime(2021, 5, 15))
@@ -238,7 +236,6 @@ class BookEducationalOfferTest:
         saved_bookings = EducationalBooking.query.join(Booking).filter(Booking.stockId == stock.id).all()
         assert len(saved_bookings) == 0
 
-    @clean_database
     def test_should_not_create_educational_booking_when_educational_year_not_found(self):
         # Given
         date_before_education_year_beginning = datetime.datetime(2018, 9, 20)
@@ -265,7 +262,6 @@ class BookEducationalOfferTest:
         saved_bookings = EducationalBooking.query.join(Booking).filter(Booking.stockId == stock.id).all()
         assert len(saved_bookings) == 0
 
-    @clean_database
     def test_should_not_create_educational_booking_when_requested_offer_is_not_educational(self):
         # Given
         educational_institution = educational_factories.EducationalInstitutionFactory()
@@ -289,7 +285,6 @@ class BookEducationalOfferTest:
         saved_bookings = EducationalBooking.query.join(Booking).filter(Booking.stockId == stock.id).all()
         assert len(saved_bookings) == 0
 
-    @clean_database
     def test_should_not_create_educational_booking_when_offer_is_not_an_event(self):
         # Given
         educational_institution = educational_factories.EducationalInstitutionFactory()
