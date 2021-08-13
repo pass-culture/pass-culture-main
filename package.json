@@ -14,7 +14,7 @@
     "lint:js:fix": "yarn lint:js --fix",
     "lint:scss": "stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",
-    "test": "jest",
+    "test:unit": "jest",
     "prepare": "husky install"
   },
   "lint-staged": {
