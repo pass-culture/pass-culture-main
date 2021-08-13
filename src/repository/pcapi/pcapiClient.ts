@@ -45,7 +45,7 @@ const fetchWithErrorHandler = async (path, options) => {
 }
 
 export const client = {
-  get: async (path) => {
+  get: async (path:string):Promise<any> => {
     return await fetchWithErrorHandler(path, buildOptions(GET_HTTP_METHOD))
   },
 }

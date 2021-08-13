@@ -1,6 +1,7 @@
 {
   "extends": [
     "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
     "plugin:react/all",
     "plugin:jsx-a11y/strict",
     "plugin:import/errors",
@@ -16,11 +17,16 @@
   "globals": {
     "fixture": "readonly"
   },
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
   "plugins": [
     "only-warn"
   ],
   "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
     "indent": ["warn", 2, {"ignoredNodes": ["JSXElement"],  "offsetTernaryExpressions": true, "SwitchCase": 1 }],
     "import/order": ["warn", {
       "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
@@ -42,6 +48,7 @@
       }
     ],
     "react/jsx-curly-brace-presence": [2, { "props": "never", "children": "ignore" }],
+    "react/jsx-filename-extension": [1, { "extensions": [".tsx", ".ts"] }],
     "react/jsx-fragments": "off",
     "react/jsx-indent": [2, 2, {"indentLogicalExpressions": true}],
     "react/jsx-indent-props": [2, 2],
@@ -92,7 +99,9 @@
       "node": {
         "extensions": [
           ".js",
-          ".jsx"
+          ".jsx",
+          ".ts",
+          ".tsx",
         ],
         "paths": ["."],
         "moduleDirectory": ["node_modules", "src"]
