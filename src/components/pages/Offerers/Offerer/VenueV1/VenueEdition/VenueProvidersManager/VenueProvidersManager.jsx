@@ -89,6 +89,7 @@ const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) =
           <VenueProviderItem
             key={venueProvider.id}
             venueProvider={venueProvider}
+            venueDepartmentCode={venue.departementCode}
           />
         ))}
       </ul>
