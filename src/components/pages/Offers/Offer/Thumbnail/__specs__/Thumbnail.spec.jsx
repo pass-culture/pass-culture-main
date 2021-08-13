@@ -18,6 +18,10 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 jest.mock('components/pages/Offers/Offer/Thumbnail/ImageEditor/canvas.js')
 
+jest.mock('repository/pcapi/pcapi', () => ({
+  validateDistantImage: jest.fn().mockResolvedValue(),
+}))
+
 describe('thumbnail edition', () => {
   describe('when thumbnail exists', () => {
     it('should display a modal when the user is clicking on thumbnail', () => {

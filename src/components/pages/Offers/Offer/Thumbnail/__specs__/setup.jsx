@@ -39,6 +39,7 @@ export const renderThumbnail = ({
   render(
     <MemoryRouter>
       <ThumbnailDialog
+        postThumbnail={jest.fn(() => Promise.resolve())}
         setIsModalOpened={setIsModalOpened}
         setPreview={jest.fn()}
         setThumbnailInfo={setThumbnailInfo}

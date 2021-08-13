@@ -75,13 +75,14 @@
         color: $grey-dark;
       }
     }
+  }
 
   .last-sync {
     @include caption();
 
     align-items: start;
+    color: $grey-dark;
     display: flex;
     width: 100%;
-    color: $grey-dark;
   }
 }

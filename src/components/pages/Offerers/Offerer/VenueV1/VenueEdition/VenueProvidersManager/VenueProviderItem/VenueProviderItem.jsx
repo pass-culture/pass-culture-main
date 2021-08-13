@@ -1,13 +1,13 @@
+import './VenueProviderItem.scss'
+
 import PropTypes from 'prop-types'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
-import { formatLocalTimeDateString } from 'utils/timezone'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
 import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 import { pluralize } from 'utils/pluralize'
-
-import './VenueProviderItem.scss'
+import { formatLocalTimeDateString } from 'utils/timezone'
 
 
 const VenueProviderItem = ({ venueProvider, venueDepartmentCode }) => {
@@ -94,18 +94,23 @@ const VenueProviderItem = ({ venueProvider, venueDepartmentCode }) => {
           </ul>
         </div>
       )}
-      <div className="last-sync">
-        <span>{'Dernière synchronisation: '}</span>
-        <span>
-          {formatLocalTimeDateString(lastSyncDate, venueDepartmentCode, 'dd/MM/yyyy HH:mm')}
-        </span>
-      </div>
+
+      {lastSyncDate && (
+        <div className="last-sync">
+          <span>
+            {'Dernière synchronisation: '}
+          </span>
+          <span>
+            {formatLocalTimeDateString(lastSyncDate, venueDepartmentCode, 'dd/MM/yyyy HH:mm')}
+          </span>
+        </div>
+      )}
     </li>
   )
 }
 
 VenueProviderItem.propTypes = {
-  venueDepartmentCode: PropTypes.number.isRequired,
+  venueDepartmentCode: PropTypes.string.isRequired,
   venueProvider: PropTypes.shape({
     provider: PropTypes.shape({
       name: PropTypes.string.isRequired,

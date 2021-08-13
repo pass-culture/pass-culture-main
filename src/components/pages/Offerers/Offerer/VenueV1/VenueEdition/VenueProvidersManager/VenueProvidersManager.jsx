@@ -13,7 +13,6 @@ import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
 
 import './VenueProvidersManager.scss'
 
-
 const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) => {
   const [isCreationMode, setIsCreationMode] = useState(false)
   const [selectedProviderId, setSelectedProviderId] = useState(DEFAULT_PROVIDER_OPTION.id)
@@ -88,8 +87,8 @@ const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) =
         {venueProviders.map(venueProvider => (
           <VenueProviderItem
             key={venueProvider.id}
-            venueProvider={venueProvider}
             venueDepartmentCode={venue.departementCode}
+            venueProvider={venueProvider}
           />
         ))}
       </ul>
@@ -148,6 +147,7 @@ VenueProvidersManagerContainer.propTypes = {
     id: PropTypes.string.isRequired,
     managingOffererId: PropTypes.string.isRequired,
     siret: PropTypes.string.isRequired,
+    departementCode: PropTypes.string.isRequired,
   }).isRequired,
 }
 

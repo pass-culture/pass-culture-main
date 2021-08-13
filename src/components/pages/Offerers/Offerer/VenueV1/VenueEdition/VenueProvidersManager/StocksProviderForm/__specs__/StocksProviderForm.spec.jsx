@@ -39,6 +39,7 @@ describe('src | StocksProviderForm', () => {
       managingOffererId: 'managingOffererId',
       name: 'Le lieu',
       siret: '12345678901234',
+      departementCode: '30',
     }
 
     props = {
@@ -103,6 +104,7 @@ describe('src | StocksProviderForm', () => {
         providerId: provider.id,
         venueId: props.venue.id,
         venueIdAtOfferProvider: props.venue.siret,
+        lastSyncDate: '2018-01-01T10:00:00',
       }
       pcapi.createVenueProvider.mockResolvedValue(createdVenueProvider)
       await renderStocksProviderForm()

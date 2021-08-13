@@ -38,6 +38,7 @@ describe('src | VenueProvidersManager', () => {
       managingOffererId: 'managingOffererId',
       name: 'Le lieu',
       siret: '12345678901234',
+      departementCode: '30',
     }
 
     props = {
@@ -71,6 +72,7 @@ describe('src | VenueProvidersManager', () => {
           nOffers: 0,
           provider: { id: 'providerId', name: 'FNAC' },
           venueId: props.venue.id,
+          lastSyncDate: '2018-01-01T10:00:00',
         },
       ]
       pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
@@ -86,7 +88,12 @@ describe('src | VenueProvidersManager', () => {
     it('should not show import button', async () => {
       // Given
       venueProviders = [
-        { id: 'AD', provider: { id: 'providerId', name: 'TiteLive' }, venueId: props.venue.id },
+        {
+          id: 'AD',
+          provider: { id: 'providerId', name: 'TiteLive' },
+          venueId: props.venue.id,
+          lastSyncDate: '2018-01-01T10:00:00',
+        },
       ]
       pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
 
