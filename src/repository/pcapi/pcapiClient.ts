@@ -1,4 +1,5 @@
-import { API_URL, URL_FOR_MAINTENANCE } from "utils/config"
+import {API_URL, URL_FOR_MAINTENANCE} from "utils/config"
+
 export const HTTP_STATUS = {
   NO_CONTENT: 204,
   FORBIDDEN: 403,
@@ -10,19 +11,17 @@ const DELETE_HTTP_METHOD = "DELETE"
 const buildOptions = (method) => {
   const params = new URLSearchParams(window.location.search)
   const token = params.get("token")
-  const headers = new Headers({
-    Authorization: `Bearer ${token}`,
-  })
+  const headers: HeadersInit = new Headers()
+  headers.set('Authorization', `Bearer ${token}`)
 
-  const options = {
+  if (method !== GET_HTTP_METHOD && method !== DELETE_HTTP_METHOD) {
+    headers.set('Content-Type', "application/json")
+  }
+
+  return {
     headers,
     method: method,
   }
-
-  if (method !== GET_HTTP_METHOD && method !== DELETE_HTTP_METHOD) {
-    options["headers"] = { "Content-Type": "application/json" }
-  }
-  return options
 }
 
 const buildUrl = (path) => `${API_URL}${path}`

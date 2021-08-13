@@ -3,8 +3,9 @@ import fetch from "jest-fetch-mock"
 import { client } from "repository/pcapi/pcapiClient"
 import { API_URL, URL_FOR_MAINTENANCE } from "utils/config"
 
-delete window.location
+Reflect.deleteProperty(global.window, 'location')
 const token = "JWT-token"
+// @ts-ignore
 window.location = new URL(`https://www.example.com?token=${token}`)
 const setHrefSpy = jest.fn()
 Object.defineProperty(window.location, "href", {
@@ -60,6 +61,7 @@ describe("pcapiClient", () => {
       const headers = new Headers({ "content-type": "application/json" })
       fetch.mockResponseOnce(JSON.stringify(paginatedBookingRecapReturned), {
         status: 200,
+        // @ts-ignore
         headers,
       })
 

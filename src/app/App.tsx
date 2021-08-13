@@ -1,10 +1,11 @@
 import "./App.scss"
-import React, { useEffect, useState } from "react"
+import * as React from "react"
 
 import * as pcapi from "repository/pcapi/pcapi"
+import {useEffect, useState} from "react";
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState()
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean|null>(null)
 
   useEffect(() => {
     pcapi

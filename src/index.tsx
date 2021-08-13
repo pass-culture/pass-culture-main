@@ -1,7 +1,7 @@
 import { init as SentryInit } from "@sentry/browser"
 import { Integrations as TracingIntegrations } from "@sentry/tracing"
-import React from "react"
-import ReactDOM from "react-dom"
+import * as React from "react"
+import * as ReactDOM from "react-dom"
 import "./index.scss"
 
 import {

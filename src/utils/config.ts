@@ -1,3 +1,5 @@
+
+
 const NODE_ENV = process.env.NODE_ENV || "development"
 
 export const IS_DEV = NODE_ENV === "development"
@@ -10,7 +12,7 @@ if (typeof window !== "undefined") {
     ? process.env.API_URL_OLD
     : process.env.API_URL_NEW
 }
-export const API_URL = apiUrlBasedOnDomain || "http://localhost"
+export const API_URL = apiUrlBasedOnDomain || "http://localhost/adage-iframe"
 
 export const {
   ENVIRONMENT_NAME,
