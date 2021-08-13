@@ -14,6 +14,9 @@ function formatInputValueWhenTooLong(value, maxLength) {
   return valueIsTooLong ? value.slice(0, maxLength - 1) : value
 }
 
+/**
+ * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ */
 class TextareaField extends PureComponent {
   renderField = ({ input, meta }) => {
     const {

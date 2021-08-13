@@ -6,6 +6,9 @@ import { requestData } from 'redux-saga-data'
 import { redirectLoggedUser } from 'components/router/helpers'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
+/**
+ * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ */
 class SignupValidation extends PureComponent {
   constructor(props) {
     super(props)

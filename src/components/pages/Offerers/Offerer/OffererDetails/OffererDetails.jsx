@@ -11,6 +11,9 @@ import BankInformation from './BankInformation/BankInformation'
 import { Offerer } from './Offerer'
 import VenuesContainer from './Venues/VenuesContainer'
 
+/**
+ * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ */
 class OffererDetails extends PureComponent {
   componentDidMount() {
     const { offererId, loadOffererById } = this.props

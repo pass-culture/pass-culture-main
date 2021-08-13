@@ -3,6 +3,9 @@ import React, { PureComponent } from 'react'
 
 import Icon from './Icon'
 
+/**
+ * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ */
 class Spinner extends PureComponent {
   constructor(props) {
     super(props)

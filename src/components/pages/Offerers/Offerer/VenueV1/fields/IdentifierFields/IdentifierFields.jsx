@@ -22,6 +22,9 @@ const parseSiret = value => {
   return value.replace(/[^[0-9]/g, '')
 }
 
+/**
+ * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ */
 class IdentifierFields extends PureComponent {
   componentDidUpdate() {
     ReactTooltip.rebuild()

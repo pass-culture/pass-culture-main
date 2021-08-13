@@ -1,0 +1,26 @@
+{
+  "pricer": {
+    "bug": 100,
+    "architecture": 100,
+    "bugRisk": 5,
+    "security": 100,
+    "securityRisk": 10,
+    "quality": 5,
+    "test": 5,
+    "doc": 3,
+    "ci": 30,
+    "deploy": 10,
+    "devEnv": 10,
+    "outdated": 5
+  },
+  "standard": 100,
+  "ignorePath": [
+    "node_modules",
+    "README.md"
+  ],
+  "debtTags": [
+    "@debt",
+    "TODO",
+    "FIXME"
+  ]
+}

@@ -38,6 +38,8 @@ import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import OfferCategories from './OfferCategories/OfferCategories'
 
+// JOCONDE React:component "Ce composant est vraiment le plus beau et le plus lisible que nous ayons côté pro. Prenez en de la graine !"
+
 const getOfferConditionalFields = ({
   offerSubCategory = null,
   isUserAdmin = null,

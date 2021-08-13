@@ -22,6 +22,9 @@ const markerIcon = new LeafletIcon({
   popupAnchor: null,
 })
 
+/**
+ * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ */
 class LocationViewer extends PureComponent {
   constructor(props) {
     super(props)

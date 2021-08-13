@@ -6,6 +6,9 @@ import FieldErrors from '../FieldErrors'
 
 const noOperation = () => {}
 
+/**
+ * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ */
 class HiddenField extends PureComponent {
   renderField = ({ input, meta }) => (
     <div>

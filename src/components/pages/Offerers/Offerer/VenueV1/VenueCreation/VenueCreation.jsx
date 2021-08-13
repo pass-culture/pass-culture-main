@@ -22,6 +22,9 @@ import { formatSiret } from '../siret/formatSiret'
 import VenueLabel from '../ValueObjects/VenueLabel'
 import VenueType from '../ValueObjects/VenueType'
 
+/**
+ * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel -> à faire lors de la V2 ?"
+ */
 class VenueCreation extends PureComponent {
   constructor() {
     super()

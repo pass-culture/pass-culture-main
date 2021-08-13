@@ -2,6 +2,9 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Field } from 'react-final-form'
 
+/**
+ * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ */
 class CheckboxField extends PureComponent {
   renderLabelAlignedField = ({ input }) => {
     const { checked, id, label } = this.props

@@ -5,6 +5,9 @@ import HeaderContainer from '../Header/HeaderContainer'
 import PageTitle from '../PageTitle/PageTitle'
 import Spinner from '../Spinner'
 
+/**
+ * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ */
 class CsvTable extends PureComponent {
   constructor(props) {
     super(props)

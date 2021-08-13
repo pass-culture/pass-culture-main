@@ -13,6 +13,9 @@ export const isNotValid = value => {
   return null
 }
 
+/**
+ * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ */
 class PasswordField extends PureComponent {
   constructor(props) {
     super(props)

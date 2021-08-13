@@ -2,6 +2,9 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
+/**
+ * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ */
 class ModifyOrCancelControl extends PureComponent {
   handleOnCLick = () => {
     const { isCreatedEntity, form, history, offererId, venueId } = this.props

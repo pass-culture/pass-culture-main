@@ -23,6 +23,9 @@ import VenueType from '../ValueObjects/VenueType'
 
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
 
+/**
+ * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel -> à faire lors de la V2 ?"
+ */
 class VenueEdition extends PureComponent {
   constructor() {
     super()
