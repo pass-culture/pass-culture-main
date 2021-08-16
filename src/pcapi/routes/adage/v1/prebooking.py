@@ -81,7 +81,15 @@ def refuse_pre_booking() -> prebooking_serialization.EducationalBookingResponse:
     tags=("change bookings",),
 )
 @adage_api_key_required
-def mark_booking_as_used() -> prebooking_serialization.EducationalBookingResponse:
+def mark_booking_as_used(educational_booking_id: int) -> prebooking_serialization.EducationalBookingResponse:
     """Mark a booking used by the educational institute
 
     Can only work if booking is in CONFIRMED status"""
+    try:
+        educational_booking = api.mark_educational_booking_as_used_by_institute(educational_booking_id)
+    except exceptions.EducationalBookingNotFound:
+        raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_FOUND"}, status_code=404)
+    except exceptions.EducationalBookingNotConfirmedYet:
+        raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_CONFIRMED_YET"}, status_code=422)
+
+    return prebooking_serialization.serialize_educational_booking(educational_booking)

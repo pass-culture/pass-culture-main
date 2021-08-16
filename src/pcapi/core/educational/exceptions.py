@@ -42,3 +42,7 @@ class EducationalDepositNotFound(Exception):
 
 class EducationalBookingNotFound(Exception):
     pass
+
+
+class EducationalBookingNotConfirmedYet(Exception):
+    pass

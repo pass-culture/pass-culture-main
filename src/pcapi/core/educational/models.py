@@ -147,3 +147,11 @@ class EducationalBooking(Model):
         back_populates="educationalBookings",
         uselist=False,
     )
+
+    def mark_as_used_by_institute(self) -> None:
+        from pcapi.core.bookings.models import BookingStatus
+
+        if self.booking.status != BookingStatus.CONFIRMED:
+            raise exceptions.EducationalBookingNotConfirmedYet()
+
+        self.status = EducationalBookingStatus.USED_BY_INSTITUTE
