@@ -1,5 +1,4 @@
 from pcapi.core.bookings.models import Booking
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_type import ProductType
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
@@ -17,11 +16,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     is_physical_offer = ProductType.is_thing(name=offer.type) and not is_digital_offer
     is_event = ProductType.is_event(name=offer.type)
 
-    if (
-        stock.canHaveActivationCodes
-        and booking.activationCode
-        and FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS.is_active()
-    ):
+    if is_digital_offer and booking.activationCode:
         can_expire = 0
     else:
         can_expire = int(offer.offerType.get("canExpire", False))

@@ -7,7 +7,6 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
 from pcapi.utils.human_ids import humanize
 
@@ -233,7 +232,6 @@ class DigitalOffersTest:
         assert email_data == expected
 
 
-@override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=False)
 @pytest.mark.usefixtures("db_session")
 def test_use_activation_code_instead_of_token_if_possible():
     booking = make_booking(
@@ -260,7 +258,7 @@ def test_use_activation_code_instead_of_token_if_possible():
         is_single_event=0,
         offer_name="Super offre numérique",
         offer_price="Gratuit",
-        can_expire=1,
+        can_expire=0,
         offer_token="code_toto",
         is_digital_booking_with_activation_code_and_no_expiration_date=1,
         code_expiration_date="",
@@ -270,7 +268,6 @@ def test_use_activation_code_instead_of_token_if_possible():
     assert email_data == expected
 
 
-@override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=False)
 @pytest.mark.usefixtures("db_session")
 def test_add_expiration_date_from_activation_code():
     booking = make_booking(
@@ -301,7 +298,7 @@ def test_add_expiration_date_from_activation_code():
         is_single_event=0,
         offer_name="Super offre numérique",
         offer_price="Gratuit",
-        can_expire=1,
+        can_expire=0,
         offer_token="code_toto",
         code_expiration_date="1 janvier 2030",
         has_offer_url=1,
