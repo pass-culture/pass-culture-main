@@ -322,6 +322,7 @@ class ReportOfferTest:
         offer = OfferFactory()
 
         # expected queries:
+        #   * select offer
         #   * get user
         #   * insert report
         #   * release savepoint
@@ -330,7 +331,7 @@ class ReportOfferTest:
         #   * select offer
         #   * insert email into db
         #   * release savepoint
-        with assert_num_queries(7):
+        with assert_num_queries(8):
             response = test_client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "INAPPROPRIATE"})
             assert response.status_code == 204
 
@@ -352,6 +353,7 @@ class ReportOfferTest:
         offer = OfferFactory()
 
         # expected queries:
+        #   * select offer
         #   * get user
         #   * insert report
         #   * release savepoint
@@ -360,7 +362,7 @@ class ReportOfferTest:
         #   * select offer
         #   * insert email into db
         #   * release savepoint
-        with assert_num_queries(7):
+        with assert_num_queries(8):
             data = {"reason": "OTHER", "customReason": "saynul"}
             response = test_client.post(f"/native/v1/offer/{offer.id}/report", json=data)
             assert response.status_code == 204
