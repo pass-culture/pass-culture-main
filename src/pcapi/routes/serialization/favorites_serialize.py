@@ -35,6 +35,7 @@ def serialize_favorite(favorite: FavoriteDomain) -> dict:
             "name": offer.name,
             "offerType": offer.offerType,
             "stocks": stocks,
+            "subcategoryId": offer.subcategoryId,
             "venue": {"id": humanized_venue_id, "latitude": venue.latitude, "longitude": venue.longitude},
             "venueId": humanized_venue_id,
         },
