@@ -1,5 +1,4 @@
-import {API_URL, URL_FOR_MAINTENANCE} from "utils/config"
-
+import { REACT_APP_API_URL, REACT_APP_URL_FOR_MAINTENANCE } from "utils/config"
 export const HTTP_STATUS = {
   NO_CONTENT: 204,
   FORBIDDEN: 403,
@@ -24,7 +23,7 @@ const buildOptions = (method) => {
   }
 }
 
-const buildUrl = (path) => `${API_URL}${path}`
+const buildUrl = (path) => `${REACT_APP_API_URL}${path}`
 
 const fetchWithErrorHandler = async (path, options) => {
   const response = await fetch(buildUrl(path), options)
@@ -35,7 +34,7 @@ const fetchWithErrorHandler = async (path, options) => {
       : await response.text()
   if (!response.ok) {
     if (response.status === HTTP_STATUS.SERVICE_UNAVAILABLE) {
-      window.location.href = URL_FOR_MAINTENANCE
+      window.location.href = REACT_APP_URL_FOR_MAINTENANCE
     }
     return Promise.reject(
       results ? { errors: results, status: response.status } : null
@@ -45,7 +44,7 @@ const fetchWithErrorHandler = async (path, options) => {
 }
 
 export const client = {
-  get: async (path:string):Promise<any> => {
+  get: async (path: string): Promise<any> => {
     return await fetchWithErrorHandler(path, buildOptions(GET_HTTP_METHOD))
   },
 }
