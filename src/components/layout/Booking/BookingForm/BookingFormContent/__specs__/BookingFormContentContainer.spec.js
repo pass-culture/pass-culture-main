@@ -14,6 +14,7 @@ describe('src | components | BookingFormContentContainer', () => {
               offerType: {
                 canExpire: false,
               },
+              subcategoryId: 'cinema',
               url: 'http://fake-url.com',
             },
           ],
@@ -25,6 +26,12 @@ describe('src | components | BookingFormContentContainer', () => {
             },
           ],
           features: [{ nameKey: 'AUTO_ACTIVATE_DIGITAL_BOOKINGS', isActive: true }],
+          categories: [
+            {
+              categories: [],
+              subcategories: [{ id: 'cinema', canExpire: false }],
+            },
+          ],
         },
       }
 

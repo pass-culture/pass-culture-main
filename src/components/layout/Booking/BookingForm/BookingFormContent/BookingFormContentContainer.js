@@ -6,6 +6,7 @@ import {
   selectStockById,
 } from '../../../../../redux/selectors/data/stocksSelectors'
 import { selectOfferById } from '../../../../../redux/selectors/data/offersSelectors'
+import { selectSubcategory } from '../../../../../redux/selectors/data/categoriesSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { offerId, values } = ownProps
@@ -14,7 +15,8 @@ export const mapStateToProps = (state, ownProps) => {
   const offer = selectOfferById(state, offerId)
   const stock = selectStockById(state, stockId)
   const hasActivationCode = !!(stock && stock.hasActivationCode)
-  const canExpire = offer && offer.offerType && offer.offerType.canExpire
+  const subcategory = selectSubcategory(state, offer)
+  const canExpire = subcategory.canExpire
   const isDigital = offer.isDigital
 
   return {
