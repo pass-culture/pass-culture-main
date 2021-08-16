@@ -1142,7 +1142,8 @@ class BatchUpdateOffersTest:
         assert not models.Offer.query.get(offer3.id).isActive
         assert not models.Offer.query.get(rejected_offer.id).isActive
         assert not models.Offer.query.get(pending_offer.id).isActive
-        mocked_async_index_offer_ids.assert_called_once_with([offer1.id, offer2.id])
+        mocked_async_index_offer_ids.assert_called_once()
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer1.id, offer2.id])
 
     def test_deactivate(self):
         offer1 = factories.OfferFactory()
