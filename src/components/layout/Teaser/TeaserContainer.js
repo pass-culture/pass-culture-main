@@ -13,6 +13,7 @@ import { getTimezoneFromOffer } from '../../../utils/timezone'
 import { selectOfferById } from '../../../redux/selectors/data/offersSelectors'
 import { selectStockById } from '../../../redux/selectors/data/stocksSelectors'
 import { selectFirstMatchingBookingByOfferId } from '../../../redux/selectors/data/bookingsSelectors'
+import { selectSubcategory } from '../../../redux/selectors/data/categoriesSelectors'
 
 export const humanizeBeginningDateTime = (hasBookings, state, booking) => {
   let humanizeRelativeDate = ''
@@ -56,6 +57,7 @@ export const mapStateToProps = (state, ownProps) => {
   const date = isReserved(statuses)
     ? formatRecommendationDates(venue.departementCode, dateRange)
     : null
+  const subcategory = selectSubcategory(state, offer)
 
   return {
     date,
@@ -65,7 +67,7 @@ export const mapStateToProps = (state, ownProps) => {
     isEditMode,
     name: offer.name,
     offerId,
-    offerTypeLabel: offer.offerType.appLabel,
+    offerSubcategoryLabel: subcategory.appLabel,
     statuses,
     thumbUrl: favorite.thumbUrl,
   }
