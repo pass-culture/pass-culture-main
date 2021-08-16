@@ -47,6 +47,17 @@ class ForbiddenError(ApiErrors):
     status_code = 403
 
 
+class UnauthorizedError(ApiErrors):
+    status_code = 401
+    www_authenticate = None
+    realm = None
+
+    def __init__(self, www_authenticate=None, realm=None, **kwargs):
+        self.www_authenticate = www_authenticate
+        self.realm = realm
+        super().__init__(**kwargs)
+
+
 class DecimalCastError(ApiErrors):
     status_code = 400
 

@@ -1,6 +1,7 @@
 import logging
 from typing import Union
 
+from flask import Response
 from flask import current_app as app
 from flask import jsonify
 from flask import request
@@ -14,6 +15,7 @@ from pcapi.core.payments.exceptions import AlreadyActivatedException
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
+from pcapi.models.api_errors import UnauthorizedError
 from pcapi.utils.human_ids import NonDehumanizableId
 
 
@@ -44,6 +46,16 @@ def internal_error(error: Exception) -> Union[tuple[dict, int], HTTPException]:
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
     return jsonify(errors.errors), 500
+
+
+@app.errorhandler(UnauthorizedError)
+def unauthorized_error(error: UnauthorizedError) -> Response:
+    headers = {}
+    if error.www_authenticate:
+        headers["WWW-Authenticate"] = error.www_authenticate
+        if error.realm:
+            headers["WWW-Authenticate"] = '%s realm="%s"' % (headers["WWW-Authenticate"], error.realm)
+    return Response(jsonify(error.errors), 401, headers)
 
 
 @app.errorhandler(MethodNotAllowed)
