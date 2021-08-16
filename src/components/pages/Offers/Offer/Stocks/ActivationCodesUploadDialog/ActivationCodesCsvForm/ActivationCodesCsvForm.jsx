@@ -24,6 +24,7 @@ export const ActivationCodeCsvForm = forwardRef(function ActivationCodeCsvForm(
       <div className="activation-codes-upload-button-section">
         <label className="primary-button activation-codes-upload-label">
           Importer un fichier .csv depuis l’ordinateur
+          {' '}
           <input
             accept=".csv"
             className="activation-codes-upload-input"

@@ -45,7 +45,8 @@ const AllocineProviderForm = ({ createVenueProvider, providerId, venueId }) => {
               <div className="apf-price-section">
                 <div className="price-section-label">
                   <label htmlFor="price">
-                    {'Prix de vente/place '}
+                    Prix de vente/place 
+                    {' '}
                     <span className="field-asterisk">
                       *
                     </span>
@@ -104,10 +105,10 @@ const AllocineProviderForm = ({ createVenueProvider, providerId, venueId }) => {
                 className="blue-insert"
                 icon="picto-info-solid-black"
               >
-                Pour le moment, seules les séances "classiques" peuvent être importées.
-                <p />
+                Pour le moment, seules les séances &quot;classiques&quot; peuvent être importées.
+                <br />
                 Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront pas d’offres.
-                <p />
+                <br />
                 Nous travaillons actuellement à l’ajout de séances spécifiques.
               </Insert>
 

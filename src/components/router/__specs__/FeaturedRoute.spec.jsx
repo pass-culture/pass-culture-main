@@ -31,7 +31,7 @@ const testInactiveFeature = {
 
 const Foo = () => (
   <div>
-    I'm foo component
+    I’m foo component
   </div>
 )
 
@@ -79,7 +79,7 @@ describe('src | components | router | FeaturedRoute', () => {
     it('should render spinner instead of Foo component', async () => {
       // then
       expect(screen.getByText('Chargement en cours')).toBeInTheDocument()
-      expect(screen.queryByText("I'm foo component")).not.toBeInTheDocument()
+      expect(screen.queryByText("I’m foo component")).not.toBeInTheDocument()
     })
 
     it('should call requestGetFeatures', () => {
@@ -109,8 +109,8 @@ describe('src | components | router | FeaturedRoute', () => {
 
     it('should render NotMatch instead of Foo component', () => {
       // then
-      expect(screen.getByText("Cette page n'existe pas.")).toBeInTheDocument()
-      expect(screen.queryByText("I'm foo component")).not.toBeInTheDocument()
+      expect(screen.getByText("Cette page n’existe pas.")).toBeInTheDocument()
+      expect(screen.queryByText("I’m foo component")).not.toBeInTheDocument()
     })
 
     it('should not call requestGetFeatures', () => {
@@ -140,7 +140,7 @@ describe('src | components | router | FeaturedRoute', () => {
 
     it('should render Foo', () => {
       // then
-      expect(screen.getByText("I'm foo component")).toBeInTheDocument()
+      expect(screen.getByText("I’m foo component")).toBeInTheDocument()
     })
 
     it('should not call requestGetFeatures', () => {

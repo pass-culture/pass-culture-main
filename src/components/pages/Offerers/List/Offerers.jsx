@@ -179,11 +179,13 @@ class Offerers extends PureComponent {
           title={sectionTitle}
         />
         <p className="advice">
-          {'Pour présenter vos offres, vous devez d’abord '}
+          Pour présenter vos offres, vous devez d’abord 
+          {' '}
           <a href={url}>
-            {'créer un nouveau lieu '}
+            créer un nouveau lieu
           </a>
-          {' lié à une structure.'}
+          {' '}
+          lié à une structure.
           <br />
           Sans lieu, vous pouvez uniquement ajouter des offres numériques.
         </p>

@@ -22,19 +22,25 @@ const ActivationCodesConfirmationForm = ({
     <div className="activation-codes-upload-confirmation-form">
       <div className="activation-codes-upload-information-message">
         <p>
-          {`Vous êtes sur le point d’ajouter ${activationCodes.length} codes d’activation.`}
+          Vous êtes sur le point d’ajouter 
+          {' '}
+          {activationCodes.length}
+          {' '}
+          codes d’activation.
         </p>
         <p>
           La quantité disponible pour cette offre sera mise à jour dans vos stocks.
         </p>
         <p className="expiration-date-information-message">
-          Veuillez ajouter une date de fin de validité. Cette date ne doit pas être antérieure à la date limite de réservation.
+          Veuillez ajouter une date de fin de validité. Cette date ne doit pas être antérieure à la
+          date limite de réservation.
         </p>
       </div>
       <div className="resized-input expiration-datetime-input-container">
         <label className="expiration-datetime-label">
           <div className="labels">
-            Date limite de validité
+            Date limite de validité 
+            {' '}
             <span className="it-sub-label">
               optionnel
             </span>

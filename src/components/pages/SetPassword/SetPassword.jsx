@@ -117,14 +117,19 @@ export const SetPassword = props => {
                         label="Confirmer le mot de passe"
                         name="passwordConfirmation"
                       />
-                      <label className="sign-up-checkbox">
+                      <label
+                        className="sign-up-checkbox"
+                        htmlFor="sign-up-checkbox"
+                      >
                         <Field
                           component="input"
+                          id="sign-up-checkbox"
                           name="contact_ok"
                           type="checkbox"
                         />
                         <span>
-                          J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture
+                          J’accepte d’être contacté par e-mail pour donner mon avis sur le pass
+                          Culture
                         </span>
                       </label>
                       <LegalInfos

@@ -38,7 +38,7 @@ describe('src | components | Offerers', () => {
           const links = wrapper.find('a')
 
           // then
-          expect(links.at(0).text()).toBe('créer un nouveau lieu ')
+          expect(links.at(0).text()).toBe('créer un nouveau lieu')
           expect(links.at(0).prop('href')).toBe('/structures/AE/lieux/creation')
         })
       })
@@ -53,7 +53,7 @@ describe('src | components | Offerers', () => {
           const links = wrapper.find('a')
 
           // then
-          expect(links.at(0).text()).toBe('créer un nouveau lieu ')
+          expect(links.at(0).text()).toBe('créer un nouveau lieu')
           expect(links.at(0).prop('href')).toBe('/erreur/indisponible')
         })
       })

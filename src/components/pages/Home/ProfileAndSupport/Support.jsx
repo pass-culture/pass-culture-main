@@ -22,7 +22,7 @@ const Support = () => {
                 <div className="ico-container">
                   <Icon svg="ico-external-site" />
                 </div>
-                Centre d'aide
+                Centre d’aide
               </a>
             </li>
 

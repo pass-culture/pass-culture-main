@@ -47,7 +47,8 @@ const WithdrawalDetailsFields = props => {
       </div>
 
       <p className="bi-subtitle">
-        Les modalités de retrait s’appliqueront par défaut à la création de vos offres. Vous pourrez modifier cette information à l'échelle de l'offre.
+        Les modalités de retrait s’appliqueront par défaut à la création de vos offres. Vous pourrez
+        modifier cette information à l’échelle de l’offre.
       </p>
 
       {!readOnly ? (

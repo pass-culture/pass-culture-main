@@ -63,7 +63,7 @@ const OfferThumbnail = ({
         {thumbnailError && (
           <span className="of-error-message">
             <ErrorAlertIcon />
-            L'image n'a pas pu être ajoutée. Veuillez réessayer.
+            L’image n’a pas pu être ajoutée. Veuillez réessayer.
           </span>
         )}
       </button>

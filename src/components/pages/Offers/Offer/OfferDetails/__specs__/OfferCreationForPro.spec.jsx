@@ -170,7 +170,7 @@ describe('offerDetails - Creation - pro user', () => {
       await renderOffers(props, store)
 
       // Then
-      expect(screen.getByText("Type d'offre", { selector: '.section-title' })).toBeInTheDocument()
+      expect(screen.getByText("Type d’offre", { selector: '.section-title' })).toBeInTheDocument()
     })
 
     it('should not display a placeholder for preview', async () => {
@@ -1151,7 +1151,7 @@ describe('offerDetails - Creation - pro user', () => {
           // Then
           expect(
             screen.getByText(
-              "Cette offre numérique ne fera pas l'objet d'un remboursement. Pour plus d'informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+              "Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
             )
           ).toBeInTheDocument()
         })
@@ -1165,7 +1165,7 @@ describe('offerDetails - Creation - pro user', () => {
 
           expect(
             screen.queryByText(
-              "Cette offre numérique ne fera pas l'objet d'un remboursement. Pour plus d'informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+              "Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
             )
           ).toBeInTheDocument()
 
@@ -1176,7 +1176,7 @@ describe('offerDetails - Creation - pro user', () => {
           // Then
           expect(
             screen.queryByText(
-              "Cette offre numérique ne fera pas l'objet d'un remboursement. Pour plus d'informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+              "Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
             )
           ).not.toBeInTheDocument()
         })
@@ -1193,7 +1193,7 @@ describe('offerDetails - Creation - pro user', () => {
           // Then
           expect(
             screen.getByText(
-              "Cette offre numérique ne fera pas l'objet d'un remboursement. Pour plus d'informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+              "Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
             )
           ).toBeInTheDocument()
         })
@@ -1210,7 +1210,7 @@ describe('offerDetails - Creation - pro user', () => {
           // Then
           expect(
             screen.queryByText(
-              "Cette offre numérique ne fera pas l'objet d'un remboursement. Pour plus d'informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+              "Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
             )
           ).not.toBeInTheDocument()
         })
@@ -1227,7 +1227,7 @@ describe('offerDetails - Creation - pro user', () => {
           // Then
           expect(
             screen.queryByText(
-              "Cette offre numérique ne fera pas l'objet d'un remboursement. Pour plus d'informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+              "Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
             )
           ).not.toBeInTheDocument()
         })
@@ -1243,7 +1243,7 @@ describe('offerDetails - Creation - pro user', () => {
 
           // Then
           const withdrawalModalitiesReminder = screen.queryByText(
-            "La livraison d'article n'est pas autorisée. Pour plus d'informations, veuillez consulter nos CGU."
+            "La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU."
           )
           expect(withdrawalModalitiesReminder).not.toBeInTheDocument()
         })
@@ -1303,7 +1303,7 @@ describe('offerDetails - Creation - pro user', () => {
 
           // Then
           const withdrawalModalitiesReminder = screen.queryByText(
-            "La livraison d'article n'est pas autorisée. Pour plus d'informations, veuillez consulter nos CGU."
+            "La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU."
           )
           expect(withdrawalModalitiesReminder).not.toBeInTheDocument()
         })
@@ -1324,7 +1324,7 @@ describe('offerDetails - Creation - pro user', () => {
             screen.getByText('Informations pratiques').closest('section')
           )
           const withdrawalModalitiesReminder = informationsPratiquesSection.getByText(
-            "La livraison d'article n'est pas autorisée. Pour plus d'informations, veuillez consulter nos CGU."
+            "La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU."
           )
           expect(withdrawalModalitiesReminder).toBeInTheDocument()
         })
@@ -1772,7 +1772,7 @@ describe('offerDetails - Creation - pro user', () => {
       expect(errorNotification).toBeInTheDocument()
 
       const thumbnailUploadError = await screen.findByText(
-        "L'image n'a pas pu être ajoutée. Veuillez réessayer."
+        "L’image n’a pas pu être ajoutée. Veuillez réessayer."
       )
       expect(thumbnailUploadError).toBeInTheDocument()
     })

@@ -13,13 +13,13 @@ const NotFound = ({ redirect }) => (
       Oh non !
     </h1>
     <p>
-      Cette page n'existe pas.
+      Cette page n’existe pas.
     </p>
     <Link
       className="nm-redirection-link"
       to={redirect}
     >
-      Retour à la page d'accueil
+      Retour à la page d’accueil
     </Link>
   </main>
 )

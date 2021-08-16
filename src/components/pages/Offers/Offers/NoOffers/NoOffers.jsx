@@ -15,7 +15,7 @@ const NoOffers = () => (
       Aucune offre
     </p>
     <p>
-      Vous n'avez pas encore créé d'offre.
+      Vous n’avez pas encore créé d’offre.
     </p>
 
     <Link

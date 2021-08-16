@@ -137,7 +137,8 @@ class SignupForm extends PureComponent {
           </h2>
           <div className="sign-up-operating-procedures">
             <div>
-              Nous vous invitons à prendre connaissance des modalités de fonctionnement avant de renseigner les champs suivants.
+              Nous vous invitons à prendre connaissance des modalités de fonctionnement avant de
+              renseigner les champs suivants.
             </div>
             <a
               className="tertiary-link"
@@ -210,14 +211,19 @@ class SignupForm extends PureComponent {
 
                 <SirenField value={values.name} />
 
-                <label className="sign-up-checkbox">
+                <label
+                  className="sign-up-checkbox"
+                  htmlFor="sign-up-checkbox"
+                >
                   <Field
                     component="input"
+                    id="sign-up-checkbox"
                     name="contactOk"
                     type="checkbox"
                   />
                   <span>
-                    J'accepte d'être contacté par e-mail pour recevoir les nouveautés du pass Culture et contribuer à son amélioration (facultatif)
+                    J’accepte d’être contacté par e-mail pour recevoir les nouveautés du pass
+                    Culture et contribuer à son amélioration (facultatif)
                   </span>
                   <FieldErrors customMessage={errors ? errors.contactOk : null} />
                 </label>

@@ -204,7 +204,8 @@ const ThingStocks = ({
       </div>
       {areActivationCodesEnabled && offer.isDigital && (
         <div className="activation-codes-information">
-          Pour ajouter des codes d'activation, veuillez passer par le menu ··· et choisir l'option correspondante.
+          Pour ajouter des codes d’activation, veuillez passer par le menu ··· et choisir l’option
+          correspondante.
         </div>
       )}
       {hasNoStock ? (

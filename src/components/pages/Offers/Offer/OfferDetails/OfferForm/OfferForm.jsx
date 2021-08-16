@@ -516,10 +516,11 @@ const OfferForm = ({
 
       <section className="form-section">
         <h3 className="section-title">
-          Type d'offre
+          Type d’offre
         </h3>
         <p className="section-description">
-          Le type de l’offre permet de la caractériser et de la valoriser au mieux dans l’application.
+          Le type de l’offre permet de la caractériser et de la valoriser au mieux dans
+          l’application.
         </p>
 
         <div className="form-row">
@@ -697,7 +698,8 @@ const OfferForm = ({
                 Informations pratiques
               </h3>
               <p className="section-description">
-                Les informations pratiques permettent de donner aux utilisateurs des informations sur le retrait de leur commande.
+                Les informations pratiques permettent de donner aux utilisateurs des informations
+                sur le retrait de leur commande.
               </p>
 
               <div className="form-row">

@@ -10,7 +10,8 @@ const WithdrawalReminder = () => {
       linkTitle={"Consulter les Conditions Générales d'Utilisation"}
       type="notification-info"
     >
-      La livraison d'article n'est pas autorisée. Pour plus d'informations, veuillez consulter nos CGU.
+      La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos
+      CGU.
     </Banner>
   )
 }

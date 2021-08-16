@@ -21,7 +21,7 @@ describe('homepage: ProfileAndSupport: Support', () => {
       const cguLink = await screen.findByText('Conditions Générales d’Utilisation', {
         selector: 'a',
       })
-      const helpCenterLink = await screen.findByText("Centre d'aide", { selector: 'a' })
+      const helpCenterLink = await screen.findByText("Centre d’aide", { selector: 'a' })
 
       expect(contactLink).toBeInTheDocument()
       expect(cguLink).toBeInTheDocument()

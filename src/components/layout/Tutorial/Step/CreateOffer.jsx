@@ -11,7 +11,9 @@ const CreateOffer = ({ titleId }) => (
         Vous pouvez créer des offres numériques ou physiques de plusieurs façons :
       </p>
       <p>
-        1. Automatiquement si vous utilisez un de nos logiciels partenaires (Titelive Stocks, GStocks, Librisoft, Praxiel) ou êtes référencé sur l'une des plateformes partenaires (Placesdeslibraires.fr, leslibraires.fr, Allociné ... et bien d'autres !)
+        1. Automatiquement si vous utilisez un de nos logiciels partenaires (Titelive Stocks,
+        GStocks, Librisoft, Praxiel) ou êtes référencé sur l’une des plateformes partenaires
+        (Placesdeslibraires.fr, leslibraires.fr, Allociné ... et bien d’autres !)
       </p>
       <p className="tco-italic">
         Les offres sont synchronisées avec les données du gestionnaire tous les soirs.

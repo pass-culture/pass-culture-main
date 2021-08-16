@@ -122,12 +122,10 @@ const Reimbursements = () => {
       {venuesOptions.length ? (
         <>
           <p>
-            {
-              'Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une contremarque dans le guichet ou à la validation automatique des contremarques d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.'
-            }
+            Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une contremarque dans le guichet ou à la validation automatique des contremarques d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.
           </p>
           <Banner type="notification-info">
-            {'En savoir plus sur'}
+            En savoir plus sur
             <a
               className="bi-link tertiary-link"
               href="https://aide.passculture.app/fr/articles/5096833-acteurs-culturels-quel-est-le-calendrier-des-prochains-remboursements"
@@ -135,7 +133,7 @@ const Reimbursements = () => {
               target="_blank"
             >
               <Icon svg="ico-external-site" />
-              {'Les prochains remboursements'}
+              Les prochains remboursements
             </a>
             <a
               className="bi-link tertiary-link"
@@ -144,20 +142,20 @@ const Reimbursements = () => {
               target="_blank"
             >
               <Icon svg="ico-external-site" />
-              {'Les modalités de remboursement'}
+              Les modalités de remboursement
             </a>
           </Banner>
 
           <div className="header">
             <h2 className="header-title">
-              {'Affichage des remboursements'}
+              Affichage des remboursements
             </h2>
             <button
               className="tertiary-button"
               onClick={resetFilters}
               type="button"
             >
-              {'Réinitialiser les filtres'}
+              Réinitialiser les filtres
             </button>
           </div>
 
@@ -192,21 +190,19 @@ const Reimbursements = () => {
                 isDisabled={!filters.periodStart || !filters.periodEnd}
                 mimeType="text/csv"
               >
-                {'Télécharger'}
+                Télécharger
               </DownloadButtonContainer>
               <CsvTableButtonContainer
                 href={csvUrl}
                 isDisabled={!filters.periodStart || !filters.periodEnd}
               >
-                {'Afficher'}
+                Afficher
               </CsvTableButtonContainer>
             </div>
           </div>
 
           <p className="format-mention">
-            {
-              'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'
-            }
+            Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
           </p>
         </>
       ) : (

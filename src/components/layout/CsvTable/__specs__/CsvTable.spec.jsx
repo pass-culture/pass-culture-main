@@ -94,7 +94,7 @@ describe('src | components | layout | CsvTable', () => {
       // then
       const noDataContainer = wrapper.find('.no-data-container')
       expect(noDataContainer).toHaveLength(1)
-      expect(noDataContainer.text()).toBe("Il n'y a pas de données à afficher.")
+      expect(noDataContainer.text()).toBe("Il n’y a pas de données à afficher.")
     })
 
     it('should load data from csv when CsvTable component is mounted', async () => {

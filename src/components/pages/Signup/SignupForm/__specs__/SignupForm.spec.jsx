@@ -262,7 +262,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       // then
       const field = wrapper.find('label').at(6)
       expect(field.text()).toBe(
-        "J'accepte d'être contacté par e-mail pour recevoir les nouveautés du pass Culture et contribuer à son amélioration (facultatif)"
+        "J’accepte d’être contacté par e-mail pour recevoir les nouveautés du pass Culture et contribuer à son amélioration (facultatif)"
       )
       const input = field.find('input')
       expect(input.prop('name')).toBe('contactOk')

@@ -13,7 +13,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const stepTitles = [
-  "Bienvenue dans l'espace acteurs culturels",
+  'Bienvenue dans l’espace acteurs culturels',
   'Gérer vos lieux culturels',
   'Créer une offre',
   'Suivre et gérer vos réservations',

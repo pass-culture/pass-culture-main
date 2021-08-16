@@ -429,7 +429,7 @@ describe('src | components | pages | Offers | Offers', () => {
           await renderOffers(props, store)
 
           // Then
-          const noOffersText = await screen.findByText("Vous n'avez pas encore créé d'offre.")
+          const noOffersText = await screen.findByText("Vous n’avez pas encore créé d’offre.")
           expect(noOffersText).toBeInTheDocument()
         })
       })

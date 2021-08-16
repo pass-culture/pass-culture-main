@@ -121,11 +121,13 @@ class IdentifierFields extends PureComponent {
           {'Informations lieu'}
           {!readOnly && (
             <span className="required-fields-hint">
-              Les champs marqués d’un
+              Les champs marqués d’un 
+              {' '}
               <span className="required-legend">
-                {' * '}
+                *
               </span>
-              {' sont obligatoires'}
+              {' '}
+              sont obligatoires
             </span>
           )}
         </h2>
@@ -185,7 +187,8 @@ class IdentifierFields extends PureComponent {
           >
             <div className="field-label">
               <label htmlFor="venue-type">
-                {'Type de lieu : '}
+                Type de lieu :
+                {' '}
               </label>
               <span className="field-asterisk">
                 *

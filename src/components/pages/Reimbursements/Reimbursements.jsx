@@ -18,7 +18,9 @@ const Reimbursements = () => (
     <PageTitle title="Vos remboursements" />
     <Titles title="Remboursements" />
     <p>
-      Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une contremarque dans le guichet ou à la validation automatique des contremarques d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.
+      Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une
+      contremarque dans le guichet ou à la validation automatique des contremarques d’évènements.
+      Cette page est automatiquement mise à jour à chaque remboursement.
     </p>
     <Banner type="notification-info">
       En savoir plus sur
@@ -29,6 +31,7 @@ const Reimbursements = () => (
         target="_blank"
       >
         <Icon svg="ico-external-site" />
+        {' '}
         Les prochains remboursements
       </a>
       <a

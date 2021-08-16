@@ -5,7 +5,8 @@ const ActivationCodesUploadErrorDescription = ({ fileName, errorMessage }) => {
   return (
     <div className="activation-codes-upload-description">
       <p>
-        {'Une erreur s’est produite lors de l’import de votre fichier '}
+        Une erreur s’est produite lors de l’import de votre fichier 
+        {' '}
         <b>
           {fileName}
         </b>

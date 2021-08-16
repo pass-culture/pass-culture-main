@@ -141,7 +141,8 @@ const ApiKey = ({
       </div>
       {!!newlyGeneratedKeys.length && (
         <Banner>
-          Veuillez copier cette clé et la stocker dans un endroit sûr car vous ne pourrez plus la visualiser entièrement ici.
+          Veuillez copier cette clé et la stocker dans un endroit sûr car vous ne pourrez plus la
+          visualiser entièrement ici.
         </Banner>
       )}
       <button
@@ -166,7 +167,8 @@ const ApiKey = ({
           </div>
           <div className="explanation">
             <p>
-              Attention, si vous supprimez cette clé, et qu'aucune autre n'a été générée, cela entraînera une rupture du service.
+              Attention, si vous supprimez cette clé, et qu’aucune autre n’a été générée, cela
+              entraînera une rupture du service.
             </p>
             <br />
             <p>
