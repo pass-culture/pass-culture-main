@@ -114,7 +114,7 @@ class EducationalBooking(Model):
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="educationalBookings"
     )
 
-    educationalYearId = Column(BigInteger, ForeignKey("educational_year.adageId"), nullable=False)
+    educationalYearId = Column(String(30), ForeignKey("educational_year.adageId"), nullable=False)
     educationalYear: EducationalYear = relationship(EducationalYear, foreign_keys=[educationalYearId])
 
     Index("ix_educational_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
