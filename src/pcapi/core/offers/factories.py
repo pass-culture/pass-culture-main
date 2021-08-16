@@ -88,7 +88,7 @@ class ProductFactory(BaseFactory):
     def match_type(self, create, extracted, **kwargs):
         self.type = getattr(ALL_SUBCATEGORIES_DICT.get(self.subcategoryId, ""), "matching_type", None)
         db.session.add(self)
-        db.session.flush()
+        db.session.commit()
 
 
 class EventProductFactory(ProductFactory):
@@ -144,7 +144,7 @@ class OfferFactory(BaseFactory):
     def match_type(self, create, extracted, **kwargs):
         self.type = getattr(ALL_SUBCATEGORIES_DICT.get(self.subcategoryId, ""), "matching_type", None)
         db.session.add(self)
-        db.session.flush()
+        db.session.commit()
 
 
 class EventOfferFactory(OfferFactory):
