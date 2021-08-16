@@ -30,6 +30,7 @@ from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.connectors.api_entreprises import get_offerer_legal_category
 from pcapi.core import search
 from pcapi.core.bookings.api import cancel_bookings_from_rejected_offer
+from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -64,7 +65,17 @@ class ExtraDataFilterEqual(FilterEqual):
         return super().get_column(alias).astext
 
 
+class SubcategoryFilterEqual(FilterEqual):
+    def __init__(self, *args, **kwargs):
+        options = [(subcategory.id, subcategory.id) for subcategory in subcategories.ALL_SUBCATEGORIES]
+        super().__init__(*args, **kwargs, options=options)
+
+
 class CategoryFilterEqual(FilterEqual):
+    def __init__(self, *args, **kwargs):
+        options = [(category.id, category.id) for category in categories.ALL_CATEGORIES]
+        super().__init__(*args, **kwargs, options=options)
+
     def apply(self, filter_query, value, alias=None):
         searched_subcategories = [
             subcategory.id
@@ -110,7 +121,7 @@ class OfferView(BaseAdminView):
         "name",
         "type",
         CategoryFilterEqual(column=Offer.subcategoryId, name="Catégorie"),
-        "subcategoryId",
+        SubcategoryFilterEqual(column=Offer.subcategoryId, name="Sous-catégories"),
         "criteria.name",
         "rankingWeight",
         "validation",
