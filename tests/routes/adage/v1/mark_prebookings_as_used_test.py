@@ -4,6 +4,7 @@ from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
+from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.urls import get_webapp_url
 
@@ -35,18 +36,18 @@ class Returns200Test:
         educational_booking = booking.educationalBooking
         assert response.json == {
             "address": venue.address,
-            "beginningDatetime": stock.beginningDatetime.isoformat(),
+            "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
             "cancellationDate": None,
-            "cancellationLimitDate": booking.cancellationLimitDate.isoformat(),
+            "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
             "category": get_serialized_offer_category(offer),
             "city": venue.city,
             "confirmationDate": None,
-            "confirmationLimitDate": educational_booking.confirmationLimitDate.isoformat(),
+            "confirmationLimitDate": format_into_utc_date(educational_booking.confirmationLimitDate),
             "coordinates": {
                 "latitude": float(venue.latitude),
                 "longitude": float(venue.longitude),
             },
-            "creationDate": booking.dateCreated.isoformat(),
+            "creationDate": format_into_utc_date(booking.dateCreated),
             "description": offer.description,
             "durationMinutes": offer.durationMinutes,
             "expirationDate": booking.expirationDate,

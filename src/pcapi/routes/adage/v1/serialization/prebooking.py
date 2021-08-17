@@ -13,6 +13,7 @@ from pcapi.routes.native.v1.serialization.offers import OfferCategoryResponse
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
 from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.serialization.utils import to_camel
+from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.urls import get_webapp_url
 
@@ -72,6 +73,7 @@ class EducationalBookingResponse(BaseModel):
         title = "Prebooking detailed response"
         alias_generator = to_camel
         allow_population_by_field_name = True
+        json_encoders = {datetime: format_into_utc_date}
 
 
 class EducationalBookingsResponse(BaseModel):
