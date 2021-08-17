@@ -3,6 +3,7 @@ import logging
 
 from flask.blueprints import Blueprint
 from flask.globals import request
+import pydantic
 import requests
 
 from pcapi import settings
@@ -30,6 +31,9 @@ def task(queue: str, path: str):
             if settings.IS_RUNNING_TESTS:
                 f(payload)
                 return
+
+            if isinstance(payload, pydantic.BaseModel):
+                payload = payload.dict()
 
             task_id = _enqueue_task(queue, path, payload)
             logger.info("Enqueued cloud task", extra={"queue": queue, "handler": path, "task": task_id})

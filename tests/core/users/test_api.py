@@ -60,6 +60,7 @@ from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
+from pcapi.tasks.account import VerifyIdentityDocumentRequest
 
 import tests
 
@@ -890,7 +891,7 @@ class AsynchronousIdentityDocumentVerificationTest:
             metadata={"email": "toto@example.com"},
         )
         mocked_verify_identity_document.delay.assert_called_once_with(
-            {"image_storage_path": "identity_documents/a_very_random_secret.jpg"}
+            VerifyIdentityDocumentRequest(image_storage_path="identity_documents/a_very_random_secret.jpg")
         )
 
     @patch("pcapi.core.users.api.store_object")

@@ -835,7 +835,7 @@ def asynchronous_identity_document_verification(image: bytes, email: str) -> Non
         raise exceptions.IdentityDocumentUploadException()
 
     try:
-        verify_identity_document.delay({"image_storage_path": image_storage_path})
+        verify_identity_document.delay(VerifyIdentityDocumentRequest(image_storage_path=image_storage_path))
     except Exception as exception:
         logger.exception("An error has occured while trying to add cloudtask in queue: %s", exception)
         delete_object(image_storage_path)

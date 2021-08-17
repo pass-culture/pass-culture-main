@@ -15,12 +15,12 @@ logger = logging.getLogger(__name__)
 
 def update_contact_attributes(user: User):
     attributes = _get_contact_attributes(user)
-    update_contact_attributes_task.delay(UpdateSendinblueContactRequest(email=user.email, attributes=attributes).dict())
+    update_contact_attributes_task.delay(UpdateSendinblueContactRequest(email=user.email, attributes=attributes))
 
 
 def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
     if settings.IS_RUNNING_TESTS:
-        testing.sendinblue_requests.append({"email": payload["email"], "attributes": payload["attributes"]})
+        testing.sendinblue_requests.append({"email": payload.email, "attributes": payload.attributes})
         return True
 
     if settings.IS_DEV:
