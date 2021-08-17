@@ -3,6 +3,7 @@ from datetime import datetime
 from pcapi.core.categories.conf import get_subcategory_from_type
 from pcapi.models import EventType
 from pcapi.models import Offer
+from pcapi.models import Product
 from pcapi.models import ThingType
 from pcapi.models.db import db
 
@@ -26,3 +27,20 @@ def bulk_update_old_offers_with_new_subcategories(batch_size: int = 10_000) -> N
             db.session.commit()
             empty_subcategory_offers = query.all()
             count += 1
+
+
+def bulk_update_products_with_subcategories(batch_size: int = 10_000) -> None:
+    count = 0
+    query = Product.query.filter(Product.subcategoryId.is_(None)).limit(batch_size)
+    empty_subcategory_products = query.all()
+    while empty_subcategory_products:
+        mappings = []
+        print(f"[{datetime.now().strftime('%H:%M:%S')}]Updating batch #{count}")
+        for product in empty_subcategory_products:
+            mappings.append(
+                {"id": product.id, "subcategoryId": get_subcategory_from_type(product.type, product.isDigital)}
+            )
+        db.session.bulk_update_mappings(Product, mappings)
+        db.session.commit()
+        empty_subcategory_products = query.all()
+        count += 1
