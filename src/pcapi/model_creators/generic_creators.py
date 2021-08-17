@@ -1,5 +1,4 @@
 from datetime import datetime
-from datetime import timedelta
 from decimal import Decimal
 from hashlib import sha256
 from typing import Optional
@@ -15,7 +14,6 @@ from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
-from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.price_rule import PriceRule
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
@@ -32,7 +30,6 @@ from pcapi.models import Payment
 from pcapi.models import PaymentMessage
 from pcapi.models import PaymentStatus
 from pcapi.models import Stock
-from pcapi.models import ThingType
 from pcapi.models import Token
 from pcapi.models import UserOfferer
 from pcapi.models import Venue
@@ -279,49 +276,6 @@ def create_payment(
     payment.transactionLabel = transaction_label
 
     return payment
-
-
-def create_payment_details(
-    booking_amount: int = 15,
-    booking_date: datetime = datetime.utcnow() - timedelta(days=10),
-    booking_used_date: datetime = datetime.utcnow() - timedelta(days=5),
-    booking_user_email: str = "john.doe@example.com",
-    booking_user_id: int = 1234,
-    offer_name: str = "Blake & Mortimer",
-    offer_type: ThingType = ThingType.LIVRE_EDITION,
-    offerer_name: str = "Les petites librairies",
-    offerer_siren: str = "123456789",
-    payment_iban: str = "FR7630001007941234567890185",
-    payment_id: int = 123,
-    payment_message_name: str = "AZERTY123456",
-    reimbursed_amount: float = 7.5,
-    reimbursement_rate: float = 0.5,
-    transaction_end_to_end_id: str = None,
-    venue_name: str = "Vive les BDs",
-    venue_siret: str = "12345678912345",
-    venue_humanized_id: str = "AE",
-) -> PaymentDetails:
-    payment_details = PaymentDetails()
-    payment_details.booking_amount = booking_amount
-    payment_details.booking_date = booking_date
-    payment_details.booking_used_date = booking_used_date
-    payment_details.booking_user_email = booking_user_email
-    payment_details.booking_user_id = booking_user_id
-    payment_details.offer_name = offer_name
-    payment_details.offer_type = str(offer_type)
-    payment_details.offerer_name = offerer_name
-    payment_details.offerer_siren = offerer_siren
-    payment_details.payment_iban = payment_iban
-    payment_details.payment_id = payment_id
-    payment_details.payment_message_name = payment_message_name
-    payment_details.reimbursed_amount = reimbursed_amount
-    payment_details.reimbursement_rate = reimbursement_rate
-    payment_details.transaction_end_to_end_id = transaction_end_to_end_id
-    payment_details.venue_name = venue_name
-    payment_details.venue_siret = venue_siret
-    payment_details.venue_humanized_id = venue_humanized_id
-
-    return payment_details
 
 
 def create_payment_message(checksum: str = None, idx: int = None, name: str = "ABCD123") -> PaymentMessage:
