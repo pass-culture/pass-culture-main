@@ -11,12 +11,13 @@ from sqlalchemy.sql import text
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational.api import confirm_educational_booking
 from pcapi.core.educational.models import EducationalBooking
+from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
@@ -61,7 +62,7 @@ class ConfirmEducationalBookingTest:
             )
 
             with pytest.raises(sqlalchemy.exc.OperationalError):
-                confirm_educational_booking(booking.educationalBookingId)
+                educational_api.confirm_educational_booking(booking.educationalBookingId)
 
         refreshed_booking = Booking.query.filter(Booking.id == booking.id).one()
         assert refreshed_booking.status == BookingStatus.PENDING
@@ -82,18 +83,18 @@ class ConfirmEducationalBookingTest:
             educationalBooking__educationalYear=educational_year,
             status=BookingStatus.PENDING,
         )
-        confirm_educational_booking(booking.educationalBookingId)
+        educational_api.confirm_educational_booking(booking.educationalBookingId)
 
         assert booking.status == BookingStatus.CONFIRMED
 
     def test_raises_if_no_educational_booking(self):
         with pytest.raises(exceptions.EducationalBookingNotFound):
-            confirm_educational_booking(100)
+            educational_api.confirm_educational_booking(100)
 
     def test_raises_if_no_educational_deposit(self, db_session):
         booking = bookings_factories.EducationalBookingFactory(status=BookingStatus.PENDING)
         with pytest.raises(exceptions.EducationalDepositNotFound):
-            confirm_educational_booking(booking.educationalBookingId)
+            educational_api.confirm_educational_booking(booking.educationalBookingId)
 
     def test_raises_insufficient_fund(self, db_session) -> None:
         # When
@@ -115,7 +116,7 @@ class ConfirmEducationalBookingTest:
 
         # Then
         with pytest.raises(exceptions.InsufficientFund):
-            confirm_educational_booking(booking.educationalBookingId)
+            educational_api.confirm_educational_booking(booking.educationalBookingId)
 
     def test_raises_insufficient_temporary_fund(self, db_session) -> None:
         # When
@@ -137,7 +138,7 @@ class ConfirmEducationalBookingTest:
 
         # Then
         with pytest.raises(exceptions.InsufficientTemporaryFund):
-            confirm_educational_booking(booking.educationalBookingId)
+            educational_api.confirm_educational_booking(booking.educationalBookingId)
 
 
 @freeze_time("2020-11-17 15:00:00")
@@ -363,3 +364,56 @@ class BookEducationalOfferTest:
 
         saved_bookings = EducationalBooking.query.join(Booking).filter(Booking.stockId == stock.id).all()
         assert len(saved_bookings) == 0
+
+
+class RefuseEducationalBookingTest:
+    @clean_database
+    def test_refuse_educational_booking_stock_lock(self, app):
+        booking = bookings_factories.EducationalBookingFactory(
+            status=BookingStatus.CONFIRMED,
+        )
+        educational_booking = booking.educationalBooking
+
+        # open a second connection on purpose and lock the deposit
+        engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
+        with engine.connect() as connection:
+            connection.execute(
+                text("""SELECT * FROM stock WHERE id = :stock_id FOR UPDATE"""),
+                stock_id=booking.stock.id,
+            )
+
+            with pytest.raises(sqlalchemy.exc.OperationalError):
+                educational_api.refuse_educational_booking(educational_booking.id)
+
+        refreshed_booking = Booking.query.filter(Booking.id == booking.id).one()
+        assert refreshed_booking.status == BookingStatus.CONFIRMED
+
+    def test_refuse_educational_booking(self, db_session):
+        stock = offers_factories.EventStockFactory(quantity=200, dnBookedQuantity=0)
+        booking = bookings_factories.EducationalBookingFactory(
+            status=BookingStatus.CONFIRMED,
+            stock=stock,
+            quantity=20,
+        )
+
+        educational_api.refuse_educational_booking(booking.educationalBookingId)
+
+        assert stock.dnBookedQuantity == 0
+        assert booking.status == BookingStatus.CANCELLED
+        assert booking.cancellationReason == BookingCancellationReasons.REFUSED_BY_INSTITUTE
+
+    def test_raises_when_no_educational_booking_found(self):
+        with pytest.raises(exceptions.EducationalBookingNotFound):
+            educational_api.refuse_educational_booking(123)
+
+    def test_no_op_when_educational_booking_already_refused(self, db_session):
+        stock = offers_factories.EventStockFactory(dnBookedQuantity=20)
+        booking = bookings_factories.EducationalBookingFactory(
+            educationalBooking__status=EducationalBookingStatus.REFUSED,
+            quantity=1,
+            stock=stock,
+        )
+
+        educational_api.refuse_educational_booking(booking.educationalBookingId)
+
+        assert stock.dnBookedQuantity == 21

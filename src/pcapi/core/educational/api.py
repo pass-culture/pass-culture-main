@@ -11,6 +11,7 @@ from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.offers import repository as offers_repository
+from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.repository import transaction
 
@@ -128,5 +129,51 @@ def mark_educational_booking_as_used_by_institute(educational_booking_id: int) -
         )
         raise exception
     repository.save(educational_booking)
+
+    return educational_booking
+
+
+def refuse_educational_booking(educational_booking_id: int) -> EducationalBooking:
+    educational_booking = educational_repository.find_educational_booking_by_id(educational_booking_id)
+
+    if educational_booking is None:
+        raise exceptions.EducationalBookingNotFound()
+
+    if educational_booking.status == EducationalBookingStatus.REFUSED:
+        return educational_booking
+
+    with transaction():
+        stock = offers_repository.get_and_lock_stock(stock_id=educational_booking.booking.stockId)
+        booking = educational_booking.booking
+        db.session.refresh(educational_booking.booking)
+
+        try:
+            educational_booking.mark_as_refused()
+        except (
+            exceptions.EducationalBookingNotRefusable,
+            exceptions.EducationalBookingAlreadyCancelled,
+        ) as exception:
+            logger.error(
+                "User from adage trying to refuse educational booking that cannot be refused",
+                extra={
+                    "educational_booking_id": educational_booking_id,
+                    "exception_type": exception.__class__.__name__,
+                },
+            )
+            raise exception
+
+        stock.dnBookedQuantity -= booking.quantity
+
+        repository.save(booking, educational_booking)
+
+    logger.info(
+        "Booking has been cancelled",
+        extra={
+            "booking": booking.id,
+            "reason": str(booking.cancellationReason),
+        },
+    )
+
+    search.async_index_offer_ids([stock.offerId])
 
     return educational_booking
