@@ -1,19 +1,28 @@
-from sqlalchemy.orm import Query
+from datetime import datetime
 
 from pcapi.core.categories.conf import get_subcategory_from_type
+from pcapi.models import EventType
 from pcapi.models import Offer
-from pcapi.repository import repository
+from pcapi.models import ThingType
+from pcapi.models.db import db
 
 
-def bulk_update_old_offers_with_new_subcategories(batch_size: int = 10000) -> None:
-    empty_subcategory_offers = find_empty_subcategory_offers().limit(batch_size).all()
-
-    while empty_subcategory_offers:
-        for offer in empty_subcategory_offers:
-            offer.subcategoryId = get_subcategory_from_type(offer.type, offer.isDigital)
-        repository.save(*empty_subcategory_offers)
-        empty_subcategory_offers = find_empty_subcategory_offers().limit(batch_size).all()
-
-
-def find_empty_subcategory_offers() -> Query:
-    return Offer.query.filter(Offer.subcategoryId.is_(None))
+def bulk_update_old_offers_with_new_subcategories(batch_size: int = 10_000) -> None:
+    all_types = [str(t) for t in list(ThingType) + list(EventType) if str(t) != "ThingType.LIVRE_EDITION"]
+    all_types.append("ThingType.LIVRE_EDITION")
+    for offer_type in all_types:
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] >>> Now updating Offers of type={offer_type} <<<\n")
+        count = 0
+        query = Offer.query.filter(Offer.subcategoryId.is_(None)).filter(Offer.type == offer_type).limit(batch_size)
+        empty_subcategory_offers = query.all()
+        while empty_subcategory_offers:
+            mappings = []
+            print(f"[{datetime.now().strftime('%H:%M:%S')}]Updating batch #{count}")
+            for offer in empty_subcategory_offers:
+                mappings.append(
+                    {"id": offer.id, "subcategoryId": get_subcategory_from_type(offer.type, offer.isDigital)}
+                )
+            db.session.bulk_update_mappings(Offer, mappings)
+            db.session.commit()
+            empty_subcategory_offers = query.all()
+            count += 1
