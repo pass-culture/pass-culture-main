@@ -4,10 +4,9 @@ from pcapi.connectors.api_adage import get_institutional_project_redactor_by_ema
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
+from pcapi.core.educational import exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
-from pcapi.core.educational.exceptions import EducationalBookingNotConfirmedYet
-from pcapi.core.educational.exceptions import EducationalBookingNotFound
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalRedactor
@@ -88,7 +87,7 @@ def book_educational_offer(redactor_email: str, uai_code: str, stock_id: int) ->
 def confirm_educational_booking(educational_booking_id: int) -> EducationalBooking:
     educational_booking = educational_repository.find_educational_booking_by_id(educational_booking_id)
     if educational_booking is None:
-        raise EducationalBookingNotFound()
+        raise exceptions.EducationalBookingNotFound()
 
     booking: bookings_models.Booking = educational_booking.booking
     if booking.status == bookings_models.BookingStatus.CONFIRMED:
@@ -109,20 +108,20 @@ def confirm_educational_booking(educational_booking_id: int) -> EducationalBooki
         booking.mark_as_confirmed()
         repository.save(booking)
 
-        return educational_booking
+    return educational_booking
 
 
 def mark_educational_booking_as_used_by_institute(educational_booking_id: int) -> EducationalBooking:
     educational_booking = educational_repository.find_educational_booking_by_id(educational_booking_id)
     if educational_booking is None:
-        raise EducationalBookingNotFound()
+        raise exceptions.EducationalBookingNotFound()
 
     if educational_booking.status == EducationalBookingStatus.USED_BY_INSTITUTE:
         return educational_booking
 
     try:
         educational_booking.mark_as_used_by_institute()
-    except EducationalBookingNotConfirmedYet as exception:
+    except exceptions.EducationalBookingNotConfirmedYet as exception:
         logger.error(
             "User from adage trying to mark unconfirmed educational booking",
             extra={"educational_booking_id": educational_booking_id},
