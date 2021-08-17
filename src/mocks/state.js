@@ -122,6 +122,7 @@ const state = {
     offers: [
       {
         bookingEmail: null,
+        subcategoryId: 'cinema',
         dateCreated: '2018-10-29T09:44:38.329923Z',
         dateModifiedAtLastProvider: '2018-10-29T09:44:38.329902Z',
         dateRange: [],
@@ -268,6 +269,12 @@ const state = {
           },
           venueId: 'AE',
         },
+      },
+    ],
+    categories: [
+      {
+        categories: [],
+        subcategories: [{ id: 'cinema', appLabel: 'applabel cinéma' }],
       },
     ],
     types: offerTypes,

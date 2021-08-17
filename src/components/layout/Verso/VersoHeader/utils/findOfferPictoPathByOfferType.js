@@ -1,13 +1,13 @@
 import { ICONS_URL } from '../../../../../utils/config'
 import OFFER_TYPE_PICTO from './offerTypePicto'
 
-const findOfferPictoPathByOfferType = offerType => {
-  if (!offerType) {
+const findOfferPictoPathByOfferType = subcategory => {
+  if (!subcategory) {
     return null
   }
 
-  const category = offerType.split('.')
-  const picto = OFFER_TYPE_PICTO[category[1]]
+  const searchGroup = subcategory.searchGroup
+  const picto = OFFER_TYPE_PICTO[searchGroup]
 
   return `${ICONS_URL}/picto-${picto}.svg`
 }

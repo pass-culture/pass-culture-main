@@ -10,7 +10,7 @@ const Verso = ({
   areDetailsVisible,
   extraClassName,
   offerName,
-  offerType,
+  subcategory,
   offerVenueNameOrPublicName,
 }) => {
   const [isLoading, setIsLoading] = useState(offerName === null)
@@ -25,9 +25,9 @@ const Verso = ({
     <div className={`verso is-overlay ${extraClassName} ${areDetailsVisible ? 'flipped' : ''}`}>
       <div className="verso-wrapper">
         <VersoHeaderContainer
+          subcategory={subcategory}
           subtitle={offerVenueNameOrPublicName}
           title={offerName}
-          type={offerType}
         />
         <VersoControlsContainer />
         <div className="mosaic-background verso-content">
@@ -41,16 +41,16 @@ const Verso = ({
 Verso.defaultProps = {
   extraClassName: '',
   offerName: null,
-  offerType: null,
   offerVenueNameOrPublicName: null,
+  subcategory: null,
 }
 
 Verso.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
   extraClassName: PropTypes.string,
   offerName: PropTypes.string,
-  offerType: PropTypes.string,
   offerVenueNameOrPublicName: PropTypes.string,
+  subcategory: PropTypes.string,
 }
 
 export default Verso

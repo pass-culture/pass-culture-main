@@ -2,16 +2,16 @@ import findOfferPictoPathByOfferType from '../findOfferPictoPathByOfferType'
 import { ICONS_URL } from '../../../../../../utils/config'
 
 jest.mock('../../../../../../utils/config', () => ({
-  ICONS_URL: '/storage/picto/url'
+  ICONS_URL: '/storage/picto/url',
 }))
 
 describe('src | components | layout | Verso | VersoHeader | utils | findOfferPictoPathByOfferType', () => {
   it('should return an url to the matching icon when offer type is provided', () => {
     // given
-    const offerType = 'EventType.SPECTACLE_VIVANT'
+    const subcategory = { searchGroup: 'Spectacles' }
 
     // when
-    const result = findOfferPictoPathByOfferType(offerType)
+    const result = findOfferPictoPathByOfferType(subcategory)
 
     // then
     expect(result).toBe(`${ICONS_URL}/picto-spectacle.svg`)
@@ -19,10 +19,10 @@ describe('src | components | layout | Verso | VersoHeader | utils | findOfferPic
 
   it('should return an url to the eye icon when offer type is cinema card', () => {
     // given
-    const offerType = 'ThingType.CINEMA_CARD'
+    const subcategory = { searchGroup: 'Cinéma' }
 
     // when
-    const result = findOfferPictoPathByOfferType(offerType)
+    const result = findOfferPictoPathByOfferType(subcategory)
 
     // then
     expect(result).toBe(`${ICONS_URL}/picto-visite.svg`)

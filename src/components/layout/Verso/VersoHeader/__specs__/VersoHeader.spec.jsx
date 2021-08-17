@@ -11,7 +11,7 @@ describe('src | components | layout | Verso | VersoHeader', () => {
     props = {
       subtitle: 'Offer subtitle',
       title: 'Offer title',
-      type: 'EventType.SPECTACLE_VIVANT',
+      subcategory: { searchGroup: 'Spectacles' },
     }
   })
 
@@ -70,7 +70,7 @@ describe('src | components | layout | Verso | VersoHeader', () => {
 
   it('should not display a picto matching offer type when not provided', () => {
     // given
-    props.type = null
+    props.subcategory = null
 
     // when
     const wrapper = shallow(<VersoHeader {...props} />)

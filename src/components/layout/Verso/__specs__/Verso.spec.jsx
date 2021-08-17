@@ -17,7 +17,7 @@ describe('src | components | layout | Verso', () => {
       extraClassNameVersoContent: 'verso-content',
       extraClassName: 'extra-classname',
       offerName: 'Offer title',
-      offerType: 'EventType.SPECTACLE_VIVANT',
+      subcategory: 'cinema',
       offerVenueNameOrPublicName: 'Offer subtitle',
     }
   })
@@ -65,7 +65,7 @@ describe('src | components | layout | Verso', () => {
     const versoHeaderContainer = wrapper.find(VersoHeaderContainer)
     expect(versoHeaderContainer.prop('subtitle')).toBe('Offer subtitle')
     expect(versoHeaderContainer.prop('title')).toBe('Offer title')
-    expect(versoHeaderContainer.prop('type')).toBe('EventType.SPECTACLE_VIVANT')
+    expect(versoHeaderContainer.prop('subcategory')).toBe('cinema')
   })
 
   it('should render a loader while offer data are loading', () => {

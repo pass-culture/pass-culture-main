@@ -2,14 +2,14 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import findOfferPictoPathByOfferType from './utils/findOfferPictoPathByOfferType'
 
-const VersoHeader = ({ subtitle, title, type }) => {
+const VersoHeader = ({ subtitle, title, subcategory }) => {
   return (
     <div className="verso-header with-triangle is-relative pc-theme-black py32 px12">
-      {type && (
+      {subcategory && (
         <img
           alt=""
           id="verso-offer-type-picto"
-          src={findOfferPictoPathByOfferType(type)}
+          src={findOfferPictoPathByOfferType(subcategory)}
         />
       )}
       {title && (
@@ -33,15 +33,15 @@ const VersoHeader = ({ subtitle, title, type }) => {
 }
 
 VersoHeader.defaultProps = {
+  subcategory: null,
   subtitle: null,
   title: null,
-  type: null,
 }
 
 VersoHeader.propTypes = {
+  subcategory: PropTypes.shape(),
   subtitle: PropTypes.string,
   title: PropTypes.string,
-  type: PropTypes.string,
 }
 
 export default VersoHeader

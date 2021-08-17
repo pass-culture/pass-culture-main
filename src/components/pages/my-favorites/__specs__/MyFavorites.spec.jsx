@@ -31,6 +31,12 @@ describe('my favorites', () => {
               wallet_balance: '',
             },
           ],
+          categories: [
+            {
+              categories: [],
+              subcategories: [{ id: 'cinema', appLabel: 'applabel cinéma' }],
+            },
+          ],
         }
       ) => state,
       geolocation: (
