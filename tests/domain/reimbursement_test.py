@@ -720,10 +720,9 @@ class FindAllBookingsReimbursementsTest:
         offer2 = offers_factories.DigitalOfferFactory()
         booking2 = bookings_factories.BookingFactory(stock__offer=offer2)
         rule1 = payments_factories.CustomReimbursementRuleFactory(offer=offer1, amount=5)
-        rule2 = payments_factories.CustomReimbursementRuleFactory(
+        payments_factories.CustomReimbursementRuleFactory(
             offer=offer2, timespan=[booking2.dateCreated + timedelta(days=2), None]
         )
-        print(rule2)
 
         bookings = [booking1, booking2]
         custom_rules = payments_models.CustomReimbursementRule.query.all()

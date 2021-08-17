@@ -40,9 +40,7 @@ class Returns200Test:
             "cancellationLimitDate": booking.cancellationLimitDate.isoformat(),
             "category": get_serialized_offer_category(offer),
             "city": venue.city,
-            "confirmationDate": educational_booking.confirmationDate.isoformat()
-            if educational_booking.confirmationDate
-            else None,
+            "confirmationDate": None,
             "confirmationLimitDate": educational_booking.confirmationLimitDate.isoformat(),
             "coordinates": {
                 "latitude": float(venue.latitude),
@@ -53,7 +51,7 @@ class Returns200Test:
             "durationMinutes": offer.durationMinutes,
             "expirationDate": booking.expirationDate,
             "id": educational_booking.id,
-            "image": {"url": offer.image.url, "credit": offer.image.credit} if offer.image else None,
+            "image": None,
             "isDigital": offer.isDigital,
             "venueName": venue.name,
             "name": offer.name,
@@ -70,7 +68,7 @@ class Returns200Test:
             "yearId": int(educational_booking.educationalYearId),
             "status": "USED_BY_INSTITUTE",
             "venueTimezone": venue.timezone,
-            "totalAmount": booking.amount * booking.quantity,
+            "totalAmount": booking.total_amount,
             "url": f"{get_webapp_url()}/accueil/details/{humanize(offer.id)}",
             "withdrawalDetails": offer.withdrawalDetails,
         }
