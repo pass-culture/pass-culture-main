@@ -29,7 +29,9 @@ class Returns201Test:
             "stocks": [{"price": 20}],
         }
 
-        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
 
         # Then
         assert response.status_code == 201
@@ -64,7 +66,9 @@ class Returns201Test:
             ],
         }
 
-        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
 
         # Then
         assert response.status_code == 201
@@ -94,7 +98,9 @@ class Returns201Test:
             "offerId": humanize(offer.id),
             "stocks": [{"id": humanize(existing_stock.id), "price": 20}],
         }
-        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
 
         # Then
         assert response.status_code == 201
@@ -137,7 +143,9 @@ class Returns201Test:
                 },
             ],
         }
-        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
 
         # Then
         assert response.status_code == 201
@@ -175,7 +183,9 @@ class Returns400Test:
             ],
         }
 
-        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
 
         # Then
         assert response.status_code == 400
@@ -208,7 +218,9 @@ class Returns400Test:
             ],
         }
 
-        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
 
         # Then
         assert response.status_code == 400
@@ -230,7 +242,9 @@ class Returns400Test:
             "stocks": [{"id": humanize(stock.id), "price": 20}],
         }
 
-        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
@@ -256,7 +270,9 @@ class Returns400Test:
             ],
         }
 
-        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
 
         # Then
         assert response.status_code == 400
@@ -290,7 +306,9 @@ class Returns400Test:
             ],
         }
 
-        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
 
         # Then
         assert response.status_code == 400
@@ -322,7 +340,9 @@ class Returns400Test:
             ],
         }
 
-        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
 
         # Then
         assert response.status_code == 400
@@ -349,7 +369,7 @@ class Returns403Test:
                 },
             ],
         }
-        response = TestClient(app.test_client()).with_auth(user.email).post("/stocks/bulk/", json=stock_data)
+        response = TestClient(app.test_client()).with_session_auth(user.email).post("/stocks/bulk/", json=stock_data)
 
         # Then
         assert response.status_code == 403

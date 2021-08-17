@@ -50,7 +50,7 @@ class Returns200ForProUserTest:
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro_user.email).get("/offerers/names")
+        response = TestClient(app.test_client()).with_session_auth(pro_user.email).get("/offerers/names")
 
         # then
         assert response.status_code == 200
@@ -63,7 +63,7 @@ class Returns200ForProUserTest:
         offerers = self._setup_offerers_for_pro_user(pro_user)
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro_user.email).get("/offerers/names")
+        response = TestClient(app.test_client()).with_session_auth(pro_user.email).get("/offerers/names")
 
         # then
         assert response.status_code == 200
@@ -83,7 +83,7 @@ class Returns200ForProUserTest:
         offerers = self._setup_offerers_for_pro_user(pro_user)
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro_user.email).get("/offerers/names?validated=true")
+        response = TestClient(app.test_client()).with_session_auth(pro_user.email).get("/offerers/names?validated=true")
 
         # then
         assert response.status_code == 200
@@ -102,7 +102,9 @@ class Returns200ForProUserTest:
         offerers = self._setup_offerers_for_pro_user(pro_user)
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro_user.email).get("/offerers/names?validated=false")
+        response = (
+            TestClient(app.test_client()).with_session_auth(pro_user.email).get("/offerers/names?validated=false")
+        )
 
         # then
         assert response.status_code == 200
@@ -120,7 +122,9 @@ class Returns200ForProUserTest:
 
         # when
         response = (
-            TestClient(app.test_client()).with_auth(pro_user.email).get("/offerers/names?validated_for_user=true")
+            TestClient(app.test_client())
+            .with_session_auth(pro_user.email)
+            .get("/offerers/names?validated_for_user=true")
         )
 
         # then
@@ -141,7 +145,9 @@ class Returns200ForProUserTest:
 
         # when
         response = (
-            TestClient(app.test_client()).with_auth(pro_user.email).get("/offerers/names?validated_for_user=false")
+            TestClient(app.test_client())
+            .with_session_auth(pro_user.email)
+            .get("/offerers/names?validated_for_user=false")
         )
 
         # then
@@ -180,7 +186,7 @@ class Returns200ForAdminTest:
         offerers = self._setup_offerers_for_users()
 
         # when
-        response = TestClient(app.test_client()).with_auth(admin.email).get("/offerers/names")
+        response = TestClient(app.test_client()).with_session_auth(admin.email).get("/offerers/names")
 
         # then
         assert response.status_code == 200
@@ -200,7 +206,7 @@ class Returns200ForAdminTest:
         offerers = self._setup_offerers_for_users()
 
         # when
-        response = TestClient(app.test_client()).with_auth(admin.email).get("/offerers/names?validated=true")
+        response = TestClient(app.test_client()).with_session_auth(admin.email).get("/offerers/names?validated=true")
 
         # then
         assert response.status_code == 200
@@ -218,7 +224,7 @@ class Returns200ForAdminTest:
         offerers = self._setup_offerers_for_users()
 
         # when
-        response = TestClient(app.test_client()).with_auth(admin.email).get("/offerers/names?validated=false")
+        response = TestClient(app.test_client()).with_session_auth(admin.email).get("/offerers/names?validated=false")
 
         # then
         assert response.status_code == 200

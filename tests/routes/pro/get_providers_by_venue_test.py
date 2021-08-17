@@ -20,7 +20,7 @@ def test_venue_has_known_allocine_id(app):
     other_provider = ProviderFactory(localClass="B provider")
 
     # When
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
     response = client.get(f"/providers/{humanize(venue.id)}")
 
     # Then
@@ -55,7 +55,7 @@ def test_venue_has_no_allocine_id(app):
     other_provider = ProviderFactory(localClass="B provider")
 
     # When
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
     response = client.get(f"/providers/{humanize(venue.id)}")
 
     # Then
@@ -76,7 +76,7 @@ def test_venue_has_no_allocine_id(app):
 def test_venue_does_not_exist(app):
     user = UserFactory()
 
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
     response = client.get("/providers/AZER")
 
     assert response.status_code == 404

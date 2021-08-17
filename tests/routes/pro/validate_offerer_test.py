@@ -65,8 +65,11 @@ class Returns202Test:
 class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def expect_offerer_not_to_be_validated_with_unknown_token(self, app):
+        # Given
+        user = users_factories.ProFactory()
+
         # When
-        response = TestClient(app.test_client()).with_auth(email="pro@example.com").get("/validate/offerer/123")
+        response = TestClient(app.test_client()).with_session_auth(email=user.email).get("/validate/offerer/123")
 
         # Then
         assert response.status_code == 404

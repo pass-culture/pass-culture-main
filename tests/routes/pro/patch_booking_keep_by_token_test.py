@@ -80,7 +80,7 @@ class Returns204Test:
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
             url = f"/v2/bookings/keep/token/{booking.token}"
-            response = TestClient(app.test_client()).with_auth("pro@example.com").patch(url)
+            response = TestClient(app.test_client()).with_session_auth("pro@example.com").patch(url)
 
             assert response.status_code == 204
             booking = Booking.query.one()
@@ -95,7 +95,7 @@ class Returns204Test:
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
             url = f"/v2/bookings/keep/token/{booking.token.lower()}"
-            response = TestClient(app.test_client()).with_auth("pro@example.com").patch(url)
+            response = TestClient(app.test_client()).with_session_auth("pro@example.com").patch(url)
 
             assert response.status_code == 204
             booking = Booking.query.one()
@@ -111,7 +111,7 @@ class Returns204Test:
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
             url = f"/v2/bookings/keep/token/{booking.token.lower()}"
-            response = TestClient(app.test_client()).with_auth("pro@example.com").patch(url)
+            response = TestClient(app.test_client()).with_session_auth("pro@example.com").patch(url)
 
             assert response.status_code == 204
             booking = Booking.query.one()
@@ -233,7 +233,7 @@ class Returns403Test:
 
             # When
             url = "/v2/bookings/keep/token/{}?email={}".format(booking.token, user.email)
-            response = TestClient(app.test_client()).with_auth("pro@example.net").patch(url)
+            response = TestClient(app.test_client()).with_session_auth("pro@example.net").patch(url)
 
             # Then
             assert response.status_code == 403
@@ -248,7 +248,7 @@ class Returns403Test:
             url = f"/v2/bookings/keep/token/{booking.token}"
 
             # When
-            response = TestClient(app.test_client()).with_auth(admin.email).patch(url)
+            response = TestClient(app.test_client()).with_session_auth(admin.email).patch(url)
 
             # Then
             booking = Booking.query.get(booking.id)
@@ -314,7 +314,7 @@ class Returns404Test:
 
             # When
             url = "/v2/bookings/keep/token/{}".format("123456")
-            response = TestClient(app.test_client()).with_auth("pro@example.net").patch(url)
+            response = TestClient(app.test_client()).with_session_auth("pro@example.net").patch(url)
 
             # Then
             assert response.status_code == 404
@@ -336,7 +336,7 @@ class Returns404Test:
 
             # When
             url = "/v2/bookings/keep/token/"
-            response = TestClient(app.test_client()).with_auth("pro@example.net").patch(url)
+            response = TestClient(app.test_client()).with_session_auth("pro@example.net").patch(url)
 
             # Then
             assert response.status_code == 404
@@ -359,7 +359,7 @@ class Returns410Test:
 
             # When
             url = "/v2/bookings/keep/token/{}".format(booking.token)
-            response = TestClient(app.test_client()).with_auth("pro@example.net").patch(url)
+            response = TestClient(app.test_client()).with_session_auth("pro@example.net").patch(url)
 
             # Then
             assert response.status_code == 410
@@ -383,7 +383,7 @@ class Returns410Test:
 
             # When
             url = "/v2/bookings/keep/token/{}".format(booking.token)
-            response = TestClient(app.test_client()).with_auth("pro@example.net").patch(url)
+            response = TestClient(app.test_client()).with_session_auth("pro@example.net").patch(url)
 
             # Then
             assert response.status_code == 410

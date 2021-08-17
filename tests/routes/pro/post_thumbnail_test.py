@@ -36,7 +36,7 @@ def offerer_fixture(offer):
 class CreateThumbnailWithoutImageTest:
     def test_no_image(self, app, offer, offerer):
         # given
-        client = TestClient(app.test_client()).with_auth(email="user@example.com")
+        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         data = {
             "offerId": humanize(offer.id),
             "offererId": humanize(offerer.id),
@@ -54,7 +54,7 @@ class CreateThumbnailWithoutImageTest:
 class CreateThumbnailFromUrlTest:
     def test_import_from_url(self, app, offer, offerer):
         # given
-        client = TestClient(app.test_client()).with_auth(email="user@example.com")
+        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         data = {
             "offerId": humanize(offer.id),
@@ -81,7 +81,7 @@ class CreateThumbnailFromUrlTest:
 
     def test_unavailable_image_url(self, app, offer, offerer):
         # given
-        client = TestClient(app.test_client()).with_auth(email="user@example.com")
+        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         data = {
             "offerId": humanize(offer.id),
             "offererId": humanize(offerer.id),
@@ -104,7 +104,7 @@ class CreateThumbnailFromUrlTest:
 
     def test_wrong_content_type(self, app, offer, offerer):
         # given
-        client = TestClient(app.test_client()).with_auth(email="user@example.com")
+        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         data = {
             "offerId": humanize(offer.id),
             "offererId": humanize(offerer.id),
@@ -128,7 +128,7 @@ class CreateThumbnailFromUrlTest:
     def test_image_too_small(self, mock_check_image, app, offer, offerer):
         # given
         mock_check_image.side_effect = exceptions.ImageTooSmall(min_width=400, min_height=400)
-        client = TestClient(app.test_client()).with_auth(email="user@example.com")
+        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         data = {
             "offerId": humanize(offer.id),
             "offererId": humanize(offerer.id),
@@ -152,7 +152,7 @@ class CreateThumbnailFromUrlTest:
     def test_content_too_large(self, mock_get_distant_image, app, offer, offerer):
         # given
         mock_get_distant_image.side_effect = exceptions.FileSizeExceeded(max_size=10_000_000)
-        client = TestClient(app.test_client()).with_auth(email="user@example.com")
+        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         data = {
             "offerId": humanize(offer.id),
             "offererId": humanize(offerer.id),
@@ -171,7 +171,7 @@ class CreateThumbnailFromUrlTest:
 class CreateThumbnailFromFileTest:
     def test_import_from_file(self, app, offer, offerer):
         # given
-        client = TestClient(app.test_client()).with_auth(email="user@example.com")
+        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         data = {
             "offerId": humanize(offer.id),
@@ -192,7 +192,7 @@ class CreateThumbnailFromFileTest:
 
     def test_wrong_content_type_from_file(self, app, offer, offerer):
         # given
-        client = TestClient(app.test_client()).with_auth(email="user@example.com")
+        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_fake_jpg.jpg").read_bytes()
         data = {
             "offerId": humanize(offer.id),
@@ -211,7 +211,7 @@ class CreateThumbnailFromFileTest:
     def test_image_too_small(self, mock_check_image, app, offer, offerer):
         # given
         mock_check_image.side_effect = exceptions.ImageTooSmall(min_width=400, min_height=400)
-        client = TestClient(app.test_client()).with_auth(email="user@example.com")
+        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_small.jpg").read_bytes()
         data = {
             "offerId": humanize(offer.id),
@@ -231,7 +231,7 @@ class CreateThumbnailFromFileTest:
     def test_content_too_large(self, mock_check_image, app, offer, offerer):
         # given
         mock_check_image.side_effect = exceptions.FileSizeExceeded(max_size=10_000_000)
-        client = TestClient(app.test_client()).with_auth(email="user@example.com")
+        client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         data = {
             "offerId": humanize(offer.id),

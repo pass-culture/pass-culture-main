@@ -44,7 +44,7 @@ class Returns200Test:
         url = f"/bookings/token/{booking.token}"
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@example.com").get(url)
+        response = TestClient(app.test_client()).with_session_auth("admin@example.com").get(url)
 
         # Then
         assert response.status_code == 200
@@ -78,7 +78,7 @@ class Returns200Test:
         url = f"/bookings/token/{booking_token}"
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@example.com").get(url)
+        response = TestClient(app.test_client()).with_session_auth("admin@example.com").get(url)
 
         # Then
         assert response.status_code == 200
@@ -110,7 +110,7 @@ class Returns200Test:
         url = f"/bookings/token/{booking.token}?{url_email}"
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@example.com").get(url)
+        response = TestClient(app.test_client()).with_session_auth("admin@example.com").get(url)
 
         # Then
         assert response.status_code == 200
@@ -181,7 +181,7 @@ class Returns404Test:
         url = "/bookings/token/12345"
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@example.com").get(url)
+        response = TestClient(app.test_client()).with_session_auth("admin@example.com").get(url)
 
         # Then
         assert response.status_code == 404
@@ -202,7 +202,7 @@ class Returns404Test:
         url = f"/bookings/token/{booking.token}?email=toto@example.com"
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@example.com").get(url)
+        response = TestClient(app.test_client()).with_session_auth("admin@example.com").get(url)
 
         # Then
         assert response.status_code == 404
@@ -242,7 +242,7 @@ class Returns404Test:
         url = f"/bookings/token/{booking.token}?email={user.email}"
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@example.com").get(url)
+        response = TestClient(app.test_client()).with_session_auth("admin@example.com").get(url)
 
         # Then
         assert response.status_code == 404
@@ -287,7 +287,7 @@ class Returns400Test:
         url = f"/bookings/token/{booking.token}"
 
         # When
-        response = TestClient(app.test_client()).with_auth("querying@example.com").get(url)
+        response = TestClient(app.test_client()).with_session_auth("querying@example.com").get(url)
 
         # Then
         assert response.status_code == 400

@@ -26,7 +26,7 @@ class Returns200Test:
         venue_label_2 = VenueLabelFactory(label="Monuments historiques")
 
         # When
-        response = TestClient(app.test_client()).with_auth(pro.email).get("/venue-labels")
+        response = TestClient(app.test_client()).with_session_auth(pro.email).get("/venue-labels")
 
         # then
         assert response.status_code == 200

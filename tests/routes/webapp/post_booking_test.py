@@ -16,7 +16,7 @@ class Returns201Test:
         stock = offers_factories.StockFactory()
 
         data = {"stockId": humanize(stock.id), "quantity": 1}
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_session_auth(user.email)
         response = client.post("/bookings", json=data)
 
         booking = bookings_models.Booking.query.one()
@@ -44,7 +44,7 @@ class Returns201Test:
 
         # When
         data = {"stockId": humanize(stock.id), "quantity": 1}
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_session_auth(user.email)
         response = client.post("/bookings", json=data)
 
         # Then
@@ -71,7 +71,7 @@ class Returns400Test:
         stock = offers_factories.StockFactory(quantity=0)
 
         data = {"stockId": humanize(stock.id), "quantity": 1}
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_session_auth(user.email)
         response = client.post("/bookings", json=data)
 
         assert response.status_code == 400

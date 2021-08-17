@@ -5,7 +5,6 @@ import uuid
 from flask import current_app as app
 from flask import jsonify
 from flask import session
-from flask_login import login_user
 
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
@@ -29,7 +28,6 @@ def get_user_with_id(user_id):
     return None
 
 
-@app.login_manager.request_loader
 def basic_authentication(request, realm=None):
     auth = request.authorization
     if not auth:
@@ -47,8 +45,7 @@ def basic_authentication(request, realm=None):
         "User logged in with authorization header",
         extra={"route": str(request.url_rule), "username": auth.username, "avoid_current_user": True},
     )
-    login_user(user)
-    stamp_session(user)
+    # TODO: ajouter l'utilisateur dans le contexte
     return user
 
 

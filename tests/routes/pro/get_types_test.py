@@ -22,7 +22,7 @@ class Returns200Test:
         users_factories.ProFactory(email="test@email.com")
 
         # when
-        response = TestClient(app.test_client()).with_auth("test@email.com").get("/types")
+        response = TestClient(app.test_client()).with_session_auth("test@email.com").get("/types")
         types = response.json
 
         # then
@@ -40,7 +40,7 @@ class Returns200Test:
         users_factories.AdminFactory(email="pctest.admin93.0@example.com")
 
         # when
-        response = TestClient(app.test_client()).with_auth("pctest.admin93.0@example.com").get("/types")
+        response = TestClient(app.test_client()).with_session_auth("pctest.admin93.0@example.com").get("/types")
         types = response.json
 
         # then
@@ -55,7 +55,7 @@ class Returns200Test:
         users_factories.ProFactory(email="test@email.com")
 
         # when
-        response = TestClient(app.test_client()).with_auth("test@email.com").get("/types")
+        response = TestClient(app.test_client()).with_session_auth("test@email.com").get("/types")
         types = response.json
 
         # then

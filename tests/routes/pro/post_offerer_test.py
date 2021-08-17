@@ -42,7 +42,7 @@ class Returns201Test:
         }
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_session_auth(pro.email).post("/offerers", json=body)
 
         # then
         assert response.status_code == 201
@@ -65,7 +65,7 @@ class Returns201Test:
         body = {"name": "Test Offerer", "siren": "418166096", "postalCode": "93100", "city": "Montreuil"}
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_session_auth(pro.email).post("/offerers", json=body)
 
         # then
         assert response.status_code == 201
@@ -91,7 +91,7 @@ class Returns201Test:
         }
 
         # When
-        response = TestClient(app.test_client()).with_auth(admin.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_session_auth(admin.email).post("/offerers", json=body)
 
         # then
         assert response.status_code == 201
@@ -115,7 +115,7 @@ class Returns201Test:
         }
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_session_auth(pro.email).post("/offerers", json=body)
 
         # then
         assert response.status_code == 201
@@ -147,7 +147,7 @@ class Returns201Test:
         }
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_session_auth(pro.email).post("/offerers", json=body)
 
         # then
         assert response.status_code == 201
@@ -180,7 +180,7 @@ class Returns201Test:
         }
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_session_auth(pro.email).post("/offerers", json=body)
 
         # then
         assert response.status_code == 201
@@ -211,7 +211,7 @@ class Returns201Test:
         }
 
         # When
-        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_session_auth(pro.email).post("/offerers", json=body)
 
         # Then
         assert response.status_code == 201
@@ -242,7 +242,7 @@ class Returns201Test:
         }
 
         # When
-        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_session_auth(pro.email).post("/offerers", json=body)
 
         # Then
         assert response.status_code == 201
@@ -274,7 +274,7 @@ class Returns201Test:
         }
 
         # When
-        response = TestClient(app.test_client()).with_auth(pro.email).post("/offerers", json=body)
+        response = TestClient(app.test_client()).with_session_auth(pro.email).post("/offerers", json=body)
 
         # Then
         assert response.status_code == 201

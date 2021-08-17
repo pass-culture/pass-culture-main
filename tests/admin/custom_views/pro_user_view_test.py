@@ -42,7 +42,7 @@ class ProUserViewTest:
         )
 
         # When
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
 
         # Then
         response = client.post("/pc/back-office/pro_users/new", form=data)
@@ -131,7 +131,7 @@ class ProUserViewTest:
         admin = users_factories.AdminFactory(email="admin15@example.com")
         pro = users_factories.ProFactory(email="user15@example.com")
 
-        client = TestClient(app.test_client()).with_auth(admin.email)
+        client = TestClient(app.test_client()).with_session_auth(admin.email)
         url = f"/pc/back-office/pro_users/suspend?user_id={pro.id}"
         data = {
             "reason": "fraud",
@@ -150,7 +150,7 @@ class ProUserViewTest:
         admin = users_factories.AdminFactory(email="admin15@example.com")
         pro = users_factories.ProFactory(email="user15@example.com", isActive=False)
 
-        client = TestClient(app.test_client()).with_auth(admin.email)
+        client = TestClient(app.test_client()).with_session_auth(admin.email)
         url = f"/pc/back-office/pro_users/unsuspend?user_id={pro.id}"
         data = {
             "reason": "fraud",

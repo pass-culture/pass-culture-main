@@ -23,7 +23,7 @@ class ManyOffersOperationsViewTest:
         data = dict(isbn="978-3-16-148410-0")
 
         # When
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post("/pc/back-office/many_offers_operations/", form=data)
 
         # Then
@@ -41,7 +41,7 @@ class ManyOffersOperationsViewTest:
         data = dict(visa="978148")
 
         # When
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post("/pc/back-office/many_offers_operations/", form=data)
 
         # Then
@@ -58,7 +58,7 @@ class ManyOffersOperationsViewTest:
         )
 
         # When
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post("/pc/back-office/many_offers_operations/", form=data)
 
         # Then
@@ -72,7 +72,7 @@ class ManyOffersOperationsViewTest:
         data = dict()
 
         # When
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post("/pc/back-office/many_offers_operations/", form=data)
 
         # Then
@@ -100,7 +100,7 @@ class ManyOffersOperationsViewTest:
         )
 
         # When
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post(
             "/pc/back-office/many_offers_operations/add_criteria_to_offers?isbn=9783161484100", form=data
         )
@@ -136,7 +136,7 @@ class ManyOffersOperationsViewTest:
         )
 
         # When
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post(
             "/pc/back-office/many_offers_operations/add_criteria_to_offers?visa=9783161484100", form=data
         )
@@ -156,7 +156,7 @@ class ManyOffersOperationsViewTest:
         users_factories.AdminFactory(email="admin@example.com")
 
         # When
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.get("/pc/back-office/many_offers_operations/edit?isbn=9783161484100")
 
         # Then
@@ -169,7 +169,7 @@ class ManyOffersOperationsViewTest:
         users_factories.AdminFactory(email="admin@example.com")
 
         # When
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.get("/pc/back-office/many_offers_operations/edit?visa=9783161484100")
 
         # Then
@@ -211,7 +211,7 @@ class ManyOffersOperationsViewTest:
         offers_factories.OfferFactory(product=product_1, venue=venue)
 
         # When
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post("/pc/back-office/many_offers_operations/product_gcu_compatibility?isbn=isbn-de-test")
 
         # Then

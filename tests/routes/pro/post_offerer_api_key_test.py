@@ -12,7 +12,7 @@ from pcapi.utils.human_ids import humanize
 def test_api_key_journey(client):
     booking = BookingFactory()
     user_offerer = UserOffererFactory(offerer=booking.stock.offer.venue.managingOfferer)
-    client.with_auth(user_offerer.user.email)
+    client.with_session_auth(user_offerer.user.email)
 
     response = client.post(f"/offerers/{humanize(user_offerer.offerer.id)}/api_keys")
 
@@ -40,7 +40,7 @@ def test_maximal_api_key_reached(client):
     for i in range(5):
         ApiKeyFactory(prefix=f"prefix_{i}", offerer=user_offerer.offerer)
 
-    client.with_auth(user_offerer.user.email)
+    client.with_session_auth(user_offerer.user.email)
     response = client.post(f"/offerers/{humanize(user_offerer.offerer.id)}/api_keys")
 
     assert response.status_code == 400
@@ -52,7 +52,7 @@ def test_maximal_api_key_reached(client):
 def test_delete_api_key_not_found(client):
     user_offerer = UserOffererFactory()
 
-    client.with_auth(user_offerer.user.email)
+    client.with_session_auth(user_offerer.user.email)
     response = client.delete("/offerers/api_keys/wrong-prefix")
 
     assert response.status_code == 404
@@ -63,7 +63,7 @@ def test_delete_api_key_not_allowed(client):
     user_offerer = UserOffererFactory()
     api_key = ApiKeyFactory()
 
-    client.with_auth(user_offerer.user.email)
+    client.with_session_auth(user_offerer.user.email)
     response = client.delete(f"/offerers/api_keys/{api_key.prefix}")
 
     assert response.status_code == 403

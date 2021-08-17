@@ -29,7 +29,7 @@ class Returns200Test:
             "externalTicketOfficeUrl": "http://example.net",
             "mentalDisabilityCompliant": True,
         }
-        response = client.with_auth("user@example.com").patch(f"/offers/{humanize(offer.id)}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 200
@@ -63,7 +63,7 @@ class Returns400Test:
             "subcategoryId": subcategories.LIVRE_PAPIER,
             "type": subcategories.LIVRE_PAPIER.matching_type,
         }
-        response = client.with_auth("user@example.com").patch(f"offers/{humanize(offer.id)}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -96,7 +96,7 @@ class Returns400Test:
             "name": "Les lièvres pas malins",
             "url": "missing.something",
         }
-        response = client.with_auth("user@example.com").patch(f"offers/{humanize(offer.id)}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -116,7 +116,7 @@ class Returns400Test:
             "name": "Les lièvres pas malins",
             "externalTicketOfficeUrl": "missing.something",
         }
-        response = client.with_auth("user@example.com").patch(f"offers/{humanize(offer.id)}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -136,7 +136,7 @@ class Returns400Test:
             "name": "Les lièvres pas malins",
             "url": "https://missing",
         }
-        response = client.with_auth("user@example.com").patch(f"offers/{humanize(offer.id)}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -156,7 +156,7 @@ class Returns400Test:
             "name": "Les lièvres pas malins",
             "externalTicketOfficeUrl": "https://missing",
         }
-        response = client.with_auth("user@example.com").patch(f"offers/{humanize(offer.id)}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 400
@@ -172,7 +172,7 @@ class Returns400Test:
         data = {
             "visualDisabilityCompliant": True,
         }
-        response = client.with_auth("user@example.com").patch(f"/offers/{humanize(offer.id)}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{humanize(offer.id)}", json=data)
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
@@ -186,7 +186,7 @@ class Returns403Test:
 
         # When
         data = {"name": "New name"}
-        response = client.with_auth("user@example.com").patch(f"/offers/{humanize(offer.id)}", json=data)
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{humanize(offer.id)}", json=data)
 
         # Then
         assert response.status_code == 403
@@ -202,7 +202,7 @@ class Returns404Test:
         users_factories.UserFactory(email="user@example.com")
 
         # when
-        response = client.with_auth("user@example.com").patch("/offers/ADFGA", json={})
+        response = client.with_session_auth("user@example.com").patch("/offers/ADFGA", json={})
 
         # then
         assert response.status_code == 404

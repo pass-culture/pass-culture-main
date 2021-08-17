@@ -71,7 +71,7 @@ class OfferValidationViewTest:
         }
 
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post(f"/pc/back-office/validation/edit?id={currently_displayed_offer.id}", form=data)
 
         currently_displayed_offer = Offer.query.get(currently_displayed_offer.id)
@@ -104,7 +104,7 @@ class OfferValidationViewTest:
         }
 
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
 
         assert offer.validation == OfferValidationStatus.APPROVED
@@ -136,7 +136,7 @@ class OfferValidationViewTest:
             "legal_category_label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
         # When
         client.post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
@@ -168,7 +168,7 @@ class OfferValidationViewTest:
             "legal_category_label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
         # When
         client.post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
@@ -205,7 +205,7 @@ class OfferValidationViewTest:
                     """
 
         data = dict(specs=config_yaml, action="save")
-        client = TestClient(app.test_client()).with_auth("super_admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("super_admin@example.com")
 
         # When
         response = client.post("pc/back-office/fraud_rules_configuration/new/", form=data)
@@ -268,7 +268,7 @@ class OfferValidationViewTest:
                     """
 
         data = dict(specs=config_yaml, action="save")
-        client = TestClient(app.test_client()).with_auth("super_admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("super_admin@example.com")
 
         # When
         response = client.post("pc/back-office/fraud_rules_configuration/new/", form=data)
@@ -301,7 +301,7 @@ class OfferValidationViewTest:
                     """
 
         data = dict(specs=config_yaml, action="save")
-        client = TestClient(app.test_client()).with_auth("not_super_admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("not_super_admin@example.com")
 
         # When
         response = client.post("pc/back-office/fraud_rules_configuration/new/", form=data)
@@ -341,7 +341,7 @@ class OfferValidationViewTest:
             "legal_category_label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
         # When
         response = client.post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
@@ -388,7 +388,7 @@ class OfferValidationViewTest:
             "legal_category_label": "Société en nom collectif",
         }
         data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
         # When
         response = client.post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
@@ -406,7 +406,7 @@ class OfferValidationViewTest:
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
     def test_access_to_validation_page_with_super_admin_user_on_prod_env(self, app):
         users_factories.AdminFactory(email="super_admin@example.com")
-        client = TestClient(app.test_client()).with_auth("super_admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("super_admin@example.com")
 
         response = client.get("/pc/back-office/validation/")
 
@@ -415,7 +415,7 @@ class OfferValidationViewTest:
     @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
     def test_access_to_validation_page_with_none_super_admin_user_on_prod_env(self, app):
         users_factories.AdminFactory(email="simple_admin@example.com")
-        client = TestClient(app.test_client()).with_auth("simple_admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("simple_admin@example.com")
 
         response = client.get("/pc/back-office/validation/")
 
@@ -470,7 +470,7 @@ class GetOfferValidationViewTest:
         offers_factories.OfferFactory(
             validation=OfferValidationStatus.PENDING, isActive=False, venue__managingOfferer=offerer
         )
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         mocked_get_offerer_legal_category.return_value = {
             "legal_category_code": 5202,
             "legal_category_label": "Société en nom collectif",
@@ -501,7 +501,7 @@ class OfferViewTest:
             )
             frozen_time.move_to("2020-12-20 15:00:00")
             data = dict(validation=OfferValidationStatus.REJECTED.value)
-            client = TestClient(app.test_client()).with_auth("admin@example.com")
+            client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
             response = client.post(f"/pc/back-office/offer/edit/?id={offer.id}", form=data)
 
@@ -532,7 +532,7 @@ class OfferViewTest:
             offer = offers_factories.OfferFactory(validation=OfferValidationStatus.REJECTED, isActive=True)
             frozen_time.move_to("2020-12-20 15:00:00")
             data = dict(validation=OfferValidationStatus.APPROVED.value)
-            client = TestClient(app.test_client()).with_auth("admin@example.com")
+            client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
             response = client.post(f"/pc/back-office/offer/edit/?id={offer.id}", form=data)
 
@@ -566,7 +566,7 @@ class OfferViewTest:
             used_booking = booking_factories.UsedBookingFactory(stock=stock)
             frozen_time.move_to("2020-12-20 15:00:00")
             data = dict(validation=OfferValidationStatus.REJECTED.value)
-            client = TestClient(app.test_client()).with_auth("admin@example.com")
+            client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
             response = client.post(f"/pc/back-office/offer/edit/?id={offer.id}", form=data)
 
@@ -586,7 +586,7 @@ class OfferViewTest:
         users_factories.AdminFactory(email="admin@example.com")
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True)
         data = dict(validation=OfferValidationStatus.DRAFT.value)
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
 
         response = client.post(f"/pc/back-office/offer/edit/?id={offer.id}", form=data)
 

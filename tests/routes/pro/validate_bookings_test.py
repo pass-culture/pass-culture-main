@@ -38,7 +38,7 @@ class Returns204Test:  # No Content
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         url = f"/bookings/token/{booking.token}"
-        response = TestClient(app.test_client()).with_auth("pro@example.com").patch(url)
+        response = TestClient(app.test_client()).with_session_auth("pro@example.com").patch(url)
 
         assert response.status_code == 204
         booking = bookings_models.Booking.query.one()
@@ -52,7 +52,7 @@ class Returns204Test:  # No Content
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         url = f"/bookings/token/{booking.token}"
-        client = TestClient(app.test_client()).with_auth("pro@example.com")
+        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         response = client.patch(url, headers={"origin": "http://random_header.fr"})
 
         assert response.status_code == 204
@@ -72,7 +72,7 @@ class Returns204Test:  # No Content
 
         quoted_email = urllib.parse.quote("user+plus@example.com")
         url = f"/bookings/token/{booking.token}?email={quoted_email}"
-        client = TestClient(app.test_client()).with_auth("pro@example.com")
+        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         response = client.patch(url, headers={"origin": "http://random_header.fr"})
 
         assert response.status_code == 204
@@ -98,7 +98,7 @@ class Returns403Test:
         url = "/bookings/token/{}?email={}".format(booking.token, user.email)
 
         # When
-        response = TestClient(app.test_client()).with_auth("pro@example.com").patch(url)
+        response = TestClient(app.test_client()).with_session_auth("pro@example.com").patch(url)
 
         # Then
         assert response.status_code == 403
@@ -120,7 +120,7 @@ class Returns403Test:
         mocked_check_is_usable.side_effect = api_errors.ForbiddenError(errors={"booking": ["Not confirmed"]})
 
         # When
-        response = TestClient(app.test_client()).with_auth("pro@example.com").patch(url)
+        response = TestClient(app.test_client()).with_session_auth("pro@example.com").patch(url)
 
         # Then
         assert response.status_code == 403
@@ -134,7 +134,7 @@ class Returns403Test:
         url = f"/bookings/token/{booking.token}"
 
         # When
-        response = TestClient(app.test_client()).with_auth(admin.email).patch(url)
+        response = TestClient(app.test_client()).with_session_auth(admin.email).patch(url)
 
         # Then
         assert response.status_code == 403
@@ -159,7 +159,7 @@ class Returns404Test:
         url = "/bookings/token/{}?email={}".format(booking.token, "wrong@example.com")
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@example.com").patch(url)
+        response = TestClient(app.test_client()).with_session_auth("admin@example.com").patch(url)
 
         # Then
         assert response.status_code == 404
@@ -184,7 +184,7 @@ class Returns404Test:
         url = "/bookings/token/{}?email={}".format(booking.token, user.email)
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@example.com").patch(url)
+        response = TestClient(app.test_client()).with_session_auth("admin@example.com").patch(url)
 
         # Then
         assert response.status_code == 404
@@ -205,7 +205,7 @@ class Returns404Test:
         url = "/bookings/token/{}?email={}&offer_id={}".format(booking.token, user.email, humanize(123))
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@example.com").patch(url)
+        response = TestClient(app.test_client()).with_session_auth("admin@example.com").patch(url)
 
         # Then
         assert response.status_code == 404

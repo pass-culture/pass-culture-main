@@ -32,7 +32,7 @@ class Returns200Test:
         booking3 = BookingFactory(user=user1, stock=stock2, token="BBBBB")
 
         # When
-        response = TestClient(app.test_client()).with_auth(user1.email).get("/bookings")
+        response = TestClient(app.test_client()).with_session_auth(user1.email).get("/bookings")
 
         # Then
         assert response.status_code == 200
@@ -140,7 +140,7 @@ class Returns200Test:
         BookingFactory(user=user1, stock=stock2, token="BBBBB")
 
         # When
-        response = TestClient(app.test_client()).with_auth(user1.email).get("/bookings")
+        response = TestClient(app.test_client()).with_session_auth(user1.email).get("/bookings")
 
         # Then
         all_bookings = response.json

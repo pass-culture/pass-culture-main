@@ -27,7 +27,7 @@ class AdminUserViewTest:
             postalCode="76001",
         )
 
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post("/pc/back-office/admin_users/new", form=data)
 
         assert response.status_code == 302
@@ -63,7 +63,7 @@ class AdminUserViewTest:
             postalCode="76000",
         )
 
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post("/pc/back-office/admin_users/new", form=data)
 
         assert response.status_code == 302
@@ -100,7 +100,7 @@ class AdminUserViewTest:
             postalCode="76000",
         )
 
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post("/pc/back-office/admin_users/new", form=data)
 
         assert response.status_code == 302
@@ -114,7 +114,7 @@ class AdminUserViewTest:
     def test_super_admin_can_suspend_then_unsuspend_simple_admin(self, mocked_validate_csrf_token, app):
         super_admin = users_factories.AdminFactory(email="superadmin@example.com")
         admin = users_factories.AdminFactory(email="admin@example.com")
-        client = TestClient(app.test_client()).with_auth(super_admin.email)
+        client = TestClient(app.test_client()).with_session_auth(super_admin.email)
 
         # Suspend
         url = f"/pc/back-office/admin_users/suspend?user_id={admin.id}"
@@ -134,7 +134,7 @@ class AdminUserViewTest:
     def test_simple_admin_can_not_suspend_admin(self, mocked_validate_csrf_token, app):
         admin_1 = users_factories.AdminFactory(email="admin1@example.com")
         admin_2 = users_factories.AdminFactory(email="admin2@example.com")
-        client = TestClient(app.test_client()).with_auth(admin_1.email)
+        client = TestClient(app.test_client()).with_session_auth(admin_1.email)
 
         # admin_1 tries to suspend admin_2 (and fails to)
         url = f"/pc/back-office/admin_users/suspend?user_id={admin_2.id}"
@@ -150,8 +150,8 @@ class AdminUserViewTest:
         super_admin = users_factories.AdminFactory(email="superadmin@example.com")
         admin_1 = users_factories.AdminFactory(email="admin1@example.com")
         admin_2 = users_factories.AdminFactory(email="admin2@example.com")
-        super_admin_client = TestClient(app.test_client()).with_auth(super_admin.email)
-        admin_1_client = TestClient(app.test_client()).with_auth(admin_1.email)
+        super_admin_client = TestClient(app.test_client()).with_session_auth(super_admin.email)
+        admin_1_client = TestClient(app.test_client()).with_session_auth(admin_1.email)
 
         # super_admin suspends admin_2
         url = f"/pc/back-office/admin_users/suspend?user_id={admin_2.id}"

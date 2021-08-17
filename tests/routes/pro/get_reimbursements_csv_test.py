@@ -28,7 +28,7 @@ def test_with_user_linked_to_offerers(app):
     pro = users_factories.ProFactory(offerers=[offerer1, offerer2])
 
     # When
-    client = TestClient(app.test_client()).with_auth(pro.email)
+    client = TestClient(app.test_client()).with_session_auth(pro.email)
     response = client.get("/reimbursements/csv")
 
     # Then
@@ -45,7 +45,7 @@ def test_with_user_with_no_offerer(app):
     pro = users_factories.ProFactory()
 
     # When
-    client = TestClient(app.test_client()).with_auth(pro.email)
+    client = TestClient(app.test_client()).with_session_auth(pro.email)
     response = client.get("/reimbursements/csv")
 
     # Then
@@ -66,7 +66,7 @@ def test_with_blacklisted_offerer(app):
     pro = users_factories.ProFactory(offerers=[offerer])
 
     # When
-    client = TestClient(app.test_client()).with_auth(pro.email)
+    client = TestClient(app.test_client()).with_session_auth(pro.email)
     response = client.get("/reimbursements/csv")
 
     # Then
@@ -92,7 +92,7 @@ def test_with_venue_filter(app):
     pro = users_factories.ProFactory(offerers=[offerer])
 
     # When
-    client = TestClient(app.test_client()).with_auth(pro.email)
+    client = TestClient(app.test_client()).with_session_auth(pro.email)
     response = client.get(
         f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&venueId={humanize(venue1.id)}"
     )
@@ -139,7 +139,7 @@ def test_with_reimbursement_period_filter(app):
     )
 
     # When
-    client = TestClient(app.test_client()).with_auth(pro.email)
+    client = TestClient(app.test_client()).with_session_auth(pro.email)
     response = client.get(
         f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}"
     )
@@ -159,7 +159,7 @@ def test_with_non_given_reimbursement_period(app):
     pro = user_offerer.user
 
     # When
-    client = TestClient(app.test_client()).with_auth(pro.email)
+    client = TestClient(app.test_client()).with_session_auth(pro.email)
     response = client.get("/reimbursements/csv")
 
     # Then

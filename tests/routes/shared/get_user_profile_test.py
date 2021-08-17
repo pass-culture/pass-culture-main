@@ -36,7 +36,7 @@ class Returns200Test:
         )
 
         # When
-        response = TestClient(app.test_client()).with_auth(email="toto@example.com").get("/users/current")
+        response = TestClient(app.test_client()).with_session_auth(email="toto@example.com").get("/users/current")
 
         # Then
         assert response.status_code == 200
@@ -90,7 +90,7 @@ class Returns200Test:
         repository.save(offer, offer2, offerer2_virtual_venue, user_offerer, user_offerer2)
 
         # When
-        response = TestClient(app.test_client()).with_auth("test@email.com").get("/users/current")
+        response = TestClient(app.test_client()).with_session_auth("test@email.com").get("/users/current")
 
         # Then
         assert response.json["hasPhysicalVenues"] is True

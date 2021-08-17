@@ -39,7 +39,7 @@ class VenueViewTest:
             isPermanent=venue.isPermanent,
         )
 
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
 
         assert response.status_code == 302
@@ -74,7 +74,7 @@ class VenueViewTest:
             isPermanent=venue.isPermanent,
         )
 
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
 
         assert response.status_code == 302
@@ -105,7 +105,7 @@ class VenueViewTest:
             isPermanent=venue.isPermanent,
         )
 
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
 
         assert response.status_code == 302
@@ -129,7 +129,7 @@ class VenueViewTest:
             isPermanent=venue.isPermanent,
         )
 
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
 
         assert response.status_code == 302

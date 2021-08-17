@@ -6,7 +6,7 @@ import pcapi.core.users.factories as users_factories
 class CategoryViewTest:
     def test_authorized_user(self, app, db_session, client):
         admin = users_factories.AdminFactory(email="admin@example.com")
-        client.with_auth(admin.email)
+        client.with_session_auth(admin.email)
 
         response = client.get("/pc/back-office/categories")
 
@@ -17,7 +17,7 @@ class CategoryViewTest:
 class SubcategoryViewTest:
     def test_authorized_user(self, app, db_session, client):
         admin = users_factories.AdminFactory(email="admin@example.com")
-        client.with_auth(admin.email)
+        client.with_session_auth(admin.email)
 
         response = client.get("/pc/back-office/subcategories")
 

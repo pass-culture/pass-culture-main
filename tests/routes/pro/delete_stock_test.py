@@ -21,7 +21,7 @@ class Returns200Test:
         booking = BookingFactory(stock=stock)
 
         # when
-        client = TestClient(app.test_client()).with_auth("pro@example.com")
+        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         response = client.delete(f"/stocks/{humanize(stock.id)}")
 
         # then
@@ -48,7 +48,7 @@ class Returns400Test:
         user = users_factories.AdminFactory()
 
         # when
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_session_auth(user.email)
         response = client.delete(f"/stocks/{humanize(stock.id)}")
 
         # then
@@ -60,7 +60,7 @@ class Returns400Test:
         stock = offers_factories.StockFactory(offer=pending_validation_offer)
         user = users_factories.AdminFactory()
 
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_session_auth(user.email)
         response = client.delete(f"/stocks/{humanize(stock.id)}")
 
         assert response.status_code == 400
@@ -74,7 +74,7 @@ class Returns403Test:
         stock = offers_factories.StockFactory()
 
         # when
-        client = TestClient(app.test_client()).with_auth(pro.email)
+        client = TestClient(app.test_client()).with_session_auth(pro.email)
         response = client.delete(f"/stocks/{humanize(stock.id)}")
 
         # then

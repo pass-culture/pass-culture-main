@@ -19,7 +19,7 @@ class Returns404Test:
         invalid_id = 12
 
         # When
-        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers/%s" % invalid_id)
+        response = TestClient(app.test_client()).with_session_auth(pro.email).get("/offerers/%s" % invalid_id)
 
         # then
         assert response.status_code == 404
@@ -43,7 +43,7 @@ class Returns200Test:
         offerer = pcapi.core.offerers.models.Offerer.query.filter_by(id=offerer.id).first()
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).get(f"/offerers/{humanize(offerer.id)}")
+        response = TestClient(app.test_client()).with_session_auth(pro.email).get(f"/offerers/{humanize(offerer.id)}")
 
         expected_serialized_offerer = {
             "address": offerer.address,

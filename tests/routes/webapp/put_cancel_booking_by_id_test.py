@@ -22,7 +22,7 @@ class Returns200Test:
         booking = bookings_factories.BookingFactory(stock=stock)
 
         # When
-        client = TestClient(app.test_client()).with_auth(booking.user.email)
+        client = TestClient(app.test_client()).with_session_auth(booking.user.email)
         response = client.put(f"/bookings/{humanize(booking.id)}/cancel")
         booking = Booking.query.get(booking.id)
 
@@ -51,7 +51,7 @@ class Returns400Test:
         booking = bookings_factories.UsedBookingFactory()
 
         # When
-        client = TestClient(app.test_client()).with_auth(booking.user.email)
+        client = TestClient(app.test_client()).with_session_auth(booking.user.email)
         response = client.put(f"/bookings/{humanize(booking.id)}/cancel")
         booking = Booking.query.get(booking.id)
 
@@ -70,7 +70,7 @@ class Returns404Test:
         user2 = users_factories.BeneficiaryFactory()
 
         # When
-        client = TestClient(app.test_client()).with_auth(user2.email)
+        client = TestClient(app.test_client()).with_session_auth(user2.email)
         response = client.put(f"/bookings/{humanize(booking.id)}/cancel")
         booking = Booking.query.get(booking.id)
 
@@ -85,7 +85,7 @@ class Returns404Test:
         user = users_factories.BeneficiaryFactory()
 
         # When
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_session_auth(user.email)
         response = client.put("/bookings/AX/cancel")
 
         # Then

@@ -34,7 +34,7 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post("/offers", json=data)
 
         # Then
@@ -61,7 +61,7 @@ class Returns200Test:
         offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         data = {
             "venueId": humanize(venue.id),
             "bookingEmail": "offer@example.com",
@@ -106,7 +106,7 @@ class Returns400Test:
         offers_factories.UserOffererFactory(user__email="user@example.com")
 
         # When
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         data = {
             "venueId": humanize(1),
             "bookingEmail": "offer@example.com",
@@ -137,7 +137,7 @@ class Returns400Test:
             "name": "too long" * 30,
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
         }
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post("/offers", json=data)
 
         # Then
@@ -156,7 +156,7 @@ class Returns400Test:
             "name": "An unacceptable name",
             "subcategoryId": "TOTO",
         }
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post("/offers", json=data)
 
         # Then
@@ -181,7 +181,7 @@ class Returns400Test:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
         }
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post("/offers", json=data)
 
         # Then
@@ -197,7 +197,7 @@ class Returns400Test:
         offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         data = {
             "venueId": humanize(venue.id),
             "name": "Les lièvres pas malins",
@@ -217,7 +217,7 @@ class Returns400Test:
         offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         data = {
             "venueId": humanize(venue.id),
             "name": "Les lièvres pas malins",
@@ -237,7 +237,7 @@ class Returns400Test:
         offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         data = {
             "venueId": humanize(venue.id),
             "name": "Les lièvres pas malins",
@@ -257,7 +257,7 @@ class Returns400Test:
         offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
         # When
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         data = {
             "venueId": humanize(venue.id),
             "name": "Les lièvres pas malins",
@@ -279,7 +279,7 @@ class Returns403Test:
         venue = offers_factories.VirtualVenueFactory()
 
         # When
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         data = {
             "venueId": humanize(venue.id),
             "audioDisabilityCompliant": True,

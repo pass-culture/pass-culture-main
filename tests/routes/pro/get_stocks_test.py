@@ -28,26 +28,16 @@ class Returns200Test:
         )
         bookings_factories.BookingFactory.create_batch(3, stock=stock)
         offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
-        client = TestClient(app.test_client()).with_auth(email=pro.email)
+        client = TestClient(app.test_client()).with_session_auth(email=pro.email)
 
         # When
         offer_id = stock.offer.id
-        n_query_select_user = 1
-        n_query_insert_session = 1
-        n_query_savepoint = 1
         n_query_select_offerer = 1
-        n_query_select_user_by_id = 1
         n_query_exist_user_offerer = 1
         n_query_select_stock = 1
 
         with assert_num_queries(
-            n_query_select_user
-            + n_query_insert_session
-            + n_query_savepoint
-            + n_query_select_offerer
-            + n_query_select_user_by_id
-            + n_query_exist_user_offerer
-            + n_query_select_stock
+            testing.AUTHENTICATION_QUERIES + n_query_select_offerer + n_query_exist_user_offerer + n_query_select_stock
         ):
             response = client.get(f"/offers/{humanize(offer_id)}/stocks")
 
@@ -86,7 +76,7 @@ class Returns200Test:
         )
         stock_on_other_offer = offers_factories.ThingStockFactory(offer__venue=stock.offer.venue)
         offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
-        client = TestClient(app.test_client()).with_auth(email=pro.email)
+        client = TestClient(app.test_client()).with_session_auth(email=pro.email)
 
         # When
         response = client.get(f"/offers/{humanize(stock.offer.id)}/stocks")
@@ -132,25 +122,18 @@ class Returns200Test:
         offers_factories.ActivationCodeFactory(stock=stock, code="DEF", expirationDate=datetime(2022, 10, 15))
         stock_on_other_offer = offers_factories.ThingStockFactory(offer__venue=stock.offer.venue)
         offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
-        client = TestClient(app.test_client()).with_auth(email=pro.email)
+        client = TestClient(app.test_client()).with_session_auth(email=pro.email)
 
         # When
         stock_id = stock.offer.id
-        n_query_select_user = 1
-        n_query_insert_session = 1
-        n_query_savepoint = 1
         n_query_select_offerer = 1
-        n_query_select_user_by_id = 1
         n_query_exist_user_offerer = 1
         n_query_select_stock = 1
         n_query_select_activation_code = 2  # 1 query per stock
 
         with assert_num_queries(
-            n_query_select_user
-            + n_query_insert_session
-            + n_query_savepoint
+            testing.AUTHENTICATION_QUERIES
             + n_query_select_offerer
-            + n_query_select_user_by_id
             + n_query_exist_user_offerer
             + n_query_select_stock
             + n_query_select_activation_code
@@ -181,7 +164,7 @@ class Returns200Test:
         pro = users_factories.ProFactory()
         stock = offers_factories.ThingStockFactory(isSoftDeleted=True)
         offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
-        client = TestClient(app.test_client()).with_auth(email=pro.email)
+        client = TestClient(app.test_client()).with_session_auth(email=pro.email)
 
         # When
         response = client.get(f"/offers/{humanize(stock.offer.id)}/stocks")
@@ -210,7 +193,7 @@ class Returns200Test:
         bookings_factories.BookingFactory(stock=stock_1)
         bookings_factories.BookingFactory(stock=stock_2)
         offers_factories.UserOffererFactory(user=pro, offerer=offer.venue.managingOfferer)
-        client = TestClient(app.test_client()).with_auth(email=pro.email)
+        client = TestClient(app.test_client()).with_session_auth(email=pro.email)
         check_user_has_rights_queries = 2
         get_stock_queries = 1
         offer_id = offer.id
@@ -236,7 +219,7 @@ class Returns403Test:
             beginningDatetime=now,
             bookingLimitDatetime=now,
         )
-        client = TestClient(app.test_client()).with_auth(email=pro.email)
+        client = TestClient(app.test_client()).with_session_auth(email=pro.email)
 
         # When
         response = client.get(f"/offers/{humanize(stock.offer.id)}/stocks")

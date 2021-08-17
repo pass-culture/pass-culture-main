@@ -20,7 +20,7 @@ class Returns200Test:
         )
 
         # when
-        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
         response = auth_request.get("/venueProviders?venueId=" + humanize(venue_provider.venue.id))
 
         # then
@@ -42,7 +42,7 @@ class Returns200Test:
         )
 
         # when
-        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
         response = auth_request.get("/venueProviders?venueId=" + humanize(allocine_venue_provider.venue.id))
 
         # then
@@ -64,7 +64,7 @@ class Returns400Test:
         )
 
         # when
-        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
         response = auth_request.get("/venueProviders")
 
         # then

@@ -62,8 +62,10 @@ def app_fixture():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SQLALCHEMY_ECHO"] = False
     app.config["SECRET_KEY"] = "@##&6cweafhv3426445"
-    app.config["REMEMBER_COOKIE_HTTPONLY"] = False
-    app.config["SESSION_COOKIE_HTTPONLY"] = False
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Strict"
+    app.config["REMEMBER_COOKIE_SECURE"] = False
+    app.config["REMEMBER_COOKIE_DURATION"] = 90 * 24 * 3600
     app.config["TESTING"] = True
     app.url_map.strict_slashes = False
     app.json_encoder = EnumJSONEncoder
@@ -175,17 +177,17 @@ class TestClient:
         self.client = client
         self.auth_header = {}
 
-    def with_auth(self, email: str = None) -> "TestClient":
-        self.email = email
-        if email is None:
-            self.auth_header = {
-                "Authorization": _basic_auth_str(TestClient.USER_TEST_ADMIN_EMAIL, PLAIN_DEFAULT_TESTING_PASSWORD),
-            }
-        else:
-            self.auth_header = {
-                "Authorization": _basic_auth_str(email, PLAIN_DEFAULT_TESTING_PASSWORD),
-            }
+    def with_session_auth(self, email: str = None) -> "TestClient":
+        self.email = email or self.USER_TEST_ADMIN_EMAIL
+        response = self.post("/users/signin", {"identifier": self.email, "password": PLAIN_DEFAULT_TESTING_PASSWORD})
+        assert response.status_code == 200
+        return self
 
+    def with_basic_auth(self, email: str = None) -> "TestClient":
+        self.email = email or self.USER_TEST_ADMIN_EMAIL
+        self.auth_header = {
+            "Authorization": _basic_auth_str(email, PLAIN_DEFAULT_TESTING_PASSWORD),
+        }
         return self
 
     def with_token(self, email: str) -> "TestClient":

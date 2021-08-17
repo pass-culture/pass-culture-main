@@ -21,7 +21,7 @@ class Returns200Test:
         pro = users_factories.ProFactory(offerers=[offerer1])
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers")
+        response = TestClient(app.test_client()).with_session_auth(pro.email).get("/offerers")
 
         # then
         assert response.status_code == 200
@@ -41,7 +41,7 @@ class Returns200Test:
         repository.save(pro)
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers")
+        response = TestClient(app.test_client()).with_session_auth(pro.email).get("/offerers")
 
         # then
         assert response.status_code == 200
@@ -63,7 +63,7 @@ class Returns200Test:
         repository.save(user_offerer1, user_offerer2, user_offerer3)
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers")
+        response = TestClient(app.test_client()).with_session_auth(pro.email).get("/offerers")
 
         # then
         assert response.status_code == 200
@@ -87,7 +87,7 @@ class Returns200Test:
         pro = users_factories.ProFactory(offerers=[offerer1, offerer2])
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers")
+        response = TestClient(app.test_client()).with_session_auth(pro.email).get("/offerers")
 
         # then
         assert response.status_code == 200
@@ -104,7 +104,7 @@ class Returns200Test:
         user = users_factories.AdminFactory(offerers=[offerer1, offerer2])
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).get("/offerers")
+        response = TestClient(app.test_client()).with_session_auth(user.email).get("/offerers")
 
         # then
         assert response.status_code == 200
@@ -122,7 +122,7 @@ class Returns200Test:
         repository.save(bank_information1, bank_information2)
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).get("/offerers?validated=false")
+        response = TestClient(app.test_client()).with_session_auth(user.email).get("/offerers?validated=false")
 
         # then
         assert response.status_code == 200
@@ -165,7 +165,7 @@ class Returns200Test:
         repository.save(bank_information1, bank_information2)
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).get("/offerers?validated=true")
+        response = TestClient(app.test_client()).with_session_auth(user.email).get("/offerers?validated=true")
 
         # then
         assert response.status_code == 200
@@ -186,7 +186,7 @@ class Returns200Test:
         repository.save(user_offerer1, user_offerer2, user_offerer3)
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers?validated=false")
+        response = TestClient(app.test_client()).with_session_auth(pro.email).get("/offerers?validated=false")
 
         # then
         assert response.status_code == 200
@@ -205,7 +205,7 @@ class Returns200Test:
         repository.save(user_offerer1, user_offerer2, user_offerer3)
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers?validated=true")
+        response = TestClient(app.test_client()).with_session_auth(pro.email).get("/offerers?validated=true")
 
         # then
         assert response.status_code == 200
@@ -231,7 +231,7 @@ class Returns200Test:
         )
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers?validated=true")
+        response = TestClient(app.test_client()).with_session_auth(pro.email).get("/offerers?validated=true")
 
         # then
         assert response.status_code == 200
@@ -269,7 +269,7 @@ class Returns200Test:
         repository.save(user_offerer1)
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers?validated=true")
+        response = TestClient(app.test_client()).with_session_auth(pro.email).get("/offerers?validated=true")
 
         # then
         assert response.status_code == 200
@@ -284,7 +284,7 @@ class Returns200Test:
         offerer = create_offerer(name="offreur C")
         user_offerer = create_user_offerer(pro, offerer)
         repository.save(user_offerer)
-        auth_request = TestClient(app.test_client()).with_auth(email="user@test.com")
+        auth_request = TestClient(app.test_client()).with_session_auth(email="user@test.com")
 
         # when
         response = auth_request.get("/offerers")
@@ -304,7 +304,7 @@ class Returns200Test:
         venue1 = create_venue(offerer1)
         venue2 = create_venue(siret="12345678912346", offerer=offerer1)
         repository.save(user_offerer1, user_offerer2, venue1, venue2)
-        auth_request = TestClient(app.test_client()).with_auth(email="user@test.com")
+        auth_request = TestClient(app.test_client()).with_session_auth(email="user@test.com")
 
         # when
         response = auth_request.get("/offerers")
@@ -324,7 +324,7 @@ class Returns200Test:
         repository.save(active_user_offerer, inactive_user_offerer)
 
         # when
-        request = TestClient(app.test_client()).with_auth(email=pro_user.email)
+        request = TestClient(app.test_client()).with_session_auth(email=pro_user.email)
         response = request.get("/offerers?is_active=true")
 
         # then
@@ -345,7 +345,7 @@ class Returns400Test:
         user = users_factories.AdminFactory(offerers=[offerer1, offerer2])
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).get("/offerers?validated=blabla")
+        response = TestClient(app.test_client()).with_session_auth(user.email).get("/offerers?validated=blabla")
 
         # then
         assert response.status_code == 400

@@ -35,7 +35,7 @@ class Returns200Test:
         booking = BookingFactory(user=user, stock=stock, token="ABCDEF")
 
         # When
-        response = TestClient(app.test_client()).with_auth(user.email).get("/bookings/" + humanize(booking.id))
+        response = TestClient(app.test_client()).with_session_auth(user.email).get("/bookings/" + humanize(booking.id))
 
         # Then
         assert response.status_code == 200

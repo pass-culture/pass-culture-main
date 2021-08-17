@@ -23,7 +23,7 @@ def test_send_phone_validation(app):
     """
     user = UserFactory(isBeneficiary=False, isEmailValidated=True, phoneNumber="+33601020304")
 
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
 
     response = client.post("/send_phone_validation_code")
 
@@ -51,7 +51,7 @@ def test_send_phone_validation_and_become_beneficiary(app):
     beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
     beneficiary_import.setStatus(ImportStatus.CREATED)
 
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
 
     response = client.post("/send_phone_validation_code")
 
@@ -74,7 +74,7 @@ def test_send_phone_validation_and_become_beneficiary(app):
 def test_send_phone_validation_blocked_number(app):
     user = UserFactory(isBeneficiary=False, isEmailValidated=True, phoneNumber="+33607080900")
 
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
 
     response = client.post("/send_phone_validation_code")
 
@@ -89,7 +89,7 @@ def test_send_phone_validation_blocked_number(app):
 def test_update_phone_number_with_blocked_phone_number(app):
     user = UserFactory(isBeneficiary=False, isEmailValidated=True, phoneNumber="+33601020304")
 
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
     response = client.post("/send_phone_validation_code", json={"phoneNumber": "+33607080900"})
 
     assert response.status_code == 400
@@ -106,7 +106,7 @@ def test_validate_phone_validation_with_blocked_number(app):
     user = UserFactory(isBeneficiary=False, isEmailValidated=True, phoneNumber="+33607080900")
 
     token = create_phone_validation_token(user)
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
     response = client.post("/validate_phone_number", {"code": token.value})
 
     assert response.status_code == 400
@@ -122,7 +122,7 @@ def test_send_phone_validation_with_malformed_number(app):
     user = UserFactory(isEmailValidated=True, isBeneficiary=False, phoneNumber="0601020304")
 
     token = create_phone_validation_token(user)
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
     response = client.post("/send_phone_validation_code", {"code": token.value})
 
     assert response.status_code == 400
@@ -137,7 +137,7 @@ def test_validate_phone_with_non_french_number(app):
     user = UserFactory(isBeneficiary=False, isEmailValidated=True, phoneNumber="+46766123456")
 
     token = create_phone_validation_token(user)
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
     response = client.post("/validate_phone_number", {"code": token.value})
 
     assert response.status_code == 400
@@ -151,7 +151,7 @@ def test_validate_phone_with_non_french_number(app):
 def test_send_phone_validation_with_non_french_number(app):
     user = UserFactory(isBeneficiary=False, isEmailValidated=True, phoneNumber="+46766123456")
 
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
     response = client.post("/send_phone_validation_code")
 
     assert response.status_code == 400
@@ -164,7 +164,7 @@ def test_send_phone_validation_with_non_french_number(app):
 def test_update_phone_number_with_non_french_number(app):
     user = UserFactory(isBeneficiary=False, isEmailValidated=True, phoneNumber="+46766123456")
 
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
     response = client.post("/send_phone_validation_code", json={"phoneNumber": "+46766987654"})
 
     assert response.status_code == 400

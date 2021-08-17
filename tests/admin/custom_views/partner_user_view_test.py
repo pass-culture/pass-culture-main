@@ -104,7 +104,7 @@ class PartnerUserViewTest:
     def test_super_admin_can_suspend_then_unsuspend_partner(self, mocked_validate_csrf_token, app):
         super_admin = users_factories.AdminFactory(email="superadmin@example.com")
         partner = users_factories.UserFactory(email="partner@example.com")
-        client = TestClient(app.test_client()).with_auth(super_admin.email)
+        client = TestClient(app.test_client()).with_session_auth(super_admin.email)
 
         # Super admin suspends partner
         url = f"/pc/back-office/partner_users/suspend?user_id={partner.id}"
@@ -126,7 +126,7 @@ class PartnerUserViewTest:
     ):
         admin = users_factories.AdminFactory(email="admin@example.com")
         partner = users_factories.UserFactory(email="partner@example.com", isEmailValidated=False)
-        client = TestClient(app.test_client()).with_auth(admin.email)
+        client = TestClient(app.test_client()).with_session_auth(admin.email)
 
         url = f"/pc/back-office/partner_users/resend-validation-email?user_id={partner.id}"
         resend_validation_email_response = client.post(url, form={"csrf_token": "token"})

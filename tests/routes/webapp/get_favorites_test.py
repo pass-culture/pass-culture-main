@@ -22,7 +22,7 @@ class Returns200Test:
         repository.save(user)
 
         # When
-        response = TestClient(app.test_client()).with_auth(user.email).get("/favorites")
+        response = TestClient(app.test_client()).with_session_auth(user.email).get("/favorites")
 
         # Then
         assert response.status_code == 200
@@ -42,7 +42,7 @@ class Returns200Test:
         repository.save(user, favorite1, favorite2)
 
         # When
-        response = TestClient(app.test_client()).with_auth(user.email).get("/favorites")
+        response = TestClient(app.test_client()).with_session_auth(user.email).get("/favorites")
 
         # Then
         assert response.status_code == 200
@@ -67,7 +67,7 @@ class Returns200Test:
         repository.save(booking, favorite)
 
         # When
-        response = TestClient(app.test_client()).with_auth(user.email).get("/favorites")
+        response = TestClient(app.test_client()).with_session_auth(user.email).get("/favorites")
 
         # Then
         assert response.status_code == 200

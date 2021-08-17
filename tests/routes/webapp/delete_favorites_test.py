@@ -26,7 +26,9 @@ class Returns204Test:
         repository.save(favorite)
 
         # When
-        response = TestClient(app.test_client()).with_auth(user.email).delete(f"/favorites/{humanize(offer.id)}")
+        response = (
+            TestClient(app.test_client()).with_session_auth(user.email).delete(f"/favorites/{humanize(offer.id)}")
+        )
 
         # Then
         assert response.status_code == 200
@@ -48,7 +50,7 @@ class Returns404Test:
         repository.save(favorite)
 
         # When
-        response = TestClient(app.test_client()).with_auth(user.email).delete("/favorites/1")
+        response = TestClient(app.test_client()).with_session_auth(user.email).delete("/favorites/1")
 
         # Then
         assert response.status_code == 404
@@ -65,7 +67,7 @@ class Returns404Test:
         repository.save(favorite)
 
         # When
-        response = TestClient(app.test_client()).with_auth(user.email).delete("/favorites/ABCD/ABCD")
+        response = TestClient(app.test_client()).with_session_auth(user.email).delete("/favorites/ABCD/ABCD")
 
         # Then
         assert response.status_code == 404

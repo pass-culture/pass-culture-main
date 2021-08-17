@@ -10,7 +10,7 @@ class Returns200Test:
         user = users_factories.ProFactory()
 
         # when
-        response = client.with_auth(user.email).get("/offers/categories")
+        response = client.with_session_auth(user.email).get("/offers/categories")
 
         # then
         assert response.status_code == 200

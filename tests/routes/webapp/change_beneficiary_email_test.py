@@ -10,6 +10,7 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import ALGORITHM_HS_256
+from pcapi.models.db import db
 
 from tests.conftest import TestClient
 
@@ -24,7 +25,7 @@ class Returns204Test:
         data = {"new_email": "new@email.com", "password": "user@AZERTY123"}
 
         # when
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_session_auth(user.email)
         response = client.put("/beneficiaries/change_email_request", json=data)
 
         # then
@@ -80,7 +81,7 @@ class Returns204Test:
         data = {"token": token}
 
         # When
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_session_auth(user.email)
         response = client.put("/beneficiaries/change_email", json=data)
 
         # Then
@@ -100,7 +101,7 @@ class Returns400Test:
         data = {"new_email": "toto"}
 
         # When
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_session_auth(user.email)
         response = client.put("/beneficiaries/change_email_request", json=data)
 
         # Then
@@ -113,7 +114,7 @@ class Returns400Test:
         data = {"password": "user@AZERTY123"}
 
         # When
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_session_auth(user.email)
         response = client.put("/beneficiaries/change_email_request", json=data)
 
         # Then
@@ -129,7 +130,7 @@ class Returns401Test:
         data = {"new_email": "new email", "password": "wrong password"}
 
         # When
-        client = TestClient(app.test_client()).with_auth(user.email)
+        client = TestClient(app.test_client()).with_session_auth(user.email)
         response = client.put("/beneficiaries/change_email_request", json=data)
 
         # Then
@@ -138,25 +139,27 @@ class Returns401Test:
 
     def when_account_is_not_active(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(isActive=False)
+        user = users_factories.BeneficiaryFactory(isActive=True)
         data = {"new_email": user.email, "password": "user@AZERTY123"}
+        client = TestClient(app.test_client()).with_session_auth(user.email)
+        user.isActive = False
+        db.session.commit()
 
         # When
-        client = TestClient(app.test_client()).with_auth(user.email)
         response = client.put("/beneficiaries/change_email_request", json=data)
 
         # Then
         assert response.status_code == 401
-        assert response.json["identifier"] == ["Identifiant ou mot de passe incorrect"]
+        assert response.json["password"] == ["Mot de passe incorrect"]
 
     def when_account_is_not_validated(self, app):
         # Given
         user = users_factories.BeneficiaryFactory()
+        client = TestClient(app.test_client()).with_session_auth(user.email)
         user.generate_validation_token()
         data = {"new_email": user.email, "password": "user@AZERTY123"}
 
         # When
-        client = TestClient(app.test_client()).with_auth(user.email)
         response = client.put("/beneficiaries/change_email_request", json=data)
 
         # Then

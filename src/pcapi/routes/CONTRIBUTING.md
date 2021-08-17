@@ -71,7 +71,7 @@ class Get:
 
             # when
             response = TestClient(app.test_client()) \
-                .with_auth(email='user@test.com') \
+                .with_session_auth(email='user@test.com') \
                 .get('/offers')
 
             # then

@@ -17,7 +17,7 @@ import pcapi.models
 class BeneficiaryFraudListViewTest:
     def test_list_view(self, client):
         admin = users_factories.AdminFactory(email="admin@example.com")
-        client.with_auth(admin.email)
+        client.with_session_auth(admin.email)
 
         for review_status in fraud_models.FraudReviewStatus:
             user = users_factories.UserFactory()
@@ -35,7 +35,7 @@ class BeneficiaryFraudDetailViewTest:
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudResultFactory(user=user)
-        client.with_auth(admin.email)
+        client.with_session_auth(admin.email)
         response = client.get("/pc/back-office/beneficiary_fraud/?id={user.id}")
         assert response.status_code == 200
 
@@ -54,7 +54,7 @@ class BeneficiaryFraudValidationViewTest:
         user = users_factories.UserFactory(isBeneficiary=False)
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         admin = users_factories.AdminFactory()
-        client.with_auth(admin.email)
+        client.with_session_auth(admin.email)
 
         response = client.post(
             f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
@@ -78,7 +78,7 @@ class BeneficiaryFraudValidationViewTest:
         user = users_factories.UserFactory(isBeneficiary=False)
         admin = users_factories.AdminFactory()
 
-        client.with_auth(admin.email)
+        client.with_session_auth(admin.email)
 
         response = client.post(
             f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
@@ -97,7 +97,7 @@ class BeneficiaryFraudValidationViewTest:
         user = users_factories.UserFactory(isBeneficiary=False)
         admin = users_factories.AdminFactory()
         expected_review = fraud_factories.BeneficiaryFraudReviewFactory(user=user, author=admin)
-        client.with_auth(admin.email)
+        client.with_session_auth(admin.email)
 
         response = client.post(
             f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
@@ -111,7 +111,7 @@ class BeneficiaryFraudValidationViewTest:
     def test_validation_view_validate_not_super_user_fails(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
         admin = users_factories.AdminFactory()
-        client.with_auth(admin.email)
+        client.with_session_auth(admin.email)
 
         with override_settings(IS_PROD=True):
             response = client.post(
@@ -128,7 +128,7 @@ class BeneficiaryFraudValidationViewTest:
         user = users_factories.UserFactory(isBeneficiary=False)
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         admin = users_factories.AdminFactory()
-        client.with_auth(admin.email)
+        client.with_session_auth(admin.email)
 
         with override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[admin.email]):
             response = client.post(
@@ -150,7 +150,7 @@ class BeneficiaryFraudValidationViewTest:
         user = users_factories.UserFactory(isBeneficiary=False)
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         jouve_admin = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
-        client.with_auth(jouve_admin.email)
+        client.with_session_auth(jouve_admin.email)
 
         response = client.post(
             f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
@@ -170,7 +170,7 @@ class BeneficiaryFraudValidationViewTest:
         user = users_factories.UserFactory(isBeneficiary=False)
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         admin = users_factories.AdminFactory()
-        client.with_auth(admin.email)
+        client.with_session_auth(admin.email)
 
         with override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[admin.email]):
             response = client.post(
@@ -188,7 +188,7 @@ class BeneficiaryFraudValidationViewTest:
         user = users_factories.UserFactory(isBeneficiary=False)
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         jouve_admin = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
-        client.with_auth(jouve_admin.email)
+        client.with_session_auth(jouve_admin.email)
 
         client.post(
             f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
@@ -235,7 +235,7 @@ class JouveUpdateIDPieceNumberTest:
         )
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.SUSPICIOUS)
 
-        client.with_auth(self.jouve_admin.email)
+        client.with_session_auth(self.jouve_admin.email)
         response = client.post(
             f"/pc/back-office/beneficiary_fraud/update/beneficiary/id_piece_number/{user.id}",
             form={"id_piece_number": "123123123123"},
@@ -251,7 +251,7 @@ class JouveUpdateIDPieceNumberTest:
         assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
 
     def test_jouve_specific_query_filter(self, client):
-        client.with_auth(self.jouve_admin.email)
+        client.with_session_auth(self.jouve_admin.email)
 
         fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.JOUVE)
         fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.DMS)
@@ -280,7 +280,7 @@ class JouveUpdateIDPieceNumberTest:
         )
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.SUSPICIOUS)
 
-        client.with_auth(admin.email)
+        client.with_session_auth(admin.email)
         client.post(
             f"/pc/back-office/beneficiary_fraud/update/beneficiary/id_piece_number/{user.id}",
             form={"id_piece_number": "123123123123"},
@@ -299,13 +299,13 @@ class JouveAccessTest:
 
     def test_access_index(self, client):
         user = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
-        client.with_auth(user.email)
+        client.with_session_auth(user.email)
         response = client.get("/pc/back-office/")
         assert response.status_code == 200
 
     def test_access_fraud_views(self, client):
         user = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
-        client.with_auth(user.email)
+        client.with_session_auth(user.email)
         response = client.get("/pc/back-office/beneficiary_fraud")
         assert response.status_code == 200
 
@@ -319,7 +319,7 @@ class JouveAccessTest:
     )
     def test_access_forbidden_views(self, client, url):
         user = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
-        client.with_auth(user.email)
+        client.with_session_auth(user.email)
         response = client.get(url)
         assert response.status_code == 302
         assert response.headers["Location"] == "http://localhost/pc/back-office/"
@@ -335,7 +335,7 @@ class ValidatePhoneNumberTest:
         jouve_admin = users_factories.UserFactory(
             isAdmin=False, isBeneficiary=False, roles=[users_models.UserRole.JOUVE]
         )
-        client.with_auth(jouve_admin.email)
+        client.with_session_auth(jouve_admin.email)
 
         response = client.get("/pc/back-office/beneficiary_fraud/?id={user.id}")
         assert "Valider le n° de télépone" not in response.data.decode()
@@ -350,7 +350,7 @@ class ValidatePhoneNumberTest:
             isBeneficiary=False,
             phoneValidationStatus=users_models.PhoneValidationStatusType.BLOCKED_TOO_MANY_CODE_SENDINGS,
         )
-        client.with_auth(admin.email)
+        client.with_session_auth(admin.email)
         with caplog.at_level(logging.INFO):
             response = client.post(f"/pc/back-office/beneficiary_fraud/validate/beneficiary/phone_number/{user.id}")
         assert response.status_code == 302

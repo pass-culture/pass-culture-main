@@ -196,7 +196,7 @@ class Returns403Test:
         # When
         response = (
             TestClient(app.test_client())
-            .with_auth(user.email)
+            .with_session_auth(user.email)
             .patch("/v2/bookings/cancel/token/{}".format(booking.token))
         )
 

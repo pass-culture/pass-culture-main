@@ -17,7 +17,7 @@ class Returns200Test:
         venue = booking.stock.offer.venue
         venue_owner = offers_factories.UserOffererFactory(offerer=venue.managingOfferer).user
 
-        auth_request = TestClient(app.test_client()).with_auth(email=venue_owner.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=venue_owner.email)
 
         # when
         response = auth_request.get("/venues/%s/stats" % humanize(venue.id))
@@ -38,7 +38,7 @@ class Returns403Test:
         pro_user = users_factories.ProFactory()
         venue = offers_factories.VenueFactory()
 
-        auth_request = TestClient(app.test_client()).with_auth(email=pro_user.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=pro_user.email)
 
         # when
         response = auth_request.get("/venues/%s/stats" % humanize(venue.id))

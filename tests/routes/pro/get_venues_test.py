@@ -17,7 +17,7 @@ def test_response_serialization(app):
     venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
     # when
-    response = TestClient(app.test_client()).with_auth(user_offerer.user.email).get("/venues")
+    response = TestClient(app.test_client()).with_session_auth(user_offerer.user.email).get("/venues")
 
     # then
     assert response.status_code == 200
@@ -45,7 +45,7 @@ def test_default_call(mock_get_filtered_venues, app):
     offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
     # when
-    response = TestClient(app.test_client()).with_auth(user_offerer.user.email).get("/venues")
+    response = TestClient(app.test_client()).with_session_auth(user_offerer.user.email).get("/venues")
 
     # then
     assert response.status_code == 200
@@ -65,7 +65,7 @@ def test_default_admin_call(mock_get_filtered_venues, app):
     admin_user = users_factories.AdminFactory(email="admin.pro@test.com")
 
     # when
-    response = TestClient(app.test_client()).with_auth(admin_user.email).get("/venues")
+    response = TestClient(app.test_client()).with_session_auth(admin_user.email).get("/venues")
 
     # then
     assert response.status_code == 200
@@ -92,7 +92,7 @@ def test_invalid_offerer_id(mock_get_filtered_venues, app):
     ]
 
     # when
-    response = TestClient(app.test_client()).with_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
+    response = TestClient(app.test_client()).with_session_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
 
     # then
     # then
@@ -125,7 +125,7 @@ def test_full_valid_call(mock_get_filtered_venues, app):
     ]
 
     # when
-    response = TestClient(app.test_client()).with_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
+    response = TestClient(app.test_client()).with_session_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
 
     # then
     assert response.status_code == 200
@@ -154,7 +154,7 @@ def test_full_valid_call_with_false(mock_get_filtered_venues, app):
     ]
 
     # when
-    response = TestClient(app.test_client()).with_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
+    response = TestClient(app.test_client()).with_session_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
 
     # then
     assert response.status_code == 200
@@ -178,7 +178,7 @@ def test_invalid_validated(mock_get_filtered_venues, app):
     ]
 
     # when
-    response = TestClient(app.test_client()).with_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
+    response = TestClient(app.test_client()).with_session_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
 
     # then
     assert response.status_code == 400
@@ -195,7 +195,7 @@ def test_invalid_validated_for_user(mock_get_filtered_venues, app):
     ]
 
     # when
-    response = TestClient(app.test_client()).with_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
+    response = TestClient(app.test_client()).with_session_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
 
     # then
     assert response.status_code == 400
@@ -212,7 +212,7 @@ def test_invalid_active_offerer_only(mock_get_filtered_venues, app):
     ]
 
     # when
-    response = TestClient(app.test_client()).with_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
+    response = TestClient(app.test_client()).with_session_auth(pro_user.email).get(f"/venues?{'&'.join(query_params)}")
 
     # then
     assert response.status_code == 400

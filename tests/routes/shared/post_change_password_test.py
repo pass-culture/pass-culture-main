@@ -22,7 +22,11 @@ class Returns200Test:
         user_id = user.id
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).post("/users/current/change-password", json=data)
+        response = (
+            TestClient(app.test_client())
+            .with_session_auth(user.email)
+            .post("/users/current/change-password", json=data)
+        )
 
         # then
         user = users_models.User.query.get(user_id)
@@ -43,7 +47,11 @@ class Returns400Test:
         data = {}
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).post("/users/current/change-password", json=data)
+        response = (
+            TestClient(app.test_client())
+            .with_session_auth(user.email)
+            .post("/users/current/change-password", json=data)
+        )
 
         # then
         assert response.status_code == 400

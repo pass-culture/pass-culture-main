@@ -29,13 +29,10 @@ class BeneficiaryUserViewTest:
         users_factories.AdminFactory(email="admin@example.com")
         users_factories.BeneficiaryFactory.create_batch(3)
 
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         n_queries = testing.AUTHENTICATION_QUERIES
         n_queries += 1  # select COUNT
         n_queries += 1  # select users
-        # FIXME (dbaty, 2021-05-21) AUTHENTICATION_QUERIES includes a
-        # RELEASE SAVEPOINT query that we don't have here.
-        n_queries -= 1
         with testing.assert_num_queries(n_queries):
             response = client.get("/pc/back-office/beneficiary_users")
 
@@ -58,7 +55,7 @@ class BeneficiaryUserViewTest:
             csrf_token="token",
         )
 
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post("/pc/back-office/beneficiary_users/new", form=data)
 
         assert response.status_code == 302
@@ -113,7 +110,7 @@ class BeneficiaryUserViewTest:
             depositVersion="2",
         )
 
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post("/pc/back-office/beneficiary_users/new", form=data)
 
         assert response.status_code == 302
@@ -177,7 +174,7 @@ class BeneficiaryUserViewTest:
             postalCode="93000",
         )
 
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post("/pc/back-office/beneficiary_users/new", form=data)
 
         assert response.status_code == 302
@@ -197,7 +194,7 @@ class BeneficiaryUserViewTest:
         booking = bookings_factories.BookingFactory()
         beneficiary = booking.user
 
-        client = TestClient(app.test_client()).with_auth(admin.email)
+        client = TestClient(app.test_client()).with_session_auth(admin.email)
         url = f"/pc/back-office/beneficiary_users/suspend?user_id={beneficiary.id}"
         data = {
             "reason": "fraud",
@@ -218,7 +215,7 @@ class BeneficiaryUserViewTest:
         admin = users_factories.AdminFactory(email="admin15@example.com")
         beneficiary = users_factories.BeneficiaryFactory(email="user15@example.com", isActive=False)
 
-        client = TestClient(app.test_client()).with_auth(admin.email)
+        client = TestClient(app.test_client()).with_session_auth(admin.email)
         url = f"/pc/back-office/beneficiary_users/unsuspend?user_id={beneficiary.id}"
         data = {
             "reason": "fraud",
@@ -235,7 +232,7 @@ class BeneficiaryUserViewTest:
         admin = users_factories.AdminFactory(email="admin@example.com")
         beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
 
-        client = TestClient(app.test_client()).with_auth(admin.email)
+        client = TestClient(app.test_client()).with_session_auth(admin.email)
         url = f"/pc/back-office/beneficiary_users/suspend?user_id={beneficiary.id}"
         data = {
             "reason": "fraud",
@@ -271,7 +268,7 @@ class BeneficiaryUserViewTest:
             postalCode="76000",
         )
 
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post(f"/pc/back-office/beneficiary_users/edit/?id={user_to_edit.id}", form=data)
 
         assert response.status_code == 302
@@ -291,7 +288,7 @@ class BeneficiaryUserViewTest:
     ):
         admin = users_factories.AdminFactory(email="admin@example.com")
         beneficiary = users_factories.BeneficiaryFactory(email="partner@example.com", isEmailValidated=False)
-        client = TestClient(app.test_client()).with_auth(admin.email)
+        client = TestClient(app.test_client()).with_session_auth(admin.email)
 
         url = f"/pc/back-office/beneficiary_users/resend-validation-email?user_id={beneficiary.id}"
         resend_validation_email_response = client.post(url, form={"csrf_token": "token"})

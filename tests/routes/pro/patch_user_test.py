@@ -14,7 +14,7 @@ def test_patch_user(app):
     pro = offers_factories.UserOffererFactory().user
     data = {"firstName": "John", "lastName": "Doe", "email": "new@example.com", "phoneNumber": "09 99 99 99 99"}
 
-    client = TestClient(app.test_client()).with_auth(email=pro.email)
+    client = TestClient(app.test_client()).with_session_auth(email=pro.email)
     response = client.patch("/users/current", json=data)
 
     assert response.status_code == 200
@@ -36,7 +36,7 @@ def test_reject_beneficiary(app):
         "email": "new@example.com",
         "publicName": "New name",
     }
-    client = TestClient(app.test_client()).with_auth(email=beneficiary.email)
+    client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
     response = client.patch("/users/current", json=data)
 
     assert response.status_code == 400
@@ -57,7 +57,7 @@ def test_forbid_some_attributes(app):
         "resetPasswordTokenValidityLimit": "2020-07-01 12:00:00",
     }
 
-    client = TestClient(app.test_client()).with_auth(email=pro.email)
+    client = TestClient(app.test_client()).with_session_auth(email=pro.email)
 
     data = {"publicName": "Name"}
     for attribute, value in forbidden_attributes.items():

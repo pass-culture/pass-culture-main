@@ -2,8 +2,8 @@ import json
 import logging
 import uuid
 
+from flask_login import login_user
 import pytest
-from requests.auth import _basic_auth_str
 
 from pcapi.core.logging import JsonFormatter
 from pcapi.core.logging import get_logged_in_user_id
@@ -33,8 +33,8 @@ class GetLoggedInUserIdTest:
 
     def test_request_from_authenticated_user(self, app):
         user = users_factories.UserFactory()
-        headers = {"Authorization": _basic_auth_str(user.email, users_factories.DEFAULT_PASSWORD)}
-        with app.test_request_context(headers=headers):
+        with app.test_request_context():
+            login_user(user)
             user_id = get_logged_in_user_id()
             assert user_id == user.id
 

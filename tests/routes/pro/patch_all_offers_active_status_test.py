@@ -21,7 +21,7 @@ class Returns204Test:
         offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
-        client = TestClient(app.test_client()).with_auth("pro@example.com")
+        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         data = {"isActive": True, "page": 1, "venueId": humanize(venue.id)}
         response = client.patch("/offers/all-active-status", json=data)
 
@@ -39,7 +39,7 @@ class Returns204Test:
         offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
-        client = TestClient(app.test_client()).with_auth("pro@example.com")
+        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         data = {"isActive": False}
         response = client.patch("/offers/all-active-status", json=data)
 
@@ -73,7 +73,7 @@ class Returns204Test:
             "periodBeginningDate": "2020-10-09T00:00:00Z",
             "periodEndingDate": "2020-10-11T23:59:59Z",
         }
-        client = TestClient(app.test_client()).with_auth(user_offerer.user.email)
+        client = TestClient(app.test_client()).with_session_auth(user_offerer.user.email)
 
         # When
         response = client.patch("/offers/all-active-status", json=data)
@@ -94,7 +94,7 @@ class Returns204Test:
         offerer = venue.managingOfferer
         offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
-        client = TestClient(app.test_client()).with_auth("pro@example.com")
+        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         data = {"isActive": True, "page": 1, "venueId": humanize(venue.id)}
         response = client.patch("/offers/all-active-status", json=data)
 

@@ -13,12 +13,9 @@ from pcapi import settings
 from pcapi.models.feature import Feature
 
 
-# 1. SELECT the user (beneficiary).
-# 2. INSERT into the user session table
-# 3. RELEASE SAVEPOINT: repository.save() calls `session.commit()`
-# 4. SELECT the user again, since the session has been released after
-#    the RELEASE SAVEPOINT.
-AUTHENTICATION_QUERIES = 4
+# 1. SELECT the user session.
+# 2. SELECT the user.
+AUTHENTICATION_QUERIES = 2
 
 
 class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):

@@ -19,7 +19,7 @@ class ApiKeyViewTest:
             offererSiren=offerer.siren,
         )
 
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post("/pc/back-office/apikey/new", form=data)
 
         assert response.status_code == 302
@@ -37,7 +37,7 @@ class ApiKeyViewTest:
             offererSiren=123456789,
         )
 
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
         response = client.post("/pc/back-office/apikey/new", form=data)
 
         assert response.status_code == 200

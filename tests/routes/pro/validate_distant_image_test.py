@@ -16,7 +16,7 @@ class ValidateDistantImageTest:
         # Given
         body = {"url": "https://example.com/exampleaaa.jpg"}
         user = ProFactory()
-        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
         mock_get_distant_image.return_value = b"aze"
         mock_check_image.return_value = None
 
@@ -35,7 +35,7 @@ class ValidateDistantImageTest:
         # Given
         body = {"url": "https://example.com/bla"}
         user = ProFactory()
-        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
         mock_get_distant_image.side_effect = exceptions.FailureToRetrieve()
 
         # When
@@ -59,7 +59,7 @@ class ValidateDistantImageTest:
         # Given
         body = {"url": "https://example.com/wallpaper.jpg"}
         user = ProFactory()
-        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
         mock_get_distant_image.side_effect = exceptions.FileSizeExceeded(max_size=10_000_000)
 
         # When
@@ -77,7 +77,7 @@ class ValidateDistantImageTest:
         # Given
         body = {"url": "https://example.com/icon.jpeg"}
         user = ProFactory()
-        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
         mock_get_distant_image.side_effect = exceptions.ImageTooSmall(min_width=400, min_height=400)
 
         # When
@@ -98,7 +98,7 @@ class ValidateDistantImageTest:
         # Given
         body = {"url": "https://example.com/meme.gif"}
         user = ProFactory()
-        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
         mock_get_distant_image.side_effect = exceptions.UnacceptedFileType(
             accepted_types=(
                 "png",

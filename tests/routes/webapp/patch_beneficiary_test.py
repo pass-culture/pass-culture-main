@@ -19,7 +19,7 @@ def test_patch_beneficiary(app):
         "publicName": "Anne",
     }
 
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
     response = client.patch("/beneficiaries/current", json=data)
 
     assert user.publicName == data["publicName"]
@@ -65,7 +65,7 @@ def test_patch_beneficiary(app):
 def test_patch_beneficiary_tutorial_related_attributes(app):
     user = BeneficiaryFactory()
 
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
     data = {"hasSeenTutorials": True}
     response = client.patch("/beneficiaries/current", json=data)
 
@@ -76,7 +76,7 @@ def test_patch_beneficiary_tutorial_related_attributes(app):
 def test_patch_beneficiary_survey_related_attributes(app):
     user = BeneficiaryFactory()
 
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
     survey_id = uuid.uuid4()
     data = {
         "needsToFillCulturalSurvey": False,
@@ -100,7 +100,7 @@ def test_reject_pro_user(app):
     data = {
         "publicName": "New name",
     }
-    client = TestClient(app.test_client()).with_auth(email=pro.email)
+    client = TestClient(app.test_client()).with_session_auth(email=pro.email)
     response = client.patch("/beneficiaries/current", json=data)
 
     assert response.status_code == 403
@@ -123,7 +123,7 @@ def test_forbid_some_attributes(app):
         "resetPasswordTokenValidityLimit": "2020-07-01 12:00:00",
     }
 
-    client = TestClient(app.test_client()).with_auth(email=user.email)
+    client = TestClient(app.test_client()).with_session_auth(email=user.email)
 
     for attribute, value in forbidden_attributes.items():
         response = client.patch("/beneficiaries/current", json={attribute: value})

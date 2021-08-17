@@ -21,7 +21,7 @@ class Returns200Test:
         offer = offers_factories.ThingOfferFactory()
 
         # When
-        client = TestClient(app.test_client()).with_auth(email=beneficiary.email)
+        client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
         response = client.get(f"/offers/{humanize(offer.id)}")
 
         # Then
@@ -42,7 +42,7 @@ class Returns200Test:
         )
 
         # When
-        client = TestClient(app.test_client()).with_auth(email=beneficiary.email)
+        client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
         response = client.get(f"/offers/{humanize(offer.id)}")
 
         # Then
@@ -55,7 +55,7 @@ class Returns200Test:
         mediation = offers_factories.MediationFactory(offer=offer)
 
         # When
-        client = TestClient(app.test_client()).with_auth(email=beneficiary.email)
+        client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
         response = client.get(f"/offers/{humanize(offer.id)}")
 
         # Then
@@ -101,7 +101,7 @@ class Returns200Test:
         offers_factories.BankInformationFactory(venue=venue)
 
         # When
-        client = TestClient(app.test_client()).with_auth(email=beneficiary.email)
+        client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
         response = client.get(f"/offers/{humanize(offer.id)}")
 
         # Then
@@ -262,7 +262,7 @@ class Returns200Test:
         repository.save(offer)
 
         # When
-        client = TestClient(app.test_client()).with_auth(email=beneficiary.email)
+        client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
         response = client.get(f"/offers/{humanize(offer.id)}")
 
         # Then
@@ -283,7 +283,7 @@ class Returns200Test:
         )
 
         # When
-        client = TestClient(app.test_client()).with_auth(email=beneficiary.email)
+        client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
 
         response = client.get(f"/offers/{humanize(offer.id)}")
 

@@ -12,7 +12,7 @@ class Returns200Test:
         user = users_factories.UserFactory()
 
         # when
-        response = TestClient(app.test_client()).with_auth(user.email).get("/features")
+        response = TestClient(app.test_client()).with_session_auth(user.email).get("/features")
 
         # then
         assert response.status_code == 200

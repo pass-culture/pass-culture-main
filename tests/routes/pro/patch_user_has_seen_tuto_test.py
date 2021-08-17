@@ -11,7 +11,7 @@ from tests.conftest import TestClient
 def test_mark_as_seen(app):
     user = users_factories.UserFactory(hasSeenProTutorials=False)
 
-    client = TestClient(app.test_client()).with_auth(user.email)
+    client = TestClient(app.test_client()).with_session_auth(user.email)
     response = client.patch("/users/tuto-seen")
 
     assert response.status_code == 204
@@ -26,7 +26,7 @@ class LegacyRouteTest:
             user = users_factories.UserFactory(hasSeenProTutorials=False)
 
             # when
-            client = TestClient(app.test_client()).with_auth(user.email)
+            client = TestClient(app.test_client()).with_session_auth(user.email)
             response = client.patch(f"/users/{humanize(user.id)}/tuto-seen")
 
             # then
@@ -41,7 +41,7 @@ class LegacyRouteTest:
             user = users_factories.UserFactory(hasSeenProTutorials=False)
 
             # when
-            client = TestClient(app.test_client()).with_auth(user.email)
+            client = TestClient(app.test_client()).with_session_auth(user.email)
             response = client.patch(f"/users/{humanize(12345)}/tuto-seen")
 
             # then
@@ -69,7 +69,7 @@ class LegacyRouteTest:
             # when
             response = (
                 TestClient(app.test_client())
-                .with_auth(email=user_logged_in.email)
+                .with_session_auth(email=user_logged_in.email)
                 .patch(f"/users/{humanize(user_to_update.id)}/tuto-seen")
             )
 

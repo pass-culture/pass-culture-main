@@ -25,7 +25,7 @@ class Returns200Test:
         VenueTypeFactory(label="Musée", id=2)
 
         # When
-        response = TestClient(app.test_client()).with_auth(user.email).get("/venue-types")
+        response = TestClient(app.test_client()).with_session_auth(user.email).get("/venue-types")
 
         # then
         assert response.status_code == 200

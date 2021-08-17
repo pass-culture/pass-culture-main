@@ -20,7 +20,7 @@ def test_should_register_new_venue(app):
     venue_type = offerers_factories.VenueTypeFactory(label="Musée")
     venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
     repository.save(user_offerer, venue_type, venue_label)
-    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
     venue_data = {
         "name": "Ma venue",
         "siret": "30255917810045",
@@ -61,7 +61,7 @@ def test_should_consider_the_venue_to_be_permanent(app):
     venue_type = offerers_factories.VenueTypeFactory(label="Musée")
     venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
     repository.save(user_offerer, venue_type, venue_label)
-    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
     venue_data = {
         "name": "Ma venue",
         "siret": "30255917810045",
@@ -105,7 +105,7 @@ def test_should_return_401_when_latitude_out_of_range_and_longitude_wrong_format
         "longitude": "112°3534",
     }
 
-    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
 
     # when
     response = auth_request.post("/venues", json=data)
@@ -136,7 +136,7 @@ def test_should_return_401_when_longitude_out_of_range_and_latitude_wrong_format
         "longitude": 210.43251,
     }
 
-    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
 
     # when
     response = auth_request.post("/venues", json=data)
@@ -165,7 +165,7 @@ def test_should_return_403_when_user_is_not_managing_offerer_create_venue(app):
         "publicName": "Ma venue publique",
         "venueTypeId": humanize(venue_type.id),
     }
-    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+    auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
 
     response = auth_request.post("/venues", json=venue_data)
 

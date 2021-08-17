@@ -69,7 +69,7 @@ class Returns200Test:
         }
 
         # when
-        auth_request = TestClient(app.test_client()).with_auth(email=user_offerer.user.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
         response = auth_request.get("/venues/%s" % humanize(venue.id))
 
         # then
@@ -85,7 +85,7 @@ class Returns403Test:
         venue = offers_factories.VenueFactory(name="L'encre et la plume")
 
         # when
-        auth_request = TestClient(app.test_client()).with_auth(email=pro.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=pro.email)
         response = auth_request.get("/venues/%s" % humanize(venue.id))
 
         # then

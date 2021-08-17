@@ -20,7 +20,7 @@ class Returns204Test:
         offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         # When
-        client = TestClient(app.test_client()).with_auth("pro@example.com")
+        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         data = {"ids": [humanize(offer1.id), humanize(offer2.id)], "isActive": True}
         response = client.patch("/offers/active-status", json=data)
 
@@ -40,7 +40,7 @@ class Returns204Test:
         offers_update_queries = 3
 
         # When
-        client = TestClient(app.test_client()).with_auth("pro@example.com")
+        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         data = {"ids": [humanize(offer1.id), humanize(offer2.id)], "isActive": False}
         with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES + offers_update_queries):
             response = client.patch("/offers/active-status", json=data)
@@ -58,7 +58,7 @@ class Returns204Test:
         offerer = venue.managingOfferer
         offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
-        client = TestClient(app.test_client()).with_auth("pro@example.com")
+        client = TestClient(app.test_client()).with_session_auth("pro@example.com")
         data = {
             "ids": [humanize(approved_offer.id), humanize(pending_offer.id), humanize(rejected_offer.id)],
             "isActive": True,
