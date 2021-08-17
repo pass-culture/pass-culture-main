@@ -15,6 +15,7 @@ from sqlalchemy.sql.schema import Index
 from sqlalchemy.sql.sqltypes import Boolean
 from sqlalchemy.sql.sqltypes import Numeric
 
+from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.models.db import Model
 
@@ -155,3 +156,19 @@ class EducationalBooking(Model):
             raise exceptions.EducationalBookingNotConfirmedYet()
 
         self.status = EducationalBookingStatus.USED_BY_INSTITUTE
+
+    def mark_as_refused(self) -> None:
+        from pcapi.core.bookings.models import BookingCancellationReasons
+
+        if self.status == EducationalBookingStatus.USED_BY_INSTITUTE:
+            raise exceptions.EducationalBookingNotRefusable()
+
+        try:
+            self.booking.cancel_booking()
+            self.booking.cancellationReason = BookingCancellationReasons.REFUSED_BY_INSTITUTE
+        except booking_exceptions.BookingIsAlreadyUsed:
+            raise exceptions.EducationalBookingNotRefusable()
+        except booking_exceptions.BookingIsAlreadyCancelled:
+            raise exceptions.EducationalBookingAlreadyCancelled()
+
+        self.status = EducationalBookingStatus.REFUSED
