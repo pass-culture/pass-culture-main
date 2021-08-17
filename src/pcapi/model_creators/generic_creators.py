@@ -12,6 +12,7 @@ from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
+from pcapi.core.users import factories as user_factories
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.domain.price_rule import PriceRule
@@ -36,9 +37,6 @@ from pcapi.models import Venue
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.utils.token import random_token
-
-
-PLAIN_DEFAULT_TESTING_PASSWORD = "user@AZERTY123"
 
 
 def create_bank_information(
@@ -391,7 +389,7 @@ def create_user(
     if password:
         user.setPassword(password)
     else:
-        user.setPassword(PLAIN_DEFAULT_TESTING_PASSWORD)
+        user.setPassword(user_factories.DEFAULT_PASSWORD)
 
     if reset_password_token:
         Token(

@@ -1,8 +1,8 @@
 from datetime import datetime
 
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
-from pcapi.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.includes import BENEFICIARY_INCLUDES
 from pcapi.utils.includes import USER_INCLUDES
@@ -63,7 +63,7 @@ def get_pro_helper(user):
         as_dict(user, includes=USER_INCLUDES),
         **{
             "resetPasswordToken": _get_reset_password_token(user),
-            "password": PLAIN_DEFAULT_TESTING_PASSWORD,
+            "password": users_factories.DEFAULT_PASSWORD,
             "validationToken": user.validationToken,
         },
     )
@@ -74,7 +74,7 @@ def get_beneficiary_helper(user):
         as_dict(user, includes=BENEFICIARY_INCLUDES),
         **{
             "resetPasswordToken": _get_reset_password_token(user),
-            "password": PLAIN_DEFAULT_TESTING_PASSWORD,
+            "password": users_factories.DEFAULT_PASSWORD,
             "validationToken": user.validationToken,
         },
     )

@@ -21,11 +21,11 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
 import pcapi.core.search.testing as search_testing
 import pcapi.core.testing
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
 from pcapi.flask_app import admin
 from pcapi.install_database_extensions import install_database_extensions
 from pcapi.local_providers.install import install_local_providers
-from pcapi.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
 from pcapi.models.db import db
 from pcapi.notifications.push import testing as push_notifications_testing
 from pcapi.notifications.sms import testing as sms_notifications_testing
@@ -179,14 +179,14 @@ class TestClient:
 
     def with_session_auth(self, email: str = None) -> "TestClient":
         self.email = email or self.USER_TEST_ADMIN_EMAIL
-        response = self.post("/users/signin", {"identifier": self.email, "password": PLAIN_DEFAULT_TESTING_PASSWORD})
+        response = self.post("/users/signin", {"identifier": self.email, "password": users_factories.DEFAULT_PASSWORD})
         assert response.status_code == 200
         return self
 
     def with_basic_auth(self, email: str = None) -> "TestClient":
         self.email = email or self.USER_TEST_ADMIN_EMAIL
         self.auth_header = {
-            "Authorization": _basic_auth_str(email, PLAIN_DEFAULT_TESTING_PASSWORD),
+            "Authorization": _basic_auth_str(email, users_factories.DEFAULT_PASSWORD),
         }
         return self
 

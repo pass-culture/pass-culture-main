@@ -22,7 +22,7 @@ class Returns204Test:
         # given
 
         user = users_factories.BeneficiaryFactory(email="test@mail.com")
-        data = {"new_email": "new@email.com", "password": "user@AZERTY123"}
+        data = {"new_email": "new@email.com", "password": users_factories.DEFAULT_PASSWORD}
 
         # when
         client = TestClient(app.test_client()).with_session_auth(user.email)
@@ -111,7 +111,7 @@ class Returns400Test:
     def when_new_email_is_missing(self, app):
         # Given
         user = users_factories.BeneficiaryFactory()
-        data = {"password": "user@AZERTY123"}
+        data = {"password": users_factories.DEFAULT_PASSWORD}
 
         # When
         client = TestClient(app.test_client()).with_session_auth(user.email)
@@ -140,7 +140,7 @@ class Returns401Test:
     def when_account_is_not_active(self, app):
         # Given
         user = users_factories.BeneficiaryFactory(isActive=True)
-        data = {"new_email": user.email, "password": "user@AZERTY123"}
+        data = {"new_email": user.email, "password": users_factories.DEFAULT_PASSWORD}
         client = TestClient(app.test_client()).with_session_auth(user.email)
         user.isActive = False
         db.session.commit()
@@ -157,7 +157,7 @@ class Returns401Test:
         user = users_factories.BeneficiaryFactory()
         client = TestClient(app.test_client()).with_session_auth(user.email)
         user.generate_validation_token()
-        data = {"new_email": user.email, "password": "user@AZERTY123"}
+        data = {"new_email": user.email, "password": users_factories.DEFAULT_PASSWORD}
 
         # When
         response = client.put("/beneficiaries/change_email_request", json=data)
