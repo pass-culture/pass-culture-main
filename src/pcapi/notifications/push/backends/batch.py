@@ -1,13 +1,19 @@
+from dataclasses import dataclass
 from enum import Enum
 import logging
 
 from pcapi import settings
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
-from pcapi.notifications.push.user_attributes_updates import UserUpdateData
 from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class UserUpdateData:
+    user_id: str
+    attributes: dict
 
 
 class BatchAPI(Enum):

@@ -1,20 +1,14 @@
-from dataclasses import dataclass
 from datetime import datetime
+import logging
 from typing import Optional
 
-from sqlalchemy.orm import joinedload
-
 from pcapi.core.bookings.models import Booking
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
-from pcapi.models.db import db
+from pcapi.tasks.batch_tasks import UpdateBatchAttributesRequest
+from pcapi.tasks.batch_tasks import update_user_attributes_task
 
 
-@dataclass
-class UserUpdateData:
-    user_id: str
-    attributes: dict
+logger = logging.getLogger(__name__)
 
 
 BATCH_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -23,17 +17,13 @@ BATCH_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 TRACKED_PRODUCT_IDS = {3084625: "brut_x"}
 
 
-def get_user_attributes(user: User) -> dict:
-    from pcapi.core.users.api import get_domains_credit
+def update_user_attributes(user: User, user_bookings: list[Booking]):
+    attributes = get_user_attributes(user, user_bookings)
+    update_user_attributes_task.delay(UpdateBatchAttributesRequest(user_id=user.id, attributes=attributes))
 
-    user_bookings = (
-        Booking.query.options(
-            joinedload(Booking.stock).joinedload(Stock.offer).load_only(Offer.type, Offer.url, Offer.productId)
-        )
-        .filter_by(userId=user.id)
-        .order_by(db.desc(Booking.dateCreated))
-        .all()
-    )
+
+def get_user_attributes(user: User, user_bookings: list[Booking]) -> dict:
+    from pcapi.core.users.api import get_domains_credit
 
     credit = get_domains_credit(user, [booking for booking in user_bookings if not booking.isCancelled])
     last_booking_date = user_bookings[0].dateCreated if user_bookings else None
@@ -64,5 +54,5 @@ def get_user_attributes(user: User) -> dict:
     return attributes
 
 
-def _format_date(date: datetime) -> Optional[str]:
+def _format_date(date: Optional[datetime]) -> Optional[str]:
     return date.strftime(BATCH_DATETIME_FORMAT) if date else None

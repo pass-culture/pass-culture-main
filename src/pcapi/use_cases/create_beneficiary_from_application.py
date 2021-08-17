@@ -3,6 +3,7 @@ import logging
 from pcapi.connectors.beneficiaries import jouve_backend
 from pcapi.core.fraud.api import on_jouve_result
 from pcapi.core.users.api import create_reset_password_token
+from pcapi.core.users.external import update_external_user
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import FraudDetected
@@ -15,7 +16,6 @@ from pcapi.domain.user_emails import send_fraud_suspicion_email
 from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_subscription
 from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from pcapi.repository.user_queries import find_user_by_email
-from pcapi.workers.push_notification_job import update_user_attributes_job
 
 
 logger = logging.getLogger(__name__)
@@ -109,7 +109,7 @@ class CreateBeneficiaryFromApplication:
             else:
                 send_accepted_as_beneficiary_email(user=user)
 
-            update_user_attributes_job.delay(user.id)
+            update_external_user(user)
 
 
 create_beneficiary_from_application = CreateBeneficiaryFromApplication()

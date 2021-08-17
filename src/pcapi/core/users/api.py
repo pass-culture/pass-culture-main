@@ -71,6 +71,7 @@ from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
+from pcapi.tasks.account import VerifyIdentityDocumentRequest
 from pcapi.tasks.account import verify_identity_document
 from pcapi.utils.token import random_token
 from pcapi.utils.urls import get_webapp_url
@@ -80,7 +81,6 @@ from pcapi.workers.apps_flyer_job import log_user_becomes_beneficiary_event_job
 logger = logging.getLogger(__name__)
 
 from pcapi.utils.mailing import MailServiceException
-from pcapi.workers.push_notification_job import update_user_attributes_job
 
 from . import constants
 from . import exceptions
@@ -202,7 +202,6 @@ def create_account(
     logger.info("Created user account", extra={"user": user.id})
 
     if remote_updates:
-        update_user_attributes_job.delay(user.id)
         update_external_user(user)
 
     if not is_email_validated and send_activation_mail:

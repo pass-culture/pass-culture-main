@@ -11,6 +11,7 @@ from pcapi.core.users.api import activate_beneficiary
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.api import steps_to_become_beneficiary
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
+from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import get_beneficiary_duplicates
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
@@ -26,7 +27,6 @@ from pcapi.repository.beneficiary_import_queries import is_already_imported
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.utils.mailing import MailServiceException
-from pcapi.workers.push_notification_job import update_user_attributes_job
 
 
 logger = logging.getLogger(__name__)
@@ -201,7 +201,7 @@ def process_beneficiary_application(
         activate_beneficiary(user, deposit_source)
 
     new_beneficiaries.append(user)
-    update_user_attributes_job.delay(user.id)
+    update_external_user(user)
     try:
         if preexisting_account is None:
             token = create_reset_password_token(user, token_life_time=RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED)

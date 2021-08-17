@@ -1,7 +1,7 @@
 from pcapi.notifications.push import testing
+from pcapi.notifications.push.backends.batch import UserUpdateData
 from pcapi.notifications.push.backends.logger import LoggerBackend
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
-from pcapi.notifications.push.user_attributes_updates import UserUpdateData
 
 
 class TestingBackend(LoggerBackend):

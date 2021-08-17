@@ -16,6 +16,7 @@ from pcapi.core.offers.exceptions import FileSizeExceeded
 from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
+from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
@@ -26,7 +27,6 @@ from pcapi.repository import transaction
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.workers.push_notification_job import update_user_attributes_job
 
 from . import blueprint
 from .serialization import account as serializers
@@ -61,7 +61,7 @@ def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) 
             )
         )
     repository.save(user)
-    update_user_attributes_job.delay(user.id)
+    update_external_user(user)
 
     return serializers.UserProfileResponse.from_orm(user)
 
@@ -78,7 +78,7 @@ def update_beneficiary_mandatory_information(user: User, body: serializers.Benef
         activity=body.activity,
         phone_number=body.phone,
     )
-    update_user_attributes_job.delay(user.id)
+    update_external_user(user)
 
 
 @blueprint.native_v1.route("/me/cultural_survey", methods=["POST"])

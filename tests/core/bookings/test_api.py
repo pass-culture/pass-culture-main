@@ -22,11 +22,11 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
+from pcapi.core.users.external.batch import BATCH_DATETIME_FORMAT
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
 from pcapi.models.db import db
 import pcapi.notifications.push.testing as push_testing
-from pcapi.notifications.push.user_attributes_updates import BATCH_DATETIME_FORMAT
 from pcapi.utils.token import random_token
 
 from tests.conftest import clean_database

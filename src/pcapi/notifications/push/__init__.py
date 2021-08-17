@@ -1,6 +1,6 @@
 from pcapi import settings
+from pcapi.notifications.push.backends.batch import UserUpdateData
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
-from pcapi.notifications.push.user_attributes_updates import UserUpdateData
 from pcapi.utils.module_loading import import_string
 
 

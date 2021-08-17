@@ -19,6 +19,7 @@ from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.domain import user_emails
 from pcapi.flask_app import db
@@ -27,7 +28,6 @@ from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils.mailing import MailServiceException
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
-from pcapi.workers.push_notification_job import update_user_attributes_job
 from pcapi.workers.user_emails_job import send_booking_cancellation_emails_to_user_and_offerer_job
 
 from . import exceptions
@@ -128,7 +128,7 @@ def book_offer(
 
     search.async_index_offer_ids([stock.offerId])
 
-    update_user_attributes_job.delay(beneficiary.id)
+    update_external_user(beneficiary)
 
     return booking
 
@@ -160,7 +160,7 @@ def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> Non
         },
     )
 
-    update_user_attributes_job.delay(booking.user.id)
+    update_external_user(booking.user)
 
     search.async_index_offer_ids([booking.stock.offerId])
 
@@ -185,7 +185,7 @@ def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons
         repository.save(*deleted_bookings)
 
     for booking in deleted_bookings:
-        update_user_attributes_job.delay(booking.user.id)
+        update_external_user(booking.user)
 
     return deleted_bookings
 
@@ -276,7 +276,7 @@ def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
         repository.save(*objects_to_save)
     logger.info("Booking was marked as used", extra={"booking": booking.id})
 
-    update_user_attributes_job.delay(booking.userId)
+    update_external_user(booking.user)
 
 
 def mark_as_cancelled(booking: Booking) -> None:
@@ -302,7 +302,7 @@ def mark_as_unused(booking: Booking) -> None:
     repository.save(booking)
     logger.info("Booking was marked as unused", extra={"booking": booking.id})
 
-    update_user_attributes_job.delay(booking.userId)
+    update_external_user(booking.user)
 
 
 def get_qr_code_data(booking_token: str) -> str:

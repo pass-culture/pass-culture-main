@@ -5,11 +5,10 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.testing import assert_num_queries
+from pcapi.core.users.external.batch import BATCH_DATETIME_FORMAT
+from pcapi.core.users.external.batch import TRACKED_PRODUCT_IDS
+from pcapi.core.users.external.batch import get_user_attributes
 from pcapi.core.users.factories import BeneficiaryFactory
-from pcapi.notifications.push.user_attributes_updates import BATCH_DATETIME_FORMAT
-from pcapi.notifications.push.user_attributes_updates import TRACKED_PRODUCT_IDS
-from pcapi.notifications.push.user_attributes_updates import get_user_attributes
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -25,12 +24,7 @@ class GetUserAttributesTest:
         b2 = BookingFactory(user=user, amount=10, dateUsed=datetime(2021, 5, 6), stock__offer=offer)
         b3 = CancelledBookingFactory(user=user, amount=100)
 
-        n_query_get_user = 1
-        n_query_get_bookings = 1
-        n_query_get_deposit = 1
-
-        with assert_num_queries(n_query_get_user + n_query_get_bookings + n_query_get_deposit):
-            attributes = get_user_attributes(user)
+        attributes = get_user_attributes(user, [b1, b2, b3])
 
         last_date_created = max(booking.dateCreated for booking in [b1, b2, b3])
 
@@ -58,12 +52,7 @@ class GetUserAttributesTest:
     def test_get_attributes_without_bookings(self):
         user = BeneficiaryFactory()
 
-        n_query_get_user = 1
-        n_query_get_bookings = 1
-        n_query_get_deposit = 1
-
-        with assert_num_queries(n_query_get_user + n_query_get_bookings + n_query_get_deposit):
-            attributes = get_user_attributes(user)
+        attributes = get_user_attributes(user, [])
 
         assert attributes["date(u.last_booking_date)"] == None
         assert attributes["u.credit"] == 50000

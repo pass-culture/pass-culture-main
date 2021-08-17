@@ -13,12 +13,12 @@ from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.admin.custom_views.mixins.resend_validation_email_mixin import ResendValidationEmailMixin
 from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
 from pcapi.core.users.api import create_reset_password_token
+from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.models import UserOfferer
 from pcapi.utils.mailing import build_pc_webapp_reset_password_link
-from pcapi.workers.push_notification_job import update_user_attributes_job
 
 
 def filter_email(value: Optional[str]) -> Optional[str]:
@@ -117,7 +117,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         super().on_model_change(form, model, is_created)
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
-        update_user_attributes_job.delay(model.id)
+        update_external_user(model)
         token = create_reset_password_token(model)
         if is_created and not send_activation_email(model, token=token):
             flash(

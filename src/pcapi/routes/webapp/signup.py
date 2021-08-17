@@ -8,6 +8,7 @@ from pcapi import settings
 from pcapi.connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from pcapi.connectors.google_spreadsheet import get_ttl_hash
 from pcapi.core.payments import api as payments_api
+from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
@@ -18,7 +19,6 @@ from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.feature import feature_required
 from pcapi.utils.includes import BENEFICIARY_INCLUDES
-from pcapi.workers.push_notification_job import update_user_attributes_job
 
 
 logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ def signup_webapp():
 
     repository.save(*objects_to_save)
 
-    update_user_attributes_job.delay(new_user.id)
+    update_external_user(new_user)
 
     return jsonify(as_dict(new_user, includes=BENEFICIARY_INCLUDES)), 201
 

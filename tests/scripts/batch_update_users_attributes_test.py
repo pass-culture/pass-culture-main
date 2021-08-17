@@ -1,10 +1,10 @@
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.users.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.users.factories import BeneficiaryFactory
 from pcapi.core.users.factories import UserFactory
 import pcapi.notifications.push.testing as push_testing
-from pcapi.notifications.push.user_attributes_updates import BATCH_DATETIME_FORMAT
 from pcapi.scripts.batch_update_users_attributes import format_users
 from pcapi.scripts.batch_update_users_attributes import get_users_chunks
 from pcapi.scripts.batch_update_users_attributes import run
