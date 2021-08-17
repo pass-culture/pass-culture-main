@@ -66,11 +66,21 @@ def confirm_prebooking(educational_booking_id: int) -> prebooking_serialization.
     tags=("change prebookings", "change bookings"),
 )
 @adage_api_key_required
-def refuse_pre_booking() -> prebooking_serialization.EducationalBookingResponse:
+def refuse_pre_booking(educational_booking_id: int) -> prebooking_serialization.EducationalBookingResponse:
     """Refuse a prebooking confirmation
 
     Can only work if prebooking is confirmed or pending,
     is not yet used and still refusable."""
+    try:
+        educational_booking = api.refuse_educational_booking(educational_booking_id)
+    except exceptions.EducationalBookingNotFound:
+        raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_FOUND"}, status_code=404)
+    except exceptions.EducationalBookingNotRefusable:
+        raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_REFUSABLE"}, status_code=422)
+    except exceptions.EducationalBookingAlreadyCancelled:
+        raise ApiErrors({"code": "EDUCATIONAL_BOOKING_ALREADY_CANCELLED"}, status_code=422)
+
+    return prebooking_serialization.serialize_educational_booking(educational_booking)
 
 
 @blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/mark_as_used", methods=["POST"])
