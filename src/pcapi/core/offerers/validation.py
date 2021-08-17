@@ -8,6 +8,8 @@ from pcapi.models import Venue
 MAX_LONGITUDE = 180
 MAX_LATITUDE = 90
 
+VENUE_BANNER_MAX_SIZE = 200_000
+
 
 def check_existing_venue(venue: Venue):
     if not venue:

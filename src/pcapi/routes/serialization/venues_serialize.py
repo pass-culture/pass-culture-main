@@ -1,14 +1,18 @@
 from datetime import datetime
 from decimal import Decimal
 from decimal import InvalidOperation
+from io import BytesIO
 import typing
 from typing import Optional
 from typing import Union
 
+from PIL import Image
 import pydantic
 from pydantic import BaseModel
+from pydantic import root_validator
 from pydantic import validator
 
+from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import string_to_boolean_field
@@ -248,3 +252,61 @@ class VenueListQueryModel(BaseModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
+
+
+class VenueBannerContentModel(BaseModel):
+    content: pydantic.conbytes(min_length=2, max_length=VENUE_BANNER_MAX_SIZE)  # type: ignore
+    content_type: pydantic.constr(strip_whitespace=True, to_lower=True, max_length=16)  # type: ignore
+    file_name: pydantic.constr(strip_whitespace=True, to_lower=True, min_length=5, max_length=256)  # type: ignore
+
+    class Config:
+        extra = pydantic.Extra.forbid
+        anystr_strip_whitespace = True
+
+    @root_validator(pre=True)
+    @classmethod
+    def validate_banner(cls, values: dict) -> dict:
+        """
+        Validate content (is not an invalid image) using PIL
+        + set and validate content type using image build from previous
+          step
+        """
+        try:
+            image = Image.open(BytesIO(values["content"]))
+        except Exception:
+            raise ValueError("Format de l'image invalide")
+
+        legit_image_types = {"jpg", "jpeg", "png"}
+        values["content_type"] = image.format.lower()
+
+        if not values["content_type"] in legit_image_types:
+            raise ValueError("Format de l'image invalide")
+
+        return values
+
+    @classmethod
+    def from_request(cls, request: typing.Any) -> "VenueBannerContentModel":
+        cls.validate_request(request)
+
+        file = request.files["banner"]
+        return VenueBannerContentModel(
+            content=file.read(VENUE_BANNER_MAX_SIZE),
+            file_name=file.filename,
+        )
+
+    @classmethod
+    def validate_request(cls, request: typing.Any) -> typing.Any:
+        """
+        If the request has a content_lenght information, use directly to
+        avoid reading the whole content to check its size. If not, do not
+        consider this a an error: it will be checked later.
+        """
+        try:
+            file = request.files["banner"]
+        except (AttributeError, KeyError):
+            raise ValueError("Image manquante")
+
+        if file.content_length and file.content_length > VENUE_BANNER_MAX_SIZE:
+            raise ValueError(f"Image trop grande, max: {VENUE_BANNER_MAX_SIZE / 1_000}Ko")
+
+        return request

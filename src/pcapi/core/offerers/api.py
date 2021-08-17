@@ -1,10 +1,12 @@
 from datetime import datetime
 import logging
+import pathlib
 import secrets
 import typing
 from typing import Optional
 
 from pcapi import settings
+from pcapi.core import object_storage
 from pcapi.core import search
 from pcapi.core.mails import MailServiceException
 from pcapi.core.offerers.models import ApiKey
@@ -240,3 +242,20 @@ def validate_offerer(token: str) -> None:
         logger.exception(
             "Could not send validation confirmation email to offerer", extra={"exc": str(mail_service_exception)}
         )
+
+
+def save_venue_banner(user: User, venue: Venue, content: bytes, content_type: str, file_name: str) -> None:
+    bucket_name = settings.BASE_BUCKET_NAME
+    object_id = f"venue_{venue.id}_banner"
+
+    object_storage.store_public_object(
+        bucket=bucket_name,
+        object_id=object_id,
+        blob=content,
+        content_type=f"image/{content_type.lower()}",
+    )
+
+    venue.bannerUrl = str(pathlib.Path(settings.OBJECT_STORAGE_URL, bucket_name, object_id))
+    venue.bannerMeta = {"content_type": content_type, "file_name": file_name, "author_id": user.id}
+
+    repository.save(venue)

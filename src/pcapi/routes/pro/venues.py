@@ -1,3 +1,4 @@
+from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
@@ -11,6 +12,7 @@ from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict
+from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.venues_serialize import EditVenueBodyModel
 from pcapi.routes.serialization.venues_serialize import GetVenueListResponseModel
 from pcapi.routes.serialization.venues_serialize import GetVenueResponseModel
@@ -123,6 +125,25 @@ def edit_venue(venue_id: str, body: EditVenueBodyModel) -> GetVenueResponseModel
         update_all_venue_offers_email_job.delay(venue, body.bookingEmail)
 
     return GetVenueResponseModel.from_orm(venue)
+
+
+@private_api.route("/venues/<venue_id>/banner", methods=["POST"])
+@login_required
+@spectree_serialize(on_success_status=204)
+def upsert_venue_banner(venue_id: str) -> None:
+    venue = load_or_404(Venue, venue_id)
+
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+
+    venue_banner = venues_serialize.VenueBannerContentModel.from_request(request)
+
+    offerers_api.save_venue_banner(
+        user=current_user,
+        venue=venue,
+        content=venue_banner.content,
+        content_type=venue_banner.content_type,
+        file_name=venue_banner.file_name,
+    )
 
 
 @private_api.route("/venues/<humanized_venue_id>/stats", methods=["GET"])

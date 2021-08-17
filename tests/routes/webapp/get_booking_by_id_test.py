@@ -126,6 +126,8 @@ class Returns200Test:
                     "venue": {
                         "address": "1 boulevard Poissonnière",
                         "audioDisabilityCompliant": False,
+                        "bannerMeta": None,
+                        "bannerUrl": None,
                         "bookingEmail": None,
                         "city": "Paris",
                         "comment": None,
