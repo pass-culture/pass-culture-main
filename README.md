@@ -62,7 +62,7 @@ modifié quand ces problèmes seront réglés côté pylint/astroid.
       ```
   - A titre informatif, si toutefois vous vouliez lançer la DB et le redis vous même, vous pourriez aussi faire (équivalement du docker compose)
       ```shell
-      docker run -d --name postgres -p 5432:5432 \
+      docker run -d --name postgres -p 5434:5432 \
           --env-file ../env_file \
           -v postgres_local_data:/var/lib/postgresql/data \
           circleci/postgres:12.3-postgis
@@ -76,7 +76,7 @@ modifié quand ces problèmes seront réglés côté pylint/astroid.
     alors vous devez suivre les étapes suivantes pour l'initialisation 
     -  Créer une variable d'environnement pour SQLAlchemy
     ```shell
-    export DATABASE_URL=postgresql://pass_culture:passq@localhost/pass_culture
+    export DATABASE_URL=postgresql://pass_culture:passq@localhost:5434/pass_culture
     ```  
     ```shell
       source venv/bin/activate # Au cas ou vous l'auriez oublié :P
@@ -123,6 +123,15 @@ Pour Debugger sous IntelliJ Pycharm, configurer la configuration de lancement py
     
     ![pycharm-test-config][pycharm-debugging]
     
+
+## Linter et hooks
+Black et ISort permettent le reformattage du code et des imports.
+Ils sont lançés automatiquement à chaque commit une fois les hooks de gitlab configurés en local.
+Pour les configurer vous pouvez utiliser le script pc :
+```bash
+cd .. # Se placer sur le dossier pass-culture-main
+./pc install-hooks # le script pc va créer les liens vers pre-push et pre-commit dans le .git/modules/api/hooks 
+```
 
 ## Problèmes rencontrés
 
