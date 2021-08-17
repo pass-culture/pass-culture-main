@@ -64,32 +64,31 @@ class PaymentDetails:
         "Marge",
     ]
 
-    def __init__(self, payment: Payment = None, booking_used_date: datetime = None):
-        if payment is not None:
-            offer = payment.booking.stock.offer
-            venue = offer.venue
-            offerer = venue.managingOfferer
-            self.offerer_and_venue_label = f"{offerer.name}-{venue.name}"
-            self.offerer_name = offerer.name
-            self.offerer_siren = offerer.siren
-            self.venue_name = venue.name
-            self.venue_siret = venue.siret
-            self.venue_humanized_id = humanize(venue.id)
-            self.offer_id = offer.id
-            self.offer_name = offer.product.name
-            self.offer_type = offer.product.offerType["proLabel"]
-            self.booking_date = payment.booking.dateCreated
-            self.booking_amount = payment.booking.total_amount
-            self.booking_used_date = booking_used_date
-            self.payment_iban = payment.iban
-            self.payment_id = payment.id
-            # `Payment.reimbursementRate` is None if a custom
-            # reimbursement rule has been applied.
-            self.reimbursement_rate = payment.reimbursementRate or (
-                Decimal(payment.amount / payment.booking.total_amount).quantize(Decimal("0.01"))
-            )
-            self.reimbursed_amount = payment.amount
-            self.margin = payment.booking.total_amount - payment.amount
+    def __init__(self, payment: Payment):
+        offer = payment.booking.stock.offer
+        venue = offer.venue
+        offerer = venue.managingOfferer
+        self.offerer_and_venue_label = f"{offerer.name}-{venue.name}"
+        self.offerer_name = offerer.name
+        self.offerer_siren = offerer.siren
+        self.venue_name = venue.name
+        self.venue_siret = venue.siret
+        self.venue_humanized_id = humanize(venue.id)
+        self.offer_id = offer.id
+        self.offer_name = offer.product.name
+        self.offer_type = offer.product.offerType["proLabel"]
+        self.booking_date = payment.booking.dateCreated
+        self.booking_amount = payment.booking.total_amount
+        self.booking_used_date = payment.booking.dateUsed
+        self.payment_iban = payment.iban
+        self.payment_id = payment.id
+        # `Payment.reimbursementRate` is None if a custom
+        # reimbursement rule has been applied.
+        self.reimbursement_rate = payment.reimbursementRate or (
+            Decimal(payment.amount / payment.booking.total_amount).quantize(Decimal("0.01"))
+        )
+        self.reimbursed_amount = payment.amount
+        self.margin = payment.booking.total_amount - payment.amount
 
     def as_csv_row(self):
         return [
@@ -232,10 +231,6 @@ def validate_message_file_structure(transaction_file: str):
     xsd_schema.assertValid(xml_doc)
 
 
-def create_payment_details(payment: Payment) -> PaymentDetails:
-    return PaymentDetails(payment, payment.booking.dateUsed)
-
-
 def generate_payment_details_csv(payment_query) -> str:
     # FIXME (dbaty, 2021-05-31): remove this inner import once we have
     # moved functions to core.payments.api and
@@ -247,7 +242,7 @@ def generate_payment_details_csv(payment_query) -> str:
     writer.writerow(PaymentDetails.CSV_HEADER)
     for batch in db_utils.get_batches(payment_query, Payment.id, settings.PAYMENTS_CSV_DETAILS_BATCH_SIZE):
         payments = payment_queries.join_for_payment_details(batch)
-        rows = [create_payment_details(payment).as_csv_row() for payment in payments]
+        rows = [PaymentDetails(payment).as_csv_row() for payment in payments]
         writer.writerows(rows)
     return output.getvalue()
 

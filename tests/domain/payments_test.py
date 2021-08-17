@@ -10,10 +10,10 @@ from pcapi.core.offerers.models import Offerer
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.payments import UnmatchedPayments
 from pcapi.domain.payments import _set_end_to_end_id_and_group_into_transactions
 from pcapi.domain.payments import apply_banishment
-from pcapi.domain.payments import create_payment_details
 from pcapi.domain.payments import create_payment_for_booking
 from pcapi.domain.payments import filter_out_already_paid_for_bookings
 from pcapi.domain.payments import filter_out_bookings_without_cost
@@ -223,7 +223,7 @@ class CreatePaymentDetailsTest:
         payment = create_payment(booking, offerer, 35, iban="123456789")
 
         # when
-        details = create_payment_details(payment)
+        details = PaymentDetails(payment)
 
         # then
         assert details.payment_iban == "123456789"
@@ -240,7 +240,7 @@ class CreatePaymentDetailsTest:
         payment = payments_factories.PaymentFactory(booking=booking)
 
         # when
-        details = create_payment_details(payment)
+        details = PaymentDetails(payment)
 
         # then
         assert details.booking_date == datetime(2018, 2, 5)
@@ -258,7 +258,7 @@ class CreatePaymentDetailsTest:
         payment = create_payment(booking, offerer, 35)
 
         # when
-        details = create_payment_details(payment)
+        details = PaymentDetails(payment)
 
         # then
         assert details.offerer_name == "Joe le Libraire"
@@ -275,7 +275,7 @@ class CreatePaymentDetailsTest:
         payment = create_payment(booking, offerer, 35)
 
         # when
-        details = create_payment_details(payment)
+        details = PaymentDetails(payment)
 
         # then
         assert details.venue_name == "Jack le Sculpteur"
@@ -293,7 +293,7 @@ class CreatePaymentDetailsTest:
         payment = create_payment(booking, offerer, 35)
 
         # when
-        details = create_payment_details(payment)
+        details = PaymentDetails(payment)
 
         # then
         assert details.offer_name == "Test Book"
