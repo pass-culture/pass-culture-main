@@ -138,3 +138,4 @@ class Returns404Test:
         response = client.get(f"/adage/v1/years/{educational_year.adageId}/educational_institution/UNKNOWN")
 
         assert response.status_code == 404
+        assert response.json == {"code": "EDUCATIONAL_INSTITUTION_NOT_FOUND"}
