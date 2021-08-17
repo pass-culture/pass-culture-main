@@ -1,5 +1,6 @@
 from datetime import datetime
 import logging
+from typing import List
 from typing import Union
 
 from flask import abort
@@ -10,9 +11,11 @@ from flask import request
 from flask import url_for
 from flask_admin.actions import action
 from flask_admin.base import expose
+from flask_admin.contrib.sqla.fields import QuerySelectMultipleField
 from flask_admin.contrib.sqla.filters import FilterEqual
 from flask_admin.form import SecureForm
 from flask_admin.helpers import get_form_data
+from flask_admin.helpers import get_redirect_target
 from flask_admin.helpers import is_form_submitted
 from flask_login import current_user
 from markupsafe import Markup
@@ -21,6 +24,9 @@ from sqlalchemy import func
 from sqlalchemy.orm import query
 from werkzeug import Response
 import wtforms
+from wtforms.fields.core import BooleanField
+from wtforms.fields.simple import HiddenField
+from wtforms.form import Form
 from wtforms.validators import InputRequired
 from wtforms.validators import ValidationError
 import yaml
@@ -45,6 +51,9 @@ from pcapi.core.offers.validation import check_user_can_load_config
 from pcapi.domain.admin_emails import send_offer_validation_notification_to_administration
 from pcapi.domain.user_emails import send_offer_validation_status_update_email
 from pcapi.models import Offer
+from pcapi.models import db
+from pcapi.models.criterion import Criterion
+from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.repository import repository
 from pcapi.settings import IS_PROD
 from pcapi.utils.human_ids import humanize
@@ -85,7 +94,20 @@ class CategoryFilterEqual(FilterEqual):
         return filter_query.filter(self.get_column(alias).in_(searched_subcategories))
 
 
+class OfferChangeForm(Form):
+    ids = HiddenField()
+    tags = QuerySelectMultipleField(
+        get_label="name",
+        query_factory=lambda: Criterion.query.all(),  # pylint: disable=unnecessary-lambda
+        allow_blank=True,
+    )
+    remove_other_tags = BooleanField(
+        label="Supprimmer tous les autres tags",
+    )
+
+
 class OfferView(BaseAdminView):
+    list_template = "admin/edit_many_offers_components/custom_list_with_modal.html"
     can_create = False
     can_edit = True
     can_delete = False
@@ -133,6 +155,70 @@ class OfferView(BaseAdminView):
     ]
     form_columns = ["criteria", "rankingWeight", "isEducational"]
     simple_list_pager = True
+
+    @action("bulk_edit", "Bulk Edit")
+    def action_bulk_edit(self, ids):
+        url = get_redirect_target() or self.get_url(".index_view")
+        return redirect(url, code=307)
+
+    @expose("/", methods=["POST"])
+    def index(self):
+        if request.method == "POST":
+            url = get_redirect_target() or self.get_url(".index_view")
+            ids = request.form.getlist("rowid")
+            joined_ids = ",".join(ids)
+            change_form = OfferChangeForm()
+            change_form.ids.data = joined_ids
+
+            criteria_in_common = (
+                db.session.query(Criterion)
+                .join(OfferCriterion)
+                .filter(OfferCriterion.offerId.in_(ids))
+                .group_by(Criterion.id)
+                .having(func.count(OfferCriterion.criterion) == len(ids))
+                .all()
+            )
+            change_form.tags.data = criteria_in_common
+
+            self._template_args["url"] = url
+            self._template_args["change_form"] = change_form
+            self._template_args["change_modal"] = True
+            self._template_args["number_of_edited_items"] = len(ids)
+        return self.index_view()
+
+    @expose("/update/", methods=["POST"])
+    def update_view(self):
+        if request.method == "POST":
+            url = get_redirect_target() or self.get_url(".index_view")
+            change_form = OfferChangeForm(request.form)
+            if change_form.validate():
+                offer_ids: List[str] = change_form.ids.data.split(",")
+                criteria: List[OfferCriterion] = change_form.data["tags"]
+                remove_other_tags = change_form.data["remove_other_tags"]
+
+                if remove_other_tags:
+                    OfferCriterion.query.filter(OfferCriterion.offerId.in_(offer_ids)).delete(synchronize_session=False)
+
+                offer_criteria: list[OfferCriterion] = []
+                for criterion in criteria:
+                    offer_criteria.extend(
+                        OfferCriterion(offerId=offer_id, criterionId=criterion.id)
+                        for offer_id in offer_ids
+                        if OfferCriterion.query.filter(
+                            OfferCriterion.offerId == offer_id, OfferCriterion.criterionId == criterion.id
+                        ).first()
+                        is None
+                    )
+
+                db.session.bulk_save_objects(offer_criteria)
+                db.session.commit()
+
+                # synchronize with external apis that generate playlists based on tags
+                search.async_index_offer_ids(offer_ids)
+            else:
+                # Form didn't validate
+                flash("Le formulaire est invalide: %s" % (change_form.errors), "error")
+        return redirect(url, code=307)
 
     def get_edit_form(self) -> wtforms.Form:
         form = super().get_form()
