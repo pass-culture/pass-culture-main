@@ -7,8 +7,8 @@ from itertools import islice
 import logging
 from typing import Generator
 
-from pcapi.core.users.external import get_user_bookings
-from pcapi.core.users.external.batch import get_user_attributes
+from pcapi.core.users.external import batch
+from pcapi.core.users.external import get_user_attributes
 from pcapi.models import User
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.backends.batch import UserUpdateData
@@ -43,8 +43,7 @@ def get_users_chunks(chunk_size: int) -> Generator[list[User], None, None]:
 def format_users(users: list[User]) -> list[UserUpdateData]:
     res = []
     for user in users:
-        user_bookings = get_user_bookings(user)
-        attributes = get_user_attributes(user, user_bookings)
+        attributes = batch.format_user_attributes(get_user_attributes(user))
 
         res.append(UserUpdateData(user_id=str(user.id), attributes=attributes))
     print(f"{len(res)} users formatted...")
