@@ -445,85 +445,57 @@ class ReimbursementRuleIsActiveTest:
     class DummyRule(reimbursement.ReimbursementRule):
         rate = Decimal(10)
         description = "Dummy rule"
-        valid_from = None
-        valid_until = None
+
+        def __init__(self, valid_from=None, valid_until=None):
+            self.valid_from = valid_from
+            self.valid_until = valid_until
 
         def is_relevant(self, booking, **kwargs):
             return True
 
-    booking = Booking(isUsed=True, dateCreated=datetime.now(), dateUsed=datetime.now())
+    booking = Booking(dateCreated=datetime.now() + timedelta(days=365), dateUsed=datetime.now())
 
-    def test_is_active_if_valid_from_is_none_and_valid_until_is_none(self):
-        # given
-        self.booking.dateCreated = datetime.utcnow()
-        self.DummyRule.valid_from = None
-        self.DummyRule.valid_until = None
+    def test_is_active_if_rule_has_no_start_nor_end(self):
+        rule = self.DummyRule(None, None)
+        assert rule.is_active(self.booking)
 
-        # then
-        assert self.DummyRule().is_active(self.booking) is True
+    def test_is_active_if_valid_since_yesterday_without_end_date(self):
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        rule = self.DummyRule(valid_from=yesterday)
+        assert rule.is_active(self.booking)
 
-    def test_is_active_if_valid_from_is_past_and_valid_until_is_none(self):
-        # given
-        self.booking.dateCreated = datetime.utcnow()
-        self.DummyRule.valid_from = datetime.utcnow() - timedelta(weeks=3)
-        self.DummyRule.valid_until = None
+    def test_is_active_if_valid_since_yesterday_with_end_date(self):
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        tomorrow = datetime.utcnow() + timedelta(days=1)
+        rule = self.DummyRule(valid_from=yesterday, valid_until=tomorrow)
+        assert rule.is_active(self.booking)
 
-        # then
-        assert self.DummyRule().is_active(self.booking) is True
+    def test_is_not_active_if_not_yet_valid_without_end_date(self):
+        future = datetime.utcnow() + timedelta(weeks=3)
+        rule = self.DummyRule(valid_from=future)
+        assert not rule.is_active(self.booking)
 
-    def test_is_not_active_if_valid_from_is_future_and_valid_until_is_none(self):
-        # given
-        self.booking.dateCreated = datetime.utcnow()
-        self.DummyRule.valid_from = datetime.utcnow() + timedelta(weeks=3)
-        self.DummyRule.valid_until = None
+    def test_is_not_active_if_not_yet_valid_with_end_date(self):
+        future = datetime.utcnow() + timedelta(weeks=3)
+        far_future = datetime.utcnow() + timedelta(weeks=5)
+        rule = self.DummyRule(valid_from=future, valid_until=far_future)
+        assert not rule.is_active(self.booking)
 
-        # then
-        assert self.DummyRule().is_active(self.booking) is False
+    def test_is_active_if_no_start_date_and_until_later(self):
+        future = datetime.utcnow() + timedelta(weeks=3)
+        rule = self.DummyRule(valid_until=future)
+        assert rule.is_active(self.booking)
 
-    def test_is_active_if_valid_from_is_none_and_valid_until_is_future(self):
-        # given
-        self.booking.dateCreated = datetime.utcnow()
-        self.DummyRule.valid_from = None
-        self.DummyRule.valid_until = datetime.utcnow() + timedelta(weeks=3)
+    def test_is_not_active_if_rule_is_not_valid_anymore_with_no_start_date(self):
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        rule = self.DummyRule(valid_until=yesterday)
+        assert not rule.is_active(self.booking)
 
-        # then
-        assert self.DummyRule().is_active(self.booking) is True
-
-    def test_is_not_active_if_valid_from_is_none_and_valid_until_is_past(self):
-        # given
-        self.booking.dateCreated = datetime.utcnow()
-        self.DummyRule.valid_from = None
-        self.DummyRule.valid_until = datetime.utcnow() - timedelta(weeks=3)
-
-        # then
-        assert self.DummyRule().is_active(self.booking) is False
-
-    def test_is_active_if_valid_from_is_past_and_valid_until_is_future(self):
-        # given
-        self.booking.dateCreated = datetime.utcnow()
-        self.DummyRule.valid_from = datetime.utcnow() - timedelta(weeks=3)
-        self.DummyRule.valid_until = datetime.utcnow() + timedelta(weeks=3)
-
-        # then
-        assert self.DummyRule().is_active(self.booking) is True
-
-    def test_is_not_active_if_valid_from_is_future_and_valid_until_is_future(self):
-        # given
-        self.booking.dateCreated = datetime.utcnow()
-        self.DummyRule.valid_from = datetime.utcnow() + timedelta(weeks=3)
-        self.DummyRule.valid_until = datetime.utcnow() + timedelta(weeks=6)
-
-        # then
-        assert self.DummyRule().is_active(self.booking) is False
-
-    def test_is_not_active_if_valid_from_is_past_and_valid_until_is_past(self):
-        # given
-        self.booking.dateCreated = datetime.utcnow()
-        self.DummyRule.valid_from = datetime.utcnow() - timedelta(weeks=3)
-        self.DummyRule.valid_until = datetime.utcnow() - timedelta(weeks=6)
-
-        # then
-        assert self.DummyRule().is_active(self.booking) is False
+    def test_is_not_active_if_rule_is_not_valid_anymore_with_start_date(self):
+        a_month_ago = datetime.utcnow() - timedelta(days=30)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        rule = self.DummyRule(valid_from=a_month_ago, valid_until=yesterday)
+        assert not rule.is_active(self.booking)
 
 
 @pytest.mark.usefixtures("db_session")
