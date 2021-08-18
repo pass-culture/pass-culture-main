@@ -113,8 +113,8 @@ class PaymentDetails:
 
 
 def create_payment_for_booking(reimbursement: BookingReimbursement, batch_date: datetime) -> Payment:
-    venue = reimbursement.booking.stock.offer.venue
-    offerer = venue.managingOfferer
+    venue = reimbursement.booking.venue
+    offerer = reimbursement.booking.offerer
 
     payment = Payment()
     payment.bookingId = reimbursement.booking.id

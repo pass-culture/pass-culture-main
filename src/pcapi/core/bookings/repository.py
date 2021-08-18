@@ -11,6 +11,7 @@ from sqlalchemy import func
 from sqlalchemy import or_
 from sqlalchemy import text
 from sqlalchemy.orm import Query
+from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.util._collections import AbstractKeyedTuple
@@ -111,23 +112,34 @@ def find_not_cancelled_bookings_by_stock(stock: Stock) -> list[Booking]:
 
 
 def find_bookings_eligible_for_payment_for_venue(venue_id: int, cutoff_date) -> list[Booking]:
+    bookings = Booking.query
+    # There should not be any booking that is both cancelled and used,
+    # but here we want to be extra cautious.
+    bookings = bookings.filter_by(isCancelled=False, isUsed=True)
+    bookings = bookings.filter_by(venueId=venue_id)
+    # fmt: off
+    bookings = (
+        bookings
+        .filter(Booking.dateUsed < cutoff_date, Booking.amount > 0)
+        .join(Stock)
+        .filter(
+            Stock.beginningDatetime.is_(None)
+            | (cast(Stock.beginningDatetime, Date) < date.today())
+        )
+    )
+    # fmt: on
     return (
-        _find_bookings_eligible_for_payment(cutoff_date)
-        .filter(Venue.id == venue_id)
-        .reset_joinpoint()
-        .outerjoin(Payment)
-        .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.product))
-        .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.venue))
-        .options(
-            joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.venue).joinedload(Venue.bankInformation)
-        )
-        .options(
-            joinedload(Booking.stock)
-            .joinedload(Stock.offer)
-            .joinedload(Offer.venue)
-            .joinedload(Venue.managingOfferer)
-            .joinedload(Offerer.bankInformation)
-        )
+        bookings.outerjoin(Payment)
+        .options(contains_eager(Booking.stock).joinedload(Stock.offer).joinedload(Offer.product))
+        # FIXME (dbaty, 2021-08-18): `create_payment_for_booking` goes
+        # through `Booking.venue.iban` to access the IBAN of the
+        # venue. Could there be a way to avoid the JOIN on venue?
+        # (Unfortunately, The JOIN on offerer is necessary, since
+        # `create_payment_for_booking()` uses `Offerer.name` and
+        # `Offerer.siren`.) Also, the two lines below make 2 distinct
+        # JOIN on `bank_information`.
+        .options(joinedload(Booking.venue).joinedload(Venue.bankInformation))
+        .options(joinedload(Booking.offerer).joinedload(Offerer.bankInformation))
         .options(joinedload(Booking.payments))
         .order_by(Payment.id, Booking.dateUsed.asc())
         .all()
@@ -440,21 +452,3 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
         if booking.offerExtraData and "isbn" in booking.offerExtraData
         else None,
     )
-
-
-def _find_bookings_eligible_for_payment(cutoff_date=datetime) -> Query:
-    # fmt: off
-    return (
-        _query_keep_only_used_and_non_cancelled_bookings()
-        .filter(Booking.dateUsed < cutoff_date, Booking.amount > 0)
-        .join(Stock)
-        .filter(
-            ~(cast(Stock.beginningDatetime, Date) >= date.today())
-            | (Stock.beginningDatetime.is_(None))
-        )
-    )
-    # fmt: on
-
-
-def _query_keep_only_used_and_non_cancelled_bookings() -> Query:
-    return Booking.query.join(Venue).filter(Booking.isCancelled.is_(False)).filter(Booking.isUsed.is_(True))
