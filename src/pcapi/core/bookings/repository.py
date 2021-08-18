@@ -298,12 +298,6 @@ def find_cancellable_bookings_by_offerer(offerer_id: int) -> list[Booking]:
     )
 
 
-def _query_keep_on_non_activation_offers() -> Query:
-    offer_types = ["ThingType.ACTIVATION", "EventType.ACTIVATION"]
-
-    return Booking.query.join(Stock).join(Offer).filter(~Offer.type.in_(offer_types))
-
-
 def _filter_bookings_recap_query(
     bookings_recap_query: Query,
     user_id: int,
@@ -451,8 +445,9 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
 def _find_bookings_eligible_for_payment(cutoff_date=datetime) -> Query:
     # fmt: off
     return (
-        _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers()
+        _query_keep_only_used_and_non_cancelled_bookings()
         .filter(Booking.dateUsed < cutoff_date, Booking.amount > 0)
+        .join(Stock)
         .filter(
             ~(cast(Stock.beginningDatetime, Date) >= date.today())
             | (Stock.beginningDatetime.is_(None))
@@ -461,10 +456,5 @@ def _find_bookings_eligible_for_payment(cutoff_date=datetime) -> Query:
     # fmt: on
 
 
-def _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers() -> Query:
-    return (
-        _query_keep_on_non_activation_offers()
-        .join(Venue)
-        .filter(Booking.isCancelled.is_(False))
-        .filter(Booking.isUsed.is_(True))
-    )
+def _query_keep_only_used_and_non_cancelled_bookings() -> Query:
+    return Booking.query.join(Venue).filter(Booking.isCancelled.is_(False)).filter(Booking.isUsed.is_(True))
