@@ -9,13 +9,6 @@
     &-title {
       @include title3();
     }
-
-    &-initialize-filters-button {
-      @include unstyle-button;
-      @include bold;
-
-      color: $grey-dark;
-    }
   }
 
   .filters {

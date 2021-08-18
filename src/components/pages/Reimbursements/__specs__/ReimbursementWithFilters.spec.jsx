@@ -43,7 +43,6 @@ const initialStore = {
 const renderReimbursements = (store, props) => {
   const history = createMemoryHistory()
 
-  // mock push function
   const mockedHistoryPush = jest.fn()
   history.push = mockedHistoryPush
 
@@ -68,7 +67,7 @@ const renderReimbursements = (store, props) => {
       display: screen.getByRole('button', {
         name: /Afficher/i,
       }),
-      initializeFilters: screen.getByRole('button', {
+      resetFilters: screen.getByRole('button', {
         name: /Réinitialiser les filtres/i,
       }),
     },
@@ -76,9 +75,9 @@ const renderReimbursements = (store, props) => {
 
   const expectFilters = filters => {
     const checkValues = async (venue, perdiodStart, periodEnd) => {
-      await waitFor(() => expect(filters.venue.value).toStrictEqual(venue))
-      await waitFor(() => expect(filters.periodStart.value).toStrictEqual(perdiodStart))
-      await waitFor(() => expect(filters.periodEnd.value).toStrictEqual(periodEnd))
+      await waitFor(() => expect(filters.venue).toHaveValue(venue))
+      await waitFor(() => expect(filters.periodStart).toHaveValue(perdiodStart))
+      await waitFor(() => expect(filters.periodEnd).toHaveValue(periodEnd))
     }
 
     return {
@@ -163,7 +162,7 @@ describe('reimbursementsWithFilters', () => {
 
     await expectFilters.toHaveInitialValues()
 
-    expect(buttons.initializeFilters).toBeInTheDocument()
+    expect(buttons.resetFilters).toBeInTheDocument()
 
     expect(buttons.download).toBeInTheDocument()
     expect(buttons.display).toBeInTheDocument()
@@ -182,6 +181,14 @@ describe('reimbursementsWithFilters', () => {
 
     // then
     await expectFilters.toHaveValues('allVenues', '', '')
+    expect(buttons.download).toBeDisabled()
+    expect(buttons.display).toBeDisabled()
+
+    // when
+    setPeriodFilters('12/11/2020', '')
+
+    // then
+    await expectFilters.toHaveValues('allVenues', '12/11/2020', '')
     expect(buttons.download).toBeDisabled()
     expect(buttons.display).toBeDisabled()
 
@@ -214,7 +221,7 @@ describe('reimbursementsWithFilters', () => {
     await expectFilters.toHaveValues(options[1].value, '12/11/1998', '12/12/1999')
 
     // when
-    userEvent.click(buttons.initializeFilters)
+    userEvent.click(buttons.resetFilters)
     // then
     await expectFilters.toHaveInitialValues()
   })
@@ -226,7 +233,7 @@ describe('reimbursementsWithFilters', () => {
     const options = await within(filters.venue).findAllByRole('option')
 
     // then
-    const expectedFirstVirtualOption = `${BASE_VENUES[1].offererName} - ${BASE_VENUES[1].name}`
+    const expectedFirstVirtualOption = `${BASE_VENUES[1].offererName} - Offre numérique`
     const expectedSecondOption = BASE_VENUES[0].publicName
     expect(options[0].textContent).toStrictEqual('Tous les lieux')
     expect(options[1].textContent).toStrictEqual(expectedFirstVirtualOption)

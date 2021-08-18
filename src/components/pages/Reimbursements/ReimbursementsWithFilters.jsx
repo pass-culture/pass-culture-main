@@ -57,7 +57,7 @@ const buildAndSortVenueFilterOptions = venues =>
     .map(venue => ({
       id: venue.id,
       displayName: venue.isVirtual
-        ? `${venue.offererName} - ${venue.publicName || venue.name}`
+        ? `${venue.offererName} - Offre numérique`
         : venue.publicName || venue.name,
     }))
     .sort(sortByKeyAlphabeticalOrder('displayName'))
@@ -153,7 +153,7 @@ const Reimbursements = () => {
               {'Affichage des remboursements'}
             </h2>
             <button
-              className="header-initialize-filters-button"
+              className="tertiary-button"
               onClick={resetFilters}
               type="button"
             >

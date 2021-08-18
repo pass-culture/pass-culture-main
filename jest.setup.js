@@ -6,5 +6,6 @@ import 'babel-polyfill'
 configure({ adapter: new Adapter() })
 
 global.fetch = fetch
+jest.spyOn(global, 'scrollTo').mockImplementation()
 
 jest.mock('tracking/mediaCampaignsTracking')
