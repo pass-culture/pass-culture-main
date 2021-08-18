@@ -8,12 +8,12 @@ from pydantic.fields import Field
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
+from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferCategoryResponse
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
 from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.serialization.utils import to_camel
-from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.urls import get_webapp_url
 
@@ -28,7 +28,7 @@ class GetEducationalBookingsRequest(BaseModel):
         title = "Prebookings query filters"
 
 
-class Redactor(BaseModel):
+class Redactor(AdageBaseResponseModel):
     email: str
     redactorFirstName: str
     redactorLastName: str
@@ -38,7 +38,7 @@ class Redactor(BaseModel):
         alias_generator = to_camel
 
 
-class EducationalBookingResponse(BaseModel):
+class EducationalBookingResponse(AdageBaseResponseModel):
     address: str = Field(description="Adresse of event")
     beginningDatetime: datetime = Field(description="Beginnning date of event")
     cancellationDate: Optional[datetime] = Field(description="Date of cancellation if prebooking is cancelled")
@@ -73,10 +73,9 @@ class EducationalBookingResponse(BaseModel):
         title = "Prebooking detailed response"
         alias_generator = to_camel
         allow_population_by_field_name = True
-        json_encoders = {datetime: format_into_utc_date}
 
 
-class EducationalBookingsResponse(BaseModel):
+class EducationalBookingsResponse(AdageBaseResponseModel):
     prebookings: list[EducationalBookingResponse]
 
     class Config:
