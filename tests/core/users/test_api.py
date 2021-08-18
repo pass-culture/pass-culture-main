@@ -283,7 +283,7 @@ class SuspendAccountTest:
         confirmed_booking = bookings_factories.BookingFactory(
             user=user, cancellation_limit_date=yesterday, status=BookingStatus.CONFIRMED
         )
-        used_booking = bookings_factories.BookingFactory(user=user, isUsed=True, status=BookingStatus.USED)
+        used_booking = bookings_factories.UsedBookingFactory(user=user)
         actor = users_factories.AdminFactory()
 
         users_api.suspend_account(user, users_constants.SuspensionReason.FRAUD, actor)
@@ -294,7 +294,7 @@ class SuspendAccountTest:
         assert confirmed_booking.isCancelled
         assert confirmed_booking.status is BookingStatus.CANCELLED
         assert not used_booking.isCancelled
-        assert used_booking.status is not BookingStatus.CANCELLED
+        assert used_booking.status is BookingStatus.USED
 
     def test_suspend_pro(self):
         booking = bookings_factories.BookingFactory()
@@ -675,11 +675,9 @@ class DomainsCreditTest:
         )
 
         # cancelled booking
-        bookings_factories.BookingFactory(
+        bookings_factories.CancelledBookingFactory(
             user=user,
             amount=150,
-            isCancelled=True,
-            status=BookingStatus.CANCELLED,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 

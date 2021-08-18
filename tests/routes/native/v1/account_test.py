@@ -17,6 +17,7 @@ from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import InstitutionalProjectRedactorNotFoundException
 from pcapi.connectors.serialization.api_adage_serializers import InstitutionalProjectRedactorResponse
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
 from pcapi.core.fraud.models import FraudCheckType
@@ -109,7 +110,7 @@ class AccountTest:
             **USER_DATA,
         )
         booking = BookingFactory(user=user, amount=Decimal("123.45"))
-        BookingFactory(user=user, amount=Decimal("123.45"), isCancelled=True)
+        CancelledBookingFactory(user=user, amount=Decimal("123.45"))
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())

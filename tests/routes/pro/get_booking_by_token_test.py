@@ -335,8 +335,7 @@ class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_booking_is_refunded(self, app):
         # Given
-        booking = BookingFactory()
-        PaymentFactory(booking=booking)
+        booking = PaymentFactory().booking
         url = (
             f"/bookings/token/{booking.token}?" f"email={booking.user.email}&offer_id={humanize(booking.stock.offerId)}"
         )

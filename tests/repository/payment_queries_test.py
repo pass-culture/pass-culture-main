@@ -77,8 +77,8 @@ class FindNotProcessableWithBankInformationTest:
         venue = offers_factories.VenueFactory(postalCode="34000", departementCode="34")
         offer = offers_factories.ThingOfferFactory(product=product, venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0, quantity=2)
-        booking = bookings_factories.BookingFactory(stock=stock, quantity=2, isCancelled=True)
-        payment = factories.PaymentFactory(booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555")
+        booking = bookings_factories.UsedBookingFactory(stock=stock, quantity=2)
+        payment = factories.PaymentFactory(booking=booking, amount=10)
         factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.NOT_PROCESSABLE)
 
         # When
@@ -99,10 +99,8 @@ class FindNotProcessableWithBankInformationTest:
         )
         offer = offers_factories.ThingOfferFactory(product=product, venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        booking = bookings_factories.BookingFactory(stock=stock)
-        not_processable_payment = factories.PaymentFactory(
-            booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
-        )
+        booking = bookings_factories.UsedBookingFactory(stock=stock)
+        not_processable_payment = factories.PaymentFactory(booking=booking, amount=10)
         factories.PaymentStatusFactory(payment=not_processable_payment, status=TransactionStatus.NOT_PROCESSABLE)
         offers_factories.BankInformationFactory(offerer=user_offerer.offerer)
 
@@ -124,7 +122,7 @@ class FindNotProcessableWithBankInformationTest:
         )
         offer = offers_factories.ThingOfferFactory(product=product, venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        booking = bookings_factories.BookingFactory(stock=stock)
+        booking = bookings_factories.UsedBookingFactory(stock=stock)
         not_processable_payment = factories.PaymentFactory(
             booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
         )
@@ -148,7 +146,7 @@ class FindNotProcessableWithBankInformationTest:
         )
         offer = offers_factories.ThingOfferFactory(product=product, venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        booking = bookings_factories.BookingFactory(stock=stock)
+        booking = bookings_factories.UsedBookingFactory(stock=stock)
         not_processable_payment = factories.PaymentFactory(
             booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
         )
@@ -175,7 +173,7 @@ class FindNotProcessableWithBankInformationTest:
         )
         offer = offers_factories.ThingOfferFactory(product=product, venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        booking = bookings_factories.BookingFactory(stock=stock)
+        booking = bookings_factories.UsedBookingFactory(stock=stock)
         not_processable_payment = factories.PaymentFactory(
             booking=booking, amount=10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
         )
@@ -191,7 +189,7 @@ class FindNotProcessableWithBankInformationTest:
 
 @pytest.mark.usefixtures("db_session")
 def test_has_payment():
-    booking = bookings_factories.BookingFactory()
+    booking = bookings_factories.UsedBookingFactory()
     assert not payment_queries.has_payment(booking)
 
     factories.PaymentFactory(booking=booking)

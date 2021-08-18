@@ -124,6 +124,7 @@ def test_generate_reimbursement_details_csv():
         booking__token="0E2722",
         booking__amount=10.5,
         booking__quantity=2,
+        booking__dateUsed=datetime(2021, 1, 1, 12, 0),
         iban="iban-1234",
         transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
     )
@@ -142,7 +143,7 @@ def test_generate_reimbursement_details_csv():
     )
     assert (
         rows[1]
-        == '"2019";"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"iban-1234";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"";"21,00";"100%";"21,00";"Remboursement envoyé"'
+        == '"2019";"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"iban-1234";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"2021-01-01 12:00:00";"21,00";"100%";"21,00";"Remboursement envoyé"'
     )
 
 

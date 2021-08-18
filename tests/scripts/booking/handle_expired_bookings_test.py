@@ -5,12 +5,12 @@ from unittest import mock
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_num_queries
-from pcapi.repository import repository
 from pcapi.scripts.booking import handle_expired_bookings
 
 
@@ -73,24 +73,15 @@ class CancelExpiredBookingsTest:
         assert not old_press_subscription_booking.cancellationReason
 
     def should_not_update_cancelled_old_thing_that_can_expire_booking(self, app) -> None:
-        fifty_days_ago = datetime.utcnow() - timedelta(days=50)
-        forty_days_ago = datetime.utcnow() - timedelta(days=40)
         book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        old_book_booking = BookingFactory(
-            stock__offer__product=book,
-            dateCreated=fifty_days_ago,
-            isCancelled=True,
-            status=BookingStatus.CANCELLED,
-            cancellationReason=BookingCancellationReasons.BENEFICIARY,
-        )
-        old_book_booking.cancellationDate = forty_days_ago
-        repository.save()
+        old_book_booking = CancelledBookingFactory(stock__offer__product=book)
+        initial_cancellation_date = old_book_booking.cancellationDate
 
         handle_expired_bookings.cancel_expired_bookings()
 
         assert old_book_booking.isCancelled
         assert old_book_booking.status is BookingStatus.CANCELLED
-        assert old_book_booking.cancellationDate == forty_days_ago
+        assert old_book_booking.cancellationDate == initial_cancellation_date
         assert old_book_booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
 
     def should_only_cancel_old_thing_that_can_expire_bookings_before_start_date(self, app) -> None:
@@ -154,31 +145,24 @@ class NotifyUsersOfExpiredBookingsTest:
         long_ago = now - timedelta(days=31)
         very_long_ago = now - timedelta(days=32)
         dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        expired_today_dvd_booking = BookingFactory(
+        expired_today_dvd_booking = CancelledBookingFactory(
             stock__offer__product=dvd,
             dateCreated=long_ago,
-            isCancelled=True,
-            status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
         cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
-        expired_today_cd_booking = BookingFactory(
+        expired_today_cd_booking = CancelledBookingFactory(
             stock__offer__product=cd,
             dateCreated=long_ago,
-            isCancelled=True,
-            status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
         painting = ProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
-        expired_yesterday_painting_booking = BookingFactory(
+        _expired_yesterday_booking = CancelledBookingFactory(
             stock__offer__product=painting,
             dateCreated=very_long_ago,
-            isCancelled=True,
-            status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
+            cancellationDate=yesterday,
         )
-        expired_yesterday_painting_booking.cancellationDate = yesterday
-        repository.save(expired_yesterday_painting_booking)
 
         handle_expired_bookings.notify_users_of_expired_bookings()
 
@@ -202,31 +186,24 @@ class NotifyOfferersOfExpiredBookingsTest:
         long_ago = now - timedelta(days=31)
         very_long_ago = now - timedelta(days=32)
         dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        expired_today_dvd_booking = BookingFactory(
+        expired_today_dvd_booking = CancelledBookingFactory(
             stock__offer__product=dvd,
             dateCreated=long_ago,
-            isCancelled=True,
-            status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
         cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
-        expired_today_cd_booking = BookingFactory(
+        expired_today_cd_booking = CancelledBookingFactory(
             stock__offer__product=cd,
             dateCreated=long_ago,
-            isCancelled=True,
-            status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
         painting = ProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
-        expired_yesterday_painting_booking = BookingFactory(
+        _expired_yesterday_booking = CancelledBookingFactory(
             stock__offer__product=painting,
             dateCreated=very_long_ago,
-            isCancelled=True,
-            status=BookingStatus.CANCELLED,
             cancellationReason=BookingCancellationReasons.EXPIRED,
+            cancellationDate=yesterday,
         )
-        expired_yesterday_painting_booking.cancellationDate = yesterday
-        repository.save(expired_yesterday_painting_booking)
 
         handle_expired_bookings.notify_offerers_of_expired_bookings()
 

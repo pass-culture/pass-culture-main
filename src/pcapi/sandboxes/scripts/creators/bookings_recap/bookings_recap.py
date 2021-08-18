@@ -5,6 +5,7 @@ import logging
 from pcapi.core.bookings.exceptions import BookingIsAlreadyCancelled
 from pcapi.core.bookings.exceptions import BookingIsAlreadyUsed
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import UsedBookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventProductFactory
@@ -144,38 +145,34 @@ def save_bookings_recap_sandbox():
         isCancelled=False,
     )
 
-    booking3_beneficiary1 = BookingFactory(
+    booking3_beneficiary1 = UsedBookingFactory(
         user=beneficiary1, stock=stock_1_offer1_venue3, dateCreated=datetime(2020, 4, 12, 14, 31, 12, 0)
     )
 
     payment_booking3_beneficiary1 = PaymentFactory(booking=booking3_beneficiary1)
     PaymentStatusFactory(payment=payment_booking3_beneficiary1, status=TransactionStatus.PENDING)
 
-    booking3_beneficiary2 = BookingFactory(
+    booking3_beneficiary2 = UsedBookingFactory(
         user=beneficiary2,
         stock=stock_1_offer1_venue3,
         dateCreated=datetime(2020, 4, 12, 19, 31, 12, 0),
-        isUsed=True,
         dateUsed=datetime(2020, 4, 22, 17, 00, 10, 0),
-        isCancelled=False,
     )
 
     PaymentFactory(booking=booking3_beneficiary2)
     PaymentStatusFactory(payment=payment_booking3_beneficiary1, status=TransactionStatus.SENT)
 
-    booking3_beneficiary3 = BookingFactory(
+    booking3_beneficiary3 = UsedBookingFactory(
         user=beneficiary3, stock=stock_1_offer1_venue3, dateCreated=datetime(2020, 4, 12, 22, 9, 12, 0)
     )
 
     payment_booking3_beneficiary3 = PaymentFactory(booking=booking3_beneficiary3)
     PaymentStatusFactory(payment=payment_booking3_beneficiary3, status=TransactionStatus.ERROR)
 
-    BookingFactory(
+    UsedBookingFactory(
         user=beneficiary3,
         stock=stock_1_offer1_venue2,
         dateCreated=datetime(2020, 3, 21, 22, 9, 12, 0),
-        isUsed=True,
-        isCancelled=False,
     )
 
     booking5_beneficiary3 = BookingFactory(
@@ -185,33 +182,30 @@ def save_bookings_recap_sandbox():
         isCancelled=False,
     )
 
-    booking6_beneficiary3 = BookingFactory(
+    booking6_beneficiary3 = UsedBookingFactory(
         user=beneficiary3,
         stock=stock_1_offer2_venue2,
         dateCreated=datetime(2020, 3, 21, 22, 9, 12, 0),
-        isUsed=True,
         dateUsed=datetime(2020, 4, 22, 21, 9, 12, 0),
     )
 
     payment_booking6_beneficiary3 = PaymentFactory(booking=booking6_beneficiary3)
     PaymentStatusFactory(payment=payment_booking6_beneficiary3, status=TransactionStatus.SENT)
 
-    booking7_beneficiary2 = BookingFactory(
+    booking7_beneficiary2 = UsedBookingFactory(
         user=beneficiary2,
         stock=stock_1_offer2_venue2,
         dateCreated=datetime(2020, 4, 21, 22, 6, 12, 0),
-        isUsed=True,
         dateUsed=datetime(2020, 4, 22, 22, 9, 12, 0),
     )
 
     payment_booking7_beneficiary2 = PaymentFactory(booking=booking7_beneficiary2)
     PaymentStatusFactory(payment=payment_booking7_beneficiary2, status=TransactionStatus.RETRY)
 
-    BookingFactory(
+    UsedBookingFactory(
         user=beneficiary1,
         stock=stock_1_offer2_venue2,
         dateCreated=datetime(2020, 2, 21, 22, 6, 12, 0),
-        isUsed=True,
         dateUsed=datetime(2020, 4, 22, 23, 9, 12, 0),
     )
 

@@ -563,7 +563,7 @@ class OfferViewTest:
             offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True)
             stock = offers_factories.StockFactory(offer=offer, price=10)
             unused_booking = booking_factories.BookingFactory(stock=stock)
-            used_booking = booking_factories.BookingFactory(stock=stock, isUsed=True)
+            used_booking = booking_factories.UsedBookingFactory(stock=stock)
             frozen_time.move_to("2020-12-20 15:00:00")
             data = dict(validation=OfferValidationStatus.REJECTED.value)
             client = TestClient(app.test_client()).with_auth("admin@example.com")

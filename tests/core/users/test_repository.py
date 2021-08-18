@@ -5,7 +5,6 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_features
 from pcapi.core.users import exceptions
@@ -215,16 +214,12 @@ class FindByBeneficiaryTest:
     def test_should_not_return_booking_when_favorite_offer_booking_is_cancelled(self, app):
         # given
         beneficiary = factories.UserFactory()
-        venue = offers_factories.VenueFactory()
-        offer = offers_factories.ThingOfferFactory(venue=venue)
-        stock = offers_factories.StockFactory(offer=offer, price=0)
-        bookings_factories.BookingFactory(
+        stock = offers_factories.StockFactory()
+        bookings_factories.CancelledBookingFactory(
             stock=stock,
             user=beneficiary,
-            isCancelled=True,
-            status=BookingStatus.CANCELLED,
-            cancellationDate=datetime.now(),
         )
+        offer = stock.offer
         mediation = offers_factories.MediationFactory(offer=offer)
         favorite = factories.FavoriteFactory(mediation=mediation, offer=offer, user=beneficiary)
 

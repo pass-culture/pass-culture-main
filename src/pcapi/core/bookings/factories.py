@@ -1,3 +1,5 @@
+import datetime
+
 import factory
 
 from pcapi.core.educational.factories import EducationalBookingFactory as EducationalBookingSubFactory
@@ -50,6 +52,19 @@ class BookingFactory(BaseFactory):
         kwargs["venue"] = kwargs["stock"].offer.venue
         kwargs["offerer"] = kwargs["stock"].offer.venue.managingOfferer
         return super()._create(model_class, *args, **kwargs)
+
+
+class UsedBookingFactory(BookingFactory):
+    status = models.BookingStatus.USED
+    isUsed = True
+    dateUsed = factory.LazyFunction(datetime.datetime.now)
+
+
+class CancelledBookingFactory(BookingFactory):
+    status = models.BookingStatus.CANCELLED
+    isCancelled = True
+    cancellationDate = factory.LazyFunction(datetime.datetime.now)
+    cancellationReason = models.BookingCancellationReasons.BENEFICIARY
 
 
 class EducationalBookingFactory(BookingFactory):

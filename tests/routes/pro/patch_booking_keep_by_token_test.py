@@ -3,6 +3,8 @@ from decimal import Decimal
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import CancelledBookingFactory
+from pcapi.core.bookings.factories import UsedBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
@@ -31,7 +33,7 @@ API_KEY_VALUE = random_token(64)
 class Returns204Test:
     class WithApiKeyAuthTest:
         def test_when_api_key_provided_is_related_to_regular_offer_with_rights(self, app):
-            booking = BookingFactory(isUsed=True, status=BookingStatus.USED, token="ABCDEF")
+            booking = UsedBookingFactory()
             offerer = booking.stock.offer.venue.managingOfferer
             ApiKeyFactory(offerer=offerer)
 
@@ -51,7 +53,7 @@ class Returns204Test:
             assert booking.dateUsed is None
 
         def test_expect_booking_to_be_used_with_non_standard_origin_header(self, app):
-            booking = BookingFactory(isUsed=True, status=BookingStatus.USED, token="ABCDEF")
+            booking = UsedBookingFactory()
             offerer = booking.stock.offer.venue.managingOfferer
             ApiKeyFactory(offerer=offerer)
 
@@ -72,7 +74,7 @@ class Returns204Test:
 
     class WithBasicAuthTest:
         def test_when_user_is_logged_in_and_regular_offer(self, app):
-            booking = BookingFactory(isUsed=True, status=BookingStatus.USED, token="ABCDEF")
+            booking = UsedBookingFactory()
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -87,7 +89,7 @@ class Returns204Test:
             assert booking.dateUsed is None
 
         def test_when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, app):
-            booking = BookingFactory(isUsed=True, status=BookingStatus.USED, token="ABCDEF")
+            booking = UsedBookingFactory()
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -103,12 +105,7 @@ class Returns204Test:
 
         # FIXME: I don't understand what we're trying to test, here.
         def test_when_there_is_no_remaining_quantity_after_validating(self, app):
-            booking = BookingFactory(
-                isUsed=True,
-                status=BookingStatus.USED,
-                token="ABCDEF",
-                stock__quantity=1,
-            )
+            booking = UsedBookingFactory(stock__quantity=1)
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -202,11 +199,7 @@ class Returns403Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_api_key_is_provided_and_booking_has_been_cancelled_already(self, app):
             # Given
-            booking = BookingFactory(
-                isUsed=False,
-                isCancelled=True,
-                status=BookingStatus.CANCELLED,
-            )
+            booking = CancelledBookingFactory()
             offerer = booking.stock.offer.venue.managingOfferer
 
             ApiKeyFactory(offerer=offerer)
@@ -251,7 +244,7 @@ class Returns403Test:
         def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
             # Given
             admin = users_factories.UserFactory(isAdmin=True)
-            booking = BookingFactory(isCancelled=True, isUsed=False, status=BookingStatus.CANCELLED)
+            booking = CancelledBookingFactory()
             url = f"/v2/bookings/keep/token/{booking.token}"
 
             # When

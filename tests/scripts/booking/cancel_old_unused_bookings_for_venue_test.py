@@ -21,11 +21,9 @@ def test_should_cancel_old_unused_bookings_for_venue():
         dateCreated=(datetime.now() - timedelta(days=40)), stock__offer__venue=venue
     )
 
-    used_booking = bookings_factories.BookingFactory(
+    used_booking = bookings_factories.UsedBookingFactory(
         dateCreated=(datetime.now() - timedelta(days=40)),
         stock__offer__venue=venue,
-        isUsed=True,
-        status=BookingStatus.USED,
     )
 
     recent_booking = bookings_factories.BookingFactory(

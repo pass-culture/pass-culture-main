@@ -2,6 +2,7 @@ import pytest
 from sqlalchemy import func
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
@@ -107,7 +108,7 @@ class QueryOfferWithRemainingStocksTest:
         venue = VenueFactory(postalCode="34000", departementCode="34")
         offer = ThingOfferFactory(product=product, venue=venue)
         stock = ThingStockFactory(offer=offer, price=0, quantity=2)
-        BookingFactory(user=beneficiary, stock=stock, quantity=2, isCancelled=True)
+        CancelledBookingFactory(user=beneficiary, stock=stock, quantity=2)
 
         # When
         bookings_quantity = _build_bookings_quantity_subquery()
@@ -129,7 +130,7 @@ class QueryOfferWithRemainingStocksTest:
         venue = VenueFactory(postalCode="34000", departementCode="34")
         offer = ThingOfferFactory(product=product, venue=venue)
         stock = ThingStockFactory(offer=offer, price=0, quantity=2)
-        BookingFactory(user=beneficiary, stock=stock, quantity=2, isCancelled=True)
+        CancelledBookingFactory(user=beneficiary, stock=stock, quantity=2)
         BookingFactory(user=beneficiary, stock=stock, quantity=2)
 
         # When

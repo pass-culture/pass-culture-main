@@ -212,8 +212,8 @@ class Returns403Test:
         def test_should_prevent_a_used_booking_from_being_cancelled(self, app):
             # Given
             user_offerer = offers_factories.UserOffererFactory()
-            booking = bookings_factories.BookingFactory(
-                stock__offer__venue__managingOfferer=user_offerer.offerer, isUsed=True, status=BookingStatus.USED
+            booking = bookings_factories.UsedBookingFactory(
+                stock__offer__venue__managingOfferer=user_offerer.offerer,
             )
 
             ApiKeyFactory(offerer=user_offerer.offerer)

@@ -11,7 +11,7 @@ from pcapi.scripts.booking.canceling_token_validation import canceling_token_val
 def test_should_update_booking_when_valid_token_is_given_and_no_payment_associated(app):
     # Given
     token = "123456"
-    booking = bookings_factories.BookingFactory(isUsed=True, status=BookingStatus.USED, token=token)
+    booking = bookings_factories.UsedBookingFactory(token=token)
 
     # When
     canceling_token_validation(token=token)
@@ -27,9 +27,8 @@ def test_should_update_booking_when_valid_token_is_given_and_no_payment_associat
 def test_should_do_nothing_when_valid_token_is_given_but_the_booking_is_linked_to_a_payment(app):
     # Given
     token = "123456"
-    booking = bookings_factories.BookingFactory(isUsed=True, status=BookingStatus.USED, token=token)
+    booking = payments_factories.PaymentFactory(booking__token=token).booking
     initial_date_used = booking.dateUsed
-    payments_factories.PaymentFactory(booking=booking)
 
     # When
     canceling_token_validation(token=token)

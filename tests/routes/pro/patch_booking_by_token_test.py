@@ -2,7 +2,7 @@ import urllib.parse
 
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
@@ -25,7 +25,7 @@ from tests.conftest import TestClient
 class Returns204Test:
     class WhenUserIsAnonymousTest:
         def expect_booking_to_be_used(self, app):
-            booking = BookingFactory(token="ABCDEF")
+            booking = bookings_factories.BookingFactory(token="ABCDEF")
 
             url = (
                 f"/bookings/token/{booking.token}?"
@@ -40,7 +40,7 @@ class Returns204Test:
 
     class WhenUserIsLoggedInTest:
         def expect_booking_to_be_used(self, app):
-            booking = BookingFactory(token="ABCDEF")
+            booking = bookings_factories.BookingFactory(token="ABCDEF")
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -54,7 +54,7 @@ class Returns204Test:
             assert booking.status is BookingStatus.USED
 
         def expect_booking_with_token_in_lower_case_to_be_used(self, app):
-            booking = BookingFactory(token="ABCDEF")
+            booking = bookings_factories.BookingFactory(token="ABCDEF")
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -68,7 +68,7 @@ class Returns204Test:
             assert booking.status is BookingStatus.USED
 
         def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
-            booking = BookingFactory(token="ABCDEF")
+            booking = bookings_factories.BookingFactory(token="ABCDEF")
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -85,7 +85,7 @@ class Returns204Test:
         # FIXME: what is the purpose of this test? Are we testing that
         # Flask knows how to URL-decode parameters?
         def expect_booking_to_be_used_with_special_char_in_url(self, app):
-            booking = BookingFactory(token="ABCDEF", user__email="user+plus@example.com")
+            booking = bookings_factories.BookingFactory(token="ABCDEF", user__email="user+plus@example.com")
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -191,7 +191,7 @@ class Returns403Test:  # Forbidden
     def when_booking_has_been_cancelled_already(self, app):
         # Given
         admin = users_factories.AdminFactory()
-        booking = BookingFactory(isCancelled=True)
+        booking = bookings_factories.CancelledBookingFactory()
         url = f"/bookings/token/{booking.token}"
 
         # When

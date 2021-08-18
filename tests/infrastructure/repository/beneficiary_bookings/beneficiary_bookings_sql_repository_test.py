@@ -4,7 +4,8 @@ from datetime import timedelta
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.bookings.factories import CancelledBookingFactory
+from pcapi.core.bookings.factories import UsedBookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
@@ -28,14 +29,12 @@ class BeneficiaryBookingsSQLRepositoryTest:
         beneficiary = BeneficiaryFactory()
         offer = ThingOfferFactory(isActive=True, url="http://url.com", product__thumbCount=1)
         stock = ThingStockFactory(offer=offer, price=0, quantity=10)
-        booking = BookingFactory(
+        booking = UsedBookingFactory(
             user=beneficiary,
             stock=stock,
             token="ABCDEF",
             dateCreated=datetime(2020, 4, 22, 0, 0),
             dateUsed=datetime(2020, 5, 5, 0, 0),
-            isUsed=True,
-            status=BookingStatus.USED,
             quantity=2,
         )
 
@@ -116,8 +115,8 @@ class BeneficiaryBookingsSQLRepositoryTest:
         beneficiary = BeneficiaryFactory()
         offer = EventOfferFactory()
         stock = EventStockFactory(offer=offer)
-        booking1 = BookingFactory(user=beneficiary, stock=stock, dateCreated=two_days_ago, isCancelled=True)
-        BookingFactory(user=beneficiary, stock=stock, dateCreated=three_days_ago, isCancelled=True)
+        booking1 = CancelledBookingFactory(user=beneficiary, stock=stock, dateCreated=two_days_ago)
+        CancelledBookingFactory(user=beneficiary, stock=stock, dateCreated=three_days_ago)
 
         # When
         result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=beneficiary.id)

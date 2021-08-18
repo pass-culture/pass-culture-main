@@ -114,10 +114,10 @@ def test_quantity_stocks_can_be_changed_even_when_bookings_with_cancellations_ex
     user1 = users_factories.BeneficiaryFactory()
     user2 = users_factories.BeneficiaryFactory()
 
-    bookings_factories.BookingFactory(user=user1, stock=stock, isCancelled=True, quantity=1)
-    bookings_factories.BookingFactory(user=user1, stock=stock, isCancelled=True, quantity=1)
-    bookings_factories.BookingFactory(user=user1, stock=stock, isCancelled=False, quantity=1)
-    bookings_factories.BookingFactory(user=user2, stock=stock, isCancelled=False, quantity=1)
+    bookings_factories.CancelledBookingFactory(user=user1, stock=stock, quantity=1)
+    bookings_factories.CancelledBookingFactory(user=user1, stock=stock, quantity=1)
+    bookings_factories.BookingFactory(user=user1, stock=stock, quantity=1)
+    bookings_factories.BookingFactory(user=user2, stock=stock, quantity=1)
 
     stock.quantity = 3
 

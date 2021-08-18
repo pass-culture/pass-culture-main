@@ -7,7 +7,6 @@ import pytest
 from pcapi.core.bookings import factories
 from pcapi.core.bookings import models
 from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import MediationFactory
 import pcapi.core.users.factories as users_factories
@@ -34,7 +33,8 @@ def test_save_cancellation_date_postgresql_function():
     db.session.commit()
     assert booking.cancellationDate is not None
 
-    # Don't change cancellationDate when another attribute is updated.
+    # `cancellationDate` should not be changed when another attribute
+    # is updated.
     previous = booking.cancellationDate
     booking.cancellationReason = "FRAUD"
     db.session.commit()
@@ -115,9 +115,7 @@ class BookingQrCodeTest:
         assert booking.qrCode is None
 
     def test_event_return_none_if_booking_is_cancelled(self):
-        booking = factories.BookingFactory(
-            isCancelled=True,
-            status=BookingStatus.CANCELLED,
+        booking = factories.CancelledBookingFactory(
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )
         assert booking.qrCode is None
@@ -129,18 +127,14 @@ class BookingQrCodeTest:
         assert isinstance(booking.qrCode, str)
 
     def test_thing_return_none_if_booking_is_used(self):
-        booking = factories.BookingFactory(
-            isUsed=True,
-            status=BookingStatus.USED,
+        booking = factories.UsedBookingFactory(
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
         assert booking.qrCode is None
 
     def test_thing_return_none_if_booking_is_cancelled(self):
-        booking = factories.BookingFactory(
-            isCancelled=True,
+        booking = factories.CancelledBookingFactory(
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
-            status=BookingStatus.CANCELLED,
         )
         assert booking.qrCode is None
 

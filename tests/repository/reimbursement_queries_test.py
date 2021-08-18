@@ -6,7 +6,6 @@ from decimal import Decimal
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import VenueFactory
@@ -27,11 +26,8 @@ class FindAllOffererPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_payment_info_with_error_status(self, app):
         # Given
-        stock = offers_factories.ThingStockFactory(price=10)
-        now = datetime.utcnow()
-        booking = bookings_factories.BookingFactory(
-            stock=stock, isUsed=True, status=BookingStatus.USED, dateUsed=now, token="ABCDEF"
-        )
+        booking = bookings_factories.UsedBookingFactory()
+        offerer = booking.stock.offer.venue.managingOfferer
         payment = payments_factories.PaymentFactory(
             booking=booking, transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019"
         )
@@ -40,7 +36,7 @@ class FindAllOffererPaymentsTest:
         )
 
         # When
-        payments = find_all_offerer_payments(stock.offer.venue.managingOfferer.id, reimbursement_period)
+        payments = find_all_offerer_payments(offerer.id, reimbursement_period)
 
         # Then
         assert len(payments) == 0
@@ -58,9 +54,7 @@ class FindAllOffererPaymentsTest:
             price=10,
         )
         now = datetime.utcnow()
-        booking = bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock, isUsed=True, dateUsed=now, token="ABCDEF"
-        )
+        booking = bookings_factories.UsedBookingFactory(user=beneficiary, stock=stock, dateUsed=now, token="ABCDEF")
 
         payment = payments_factories.PaymentFactory(
             amount=50,
@@ -113,12 +107,8 @@ class FindAllOffererPaymentsTest:
             price=10,
         )
         now = datetime.utcnow()
-        booking1 = bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock, isUsed=True, dateUsed=now, token="ABCDEF"
-        )
-        booking2 = bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock, isUsed=True, dateUsed=now, token="ABCDFE"
-        )
+        booking1 = bookings_factories.UsedBookingFactory(user=beneficiary, stock=stock, dateUsed=now, token="ABCDEF")
+        booking2 = bookings_factories.UsedBookingFactory(user=beneficiary, stock=stock, dateUsed=now, token="ABCDFE")
 
         payment = payments_factories.PaymentFactory(
             amount=50,
@@ -251,9 +241,7 @@ class LegacyFindAllOffererPaymentsTest:
         # Given
         stock = offers_factories.ThingStockFactory(price=10)
         now = datetime.utcnow()
-        booking = bookings_factories.BookingFactory(
-            stock=stock, isUsed=True, status=BookingStatus.USED, dateUsed=now, token="ABCDEF"
-        )
+        booking = bookings_factories.UsedBookingFactory(stock=stock, dateUsed=now, token="ABCDEF")
         payment = payments_factories.PaymentFactory(
             booking=booking, transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019"
         )
@@ -299,9 +287,7 @@ class LegacyFindAllOffererPaymentsTest:
             price=10,
         )
         now = datetime.utcnow()
-        booking = bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock, isUsed=True, dateUsed=now, token="ABCDEF"
-        )
+        booking = bookings_factories.UsedBookingFactory(user=beneficiary, stock=stock, dateUsed=now, token="ABCDEF")
 
         payment = payments_factories.PaymentFactory(
             amount=50,
@@ -354,12 +340,8 @@ class LegacyFindAllOffererPaymentsTest:
             price=10,
         )
         now = datetime.utcnow()
-        booking1 = bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock, isUsed=True, dateUsed=now, token="ABCDEF"
-        )
-        booking2 = bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock, isUsed=True, dateUsed=now, token="ABCDFE"
-        )
+        booking1 = bookings_factories.UsedBookingFactory(user=beneficiary, stock=stock, dateUsed=now, token="ABCDEF")
+        booking2 = bookings_factories.UsedBookingFactory(user=beneficiary, stock=stock, dateUsed=now, token="ABCDFE")
 
         payment = payments_factories.PaymentFactory(
             amount=50,

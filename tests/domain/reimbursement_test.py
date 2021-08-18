@@ -28,7 +28,7 @@ def create_non_digital_thing_booking(quantity=1, price=10, user=None, date_creat
         price=price,
         offer=offers_factories.ThingOfferFactory(**offer_kwargs),
     )
-    return bookings_factories.BookingFactory(stock=stock, quantity=quantity, **booking_kwargs)
+    return bookings_factories.UsedBookingFactory(stock=stock, quantity=quantity, **booking_kwargs)
 
 
 def create_digital_booking(quantity=1, price=10, user=None, product_subcategory_id=None):
@@ -41,7 +41,7 @@ def create_digital_booking(quantity=1, price=10, user=None, product_subcategory_
         price=price,
         offer=offers_factories.ThingOfferFactory(product=product),
     )
-    return bookings_factories.BookingFactory(user=user, stock=stock, quantity=quantity)
+    return bookings_factories.UsedBookingFactory(user=user, stock=stock, quantity=quantity)
 
 
 def create_event_booking(quantity=1, price=10, user=None, date_created=None):
@@ -55,7 +55,7 @@ def create_event_booking(quantity=1, price=10, user=None, date_created=None):
         price=price,
         offer=offers_factories.EventOfferFactory(),
     )
-    return bookings_factories.BookingFactory(stock=stock, quantity=quantity, **booking_kwargs)
+    return bookings_factories.UsedBookingFactory(stock=stock, quantity=quantity, **booking_kwargs)
 
 
 def create_rich_user(total_deposit):
@@ -716,9 +716,9 @@ class FindAllBookingsReimbursementsTest:
     @pytest.mark.usefixtures("db_session")
     def test_select_custom_reimbursement_rule_if_applicable(self):
         offer1 = offers_factories.DigitalOfferFactory()
-        booking1 = bookings_factories.BookingFactory(stock__offer=offer1)
+        booking1 = bookings_factories.UsedBookingFactory(stock__offer=offer1)
         offer2 = offers_factories.DigitalOfferFactory()
-        booking2 = bookings_factories.BookingFactory(stock__offer=offer2)
+        booking2 = bookings_factories.UsedBookingFactory(stock__offer=offer2)
         rule1 = payments_factories.CustomReimbursementRuleFactory(offer=offer1, amount=5)
         payments_factories.CustomReimbursementRuleFactory(
             offer=offer2, timespan=[booking2.dateCreated + timedelta(days=2), None]

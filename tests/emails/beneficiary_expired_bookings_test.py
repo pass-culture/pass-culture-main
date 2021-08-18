@@ -3,9 +3,8 @@ from datetime import timedelta
 
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.bookings.models import BookingCancellationReasons
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import ProductFactory
 import pcapi.core.users.factories as users_factories
@@ -18,25 +17,21 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled():
     amnesiac_user = users_factories.UserFactory(email="dory@example.com", firstName="Dory")
     long_ago = now - timedelta(days=31)
     dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-    expired_today_dvd_booking = BookingFactory(
+    expired_today_dvd_booking = CancelledBookingFactory(
         stock__offer__product=dvd,
         stock__offer__name="Memento",
         stock__offer__venue__name="Mnémosyne",
         dateCreated=long_ago,
-        isCancelled=True,
-        status=BookingStatus.CANCELLED,
         cancellationReason=BookingCancellationReasons.EXPIRED,
         user=amnesiac_user,
     )
 
     cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
-    expired_today_cd_booking = BookingFactory(
+    expired_today_cd_booking = CancelledBookingFactory(
         stock__offer__product=cd,
         stock__offer__name="Random Access Memories",
         stock__offer__venue__name="Virgin Megastore",
         dateCreated=long_ago,
-        isCancelled=True,
-        status=BookingStatus.CANCELLED,
         cancellationReason=BookingCancellationReasons.EXPIRED,
         user=amnesiac_user,
     )

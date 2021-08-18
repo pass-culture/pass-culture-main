@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.factories import BeneficiaryFactory
@@ -22,7 +23,7 @@ class GetUserAttributesTest:
         offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
         b1 = BookingFactory(user=user, amount=10, stock__offer=offer)
         b2 = BookingFactory(user=user, amount=10, dateUsed=datetime(2021, 5, 6), stock__offer=offer)
-        b3 = BookingFactory(user=user, amount=100, isCancelled=True)
+        b3 = CancelledBookingFactory(user=user, amount=100)
 
         n_query_get_user = 1
         n_query_get_bookings = 1

@@ -9,9 +9,9 @@ from pcapi.scripts.stock.soft_delete_stock import soft_delete_stock
 
 class SoftDeleteStockTest:
     @pytest.mark.usefixtures("db_session")
-    def should_return_ko_if_at_least_one_booking_is_used(self, app):
+    def should_return_ko_if_at_least_one_booking_is_used(self):
         # Given
-        booking = bookings_factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
+        booking = bookings_factories.UsedBookingFactory()
 
         # When
         soft_delete_stock(booking.stock.id)
@@ -20,19 +20,18 @@ class SoftDeleteStockTest:
         assert not booking.stock.isSoftDeleted
 
     @pytest.mark.usefixtures("db_session")
-    def should_return_ko_if_at_least_one_booking_has_payments(self, app):
+    def should_return_ko_if_at_least_one_booking_has_payments(self):
         # Given
-        booking = bookings_factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
-        payment = payment_factories.PaymentFactory(booking=booking)
+        booking = payment_factories.PaymentFactory().booking
 
         # When
-        soft_delete_stock(payment.booking.stock.id)
+        soft_delete_stock(booking.stock.id)
 
         # Then
         assert not booking.stock.isSoftDeleted
 
     @pytest.mark.usefixtures("db_session")
-    def should_return_ok_if_stock_has_no_bookings_and_soft_delete_it(self, app):
+    def should_return_ok_if_stock_has_no_bookings_and_soft_delete_it(self):
         # Given
         stock = offer_factories.StockFactory()
 
@@ -43,7 +42,7 @@ class SoftDeleteStockTest:
         assert stock.isSoftDeleted
 
     @pytest.mark.usefixtures("db_session")
-    def should_cancel_every_bookings_for_target_stock(self, app):
+    def should_cancel_every_bookings_for_target_stock(self):
         # Given
         booking = bookings_factories.BookingFactory()
 

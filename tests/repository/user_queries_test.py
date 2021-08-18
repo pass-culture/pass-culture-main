@@ -5,7 +5,6 @@ from datetime import timedelta
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_beneficiary_import
@@ -56,8 +55,8 @@ class GetAllUsersWalletBalancesTest:
         user = users_factories.BeneficiaryFactory(deposit__version=1)
 
         bookings_factories.BookingFactory(user=user, stock=stock1)
-        bookings_factories.BookingFactory(user=user, stock=stock2, isCancelled=True)
-        bookings_factories.BookingFactory(user=user, stock=stock3, isUsed=True, status=BookingStatus.USED, quantity=2)
+        bookings_factories.CancelledBookingFactory(user=user, stock=stock2)
+        bookings_factories.UsedBookingFactory(user=user, stock=stock3, quantity=2)
 
         # when
         balances = get_all_users_wallet_balances()

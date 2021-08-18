@@ -4,7 +4,6 @@ from datetime import timezone
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import ActivationCodeFactory
@@ -256,12 +255,10 @@ def test_no_need_when_booking_is_autovalidated():
     )
     digital_stock = offers_factories.StockWithActivationCodesFactory()
     first_activation_code = digital_stock.activationCodes[0]
-    booking = bookings_factories.BookingFactory(
+    booking = bookings_factories.UsedBookingFactory(
         user__email="john@example.com",
         user__firstName="John",
         user__lastName="Doe",
-        isUsed=True,
-        status=BookingStatus.USED,
         stock__offer=offer,
         activationCode=first_activation_code,
         dateCreated=datetime(2018, 1, 1),
@@ -295,12 +292,10 @@ def test_a_digital_booking_with_activation_code_is_automatically_used():
     )
     digital_stock = offers_factories.StockWithActivationCodesFactory()
     first_activation_code = digital_stock.activationCodes[0]
-    booking = bookings_factories.BookingFactory(
+    booking = bookings_factories.UsedBookingFactory(
         user__email="john@example.com",
         user__firstName="John",
         user__lastName="Doe",
-        isUsed=True,
-        status=BookingStatus.USED,
         stock__offer=offer,
         activationCode=first_activation_code,
         dateCreated=datetime(2018, 1, 1),

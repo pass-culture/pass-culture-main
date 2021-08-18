@@ -48,7 +48,7 @@ class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def when_the_booking_cannot_be_cancelled(self, app):
         # Given
-        booking = bookings_factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
+        booking = bookings_factories.UsedBookingFactory()
 
         # When
         client = TestClient(app.test_client()).with_auth(booking.user.email)
@@ -66,7 +66,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_cancelling_a_booking_of_someone_else(self, app):
         # Given
-        booking = bookings_factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
+        booking = bookings_factories.UsedBookingFactory()
         user2 = users_factories.BeneficiaryFactory()
 
         # When

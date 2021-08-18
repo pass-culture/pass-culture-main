@@ -6,9 +6,10 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import CancelledBookingFactory
+from pcapi.core.bookings.factories import UsedBookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
@@ -92,10 +93,8 @@ class GetBookingsTest:
         OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"
         user = users_factories.BeneficiaryFactory(email=self.identifier)
 
-        permanent_booking = BookingFactory(
+        permanent_booking = UsedBookingFactory(
             user=user,
-            isUsed=True,
-            status=BookingStatus.USED,
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
             dateUsed=datetime(2021, 2, 3),
         )
@@ -105,45 +104,34 @@ class GetBookingsTest:
         digital_stock = StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]
         second_activation_code = digital_stock.activationCodes[1]
-        digital_booking = BookingFactory(
+        digital_booking = UsedBookingFactory(
             user=user,
-            isUsed=True,
-            status=BookingStatus.USED,
-            dateUsed=datetime.now(),
             stock=digital_stock,
             activationCode=first_activation_code,
         )
-        ended_digital_booking = BookingFactory(
+        ended_digital_booking = UsedBookingFactory(
             user=user,
             displayAsEnded=True,
-            isUsed=True,
-            status=BookingStatus.USED,
-            dateUsed=datetime.now(),
             stock=digital_stock,
             activationCode=second_activation_code,
         )
         expire_tomorrow = BookingFactory(user=user, dateCreated=datetime.now() - timedelta(days=29))
-        used_but_in_future = BookingFactory(
+        used_but_in_future = UsedBookingFactory(
             user=user,
-            isUsed=True,
-            status=BookingStatus.USED,
             dateUsed=datetime(2021, 3, 11),
             stock=StockFactory(beginningDatetime=datetime(2021, 3, 15)),
         )
 
-        cancelled_permanent_booking = BookingFactory(
+        cancelled_permanent_booking = CancelledBookingFactory(
             user=user,
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
-            isCancelled=True,
             cancellation_date=datetime(2021, 3, 10),
         )
-        cancelled = BookingFactory(user=user, isCancelled=True, cancellation_date=datetime(2021, 3, 8))
-        used1 = BookingFactory(user=user, isUsed=True, status=BookingStatus.USED, dateUsed=datetime(2021, 3, 1))
-        used2 = BookingFactory(
+        cancelled = CancelledBookingFactory(user=user, cancellation_date=datetime(2021, 3, 8))
+        used1 = UsedBookingFactory(user=user, dateUsed=datetime(2021, 3, 1))
+        used2 = UsedBookingFactory(
             user=user,
             displayAsEnded=True,
-            isUsed=True,
-            status=BookingStatus.USED,
             dateUsed=datetime(2021, 3, 2),
             stock__offer__url=OFFER_URL,
             cancellation_limit_date=datetime(2021, 3, 2),
@@ -302,11 +290,9 @@ class ToggleBookingVisibilityTest:
 
         stock = StockWithActivationCodesFactory()
         activation_code = stock.activationCodes[0]
-        booking = BookingFactory(
+        booking = UsedBookingFactory(
             user=user,
             displayAsEnded=None,
-            isUsed=True,
-            status=BookingStatus.USED,
             dateUsed=datetime.now(),
             stock=stock,
             activationCode=activation_code,

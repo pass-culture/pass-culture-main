@@ -5,7 +5,7 @@ import urllib.parse
 
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
+import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
@@ -32,7 +32,7 @@ tomorrow_minus_one_hour = tomorrow - timedelta(hours=1)
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:  # No Content
     def when_user_has_rights(self, app):
-        booking = BookingFactory(token="ABCDEF")
+        booking = bookings_factories.BookingFactory(token="ABCDEF")
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerer = booking.stock.offer.venue.managingOfferer
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -46,7 +46,7 @@ class Returns204Test:  # No Content
         assert booking.dateUsed is not None
 
     def when_header_is_not_standard_but_request_is_valid(self, app):
-        booking = BookingFactory(token="ABCDEF")
+        booking = bookings_factories.BookingFactory(token="ABCDEF")
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerer = booking.stock.offer.venue.managingOfferer
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -62,7 +62,7 @@ class Returns204Test:  # No Content
     # FIXME: what is the purpose of this test? Are we testing that
     # Flask knows how to URL-decode parameters?
     def when_booking_user_email_has_special_character_url_encoded(self, app):
-        booking = BookingFactory(
+        booking = bookings_factories.BookingFactory(
             token="ABCDEF",
             user__email="user+plus@example.com",
         )
@@ -112,7 +112,7 @@ class Returns403Test:
     def when_booking_not_confirmed(self, mocked_check_is_usable, app):
         # Given
         next_week = datetime.utcnow() + timedelta(weeks=1)
-        booking = BookingFactory(stock__beginningDatetime=next_week)
+        booking = bookings_factories.BookingFactory(stock__beginningDatetime=next_week)
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerer = booking.stock.offer.venue.managingOfferer
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -130,7 +130,7 @@ class Returns403Test:
     def when_booking_is_cancelled(self, app):
         # Given
         admin = users_factories.AdminFactory()
-        booking = BookingFactory(isCancelled=True, status=bookings_models.BookingStatus.CANCELLED)
+        booking = bookings_factories.CancelledBookingFactory()
         url = f"/bookings/token/{booking.token}"
 
         # When

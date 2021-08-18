@@ -91,8 +91,8 @@ class BookOfferConcurrencyTest:
         stock = offers_factories.StockFactory(dnBookedQuantity=1)
         factories.BookingFactory(stock=stock)
         factories.BookingFactory(stock=stock)
-        factories.BookingFactory(stock=stock, isUsed=True, status=BookingStatus.USED)
-        factories.BookingFactory(stock=stock, isCancelled=True, status=BookingStatus.CANCELLED)
+        factories.UsedBookingFactory(stock=stock)
+        factories.CancelledBookingFactory(stock=stock)
 
         # open a second connection on purpose and lock the stock
         engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
@@ -300,7 +300,7 @@ class BookOfferTest:
         def test_ignore_activation_that_is_already_used_for_booking(self):
             # Given
             beneficiary = users_factories.BeneficiaryFactory()
-            booking = factories.BookingFactory(isUsed=True, status=BookingStatus.USED, token="ABCDEF")
+            booking = factories.UsedBookingFactory(token="ABCDEF")
             stock = offers_factories.StockWithActivationCodesFactory(
                 activationCodes=["code-vgya451afvyux", "code-bha45k15fuz"]
             )
@@ -316,7 +316,7 @@ class BookOfferTest:
         def test_raise_when_no_activation_code_available(self):
             # Given
             beneficiary = users_factories.BeneficiaryFactory()
-            booking = factories.BookingFactory(isUsed=True, status=BookingStatus.USED, token="ABCDEF")
+            booking = factories.UsedBookingFactory(token="ABCDEF")
             stock = offers_factories.StockWithActivationCodesFactory(activationCodes=["code-vgya451afvyux"])
             stock.activationCodes[0].booking = booking
 
@@ -404,7 +404,7 @@ class CancelByBeneficiaryTest:
         assert booking.stock.dnBookedQuantity == (initial_quantity - 1)
 
     def test_raise_if_booking_is_already_used(self):
-        booking = factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
+        booking = factories.UsedBookingFactory()
 
         with pytest.raises(exceptions.BookingIsAlreadyUsed):
             api.cancel_booking_by_beneficiary(booking.user, booking)
@@ -497,24 +497,22 @@ class CancelByOffererTest:
         }
 
     def test_raise_if_already_cancelled(self):
-        booking = factories.BookingFactory(
-            isCancelled=True, status=BookingStatus.CANCELLED, cancellationReason=BookingCancellationReasons.BENEFICIARY
-        )
+        booking = factories.CancelledBookingFactory(cancellationReason=BookingCancellationReasons.BENEFICIARY)
         with pytest.raises(api_errors.ResourceGoneError):
             api.cancel_booking_by_offerer(booking)
         assert booking.isCancelled
         assert booking.status is BookingStatus.CANCELLED
-        assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
+        assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY  # unchanged
 
         assert push_testing.requests == []
 
     def test_raise_if_already_used(self):
-        booking = factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
+        booking = factories.UsedBookingFactory()
         with pytest.raises(api_errors.ForbiddenError):
             api.cancel_booking_by_offerer(booking)
         assert booking.isUsed
         assert not booking.isCancelled
-        assert booking.status is not BookingStatus.CANCELLED
+        assert booking.status is BookingStatus.USED
         assert not booking.cancellationReason
 
         assert push_testing.requests == []
@@ -523,13 +521,8 @@ class CancelByOffererTest:
         stock = offers_factories.StockFactory(dnBookedQuantity=1)
         booking_1 = factories.BookingFactory(stock=stock)
         booking_2 = factories.BookingFactory(stock=stock)
-        used_booking = factories.BookingFactory(stock=stock, isUsed=True, status=BookingStatus.USED)
-        cancelled_booking = factories.BookingFactory(
-            stock=stock,
-            isCancelled=True,
-            status=BookingStatus.CANCELLED,
-            cancellationReason=BookingCancellationReasons.BENEFICIARY,
-        )
+        used_booking = factories.UsedBookingFactory(stock=stock)
+        cancelled_booking = factories.CancelledBookingFactory(stock=stock)
 
         api.cancel_bookings_when_offerer_deletes_stock(stock)
 
@@ -578,9 +571,7 @@ class MarkAsUsedTest:
         assert len(push_testing.requests) == 1
 
     def test_mark_as_used_with_uncancel(self):
-        booking = factories.BookingFactory(
-            isCancelled=True, status=BookingStatus.CANCELLED, cancellationReason="BENEFICIARY"
-        )
+        booking = factories.CancelledBookingFactory()
         api.mark_as_used(booking, uncancel=True)
         assert booking.isUsed
         assert not booking.isCancelled
@@ -594,19 +585,19 @@ class MarkAsUsedTest:
         assert booking.status is BookingStatus.USED
 
     def test_raise_if_already_used(self):
-        booking = factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
+        booking = factories.UsedBookingFactory()
         with pytest.raises(api_errors.ResourceGoneError):
             api.mark_as_used(booking)
 
     def test_raise_if_cancelled(self):
-        booking = factories.BookingFactory(isCancelled=True, status=BookingStatus.CANCELLED)
+        booking = factories.CancelledBookingFactory()
         with pytest.raises(api_errors.ForbiddenError):
             api.mark_as_used(booking)
         assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
 
     def test_raise_if_already_reimbursed(self):
-        booking = factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
+        booking = factories.UsedBookingFactory()
         payments_factories.PaymentFactory(booking=booking)
         with pytest.raises(api_errors.ForbiddenError):
             api.mark_as_used(booking)
@@ -622,7 +613,7 @@ class MarkAsUsedTest:
 @pytest.mark.usefixtures("db_session")
 class MarkAsUnusedTest:
     def test_mark_as_unused(self):
-        booking = factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
+        booking = factories.UsedBookingFactory()
         api.mark_as_unused(booking)
         assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
@@ -631,7 +622,7 @@ class MarkAsUnusedTest:
     @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     def test_mark_as_unused_digital_offer(self):
         offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
-        booking = factories.BookingFactory(isUsed=True, status=BookingStatus.USED, stock__offer=offer)
+        booking = factories.UsedBookingFactory(stock__offer=offer)
         api.mark_as_unused(booking)
         assert not booking.isUsed
         assert booking.status is not BookingStatus.USED
@@ -644,7 +635,7 @@ class MarkAsUnusedTest:
         assert booking.status is not BookingStatus.USED
 
     def test_raise_if_has_payment(self):
-        booking = factories.BookingFactory(isUsed=True, status=BookingStatus.USED)
+        booking = factories.UsedBookingFactory()
         payments_factories.PaymentFactory(booking=booking)
         with pytest.raises(api_errors.ResourceGoneError):
             api.mark_as_unused(booking)
@@ -656,9 +647,7 @@ class MarkAsUnusedTest:
         offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
         digital_stock = offers_factories.StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]
-        booking = factories.BookingFactory(
-            isUsed=True, status=BookingStatus.USED, stock__offer=offer, activationCode=first_activation_code
-        )
+        booking = factories.UsedBookingFactory(stock__offer=offer, activationCode=first_activation_code)
         with pytest.raises(api_errors.ForbiddenError):
             api.mark_as_unused(booking)
         assert booking.isUsed
@@ -829,7 +818,7 @@ class AutoMarkAsUsedAfterEventTest:
     @freeze_time("2021-01-01")
     def test_does_not_update_booking_if_already_used(self):
         event_date = datetime.now() - timedelta(days=3)
-        booking = factories.BookingFactory(stock__beginningDatetime=event_date, isUsed=True)
+        booking = factories.UsedBookingFactory(stock__beginningDatetime=event_date)
         initial_date_used = booking.dateUsed
 
         api.auto_mark_as_used_after_event()

@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import UsedBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import BeneficiaryFactory
@@ -53,7 +54,7 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
         fraudulent_emails_providers = ["example.com"]
         admin_user = AdminFactory()
         fraudulent_user = BeneficiaryFactory(email="jesuisunefraude@example.com")
-        uncancellable_booking = BookingFactory(user=fraudulent_user, stock__price=1, isUsed=True)
+        uncancellable_booking = UsedBookingFactory(user=fraudulent_user, stock__price=1)
 
         # When
         suspend_fraudulent_beneficiary_users_by_email_providers(

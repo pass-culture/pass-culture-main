@@ -45,7 +45,7 @@ class PaymentFactory(BaseFactory):
         model = models.Payment
 
     author = "batch"
-    booking = factory.SubFactory(bookings_factories.BookingFactory, isUsed=True)
+    booking = factory.SubFactory(bookings_factories.UsedBookingFactory)
     amount = factory.LazyAttribute(lambda payment: payment.booking.total_amount * Decimal(payment.reimbursementRate))
     recipientSiren = factory.SelfAttribute("booking.stock.offer.venue.managingOfferer.siren")
     reimbursementRule = factory.Iterator(REIMBURSEMENT_RULE_DESCRIPTIONS)

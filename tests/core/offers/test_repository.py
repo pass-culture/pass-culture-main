@@ -5,7 +5,6 @@ from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import ActivationCodeFactory
@@ -660,7 +659,7 @@ class GetCappedOffersForFiltersTest:
                 bookingLimitDatetime=in_five_days,
                 quantity=1,
             )
-            bookings_factories.BookingFactory(user=beneficiary, stock=stock_with_some_bookings, isCancelled=True)
+            bookings_factories.CancelledBookingFactory(user=beneficiary, stock=stock_with_some_bookings)
             offers_factories.EventStockFactory(
                 offer=self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity,
                 beginningDatetime=in_five_days,
@@ -1142,11 +1141,11 @@ class CheckStockConsistenceTest:
         stock4.dnBookedQuantity = 5
 
         # consistent stock with cancelled booking
-        stock5_bookings = bookings_factories.BookingFactory(quantity=2, isCancelled=True)
+        stock5_bookings = bookings_factories.CancelledBookingFactory(quantity=2)
         stock5 = stock5_bookings.stock
         stock5.dnBookedQuantity = 0
         # inconsistent stock with cancelled booking
-        stock6_bookings = bookings_factories.BookingFactory(quantity=2, isCancelled=True)
+        stock6_bookings = bookings_factories.CancelledBookingFactory(quantity=2)
         stock6 = stock6_bookings.stock
         stock6.dnBookedQuantity = 2
 
@@ -1167,13 +1166,13 @@ class TomorrowStockTest:
         stocks_next_week = EventStockFactory.create_batch(3, beginningDatetime=next_week)
 
         for stock in stocks_tomorrow:
-            BookingFactory.create_batch(2, stock=stock, isCancelled=False)
+            bookings_factories.BookingFactory.create_batch(2, stock=stock)
 
         for stock in stocks_tomorrow_cancelled:
-            BookingFactory.create_batch(2, stock=stock, isCancelled=True)
+            bookings_factories.CancelledBookingFactory.create_batch(2, stock=stock)
 
         for stock in stocks_next_week:
-            BookingFactory.create_batch(2, stock=stock, isCancelled=False)
+            bookings_factories.BookingFactory.create_batch(2, stock=stock)
 
         stock_ids = find_tomorrow_event_stock_ids()
         assert set(stock_ids) == set(stock.id for stock in stocks_tomorrow)
@@ -1238,7 +1237,7 @@ class DeletePastDraftOfferTest:
 class AvailableActivationCodeTest:
     def test_activation_code_is_available_for_a_stock(self):
         # GIVEN
-        booking = BookingFactory()
+        booking = bookings_factories.BookingFactory()
         stock = booking.stock
         ActivationCodeFactory(booking=booking, stock=stock)  # booked_code
         not_booked_code = ActivationCodeFactory(stock=stock)
@@ -1251,7 +1250,7 @@ class AvailableActivationCodeTest:
 
     def test_expired_activation_code_is_not_available_for_a_stock(self):
         # GIVEN
-        booking = BookingFactory()
+        booking = bookings_factories.BookingFactory()
         stock = booking.stock
         ActivationCodeFactory(booking=booking, stock=stock)  # booked_code
         ActivationCodeFactory(stock=stock, expirationDate=datetime.now() - timedelta(days=1))  # expired code
@@ -1260,8 +1259,8 @@ class AvailableActivationCodeTest:
         assert not get_available_activation_code(stock)
 
     def test_activation_code_of_a_stock_is_not_available_for_another_stock(self):
-        booking = BookingFactory()
-        booking2 = BookingFactory()
+        booking = bookings_factories.BookingFactory()
+        booking2 = bookings_factories.BookingFactory()
         stock = booking.stock
         stock2 = booking2.stock
         ActivationCodeFactory(stock=stock2)

@@ -11,7 +11,7 @@ from pcapi.scripts.cancel_bookings_during_quarantine import cancel_booking_statu
 @pytest.mark.usefixtures("db_session")
 def test_should_update_booking_if_happening_during_quarantine():
     yesterday = datetime.utcnow() - timedelta(days=1)
-    bookings_factories.BookingFactory(isUsed=True, stock__beginningDatetime=yesterday)
+    bookings_factories.UsedBookingFactory(stock__beginningDatetime=yesterday)
 
     cancel_booking_status_for_events_happening_during_quarantine()
 
@@ -23,7 +23,7 @@ def test_should_update_booking_if_happening_during_quarantine():
 @pytest.mark.usefixtures("db_session")
 def test_should_not_update_booking_if_happened_before_quarantine():
     long_ago = datetime(2018, 1, 1)
-    bookings_factories.BookingFactory(isUsed=True, dateUsed=long_ago, stock__beginningDatetime=long_ago)
+    bookings_factories.UsedBookingFactory(dateUsed=long_ago, stock__beginningDatetime=long_ago)
 
     cancel_booking_status_for_events_happening_during_quarantine()
 

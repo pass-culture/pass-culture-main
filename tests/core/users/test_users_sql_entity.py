@@ -4,7 +4,6 @@ from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.users import factories as users_factories
@@ -97,12 +96,10 @@ class WalletBalanceTest:
     def test_balance(self):
         # given
         user = users_factories.BeneficiaryFactory(deposit__version=1)
-        bookings_factories.BookingFactory(user=user, isUsed=True, status=BookingStatus.USED, quantity=1, amount=10)
-        bookings_factories.BookingFactory(user=user, isUsed=True, status=BookingStatus.USED, quantity=2, amount=20)
-        bookings_factories.BookingFactory(user=user, isUsed=False, quantity=3, amount=30)
-        bookings_factories.BookingFactory(
-            user=user, isCancelled=True, status=BookingStatus.CANCELLED, quantity=4, amount=40
-        )
+        bookings_factories.UsedBookingFactory(user=user, quantity=1, amount=10)
+        bookings_factories.UsedBookingFactory(user=user, quantity=2, amount=20)
+        bookings_factories.BookingFactory(user=user, quantity=3, amount=30)
+        bookings_factories.CancelledBookingFactory(user=user, quantity=4, amount=40)
 
         # then
         assert user.wallet_balance == 500 - (10 + 2 * 20 + 3 * 30)
@@ -122,7 +119,7 @@ class WalletBalanceTest:
     def test_balance_should_not_be_negative(self):
         # given
         user = users_factories.BeneficiaryFactory(deposit__version=1)
-        bookings_factories.BookingFactory(user=user, isUsed=True, quantity=1, amount=10)
+        bookings_factories.UsedBookingFactory(user=user, quantity=1, amount=10)
         deposit = user.deposit
         deposit.expirationDate = datetime(2000, 1, 1)
 

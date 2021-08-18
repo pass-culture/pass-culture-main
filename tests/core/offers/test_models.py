@@ -2,8 +2,7 @@ import datetime
 
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as providers_factories
 from pcapi.core.offers import factories
@@ -303,7 +302,7 @@ class StockBookingsQuantityTest:
     def test_bookings_quantity_with_booking(self):
         offer = factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
         stock = factories.StockFactory(offer=offer, quantity=5)
-        BookingFactory(stock=stock)
+        bookings_factories.BookingFactory(stock=stock)
 
         assert Stock.query.filter(Stock.dnBookedQuantity == 0).count() == 0
         assert Stock.query.filter(Stock.dnBookedQuantity == 1).one() == stock
@@ -311,8 +310,8 @@ class StockBookingsQuantityTest:
     def test_bookings_quantity_with_a_cancelled_booking(self):
         offer = factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
         stock = factories.StockFactory(offer=offer, quantity=5)
-        BookingFactory(stock=stock)
-        BookingFactory(stock=stock, isCancelled=True, status=BookingStatus.CANCELLED)
+        bookings_factories.BookingFactory(stock=stock)
+        bookings_factories.CancelledBookingFactory(stock=stock)
 
         assert Stock.query.filter(Stock.dnBookedQuantity == 1).one() == stock
 
@@ -337,7 +336,7 @@ class OfferIsSoldOutTest:
     def test_offer_with_fully_booked_stock(self):
         offer = factories.OfferFactory()
         stock = factories.StockFactory(offer=offer, quantity=1)
-        BookingFactory(stock=stock)
+        bookings_factories.BookingFactory(stock=stock)
 
         assert offer.isSoldOut
         assert Offer.query.filter(Offer.isSoldOut.is_(True)).one() == offer
@@ -380,7 +379,7 @@ class StockRemainingQuantityTest:
         offer = factories.OfferFactory()
         stock = factories.StockFactory(offer=offer, quantity=None)
 
-        BookingFactory(stock=stock)
+        bookings_factories.BookingFactory(stock=stock)
 
         assert stock.remainingQuantity == "unlimited"
         assert Offer.query.filter(Stock.remainingQuantity.is_(None)).one() == offer
@@ -396,7 +395,7 @@ class StockRemainingQuantityTest:
         offer = factories.OfferFactory()
         stock = factories.StockFactory(offer=offer, quantity=5)
 
-        BookingFactory(stock=stock, quantity=2)
+        bookings_factories.BookingFactory(stock=stock, quantity=2)
 
         assert stock.remainingQuantity == 3
         assert Offer.query.filter(Stock.remainingQuantity == 3).one() == offer
@@ -405,7 +404,7 @@ class StockRemainingQuantityTest:
         offer = factories.OfferFactory()
         stock = factories.StockFactory(offer=offer, quantity=1)
 
-        BookingFactory(stock=stock)
+        bookings_factories.BookingFactory(stock=stock)
 
         assert stock.remainingQuantity == 0
         assert Offer.query.filter(Stock.remainingQuantity == 0).one() == offer
@@ -414,7 +413,7 @@ class StockRemainingQuantityTest:
         offer = factories.OfferFactory()
         stock = factories.StockFactory(offer=offer, quantity=5)
 
-        BookingFactory(stock=stock, isCancelled=True, status=BookingStatus.CANCELLED)
+        bookings_factories.CancelledBookingFactory(stock=stock)
 
         assert stock.remainingQuantity == 5
         assert Offer.query.filter(Stock.remainingQuantity == 5).one() == offer

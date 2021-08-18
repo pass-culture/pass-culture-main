@@ -3,7 +3,6 @@ import datetime
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
@@ -39,21 +38,11 @@ class GenerateNewPaymentsTest:
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
         paying_stock = offers_factories.ThingStockFactory(offer=offer)
         free_stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
-        )
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
-        )
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=free_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
-        )
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=free_stock, isUsed=True, status=BookingStatus.USED, dateUsed=before_cutoff
-        )
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock, isUsed=True, status=BookingStatus.USED, dateUsed=cutoff
-        )
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock, dateUsed=before_cutoff)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock, dateUsed=before_cutoff)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=free_stock, dateUsed=before_cutoff)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=free_stock, dateUsed=before_cutoff)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock, dateUsed=cutoff)
 
         payment_message = payments_factories.PaymentMessageFactory(name="ABCD123")
         payments_factories.PaymentFactory(paymentMessage=payment_message)
@@ -94,10 +83,10 @@ class GenerateNewPaymentsTest:
         paying_stock1 = offers_factories.ThingStockFactory(offer=offer1)
         paying_stock2 = offers_factories.ThingStockFactory(offer=offer2)
         free_stock1 = offers_factories.ThingStockFactory(offer=offer1, price=0)
-        bookings_factories.BookingFactory(user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff)
-        bookings_factories.BookingFactory(user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff)
-        bookings_factories.BookingFactory(user=beneficiary, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff)
-        bookings_factories.BookingFactory(user=beneficiary, stock=free_stock1, isUsed=True, dateUsed=before_cutoff)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock1, dateUsed=before_cutoff)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock1, dateUsed=before_cutoff)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock2, dateUsed=before_cutoff)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=free_stock1, dateUsed=before_cutoff)
 
         # When
         generate_new_payments(cutoff, batch_date=datetime.datetime.now())
@@ -130,15 +119,9 @@ class GenerateNewPaymentsTest:
         beneficiary.deposit.amount = 50000
         repository.save(beneficiary.deposit)
 
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock1, dateUsed=before_cutoff, quantity=1)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock2, dateUsed=before_cutoff, quantity=1)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock3, dateUsed=before_cutoff, quantity=1)
 
         # When
         generate_new_payments(cutoff, batch_date=datetime.datetime.now())
@@ -173,15 +156,9 @@ class GenerateNewPaymentsTest:
         beneficiary.deposit.amount = 50000
         repository.save(beneficiary.deposit)
 
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock1, dateUsed=before_cutoff, quantity=1)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock2, dateUsed=before_cutoff, quantity=1)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock3, dateUsed=before_cutoff, quantity=1)
 
         # When
         generate_new_payments(cutoff, batch_date=datetime.datetime.now())
@@ -214,12 +191,8 @@ class GenerateNewPaymentsTest:
         beneficiary.deposit.amount = 50000
         repository.save(beneficiary.deposit)
 
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock1, dateUsed=before_cutoff, quantity=1)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock2, dateUsed=before_cutoff, quantity=1)
 
         # When
         generate_new_payments(cutoff, batch_date=datetime.datetime.now())
@@ -254,15 +227,9 @@ class GenerateNewPaymentsTest:
         beneficiary.deposit.amount = 50000
         repository.save(beneficiary.deposit)
 
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock1, dateUsed=before_cutoff, quantity=1)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock2, dateUsed=before_cutoff, quantity=1)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock3, dateUsed=before_cutoff, quantity=1)
 
         # When
         generate_new_payments(cutoff, batch_date=datetime.datetime.now())
@@ -298,15 +265,9 @@ class GenerateNewPaymentsTest:
         beneficiary.deposit.amount = 80000
         repository.save(beneficiary.deposit)
 
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock1, dateUsed=before_cutoff, quantity=1)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock2, dateUsed=before_cutoff, quantity=1)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock3, dateUsed=before_cutoff, quantity=1)
 
         # When
         generate_new_payments(cutoff, batch_date=datetime.datetime.now())
@@ -342,15 +303,9 @@ class GenerateNewPaymentsTest:
         beneficiary.deposit.amount = 120000
         repository.save(beneficiary.deposit)
 
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock1, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock2, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
-        bookings_factories.BookingFactory(
-            user=beneficiary, stock=paying_stock3, isUsed=True, dateUsed=before_cutoff, quantity=1
-        )
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock1, dateUsed=before_cutoff, quantity=1)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock2, dateUsed=before_cutoff, quantity=1)
+        bookings_factories.UsedBookingFactory(user=beneficiary, stock=paying_stock3, dateUsed=before_cutoff, quantity=1)
 
         # When
         generate_new_payments(cutoff, batch_date=datetime.datetime.now())
@@ -365,9 +320,7 @@ class GenerateNewPaymentsTest:
     def test_use_custom_reimbursement_rule(self):
         offer = offers_factories.DigitalOfferFactory()
         offers_factories.BankInformationFactory(venue=offer.venue, iban="iban1", bic="bic1")
-        bookings_factories.BookingFactory(
-            amount=10, quantity=2, isUsed=True, dateUsed=datetime.datetime.now(), stock__offer=offer
-        )
+        bookings_factories.UsedBookingFactory(amount=10, quantity=2, stock__offer=offer)
         rule = payments_factories.CustomReimbursementRuleFactory(offer=offer, amount=7)
 
         cutoff = batch_date = datetime.datetime.now()
