@@ -8,14 +8,13 @@ from pydantic.fields import Field
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
+from pcapi.core.offers.utils import offer_webapp_link
 from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferCategoryResponse
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
 from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.serialization.utils import to_camel
-from pcapi.utils.human_ids import humanize
-from pcapi.utils.urls import get_webapp_url
 
 
 class GetEducationalBookingsRequest(BaseModel):
@@ -131,7 +130,7 @@ def serialize_educational_booking(educational_booking: EducationalBooking) -> Ed
         status=get_education_booking_status(educational_booking),
         venueTimezone=venue.timezone,
         totalAmount=booking.total_amount,
-        url=f"{get_webapp_url()}/accueil/details/{humanize(offer.id)}",
+        url=offer_webapp_link(offer),
         withdrawalDetails=offer.withdrawalDetails,
     )
 

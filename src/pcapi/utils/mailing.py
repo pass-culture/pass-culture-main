@@ -10,6 +10,7 @@ from pcapi import settings
 from pcapi.connectors import api_entreprises
 from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offers.utils import offer_webapp_link
 from pcapi.core.users.models import User
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import Booking
@@ -239,10 +240,10 @@ def make_wallet_balances_email(csv: str) -> dict:
 
 def make_offer_creation_notification_email(offer: Offer) -> dict:
     author = offer.author or offer.venue.managingOfferer.UserOfferers[0].user
-    pro_link_to_offer = f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition"
-    webapp_link_to_offer = f"{get_webapp_url()}/offre/details/{humanize(offer.id)}"
     venue = offer.venue
+    pro_link_to_offer = f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition"
     pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
+    webapp_link_to_offer = offer_webapp_link(offer)
     html = render_template(
         "mails/offer_creation_notification_email.html",
         offer=offer,

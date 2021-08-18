@@ -17,8 +17,10 @@ def get_webapp_url() -> Optional[str]:
     return settings.WEBAPP_URL
 
 
-def generate_firebase_dynamic_link(path: str, params: dict) -> str:
-    universal_link_query_string = urlencode(params)
-    universal_link_url = f"{get_webapp_for_native_redirection_url()}/{path}?{universal_link_query_string}"
+def generate_firebase_dynamic_link(path: str, params: Optional[dict]) -> str:
+    universal_link_url = f"{get_webapp_for_native_redirection_url()}/{path}"
+    if params:
+        universal_link_url = universal_link_url + f"?{urlencode(params)}"
+
     firebase_dynamic_query_string = urlencode({"link": universal_link_url})
     return f"{settings.FIREBASE_DYNAMIC_LINKS_URL}/?{firebase_dynamic_query_string}"

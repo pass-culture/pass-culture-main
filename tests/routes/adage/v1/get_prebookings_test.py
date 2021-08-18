@@ -4,10 +4,9 @@ from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.offers.utils import offer_webapp_link
 from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.human_ids import humanize
-from pcapi.utils.urls import get_webapp_url
 
 from tests.conftest import TestClient
 
@@ -82,7 +81,7 @@ class Returns200Test:
                     "status": "CONFIRMED",
                     "venueTimezone": venue.timezone,
                     "totalAmount": booking.amount * booking.quantity,
-                    "url": f"{get_webapp_url()}/accueil/details/{humanize(offer.id)}",
+                    "url": offer_webapp_link(offer),
                     "withdrawalDetails": offer.withdrawalDetails,
                 }
             ],
@@ -172,7 +171,7 @@ class Returns200Test:
                     "status": "USED_BY_INSTITUTE",
                     "venueTimezone": venue.timezone,
                     "totalAmount": booking.total_amount,
-                    "url": f"{get_webapp_url()}/accueil/details/{humanize(offer.id)}",
+                    "url": offer_webapp_link(offer),
                     "withdrawalDetails": offer.withdrawalDetails,
                 }
             ],

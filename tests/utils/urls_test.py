@@ -4,7 +4,14 @@ from pcapi.utils import urls as utils
 
 
 class FirebaseLinksTest:
-    def test_generate_firebase_dynamic_link(self):
+    def test_generate_firebase_dynamic_link_without_params(self):
+        url = utils.generate_firebase_dynamic_link(path="signup-confirmation", params=None)
+        assert url == (
+            "https://passcultureapptestauto.page.link/"
+            "?link=https%3A%2F%2Fapp.passculture-testing.beta.gouv.fr%2Fsignup-confirmation"
+        )
+
+    def test_generate_firebase_dynamic_link_with_params(self):
         url = utils.generate_firebase_dynamic_link(
             path="signup-confirmation",
             params={
