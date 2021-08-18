@@ -18,6 +18,7 @@ from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.models import UserOfferer
 from pcapi.models import Venue
+from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 
 from . import constants
@@ -47,10 +48,10 @@ def get_user_with_credentials(identifier: str, password: str) -> User:
 
 
 def get_user_with_valid_token(
-    token_value: str, token_types: list[models.TokenType], delete_token: bool = False
+    token_value: str, token_types: list[models.TokenType], use_token: bool = True
 ) -> Optional[User]:
     token = models.Token.query.filter(
-        models.Token.value == token_value, models.Token.type.in_(token_types)
+        models.Token.value == token_value, models.Token.type.in_(token_types), models.Token.isUsed == False
     ).one_or_none()
     if not token:
         return None
@@ -58,8 +59,9 @@ def get_user_with_valid_token(
     if token.expirationDate and token.expirationDate < datetime.now():
         return None
 
-    if delete_token:
-        models.Token.query.filter_by(id=token.id).delete()
+    if use_token:
+        token.isUsed = True
+        repository.save(token)
 
     return token.user
 

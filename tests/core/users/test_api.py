@@ -56,7 +56,6 @@ from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.user_session import UserSession
-from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks.account import VerifyIdentityDocumentRequest
 
@@ -106,47 +105,36 @@ class ValidateJwtTokenTest:
         token_type = TokenType.RESET_PASSWORD
         expiration_date = datetime.now() + timedelta(hours=24)
 
-        saved_token = Token(
-            from_dict={
-                "userId": user.id,
-                "value": self.token_value,
-                "type": token_type,
-                "expirationDate": expiration_date,
-            }
+        saved_token = users_factories.TokenFactory(
+            user=user, value=self.token_value, type=token_type, expirationDate=expiration_date
         )
-        repository.save(saved_token)
 
         associated_user = get_user_with_valid_token(self.token_value, [token_type, "other-allowed-type"])
 
         assert associated_user.id == user.id
         assert Token.query.get(saved_token.id)
 
-    def test_get_user_and_delete_token(self):
+    def test_get_user_and_mark_token_as_used(self):
         user = users_factories.UserFactory()
         token_type = TokenType.RESET_PASSWORD
         expiration_date = datetime.now() + timedelta(hours=24)
 
-        saved_token = Token(
-            from_dict={
-                "userId": user.id,
-                "value": self.token_value,
-                "type": token_type,
-                "expirationDate": expiration_date,
-            }
+        saved_token = users_factories.TokenFactory(
+            user=user, value=self.token_value, type=token_type, expirationDate=expiration_date
         )
-        repository.save(saved_token)
 
-        associated_user = get_user_with_valid_token(self.token_value, [token_type], delete_token=True)
+        associated_user = get_user_with_valid_token(self.token_value, [token_type])
 
         assert associated_user.id == user.id
-        assert not Token.query.get(saved_token.id)
+
+        token = Token.query.get(saved_token.id)
+        assert token.isUsed
 
     def test_get_user_with_valid_token_without_expiration_date(self):
         user = users_factories.UserFactory()
         token_type = TokenType.RESET_PASSWORD
 
-        saved_token = Token(from_dict={"userId": user.id, "value": self.token_value, "type": token_type})
-        repository.save(saved_token)
+        users_factories.TokenFactory(user=user, value=self.token_value, type=token_type)
 
         associated_user = get_user_with_valid_token(self.token_value, [token_type])
 
@@ -156,8 +144,7 @@ class ValidateJwtTokenTest:
         user = users_factories.UserFactory()
         token_type = TokenType.RESET_PASSWORD
 
-        saved_token = Token(from_dict={"userId": user.id, "value": self.token_value, "type": token_type})
-        repository.save(saved_token)
+        users_factories.TokenFactory(user=user, value=self.token_value, type=token_type)
 
         associated_user = get_user_with_valid_token("wrong-token-value", [token_type])
 
@@ -167,8 +154,7 @@ class ValidateJwtTokenTest:
         user = users_factories.UserFactory()
         token_type = TokenType.RESET_PASSWORD
 
-        saved_token = Token(from_dict={"userId": user.id, "value": self.token_value, "type": token_type})
-        repository.save(saved_token)
+        users_factories.TokenFactory(user=user, value=self.token_value, type=token_type)
 
         assert Token.query.filter_by(value=self.token_value).first() is not None
 
@@ -180,15 +166,8 @@ class ValidateJwtTokenTest:
         user = users_factories.UserFactory()
         token_type = TokenType.RESET_PASSWORD
 
-        saved_token = Token(
-            from_dict={
-                "userId": user.id,
-                "value": self.token_value,
-                "type": token_type,
-                "expirationDate": datetime.now() - timedelta(hours=24),
-            }
-        )
-        repository.save(saved_token)
+        expiration_date = datetime.now() - timedelta(hours=24)
+        users_factories.TokenFactory(user=user, value=self.token_value, type=token_type, expirationDate=expiration_date)
 
         assert Token.query.filter_by(value=self.token_value).first() is not None
 

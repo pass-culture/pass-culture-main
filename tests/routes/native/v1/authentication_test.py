@@ -202,7 +202,9 @@ def test_reset_password_success(app):
     assert response.status_code == 204
     db.session.refresh(user)
     assert user.password == crypto.hash_password(new_password)
-    assert Token.query.get(token.id) is None
+
+    token = Token.query.get(token.id)
+    assert token.isUsed
 
 
 def test_reset_password_for_unvalidated_email(app):
@@ -288,7 +290,7 @@ def test_validate_email_with_invalid_token(mock_get_user_with_valid_token, app):
 
     response = TestClient(app.test_client()).post("/native/v1/validate_email", json={"email_validation_token": token})
 
-    mock_get_user_with_valid_token.assert_called_once_with(token, [TokenType.EMAIL_VALIDATION])
+    mock_get_user_with_valid_token.assert_called_once_with(token, [TokenType.EMAIL_VALIDATION], use_token=False)
 
     assert response.status_code == 400
 

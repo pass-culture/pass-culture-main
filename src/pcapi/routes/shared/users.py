@@ -31,7 +31,7 @@ def get_profile():
 # @debt api-migration
 @private_api.route("/users/token/<token>", methods=["GET"])
 def check_activation_token_exists(token):
-    user = users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD])
+    user = users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD], use_token=False)
     if user is None:
         return jsonify(), 404
 

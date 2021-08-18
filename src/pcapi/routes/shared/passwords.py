@@ -83,7 +83,7 @@ def post_new_password():
 
     check_password_strength("newPassword", new_password)
 
-    user = users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD], delete_token=True)
+    user = users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD])
 
     if not user:
         errors = ApiErrors()
