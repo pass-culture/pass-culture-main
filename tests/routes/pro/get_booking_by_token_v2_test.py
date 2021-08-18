@@ -59,7 +59,7 @@ class Returns200Test:
         url = f"/v2/bookings/token/{unconfirmed_booking.token}"
 
         # When
-        response = TestClient(app.test_client()).with_session_auth("admin@example.com").get(url)
+        response = TestClient(app.test_client()).with_basic_auth("admin@example.com").get(url)
 
         # Then
         assert response.headers["Content-type"] == "application/json"
@@ -136,7 +136,7 @@ class Returns200Test:
         url = f"/v2/bookings/token/{booking_token}"
 
         # When
-        response = TestClient(app.test_client()).with_session_auth("admin@example.com").get(url)
+        response = TestClient(app.test_client()).with_basic_auth("admin@example.com").get(url)
 
         # Then
         assert response.status_code == 200
@@ -163,7 +163,7 @@ class Returns200Test:
         # When
         response = (
             TestClient(app.test_client())
-            .with_session_auth("admin@example.com")
+            .with_basic_auth("admin@example.com")
             .get(url, headers={"origin": "http://random_header.fr"})
         )
 
@@ -224,7 +224,7 @@ class Returns403Test:
         url = f"/v2/bookings/token/{booking.token}"
 
         # When
-        response = TestClient(app.test_client()).with_session_auth("querying@example.com").get(url)
+        response = TestClient(app.test_client()).with_basic_auth("querying@example.com").get(url)
 
         # Then
         assert response.status_code == 403
@@ -265,7 +265,7 @@ class Returns403Test:
         mocked_check_is_usable.side_effect = api_errors.ForbiddenError(errors={"booking": ["Not confirmed"]})
 
         # When
-        response = TestClient(app.test_client()).with_session_auth("pro@example.com").get(url)
+        response = TestClient(app.test_client()).with_basic_auth("pro@example.com").get(url)
 
         # Then
         assert response.status_code == 403
@@ -349,7 +349,7 @@ class Returns404Test:
         url = "/v2/bookings/token/12345"
 
         # When
-        response = TestClient(app.test_client()).with_session_auth("admin@example.com").get(url)
+        response = TestClient(app.test_client()).with_basic_auth("admin@example.com").get(url)
 
         # Then
         assert response.status_code == 404
