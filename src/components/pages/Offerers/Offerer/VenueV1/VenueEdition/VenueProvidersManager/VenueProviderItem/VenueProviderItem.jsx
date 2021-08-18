@@ -76,7 +76,7 @@ const VenueProviderItem = ({ venueProvider }) => {
                 {'Nombre de places/séance : '}
               </span>
               <span>
-                {`${venueProvider.quantity}`}
+                {`${venueProvider.quantity ? venueProvider.quantity : 'Illimité'}`}
               </span>
             </li>
             <li>
