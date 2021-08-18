@@ -11,7 +11,14 @@ export const dehumanizeId = humanId => {
 const byteArrayToInt = bytes =>
   bytes.reduce((result, byte, index) => result + byte * Math.pow(256, bytes.length - 1 - index), 0)
 
-const intToByteArray = x => [x, x << 8, x << 16, x << 24].map(z => z >>> 24).filter(z => z > 0)
+const intToByteArray = x => {
+  const byteArray = [x, x << 8, x << 16, x << 24].map(z => z >>> 24)
+  //we want to remove all bytes equal to 0 if they are at the beginning of the array
+  while (byteArray[0] === 0) {
+    byteArray.shift()
+  }
+  return byteArray
+}
 
 export const humanizeId = dehumanizedId => {
   try {

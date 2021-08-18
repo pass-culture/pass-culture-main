@@ -12,6 +12,7 @@ describe('dehumanizeId', () => {
     ${'A98K8'}   | ${138407}
     ${'MAYGK'}   | ${6303845}
     ${'AG8YRWQ'} | ${27101402}
+    ${'B4GQA'}   | ${986368}
   `(
     'a given humanizedId: $humanizedId becomes a dehumanizedId: $dehumanizedId',
     ({ dehumanizedId, humanizedId }) => {
