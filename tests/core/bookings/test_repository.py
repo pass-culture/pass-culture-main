@@ -69,7 +69,7 @@ def test_find_not_cancelled_bookings_by_stock(app):
 
 @pytest.mark.usefixtures("db_session")
 class FindPaymentEligibleBookingsForVenueTest:
-    def test_returns_used_past_event_and_thing_bookings_ordered_by_date_created(self, app: fixture):
+    def test_basics(self, app: fixture):
         # Given
         cutoff = datetime.now()
         before_cutoff = cutoff - timedelta(days=1)
@@ -87,7 +87,7 @@ class FindPaymentEligibleBookingsForVenueTest:
             user=beneficiary,
             stock=past_event_stock,
             dateCreated=YESTERDAY,
-            dateUsed=before_cutoff,
+            dateUsed=before_cutoff - timedelta(seconds=2),
         )
 
         future_event_booking = bookings_factories.UsedBookingFactory(
@@ -103,7 +103,7 @@ class FindPaymentEligibleBookingsForVenueTest:
             user=beneficiary,
             stock=stock_thing,
             dateCreated=NOW,
-            dateUsed=before_cutoff,
+            dateUsed=before_cutoff - timedelta(seconds=1),
         )
 
         another_offerer = offers_factories.OffererFactory(siren="987654321")

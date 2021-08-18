@@ -15,12 +15,12 @@ from pcapi.models import Booking
 from pcapi.repository import repository
 
 
-def create_non_digital_thing_booking(quantity=1, price=10, user=None, date_created=None, product_subcategory_id=None):
+def create_non_digital_thing_booking(quantity=1, price=10, user=None, date_used=None, product_subcategory_id=None):
     booking_kwargs = {}
     if user:
         booking_kwargs["user"] = user
-    if date_created:
-        booking_kwargs["dateCreated"] = date_created
+    if date_used:
+        booking_kwargs["dateUsed"] = date_used
     offer_kwargs = {}
     if product_subcategory_id:
         offer_kwargs = {"product__subcategoryId": product_subcategory_id}
@@ -44,12 +44,12 @@ def create_digital_booking(quantity=1, price=10, user=None, product_subcategory_
     return bookings_factories.UsedBookingFactory(user=user, stock=stock, quantity=quantity)
 
 
-def create_event_booking(quantity=1, price=10, user=None, date_created=None):
+def create_event_booking(quantity=1, price=10, user=None, date_used=None):
     booking_kwargs = {}
     if user:
         booking_kwargs["user"] = user
-    if date_created:
-        booking_kwargs["dateCreated"] = date_created
+    if date_used:
+        booking_kwargs["dateUsed"] = date_used
     user = user or users_factories.BeneficiaryFactory()
     stock = offers_factories.StockFactory(
         price=price,
@@ -451,7 +451,7 @@ class ReimbursementRuleIsActiveTest:
         def is_relevant(self, booking, **kwargs):
             return True
 
-    booking = Booking()
+    booking = Booking(isUsed=True, dateCreated=datetime.now(), dateUsed=datetime.now())
 
     def test_is_active_if_valid_from_is_none_and_valid_until_is_none(self):
         # given
@@ -684,9 +684,9 @@ class FindAllBookingsReimbursementsTest:
     def test_returns_full_reimbursement_for_all_bookings_for_new_civil_year(self):
         # given
         user = create_rich_user(30000)
-        booking1 = create_event_booking(user=user, price=10000, date_created=datetime(2018, 1, 1))
-        booking2 = create_non_digital_thing_booking(user=user, price=10000, date_created=datetime(2018, 1, 1))
-        booking3 = create_event_booking(user=user, price=200, quantity=2, date_created=datetime(2019, 1, 1))
+        booking1 = create_event_booking(user=user, price=10000, date_used=datetime(2018, 1, 1))
+        booking2 = create_non_digital_thing_booking(user=user, price=10000, date_used=datetime(2018, 1, 1))
+        booking3 = create_event_booking(user=user, price=200, quantity=2, date_used=datetime(2019, 1, 1))
         bookings = [booking1, booking2, booking3]
 
         # when
@@ -700,9 +700,9 @@ class FindAllBookingsReimbursementsTest:
     def test_returns_85_reimbursement_rate_between_20000_and_40000_euros_for_this_civil_year(self):
         # given
         user = create_rich_user(50000)
-        booking1 = create_event_booking(user=user, price=20000, date_created=datetime(2018, 1, 1))
-        booking2 = create_non_digital_thing_booking(user=user, price=25000, date_created=datetime(2019, 1, 1))
-        booking3 = create_non_digital_thing_booking(user=user, price=2000, date_created=datetime(2019, 1, 1))
+        booking1 = create_event_booking(user=user, price=20000, date_used=datetime(2018, 1, 1))
+        booking2 = create_non_digital_thing_booking(user=user, price=25000, date_used=datetime(2019, 1, 1))
+        booking3 = create_non_digital_thing_booking(user=user, price=2000, date_used=datetime(2019, 1, 1))
         bookings = [booking1, booking2, booking3]
 
         # when

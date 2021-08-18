@@ -129,7 +129,7 @@ def find_bookings_eligible_for_payment_for_venue(venue_id: int, cutoff_date) -> 
             .joinedload(Offerer.bankInformation)
         )
         .options(joinedload(Booking.payments))
-        .order_by(Payment.id, Booking.dateCreated.asc())
+        .order_by(Payment.id, Booking.dateUsed.asc())
         .all()
     )
 

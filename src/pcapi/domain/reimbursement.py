@@ -17,7 +17,7 @@ class ReimbursementRule:
     def is_active(self, booking: Booking) -> bool:
         valid_from = self.valid_from or MIN_DATETIME
         valid_until = self.valid_until or MAX_DATETIME
-        return valid_from < booking.dateCreated <= valid_until
+        return valid_from < booking.dateUsed <= valid_until
 
     def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
         raise NotImplementedError()
@@ -145,7 +145,7 @@ def find_all_booking_reimbursements(
         custom_offer_rules[rule.offerId].append(rule)
 
     for booking in bookings:
-        year = booking.dateCreated.year
+        year = booking.dateUsed.year
 
         if PhysicalOffersReimbursement().is_relevant(booking):
             total_per_year[year] += booking.total_amount
