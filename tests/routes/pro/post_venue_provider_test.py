@@ -99,6 +99,7 @@ class Returns201Test:
 
         # Then
         assert response.status_code == 201
+        assert response.json["price"] == 9.99
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")

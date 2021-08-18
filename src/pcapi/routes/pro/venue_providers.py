@@ -34,6 +34,8 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
 
     new_venue_provider = api.create_venue_provider(body)
     venue_provider_job.delay(new_venue_provider.id)
+    if new_venue_provider.isFromAllocineProvider:
+        new_venue_provider.price = _allocine_venue_provider_price(new_venue_provider)
 
     return VenueProviderResponse.from_orm(new_venue_provider)
 

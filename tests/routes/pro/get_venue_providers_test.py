@@ -37,6 +37,9 @@ class Returns200Test:
             venue__name="Whatever cinema",
             provider=allocine_stocks_provider,
         )
+        offerers_factories.AllocineVenueProviderPriceRuleFactory(
+            price=123.2, allocineVenueProvider=allocine_venue_provider
+        )
 
         # when
         auth_request = TestClient(app.test_client()).with_auth(email=user.email)
@@ -46,6 +49,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["venue_providers"][0].get("id") == humanize(allocine_venue_provider.id)
         assert response.json["venue_providers"][0].get("venueId") == humanize(allocine_venue_provider.venue.id)
+        assert response.json["venue_providers"][0].get("price") == 123.2
 
 
 class Returns400Test:
