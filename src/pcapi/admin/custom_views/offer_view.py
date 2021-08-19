@@ -163,61 +163,65 @@ class OfferView(BaseAdminView):
 
     @expose("/", methods=["POST"])
     def index(self):
-        if request.method == "POST":
-            url = get_redirect_target() or self.get_url(".index_view")
-            ids = request.form.getlist("rowid")
-            joined_ids = ",".join(ids)
-            change_form = OfferChangeForm()
-            change_form.ids.data = joined_ids
+        if request.method != "POST":
+            return self.index_view()
 
-            criteria_in_common = (
-                db.session.query(Criterion)
-                .join(OfferCriterion)
-                .filter(OfferCriterion.offerId.in_(ids))
-                .group_by(Criterion.id)
-                .having(func.count(OfferCriterion.criterion) == len(ids))
-                .all()
-            )
-            change_form.tags.data = criteria_in_common
+        url = get_redirect_target() or self.get_url(".index_view")
+        ids = request.form.getlist("rowid")
+        joined_ids = ",".join(ids)
+        change_form = OfferChangeForm()
+        change_form.ids.data = joined_ids
 
-            self._template_args["url"] = url
-            self._template_args["change_form"] = change_form
-            self._template_args["change_modal"] = True
-            self._template_args["number_of_edited_items"] = len(ids)
+        criteria_in_common = (
+            db.session.query(Criterion)
+            .join(OfferCriterion)
+            .filter(OfferCriterion.offerId.in_(ids))
+            .group_by(Criterion.id)
+            .having(func.count(OfferCriterion.criterion) == len(ids))
+            .all()
+        )
+        change_form.tags.data = criteria_in_common
+
+        self._template_args["url"] = url
+        self._template_args["change_form"] = change_form
+        self._template_args["change_modal"] = True
+        self._template_args["number_of_edited_items"] = len(ids)
         return self.index_view()
 
     @expose("/update/", methods=["POST"])
     def update_view(self):
-        if request.method == "POST":
-            url = get_redirect_target() or self.get_url(".index_view")
-            change_form = OfferChangeForm(request.form)
-            if change_form.validate():
-                offer_ids: List[str] = change_form.ids.data.split(",")
-                criteria: List[OfferCriterion] = change_form.data["tags"]
-                remove_other_tags = change_form.data["remove_other_tags"]
+        url = get_redirect_target() or self.get_url(".index_view")
+        if request.method != "POST":
+            return redirect(url, code=307)
 
-                if remove_other_tags:
-                    OfferCriterion.query.filter(OfferCriterion.offerId.in_(offer_ids)).delete(synchronize_session=False)
+        change_form = OfferChangeForm(request.form)
+        if change_form.validate():
+            offer_ids: List[str] = change_form.ids.data.split(",")
+            criteria: List[OfferCriterion] = change_form.data["tags"]
+            remove_other_tags = change_form.data["remove_other_tags"]
 
-                offer_criteria: list[OfferCriterion] = []
-                for criterion in criteria:
-                    offer_criteria.extend(
-                        OfferCriterion(offerId=offer_id, criterionId=criterion.id)
-                        for offer_id in offer_ids
-                        if OfferCriterion.query.filter(
-                            OfferCriterion.offerId == offer_id, OfferCriterion.criterionId == criterion.id
-                        ).first()
-                        is None
-                    )
+            if remove_other_tags:
+                OfferCriterion.query.filter(OfferCriterion.offerId.in_(offer_ids)).delete(synchronize_session=False)
 
-                db.session.bulk_save_objects(offer_criteria)
-                db.session.commit()
+            offer_criteria: list[OfferCriterion] = []
+            for criterion in criteria:
+                offer_criteria.extend(
+                    OfferCriterion(offerId=offer_id, criterionId=criterion.id)
+                    for offer_id in offer_ids
+                    if OfferCriterion.query.filter(
+                        OfferCriterion.offerId == offer_id, OfferCriterion.criterionId == criterion.id
+                    ).first()
+                    is None
+                )
 
-                # synchronize with external apis that generate playlists based on tags
-                search.async_index_offer_ids(offer_ids)
-            else:
-                # Form didn't validate
-                flash("Le formulaire est invalide: %s" % (change_form.errors), "error")
+            db.session.bulk_save_objects(offer_criteria)
+            db.session.commit()
+
+            # synchronize with external apis that generate playlists based on tags
+            search.async_index_offer_ids(offer_ids)
+        else:
+            # Form didn't validate
+            flash("Le formulaire est invalide: %s" % (change_form.errors), "error")
         return redirect(url, code=307)
 
     def get_edit_form(self) -> wtforms.Form:
