@@ -58,7 +58,7 @@ const StyleguideInputTextarea = () => {
   return (
     <div>
       <h3>
-        {'Champs textuel'}
+        Champs textuel
       </h3>
       <div className="flex-block">
         <div className="it-content">
@@ -100,7 +100,7 @@ const StyleguideInputTextarea = () => {
       </div>
       <hr />
       <h3>
-        {'Champs textuel en erreur'}
+        Champs textuel en erreur
       </h3>
       <div className="flex-block">
         <div className="it-content">
@@ -124,7 +124,7 @@ const StyleguideInputTextarea = () => {
       </div>
       <br />
       <h3>
-        {'Champs avec compte de caractères'}
+        Champs avec compte de caractères
       </h3>
       <div className="flex-block">
         <div className="it-content">

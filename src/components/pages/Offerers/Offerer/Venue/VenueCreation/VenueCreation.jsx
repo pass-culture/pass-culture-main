@@ -43,7 +43,7 @@ const VenueCreation = ({ isTemporary }) => {
           path={`${match.path}/gestion`}
         >
           <p>
-            {'create venue management form'}
+            create venue management form
           </p>
         </Route>
         <Route

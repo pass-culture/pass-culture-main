@@ -64,7 +64,7 @@ const RouteLeavingGuard = ({
               onClick={closeModal}
               type="button"
             >
-              {'Annuler'}
+              Annuler
             </button>
             <button
               className="primary-button"
@@ -72,7 +72,7 @@ const RouteLeavingGuard = ({
               ref={confirmQuitButton}
               type="button"
             >
-              {'Quitter'}
+              Quitter
             </button>
           </div>
         </DialogBox>

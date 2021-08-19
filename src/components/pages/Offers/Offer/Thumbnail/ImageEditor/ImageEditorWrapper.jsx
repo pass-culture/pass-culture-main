@@ -31,7 +31,7 @@ const ImageEditorWrapper = ({
   return (
     <>
       <div className="tnd-subtitle">
-        {'Recadrer votre image'}
+        Recadrer votre image
       </div>
       <ImageEditor
         image={image}
@@ -44,7 +44,7 @@ const ImageEditorWrapper = ({
           title="Retour"
           type="button"
         >
-          {'Retour'}
+          Retour
         </button>
         <button
           className="primary-button"
@@ -52,7 +52,7 @@ const ImageEditorWrapper = ({
           title="Suivant"
           type="button"
         >
-          {'Prévisualiser'}
+          Prévisualiser
         </button>
       </div>
     </>

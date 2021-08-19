@@ -50,7 +50,7 @@ const OfferPreview = ({ formValues, offerSubCategory }) => {
               className="op-option-ico"
             />
             <span className="op-option-text">
-              {'Type'}
+              Type
             </span>
           </div>
 
@@ -60,7 +60,7 @@ const OfferPreview = ({ formValues, offerSubCategory }) => {
               className="op-option-ico"
             />
             <span className="op-option-text">
-              {'À deux !'}
+              À deux !
             </span>
           </div>
 
@@ -70,7 +70,7 @@ const OfferPreview = ({ formValues, offerSubCategory }) => {
               className="op-option-ico"
             />
             <span className="op-option-text">
-              {'- - €'}
+              - - €
             </span>
           </div>
         </div>
@@ -86,7 +86,7 @@ const OfferPreview = ({ formValues, offerSubCategory }) => {
       {formValues.withdrawalDetails && (
         <div className="op-section">
           <div className="op-section-title">
-            {'Modalités de retrait'}
+            Modalités de retrait
           </div>
           <div className="op-section-text">
             {buildPreviewText(formValues.withdrawalDetails)}

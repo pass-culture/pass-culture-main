@@ -12,10 +12,10 @@ const NoOffers = () => (
     />
 
     <p className="highlight">
-      {'Aucune offre'}
+      Aucune offre
     </p>
     <p>
-      {"Vous n'avez pas encore créé d'offre."}
+      Vous n'avez pas encore créé d'offre.
     </p>
 
     <Link
@@ -23,7 +23,7 @@ const NoOffers = () => (
       to="/offres/creation"
     >
       <AddOfferSvg />
-      {'Créer ma première offre'}
+      Créer ma première offre
     </Link>
   </div>
 )

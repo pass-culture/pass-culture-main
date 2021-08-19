@@ -13,19 +13,19 @@ export const VenueDetails = ({ physicalVenue }) => {
   return (
     <div className="op-section">
       <div className="op-section-title">
-        {'Où ?'}
+        Où ?
       </div>
       <div className="op-section-secondary-title">
-        {'Adresse'}
+        Adresse
       </div>
       <address className="op-section-text op-address">
         {venueDetails.filter(venueDetail => Boolean(venueDetail)).join(' - ')}
       </address>
       <div className="op-section-secondary-title">
-        {'Distance'}
+        Distance
       </div>
       <div className="op-section-text">
-        {'- - km'}
+        - - km
       </div>
     </div>
   )

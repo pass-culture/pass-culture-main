@@ -29,12 +29,10 @@ const Advices = ({ hidden, setHidden }) => {
         className={hidden ? 'tna-hidden' : ''}
       >
         <p className="tna-teaser">
-          {
-            'Pour maximiser vos chances de réservations, choisissez avec soin l’image qui accompagne votre offre. Les ressources suivantes sont à votre disposition :'
-          }
+          Pour maximiser vos chances de réservations, choisissez avec soin l’image qui accompagne votre offre. Les ressources suivantes sont à votre disposition :
         </p>
         <p className="tna-title">
-          {'Banques d’images libres de droits'}
+          Banques d’images libres de droits
         </p>
         <ul className="tna-links">
           <li>
@@ -45,7 +43,7 @@ const Advices = ({ hidden, setHidden }) => {
               target="_blank"
             >
               <ExternalSite />
-              {'Pexels'}
+              Pexels
               <span className="tna-links-help">
                 {`${NBSP}(nouvel onglet)`}
               </span>
@@ -59,7 +57,7 @@ const Advices = ({ hidden, setHidden }) => {
               target="_blank"
             >
               <ExternalSite />
-              {'Pixabay'}
+              Pixabay
               <span className="tna-links-help">
                 {`${NBSP}(nouvel onglet)`}
               </span>
@@ -73,7 +71,7 @@ const Advices = ({ hidden, setHidden }) => {
               target="_blank"
             >
               <ExternalSite />
-              {'Shutterstock'}
+              Shutterstock
               <span className="tna-links-help">
                 {`${NBSP}(nouvel onglet)`}
               </span>
@@ -81,7 +79,7 @@ const Advices = ({ hidden, setHidden }) => {
           </li>
         </ul>
         <p className="tna-title">
-          {'Gabarits'}
+          Gabarits
         </p>
         <ul className="tna-links tna-download-links">
           <li>
@@ -90,7 +88,7 @@ const Advices = ({ hidden, setHidden }) => {
               href={`${ASSETS_URL}/PassCulture-image-template-20210205.psd`}
             >
               <Download />
-              {'Gabarit Photoshop'}
+              Gabarit Photoshop
               <span className="tna-links-help">
                 {`${NBSP}(.psd, 116 Ko)`}
               </span>
@@ -102,7 +100,7 @@ const Advices = ({ hidden, setHidden }) => {
               href={`${ASSETS_URL}/PassCulture-image-template-20210205.eps`}
             >
               <Download />
-              {'Gabarit Illustrator'}
+              Gabarit Illustrator
               <span className="tna-links-help">
                 {`${NBSP}(.eps, 836 Ko)`}
               </span>

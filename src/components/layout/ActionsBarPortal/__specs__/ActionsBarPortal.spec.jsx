@@ -10,7 +10,7 @@ const renderActionsBar = props => {
   return renderWithStyles(
     <ActionsBarPortal {...props}>
       <div>
-        {'actionsBar content'}
+        actionsBar content
       </div>
     </ActionsBarPortal>,
     {

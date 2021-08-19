@@ -70,16 +70,14 @@ const PreFilters = ({ appliedPreFilters, applyPreFilters, hasResult, isLoading, 
             disabled={isLoading}
             type="submit"
           >
-            {'Afficher'}
+            Afficher
           </button>
           <div className="separator" />
         </div>
       </form>
       {isRefreshRequired && (
         <p className="pf-refresh-message">
-          {
-            'Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour actualiser votre recherche.'
-          }
+          Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour actualiser votre recherche.
         </p>
       )}
     </>

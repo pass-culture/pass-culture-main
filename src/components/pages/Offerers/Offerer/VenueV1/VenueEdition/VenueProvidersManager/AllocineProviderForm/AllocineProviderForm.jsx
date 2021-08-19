@@ -47,7 +47,7 @@ const AllocineProviderForm = ({ createVenueProvider, providerId, venueId }) => {
                   <label htmlFor="price">
                     {'Prix de vente/place '}
                     <span className="field-asterisk">
-                      {'*'}
+                      *
                     </span>
                   </label>
                   <span
@@ -73,7 +73,7 @@ const AllocineProviderForm = ({ createVenueProvider, providerId, venueId }) => {
                   className="label-quantity"
                   htmlFor="quantity"
                 >
-                  {'Nombre de places/séance'}
+                  Nombre de places/séance
                 </label>
                 <NumberField
                   isDecimal={false}
@@ -104,11 +104,11 @@ const AllocineProviderForm = ({ createVenueProvider, providerId, venueId }) => {
                 className="blue-insert"
                 icon="picto-info-solid-black"
               >
-                {'Pour le moment, seules les séances "classiques" peuvent être importées.'}
+                Pour le moment, seules les séances "classiques" peuvent être importées.
                 <p />
-                {'Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront pas d’offres.'}
+                Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront pas d’offres.
                 <p />
-                {'Nous travaillons actuellement à l’ajout de séances spécifiques.'}
+                Nous travaillons actuellement à l’ajout de séances spécifiques.
               </Insert>
 
               <div className="apf-provider-import-button-section">
@@ -118,7 +118,7 @@ const AllocineProviderForm = ({ createVenueProvider, providerId, venueId }) => {
                   onClick={formProps.handleSubmit}
                   type="submit"
                 >
-                  {'Importer les offres'}
+                  Importer les offres
                 </button>
               </div>
             </div>

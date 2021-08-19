@@ -8,7 +8,7 @@ const StyleguideAgenda = () => {
           className="tertiary-link"
           href="#sg-titles"
         >
-          {'Titres'}
+          Titres
         </a>
       </li>
       <li>
@@ -16,7 +16,7 @@ const StyleguideAgenda = () => {
           className="tertiary-link"
           href="#sg-buttons"
         >
-          {'Boutons'}
+          Boutons
         </a>
       </li>
       <li>
@@ -24,7 +24,7 @@ const StyleguideAgenda = () => {
           className="tertiary-link"
           href="#sg-inputtext"
         >
-          {'Inputs texte'}
+          Inputs texte
         </a>
       </li>
       <li>
@@ -32,7 +32,7 @@ const StyleguideAgenda = () => {
           className="tertiary-link"
           href="#sg-inputtime"
         >
-          {'Inputs de durée'}
+          Inputs de durée
         </a>
       </li>
       <li>
@@ -40,7 +40,7 @@ const StyleguideAgenda = () => {
           className="tertiary-link"
           href="#sg-textarea"
         >
-          {'Textarea'}
+          Textarea
         </a>
       </li>
       <li>
@@ -48,7 +48,7 @@ const StyleguideAgenda = () => {
           className="tertiary-link"
           href="#sg-select"
         >
-          {'Select'}
+          Select
         </a>
       </li>
       <li>
@@ -56,7 +56,7 @@ const StyleguideAgenda = () => {
           className="tertiary-link"
           href="#sg-checkbox"
         >
-          {'Checkboxes'}
+          Checkboxes
         </a>
       </li>
       <li>
@@ -64,7 +64,7 @@ const StyleguideAgenda = () => {
           className="tertiary-link"
           href="#sg-banner"
         >
-          {'Bannières'}
+          Bannières
         </a>
       </li>
     </ul>

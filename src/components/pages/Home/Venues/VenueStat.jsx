@@ -27,7 +27,7 @@ export const VenueStat = ({ stat }) => (
       className="tertiary-link"
       to={stat.link}
     >
-      {'Voir'}
+      Voir
     </Link>
   </div>
 )

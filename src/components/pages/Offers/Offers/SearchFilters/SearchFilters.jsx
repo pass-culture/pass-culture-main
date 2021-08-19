@@ -188,7 +188,7 @@ const SearchFilters = ({
             className="primary-button"
             type="submit"
           >
-            {'Lancer la recherche'}
+            Lancer la recherche
           </button>
           <div className="separator" />
         </div>

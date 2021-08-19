@@ -32,27 +32,27 @@ export const SetPasswordConfirm = props => {
             {!displayErrorMessage && (
               <div>
                 <h1>
-                  {'Votre mot de passe a bien été enregistré !'}
+                  Votre mot de passe a bien été enregistré !
                 </h1>
                 <h2>
-                  {'Vous pouvez dès à présent vous connecter avec votre mot de passe.'}
+                  Vous pouvez dès à présent vous connecter avec votre mot de passe.
                 </h2>
 
                 <Link
                   className="primary-link redirection-button"
                   to="/connexion"
                 >
-                  {'Se connecter'}
+                  Se connecter
                 </Link>
               </div>
             )}
             {displayErrorMessage && (
               <div>
                 <h1>
-                  {'Votre lien a expiré !'}
+                  Votre lien a expiré !
                 </h1>
                 <h2>
-                  {'Veuillez contacter notre support'}
+                  Veuillez contacter notre support
                 </h2>
 
                 <a
@@ -61,7 +61,7 @@ export const SetPasswordConfirm = props => {
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  {'Contacter'}
+                  Contacter
                 </a>
               </div>
             )}

@@ -11,16 +11,16 @@ const NoFilteredBookings = ({ resetFilters }) => {
         svg="ico-search-gray"
       />
       <span>
-        {'Aucune réservation trouvée pour votre recherche'}
+        Aucune réservation trouvée pour votre recherche
       </span>
       <span>
-        {'Vous pouvez modifier votre recherche ou'}
+        Vous pouvez modifier votre recherche ou
       </span>
       <button
         onClick={resetFilters}
         type="button"
       >
-        {'afficher toutes les réservations'}
+        afficher toutes les réservations
       </button>
     </div>
   )

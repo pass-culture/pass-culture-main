@@ -122,7 +122,7 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
           to={`/offres/${offer.id}/stocks`}
         >
           <Icon svg="ico-guichet-full" />
-          {'Stocks'}
+          Stocks
         </Link>
       </td>
       <td className="edit-column">

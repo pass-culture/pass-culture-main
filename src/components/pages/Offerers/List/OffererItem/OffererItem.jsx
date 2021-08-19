@@ -55,7 +55,7 @@ const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable
             </li>
           ) : (
             <li className="count-offers-action">
-              {'0 offre'}
+              0 offre
             </li>
           )}
 
@@ -75,7 +75,7 @@ const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable
               to={venueCreationUrl}
             >
               <Icon svg="ico-venue-r" />
-              {'Nouveau lieu'}
+              Nouveau lieu
             </Link>
           </li>
         </ul>

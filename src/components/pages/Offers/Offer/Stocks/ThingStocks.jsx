@@ -192,7 +192,7 @@ const ThingStocks = ({
       {isDisabled && <OfferStatusBanner status={offer.status} />}
 
       <h3 className="section-title">
-        {'Stock et prix'}
+        Stock et prix
       </h3>
 
       <div className="cancellation-information">
@@ -204,9 +204,7 @@ const ThingStocks = ({
       </div>
       {areActivationCodesEnabled && offer.isDigital && (
         <div className="activation-codes-information">
-          {
-            "Pour ajouter des codes d'activation, veuillez passer par le menu ··· et choisir l'option correspondante."
-          }
+          Pour ajouter des codes d'activation, veuillez passer par le menu ··· et choisir l'option correspondante.
         </div>
       )}
       {hasNoStock ? (
@@ -217,33 +215,33 @@ const ThingStocks = ({
           type="button"
         >
           <AddStockSvg />
-          {'Ajouter un stock'}
+          Ajouter un stock
         </button>
       ) : (
         <table>
           <thead>
             <tr>
               <th>
-                {'Prix'}
+                Prix
               </th>
               <th>
-                {'Date limite de réservation'}
+                Date limite de réservation
               </th>
               {displayExpirationDatetime && (
                 <th>
-                  {'Date limite de validité'}
+                  Date limite de validité
                 </th>
               )}
               <th>
-                {'Quantité'}
+                Quantité
               </th>
               {!inCreateMode && (
                 <Fragment>
                   <th>
-                    {'Stock restant'}
+                    Stock restant
                   </th>
                   <th>
-                    {'Réservations'}
+                    Réservations
                   </th>
                 </Fragment>
               )}
@@ -291,7 +289,7 @@ const ThingStocks = ({
                 className="secondary-link"
                 to={editionOfferLink}
               >
-                {'Annuler et quitter'}
+                Annuler et quitter
               </Link>
             )}
             <SubmitButton

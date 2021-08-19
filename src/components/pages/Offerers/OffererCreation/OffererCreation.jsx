@@ -48,7 +48,7 @@ class OffererCreation extends PureComponent {
           to="/accueil"
         >
           <Icon svg="ico-back" />
-          {'Accueil'}
+          Accueil
         </NavLink>
         <PageTitle title="Créer une structure" />
         <Titles title="Structure" />

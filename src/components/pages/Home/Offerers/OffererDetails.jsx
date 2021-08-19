@@ -71,12 +71,12 @@ const OffererDetails = ({
             {isExpanded ? (
               <>
                 <ClosedEyeSvg />
-                {'Masquer'}
+                Masquer
               </>
             ) : (
               <>
                 <OpenedEyeSvg />
-                {'Afficher'}
+                Afficher
               </>
             )}
           </button>
@@ -94,7 +94,7 @@ const OffererDetails = ({
               to={`/structures/${selectedOfferer.id}`}
             >
               <Icon svg="ico-outer-pen" />
-              {'Modifier'}
+              Modifier
             </Link>
           ) : (
             <button
@@ -103,7 +103,7 @@ const OffererDetails = ({
               type="button"
             >
               <Icon svg="ico-outer-pen" />
-              {'Modifier'}
+              Modifier
             </button>
           )}
         </div>
@@ -113,20 +113,20 @@ const OffererDetails = ({
             <div className="od-separator horizontal" />
             {!selectedOfferer.isValidated && (
               <Banner type="notification-info">
-                {'Votre structure est en cours de validation'}
+                Votre structure est en cours de validation
               </Banner>
             )}
             {isUserOffererValidated && (
               <div className="h-card-cols">
                 <div className="h-card-col">
                   <h3 className="h-card-secondary-title">
-                    {'Informations pratiques'}
+                    Informations pratiques
                   </h3>
                   <div className="h-card-content">
                     <ul className="h-description-list">
                       <li className="h-dl-row">
                         <span className="h-dl-title">
-                          {'Siren :'}
+                          Siren :
                         </span>
                         <span className="h-dl-description">
                           {selectedOfferer.siren}
@@ -135,7 +135,7 @@ const OffererDetails = ({
 
                       <li className="h-dl-row">
                         <span className="h-dl-title">
-                          {'Désignation :'}
+                          Désignation :
                         </span>
                         <span className="h-dl-description">
                           {selectedOfferer.name}

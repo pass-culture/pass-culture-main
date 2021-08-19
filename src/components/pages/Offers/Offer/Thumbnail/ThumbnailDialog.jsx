@@ -95,7 +95,7 @@ const ThumbnailDialog = ({
           className="tnd-header"
           id={DIALOG_LABEL_ID}
         >
-          {'Ajouter une image'}
+          Ajouter une image
         </h1>
       </header>
       <>

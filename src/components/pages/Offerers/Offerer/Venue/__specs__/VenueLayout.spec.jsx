@@ -22,7 +22,7 @@ const renderVenueLayout = async (offererId, url = '/') => {
           <VenueLayout />
         </Route>
         <Route>
-          {'DO NOT MATCH'}
+          DO NOT MATCH
         </Route>
       </MemoryRouter>
     )

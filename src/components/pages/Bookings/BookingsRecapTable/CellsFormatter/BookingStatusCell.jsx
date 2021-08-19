@@ -37,7 +37,7 @@ const BookingStatusCell = ({ bookingRecapInfo }) => {
           {`Prix : ${amount.replace('.', ',')}`}
         </div>
         <div className="bs-history-title">
-          {'Historique'}
+          Historique
         </div>
         <BookingStatusCellHistory
           bookingStatusHistory={bookingRecapInfo.original.booking_status_history}

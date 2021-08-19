@@ -7,7 +7,7 @@ const NoBookingsForPreFiltersMessage = ({ resetPreFilters }) => (
   <div className="br-warning no-bookings-for-pre-filters">
     <Icon svg="ico-search-gray" />
     <p>
-      {'Aucune réservation trouvée pour votre recherche.'}
+      Aucune réservation trouvée pour votre recherche.
     </p>
     <p>
       {'Veuillez modifier vos filtres et lancer une nouvelle recherche ou '}
@@ -16,7 +16,7 @@ const NoBookingsForPreFiltersMessage = ({ resetPreFilters }) => (
         onClick={resetPreFilters}
         type="button"
       >
-        {'réinitialiser tous les filtres.'}
+        réinitialiser tous les filtres.
       </button>
     </p>
   </div>

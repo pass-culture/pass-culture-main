@@ -35,12 +35,12 @@ export const StatusToggleButton = ({ notifyError, notifySuccess, offer, reloadOf
       {offer.status !== OFFER_STATUS_INACTIVE ? (
         <>
           <Icon svg="ico-status-inactive" />
-          {'Désactiver'}
+          Désactiver
         </>
       ) : (
         <>
           <Icon svg="ico-status-validated" />
-          {'Activer'}
+          Activer
         </>
       )}
     </button>

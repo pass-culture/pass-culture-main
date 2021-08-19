@@ -29,7 +29,7 @@ const Logo = ({ className, noLink, signPage, isUserAdmin }) => {
         <div className="logo-subtitle">
           {'L’espace pass Culture des '}
           <span className="logo-subtitle-highlighted">
-            {'acteurs culturels'}
+            acteurs culturels
           </span>
         </div>
       )}

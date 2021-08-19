@@ -48,7 +48,7 @@ function TextField(props) {
                 </span>
                 {props.required && !props.readOnly && (
                   <span className="field-asterisk">
-                    {'*'}
+                    *
                   </span>
                 )}
               </span>

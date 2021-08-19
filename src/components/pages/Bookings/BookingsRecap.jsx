@@ -105,7 +105,7 @@ const BookingsRecap = ({ location, showInformationNotification }) => {
       <PageTitle title="Vos réservations" />
       <Titles title="Réservations" />
       <h2 className="br-title">
-        {'Affichage des réservations'}
+        Affichage des réservations
       </h2>
       {werePreFiltersCustomized && (
         <button
@@ -113,7 +113,7 @@ const BookingsRecap = ({ location, showInformationNotification }) => {
           onClick={resetPreFilters}
           type="button"
         >
-          {'Réinitialiser les filtres'}
+          Réinitialiser les filtres
         </button>
       )}
       <PreFilters

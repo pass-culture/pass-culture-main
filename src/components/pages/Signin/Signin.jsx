@@ -86,13 +86,13 @@ class Signin extends PureComponent {
         <section className="scrollable-content-side">
           <div className="content">
             <h1>
-              {'Bienvenue sur l’espace dédié aux acteurs culturels'}
+              Bienvenue sur l’espace dédié aux acteurs culturels
             </h1>
             <h2>
-              {'Et merci de votre participation pour nous aider à l’améliorer !'}
+              Et merci de votre participation pour nous aider à l’améliorer !
             </h2>
             <span className="has-text-grey">
-              {'Tous les champs sont obligatoires'}
+              Tous les champs sont obligatoires
             </span>
             <form
               noValidate
@@ -125,7 +125,7 @@ class Signin extends PureComponent {
                   id="lostPasswordLink"
                   to="/mot-de-passe-perdu"
                 >
-                  {'Mot de passe égaré ?'}
+                  Mot de passe égaré ?
                 </Link>
               </div>
               <div className="field buttons-field">
@@ -133,7 +133,7 @@ class Signin extends PureComponent {
                   className="secondary-link"
                   to={accountCreationUrl}
                 >
-                  {'Créer un compte'}
+                  Créer un compte
                 </Link>
                 <button
                   className="primary-button"
@@ -141,7 +141,7 @@ class Signin extends PureComponent {
                   id="signin-submit-button"
                   type="submit"
                 >
-                  {'Se connecter'}
+                  Se connecter
                 </button>
               </div>
             </form>

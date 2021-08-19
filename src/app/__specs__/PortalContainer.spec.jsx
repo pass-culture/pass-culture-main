@@ -8,7 +8,7 @@ const renderPortalContent = testId =>
   render(
     <PortalContainer>
       <div data-testid={testId}>
-        {'Some content'}
+        Some content
       </div>
     </PortalContainer>
   )

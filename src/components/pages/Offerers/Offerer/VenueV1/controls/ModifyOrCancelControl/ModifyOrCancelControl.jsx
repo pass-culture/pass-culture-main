@@ -27,7 +27,7 @@ class ModifyOrCancelControl extends PureComponent {
             id="modify-venue"
             to={`/structures/${offererId}/lieux/${venueId}?modification`}
           >
-            {'Modifier le lieu'}
+            Modifier le lieu
           </Link>
         ) : (
           <button
@@ -35,7 +35,7 @@ class ModifyOrCancelControl extends PureComponent {
             onClick={this.handleOnCLick}
             type="reset"
           >
-            {'Annuler'}
+            Annuler
           </button>
         )}
       </div>

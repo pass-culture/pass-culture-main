@@ -17,7 +17,7 @@ const ConfirmDialog = ({ onConfirm, onCancel }) => {
       <AlertSvg />
       <div className="title">
         <strong>
-          {'Certains ouvrages seront exclus de la synchronisation automatique.'}
+          Certains ouvrages seront exclus de la synchronisation automatique.
         </strong>
       </div>
       <div className="explanation">
@@ -35,7 +35,7 @@ const ConfirmDialog = ({ onConfirm, onCancel }) => {
               alt=""
               svg="ico-external-site-red"
             />
-            {'FAQ'}
+            FAQ
           </a>
         </p>
       </div>
@@ -45,14 +45,14 @@ const ConfirmDialog = ({ onConfirm, onCancel }) => {
           onClick={onCancel}
           type="button"
         >
-          {'Annuler'}
+          Annuler
         </button>
         <button
           className="primary-button confirm"
           onClick={onConfirm}
           type="button"
         >
-          {'Continuer'}
+          Continuer
         </button>
       </div>
     </DialogBox>

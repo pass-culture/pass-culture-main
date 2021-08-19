@@ -62,7 +62,7 @@ const ImportFromURL = ({ isLoading, setIsLoading, setStep, setPreviewBase64, set
     >
       <ThumbnailSampleIcon />
       <p className="tnf-info">
-        {'Utilisez de préférence un visuel en orientation portrait'}
+        Utilisez de préférence un visuel en orientation portrait
       </p>
       <TextInput
         disabled={isLoading}
@@ -79,7 +79,7 @@ const ImportFromURL = ({ isLoading, setIsLoading, setStep, setPreviewBase64, set
         isLoading={isLoading}
         onClick={isThereAnError}
       >
-        {'Valider'}
+        Valider
       </SubmitButton>
     </form>
   )

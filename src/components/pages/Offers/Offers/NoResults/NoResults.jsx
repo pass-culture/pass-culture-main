@@ -11,17 +11,17 @@ const NoResults = ({ resetFilters }) => (
       svg="ico-search-gray"
     />
     <p>
-      {'Aucune offre trouvée pour votre recherche'}
+      Aucune offre trouvée pour votre recherche
     </p>
     <p>
-      {'Vous pouvez modifer votre recherche ou'}
+      Vous pouvez modifer votre recherche ou
       <br />
       <Link
         className="reset-filters-link"
         onClick={resetFilters}
         to="/offres"
       >
-        {'afficher toutes les offres'}
+        afficher toutes les offres
       </Link>
     </p>
   </div>

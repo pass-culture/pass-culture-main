@@ -17,7 +17,7 @@ const StyleguideTitles = () => {
     <div>
       <div className="flex-block">
         <h1>
-          {'Ceci est un titre'}
+          Ceci est un titre
         </h1>
         <div className="it-description">
           <pre className="it-icon-snippet">
@@ -31,7 +31,7 @@ const StyleguideTitles = () => {
 
       <div className="flex-block">
         <h2>
-          {'Ceci est un sous-titre'}
+          Ceci est un sous-titre
         </h2>
         <div className="it-description">
           <pre className="it-icon-snippet">
@@ -44,7 +44,7 @@ const StyleguideTitles = () => {
 
       <div className="flex-block">
         <h3 className="section-title">
-          {'Ceci est un titre de section'}
+          Ceci est un titre de section
         </h3>
         <div className="it-description">
           <pre className="it-icon-snippet">

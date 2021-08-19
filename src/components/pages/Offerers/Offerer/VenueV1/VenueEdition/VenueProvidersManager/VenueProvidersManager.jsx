@@ -81,7 +81,7 @@ const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) =
   return (
     <div className="venue-providers-manager section">
       <h2 className="main-list-title">
-        {'Importation d’offres'}
+        Importation d’offres
       </h2>
 
       <ul className="provider-list">
@@ -131,7 +131,7 @@ const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) =
           >
             <AddOfferSvg />
             <span>
-              {'Importer des offres'}
+              Importer des offres
             </span>
           </button>
         </div>

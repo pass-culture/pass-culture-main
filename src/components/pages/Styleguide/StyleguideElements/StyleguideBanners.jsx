@@ -29,7 +29,7 @@ const StyleguideBanners = () => {
           href="#"
           linkTitle="Lien vers une autre page"
         >
-          {"Bannière de type 'Attention'"}
+          Bannière de type 'Attention'
         </Banner>
         <div className="it-description">
           <pre className="it-icon-snippet">
@@ -45,7 +45,7 @@ const StyleguideBanners = () => {
           linkTitle="Lien vers une autre page"
           type="notification-info"
         >
-          {"Bannière de type 'information'"}
+          Bannière de type 'information'
         </Banner>
         <div className="it-description">
           <pre className="it-icon-snippet">

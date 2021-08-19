@@ -17,7 +17,7 @@ const Preview = ({ preview, setStep, step }) => {
   return (
     <>
       <div className="tnd-subtitle">
-        {'Prévisualisation de votre image dans l’application pass Culture'}
+        Prévisualisation de votre image dans l’application pass Culture
       </div>
       <div className="tnp-previews">
         <div className="tnp-previews-wrapper">
@@ -35,7 +35,7 @@ const Preview = ({ preview, setStep, step }) => {
             src={preview}
           />
           <div>
-            {'Page d’accueil'}
+            Page d’accueil
           </div>
         </div>
         <div className="tnp-previews-wrapper">
@@ -59,7 +59,7 @@ const Preview = ({ preview, setStep, step }) => {
             src={preview}
           />
           <div>
-            {'Détail de l’offre'}
+            Détail de l’offre
           </div>
         </div>
       </div>
@@ -70,7 +70,7 @@ const Preview = ({ preview, setStep, step }) => {
           title="Retour"
           type="button"
         >
-          {'Retour'}
+          Retour
         </button>
         <button
           className="primary-button"
@@ -78,7 +78,7 @@ const Preview = ({ preview, setStep, step }) => {
           title="Suivant"
           type="button"
         >
-          {'Valider'}
+          Valider
         </button>
       </div>
     </>

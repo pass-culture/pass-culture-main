@@ -51,7 +51,7 @@ export const OffersStatusFiltersModal = ({
       ref={modalRef}
     >
       <div className="osf-title">
-        {'Afficher les statuts'}
+        Afficher les statuts
       </div>
       <RadioInput
         checked={status === ALL_STATUS}
@@ -107,7 +107,7 @@ export const OffersStatusFiltersModal = ({
         onClick={applyFilters}
         type="button"
       >
-        {'Appliquer'}
+        Appliquer
       </button>
     </div>
   )

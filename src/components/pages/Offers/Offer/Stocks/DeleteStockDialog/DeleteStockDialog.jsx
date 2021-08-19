@@ -37,16 +37,16 @@ const DeleteStockDialog = ({
     >
       <DeletionIcon />
       <h1 id={DIALOG_LABEL_ID}>
-        {'Voulez-vous supprimer ce stock ?'}
+        Voulez-vous supprimer ce stock ?
       </h1>
       <p>
         {'Ce stock ne sera plus disponible à la réservation et '}
         <strong>
-          {'entraînera l’annulation des réservations en cours !'}
+          entraînera l’annulation des réservations en cours !
         </strong>
       </p>
       <p>
-        {'L’ensemble des utilisateurs concernés sera automatiquement averti par e-mail.'}
+        L’ensemble des utilisateurs concernés sera automatiquement averti par e-mail.
       </p>
       <div className="action-buttons">
         <button
@@ -54,7 +54,7 @@ const DeleteStockDialog = ({
           onClick={abortStockDeletion}
           type="button"
         >
-          {'Annuler'}
+          Annuler
         </button>
         <button
           className="primary-button"
@@ -62,7 +62,7 @@ const DeleteStockDialog = ({
           ref={deleteButtonRef}
           type="button"
         >
-          {'Supprimer'}
+          Supprimer
         </button>
       </div>
     </DialogBox>

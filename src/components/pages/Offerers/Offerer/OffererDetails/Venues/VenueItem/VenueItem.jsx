@@ -52,7 +52,7 @@ const VenueItem = ({ venue }) => {
             </li>
           ) : (
             <li>
-              {'0 offre'}
+              0 offre
             </li>
           )}
           <li>

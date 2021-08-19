@@ -118,7 +118,7 @@ class Offerers extends PureComponent {
           className="secondary-button"
           type="submit"
         >
-          {'OK'}
+          OK
         </button>
       </form>
     )
@@ -160,7 +160,7 @@ class Offerers extends PureComponent {
           to={offererCreationPageURL}
         >
           <AddOffererSvg />
-          {'Ajouter une structure'}
+          Ajouter une structure
         </Link>
         <Icon
           data-place="bottom"
@@ -185,7 +185,7 @@ class Offerers extends PureComponent {
           </a>
           {' lié à une structure.'}
           <br />
-          {'Sans lieu, vous pouvez uniquement ajouter des offres numériques.'}
+          Sans lieu, vous pouvez uniquement ajouter des offres numériques.
         </p>
 
         <Form

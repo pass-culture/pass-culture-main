@@ -42,14 +42,12 @@ const WithdrawalDetailsFields = props => {
     <div className="section vp-content-section bank-information">
       <div className="main-list-title title-actions-container">
         <h2 className="main-list-title-text">
-          {'Modalités de retrait'}
+          Modalités de retrait
         </h2>
       </div>
 
       <p className="bi-subtitle">
-        {
-          "Les modalités de retrait s’appliqueront par défaut à la création de vos offres. Vous pourrez modifier cette information à l'échelle de l'offre."
-        }
+        Les modalités de retrait s’appliqueront par défaut à la création de vos offres. Vous pourrez modifier cette information à l'échelle de l'offre.
       </p>
 
       {!readOnly ? (

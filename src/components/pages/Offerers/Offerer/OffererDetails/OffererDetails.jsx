@@ -26,7 +26,7 @@ class OffererDetails extends PureComponent {
           to={`/accueil?structure=${offerer.id}`}
         >
           <Icon svg="ico-back" />
-          {'Accueil'}
+          Accueil
         </NavLink>
         <PageTitle title="Détails de votre structure" />
         <Titles
@@ -34,11 +34,11 @@ class OffererDetails extends PureComponent {
           title="Structure"
         />
         <p className="op-teaser">
-          {'Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.'}
+          Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
         </p>
         <div className="section op-content-section">
           <h2 className="main-list-title">
-            {'Informations structure'}
+            Informations structure
           </h2>
           <div className="op-detail">
             <span>

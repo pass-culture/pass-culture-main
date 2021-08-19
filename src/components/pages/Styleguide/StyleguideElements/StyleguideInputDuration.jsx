@@ -40,7 +40,7 @@ const StyleguideInputDuration = () => {
   return (
     <div>
       <h3>
-        {'Champs de durée'}
+        Champs de durée
       </h3>
       <div className="flex-block">
         <DurationInput
@@ -60,7 +60,7 @@ const StyleguideInputDuration = () => {
       </div>
       <br />
       <h3>
-        {'Champs de durée read only'}
+        Champs de durée read only
       </h3>
       <div className="flex-block">
         <DurationInput
@@ -82,7 +82,7 @@ const StyleguideInputDuration = () => {
       <br />
       <hr />
       <h3>
-        {'Champs de durée en erreur'}
+        Champs de durée en erreur
       </h3>
       <div className="flex-block">
         <DurationInput

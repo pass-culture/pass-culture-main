@@ -11,7 +11,7 @@ const BankInformation = ({ offerer }) => (
   <div className="section op-content-section bank-information">
     <div className="main-list-title title-actions-container">
       <h2 className="main-list-title-text">
-        {'Coordonnées bancaires de la structure'}
+        Coordonnées bancaires de la structure
       </h2>
 
       {offerer.areBankInformationProvided && (
@@ -25,7 +25,7 @@ const BankInformation = ({ offerer }) => (
             alt=""
             svg="ico-external-site"
           />
-          {'Modifier'}
+          Modifier
         </a>
       )}
     </div>
@@ -33,9 +33,7 @@ const BankInformation = ({ offerer }) => (
     {offerer.areBankInformationProvided ? (
       <Fragment>
         <p className="bi-subtitle">
-          {
-            'Les coordonnées bancaires ci-dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :'
-          }
+          Les coordonnées bancaires ci-dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :
         </p>
         <div className="op-detail">
           <span>
@@ -60,7 +58,7 @@ const BankInformation = ({ offerer }) => (
           href={`https://www.demarches-simplifiees.fr/dossiers/${offerer.demarchesSimplifieesApplicationId}`}
           linkTitle="Accéder au dossier"
         >
-          {'Votre dossier est en cours pour cette structure'}
+          Votre dossier est en cours pour cette structure
         </Banner>
       )
     )}

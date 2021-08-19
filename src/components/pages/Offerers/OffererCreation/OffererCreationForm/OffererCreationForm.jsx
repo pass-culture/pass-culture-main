@@ -51,7 +51,7 @@ const OffererCreationForm = ({ backTo, handleSubmit, invalid, pristine }) => {
               className="secondary-link"
               to={backTo}
             >
-              {'Retour'}
+              Retour
             </Link>
           </div>
           <div className="control">
@@ -60,7 +60,7 @@ const OffererCreationForm = ({ backTo, handleSubmit, invalid, pristine }) => {
               disabled={invalid || pristine}
               type="submit"
             >
-              {'Créer'}
+              Créer
             </button>
           </div>
         </div>

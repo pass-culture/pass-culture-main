@@ -56,14 +56,14 @@ const OfferThumbnail = ({
         ) : (
           <>
             <AddThumbnailIcon />
-            {'Ajouter une image'}
+            Ajouter une image
           </>
         )}
 
         {thumbnailError && (
           <span className="of-error-message">
             <ErrorAlertIcon />
-            {"L'image n'a pas pu être ajoutée. Veuillez réessayer."}
+            L'image n'a pas pu être ajoutée. Veuillez réessayer.
           </span>
         )}
       </button>

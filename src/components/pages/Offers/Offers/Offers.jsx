@@ -272,7 +272,7 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
         to="/offres/creation"
       >
         <AddOfferSvg />
-        {'Créer une offre'}
+        Créer une offre
       </Link>
     )
 
@@ -311,7 +311,7 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
       ) : (
         <>
           <h3 className="op-title">
-            {'Rechercher une offre'}
+            Rechercher une offre
           </h3>
           {hasSearchFilters(savedSearchFilters) ? (
             <Link
@@ -319,11 +319,11 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
               onClick={resetFilters}
               to="/offres"
             >
-              {'Réinitialiser les filtres'}
+              Réinitialiser les filtres
             </Link>
           ) : (
             <span className="reset-filters-link disabled">
-              {'Réinitialiser les filtres'}
+              Réinitialiser les filtres
             </span>
           )}
 

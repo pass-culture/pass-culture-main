@@ -9,13 +9,13 @@ const ActivationCodesUploadErrorDescription = ({ fileName, errorMessage }) => {
         <b>
           {fileName}
         </b>
-        {'.'}
+        .
       </p>
       <p>
         {errorMessage}
       </p>
       <p>
-        {'Veuillez réessayer.'}
+        Veuillez réessayer.
       </p>
     </div>
   )

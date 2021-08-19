@@ -16,7 +16,7 @@ const Homepage = props => {
     <div className="homepage">
       <PageTitle title="Espace acteurs culturels" />
       <h1>
-        {'Bienvenue dans l’espace acteurs culturels'}
+        Bienvenue dans l’espace acteurs culturels
       </h1>
 
       <HomepageBreadcrumb

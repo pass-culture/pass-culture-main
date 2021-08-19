@@ -15,7 +15,7 @@ const NotificationMessage = ({ venueId, offererId, dispatch }) => {
         onClick={handleOnClick(dispatch)}
         to={createOfferPathname}
       >
-        {'créer une offre'}
+        créer une offre
       </Link>
       {', ou en importer automatiquement. '}
     </p>

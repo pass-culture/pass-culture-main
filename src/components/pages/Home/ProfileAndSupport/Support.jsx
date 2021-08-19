@@ -7,7 +7,7 @@ const Support = () => {
     <div className="h-support h-card h-card-secondary-hover">
       <div className="h-card-inner">
         <h3 className="h-card-title">
-          {'Aide et support'}
+          Aide et support
         </h3>
 
         <div className="h-card-content">
@@ -22,7 +22,7 @@ const Support = () => {
                 <div className="ico-container">
                   <Icon svg="ico-external-site" />
                 </div>
-                {"Centre d'aide"}
+                Centre d'aide
               </a>
             </li>
 
@@ -39,7 +39,7 @@ const Support = () => {
                     svg="ico-mail"
                   />
                 </div>
-                {'Contacter le support'}
+                Contacter le support
               </a>
             </li>
 
@@ -53,7 +53,7 @@ const Support = () => {
                 <div className="ico-container">
                   <Icon svg="ico-external-site" />
                 </div>
-                {'Conditions Générales d’Utilisation'}
+                Conditions Générales d’Utilisation
               </a>
             </li>
           </ul>

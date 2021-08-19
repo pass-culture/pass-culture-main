@@ -69,7 +69,7 @@ const ApiKey = ({
     <div className="section op-content-section api-key">
       <div className="main-list-title">
         <h2 className="main-list-title-text">
-          {'Gestion des clés API'}
+          Gestion des clés API
         </h2>
       </div>
       <Banner
@@ -113,7 +113,7 @@ const ApiKey = ({
               >
                 <Icon svg="ico-trash" />
                 <span>
-                  {'supprimer'}
+                  supprimer
                 </span>
               </button>
             </div>
@@ -133,7 +133,7 @@ const ApiKey = ({
                 onClick={copyKey(newKey)}
                 type="button"
               >
-                {'Copier'}
+                Copier
               </button>
             </div>
           )
@@ -141,9 +141,7 @@ const ApiKey = ({
       </div>
       {!!newlyGeneratedKeys.length && (
         <Banner>
-          {
-            'Veuillez copier cette clé et la stocker dans un endroit sûr car vous ne pourrez plus la visualiser entièrement ici.'
-          }
+          Veuillez copier cette clé et la stocker dans un endroit sûr car vous ne pourrez plus la visualiser entièrement ici.
         </Banner>
       )}
       <button
@@ -164,17 +162,15 @@ const ApiKey = ({
         >
           <DeleteSvg />
           <div className="title">
-            {'Êtes-vous sûr de vouloir supprimer votre clé API ?'}
+            Êtes-vous sûr de vouloir supprimer votre clé API ?
           </div>
           <div className="explanation">
             <p>
-              {
-                "Attention, si vous supprimez cette clé, et qu'aucune autre n'a été générée, cela entraînera une rupture du service."
-              }
+              Attention, si vous supprimez cette clé, et qu'aucune autre n'a été générée, cela entraînera une rupture du service.
             </p>
             <br />
             <p>
-              {'Cette action est irréversible.'}
+              Cette action est irréversible.
             </p>
           </div>
           <div className="actions">
@@ -183,14 +179,14 @@ const ApiKey = ({
               onClick={changeApiKeyToDelete(null)}
               type="button"
             >
-              {'Annuler'}
+              Annuler
             </button>
             <button
               className="primary-button confirm"
               onClick={confirmApiKeyDeletion}
               type="button"
             >
-              {'Confirmer la suppression'}
+              Confirmer la suppression
             </button>
           </div>
         </DialogBox>

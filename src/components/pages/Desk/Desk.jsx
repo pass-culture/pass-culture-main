@@ -208,9 +208,7 @@ class Desk extends Component {
         <PageTitle title="Guichet" />
         <Titles title="Guichet" />
         <p className="advice">
-          {
-            'Saisissez les contremarques présentées par les bénéficiaires afin de les valider ou de les invalider.'
-          }
+          Saisissez les contremarques présentées par les bénéficiaires afin de les valider ou de les invalider.
         </p>
         <form>
           <TextInput
@@ -271,7 +269,7 @@ class Desk extends Component {
                 onClick={this.invalidationOfToken(token)}
                 type="submit"
               >
-                {'Invalider la contremarque'}
+                Invalider la contremarque
               </button>
             )}
             {!isUsedToken && (
@@ -281,7 +279,7 @@ class Desk extends Component {
                 onClick={this.registrationOfToken(token)}
                 type="submit"
               >
-                {'Valider la contremarque'}
+                Valider la contremarque
               </button>
             )}
           </div>
@@ -299,9 +297,7 @@ class Desk extends Component {
             type="notification-info"
           >
             <strong>
-              {
-                'N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque.'
-              }
+              N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque.
             </strong>
             {
               ' Les pièces d’identité doivent impérativement être présentées physiquement. Merci de ne pas accepter les pièces d’identité au format numérique.'

@@ -16,7 +16,7 @@ const PendingOffererItem = ({ offerer }) => (
         className="validating-status"
         id="offerer-item-validation"
       >
-        {'Rattachement en cours de validation'}
+        Rattachement en cours de validation
       </p>
     </div>
   </li>

@@ -17,7 +17,7 @@ const BankInformation = ({ venue, offerer }) => {
     <div className="section vp-content-section bank-information">
       <div className="main-list-title title-actions-container">
         <h2 className="main-list-title-text">
-          {'Coordonnées bancaires du lieu'}
+          Coordonnées bancaires du lieu
         </h2>
 
         {(venueHasBankInformation || offererHasBankInformation) && (
@@ -31,7 +31,7 @@ const BankInformation = ({ venue, offerer }) => {
               alt=""
               svg="ico-external-site"
             />
-            {'Modifier'}
+            Modifier
           </a>
         )}
       </div>
@@ -55,15 +55,13 @@ const BankInformation = ({ venue, offerer }) => {
           {!offererHasBankInformation && !venueHasApplicationId && (
             <Fragment>
               <p className="bi-subtitle">
-                {'Aucune coordonnée bancaire renseignée'}
+                Aucune coordonnée bancaire renseignée
               </p>
               <Banner
                 href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
                 linkTitle="Renseignez les coordonnées bancaires du lieu"
               >
-                {
-                  'Renseignez vos coordonnées bancaires pour ce lieu pour être remboursé de vos offres éligibles'
-                }
+                Renseignez vos coordonnées bancaires pour ce lieu pour être remboursé de vos offres éligibles
               </Banner>
             </Fragment>
           )}

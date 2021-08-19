@@ -50,7 +50,7 @@ export const UseFrenchQueryTestingExample = () => {
         onClick={handleClick()}
         type="button"
       >
-        {'Update query params'}
+        Update query params
       </button>
       <div>
         {`Number of query changes: ${queryChangeCount}`}

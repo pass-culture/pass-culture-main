@@ -59,10 +59,10 @@ const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
     >
       <ThumbnailSampleIcon />
       <p className="tnf-info">
-        {'Utilisez de préférence un visuel en orientation portrait'}
+        Utilisez de préférence un visuel en orientation portrait
       </p>
       <label className="tnf-file-label primary-link">
-        {'Importer une image depuis l’ordinateur'}
+        Importer une image depuis l’ordinateur
         <input
           accept={IMAGE_TYPE.join()}
           aria-invalid={error}

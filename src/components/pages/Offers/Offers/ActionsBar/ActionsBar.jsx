@@ -125,7 +125,7 @@ const ActionsBar = props => {
           type="button"
         >
           <Icon svg="ico-status-inactive" />
-          {'Désactiver'}
+          Désactiver
         </button>
         <button
           className="primary-button with-icon"
@@ -133,14 +133,14 @@ const ActionsBar = props => {
           type="button"
         >
           <Icon svg="ico-status-validated" />
-          {'Activer'}
+          Activer
         </button>
         <button
           className="secondary-button"
           onClick={handleClose}
           type="button"
         >
-          {'Annuler'}
+          Annuler
         </button>
       </div>
     </div>

@@ -46,11 +46,11 @@ export const ImageEditor = ({ image }, ref) => {
         />
       </div>
       <label htmlFor="scale">
-        {'Zoom'}
+        Zoom
       </label>
       <div className="tnr-scale">
         <span>
-          {'min'}
+          min
         </span>
         <input
           id="scale"
@@ -62,7 +62,7 @@ export const ImageEditor = ({ image }, ref) => {
           value={scale}
         />
         <span>
-          {'max'}
+          max
         </span>
       </div>
     </>

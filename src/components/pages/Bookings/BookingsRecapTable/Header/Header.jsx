@@ -11,7 +11,7 @@ const Header = ({ bookingsRecapFiltered, isLoading }) => {
   if (isLoading) {
     return (
       <div className="bookings-header-loading">
-        {'Chargement des réservations...'}
+        Chargement des réservations...
       </div>
     )
   } else {
@@ -30,7 +30,7 @@ const Header = ({ bookingsRecapFiltered, isLoading }) => {
               alt="Télécharger le CSV"
               svg="ico-download"
             />
-            {'Télécharger le CSV'}
+            Télécharger le CSV
           </CSVLink>
         </span>
       </div>

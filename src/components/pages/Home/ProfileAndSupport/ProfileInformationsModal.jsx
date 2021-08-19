@@ -62,10 +62,10 @@ const ProfileInformationsModal = ({
           className="pi-title"
           id="modal-profile"
         >
-          {'Profil'}
+          Profil
         </h1>
         <div className="pi-mandatory-message">
-          {'Tous les champs sont obligatoires'}
+          Tous les champs sont obligatoires
         </div>
         <form onSubmit={submitProfileInformations}>
           <TextInput
@@ -102,13 +102,13 @@ const ProfileInformationsModal = ({
               onClick={hideProfileInfoModal}
               type="button"
             >
-              {'Annuler'}
+              Annuler
             </button>
             <button
               className="primary-button"
               type="submit"
             >
-              {'Enregistrer'}
+              Enregistrer
             </button>
           </div>
         </form>

@@ -108,7 +108,7 @@ const StyleguideInputText = () => {
   return (
     <div>
       <h3>
-        {'Champs textuel'}
+        Champs textuel
       </h3>
       <div className="flex-block">
         <TextInput
@@ -150,7 +150,7 @@ const StyleguideInputText = () => {
       </div>
       <hr />
       <h3>
-        {'Champs textuel en erreur'}
+        Champs textuel en erreur
       </h3>
       <div className="flex-block">
         <TextInput
@@ -172,7 +172,7 @@ const StyleguideInputText = () => {
         </div>
       </div>
       <h3>
-        {'Champs textuel avec icône'}
+        Champs textuel avec icône
       </h3>
       <div className="flex-block">
         <div>
@@ -220,7 +220,7 @@ const StyleguideInputText = () => {
       </div>
       <hr />
       <h3>
-        {'Champs avec icône en erreur'}
+        Champs avec icône en erreur
       </h3>
       <div className="flex-block">
         <div>
@@ -245,7 +245,7 @@ const StyleguideInputText = () => {
       </div>
       <hr />
       <h3>
-        {'Champs avec compte de caractères'}
+        Champs avec compte de caractères
       </h3>
       <div className="flex-block">
         <TextInput

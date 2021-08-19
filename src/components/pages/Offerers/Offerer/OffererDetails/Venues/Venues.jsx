@@ -14,7 +14,7 @@ const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
   return (
     <div className="section op-content-section">
       <h2 className="main-list-title">
-        {'Lieux'}
+        Lieux
       </h2>
       <ul className="main-list venues-list">
         {venues.map(venue => (
@@ -29,7 +29,7 @@ const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
           className="tertiary-link"
           to={venueCreationUrl}
         >
-          {'+ Ajouter un lieu'}
+          + Ajouter un lieu
         </Link>
       </div>
     </div>

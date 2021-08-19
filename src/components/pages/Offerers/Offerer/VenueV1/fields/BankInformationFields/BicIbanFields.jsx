@@ -4,9 +4,7 @@ import React, { Fragment } from 'react'
 export const BicIbanFields = ({ iban, bic }) => (
   <Fragment>
     <p className="bi-subtitle">
-      {
-        'Les remboursements des offres éligibles présentées dans ce lieu sont effectués sur le compte ci-dessous :'
-      }
+      Les remboursements des offres éligibles présentées dans ce lieu sont effectués sur le compte ci-dessous :
     </p>
     <div className="vp-detail">
       <span>

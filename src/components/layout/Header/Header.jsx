@@ -42,7 +42,7 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
             to={isUserAdmin ? '/structures' : '/accueil'}
           >
             <HomeSvg aria-hidden />
-            {'Accueil'}
+            Accueil
           </NavLink>
 
           <NavLink
@@ -51,7 +51,7 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
             to="/guichet"
           >
             <CounterSvg aria-hidden />
-            {'Guichet'}
+            Guichet
           </NavLink>
 
           <NavLink
@@ -60,7 +60,7 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
             to="/offres"
           >
             <OffersSvg aria-hidden />
-            {'Offres'}
+            Offres
           </NavLink>
 
           <NavLink
@@ -69,7 +69,7 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
             to="/reservations"
           >
             <BookingsSvg aria-hidden />
-            {'Réservations'}
+            Réservations
           </NavLink>
 
           <NavLink
@@ -78,7 +78,7 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
             to="/remboursements"
           >
             <RefundsSvg aria-hidden />
-            {'Remboursements'}
+            Remboursements
           </NavLink>
 
           <div className="separator" />

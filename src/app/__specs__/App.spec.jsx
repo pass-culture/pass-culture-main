@@ -12,7 +12,7 @@ const renderApp = async props => {
     await render(
       <App {...props}>
         <p>
-          {'Sub component'}
+          Sub component
         </p>
       </App>
     )

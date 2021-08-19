@@ -10,18 +10,18 @@ const StyleguideButtons = () => {
         className="primary-link"
         type="button"
       >
-        {'Primary Button'}
+        Primary Button
       </button>
       <div>
-        {'classe'}
+        classe
         <span className="class-name">
           {' .primary-button '}
         </span>
-        {'(boutons) ou'}
+        (boutons) ou
         <span className="class-name">
           {' .primary-link '}
         </span>
-        {'(liens)'}
+        (liens)
       </div>
     </div>
   )
@@ -32,18 +32,18 @@ const StyleguideButtons = () => {
         className="secondary-button"
         type="button"
       >
-        {'Secondary Button'}
+        Secondary Button
       </button>
       <div>
-        {'classe'}
+        classe
         <span className="class-name">
           {' .secondary-button '}
         </span>
-        {'(boutons) ou'}
+        (boutons) ou
         <span className="class-name">
           {' .secondary-link '}
         </span>
-        {'(liens)'}
+        (liens)
       </div>
     </div>
   )
@@ -58,15 +58,15 @@ const StyleguideButtons = () => {
       >
         <Icon svg="ico-external-site" />
         <span>
-          {'Tertiary Link'}
+          Tertiary Link
         </span>
       </a>
       <div>
-        {'classe'}
+        classe
         <span className="class-name">
           {' .tertiary-link '}
         </span>
-        {'(liens)'}
+        (liens)
       </div>
     </div>
   )
@@ -81,15 +81,15 @@ const StyleguideButtons = () => {
       >
         <Icon svg="ico-external-site" />
         <span>
-          {'Quaternary Link'}
+          Quaternary Link
         </span>
       </a>
       <div>
-        {'classe'}
+        classe
         <span className="class-name">
           {' .quaternary-link '}
         </span>
-        {'(liens)'}
+        (liens)
       </div>
     </div>
   )
@@ -112,7 +112,7 @@ const StyleguideButtons = () => {
         isLoading={isLoading}
         onClick={handleOnClick}
       >
-        {'Submit Button'}
+        Submit Button
       </SubmitButton>
       <div className="it-description">
         <pre className="it-icon-snippet">

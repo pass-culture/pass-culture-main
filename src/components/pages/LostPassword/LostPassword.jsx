@@ -132,16 +132,16 @@ class LostPassword extends PureComponent {
               <section className="hero password-reset">
                 <div className="hero-body">
                   <h1>
-                    {'Mot de passe changé !'}
+                    Mot de passe changé !
                   </h1>
                   <h2>
-                    {'Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe'}
+                    Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe
                   </h2>
                   <Link
                     className="primary-link"
                     to="/connexion"
                   >
-                    {'Se connecter'}
+                    Se connecter
                   </Link>
                 </div>
               </section>
@@ -150,18 +150,16 @@ class LostPassword extends PureComponent {
               <section className="hero mail-sent">
                 <div className="hero-body">
                   <h1>
-                    {'Merci !'}
+                    Merci !
                   </h1>
                   <h2>
-                    {
-                      'Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe.'
-                    }
+                    Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe.
                   </h2>
                   <Link
                     className="primary-link"
                     to="/"
                   >
-                    {'Revenir à l’accueil'}
+                    Revenir à l’accueil
                   </Link>
                 </div>
               </section>
@@ -170,10 +168,10 @@ class LostPassword extends PureComponent {
               <section className="hero password-reset-request-form">
                 <div className="hero-body">
                   <h1>
-                    {'Créer un nouveau mot de passe'}
+                    Créer un nouveau mot de passe
                   </h1>
                   <h2>
-                    {'Saisissez le nouveau mot de passe'}
+                    Saisissez le nouveau mot de passe
                   </h2>
                   <Form onSubmit={this.submitResetPassword}>
                     {({ handleSubmit, errors, values }) => (
@@ -198,7 +196,7 @@ class LostPassword extends PureComponent {
                           disabled={this.isResetPasswordSubmitDisabled(values)}
                           type="submit"
                         >
-                          {'Envoyer'}
+                          Envoyer
                         </button>
                       </form>
                     )}
@@ -210,12 +208,10 @@ class LostPassword extends PureComponent {
               <section className="hero password-reset-request">
                 <div className="hero-body">
                   <h1>
-                    {'Mot de passe égaré ?'}
+                    Mot de passe égaré ?
                   </h1>
                   <h2>
-                    {
-                      'Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez créé votre compte.'
-                    }
+                    Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez créé votre compte.
                   </h2>
 
                   <form
@@ -238,7 +234,7 @@ class LostPassword extends PureComponent {
                       disabled={this.isResetPasswordRequestSubmitDisabled()}
                       type="submit"
                     >
-                      {'Envoyer'}
+                      Envoyer
                     </button>
                   </form>
                 </div>

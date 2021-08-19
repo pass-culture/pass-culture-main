@@ -94,7 +94,7 @@ const TutorialDialog = ({ currentUser, setUserHasSeenTuto }) => {
               onClick={goToStep(activeStepPosition - 1)}
               type="button"
             >
-              {'Précédent'}
+              Précédent
             </button>
             {hasNextStep && (
               <button
@@ -102,7 +102,7 @@ const TutorialDialog = ({ currentUser, setUserHasSeenTuto }) => {
                 onClick={goToStep(activeStepPosition + 1)}
                 type="button"
               >
-                {'Suivant'}
+                Suivant
               </button>
             )}
             {!hasNextStep && (
@@ -111,7 +111,7 @@ const TutorialDialog = ({ currentUser, setUserHasSeenTuto }) => {
                 onClick={closeTutoDialog}
                 type="button"
               >
-                {'Terminer'}
+                Terminer
               </button>
             )}
           </div>

@@ -509,20 +509,17 @@ const OfferForm = ({
       {providerName !== null ? (
         <SynchronizedProviderInformation providerName={providerName} />
       ) : (
-        <p className="page-subtitle"> 
-          {' '}
-          {'Tous les champs sont obligatoires sauf mention contraire.'}
+        <p className="page-subtitle">
+          Tous les champs sont obligatoires sauf mention contraire.
         </p>
       )}
 
       <section className="form-section">
         <h3 className="section-title">
-          {"Type d'offre"}
+          Type d'offre
         </h3>
         <p className="section-description">
-          {
-            'Le type de l’offre permet de la caractériser et de la valoriser au mieux dans l’application.'
-          }
+          Le type de l’offre permet de la caractériser et de la valoriser au mieux dans l’application.
         </p>
 
         <div className="form-row">
@@ -556,7 +553,7 @@ const OfferForm = ({
           <Fragment>
             <section className="form-section">
               <h3 className="section-title">
-                {'Informations artistiques'}
+                Informations artistiques
               </h3>
 
               <div className="form-row">
@@ -697,12 +694,10 @@ const OfferForm = ({
 
             <section className="form-section">
               <h3 className="section-title">
-                {'Informations pratiques'}
+                Informations pratiques
               </h3>
               <p className="section-description">
-                {
-                  'Les informations pratiques permettent de donner aux utilisateurs des informations sur le retrait de leur commande.'
-                }
+                Les informations pratiques permettent de donner aux utilisateurs des informations sur le retrait de leur commande.
               </p>
 
               <div className="form-row">
@@ -784,10 +779,10 @@ const OfferForm = ({
 
             <section className="form-section accessibility-section">
               <h3 className="section-title">
-                {'Accessibilité'}
+                Accessibilité
               </h3>
               <p className="section-description">
-                {'Cette offre est-elle accessible aux publics en situation de handicaps :'}
+                Cette offre est-elle accessible aux publics en situation de handicaps :
               </p>
               <CheckboxInput
                 SvgElement={VisualDisabilitySvg}
@@ -841,14 +836,14 @@ const OfferForm = ({
 
               {Boolean(getErrorMessage('disabilityCompliant')) && (
                 <InputError>
-                  {'Vous devez cocher l’une des options ci-dessus'}
+                  Vous devez cocher l’une des options ci-dessus
                 </InputError>
               )}
             </section>
 
             <section className="form-section">
               <h3 className="section-title">
-                {'Lien de réservation externe'}
+                Lien de réservation externe
               </h3>
               <p className="section-description">
                 {'Ce lien sera affiché aux utilisateurs ne pouvant pas effectuer la réservation dans l’application. ' +
@@ -868,7 +863,7 @@ const OfferForm = ({
 
             <section className="form-section">
               <h3 className="section-title">
-                {'Autre'}
+                Autre
               </h3>
 
               {offerFormFields.includes('isNational') && (
@@ -933,7 +928,7 @@ const OfferForm = ({
           className="secondary-link"
           to={backUrl}
         >
-          {'Annuler et quitter'}
+          Annuler et quitter
         </Link>
         <SubmitButton
           className="primary-button"

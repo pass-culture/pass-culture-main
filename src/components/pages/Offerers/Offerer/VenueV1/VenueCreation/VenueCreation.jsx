@@ -182,12 +182,12 @@ class VenueCreation extends PureComponent {
           to={`/accueil?structure=${offererId}`}
         >
           <Icon svg="ico-back" />
-          {'Accueil'}
+          Accueil
         </NavLink>
         <PageTitle title="Créer un lieu" />
         <Titles title="Lieu" />
         <p className="advice">
-          {'Ajoutez un lieu où accéder à vos offres.'}
+          Ajoutez un lieu où accéder à vos offres.
         </p>
 
         {showForm && (

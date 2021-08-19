@@ -31,7 +31,7 @@ const testInactiveFeature = {
 
 const Foo = () => (
   <div>
-    {"I'm foo component"}
+    I'm foo component
   </div>
 )
 

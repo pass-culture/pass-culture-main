@@ -27,7 +27,7 @@ const StatusFiltersButton = ({
         title={disabled ? ADMINS_DISABLED_FILTERS_MESSAGE : undefined}
         type="button"
       >
-        {'Statut'}
+        Statut
         <Icon
           alt="Afficher ou masquer le filtre par statut"
           className={isFilteredByStatus ? 'active-status-filter' : undefined}

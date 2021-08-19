@@ -70,7 +70,7 @@ const StyleguideSelect = () => {
   return (
     <div className="styleguide-select">
       <h3>
-        {'Select'}
+        Select
       </h3>
       <div className="flex-block">
         <Select
@@ -90,7 +90,7 @@ const StyleguideSelect = () => {
         </div>
       </div>
       <h3>
-        {'Select en erreur'}
+        Select en erreur
       </h3>
       <div className="flex-block">
         <Select

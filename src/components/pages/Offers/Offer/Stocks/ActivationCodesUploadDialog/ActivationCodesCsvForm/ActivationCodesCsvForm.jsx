@@ -23,7 +23,7 @@ export const ActivationCodeCsvForm = forwardRef(function ActivationCodeCsvForm(
 
       <div className="activation-codes-upload-button-section">
         <label className="primary-button activation-codes-upload-label">
-          {'Importer un fichier .csv depuis l’ordinateur'}
+          Importer un fichier .csv depuis l’ordinateur
           <input
             accept=".csv"
             className="activation-codes-upload-input"
@@ -35,17 +35,17 @@ export const ActivationCodeCsvForm = forwardRef(function ActivationCodeCsvForm(
         </label>
         <div className="activation-codes-upload-button-caption">
           <p>
-            {'Format supporté : CSV'}
+            Format supporté : CSV
           </p>
           <p>
-            {'Le poids du fichier ne doit pas dépasser 1 Mo'}
+            Le poids du fichier ne doit pas dépasser 1 Mo
           </p>
         </div>
       </div>
       <div className="activation-codes-upload-separator" />
       <div className="activation-codes-upload-template-section">
         <p className="activation-codes-upload-gabarit">
-          {'Gabarits'}
+          Gabarits
         </p>
         <p>
           <a
@@ -57,11 +57,11 @@ export const ActivationCodeCsvForm = forwardRef(function ActivationCodeCsvForm(
           >
             <Icon svg="ico-other-download" />
             <b>
-              {'Gabarit CSV'}
+              Gabarit CSV
             </b>
             {' '}
             <span className="activation-codes-upload-gabarit-type-and-size">
-              {'(.csv, 50 ko)'}
+              (.csv, 50 ko)
             </span>
           </a>
         </p>

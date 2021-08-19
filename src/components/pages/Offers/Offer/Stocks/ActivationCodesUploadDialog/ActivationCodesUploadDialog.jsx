@@ -74,7 +74,7 @@ const ActivationCodesUploadDialog = ({
             className="activation-codes-upload-title"
             id={ACTIVATION_CODES_UPLOAD_ID}
           >
-            {'Ajouter des codes d’activation'}
+            Ajouter des codes d’activation
           </h4>
           {errorMessage ? (
             <ActivationCodeErrorIcon

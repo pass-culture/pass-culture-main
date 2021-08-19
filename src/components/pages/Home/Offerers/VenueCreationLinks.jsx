@@ -27,7 +27,7 @@ const VenueCreationLinks = ({ hasPhysicalVenue, hasVirtualOffers, offererId }) =
           className="secondary-link"
           to={`/offres/creation?structure=${offererId}`}
         >
-          {'Créer une offre numérique'}
+          Créer une offre numérique
         </Link>
       )}
     </div>
@@ -40,12 +40,12 @@ const VenueCreationLinks = ({ hasPhysicalVenue, hasVirtualOffers, offererId }) =
     >
       <div className="h-card-inner">
         <h3 className="h-card-title">
-          {'Lieux'}
+          Lieux
         </h3>
 
         <div className="h-card-content">
           <p>
-            {'Avant de créer votre première offre physique vous devez avoir un lieu'}
+            Avant de créer votre première offre physique vous devez avoir un lieu
           </p>
           {renderLinks({ insideCard: true })}
         </div>

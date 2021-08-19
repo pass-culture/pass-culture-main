@@ -55,7 +55,7 @@ export const addressFieldRender = ({
             </span>
             {required && !readOnly && (
               <span className="field-asterisk">
-                {'*'}
+                *
               </span>
             )}
           </span>

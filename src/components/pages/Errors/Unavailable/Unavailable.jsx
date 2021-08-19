@@ -12,10 +12,10 @@ const Unavailable = () => {
         svg="ico-unavailable-page"
       />
       <h1>
-        {'Page indisponible'}
+        Page indisponible
       </h1>
       <p>
-        {'Veuillez rééssayer plus tard'}
+        Veuillez rééssayer plus tard
       </p>
       <Icon
         className="brand-logo"

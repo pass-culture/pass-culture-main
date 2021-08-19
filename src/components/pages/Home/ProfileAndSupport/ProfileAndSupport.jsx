@@ -62,7 +62,7 @@ const Profile = ({ setUserInformations, showSuccessNotification, user }) => {
         className="h-section-title"
         id={STEP_PROFILE_HASH}
       >
-        {'Profil et aide'}
+        Profil et aide
       </h2>
 
       <div className="h-section-row">
@@ -73,7 +73,7 @@ const Profile = ({ setUserInformations, showSuccessNotification, user }) => {
           <div className="h-card-inner">
             <div className="h-card-header-row">
               <h3 className="h-card-title">
-                {'Profil'}
+                Profil
               </h3>
               <button
                 className="tertiary-button"
@@ -81,14 +81,14 @@ const Profile = ({ setUserInformations, showSuccessNotification, user }) => {
                 type="button"
               >
                 <Icon svg="ico-outer-pen" />
-                {'Modifier'}
+                Modifier
               </button>
             </div>
             <div className="h-card-content">
               <ul className="h-description-list">
                 <li className="h-dl-row">
                   <span className="h-dl-title">
-                    {'Nom :'}
+                    Nom :
                   </span>
                   <span className="h-dl-description">
                     {user.lastName}
@@ -96,7 +96,7 @@ const Profile = ({ setUserInformations, showSuccessNotification, user }) => {
                 </li>
                 <li className="h-dl-row">
                   <span className="h-dl-title">
-                    {'Prénom :'}
+                    Prénom :
                   </span>
                   <span className="h-dl-description">
                     {user.firstName}
@@ -104,7 +104,7 @@ const Profile = ({ setUserInformations, showSuccessNotification, user }) => {
                 </li>
                 <li className="h-dl-row">
                   <span className="h-dl-title">
-                    {'E-mail :'}
+                    E-mail :
                   </span>
                   <span className="h-dl-description">
                     {user.email}
@@ -112,7 +112,7 @@ const Profile = ({ setUserInformations, showSuccessNotification, user }) => {
                 </li>
                 <li className="h-dl-row">
                   <span className="h-dl-title">
-                    {'Téléphone :'}
+                    Téléphone :
                   </span>
                   <span className="h-dl-description">
                     {formatPhoneNumber(user.phoneNumber)}

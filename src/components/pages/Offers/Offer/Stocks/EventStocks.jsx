@@ -201,13 +201,11 @@ const EventStocks = ({
       {isDisabled && <OfferStatusBanner status={offer.status} />}
 
       <h3 className="section-title">
-        {'Stock et prix'}
+        Stock et prix
       </h3>
 
       <div className="cancellation-information">
-        {
-          'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’événement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente.'
-        }
+        Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’événement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente.
       </div>
       {hasNoStock ? (
         <button
@@ -217,7 +215,7 @@ const EventStocks = ({
           type="button"
         >
           <AddStockSvg />
-          {'Ajouter une date'}
+          Ajouter une date
         </button>
       ) : (
         <Fragment>
@@ -228,33 +226,33 @@ const EventStocks = ({
             type="button"
           >
             <AddStockSvg />
-            {'Ajouter une date'}
+            Ajouter une date
           </button>
           <table>
             <thead>
               <tr>
                 <th>
-                  {'Date'}
+                  Date
                 </th>
                 <th>
-                  {'Horaire'}
+                  Horaire
                 </th>
                 <th>
-                  {'Prix'}
+                  Prix
                 </th>
                 <th>
-                  {'Date limite de réservation'}
+                  Date limite de réservation
                 </th>
                 <th>
-                  {'Quantité'}
+                  Quantité
                 </th>
                 {(stocksInCreation.length === 0 || existingStocks.length > 0) && (
                   <Fragment>
                     <th>
-                      {'Stock restant'}
+                      Stock restant
                     </th>
                     <th>
-                      {'Réservations'}
+                      Réservations
                     </th>
                   </Fragment>
                 )}
@@ -305,7 +303,7 @@ const EventStocks = ({
                 className="secondary-link"
                 to={editionOfferLink}
               >
-                {'Annuler et quitter'}
+                Annuler et quitter
               </Link>
             )}
             <SubmitButton

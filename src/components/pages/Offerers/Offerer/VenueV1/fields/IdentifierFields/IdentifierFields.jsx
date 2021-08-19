@@ -121,7 +121,7 @@ class IdentifierFields extends PureComponent {
           {'Informations lieu'}
           {!readOnly && (
             <span className="required-fields-hint">
-              {'Les champs marqués d’un'}
+              Les champs marqués d’un
               <span className="required-legend">
                 {' * '}
               </span>
@@ -188,7 +188,7 @@ class IdentifierFields extends PureComponent {
                 {'Type de lieu : '}
               </label>
               <span className="field-asterisk">
-                {'*'}
+                *
               </span>
             </div>
 
@@ -209,7 +209,7 @@ class IdentifierFields extends PureComponent {
                       validate={this.venueTypeValidate}
                     >
                       <option value="">
-                        {'Choisissez un type de lieu dans la liste'}
+                        Choisissez un type de lieu dans la liste
                       </option>
                       {venueTypes.map(venueType => (
                         <option
@@ -241,7 +241,7 @@ class IdentifierFields extends PureComponent {
           >
             <div className="field-label">
               <label htmlFor="venue-label">
-                {'Label du lieu :'}
+                Label du lieu :
               </label>
             </div>
 
@@ -260,7 +260,7 @@ class IdentifierFields extends PureComponent {
                       name="venueLabelId"
                     >
                       <option value="">
-                        {'Choisissez un label dans la liste'}
+                        Choisissez un label dans la liste
                       </option>
                       {venueLabels.map(venueLabel => (
                         <option

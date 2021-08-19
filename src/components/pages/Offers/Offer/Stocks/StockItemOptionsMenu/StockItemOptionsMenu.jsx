@@ -49,7 +49,7 @@ const StockItemOptionsMenu = ({
             className="stock-options-menu-item-icon"
           />
           <span className="stock-options-menu-item-text">
-            {'Supprimer le stock'}
+            Supprimer le stock
           </span>
         </MenuItem>
         {canAddActivationCodes && (
@@ -69,7 +69,7 @@ const StockItemOptionsMenu = ({
               className="stock-options-menu-item-icon"
             />
             <span className="stock-options-menu-item-text">
-              {'Ajouter des codes d’activation'}
+              Ajouter des codes d’activation
             </span>
           </MenuItem>
         )}

@@ -30,7 +30,7 @@ describe('components | TableFrame', () => {
               headerTitle: 'Offres',
               render: jest.fn(() => (
                 <span>
-                  {'Offres'}
+                  Offres
                 </span>
               )),
               getHeaderProps: jest.fn(),
@@ -41,7 +41,7 @@ describe('components | TableFrame', () => {
               headerTitle: 'Beneficiaires',
               render: jest.fn(() => (
                 <span>
-                  {'Beneficiaires'}
+                  Beneficiaires
                 </span>
               )),
               getHeaderProps: jest.fn(),

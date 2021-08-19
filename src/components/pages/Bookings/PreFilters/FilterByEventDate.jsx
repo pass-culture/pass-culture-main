@@ -19,7 +19,7 @@ const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
         className="pf-offer-date-label"
         htmlFor="select-filter-date"
       >
-        {'Date de l’évènement'}
+        Date de l’évènement
       </label>
       <div className="pf-offer-date-picker">
         <DatePicker

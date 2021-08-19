@@ -26,7 +26,7 @@ describe('src | components | layout | form | HiddenField', () => {
                 onClick={handleSubmit}
                 type="submit"
               >
-                {'Submit'}
+                Submit
               </button>
             </form>
           )}

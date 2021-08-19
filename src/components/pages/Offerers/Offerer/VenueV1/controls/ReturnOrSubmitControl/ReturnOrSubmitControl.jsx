@@ -21,7 +21,7 @@ const ReturnOrSubmitControl = ({
             className="primary-link"
             to={`/accueil?structure=${offererId}`}
           >
-            {'Terminer'}
+            Terminer
           </Link>
         ) : (
           <button

@@ -99,7 +99,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
                 to={editVenueLink}
               >
                 <Icon svg="ico-outer-pen" />
-                {'Modifier'}
+                Modifier
               </Link>
             )}
           </div>

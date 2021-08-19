@@ -92,10 +92,10 @@ export const SetPassword = props => {
             <section className="password-set-request-form">
               <div>
                 <h1>
-                  {'Bienvenue sur l’espace dédié aux acteurs culturels'}
+                  Bienvenue sur l’espace dédié aux acteurs culturels
                 </h1>
                 <h2>
-                  {'Pour accéder à votre espace, merci de définir votre mot de passe.'}
+                  Pour accéder à votre espace, merci de définir votre mot de passe.
                 </h2>
                 <Form
                   onSubmit={submitSetFirstPassword}
@@ -124,9 +124,7 @@ export const SetPassword = props => {
                           type="checkbox"
                         />
                         <span>
-                          {
-                            'J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture'
-                          }
+                          J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture
                         </span>
                       </label>
                       <LegalInfos
@@ -138,7 +136,7 @@ export const SetPassword = props => {
                         className="primary-button submit-button password-set-button"
                         type="submit"
                       >
-                        {'Envoyer'}
+                        Envoyer
                       </button>
                     </form>
                   )}

@@ -10,13 +10,13 @@ import RouteLeavingGuard from '../RouteLeavingGuard'
 const MiniAppTest = () => (
   <div>
     <Link to="/">
-      {'Home'}
+      Home
     </Link>
     <Link to="/about">
-      {'About'}
+      About
     </Link>
     <Link to="/contact">
-      {'Contact'}
+      Contact
     </Link>
     <Switch>
       <Route
@@ -24,17 +24,17 @@ const MiniAppTest = () => (
         path="/"
       >
         <div>
-          {'Home page'}
+          Home page
         </div>
       </Route>
       <Route path="/about">
         <div>
-          {'About page'}
+          About page
         </div>
       </Route>
       <Route path="/contact">
         <div>
-          {'Contact page'}
+          Contact page
         </div>
       </Route>
     </Switch>

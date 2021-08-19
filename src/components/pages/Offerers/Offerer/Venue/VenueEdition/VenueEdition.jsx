@@ -28,12 +28,12 @@ const VenueEdition = () => {
       <Switch>
         <Route path={`${match.path}/informations`}>
           <p>
-            {'edit venue information form'}
+            edit venue information form
           </p>
         </Route>
         <Route path={`${match.path}/gestion`}>
           <p>
-            {'edit venue management form'}
+            edit venue management form
           </p>
         </Route>
 

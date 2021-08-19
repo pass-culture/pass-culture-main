@@ -35,24 +35,20 @@ const Confirmation = ({ isCreatingOffer, location, offer, setOffer }) => {
         <div>
           <PendingIcon className="oc-pending" />
           <h2 className="oc-title">
-            {'Offre en cours de validation'}
+            Offre en cours de validation
           </h2>
           <p className="oc-details">
-            {
-              'Votre offre est en cours de validation par l’équipe du pass Culture. Vous recevrez un e-mail de confirmation une fois votre offre validée et disponible à la réservation.'
-            }
+            Votre offre est en cours de validation par l’équipe du pass Culture. Vous recevrez un e-mail de confirmation une fois votre offre validée et disponible à la réservation.
           </p>
         </div>
       ) : (
         <div>
           <ValidateIcon className="oc-validate" />
           <h2 className="oc-title">
-            {'Offre créée !'}
+            Offre créée !
           </h2>
           <p className="oc-details">
-            {
-              'Votre offre est désormais disponible à la réservation sur l’application pass Culture.'
-            }
+            Votre offre est désormais disponible à la réservation sur l’application pass Culture.
           </p>
         </div>
       )}
@@ -66,7 +62,7 @@ const Confirmation = ({ isCreatingOffer, location, offer, setOffer }) => {
           onClick={resetOffer}
           to={`/offres/creation${queryString}`}
         >
-          {'Créer une nouvelle offre'}
+          Créer une nouvelle offre
         </Link>
       </div>
     </div>

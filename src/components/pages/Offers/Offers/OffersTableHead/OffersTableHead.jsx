@@ -48,10 +48,10 @@ const OffersTableHead = ({
         </th>
         <th />
         <th>
-          {'Lieu'}
+          Lieu
         </th>
         <th>
-          {'Stock'}
+          Stock
         </th>
         <th className="th-with-filter">
           <StatusFiltersButton

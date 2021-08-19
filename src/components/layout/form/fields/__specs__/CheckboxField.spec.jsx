@@ -21,7 +21,7 @@ describe('components | CheckboxField', () => {
           onClick={handleSubmit}
           type="submit"
         >
-          {'Submit'}
+          Submit
         </button>
       </form>
     )
@@ -58,7 +58,7 @@ describe('components | CheckboxField', () => {
           onClick={handleSubmit}
           type="submit"
         >
-          {'Submit'}
+          Submit
         </button>
       </form>
     )

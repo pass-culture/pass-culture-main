@@ -79,7 +79,7 @@ const FilterByBookingStatus = ({ bookingStatuses, bookingsRecap, updateGlobalFil
         type="button"
       >
         <span className="table-head-label">
-          {`Statut`}
+          Statut
         </span>
 
         <Icon
@@ -91,7 +91,7 @@ const FilterByBookingStatus = ({ bookingStatuses, bookingsRecap, updateGlobalFil
         {isToolTipVisible && (
           <div className="bs-filter-tooltip">
             <div className="bs-filter-label">
-              {'Afficher les statuts'}
+              Afficher les statuts
             </div>
             {filteredBookingStatuses.map(bookingStatus => (
               <label key={bookingStatus.value}>

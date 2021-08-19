@@ -18,7 +18,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
               headerTitle: 'Offres',
               render: jest.fn(() => (
                 <span>
-                  {'Offres'}
+                  Offres
                 </span>
               )),
               getHeaderProps: jest.fn(),
@@ -29,7 +29,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
               headerTitle: 'Beneficiaires',
               render: jest.fn(() => (
                 <span>
-                  {'Beneficiaires'}
+                  Beneficiaires
                 </span>
               )),
               getHeaderProps: jest.fn(),
@@ -74,7 +74,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
               headerTitle: 'Offres',
               render: jest.fn(() => (
                 <span>
-                  {'Offres'}
+                  Offres
                 </span>
               )),
               getHeaderProps: jest.fn(),
@@ -110,7 +110,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
               headerTitle: 'Offres',
               render: jest.fn(() => (
                 <span>
-                  {'Offres'}
+                  Offres
                 </span>
               )),
               getHeaderProps: jest.fn(),
@@ -145,7 +145,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
               headerTitle: 'Offres',
               render: jest.fn(() => (
                 <span>
-                  {'Offres'}
+                  Offres
                 </span>
               )),
               getHeaderProps: jest.fn(),
@@ -182,7 +182,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
               headerTitle: 'Offres',
               render: jest.fn(() => (
                 <span>
-                  {'Offres'}
+                  Offres
                 </span>
               )),
               getHeaderProps: jest.fn(),

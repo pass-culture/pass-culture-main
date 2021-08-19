@@ -25,7 +25,7 @@ describe('src | components | layout | form | TextField', () => {
                 onClick={handleSubmit}
                 type="submit"
               >
-                {'Submit'}
+                Submit
               </button>
             </form>
           )}

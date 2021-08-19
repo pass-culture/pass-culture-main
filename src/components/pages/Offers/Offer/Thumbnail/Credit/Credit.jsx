@@ -22,7 +22,7 @@ const Credit = ({ credit, setCredit, setStep, step }) => {
   return (
     <>
       <div className="tnd-subtitle">
-        {'Crédit image et droits d’utilisation'}
+        Crédit image et droits d’utilisation
       </div>
 
       <TextInput
@@ -39,9 +39,7 @@ const Credit = ({ credit, setCredit, setStep, step }) => {
       />
 
       <div className="tnc-explanations">
-        {
-          'En utilisant ce contenu, je certifie que je suis propriétaire ou que je dispose des autorisations nécessaires pour l’utilisation de celui-ci'
-        }
+        En utilisant ce contenu, je certifie que je suis propriétaire ou que je dispose des autorisations nécessaires pour l’utilisation de celui-ci
       </div>
 
       <div className="tnd-actions">
@@ -51,7 +49,7 @@ const Credit = ({ credit, setCredit, setStep, step }) => {
           title="Retour"
           type="button"
         >
-          {'Retour'}
+          Retour
         </button>
         <button
           className="primary-button"
@@ -59,7 +57,7 @@ const Credit = ({ credit, setCredit, setStep, step }) => {
           title="Suivant"
           type="button"
         >
-          {'Suivant'}
+          Suivant
         </button>
       </div>
     </>

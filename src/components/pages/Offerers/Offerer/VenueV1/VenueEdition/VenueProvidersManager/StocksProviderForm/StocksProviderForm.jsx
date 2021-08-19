@@ -43,7 +43,7 @@ const StocksProviderForm = ({ createVenueProvider, providerId, siret, venueId })
       >
         <div className="account-section">
           <div className="account-label">
-            {'Compte'}
+            Compte
           </div>
           <div className="account-value">
             {siret}
@@ -54,7 +54,7 @@ const StocksProviderForm = ({ createVenueProvider, providerId, siret, venueId })
             className="secondary-button"
             type="submit"
           >
-            {'Importer'}
+            Importer
           </button>
         </div>
       </form>

@@ -16,7 +16,7 @@ export const LegalInfos = ({ title, className }) => (
     >
       <Icon svg="ico-external-site-red" />
       <span>
-        {'Conditions Générales d’Utilisation'}
+        Conditions Générales d’Utilisation
       </span>
     </a>
     <span>
@@ -30,7 +30,7 @@ export const LegalInfos = ({ title, className }) => (
     >
       <Icon svg="ico-external-site-red" />
       <span>
-        {'Charte des Données Personnelles'}
+        Charte des Données Personnelles
       </span>
     </a>
     <span>
@@ -46,7 +46,7 @@ export const LegalInfos = ({ title, className }) => (
     >
       <Icon svg="ico-email-red" />
       <span>
-        {'contactez notre support.'}
+        contactez notre support.
       </span>
     </a>
   </div>
