@@ -121,7 +121,7 @@ class BookOfferTest:
 
         data = push_testing.requests[0]
         assert data["attribute_values"]["u.credit"] == 49_000  # values in cents
-        assert data["attribute_values"]["ut.booking_categories"] == [stock.offer.type]
+        assert data["attribute_values"]["ut.booking_categories"] == ["FILM"]
 
         expected_date = booking.dateCreated.strftime(BATCH_DATETIME_FORMAT)
         assert data["attribute_values"]["date(u.last_booking_date)"] == expected_date
@@ -172,7 +172,7 @@ class BookOfferTest:
         expected_date = booking.dateCreated.strftime(BATCH_DATETIME_FORMAT)
         assert data["attribute_values"]["date(u.last_booking_date)"] == expected_date
 
-        expected_categories = ["ThingType.AUDIOVISUEL", "ThingType.CINEMA_ABO"]
+        expected_categories = ["CINEMA", "FILM"]
         assert sorted(data["attribute_values"]["ut.booking_categories"]) == expected_categories
 
     @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True, ENABLE_ACTIVATION_CODES=True)
@@ -359,7 +359,7 @@ class CancelByBeneficiaryTest:
         queries += 1  # select stock for update
         queries += 1  # refresh booking
         queries += 3  # update stock ; update booking ; release savepoint
-        queries += 5  # (update batch attributes): select booking ; user ; user.bookings ; deposit ; user_offerer
+        queries += 7  # (update batch attributes): select booking ; user ; user.bookings ; deposit ; user_offerer ; favorites ; stock
         queries += 1  # select offer
         queries += 2  # insert email ; release savepoint
         queries += 4  # (TODO: optimize) select booking ; stock ; offer ; user

@@ -1,13 +1,10 @@
 from copy import deepcopy
-from datetime import datetime
-from decimal import Decimal
 
 import pytest
 
 from pcapi.core.users.external.batch import format_user_attributes
-from pcapi.core.users.external.models import UserAttributes
-from pcapi.core.users.models import Credit
-from pcapi.core.users.models import DomainsCredit
+
+from . import common_user_attributes
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -16,29 +13,8 @@ MAX_BATCH_PARAMETER_SIZE = 30
 
 
 class FormatUserAttributesTest:
-    attributes = UserAttributes(
-        domains_credit=DomainsCredit(
-            all=Credit(initial=Decimal("500"), remaining=Decimal("480.00")),
-            digital=Credit(initial=Decimal("200"), remaining=Decimal("200")),
-            physical=Credit(initial=200, remaining=Decimal("180.00")),
-        ),
-        last_booking_date=datetime(2021, 5, 6),
-        booking_categories=["ThingType.CINEMA", "ThingType.LIVRE"],
-        date_created=datetime(2021, 2, 6),
-        date_of_birth=datetime(2003, 5, 6),
-        departement_code="12",
-        deposit_expiration_date=None,
-        first_name="First name",
-        is_beneficiary=True,
-        is_pro=False,
-        marketing_push_subscription=True,
-        last_name="Last name",
-        postal_code=None,
-        products_use_date={"product_brut_x_use": datetime(2021, 5, 6)},
-    )
-
     def test_format_attributes(self):
-        formatted_attributes = format_user_attributes(self.attributes)
+        formatted_attributes = format_user_attributes(common_user_attributes)
 
         assert formatted_attributes == {
             "date(u.date_of_birth)": "2003-05-06T00:00:00",
@@ -49,7 +25,7 @@ class FormatUserAttributesTest:
             "u.credit": 48000,
             "u.departement_code": "12",
             "u.is_beneficiary": True,
-            "ut.booking_categories": ["ThingType.CINEMA", "ThingType.LIVRE"],
+            "ut.booking_categories": ["CINEMA", "LIVRE"],
             "u.marketing_push_subscription": True,
             "u.postal_code": None,
         }
@@ -63,7 +39,7 @@ class FormatUserAttributesTest:
             assert len(parameter_name) <= MAX_BATCH_PARAMETER_SIZE
 
     def test_format_attributes_without_bookings(self):
-        attributes = deepcopy(self.attributes)
+        attributes = deepcopy(common_user_attributes)
         attributes.booking_categories = []
         attributes.last_booking_date = None
 

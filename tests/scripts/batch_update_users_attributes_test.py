@@ -57,5 +57,5 @@ def test_format_user():
         "u.is_beneficiary": True,
         "u.marketing_push_subscription": True,
         "u.postal_code": None,
-        "ut.booking_categories": ["ThingType.AUDIOVISUEL"],
+        "ut.booking_categories": ["FILM"],
     }
