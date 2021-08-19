@@ -44,3 +44,11 @@ Yarn est prometteur, on vous conseille de l'utiliser. Tâchez de l'installer glo
     ```shell
     yarn test:cafe
     ```
+
+## Standards de code et d'architecture
+
+La documentation est intégrée au projet, aux travers de fichiers README à la racine des dossiers principaux.
+
+Vous trouverez une documentation générale ainsi que des liens vers les différents README en suivant ce lien :
+
+[Standards de code et d'architecture](./src/README.md)
