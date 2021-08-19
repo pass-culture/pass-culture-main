@@ -118,7 +118,7 @@ def get_bookings(user: User) -> BookingsResponse:
             BookingReponse.from_orm(booking)
             for booking in sorted(
                 ended_bookings,
-                key=lambda b: b.stock.beginningDatetime or b.dateUsed or b.cancellationDate,
+                key=lambda b: b.stock.beginningDatetime or b.dateUsed or b.cancellationDate or datetime.min,
                 reverse=True,
             )
         ],
