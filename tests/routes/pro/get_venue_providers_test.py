@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 
 from pcapi.core.offerers import factories as offerers_factories
@@ -15,8 +17,7 @@ class Returns200Test:
         user = users_factories.ProFactory()
         titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
         venue_provider = offerers_factories.VenueProviderFactory(
-            venue__name="Librairie Titelive",
-            provider=titelive_things_provider,
+            venue__name="Librairie Titelive", provider=titelive_things_provider, lastSyncDate=datetime(2021, 8, 16)
         )
 
         # when
@@ -27,6 +28,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["venue_providers"][0].get("id") == humanize(venue_provider.id)
         assert response.json["venue_providers"][0].get("venueId") == humanize(venue_provider.venue.id)
+        assert response.json["venue_providers"][0].get("lastSyncDate") == "2021-08-16T00:00:00Z"
 
     @pytest.mark.usefixtures("db_session")
     def test_get_list_that_include_allocine_with_valid_venue_id(self, app):

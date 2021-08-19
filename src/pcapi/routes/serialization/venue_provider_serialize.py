@@ -7,6 +7,7 @@ from pydantic.main import BaseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
+from pcapi.utils.date import format_into_utc_date
 
 
 class PostVenueProviderBody(BaseModel):
@@ -61,6 +62,9 @@ class VenueProviderResponse(BaseModel):
 
 class ListVenueProviderResponse(BaseModel):
     venue_providers: List[VenueProviderResponse]
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
 
 
 class ListVenueProviderQuery(BaseModel):
