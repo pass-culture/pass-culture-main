@@ -59,7 +59,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       isDuo: true,
       lastSyncDate: '2018-01-01T10:00:00',
       nOffers: 35,
-      price: 10,
+      price: 10.1,
       provider: {
         name: 'Allociné',
       },
@@ -143,10 +143,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
     await renderVenueProvidersManager(props)
 
     // then
-    const price = queryByTextTrimHtml(
-      screen,
-      `Prix de vente/place : ${allocineVenueProvider.price} €`
-    )
+    const price = queryByTextTrimHtml(screen, `Prix de vente/place : 10,10`)
     expect(price).toBeInTheDocument()
     const quantity = queryByTextTrimHtml(
       screen,

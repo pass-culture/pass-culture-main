@@ -68,7 +68,9 @@ const VenueProviderItem = ({ venueProvider }) => {
                 {'Prix de vente/place : '}
               </span>
               <span>
-                {`${venueProvider.price} €`}
+                {`${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
+                  venueProvider.price
+                )}`}
               </span>
             </li>
             <li>
