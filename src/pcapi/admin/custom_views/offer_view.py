@@ -192,8 +192,7 @@ class OfferView(BaseAdminView):
     def update_view(self):
         url = get_redirect_target() or self.get_url(".index_view")
         if request.method != "POST":
-            return redirect(url, code=307)
-
+            return redirect(url)
         change_form = OfferChangeForm(request.form)
         if change_form.validate():
             offer_ids: List[str] = change_form.ids.data.split(",")
@@ -219,9 +218,10 @@ class OfferView(BaseAdminView):
 
             # synchronize with external apis that generate playlists based on tags
             search.async_index_offer_ids(offer_ids)
-        else:
-            # Form didn't validate
-            flash("Le formulaire est invalide: %s" % (change_form.errors), "error")
+            return redirect(url)
+
+        # Form didn't validate
+        flash("Le formulaire est invalide: %s" % (change_form.errors), "error")
         return redirect(url, code=307)
 
     def get_edit_form(self) -> wtforms.Form:
