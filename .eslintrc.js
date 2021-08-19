@@ -49,7 +49,8 @@ const comonConfig = {
         unnamedComponents: 'arrow-function',
       },
     ],
-    'react/jsx-curly-brace-presence': [2, { props: 'never', children: 'ignore' }],
+    'react/jsx-no-literals': 'off',
+    'react/jsx-curly-brace-presence': [2, { props: 'never', children: 'never' }],
     'react/jsx-fragments': 'off',
     'react/jsx-indent': [2, 2, { indentLogicalExpressions: true }],
     'react/jsx-indent-props': [2, 2],
@@ -73,6 +74,7 @@ const comonConfig = {
     'react/destructuring-assignment': 'off',
     'react/require-optimization': 'off',
     'react/static-property-placement': 'off',
+    'react/jsx-child-element-spacing': 'off',
     semi: ['warn', 'never'],
   },
   overrides: [
@@ -85,6 +87,13 @@ const comonConfig = {
         'jest/prefer-expect-assertions': 'off',
         'jest/require-top-level-describe': 'off',
         'jest/no-done-callback': 'off',
+      },
+    },
+    {
+      files: ['**/pages/Styleguide/**/*'],
+      rules: {
+        'react/no-unescaped-entities': 'off',
+        'react/jsx-child-element-spacing': 'off',
       },
     },
   ],
