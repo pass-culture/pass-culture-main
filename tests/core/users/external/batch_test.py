@@ -30,6 +30,7 @@ class FormatUserAttributesTest:
         deposit_expiration_date=None,
         first_name="First name",
         is_beneficiary=True,
+        is_pro=False,
         marketing_push_subscription=True,
         last_name="Last name",
         postal_code=None,

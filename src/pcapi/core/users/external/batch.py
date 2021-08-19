@@ -14,6 +14,9 @@ BATCH_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 
 def update_user_attributes(user_id: int, user_attributes: UserAttributes):
+    if user_attributes.is_pro:
+        return
+
     formatted_attributes = format_user_attributes(user_attributes)
     update_user_attributes_task.delay(UpdateBatchAttributesRequest(user_id=user_id, attributes=formatted_attributes))
 

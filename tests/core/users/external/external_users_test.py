@@ -12,6 +12,7 @@ from pcapi.core.users.external import get_user_attributes
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.external.models import UserAttributes
 from pcapi.core.users.factories import BeneficiaryFactory
+from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
 from pcapi.notifications.push import testing as batch_testing
@@ -29,11 +30,26 @@ def test_update_external_user():
     n_query_get_user = 1
     n_query_get_bookings = 1
     n_query_get_deposit = 1
+    n_query_is_pro = 1
+
+    with assert_num_queries(n_query_get_user + n_query_get_bookings + n_query_get_deposit + n_query_is_pro):
+        update_external_user(user)
+
+    assert len(batch_testing.requests) == 1
+    assert len(sendinblue_testing.sendinblue_requests) == 1
+
+
+def test_update_external_pro_user():
+    user = ProFactory()
+
+    n_query_get_user = 1
+    n_query_get_bookings = 1
+    n_query_get_deposit = 1
 
     with assert_num_queries(n_query_get_user + n_query_get_bookings + n_query_get_deposit):
         update_external_user(user)
 
-    assert len(batch_testing.requests) == 1
+    assert len(batch_testing.requests) == 0
     assert len(sendinblue_testing.sendinblue_requests) == 1
 
 
@@ -49,8 +65,9 @@ def test_get_user_attributes():
     n_query_get_user = 1
     n_query_get_bookings = 1
     n_query_get_deposit = 1
+    n_query_is_pro = 1
 
-    with assert_num_queries(n_query_get_user + n_query_get_bookings + n_query_get_deposit):
+    with assert_num_queries(n_query_get_user + n_query_get_bookings + n_query_get_deposit + n_query_is_pro):
         attributes = get_user_attributes(user)
 
     assert attributes == UserAttributes(
@@ -66,6 +83,7 @@ def test_get_user_attributes():
         deposit_expiration_date=user.deposit_expiration_date,
         first_name="Jeanne",
         is_beneficiary=True,
+        is_pro=False,
         last_booking_date=last_date_created,
         last_name="Doux",
         marketing_push_subscription=True,

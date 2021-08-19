@@ -15,6 +15,7 @@ class UserAttributes:
     domains_credit: Optional[DomainsCredit]
     first_name: Optional[str]
     is_beneficiary: bool
+    is_pro: bool
     last_booking_date: Optional[datetime]
     last_name: Optional[str]
     marketing_push_subscription: bool

@@ -16,6 +16,7 @@ SENDINBLUE_CONTACTS_QUEUE_NAME = settings.GCP_SENDINBLUE_CONTACTS_QUEUE_NAME
 class UpdateSendinblueContactRequest(BaseModel):
     email: str
     attributes: dict
+    contact_list_ids: list[int]
 
 
 @task(SENDINBLUE_CONTACTS_QUEUE_NAME, "/sendinblue/update_contact_attributes")

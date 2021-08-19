@@ -359,7 +359,7 @@ class CancelByBeneficiaryTest:
         queries += 1  # select stock for update
         queries += 1  # refresh booking
         queries += 3  # update stock ; update booking ; release savepoint
-        queries += 4  # (update batch attributes): select booking ; user ; user.bookings ; deposit
+        queries += 5  # (update batch attributes): select booking ; user ; user.bookings ; deposit ; user_offerer
         queries += 1  # select offer
         queries += 2  # insert email ; release savepoint
         queries += 4  # (TODO: optimize) select booking ; stock ; offer ; user

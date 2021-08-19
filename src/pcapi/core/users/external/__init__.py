@@ -6,6 +6,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.external.models import UserAttributes
 from pcapi.core.users.models import User
 from pcapi.models.db import db
+from pcapi.models.user_offerer import UserOfferer
 
 from .batch import update_user_attributes as update_batch_user
 from .sendinblue import update_contact_attributes as update_sendinblue_user
@@ -36,6 +37,7 @@ def get_user_attributes(user: User) -> dict:
         domains_credit=get_domains_credit(user, [booking for booking in user_bookings if not booking.isCancelled]),
         first_name=user.firstName,
         is_beneficiary=user.isBeneficiary,
+        is_pro=user.has_pro_role or db.session.query(UserOfferer.query.filter_by(userId=user.id).exists()).scalar(),
         last_booking_date=user_bookings[0].dateCreated if user_bookings else None,
         last_name=user.lastName,
         marketing_push_subscription=user.get_notification_subscriptions().marketing_push,

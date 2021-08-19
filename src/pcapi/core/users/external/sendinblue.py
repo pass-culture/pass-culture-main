@@ -15,8 +15,17 @@ logger = logging.getLogger(__name__)
 
 def update_contact_attributes(user_email: str, user_attributes: UserAttributes):
     formatted_attributes = format_user_attributes(user_attributes)
+
+    constact_list_ids = (
+        [settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
+        if user_attributes.is_pro
+        else [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
+    )
+
     update_contact_attributes_task.delay(
-        UpdateSendinblueContactRequest(email=user_email, attributes=formatted_attributes)
+        UpdateSendinblueContactRequest(
+            email=user_email, attributes=formatted_attributes, contact_list_ids=constact_list_ids
+        )
     )
 
 
@@ -25,6 +34,7 @@ def format_user_attributes(user_attributes: UserAttributes) -> dict:
         "FIRSTNAME": user_attributes.first_name,
         "LASTNAME": user_attributes.last_name,
         "IS_BENEFICIARY": user_attributes.is_beneficiary,
+        "IS_PRO": user_attributes.is_pro,
     }
 
 
@@ -47,7 +57,7 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
     create_contact = sib_api_v3_sdk.CreateContact(
         email=payload.email,
         attributes=payload.attributes,
-        list_ids=[settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID],
+        list_ids=payload.contact_list_ids,
         update_enabled=True,
     )
 
