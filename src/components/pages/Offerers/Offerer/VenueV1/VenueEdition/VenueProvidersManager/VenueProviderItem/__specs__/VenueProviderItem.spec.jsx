@@ -41,11 +41,12 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       managingOffererId: 'managingOffererId',
       name: 'Le lieu',
       siret: '12345678901234',
+      departementCode: '75',
     }
     titeliveVenueProvider = {
       id: 'venueProviderId',
       isActive: true,
-      lastSyncDate: '2018-01-01T10:00:00',
+      lastSyncDate: '2018-01-01T00:00:00Z',
       nOffers: 42,
       provider: {
         name: 'TiteLive',
@@ -57,7 +58,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       id: 'venueProviderId',
       isActive: true,
       isDuo: true,
-      lastSyncDate: '2018-01-01T10:00:00',
+      lastSyncDate: '2018-01-01T00:00:00Z',
       nOffers: 35,
       price: 10.1,
       provider: {
@@ -155,5 +156,18 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       `Accepter les offres DUO : ${allocineVenueProvider.isDuo ? 'Oui' : 'Non'}`
     )
     expect(isDuo).toBeInTheDocument()
+  })
+
+  it('should show the last synchronization date', async () => {
+    // given
+    pcapi.loadVenueProviders.mockResolvedValue([allocineVenueProvider])
+
+    // when
+    await renderVenueProvidersManager(props)
+    const lastSyncDate = screen.getByTestId('last-sync-date')
+
+    // then
+    /*eslint-disable-next-line no-irregular-whitespace*/
+    expect(lastSyncDate.textContent).toMatchInlineSnapshot(`" 01/01/2018 à 01:00"`)
   })
 })

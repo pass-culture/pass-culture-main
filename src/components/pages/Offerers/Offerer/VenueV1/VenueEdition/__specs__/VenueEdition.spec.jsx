@@ -12,6 +12,12 @@ import AddressField from '../../fields/LocationFields/AddressField'
 import LocationFields from '../../fields/LocationFields/LocationFields'
 import VenueEdition from '../VenueEdition'
 
+jest.mock('repository/pcapi/pcapi', () => ({
+  createVenueProvider: jest.fn(),
+  loadProviders: jest.fn().mockResolvedValue([]),
+  loadVenueProviders: jest.fn().mockResolvedValue([]),
+}))
+
 describe('src | components | pages | VenueEdition', () => {
   let push
   let props

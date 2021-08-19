@@ -70,7 +70,7 @@ const VenueProviderItem = ({ venueProvider, venueDepartmentCode }) => {
                 <span>
                   {'Dernière synchronisation : '}
                 </span>
-                <span>
+                <span data-testid="last-sync-date">
                   &nbsp;
                   {formatLocalTimeDateString(
                     lastSyncDate,

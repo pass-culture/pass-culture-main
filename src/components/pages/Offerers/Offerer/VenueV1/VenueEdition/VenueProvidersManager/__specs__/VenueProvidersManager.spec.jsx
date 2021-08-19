@@ -159,7 +159,7 @@ describe('src | VenueProvidersManager', () => {
     describe('when selecting a provider', () => {
       it('should display the allocine form when the user choose Allocine onChange', async () => {
         // given
-        providers = [{ id: 'providerId', name: 'Allociné', lastSyncDate: '2020-01-01' }]
+        providers = [{ id: 'providerId', name: 'Allociné', lastSyncDate: '2020-01-01T10:00:00' }]
         pcapi.loadProviders.mockResolvedValue(providers)
         await renderVenueProvidersManager(props)
         const importOffersButton = screen.getByText('Importer des offres')

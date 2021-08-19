@@ -104,7 +104,7 @@ describe('src | StocksProviderForm', () => {
         providerId: provider.id,
         venueId: props.venue.id,
         venueIdAtOfferProvider: props.venue.siret,
-        lastSyncDate: '2018-01-01T10:00:00',
+        lastSyncDate: '2018-01-01T00:00:00Z',
       }
       pcapi.createVenueProvider.mockResolvedValue(createdVenueProvider)
       await renderStocksProviderForm()
