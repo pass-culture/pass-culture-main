@@ -509,7 +509,8 @@ const OfferForm = ({
       {providerName !== null ? (
         <SynchronizedProviderInformation providerName={providerName} />
       ) : (
-        <p className="page-subtitle">
+        <p className="page-subtitle"> 
+          {' '}
           {'Tous les champs sont obligatoires sauf mention contraire.'}
         </p>
       )}
