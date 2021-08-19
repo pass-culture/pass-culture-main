@@ -5,9 +5,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development'
 export const LAST_DEPLOYED_COMMIT = '##LAST_DEPLOYED_COMMIT##'
 
 export const IS_DEV = NODE_ENV === 'development'
-export const IS_PROD = !IS_DEV
 
-export const HELP_PAGE_URL = 'https://aide.passculture.app'
 export const CGU_URL = 'https://pass.culture.fr/cgu-professionnels/'
 
 // FIXME : Remove when transition to new domain is done
@@ -17,16 +15,12 @@ if (typeof window !== 'undefined') {
     ? process.env.API_URL_OLD
     : process.env.API_URL_NEW
 }
-
-let webappUrlBasedOnDomain
-if (typeof window !== 'undefined') {
-  webappUrlBasedOnDomain = window.location.hostname.includes('beta.gouv')
-    ? process.env.WEBAPP_URL_OLD
-    : process.env.WEBAPP_URL_NEW
-}
-
 export const API_URL = apiUrlBasedOnDomain || 'http://localhost'
-export const WEBAPP_URL = webappUrlBasedOnDomain || 'http://localhost'
+
+// FIXME : Remove when transition to new domain is done
+export const WEBAPP_URL = global.window?.location.hostname.includes('beta.gouv')
+  ? process.env.WEBAPP_URL_OLD
+  : process.env.WEBAPP_URL_NEW
 
 export const {
   ENVIRONMENT_NAME,

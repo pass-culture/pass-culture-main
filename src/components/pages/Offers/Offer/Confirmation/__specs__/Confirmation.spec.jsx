@@ -5,6 +5,12 @@ import { renderOffer } from 'components/pages/Offers/Offer/__specs__/render'
 import { offerFactory } from 'utils/apiFactories'
 import { loadFakeApiOffer } from 'utils/fakeApi'
 
+jest.mock('utils/config', () => {
+  return {
+    WEBAPP_URL: 'http://localhost',
+  }
+})
+
 describe('confirmation page', () => {
   it('should display the rights information when offer is draft', async () => {
     // Given
