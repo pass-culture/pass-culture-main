@@ -102,7 +102,7 @@ class OfferChangeForm(Form):
         allow_blank=True,
     )
     remove_other_tags = BooleanField(
-        label="Supprimmer tous les autres tags",
+        label="Supprimer tous les autres tags",
     )
 
 
@@ -156,7 +156,7 @@ class OfferView(BaseAdminView):
     form_columns = ["criteria", "rankingWeight", "isEducational"]
     simple_list_pager = True
 
-    @action("bulk_edit", "Bulk Edit")
+    @action("bulk_edit", "Édition multiple")
     def action_bulk_edit(self, ids):
         url = get_redirect_target() or self.get_url(".index_view")
         return redirect(url, code=307)
