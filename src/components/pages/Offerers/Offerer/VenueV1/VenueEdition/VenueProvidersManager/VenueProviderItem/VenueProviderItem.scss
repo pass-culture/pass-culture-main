@@ -63,10 +63,26 @@
     padding-top: rem(8px);
   }
 
-  .allocine-provider-synchro-modalities {
-    align-items: start;
-    display: flex;
-    width: 100%;
+  .venue-informations {
+    align-self: flex-start;
+
+    &-sync-item {
+      align-items: center;
+      color: $grey-dark;
+      display: inline-flex;
+
+      &::before {
+        background-color: $green-valid;
+        border-radius: 50%;
+        content: "";
+        display: inline-block;
+        height: rem(8px);
+        margin-right: rem(8px);
+        width: rem(8px);
+      }
+
+      @include caption();
+    }
 
     li {
       margin-top: rem(8px);
@@ -75,14 +91,5 @@
         color: $grey-dark;
       }
     }
-  }
-
-  .last-sync {
-    @include caption();
-
-    align-items: start;
-    color: $grey-dark;
-    display: flex;
-    width: 100%;
   }
 }

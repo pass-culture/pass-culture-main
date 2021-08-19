@@ -9,10 +9,10 @@ import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
-
 const VenueProviderItem = ({ venueProvider, venueDepartmentCode }) => {
   const { lastSyncDate, nOffers, provider, venueIdAtOfferProvider } = venueProvider
   const providerInfo = getProviderInfo(provider.name)
+  const shouldDisplayProviderInformations = isAllocineProvider(provider) || lastSyncDate
 
   return (
     <li className="venue-provider-row">
@@ -62,47 +62,55 @@ const VenueProviderItem = ({ venueProvider, venueDepartmentCode }) => {
           </div>
         )}
       </div>
-      {isAllocineProvider(provider) && (
-        <div className="allocine-provider-synchro-modalities">
+      {shouldDisplayProviderInformations && (
+        <div className="venue-informations">
           <ul>
-            <li>
-              <span>
-                {'Prix de vente/place : '}
-              </span>
-              <span>
-                {`${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
-                  venueProvider.price
-                )}`}
-              </span>
-            </li>
-            <li>
-              <span>
-                {'Nombre de places/séance : '}
-              </span>
-              <span>
-                {`${venueProvider.quantity ? venueProvider.quantity : 'Illimité'}`}
-              </span>
-            </li>
-            <li>
-              <span>
-                {'Accepter les offres DUO : '}
-              </span>
-              <span>
-                {`${venueProvider.isDuo ? 'Oui' : 'Non'} `}
-              </span>
-            </li>
+            {lastSyncDate && (
+              <li className="venue-informations-sync-item">
+                <span>
+                  {'Dernière synchronisation : '}
+                </span>
+                <span>
+                  &nbsp;
+                  {formatLocalTimeDateString(
+                    lastSyncDate,
+                    venueDepartmentCode,
+                    'dd/MM/yyyy à HH:mm'
+                  )}
+                </span>
+              </li>
+            )}
+            {isAllocineProvider(provider) && (
+              <>
+                <li>
+                  <span>
+                    {'Prix de vente/place : '}
+                  </span>
+                  <span>
+                    {`${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
+                      venueProvider.price
+                    )}`}
+                  </span>
+                </li>
+                <li>
+                  <span>
+                    {'Nombre de places/séance : '}
+                  </span>
+                  <span>
+                    {`${venueProvider.quantity ? venueProvider.quantity : 'Illimité'}`}
+                  </span>
+                </li>
+                <li>
+                  <span>
+                    {'Accepter les offres DUO : '}
+                  </span>
+                  <span>
+                    {`${venueProvider.isDuo ? 'Oui' : 'Non'} `}
+                  </span>
+                </li>
+              </>
+            )}
           </ul>
-        </div>
-      )}
-
-      {lastSyncDate && (
-        <div className="last-sync">
-          <span>
-            {'Dernière synchronisation: '}
-          </span>
-          <span>
-            {formatLocalTimeDateString(lastSyncDate, venueDepartmentCode, 'dd/MM/yyyy HH:mm')}
-          </span>
         </div>
       )}
     </li>
