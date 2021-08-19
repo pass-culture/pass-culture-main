@@ -1,4 +1,5 @@
 from decimal import Decimal
+from typing import Optional
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.models import EducationalDeposit
@@ -20,12 +21,12 @@ def check_institution_fund(
     deposit.check_has_enough_fund(total_amount)
 
 
-def check_institution_exists(educational_institution: EducationalInstitution) -> None:
+def check_institution_exists(educational_institution: Optional[EducationalInstitution]) -> None:
     if not educational_institution:
         raise exceptions.EducationalInstitutionUnknown()
 
 
-def check_educational_year_exists(educational_year: EducationalYear) -> None:
+def check_educational_year_exists(educational_year: Optional[EducationalYear]) -> None:
     if not educational_year:
         raise exceptions.EducationalYearNotFound()
 

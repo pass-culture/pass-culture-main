@@ -1,3 +1,5 @@
+from datetime import datetime
+import decimal
 import logging
 
 from pcapi.connectors.api_adage import get_institutional_project_redactor_by_email
@@ -9,6 +11,8 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
+from pcapi.core.educational.models import EducationalDeposit
+from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.offers import repository as offers_repository
 from pcapi.models import db
@@ -177,3 +181,27 @@ def refuse_educational_booking(educational_booking_id: int) -> EducationalBookin
     search.async_index_offer_ids([stock.offerId])
 
     return educational_booking
+
+
+def create_educational_institution(institution_id: str) -> EducationalInstitution:
+    educational_institution = EducationalInstitution(institutionId=institution_id)
+    repository.save(educational_institution)
+
+    return educational_institution
+
+
+def create_educational_deposit(
+    educational_year_id: str,
+    educational_institution_id: int,
+    deposit_amount: int,
+) -> EducationalDeposit:
+    educational_deposit = EducationalDeposit(
+        educationalYearId=educational_year_id,
+        educationalInstitutionId=educational_institution_id,
+        amount=decimal.Decimal(deposit_amount),
+        isFinal=False,
+        dateCreated=datetime.utcnow(),
+    )
+    repository.save(educational_deposit)
+
+    return educational_deposit

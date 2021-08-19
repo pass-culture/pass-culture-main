@@ -5,12 +5,15 @@ from typing import Optional
 from typing import Union
 
 from sqlalchemy.orm import joinedload
+from sqlalchemy.sql.expression import extract
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import EducationalDepositNotFound
+from pcapi.core.educational.exceptions import EducationalYearNotFound
 from pcapi.core.educational.models import EducationalBooking
+from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.educational.models import EducationalYear
@@ -60,19 +63,34 @@ def find_educational_booking_by_id(educational_booking_id: int) -> Optional[Educ
     return EducationalBooking.query.filter(EducationalBooking.id == educational_booking_id).join(Booking).one_or_none()
 
 
-def find_educational_year_by_date(date: datetime) -> EducationalYear:
+def find_educational_year_by_date(date: datetime) -> Optional[EducationalYear]:
     return EducationalYear.query.filter(
         date >= EducationalYear.beginningDate,
         date <= EducationalYear.expirationDate,
-    ).first()
+    ).one_or_none()
 
 
-def find_educational_institution_by_uai_code(uai_code: str) -> EducationalInstitution:
-    return EducationalInstitution.query.filter_by(institutionId=uai_code).first()
+def find_educational_institution_by_uai_code(uai_code: str) -> Optional[EducationalInstitution]:
+    return EducationalInstitution.query.filter_by(institutionId=uai_code).one_or_none()
 
 
-def find_stock_by_id(stock_id: int) -> Stock:
-    return Stock.query.filter_by(id=stock_id).first()
+def find_educational_deposit_by_institution_id_and_year(
+    educational_institution_id: int,
+    educational_year_id: str,
+) -> Optional[EducationalDeposit]:
+    return EducationalDeposit.query.filter(
+        EducationalDeposit.educationalInstitutionId == educational_institution_id,
+        EducationalDeposit.educationalYearId == educational_year_id,
+    ).one_or_none()
+
+
+def get_educational_year_beginning_at_given_year(year: int) -> EducationalYear:
+    educational_year = EducationalYear.query.filter(
+        extract("year", EducationalYear.beginningDate) == year
+    ).one_or_none()
+    if educational_year is None:
+        raise EducationalYearNotFound()
+    return educational_year
 
 
 def find_educational_bookings_for_adage(

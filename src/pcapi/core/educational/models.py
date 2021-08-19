@@ -1,5 +1,5 @@
 from datetime import datetime
-import decimal
+from decimal import Decimal
 import enum
 from typing import Optional
 
@@ -28,21 +28,21 @@ class EducationalBookingStatus(enum.Enum):
 class EducationalInstitution(Model):
     __tablename__ = "educational_institution"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id: int = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    institutionId = Column(String(30), nullable=False, unique=True, index=True)
+    institutionId: str = Column(String(30), nullable=False, unique=True, index=True)
 
 
 class EducationalYear(Model):
     __tablename__ = "educational_year"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id: int = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    adageId = Column(String(30), unique=True, nullable=False)
+    adageId: str = Column(String(30), unique=True, nullable=False)
 
-    beginningDate = Column(DateTime, nullable=False)
+    beginningDate: datetime = Column(DateTime, nullable=False)
 
-    expirationDate = Column(DateTime, nullable=False)
+    expirationDate: datetime = Column(DateTime, nullable=False)
 
 
 class EducationalDeposit(Model):
@@ -50,32 +50,30 @@ class EducationalDeposit(Model):
 
     TEMPORARY_FUND_AVAILABLE_RATIO = 0.8
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id: int = Column(BigInteger, primary_key=True, autoincrement=True)
 
     educationalInstitutionId = Column(BigInteger, ForeignKey("educational_institution.id"), index=True, nullable=False)
 
-    educationalInstitution = relationship(
+    educationalInstitution: EducationalInstitution = relationship(
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="deposits"
     )
 
     educationalYearId = Column(String(30), ForeignKey("educational_year.adageId"), index=True, nullable=False)
 
-    educationalYear = relationship(EducationalYear, foreign_keys=[educationalYearId], backref="deposits")
+    educationalYear: EducationalYear = relationship(
+        EducationalYear, foreign_keys=[educationalYearId], backref="deposits"
+    )
 
-    amount = Column(Numeric(10, 2), nullable=False)
+    amount: Decimal = Column(Numeric(10, 2), nullable=False)
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+    dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
 
-    isFinal = Column(Boolean, nullable=False, default=True)
+    isFinal: bool = Column(Boolean, nullable=False, default=True)
 
-    def get_amount(self) -> decimal.Decimal:
-        return (
-            round(self.amount * decimal.Decimal(self.TEMPORARY_FUND_AVAILABLE_RATIO), 2)
-            if not self.isFinal
-            else self.amount
-        )
+    def get_amount(self) -> Decimal:
+        return round(self.amount * Decimal(self.TEMPORARY_FUND_AVAILABLE_RATIO), 2) if not self.isFinal else self.amount
 
-    def check_has_enough_fund(self, total_amount_after_booking: decimal.Decimal) -> None:
+    def check_has_enough_fund(self, total_amount_after_booking: Decimal) -> None:
         if self.amount < total_amount_after_booking:
             raise exceptions.InsufficientFund()
 
@@ -89,15 +87,15 @@ class EducationalRedactor(Model):
 
     __tablename__ = "educational_redactor"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id: int = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    email = Column(String(120), nullable=False, unique=True, index=True)
+    email: str = Column(String(120), nullable=False, unique=True, index=True)
 
-    firstName = Column(String(128), nullable=False)
+    firstName: str = Column(String(128), nullable=False)
 
-    lastName = Column(String(128), nullable=False)
+    lastName: str = Column(String(128), nullable=False)
 
-    civility = Column(String(20), nullable=False)
+    civility: str = Column(String(20), nullable=False)
 
     educationalBookings = relationship(
         "EducationalBooking",
@@ -108,7 +106,7 @@ class EducationalRedactor(Model):
 class EducationalBooking(Model):
     __tablename__ = "educational_booking"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id: int = Column(BigInteger, primary_key=True, autoincrement=True)
 
     educationalInstitutionId = Column(BigInteger, ForeignKey("educational_institution.id"), nullable=False)
     educationalInstitution: EducationalInstitution = relationship(
