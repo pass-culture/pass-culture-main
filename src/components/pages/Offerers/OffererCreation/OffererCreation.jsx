@@ -12,7 +12,7 @@ import { bindAddressAndDesignationFromSiren } from 'repository/siren/bindSirenFi
 import OffererCreationForm from './OffererCreationForm/OffererCreationForm'
 
 /**
- * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"
  */
 class OffererCreation extends PureComponent {
   handleSubmit = values => {

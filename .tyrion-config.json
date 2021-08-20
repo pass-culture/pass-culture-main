@@ -1,20 +1,18 @@
 {
   "pricer": {
-    "bug": 100,
-    "architecture": 100,
-    "bugRisk": 5,
-    "security": 100,
+    "directory": 5,
+    "bugRisk": 10,
     "securityRisk": 10,
-    "quality": 5,
-    "test": 5,
-    "doc": 3,
-    "ci": 30,
-    "deploy": 10,
-    "devEnv": 10,
-    "outdated": 5
+    "complexity": 5,
+    "standard": 5,
+    "testWarning": 5,
+    "testInitialize": 5,
+    "rtl": 5,
+    "deprecated": 5
   },
   "standard": 100,
   "ignorePath": [
+    "./.tyrion-config.json",
     "node_modules",
     "README.md"
   ],

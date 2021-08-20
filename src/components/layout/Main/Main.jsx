@@ -5,7 +5,7 @@ import React from 'react'
 import { showNotification } from 'store/reducers/notificationReducer'
 
 /**
- * @debt quality "Alexis: Deprecated since 04/12/2020. This component should not be used anymore.
+ * @debt standard "Alexis: Deprecated since 04/12/2020. This component should not be used anymore.
  * It has been cleaned from any rendering utility and only stays lifecycle logic for legacy component using it.
  * Should be replaced by an hoc, or component using it should be completely rewritten with hooks."
  */

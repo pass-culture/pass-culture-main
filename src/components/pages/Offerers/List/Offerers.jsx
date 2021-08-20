@@ -19,7 +19,7 @@ import PendingOffererItem from './OffererItem/PendingOffererItem'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 
 /**
- * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"
  */
 class Offerers extends PureComponent {
   constructor(props) {

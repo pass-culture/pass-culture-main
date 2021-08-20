@@ -22,7 +22,7 @@ const addressAndDesignationFromSirenDecorator = createDecorator({
 const required = value => (value ? undefined : 'Required')
 
 /**
- * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"
  */
 class SignupForm extends PureComponent {
   constructor(props) {

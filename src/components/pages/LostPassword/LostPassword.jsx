@@ -13,7 +13,7 @@ import { redirectLoggedUser } from 'components/router/helpers'
 import { initReCaptchaScript } from '../../../utils/recaptcha'
 
 /**
- * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"
  */
 class LostPassword extends PureComponent {
   constructor(props) {

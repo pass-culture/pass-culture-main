@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
 /**
- * @debt quality "Annaëlle: Composant de classe à migrer en fonctionnel"
+ * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"
  */
 class ModifyOrCancelControl extends PureComponent {
   handleOnCLick = () => {

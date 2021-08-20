@@ -27,7 +27,7 @@ export const mapStateToProps = (state, ownProps) => {
 }
 
 /**
- * @debt quality "Annaëlle: Supprimer requestData"
+ * @debt standard "Annaëlle: Supprimer requestData"
  */
 export const mapDispatchToProps = dispatch => {
   return {

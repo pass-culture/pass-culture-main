@@ -12,6 +12,7 @@
 target.zip
 
 # misc
+.vscode/
 .DS_Store
 .vscode/
 .env.local
@@ -43,3 +44,6 @@ env_file
 # licenses
 licenses
 licenses.json
+
+# reports
+tyrion_report.html
