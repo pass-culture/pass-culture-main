@@ -145,9 +145,10 @@ class OfferFactory(BaseFactory):
     # FIXME: fseguin(2021-07-22): deprecated
     @factory.post_generation
     def match_type(self, create, extracted, **kwargs):
-        self.type = getattr(ALL_SUBCATEGORIES_DICT.get(self.subcategoryId, ""), "matching_type", None)
-        db.session.add(self)
-        db.session.commit()
+        if self.type == "MATCHED_FROM_SUBCATEGORY_ID_IN_POST_GENERATION":
+            self.type = getattr(ALL_SUBCATEGORIES_DICT.get(self.subcategoryId, ""), "matching_type", None)
+            db.session.add(self)
+            db.session.commit()
 
 
 class EventOfferFactory(OfferFactory):

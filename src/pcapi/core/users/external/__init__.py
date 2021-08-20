@@ -4,6 +4,7 @@ from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
+from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.external.models import UserAttributes
@@ -70,18 +71,24 @@ def get_user_attributes(user: User) -> dict:
     )
 
 
-def _get_bookings_categories_and_subcategories(user_bookings: list[Booking]) -> Tuple[list[str], list[str]]:
-    booking_subcategories_ids = list(
-        set(
-            booking.stock.offer.subcategoryId
-            for booking in user_bookings
-            if booking.stock.offer.subcategoryId is not None
-        )
-    )
-    booking_subcategories = [
-        subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.id in booking_subcategories_ids
-    ]
+# FIXME: corentinn(2021-08-20): deprecated after type -> subcategory transition
+def _get_offer_subcategory(offer: Offer) -> str:
+    """Returns an offer subcategory, falling back on the type to find it if subcategoryId is None
 
+    Args:
+        offer (Offer): The offer
+
+    Returns:
+        str: subcategoryId
+    """
+    return offer.subcategoryId or next(
+        subcategory.id for subcategory in ALL_SUBCATEGORIES if subcategory.matching_type == offer.type
+    )
+
+
+def _get_bookings_categories_and_subcategories(user_bookings: list[Booking]) -> Tuple[list[str], list[str]]:
+    booking_subcategories_ids = list(set(_get_offer_subcategory(booking.stock.offer) for booking in user_bookings))
+    booking_subcategories = [ALL_SUBCATEGORIES_DICT[subcategory_id] for subcategory_id in booking_subcategories_ids]
     booking_categories = list(set(subcategory.category_id for subcategory in booking_subcategories))
     return booking_categories, booking_subcategories_ids
 
