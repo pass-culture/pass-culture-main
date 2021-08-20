@@ -2,10 +2,11 @@ import logging
 import random
 import re
 
+from pcapi.core.offerers.factories import VenueProviderFactory
 from pcapi.core.offerers.models import VenueType
-from pcapi.model_creators.generic_creators import create_bank_information
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.repository import repository
+from pcapi.core.offers.factories import BankInformationFactory
+from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.offers.factories import VirtualVenueFactory
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 
 
@@ -62,34 +63,32 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
                 comment = "Pas de siret car c'est comme cela."
                 siret = None
 
-            venue_by_name[venue_name] = create_venue(
-                offerer,
-                address=offerer.address,
-                booking_email="fake@email.com",
-                city=offerer.city,
-                comment=comment,
+            venue = VenueFactory(
+                managingOfferer=offerer,
+                bookingEmail="fake@example.com",
                 latitude=float(geoloc_match.group(2)),
                 longitude=float(geoloc_match.group(3)),
+                comment=comment,
                 name=venue_name,
-                postal_code=offerer.postalCode,
                 siret=siret,
-                venue_type_id=venue_types[0].id,
+                venueTypeId=venue_types[0].id,
             )
+            VenueProviderFactory(venue=venue)
 
-            if iban and venue_by_name[venue_name].siret:
-                create_bank_information(
-                    bic=bic,
-                    iban=iban,
-                    venue=venue_by_name[venue_name],
-                    application_id=application_id_prefix + str(offerer_index),
+            venue_by_name[venue_name] = venue
+
+            if iban and venue.siret:
+                BankInformationFactory(
+                    venue=venue, bic=bic, iban=iban, applicationId=application_id_prefix + str(offerer_index)
                 )
+
         bic_suffix += 1
         mock_index += 1
 
-        virtual_venue_name = "{} (Offre numérique)".format(venue_name)
-        venue_by_name[virtual_venue_name] = create_venue(offerer, is_virtual=True, name=virtual_venue_name, siret=None)
-
-    repository.save(*venue_by_name.values())
+        virtual_venue_name = "{} (Offre numérique)"
+        venue_by_name[virtual_venue_name] = VirtualVenueFactory(
+            managingOfferer=offerer, name=virtual_venue_name.format(venue_name)
+        )
 
     logger.info("created %d venues", len(venue_by_name))
 

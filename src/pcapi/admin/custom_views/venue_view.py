@@ -45,6 +45,7 @@ class VenueView(BaseAdminView):
         "longitude",
         "isPermanent",
         "offer_import",
+        "provider_name",
     ]
     column_labels = dict(
         name="Nom",
@@ -57,6 +58,7 @@ class VenueView(BaseAdminView):
         longitude="Longitude",
         isPermanent="Lieu permanent",
         offer_import="Import d'offres",
+        provider_name="Provider",
     )
     column_searchable_list = ["name", "siret", "publicName"]
     column_filters = ["postalCode", "city", "publicName", "id"]
