@@ -167,7 +167,7 @@ def test_update_venue_description_too_long(app, client):
 
     data = {"description": "a" * 1024}
 
-    client = client.with_auth(user_offerer.user.email)
+    client = client.with_session_auth(user_offerer.user.email)
     venue_id = humanize(venue.id)
     response = client.patch(f"/venues/{venue_id}", json=data)
 
