@@ -7,6 +7,7 @@ from flask_login import login_required
 from pcapi import settings
 from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
 from pcapi.core.users import repository as users_repo
+from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import TokenType
 from pcapi.domain.password import check_password_strength
 from pcapi.domain.password import check_password_validity
@@ -97,6 +98,7 @@ def post_new_password():
     user.setPassword(new_password)
     if not user.isEmailValidated:
         user.isEmailValidated = True
+        update_external_user(user)
 
     repository.save(user)
 

@@ -1,11 +1,13 @@
 import pytest
 
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import testing as users_testing
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import Favorite
+from pcapi.notifications.push import testing as push_testing
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
@@ -101,6 +103,12 @@ class Returns201Test:
         assert favorite.mediationId == mediation.id
         assert favorite.userId == user.id
 
+        # One call should be sent to batch, and one to sendinblue
+        assert len(push_testing.requests) == 1
+        assert len(users_testing.sendinblue_requests) == 1
+        sendinblue_data = users_testing.sendinblue_requests[0]
+        assert sendinblue_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None
+
     @pytest.mark.usefixtures("db_session")
     def when_mediation_id_doest_not_exist(self, app):
         # Given
@@ -119,3 +127,9 @@ class Returns201Test:
 
         # Then
         assert response.status_code == 201
+
+        # One call should be sent to batch, and one to sendinblue
+        assert len(push_testing.requests) == 1
+        assert len(users_testing.sendinblue_requests) == 1
+        sendinblue_data = users_testing.sendinblue_requests[0]
+        assert sendinblue_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None

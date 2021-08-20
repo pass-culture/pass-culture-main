@@ -9,7 +9,9 @@ from pcapi.core.payments import factories as payments_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import testing as users_testing
 from pcapi.models import Favorite
+from pcapi.notifications.push import testing as push_testing
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -302,6 +304,12 @@ class PostTest:
             assert response.json["id"] == favorite.id
             assert response.json["offer"]
 
+            # One call should be sent to batch, and one to sendinblue
+            assert len(push_testing.requests) == 1
+            assert len(users_testing.sendinblue_requests) == 1
+            sendinblue_data = users_testing.sendinblue_requests[0]
+            assert sendinblue_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None
+
         def when_user_creates_a_favorite_twice(self, app):
             # Given
             _, test_client = utils.create_user_and_test_client(app)
@@ -318,6 +326,12 @@ class PostTest:
             # Then
             assert response.status_code == 200
             assert Favorite.query.count() == 1
+
+            # One call should be sent to batch, and one to sendinblue
+            assert len(push_testing.requests) == 1
+            assert len(users_testing.sendinblue_requests) == 1
+            sendinblue_data = users_testing.sendinblue_requests[0]
+            assert sendinblue_data["attributes"]["LAST_FAVORITE_CREATION_DATE"] is not None
 
     class Returns400Test:
         @override_settings(MAX_FAVORITES=1)

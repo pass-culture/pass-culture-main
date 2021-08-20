@@ -4,7 +4,9 @@ from datetime import timedelta
 import pytest
 
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import testing as users_testing
 from pcapi.core.users.models import TokenType
+from pcapi.notifications.push import testing as push_testing
 
 from tests.conftest import TestClient
 
@@ -21,6 +23,27 @@ def test_change_password(app):
     assert response.status_code == 204
     assert user.checkPassword("N3W_p4ssw0rd")
     assert len(user.tokens) == 0
+
+
+@pytest.mark.usefixtures("db_session")
+def test_change_password_validates_email(app):
+    user = users_factories.UserFactory(isEmailValidated=False)
+    token = users_factories.TokenFactory(user=user, type=TokenType.RESET_PASSWORD)
+    data = {"token": token.value, "newPassword": "N3W_p4ssw0rd"}
+
+    client = TestClient(app.test_client())
+    response = client.post("/users/new-password", json=data)
+
+    assert response.status_code == 204
+    assert user.checkPassword("N3W_p4ssw0rd")
+    assert len(user.tokens) == 0
+    assert user.isEmailValidated
+
+    # One call should be sent to batch, and one to sendinblue
+    assert len(push_testing.requests) == 1
+    assert len(users_testing.sendinblue_requests) == 1
+    sendinblue_data = users_testing.sendinblue_requests[0]
+    assert sendinblue_data["attributes"]["IS_EMAIL_VALIDATED"]
 
 
 @pytest.mark.usefixtures("db_session")

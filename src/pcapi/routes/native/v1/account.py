@@ -161,6 +161,7 @@ def create_institutional_project_redactor_account(body: serializers.Institutiona
 def has_completed_id_check(user: User) -> None:
     user.hasCompletedIdCheck = True
     repository.save(user)
+    update_external_user(user)
 
 
 @blueprint.native_v1.route("/resend_email_validation", methods=["POST"])

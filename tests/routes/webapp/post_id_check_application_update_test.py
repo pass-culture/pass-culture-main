@@ -6,6 +6,7 @@ import pytest
 
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import testing as users_testing
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import User
 from pcapi.models import BeneficiaryImport
@@ -132,6 +133,7 @@ class Returns200Test:
         mocked_send_accepted_as_beneficiary_email.assert_called_once()
 
         assert len(push_testing.requests) == 1
+        assert len(users_testing.sendinblue_requests) == 1
 
     @override_features(FORCE_PHONE_VALIDATION=True)
     @patch("pcapi.use_cases.create_beneficiary_from_application.send_accepted_as_beneficiary_email")
@@ -196,6 +198,7 @@ class Returns200Test:
         mocked_send_accepted_as_beneficiary_email.assert_not_called()
 
         assert len(push_testing.requests) == 1
+        assert len(users_testing.sendinblue_requests) == 1
 
 
 class Returns400Test:

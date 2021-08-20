@@ -7,6 +7,7 @@ from sqlalchemy.orm import joinedload
 
 from pcapi import settings
 from pcapi.core.offers.models import Offer
+from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.models import Favorite
 from pcapi.models import Mediation
@@ -143,8 +144,10 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
             )
             db.session.add(favorite)
             db.session.flush()
+        update_external_user(user)
     except exc.IntegrityError:
         favorite = Favorite.query.filter_by(offerId=body.offerId, userId=user.id).one_or_none()
+
     return serializers.FavoriteResponse.from_orm(favorite)
 
 

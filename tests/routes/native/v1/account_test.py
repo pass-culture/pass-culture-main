@@ -287,6 +287,13 @@ class AccountTest:
         db.session.refresh(user)
         assert user.hasCompletedIdCheck
 
+        # One call should be sent to batch, and one to sendinblue
+        assert len(push_testing.requests) == 1
+        assert len(users_testing.sendinblue_requests) == 1
+
+        sendinblue_data = users_testing.sendinblue_requests[0]
+        assert sendinblue_data["attributes"]["HAS_COMPLETED_ID_CHECK"]
+
         me_response = test_client.get("/native/v1/me")
         assert me_response.json["hasCompletedIdCheck"]
 

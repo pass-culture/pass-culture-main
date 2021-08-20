@@ -4,6 +4,7 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.offers.models import Mediation
+from pcapi.core.users.external import update_external_user
 from pcapi.core.users.repository import find_favorite_for_offer_and_user
 from pcapi.core.users.repository import find_favorites_domain_by_beneficiary
 from pcapi.flask_app import private_api
@@ -39,6 +40,7 @@ def add_to_favorite():
     repository.save(favorite_sql_entity)
 
     favorite = favorite_domain_converter.to_domain(favorite_sql_entity)
+    update_external_user(current_user)
 
     return jsonify(serialize_favorite(favorite)), 201
 
