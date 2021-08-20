@@ -44,6 +44,7 @@ SCHEMA = {
     # "id": "number",  must not be provided when creating the schema.
     "prices": "number",
     "ranking_weight": "number",
+    "search_group": "text",
     "stocks_date_created": "date",
     "tags": "text",
     "times": "number",
@@ -236,6 +237,7 @@ class AppSearchBackend(base.SearchBackend):
             "id": offer.id,
             "prices": [int(stock.price * 100) for stock in stocks],
             "ranking_weight": offer.rankingWeight or 0,
+            "search_group": offer.subcategory.search_group,
             "stocks_date_created": [stock.dateCreated for stock in stocks],
             "tags": [criterion.name for criterion in offer.criteria],
             "times": times,

@@ -34,6 +34,8 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 import pcapi.core.bookings.conf as bookings_conf
+from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
+from pcapi.core.categories.subcategories import Subcategory
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -484,6 +486,12 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
     def offer_category_name_for_app(self) -> str:
         # offer_types ThingType.OEUVRE_ART, EventType.ACTIVATION and ThingType.ACTIVATION do not have a corresponding Category so return None in this case
         return CATEGORIES_LABEL_DICT.get(self.offerType["appLabel"])
+
+    @property
+    def subcategory(self) -> Subcategory:
+        if self.subcategoryId not in ALL_SUBCATEGORIES_DICT:
+            raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for offer {self.id}")
+        return ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
     @property
     def category_type(self) -> Optional[str]:
