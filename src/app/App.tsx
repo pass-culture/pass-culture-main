@@ -10,9 +10,9 @@ import * as pcapi from "repository/pcapi/pcapi"
 import { REACT_APP_APP_SEARCH_ENDPOINT, REACT_APP_APP_SEARCH_KEY } from "utils/config"
 
 const connector = new AppSearchAPIConnector({
-  searchKey: REACT_APP_APP_SEARCH_ENDPOINT,
+  searchKey: REACT_APP_APP_SEARCH_KEY,
   engineName: "offers",
-  endpointBase: REACT_APP_APP_SEARCH_KEY,
+  endpointBase: REACT_APP_APP_SEARCH_ENDPOINT,
 })
 
 const App = ():JSX.Element => {
