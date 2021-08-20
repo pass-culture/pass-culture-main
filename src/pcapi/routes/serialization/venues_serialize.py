@@ -134,6 +134,9 @@ class VenueContactModel(BaseModel):
             raise ValueError(f"numéro de téléphone invalide: {phone_number}")
 
 
+VenueDescription = pydantic.constr(max_length=1000, strip_whitespace=True)
+
+
 class GetVenueResponseModel(BaseModel):
     address: Optional[str]
     bic: Optional[str]
@@ -190,7 +193,7 @@ class EditVenueBodyModel(BaseModel):
     withdrawalDetails: Optional[str]
     isWithdrawalAppliedOnAllOffers: Optional[bool]
     isEmailAppliedOnAllOffers: Optional[bool]
-    description: Optional[pydantic.constr(max_length=1000, strip_whitespace=True)]  # type: ignore
+    description: Optional[VenueDescription]  # type: ignore
     audioDisabilityCompliant: Optional[bool]
     mentalDisabilityCompliant: Optional[bool]
     motorDisabilityCompliant: Optional[bool]

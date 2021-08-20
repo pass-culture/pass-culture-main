@@ -26,6 +26,17 @@ class VenuesTest:
             "address": venue.address,
             "postalCode": venue.postalCode,
             "venueTypeCode": venue.venueTypeCode.value,
+            "description": venue.description,
+            "audioDisabilityCompliant": venue.audioDisabilityCompliant,
+            "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
+            "motorDisabilityCompliant": venue.motorDisabilityCompliant,
+            "visualDisabilityCompliant": venue.visualDisabilityCompliant,
+            "contact": {
+                "email": venue.contact.email,
+                "phoneNumber": venue.contact.phone_number,
+                "website": venue.contact.website,
+                "socialMedias": venue.contact.social_medias,
+            },
         }
 
     def test_get_non_existing_venue(self, client):
