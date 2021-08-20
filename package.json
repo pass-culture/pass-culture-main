@@ -5,10 +5,10 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "build:development": "ENV=development yarn build",
-    "build:testing": "ENV=testing yarn build",
-    "build:staging": "ENV=staging yarn build",
-    "build:production": "ENV=production yarn build",
+    "build:development": "env-cmd -f .env.development yarn build",
+    "build:testing": "env-cmd -f .env.testing yarn build",
+    "build:staging": "env-cmd -f .env.staging yarn build",
+    "build:production": "env-cmd -f .env.production yarn build",
     "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx,ts,tsx}' --max-warnings=0",
     "lint:js:fix": "yarn lint:js --fix",
     "lint:scss": "stylelint '**/*.scss'",
@@ -53,6 +53,7 @@
     "@elastic/search-ui-app-search-connector": "^1.7.0",
     "@sentry/react": "^6.11.0",
     "@sentry/tracing": "^6.11.0",
+    "env-cmd": "^10.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "sass-rem": "^3.0.0"
