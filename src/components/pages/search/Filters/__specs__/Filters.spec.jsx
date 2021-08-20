@@ -352,7 +352,7 @@ describe('components | Filters', () => {
           </Provider>
         )
         const resultsButton = wrapper.find('.sf-button')
-        const showCategory = wrapper.find('input[name="SPECTACLE"]')
+        const showCategory = wrapper.find('input[name="Spectacles"]')
         const digitalOffers = wrapper.find('input[name="isDigital"]')
 
         const showCategoryEvent = { target: { name: 'SPECTACLE', checked: true } }
@@ -1454,7 +1454,7 @@ describe('components | Filters', () => {
             '[data-test="sf-categories-filter-wrapper"]'
           )
           const filterCheckboxAfterClick = categoriesWrapperAfterClick.find(Checkbox)
-          expect(filterCheckboxBeforeClick).toHaveLength(11)
+          expect(filterCheckboxBeforeClick).toHaveLength(12)
           expect(filterCheckboxAfterClick).toHaveLength(0)
 
           const categoriesButtonAfterClick = wrapper
@@ -1480,9 +1480,9 @@ describe('components | Filters', () => {
           const cinemaFilterCheckbox = wrapper.find('Checkbox[label="Cinéma"]')
           expect(cinemaFilterCheckbox.prop('checked')).toBe(false)
           expect(cinemaFilterCheckbox.prop('className')).toBe('fc-label')
-          expect(cinemaFilterCheckbox.prop('id')).toBe('CINEMA')
+          expect(cinemaFilterCheckbox.prop('id')).toBe('Cinéma')
           expect(cinemaFilterCheckbox.prop('label')).toBe('Cinéma')
-          expect(cinemaFilterCheckbox.prop('name')).toBe('CINEMA')
+          expect(cinemaFilterCheckbox.prop('name')).toBe('Cinéma')
           expect(cinemaFilterCheckbox.prop('onChange')).toStrictEqual(expect.any(Function))
           expect(wrapper.find('Checkbox[label="Visites, expositions"]').prop('checked')).toBe(false)
           expect(wrapper.find('Checkbox[label="Musique"]').prop('checked')).toBe(false)
@@ -1493,7 +1493,7 @@ describe('components | Filters', () => {
             false
           )
           expect(wrapper.find('Checkbox[label="Presse"]').prop('checked')).toBe(false)
-          expect(wrapper.find('Checkbox[label="Jeux vidéos"]').prop('checked')).toBe(false)
+          expect(wrapper.find('Checkbox[label="Jeux"]').prop('checked')).toBe(false)
           expect(wrapper.find('Checkbox[label="Conférences, rencontres"]').prop('checked')).toBe(
             false
           )
@@ -1520,7 +1520,7 @@ describe('components | Filters', () => {
         it('should render a Checkbox component checked when category is selected', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
-          props.initialFilters.offerCategories = ['CINEMA', 'LIVRE']
+          props.initialFilters.offerCategories = ['Cinéma', 'Livres']
 
           // when
           const wrapper = shallow(<Filters {...props} />)
@@ -1541,7 +1541,7 @@ describe('components | Filters', () => {
             false
           )
           expect(wrapper.find('Checkbox[label="Presse"]').prop('checked')).toBe(false)
-          expect(wrapper.find('Checkbox[label="Jeux vidéos"]').prop('checked')).toBe(false)
+          expect(wrapper.find('Checkbox[label="Jeux"]').prop('checked')).toBe(false)
           expect(wrapper.find('Checkbox[label="Conférences, rencontres"]').prop('checked')).toBe(
             false
           )

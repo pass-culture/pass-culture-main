@@ -42,7 +42,7 @@ describe('src | components | parseAlgoliaParameters', () => {
       endingDatetime: null,
       geolocation: null,
       hitsPerPage: null,
-      offerCategories: ['CINEMA', 'LECON', 'LIVRE'],
+      offerCategories: ['Cinéma', 'Cours, ateliers', 'Livres'],
       offerIsDuo: false,
       offerIsFree: false,
       offerIsNew: false,

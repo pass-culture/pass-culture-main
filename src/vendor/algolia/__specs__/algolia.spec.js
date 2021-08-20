@@ -267,7 +267,7 @@ describe('fetchAlgolia', () => {
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        facetFilters: [['offer.category:LECON']],
+        facetFilters: [['offer.searchGroup:LECON']],
         page: 0,
       })
     })
@@ -285,7 +285,7 @@ describe('fetchAlgolia', () => {
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        facetFilters: [['offer.category:SPECTACLE', 'offer.category:LIVRE']],
+        facetFilters: [['offer.searchGroup:SPECTACLE', 'offer.searchGroup:LIVRE']],
         page: 0,
       })
     })
@@ -978,7 +978,10 @@ describe('fetchAlgolia', () => {
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         page: page,
-        facetFilters: [['offer.category:LECON', 'offer.category:VISITE'], 'offer.isDigital:true'],
+        facetFilters: [
+          ['offer.searchGroup:LECON', 'offer.searchGroup:VISITE'],
+          'offer.isDigital:true',
+        ],
         aroundLatLng: '42, 43',
         aroundRadius: 'all',
       })
@@ -1013,7 +1016,7 @@ describe('fetchAlgolia', () => {
       expect(search).toHaveBeenCalledWith(keywords, {
         page: 0,
         facetFilters: [
-          ['offer.category:PRATIQUE', 'offer.category:SPECTACLE'],
+          ['offer.searchGroup:PRATIQUE', 'offer.searchGroup:SPECTACLE'],
           'offer.isEvent:true',
         ],
         aroundLatLng: '42, 43',
@@ -1052,7 +1055,7 @@ describe('fetchAlgolia', () => {
       expect(search).toHaveBeenCalledWith(keywords, {
         page: 0,
         facetFilters: [
-          ['offer.category:PRATIQUE', 'offer.category:SPECTACLE'],
+          ['offer.searchGroup:PRATIQUE', 'offer.searchGroup:SPECTACLE'],
           'offer.isEvent:true',
           'offer.isDuo:true',
         ],
