@@ -1,0 +1,4 @@
+POSTGRES_DB=pass_culture
+POSTGRES_USER=pytest
+POSTGRES_PASSWORD=pytest
+RUN_ENV=tests

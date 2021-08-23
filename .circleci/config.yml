@@ -205,7 +205,7 @@ jobs:
           name: Running API server
           command: |
             cd api
-            pc start-backend
+            ENV=tests pc start-backend
           background: true
       - run:
           name: Run Frontend WEBAPP
@@ -279,7 +279,7 @@ jobs:
           name: Running API server
           command: |
             cd api
-            pc start-backend
+            ENV=tests pc start-backend
           background: true
       - run:
           name: Run Frontend PRO
