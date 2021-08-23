@@ -98,6 +98,8 @@ def confirm_educational_booking(educational_booking_id: int) -> EducationalBooki
     if booking.status == bookings_models.BookingStatus.CONFIRMED:
         return educational_booking
 
+    validation.check_educational_booking_status(educational_booking)
+
     educational_institution_id = educational_booking.educationalInstitutionId
     educational_year_id = educational_booking.educationalYearId
     with transaction():

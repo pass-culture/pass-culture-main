@@ -140,6 +140,25 @@ class ConfirmEducationalBookingTest:
         with pytest.raises(exceptions.InsufficientTemporaryFund):
             educational_api.confirm_educational_booking(booking.educationalBookingId)
 
+    def test_raises_educational_booking_is_refused(self, db_session) -> None:
+        # Given
+        booking = bookings_factories.EducationalBookingFactory(
+            educationalBooking__status=EducationalBookingStatus.REFUSED,
+            status=BookingStatus.CANCELLED,
+        )
+
+        # Then
+        with pytest.raises(exceptions.EducationalBookingIsRefused):
+            educational_api.confirm_educational_booking(booking.educationalBookingId)
+
+    def test_raises_booking_is_cancelled(self, db_session) -> None:
+        # Given
+        booking = bookings_factories.EducationalBookingFactory(status=BookingStatus.CANCELLED)
+
+        # Then
+        with pytest.raises(exceptions.BookingIsCancelled):
+            educational_api.confirm_educational_booking(booking.educationalBookingId)
+
 
 @freeze_time("2020-11-17 15:00:00")
 @pytest.mark.usefixtures("db_session")

@@ -1,7 +1,10 @@
 from decimal import Decimal
 from typing import Optional
 
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import exceptions
+from pcapi.core.educational.models import EducationalBooking
+from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalYear
@@ -38,3 +41,11 @@ def check_stock_is_bookable(stock: Stock) -> None:
         raise exceptions.OfferIsNotEducational(stock.offer.id)
     if not stock.offer.isEvent:
         raise exceptions.OfferIsNotEvent(stock.offer.id)
+
+
+def check_educational_booking_status(educational_booking: EducationalBooking) -> None:
+    if educational_booking.status == EducationalBookingStatus.REFUSED:
+        raise exceptions.EducationalBookingIsRefused()
+
+    if educational_booking.booking.status == BookingStatus.CANCELLED:
+        raise exceptions.BookingIsCancelled()
