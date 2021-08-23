@@ -560,7 +560,7 @@ const OfferForm = ({
               </h3>
 
               <div className="form-row">
-                <TextareaInput
+                <TextInput
                   countCharacters
                   disabled={readOnlyFields.includes('name')}
                   error={getErrorMessage('name')}
@@ -569,7 +569,6 @@ const OfferForm = ({
                   name="name"
                   onChange={handleSingleFormUpdate}
                   required
-                  rows={1}
                   subLabel={!mandatoryFields.includes('name') ? 'Optionnel' : ''}
                   value={formValues.name}
                 />
@@ -597,7 +596,6 @@ const OfferForm = ({
                     name="speaker"
                     onChange={handleSingleFormUpdate}
                     subLabel={!mandatoryFields.includes('speaker') ? 'Optionnel' : ''}
-                    type="text"
                     value={formValues.speaker}
                   />
                 </div>

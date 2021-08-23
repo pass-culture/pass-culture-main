@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {act, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -208,7 +208,7 @@ describe('offerDetails - Edition', () => {
           userEvent.click(mentalDisabilityCompliantCheckbox)
 
           // Then
-          accessibilityErrorNotification = await screen.queryByText(
+          accessibilityErrorNotification = screen.queryByText(
             'Vous devez cocher l’une des options ci-dessus'
           )
           expect(accessibilityErrorNotification).toBeNull()
@@ -400,7 +400,7 @@ describe('offerDetails - Edition', () => {
 
         // Then
         expect(
-          await screen.getByTitle('Modifier l’image', { selector: 'button' })
+          screen.getByTitle('Modifier l’image', { selector: 'button' })
         ).toBeInTheDocument()
         expect(
           screen.queryByTitle('Fermer la modale', { selector: 'button' })
@@ -462,7 +462,8 @@ describe('offerDetails - Edition', () => {
         await renderOffers({}, store)
 
         // then
-        expect(await screen.getAllByText('My edited offer')).toHaveLength(2)
+        const offerPreview = screen.getByTestId('offer-preview-section')
+        expect(within(offerPreview).getByText(editedOffer.name)).toBeInTheDocument()
       })
 
       it('should display description', async () => {
@@ -470,7 +471,8 @@ describe('offerDetails - Edition', () => {
         await renderOffers({}, store)
 
         // then
-        expect(await screen.getAllByText('My edited description')).toHaveLength(2)
+        const offerPreview = screen.getByTestId('offer-preview-section')
+        expect(within(offerPreview).getByText(editedOffer.description)).toBeInTheDocument()
       })
 
       it('should display terms of withdrawal', async () => {
@@ -478,7 +480,8 @@ describe('offerDetails - Edition', () => {
         await renderOffers({}, store)
 
         // then
-        expect(await screen.getAllByText('My edited withdrawal details')).toHaveLength(2)
+        const offerPreview = screen.getByTestId('offer-preview-section')
+        expect(within(offerPreview).getByText(editedOffer.withdrawalDetails)).toBeInTheDocument()
       })
 
       describe('when fraud detection', () => {
@@ -1138,7 +1141,7 @@ describe('offerDetails - Edition', () => {
       fireEvent.click(await screen.findByText("Détail de l'offre"))
 
       // Then
-      expect(await getOfferInputForField('name')).toHaveTextContent(editValues.name)
+      expect(await getOfferInputForField('name')).toHaveValue(editValues.name)
 
       const expectedSubCategoryValue = categories.subcategories.find(
         subCat => subCat.id.toString() === editValues.subcategoryId

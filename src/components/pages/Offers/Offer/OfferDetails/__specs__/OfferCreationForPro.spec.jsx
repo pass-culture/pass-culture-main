@@ -372,7 +372,8 @@ describe('offerDetails - Creation - pro user', () => {
           userEvent.type(titleInput, 'Mon joli titre')
 
           // then
-          expect(screen.getAllByText('Mon joli titre')).toHaveLength(2)
+          const offerPreview = screen.getByTestId('offer-preview-section')
+          expect(within(offerPreview).getByText('Mon joli titre')).toBeInTheDocument()
         })
 
         it('should display description when input is filled', async () => {
@@ -386,7 +387,8 @@ describe('offerDetails - Creation - pro user', () => {
           userEvent.type(descriptionInput, 'Ma jolie description')
 
           // then
-          expect(await screen.queryAllByText('Ma jolie description')).toHaveLength(2)
+          const offerPreview = screen.getByTestId('offer-preview-section')
+          expect(within(offerPreview).getByText('Ma jolie description')).toBeInTheDocument()
         })
 
         it('should display terms of withdrawal when input is filled', async () => {
@@ -402,7 +404,8 @@ describe('offerDetails - Creation - pro user', () => {
           userEvent.type(withdrawalInput, 'Mes jolies modalités')
 
           // then
-          expect(await screen.queryAllByText('Mes jolies modalités')).toHaveLength(2)
+          const offerPreview = screen.getByTestId('offer-preview-section')
+          expect(within(offerPreview).getByText('Mes jolies modalités')).toBeInTheDocument()
         })
 
         it("should display disabled 'isDuo' icone for offers that aren't event", async () => {
