@@ -1,4 +1,5 @@
 from functools import wraps
+import json
 import logging
 
 from flask.blueprints import Blueprint
@@ -33,7 +34,7 @@ def task(queue: str, path: str):
                 return
 
             if isinstance(payload, pydantic.BaseModel):
-                payload = payload.dict()
+                payload = json.loads(payload.json())
 
             task_id = _enqueue_task(queue, path, payload)
             logger.info("Enqueued cloud task", extra={"queue": queue, "handler": path, "task": task_id})
