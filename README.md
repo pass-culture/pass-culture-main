@@ -15,7 +15,7 @@ Elle ne contient toutefois pas les endpoints de l'api publique.
 
 Il existe une ancienne api très incomplète et non utilisable (A décommissioner) [http://localhost/api/doc](http://localhost/api/doc)
 
-## Installation et Lancement des tests
+## Installation et Tests
 
 - ### Installation des requirements
   - Avec venv (ou virtualenv si vous préférez)
@@ -43,6 +43,12 @@ Il existe une ancienne api très incomplète et non utilisable (A décommissione
     
     Configurer le working directory par défaut pour être toujours à la racine de ce projet
     ![pycharm-test-config][pycharm-test-configuration]
+
+- ### Écriture des tests
+  - Les tests utilisent leur propre base de données
+   Si un test a besoin d'accéder à la base de donnée, il faut le décorer avec `@pytest.mark.usefixtures("db_session")` pour encapsuler le test dans une transation et éviter des colisions entre différents tests
+
+   les différentes fixtures utilisées dans les tests sont définies dans `tests/conftest.py`
 
 ## Dépendances
 
