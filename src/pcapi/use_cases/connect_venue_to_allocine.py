@@ -1,34 +1,33 @@
 from decimal import Decimal
 
+from pcapi.core.providers.api import VenueProviderCreationPayload
+from pcapi.core.providers.exceptions import NoAllocinePivot
+from pcapi.core.providers.exceptions import NoPriceSpecified
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import VenueProvider
 from pcapi.domain.price_rule import PriceRule
-from pcapi.models import ApiErrors
 from pcapi.models import Venue
 from pcapi.models.allocine_pivot import AllocinePivot
 from pcapi.repository import repository
 from pcapi.repository.allocine_pivot_queries import get_allocine_pivot_for_venue
-from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
-from pcapi.utils.human_ids import dehumanize
 
 
 ERROR_CODE_PROVIDER_NOT_SUPPORTED = 400
 ERROR_CODE_SIRET_NOT_SUPPORTED = 422
 
 
-def _check_allocine_pivot(allocine_pivot: AllocinePivot):
-    if not allocine_pivot:
-        errors = ApiErrors(status_code=404)
-        errors.add_error("global", "No Allocine pivot was found for this venue")
-        raise errors
-
-
-def connect_venue_to_allocine(venue: Venue, venue_provider_payload: PostVenueProviderBody) -> AllocineVenueProvider:
+def connect_venue_to_allocine(
+    venue: Venue, provider_id: int, venue_provider_payload: VenueProviderCreationPayload
+) -> AllocineVenueProvider:
     allocine_pivot = get_allocine_pivot_for_venue(venue)
-    _check_allocine_pivot(allocine_pivot)
 
-    venue_provider = _create_allocine_venue_provider(allocine_pivot, venue_provider_payload, venue)
+    if not allocine_pivot:
+        raise NoAllocinePivot()
+    if not venue_provider_payload.price:
+        raise NoPriceSpecified()
+
+    venue_provider = _create_allocine_venue_provider(allocine_pivot, provider_id, venue_provider_payload, venue)
     venue_provider_price_rule = _create_allocine_venue_provider_price_rule(venue_provider, venue_provider_payload.price)
 
     repository.save(venue_provider_price_rule)
@@ -48,11 +47,11 @@ def _create_allocine_venue_provider_price_rule(
 
 
 def _create_allocine_venue_provider(
-    allocine_pivot: AllocinePivot, venue_provider_payload: PostVenueProviderBody, venue: Venue
+    allocine_pivot: AllocinePivot, provider_id: int, venue_provider_payload: VenueProviderCreationPayload, venue: Venue
 ) -> AllocineVenueProvider:
     allocine_venue_provider = AllocineVenueProvider()
     allocine_venue_provider.venue = venue
-    allocine_venue_provider.providerId = dehumanize(venue_provider_payload.providerId)
+    allocine_venue_provider.providerId = provider_id
     allocine_venue_provider.venueIdAtOfferProvider = allocine_pivot.theaterId
     allocine_venue_provider.isDuo = venue_provider_payload.isDuo
     allocine_venue_provider.quantity = venue_provider_payload.quantity

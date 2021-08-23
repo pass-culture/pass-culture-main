@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import Optional
+
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
 from sqlalchemy import CheckConstraint
@@ -168,3 +171,11 @@ class AllocineVenueProviderPriceRule(PcObject, Model):
         if "wrong_price" in str(data_error):
             return ["global", "Le prix doit être un nombre décimal"]
         return PcObject.restize_integrity_error(data_error)
+
+
+@dataclass
+class VenueProviderCreationPayload:
+    isDuo: Optional[bool] = None
+    price: Optional[str] = None
+    quantity: Optional[int] = None
+    venueIdAtOfferProvider: Optional[str] = None

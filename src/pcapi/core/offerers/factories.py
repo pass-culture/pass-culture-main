@@ -16,10 +16,11 @@ from pcapi.utils import crypto
 class ProviderFactory(BaseFactory):
     class Meta:
         model = pcapi.core.providers.models.Provider
-        sqlalchemy_get_or_create = ["localClass"]
+        sqlalchemy_get_or_create = ["localClass", "apiUrl"]
 
     name = factory.Sequence("Provider {}".format)
     localClass = factory.Sequence("{}Stocks".format)
+    apiUrl = None
     enabledForPro = True
     isActive = True
 
@@ -51,6 +52,8 @@ class AllocineProviderFactory(BaseFactory):
 
     name = factory.Sequence("Provider {}".format)
     localClass = "AllocineStocks"
+    enabledForPro = True
+    isActive = True
 
 
 class AllocineVenueProviderFactory(BaseFactory):

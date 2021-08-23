@@ -6,11 +6,13 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.providers.api import connect_venue_to_provider
+from pcapi.core.providers.exceptions import NoSiretSpecified
+from pcapi.core.providers.exceptions import ProviderWithoutApiImplementation
+from pcapi.core.providers.exceptions import VenueSiretNotRegistered
 from pcapi.core.providers.models import VenueProvider
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_provider
 from pcapi.model_creators.generic_creators import create_venue
-from pcapi.models import ApiErrors
 from pcapi.repository import repository
 
 
@@ -100,13 +102,11 @@ class WhenProviderImplementsProviderAPITest:
         stock_repository.can_be_synchronized.return_value = False
 
         # when
-        with pytest.raises(ApiErrors) as error:
+        with pytest.raises(VenueSiretNotRegistered):
             connect_venue_to_provider(venue, provider)
 
         # then
-        assert error.value.errors["provider"] == [
-            "L’importation d’offres avec FNAC n’est pas disponible pour le SIRET 12345678912345"
-        ]
+        assert not VenueProvider.query.first()
 
     @pytest.mark.usefixtures("db_session")
     def should_not_connect_venue_when_venue_has_no_siret(self, app):
@@ -120,13 +120,11 @@ class WhenProviderImplementsProviderAPITest:
         self.find_by_id.return_value = venue
 
         # when
-        with pytest.raises(ApiErrors) as error:
+        with pytest.raises(NoSiretSpecified):
             connect_venue_to_provider(venue, provider)
 
         # then
-        assert error.value.errors["provider"] == [
-            "L’importation d’offres avec FNAC n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres."
-        ]
+        assert not VenueProvider.query.first()
 
 
 class WhenProviderIsSomethingElseTest:
@@ -144,8 +142,8 @@ class WhenProviderIsSomethingElseTest:
         self.find_by_id.return_value = venue
 
         # When
-        with pytest.raises(ApiErrors) as error:
+        with pytest.raises(ProviderWithoutApiImplementation):
             connect_venue_to_provider(venue, provider)
 
         # Then
-        assert error.value.errors["provider"] == ["Provider non pris en charge"]
+        assert not VenueProvider.query.first()

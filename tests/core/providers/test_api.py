@@ -11,26 +11,25 @@ from pcapi.core.offers import factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.providers import api
+from pcapi.core.providers.exceptions import ProviderNotFound
+from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.provider_api import synchronize_provider_api
-from pcapi.models import ApiErrors
 from pcapi.models.product import Product
-from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 
 
 class CreateVenueProviderTest:
     @pytest.mark.usefixtures("db_session")
     def test_prevent_creation_for_non_existing_provider(self):
         # Given
-        providerId = "AE"
-        venueId = "AE"
-        venue_provider = PostVenueProviderBody(providerId=providerId, venueId=venueId)
+        providerId = 1
+        venueId = 2
 
         # When
-        with pytest.raises(ApiErrors) as error:
-            api.create_venue_provider(venue_provider)
+        with pytest.raises(ProviderNotFound):
+            api.create_venue_provider(providerId, venueId)
 
         # Then
-        assert error.value.errors["provider"] == ["Cette source n'est pas disponible"]
+        assert not VenueProvider.query.first()
 
 
 def create_product(isbn, **kwargs):

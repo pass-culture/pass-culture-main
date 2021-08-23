@@ -26,7 +26,7 @@ def _get_venue_provider_link(view, context, model, name) -> Union[Markup, None]:
     if not model.venueProviders:
         return None
     url = url_for("venue_providers.index_view", id=model.id)
-    return Markup('<a href="{}">Voir</a>').format(url)
+    return Markup('<a href="{url}">{text}</a>').format(url=url, text=model.venueProviders[0].provider.name)
 
 
 class VenueView(BaseAdminView):
@@ -44,7 +44,6 @@ class VenueView(BaseAdminView):
         "latitude",
         "longitude",
         "isPermanent",
-        "offer_import",
         "provider_name",
     ]
     column_labels = dict(
@@ -57,7 +56,6 @@ class VenueView(BaseAdminView):
         latitude="Latitude",
         longitude="Longitude",
         isPermanent="Lieu permanent",
-        offer_import="Import d'offres",
         provider_name="Provider",
     )
     column_searchable_list = ["name", "siret", "publicName"]
@@ -93,7 +91,7 @@ class VenueView(BaseAdminView):
     def column_formatters(self):
         formatters = super().column_formatters
         formatters.update(offres=_offers_link)
-        formatters.update(offer_import=_get_venue_provider_link)
+        formatters.update(provider_name=_get_venue_provider_link)
         return formatters
 
     def delete_model(self, venue: Venue) -> bool:

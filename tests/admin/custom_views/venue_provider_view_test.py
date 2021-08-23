@@ -1,13 +1,16 @@
 from unittest.mock import patch
 
-import pytest
-
 from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
-from pcapi.admin.custom_views.venue_view import _get_venue_provider_link
+from pcapi.core.offerers.factories import AllocineProviderFactory
+from pcapi.core.offerers.factories import AllocineVenueProviderFactory
+from pcapi.core.offerers.factories import AllocineVenueProviderPriceRuleFactory
 from pcapi.core.offerers.factories import ProviderFactory
 from pcapi.core.offerers.factories import VenueProviderFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.providers.models import VenueProvider
+from pcapi.core.users.factories import AdminFactory
+
+from tests.conftest import clean_database
 
 
 class VenueProviderViewTest:
@@ -31,57 +34,96 @@ class VenueProviderViewTest:
         assert not view.is_accessible()
 
 
-class CreateModelTest:
-    @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider", lambda *args, **kwargs: True)
+class EditModelTest:
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
-    def test_use_api_method_to_create_venue_provider(self, synchronize_venue_provider, db_session):
+    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
+    def test_edit_venue_provider(
+        self, mock_siret_can_be_synchronized, synchronize_venue_provider, validate_csrf_token, client, app
+    ):
         # Given
+        AdminFactory(email="user@example.com")
         venue = VenueFactory()
-        provider = ProviderFactory(enabledForPro=True, localClass=None, apiUrl="https://example.com")
-        view = VenueProviderView(VenueProvider, db_session)
-        VenueProviderForm = view.scaffold_form()
+        old_provider = ProviderFactory(
+            name="old provider", enabledForPro=True, localClass=None, apiUrl="https://example.com"
+        )
+        new_provider = ProviderFactory(
+            name="new provider", enabledForPro=True, localClass=None, apiUrl="https://example2.com"
+        )
+        venue_provider = VenueProviderFactory(provider=old_provider, venue=venue)
+
+        mock_siret_can_be_synchronized.return_value = True
 
         data = dict(
-            isDuo=True,
-            price=23.5,
-            provider=provider,
-            venueId=venue.id,
+            provider=new_provider.id,
+            venue=venue.id,
             venueIdAtOfferProvider="hsf4uiagèy12386dq",
         )
-        form = VenueProviderForm(data=data)
 
-        # When
-        view.create_model(form)
+        client.with_session_auth("user@example.com")
+        response = client.post(f"/pc/back-office/venue_providers/edit/?id={venue_provider.id}", form=data)
+
+        assert response.status_code == 302
 
         # Then
         venue_provider = VenueProvider.query.one()
         assert venue_provider.venue == venue
-        assert venue_provider.provider == provider
+        assert venue_provider.provider == new_provider
         assert venue_provider.venueIdAtOfferProvider == "hsf4uiagèy12386dq"
         synchronize_venue_provider.assert_called_once_with(venue_provider)
 
-
-class GetVenueProviderLinkTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_return_empty_link_when_no_venue_provider(self, app):
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
+    def test_provider_not_synchronizable(self, mock_siret_can_be_synchronized, validate_csrf_token, client):
         # Given
+        AdminFactory(email="user@example.com")
         venue = VenueFactory()
+        old_provider = ProviderFactory(enabledForPro=True, localClass=None, apiUrl="https://example.com")
+        new_provider = ProviderFactory(enabledForPro=True, localClass=None, apiUrl="https://example2.com")
+        venue_provider = VenueProviderFactory(provider=old_provider, venue=venue, venueIdAtOfferProvider="old-siret")
 
-        # When
-        link = _get_venue_provider_link(None, None, venue, None)
+        mock_siret_can_be_synchronized.return_value = False
+
+        data = dict(
+            provider=new_provider.id,
+            venue=venue.id,
+            venueIdAtOfferProvider="hsf4uiagèy12386dq",
+        )
+
+        client.with_session_auth("user@example.com")
+        client.post(f"/pc/back-office/venue_providers/edit/?id={venue_provider.id}", form=data)
 
         # Then
-        assert not link
+        assert venue_provider.provider == old_provider
+        assert venue_provider.venueIdAtOfferProvider == "old-siret"
 
-    @pytest.mark.usefixtures("db_session")
-    def test_return_link_to_venue_provider(self, app):
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
+    def test_allocine_provider(self, synchronize_venue_provider, validate_csrf_token, client):
         # Given
-        venue_provider = VenueProviderFactory()
-        venue = venue_provider.venue
+        AdminFactory(email="user@example.com")
+        venue = VenueFactory(siret="siret-pivot")
+        provider = AllocineProviderFactory(enabledForPro=True)
 
-        # When
-        link = _get_venue_provider_link(None, None, venue, None)
+        venue_provider = AllocineVenueProviderFactory(provider=provider, venue=venue, isDuo=False, quantity=111)
+        AllocineVenueProviderPriceRuleFactory(price=11, allocineVenueProvider=venue_provider)
+
+        data = dict(
+            isDuo=True,
+            allocine_price=22,
+            allocine_quantity=222,
+            provider=provider.id,
+            venue=venue.id,
+            venueIdAtOfferProvider=None,
+        )
+
+        client.with_session_auth("user@example.com")
+        client.post(f"/pc/back-office/venue_providers/edit/?id={venue_provider.id}", form=data)
+        synchronize_venue_provider.assert_called_once_with(venue_provider)
 
         # Then
-        assert str(venue.id) in link
-        assert "venue_providers" in link
+        assert venue.venueProviders[0] == venue_provider
+        assert venue_provider.quantity == 222

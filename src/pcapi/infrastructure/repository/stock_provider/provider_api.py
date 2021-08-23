@@ -1,5 +1,8 @@
 import logging
 
+from requests.exceptions import RequestException
+
+from pcapi.core.providers.exceptions import ConnexionToProviderApiFailed
 from pcapi.utils import requests
 
 
@@ -86,7 +89,10 @@ class ProviderAPI:
         if self.authentication_token is not None:
             headers = {"Authorization": f"Basic {self.authentication_token}"}
 
-        response = requests.get(url=api_url, headers=headers, timeout=REQUEST_TIMEOUT_FOR_PROVIDERS_IN_SECOND)
+        try:
+            response = requests.get(url=api_url, headers=headers, timeout=REQUEST_TIMEOUT_FOR_PROVIDERS_IN_SECOND)
+        except RequestException:
+            raise ConnexionToProviderApiFailed
 
         return response.status_code == 200
 

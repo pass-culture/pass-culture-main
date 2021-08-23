@@ -2,11 +2,15 @@ import logging
 import random
 import re
 
+from pcapi.core.offerers.factories import AllocineProviderFactory
+from pcapi.core.offerers.factories import AllocineVenueProviderFactory
+from pcapi.core.offerers.factories import AllocineVenueProviderPriceRuleFactory
 from pcapi.core.offerers.factories import VenueProviderFactory
 from pcapi.core.offerers.models import VenueType
 from pcapi.core.offers.factories import BankInformationFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.factories import VirtualVenueFactory
+from pcapi.core.providers.factories import AllocinePivotFactory
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 
 
@@ -89,6 +93,19 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
         venue_by_name[virtual_venue_name] = VirtualVenueFactory(
             managingOfferer=offerer, name=virtual_venue_name.format(venue_name)
         )
+
+    venue_synchronized_with_allocine = VenueFactory(name="Lieu synchro allociné", siret="87654321")
+    allocine_provider = AllocineProviderFactory(isActive=True)
+    pivot = AllocinePivotFactory(siret=venue_synchronized_with_allocine.siret)
+    venue_provider = AllocineVenueProviderFactory(
+        venue=venue_synchronized_with_allocine, provider=allocine_provider, venueIdAtOfferProvider=pivot.theaterId
+    )
+    AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider)
+    venue_by_name[venue_synchronized_with_allocine.name] = venue_synchronized_with_allocine
+
+    # FIXME (viconnex): understand why these properties are not set with right values in factories
+    allocine_provider.isActive = True
+    allocine_provider.enabledForPro = True
 
     logger.info("created %d venues", len(venue_by_name))
 

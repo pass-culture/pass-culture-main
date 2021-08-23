@@ -11,7 +11,6 @@ from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
-from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
@@ -22,8 +21,10 @@ from tests.conftest import clean_database
 class Returns201Test:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
-    def when_venue_provider_is_successfully_created(self, stubbed_check, mock_synchronize_venue_provider, app):
+    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
+    def when_venue_provider_is_successfully_created(
+        self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, app
+    ):
         # Given
         user = user_factories.AdminFactory()
         venue = offer_factories.VenueFactory(siret="12345678912345")
@@ -34,10 +35,9 @@ class Returns201Test:
             "providerId": humanize(provider.id),
             "venueId": humanize(venue.id),
         }
+        mock_siret_can_be_synchronized.return_value = True
 
         auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
-        stubbed_check.return_value = True
-
         # When
         response = auth_request.post("/venueProviders", json=venue_provider_data)
 
@@ -103,8 +103,8 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
-    def when_no_regression_on_format(self, stubbed_check, mock_synchronize_venue_provider, app):
+    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
+    def when_no_regression_on_format(self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, app):
         # Given
         user = user_factories.AdminFactory()
         venue = offer_factories.VenueFactory(siret="12345678912345")
@@ -117,7 +117,7 @@ class Returns201Test:
         }
 
         auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
-        stubbed_check.return_value = True
+        mock_siret_can_be_synchronized.return_value = True
 
         # When
         response = auth_request.post("/venueProviders", json=venue_provider_data)
@@ -152,8 +152,10 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-    @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
-    def when_venue_id_at_offer_provider_is_ignored_for_pro(self, stubbed_check, mock_synchronize_venue_provider, app):
+    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
+    def when_venue_id_at_offer_provider_is_ignored_for_pro(
+        self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, app
+    ):
         # Given
         user = user_factories.AdminFactory()
         venue = offer_factories.VenueFactory(siret="12345678912345")
@@ -167,7 +169,7 @@ class Returns201Test:
         }
 
         auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
-        stubbed_check.return_value = True
+        mock_siret_can_be_synchronized.return_value = True
 
         # When
         response = auth_request.post("/venueProviders", json=venue_provider_data)
@@ -181,6 +183,32 @@ class Returns201Test:
         assert "id" in response.json
         venue_provider_id = response.json["id"]
         mock_synchronize_venue_provider.assert_called_once_with(dehumanize(venue_provider_id))
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
+    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
+    def test_when_add_same_provider(self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, app):
+        # Given
+        user = user_factories.AdminFactory()
+        venue = offer_factories.VenueFactory(siret="12345678912345")
+        provider = offerers_factories.APIProviderFactory()
+        venue_provider = create_venue_provider(venue, provider, venue_id_at_offer_provider="12345678912345")
+        repository.save(venue_provider)
+
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+        venue_provider_data = {
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
+        }
+        mock_siret_can_be_synchronized.return_value = True
+
+        # When
+        response = auth_request.post("/venueProviders", json=venue_provider_data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"global": ["Votre lieu est déjà lié à cette source"]}
+        assert venue.venueProviders[0].provider.id == provider.id
 
 
 class Returns400Test:
@@ -198,30 +226,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["venueId"] == ["Ce champ est obligatoire"]
         assert response.json["providerId"] == ["Ce champ est obligatoire"]
-
-    @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
-    def when_trying_to_add_existing_provider(self, stubbed_check, app):
-        # Given
-        user = user_factories.AdminFactory()
-        venue = offer_factories.VenueFactory(siret="12345678912345")
-        provider = offerers_factories.APIProviderFactory()
-        venue_provider = create_venue_provider(venue, provider, venue_id_at_offer_provider="12345678912345")
-        repository.save(venue_provider)
-
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
-        venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
-        }
-        stubbed_check.return_value = True
-
-        # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["global"] == ["Votre lieu est déjà lié à cette source"]
 
     @clean_database
     def when_add_allocine_stocks_provider_with_wrong_format_price(self, app):
@@ -269,7 +273,7 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json["price"] == ["Cette information est obligatoire"]
+        assert response.json["price"] == ["Il est obligatoire de saisir un prix"]
         assert VenueProvider.query.count() == 0
 
 
@@ -323,14 +327,14 @@ class Returns404Test:
 
         # Then
         assert response.status_code == 404
-        assert response.json == {"global": ["No Allocine pivot was found for this venue"]}
+        assert response.json == {"allocine": ["Aucun AllocinePivot n'est défini pour ce lieu"]}
         assert VenueProvider.query.count() == 0
 
 
 class Returns422Test:
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
-    def when_provider_api_not_available(self, stubbed_check, app):
+    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
+    def when_provider_api_not_available(self, mock_siret_can_be_synchronized, app):
         # Given
         user = user_factories.AdminFactory()
         venue = offer_factories.VenueFactory(siret="12345678912345")
@@ -350,7 +354,7 @@ class Returns422Test:
             "provider",
             "L’importation d’offres avec LesLibraires n’est pas disponible " "pour le SIRET 12345678912345",
         )
-        stubbed_check.side_effect = [errors]
+        mock_siret_can_be_synchronized.side_effect = [errors]
 
         # When
         response = auth_request.post("/venueProviders", json=venue_provider_data)
@@ -365,10 +369,10 @@ class Returns422Test:
 
 class ConnectProviderToVenueTest:
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
+    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
     @patch("pcapi.core.providers.api.connect_venue_to_provider")
     def should_inject_the_appropriate_repository_to_the_usecase(
-        self, mocked_connect_venue_to_provider, stubbed_check, app
+        self, mocked_connect_venue_to_provider, mock_siret_can_be_synchronized, app
     ):
         # Given
         user = user_factories.AdminFactory()
@@ -382,7 +386,7 @@ class ConnectProviderToVenueTest:
         }
 
         auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
-        stubbed_check.return_value = True
+        mock_siret_can_be_synchronized.return_value = True
 
         # When
         auth_request.post("/venueProviders", json=venue_provider_data)
@@ -391,12 +395,8 @@ class ConnectProviderToVenueTest:
         mocked_connect_venue_to_provider.assert_called_once_with(venue, provider, None)
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
-    @patch("pcapi.core.providers.api.connect_venue_to_allocine")
-    def should_inject_no_repository_to_the_usecase_when_provider_is_not_concerned(
+    def should_connect_to_allocine(
         self,
-        mocked_connect_venue_to_allocine,
-        stubbed_check,
         app,
     ):
         # Given
@@ -406,18 +406,13 @@ class ConnectProviderToVenueTest:
 
         provider = activate_provider("AllocineStocks")
 
-        venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
-        }
+        venue_provider_data = {"providerId": humanize(provider.id), "venueId": humanize(venue.id), "price": "33.33"}
 
         auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
-        stubbed_check.return_value = True
 
         # When
         auth_request.post("/venueProviders", json=venue_provider_data)
 
         # Then
-        mocked_connect_venue_to_allocine.assert_called_once_with(
-            venue, PostVenueProviderBody(providerId=humanize(provider.id), venueId=humanize(venue.id))
-        )
+        assert len(venue.venueProviders) == 1
+        assert venue.venueProviders[0].provider == provider

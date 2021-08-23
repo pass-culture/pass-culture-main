@@ -9,45 +9,67 @@ from typing import Union
 
 from pcapi.core import search
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.validation import check_existing_venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import get_offers_map_by_id_at_providers
 from pcapi.core.offers.repository import get_products_map_by_id_at_providers
 from pcapi.core.offers.repository import get_stocks_by_id_at_providers
+from pcapi.core.providers.exceptions import NoSiretSpecified
+from pcapi.core.providers.exceptions import ProviderNotFound
+from pcapi.core.providers.exceptions import ProviderWithoutApiImplementation
+from pcapi.core.providers.exceptions import VenueNotFound
+from pcapi.core.providers.exceptions import VenueSiretNotRegistered
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
+from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.core.providers.repository import get_provider_enabled_for_pro_by_id
-from pcapi.models import ApiErrors
 from pcapi.models import Product
 from pcapi.models.db import db
 from pcapi.repository import repository
 from pcapi.repository.venue_queries import find_by_id
-from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
-from pcapi.utils.human_ids import dehumanize
 from pcapi.validation.models.entity_validator import validate
-from pcapi.validation.routes.venue_providers import check_existing_provider
 
 
 logger = logging.getLogger(__name__)
 
 
-def create_venue_provider(venue_provider: PostVenueProviderBody) -> VenueProvider:
-    provider_id = dehumanize(venue_provider.providerId)
+def create_venue_provider(
+    provider_id: int, venue_id: int, payload: Optional[VenueProviderCreationPayload] = VenueProviderCreationPayload()
+) -> VenueProvider:
     provider = get_provider_enabled_for_pro_by_id(provider_id)
-    check_existing_provider(provider)
+    if not provider:
+        raise ProviderNotFound()
 
-    venue_id = dehumanize(venue_provider.venueId)
     venue = find_by_id(venue_id)
-    check_existing_venue(venue)
+
+    if not venue:
+        raise VenueNotFound()
 
     if provider.localClass == "AllocineStocks":
-        new_venue_provider = connect_venue_to_allocine(venue, venue_provider)
+        new_venue_provider = connect_venue_to_allocine(venue, provider_id, payload)
     else:
-        new_venue_provider = connect_venue_to_provider(venue, provider, venue_provider.venueIdAtOfferProvider)
+        new_venue_provider = connect_venue_to_provider(venue, provider, payload.venueIdAtOfferProvider)
 
     return new_venue_provider
+
+
+def change_venue_provider(
+    venue_provider: VenueProvider, new_provider_id: int, venueIdAtOfferProvider: str = None
+) -> VenueProvider:
+    new_provider = get_provider_enabled_for_pro_by_id(new_provider_id)
+    if not new_provider:
+        raise ProviderNotFound()
+
+    id_at_provider = venueIdAtOfferProvider or venue_provider.venue.siret
+
+    _check_provider_can_be_connected(new_provider, id_at_provider)
+
+    venue_provider.provider = new_provider
+    venue_provider.venueIdAtOfferProvider = id_at_provider
+
+    repository.save(venue_provider)
+    return venue_provider
 
 
 ERROR_CODE_PROVIDER_NOT_SUPPORTED = 400
@@ -56,8 +78,8 @@ ERROR_CODE_SIRET_NOT_SUPPORTED = 422
 
 def connect_venue_to_provider(venue: Venue, provider: Provider, venueIdAtOfferProvider: str = None) -> VenueProvider:
     id_at_provider = venueIdAtOfferProvider or venue.siret
-    _check_provider_can_be_used(provider)
-    _check_venue_can_be_synchronized_with_provider(id_at_provider, provider)
+
+    _check_provider_can_be_connected(provider, id_at_provider)
 
     venue_provider = VenueProvider()
     venue_provider.venue = venue
@@ -68,25 +90,16 @@ def connect_venue_to_provider(venue: Venue, provider: Provider, venueIdAtOfferPr
     return venue_provider
 
 
-def _check_provider_can_be_used(
-    provider: Provider,
-) -> None:
+def _check_provider_can_be_connected(provider: Provider, id_at_provider: Optional[str]) -> None:
+    if not id_at_provider:
+        raise NoSiretSpecified()
+
     if not provider.implements_provider_api:
-        api_errors = ApiErrors()
-        api_errors.status_code = ERROR_CODE_PROVIDER_NOT_SUPPORTED
-        api_errors.add_error("provider", "Provider non pris en charge")
-        raise api_errors
+        raise ProviderWithoutApiImplementation()
 
-
-def _check_venue_can_be_synchronized_with_provider(
-    id_at_provider: str,
-    provider: Provider,
-) -> None:
     if not _siret_can_be_synchronized(id_at_provider, provider):
-        api_errors = ApiErrors()
-        api_errors.status_code = ERROR_CODE_SIRET_NOT_SUPPORTED
-        api_errors.add_error("provider", _get_synchronization_error_message(provider.name, id_at_provider))
-        raise api_errors
+        raise VenueSiretNotRegistered(provider.name, id_at_provider)
+    return
 
 
 def _siret_can_be_synchronized(

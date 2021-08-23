@@ -4,10 +4,9 @@ from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.providers.factories import AllocinePivotFactory
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
+from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.model_creators.provider_creators import activate_provider
-from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
-from pcapi.utils.human_ids import humanize
 
 
 class ConnectAllocineToVenueTest:
@@ -21,16 +20,10 @@ class ConnectAllocineToVenueTest:
             theaterId="123VHJ==",
         )
 
-        venue_provider_payload = PostVenueProviderBody(
-            providerId=humanize(provider.id),
-            venueId=humanize(venue.id),
-            price="9.99",
-            isDuo=True,
-            quantity=50,
-        )
-
         # When
-        connect_venue_to_allocine(venue, venue_provider_payload)
+        connect_venue_to_allocine(
+            venue, provider.id, VenueProviderCreationPayload(price="9.99", isDuo=True, quantity=50)
+        )
 
         # Then
         allocine_venue_provider = AllocineVenueProvider.query.one()
