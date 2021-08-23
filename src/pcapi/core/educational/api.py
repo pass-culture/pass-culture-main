@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import datetime
 import decimal
 import logging
 
@@ -6,6 +7,7 @@ from pcapi.connectors.api_adage import get_institutional_project_redactor_by_ema
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
+from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
@@ -70,6 +72,8 @@ def book_educational_offer(redactor_email: str, uai_code: str, stock_id: int) ->
             status=bookings_models.BookingStatus.PENDING,
         )
 
+        booking.dateCreated = datetime.utcnow()
+        booking.cancellationLimitDate = compute_cancellation_limit_date(stock.beginningDatetime, booking.dateCreated)
         stock.dnBookedQuantity += EAC_DEFAULT_BOOKED_QUANTITY
 
         repository.save(booking)
