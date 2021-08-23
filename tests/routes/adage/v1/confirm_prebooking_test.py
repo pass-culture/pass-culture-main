@@ -10,6 +10,7 @@ from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.offers.utils import offer_webapp_link
+from pcapi.routes.adage.v1.serialization import constants
 from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.utils.date import format_into_utc_date
 
@@ -107,7 +108,7 @@ class ReturnsErrorTest:
         response = client.post("/adage/v1/prebookings/404/confirm")
 
         assert response.status_code == 404
-        assert response.json == {"id": "Aucune réservation n'a été trouvée avec cet identifiant"}
+        assert response.json == {"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}
 
     def test_no_deposit(self, app, db_session) -> None:
         booking = EducationalBookingFactory(
@@ -120,7 +121,7 @@ class ReturnsErrorTest:
         response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/confirm")
 
         assert response.status_code == 404
-        assert response.json == {"deposit": "Aucun budget n'a été trouvé pour valider cette réservation"}
+        assert response.json == {"code": "DEPOSIT_NOT_FOUND"}
 
     def test_insufficient_fund(self, app, db_session) -> None:
         educational_institution = EducationalInstitutionFactory()
@@ -143,7 +144,7 @@ class ReturnsErrorTest:
         response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/confirm")
 
         assert response.status_code == 422
-        assert response.json == {"deposit": "Fonds insuffisant pour confirmer cette réservation"}
+        assert response.json == {"code": "INSUFFICIENT_FUND"}
 
     def test_insufficient_temporary_fund(self, app, db_session) -> None:
         educational_institution = EducationalInstitutionFactory()
@@ -166,4 +167,4 @@ class ReturnsErrorTest:
         response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/confirm")
 
         assert response.status_code == 422
-        assert response.json == {"deposit": "Montant du fond définitif en attente de validation"}
+        assert response.json == {"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"}

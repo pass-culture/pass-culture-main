@@ -6,6 +6,7 @@ from pcapi.core.educational.repository import find_educational_bookings_for_adag
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.educational_institution import educational_institution_path
+from pcapi.routes.adage.v1.serialization import constants
 from pcapi.routes.adage.v1.serialization import prebooking as prebooking_serialization
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -47,13 +48,13 @@ def confirm_prebooking(educational_booking_id: int) -> prebooking_serialization.
     try:
         educational_booking = api.confirm_educational_booking(educational_booking_id)
     except exceptions.InsufficientFund:
-        raise ApiErrors({"deposit": "Fonds insuffisant pour confirmer cette réservation"}, status_code=422)
+        raise ApiErrors({"code": "INSUFFICIENT_FUND"}, status_code=422)
     except exceptions.InsufficientTemporaryFund:
-        raise ApiErrors({"deposit": "Montant du fond définitif en attente de validation"}, status_code=422)
+        raise ApiErrors({"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"}, status_code=422)
     except exceptions.EducationalBookingNotFound:
-        raise ApiErrors({"id": "Aucune réservation n'a été trouvée avec cet identifiant"}, status_code=404)
+        raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
     except exceptions.EducationalDepositNotFound:
-        raise ApiErrors({"deposit": "Aucun budget n'a été trouvé pour valider cette réservation"}, status_code=404)
+        raise ApiErrors({"code": "DEPOSIT_NOT_FOUND"}, status_code=404)
 
     return prebooking_serialization.serialize_educational_booking(educational_booking)
 
@@ -74,7 +75,7 @@ def refuse_pre_booking(educational_booking_id: int) -> prebooking_serialization.
     try:
         educational_booking = api.refuse_educational_booking(educational_booking_id)
     except exceptions.EducationalBookingNotFound:
-        raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_FOUND"}, status_code=404)
+        raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
     except exceptions.EducationalBookingNotRefusable:
         raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_REFUSABLE"}, status_code=422)
     except exceptions.EducationalBookingAlreadyCancelled:
@@ -98,7 +99,7 @@ def mark_booking_as_used(educational_booking_id: int) -> prebooking_serializatio
     try:
         educational_booking = api.mark_educational_booking_as_used_by_institute(educational_booking_id)
     except exceptions.EducationalBookingNotFound:
-        raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_FOUND"}, status_code=404)
+        raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
     except exceptions.EducationalBookingNotConfirmedYet:
         raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_CONFIRMED_YET"}, status_code=422)
 
