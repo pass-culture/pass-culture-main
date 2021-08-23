@@ -55,7 +55,7 @@ def unauthorized_error(error: UnauthorizedError) -> Response:
         headers["WWW-Authenticate"] = error.www_authenticate
         if error.realm:
             headers["WWW-Authenticate"] = '%s realm="%s"' % (headers["WWW-Authenticate"], error.realm)
-    return Response(jsonify(error.errors), 401, headers)
+    return Response(json.dumps(error.errors), 401, headers)
 
 
 @app.errorhandler(MethodNotAllowed)
@@ -99,10 +99,15 @@ def already_activated_exception(error: AlreadyActivatedException) -> tuple[dict,
 
 
 @app.errorhandler(429)
-def ratelimit_handler(error: Exception):
+def ratelimit_handler(error: Exception) -> tuple[dict, int]:
+    identifier = None
+    if request.json and "identifier" in request.json:
+        identifier = request.json["identifier"]
+    if request.authorization and request.authorization.username:
+        identifier = request.authorization.username
     extra = {
         "method": request.method,
-        "identifier": request.json["identifier"] if "identifier" in request.json else None,
+        "identifier": identifier,
         "route": str(request.url_rule),
         "path": request.path,
         "queryParams": request.query_string.decode("UTF-8"),

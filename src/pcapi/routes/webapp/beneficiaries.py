@@ -96,8 +96,8 @@ def change_beneficiary_email(body: ChangeBeneficiaryEmailBody) -> None:
 
 # @debt api-migration
 @private_api.route("/beneficiaries/signin", methods=["POST"])
-@email_rate_limiter
-@ip_rate_limiter
+@email_rate_limiter()
+@ip_rate_limiter()
 def signin_beneficiary() -> tuple[str, int]:
     json = request.get_json()
     identifier = json.get("identifier")

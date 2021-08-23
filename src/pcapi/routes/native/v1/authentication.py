@@ -39,8 +39,8 @@ def create_user_access_token(user: User) -> str:
     on_success_status=200,
     api=blueprint.api,
 )  # type: ignore
-@email_rate_limiter
-@ip_rate_limiter
+@email_rate_limiter()
+@ip_rate_limiter()
 def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     try:
         user = users_repo.get_user_with_credentials(body.identifier, body.password)

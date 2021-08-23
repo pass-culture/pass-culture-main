@@ -43,8 +43,8 @@ def check_activation_token_exists(token):
 
 @private_api.route("/users/signin", methods=["POST"])
 @spectree_serialize(response_model=SharedLoginUserResponseModel)
-@ip_rate_limiter
-@email_rate_limiter
+@ip_rate_limiter()
+@email_rate_limiter()
 def signin(body: LoginUserBodyModel) -> SharedLoginUserResponseModel:
     errors = ApiErrors()
     errors.status_code = 401
