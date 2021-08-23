@@ -61,15 +61,13 @@ def create_industrial_educational_bookings() -> None:
     educational_current_year = educational_factories.EducationalYearFactory()
     educational_next_year = educational_factories.EducationalYearFactory()
 
-    versailles_educational_institution1 = educational_factories.EducationalInstitutionFactory(institutionId="0780032L")
-    versailles_educational_institution2 = educational_factories.EducationalInstitutionFactory(institutionId="0781839A")
-    rennes_educational_institution1 = educational_factories.EducationalInstitutionFactory(institutionId="0290047U")
-    rennes_educational_institution2 = educational_factories.EducationalInstitutionFactory(institutionId="0290198H")
     educational_institutions = [
-        versailles_educational_institution1,
-        versailles_educational_institution2,
-        rennes_educational_institution1,
-        rennes_educational_institution2,
+        educational_factories.EducationalInstitutionFactory(institutionId="0780032L"),
+        educational_factories.EducationalInstitutionFactory(institutionId="0781839A"),
+        educational_factories.EducationalInstitutionFactory(institutionId="0290047U"),
+        educational_factories.EducationalInstitutionFactory(institutionId="0290198H"),
+        educational_factories.EducationalInstitutionFactory(institutionId="0910620E"),
+        educational_factories.EducationalInstitutionFactory(institutionId="0560071Y"),
     ]
 
     now = datetime.datetime.now(datetime.timezone.utc)
