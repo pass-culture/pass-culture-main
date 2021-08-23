@@ -23,7 +23,6 @@ from redis import Redis
 # TODO (viconnex): fix circular import of pcapi/models/__init__.py
 from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
-from pcapi.connectors.api_adage import get_institutional_project_redactor_by_email
 from pcapi.connectors.beneficiaries.id_check_middleware import ask_for_identity_document_verification
 from pcapi.core import mails
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
@@ -628,34 +627,6 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
         new_pro_user.deposits = [deposit]
 
     return new_pro_user
-
-
-def create_institutional_project_redactor(email: str, password: str) -> User:
-    email = sanitize_email(email)
-    if find_user_by_email(email):
-        raise exceptions.UserAlreadyExistsException()
-
-    institutional_project_redactor_informations = get_institutional_project_redactor_by_email(email)
-    new_institutional_project_redactor = User(
-        email=email,
-        civility=institutional_project_redactor_informations.civility,
-        lastName=institutional_project_redactor_informations.last_name,
-        firstName=institutional_project_redactor_informations.first_name,
-        publicName=f"{institutional_project_redactor_informations.first_name} {institutional_project_redactor_informations.last_name}",
-    )
-    new_institutional_project_redactor.setPassword(password)
-    new_institutional_project_redactor.add_institutional_project_redactor_role()
-
-    request_email_confirmation_redactor(new_institutional_project_redactor)
-
-    repository.save(new_institutional_project_redactor)
-
-    return new_institutional_project_redactor
-
-
-def request_email_confirmation_redactor(redactor: User) -> None:
-    token = create_email_validation_token(redactor)
-    user_emails.send_activation_email_to_redactor(redactor, token=token)
 
 
 def _generate_user_offerer_when_existing_offerer(new_user: User, offerer: Offerer) -> UserOfferer:

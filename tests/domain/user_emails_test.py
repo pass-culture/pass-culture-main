@@ -17,7 +17,6 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.user_emails import send_activation_email
-from pcapi.domain.user_emails import send_activation_email_to_redactor
 from pcapi.domain.user_emails import send_admin_user_validation_email
 from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
 from pcapi.domain.user_emails import send_beneficiary_booking_cancellation_email
@@ -282,22 +281,6 @@ class SendActivationEmailTest:
         # then
         native_app_link = mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
         assert token.value in native_app_link
-
-
-@pytest.mark.usefixtures("db_session")
-class SendActivationEmailToRedactorTest:
-    def test_send_activation_email_to_redactor_native_app(self):
-        # given
-        redactor = users_factories.InstitutionalProjectRedactorFactory.build()
-        token = users_factories.EmailValidationToken.build(user=redactor)
-
-        # when
-        send_activation_email_to_redactor(redactor, token=token)
-
-        # then
-        native_app_link = mails_testing.outbox[0].sent_data["Vars"]["lien_validation_mail"]
-        assert token.value in native_app_link
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3027506
 
 
 class SendAttachmentValidationEmailToProOffererTest:

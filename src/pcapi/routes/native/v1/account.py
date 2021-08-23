@@ -2,14 +2,11 @@ from dataclasses import asdict
 from datetime import datetime
 import logging
 
-from flask import abort
 from flask import request
 
 from pcapi import settings
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import user_profiling
-from pcapi.connectors.api_adage import AdageException
-from pcapi.connectors.api_adage import InstitutionalProjectRedactorNotFoundException
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.offers.exceptions import FileSizeExceeded
@@ -19,7 +16,6 @@ from pcapi.core.users import exceptions
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import User
-from pcapi.core.users.utils import sanitize_email
 from pcapi.models import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
@@ -129,30 +125,6 @@ def create_account(body: serializers.AccountRequest) -> None:
             raise ApiErrors({"email": ["L'email n'a pas pu être envoyé"]})
     except exceptions.UnderAgeUserException:
         raise ApiErrors({"dateOfBirth": "The birthdate is invalid"})
-
-
-@blueprint.native_v1.route("/institutional-project-redactor-account", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
-def create_institutional_project_redactor_account(body: serializers.InstitutionalProjectRedactorAccountRequest) -> None:
-    try:
-        api.create_institutional_project_redactor(
-            email=body.email,
-            password=body.password,
-        )
-
-    except exceptions.UserAlreadyExistsException:
-        logger.info("Cette adresse mail est déjà utilisée")
-        try:
-            user = find_user_by_email(sanitize_email(body.email))
-            api.request_password_reset(user)
-        except exceptions.EmailNotSent:
-            raise ApiErrors({"email": ["L'email n'a pas pu être envoyé"]})
-
-    except InstitutionalProjectRedactorNotFoundException:
-        logger.info("Cette adresse mail n'est pas une adresse mail académique reconnue")
-    except AdageException as exception:
-        logger.error(exception.message, extra={"statusCode": exception.status_code, "error": exception.response_text})
-        abort(503)
 
 
 @blueprint.native_v1.route("/account/has_completed_id_check", methods=["POST"])

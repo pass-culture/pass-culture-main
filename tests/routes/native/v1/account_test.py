@@ -13,9 +13,6 @@ from freezegun.api import freeze_time
 import pytest
 
 from pcapi import settings
-from pcapi.connectors.api_adage import AdageException
-from pcapi.connectors.api_adage import InstitutionalProjectRedactorNotFoundException
-from pcapi.connectors.serialization.api_adage_serializers import InstitutionalProjectRedactorResponse
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.fraud import models as fraud_models
@@ -415,97 +412,6 @@ class AccountCreationTest:
         response = test_client.post("/native/v1/account", json=data)
         assert response.status_code == 400
         assert push_testing.requests == []
-
-
-@pytest.mark.usefixtures("db_session")
-class InstitutionalProjectRedactorAccountCreationTest:
-    @patch("pcapi.core.users.api.get_institutional_project_redactor_by_email")
-    def test_account_creation(self, get_institutional_project_redactor_by_email_stub, app):
-        test_client = TestClient(app.test_client())
-
-        institutional_project_redactor_email = "Jane.doe@example.com"
-        institutional_project_redactor_adage_response = InstitutionalProjectRedactorResponse(
-            civilite="Madame", prenom="Jane", nom="Doe", mail=institutional_project_redactor_email, etablissements=[]
-        )
-        get_institutional_project_redactor_by_email_stub.return_value = institutional_project_redactor_adage_response
-        data = {
-            "email": institutional_project_redactor_email,
-            "password": "Aazflrifaoi6@",
-        }
-
-        response = test_client.post("/native/v1/institutional-project-redactor-account", json=data)
-
-        assert response.status_code == 204, response.json
-        get_institutional_project_redactor_by_email_stub.assert_called_once_with("jane.doe@example.com")
-
-        saved_user = User.query.first()
-        assert saved_user is not None
-        assert saved_user.email == "jane.doe@example.com"
-        assert saved_user.isEmailValidated is False
-        assert (
-            saved_user.publicName
-            == f"{institutional_project_redactor_adage_response.first_name} {institutional_project_redactor_adage_response.last_name}"
-        )
-        assert saved_user.has_institutional_project_redactor_role
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3027506
-
-    @patch("pcapi.core.users.api.get_institutional_project_redactor_by_email")
-    def test_account_creation_with_existing_email(self, get_institutional_project_redactor_by_email_stub, app):
-        test_client = TestClient(app.test_client())
-        institutional_project_redactor_email = "Jane.doe@example.com"
-        users_factories.UserFactory(email=institutional_project_redactor_email)
-
-        institutional_project_redactor_adage_response = InstitutionalProjectRedactorResponse(
-            civilite="Madame", prenom="Jane", nom="Doe", mail=institutional_project_redactor_email, etablissements=[]
-        )
-        get_institutional_project_redactor_by_email_stub.return_value = institutional_project_redactor_adage_response
-        data = {
-            "email": institutional_project_redactor_email,
-            "password": "Aazflrifaoi6@",
-        }
-
-        response = test_client.post("/native/v1/institutional-project-redactor-account", json=data)
-        assert response.status_code == 204, response.json
-
-        saved_users = User.query.all()
-        assert len(saved_users) == 1
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1838526
-
-    @patch("pcapi.core.users.api.get_institutional_project_redactor_by_email")
-    def test_invalid_adage_email_creation(self, get_institutional_project_redactor_by_email_stub, app):
-        test_client = TestClient(app.test_client())
-
-        institutional_project_redactor_email = "unknown.project.redactor@example.com"
-        get_institutional_project_redactor_by_email_stub.side_effect = InstitutionalProjectRedactorNotFoundException()
-        data = {
-            "email": institutional_project_redactor_email,
-            "password": "Aazflrifaoi6@",
-        }
-
-        response = test_client.post("/native/v1/institutional-project-redactor-account", json=data)
-
-        assert response.status_code == 204, response.json
-        assert User.query.first() is None
-        assert len(mails_testing.outbox) == 0
-
-    @patch("pcapi.core.users.api.get_institutional_project_redactor_by_email")
-    def test_when_adage_is_unavailable(self, get_institutional_project_redactor_by_email_stub, app):
-        test_client = TestClient(app.test_client())
-
-        institutional_project_redactor_email = "project.redactor@example.com"
-        get_institutional_project_redactor_by_email_stub.side_effect = AdageException(
-            "Error getting Adage API", 503, "Unauthorized"
-        )
-        data = {
-            "email": institutional_project_redactor_email,
-            "password": "Aazflrifaoi6@",
-        }
-
-        response = test_client.post("/native/v1/institutional-project-redactor-account", json=data)
-
-        assert response.status_code == 503, response.json
-        assert User.query.first() is None
-        assert len(mails_testing.outbox) == 0
 
 
 class AccountCreationBeforeGrandOpeningTest:

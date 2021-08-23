@@ -165,22 +165,6 @@ class ProFactory(BaseFactory):
         return instance
 
 
-class InstitutionalProjectRedactorFactory(UserFactory):
-    class Meta:
-        model = pcapi.core.users.models.User
-
-    email = factory.Sequence("cecilia.angely{}@example.com".format)
-    civility = "Mme"
-    firstName = "Cecilia"
-    lastName = "Angely"
-    publicName = "Cecilia Angely"
-    isEmailValidated = True
-    isAdmin = False
-    isBeneficiary = False
-    roles = [pcapi.core.users.models.UserRole.INSTITUTIONAL_PROJECT_REDACTOR]
-    hasSeenTutorials = True
-
-
 class TokenFactory(BaseFactory):
     class Meta:
         model = models.Token

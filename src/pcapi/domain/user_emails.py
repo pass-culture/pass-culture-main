@@ -12,7 +12,6 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.emails import beneficiary_activation
-from pcapi.emails import redactor
 from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
 from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
 from pcapi.emails.beneficiary_expired_bookings import build_expired_bookings_recap_email_data_for_beneficiary
@@ -189,14 +188,6 @@ def send_activation_email(
         data = beneficiary_activation.get_activation_email_data(user=user, token=token)
     else:
         data = beneficiary_activation.get_activation_email_data_for_native(user=user, token=token)
-    return mails.send(recipients=[user.email], data=data)
-
-
-def send_activation_email_to_redactor(
-    user: User,
-    token: users_models.Token,
-) -> bool:
-    data = redactor.get_activation_email_data_for_redactor(user=user, token=token)
     return mails.send(recipients=[user.email], data=data)
 
 
