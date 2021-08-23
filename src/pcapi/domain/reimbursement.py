@@ -17,7 +17,7 @@ class ReimbursementRule:
     def is_active(self, booking: Booking) -> bool:
         valid_from = self.valid_from or MIN_DATETIME
         valid_until = self.valid_until or MAX_DATETIME
-        return valid_from < booking.dateUsed <= valid_until
+        return valid_from <= booking.dateUsed < valid_until
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
         raise NotImplementedError()
