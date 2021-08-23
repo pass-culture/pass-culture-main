@@ -6,11 +6,11 @@ import tempfile
 from typing import Iterable
 from typing import Optional
 
+from sqlalchemy.sql.functions import coalesce
+
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
 import pcapi.core.payments.api as payments_api
 import pcapi.core.payments.models as payments_models
 from pcapi.domain.admin_emails import send_payment_details_email
@@ -51,20 +51,21 @@ def include_error_and_retry_payments_in_batch(batch_date: datetime):
 
 
 def get_venues_to_reimburse(cutoff_date: datetime) -> Iterable[tuple[id, str]]:
-    # FIXME (dbaty, 2021-06-02): this query is very slow (around 2
-    # minutes). It's still better than iterating over all venues, but
-    # we should look into it.
-    query = (
-        Venue.query.distinct(Venue.id)
-        .join(Offer)
-        .join(Stock)
-        .join(Booking)
+    # fmt: off
+    bookings = (
+        Booking.query
         .filter(Booking.dateUsed < cutoff_date, ~Booking.isCancelled, Booking.amount > 0)
         .outerjoin(Payment, Booking.id == Payment.bookingId)
         .filter(Payment.id.is_(None))
-        .with_entities(Venue.id, Venue.publicName, Venue.name)
+        .with_entities(Booking.venueId)
     )
-    return [(venue.id, venue.publicName or venue.name) for venue in query]
+    return (
+        Venue.query
+        .filter(Venue.id.in_(bookings.subquery()))
+        .with_entities(Venue.id, coalesce(Venue.publicName, Venue.name))
+        .all()
+    )
+    # fmt: on
 
 
 def generate_new_payments(cutoff_date: datetime, batch_date: datetime) -> None:
