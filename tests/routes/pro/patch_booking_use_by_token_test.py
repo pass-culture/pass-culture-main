@@ -1,7 +1,11 @@
+import datetime
+
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
 import pcapi.core.offers.factories as offers_factories
@@ -20,10 +24,11 @@ from pcapi.utils.token import random_token
 from tests.conftest import TestClient
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
 API_KEY_VALUE = random_token(64)
 
 
-@pytest.mark.usefixtures("db_session")
 class Returns204Test:
     class WithApiKeyAuthTest:
         def test_when_api_key_is_provided_and_rights_and_regular_offer(self, app):
@@ -43,6 +48,7 @@ class Returns204Test:
             assert response.status_code == 204
             booking = Booking.query.one()
             assert booking.isUsed
+            assert booking.status == BookingStatus.USED
 
         def test_expect_booking_to_be_used_with_non_standard_origin_header(self, app):
             booking = bookings_factories.BookingFactory(token="ABCDEF")
@@ -61,6 +67,7 @@ class Returns204Test:
             assert response.status_code == 204
             booking = Booking.query.one()
             assert booking.isUsed
+            assert booking.status == BookingStatus.USED
 
     class WithBasicAuthTest:
         def test_when_user_is_logged_in_and_regular_offer(self, app):
@@ -75,6 +82,7 @@ class Returns204Test:
             assert response.status_code == 204
             booking = Booking.query.one()
             assert booking.isUsed
+            assert booking.status == BookingStatus.USED
 
         def test_when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, app):
             booking = bookings_factories.BookingFactory(token="ABCDEF")
@@ -88,10 +96,31 @@ class Returns204Test:
             assert response.status_code == 204
             booking = Booking.query.one()
             assert booking.isUsed
+            assert booking.status == BookingStatus.USED
+
+        def test_when_user_is_logged_in_and_offer_is_educational_validated_by_institution(self, app):
+            # Given
+            booking = bookings_factories.EducationalBookingFactory(
+                token="ABCDEF",
+                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+                educationalBooking__status=EducationalBookingStatus.USED_BY_INSTITUTE,
+            )
+            pro_user = users_factories.ProFactory(email="pro@example.com")
+            offerer = booking.stock.offer.venue.managingOfferer
+            offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+
+            # When
+            url = f"/v2/bookings/use/token/{booking.token}"
+            response = TestClient(app.test_client()).with_session_auth("pro@example.com").patch(url)
+
+            # Then
+            assert response.status_code == 204
+            booking = Booking.query.one()
+            assert booking.isUsed
+            assert booking.status == BookingStatus.USED
 
 
 class Returns401Test:
-    @pytest.mark.usefixtures("db_session")
     def test_when_user_not_logged_in_and_doesnt_give_api_key(self, app):
         # Given
         user = users_factories.BeneficiaryFactory(email="user@example.com")
@@ -109,7 +138,6 @@ class Returns401Test:
         # Then
         assert response.status_code == 401
 
-    @pytest.mark.usefixtures("db_session")
     def test_when_user_not_logged_in_and_not_existing_api_key_given(self, app):
         # Given
         user = users_factories.BeneficiaryFactory(email="user@example.com")
@@ -134,7 +162,6 @@ class Returns401Test:
 
 class Returns403Test:
     class WithApiKeyAuthTest:
-        @pytest.mark.usefixtures("db_session")
         def test_when_api_key_given_not_related_to_booking_offerer(self, app):
             # Given
             user = users_factories.BeneficiaryFactory(email="user@example.com")
@@ -157,7 +184,6 @@ class Returns403Test:
             assert response.status_code == 403
             assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
-        @pytest.mark.usefixtures("db_session")
         def test_when_api_key_is_provided_and_booking_has_been_cancelled_already(self, app):
             # Given
             user = users_factories.BeneficiaryFactory()
@@ -176,10 +202,11 @@ class Returns403Test:
             # Then
             assert response.status_code == 403
             assert response.json["booking"] == ["Cette réservation a été annulée"]
-            assert Booking.query.get(booking.id).isUsed is False
+            booking = Booking.query.get(booking.id)
+            assert not booking.isUsed
+            assert booking.status is not BookingStatus.USED
 
     class WithBasicAuthTest:
-        @pytest.mark.usefixtures("db_session")
         def test_when_user_is_not_attached_to_linked_offerer(self, app):
             # Given
             user = users_factories.BeneficiaryFactory()
@@ -189,7 +216,6 @@ class Returns403Test:
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking = create_booking(user=user, stock=stock, venue=venue)
             repository.save(booking)
-            booking_id = booking.id
             url = f"/v2/bookings/use/token/{booking.token}"
 
             # When
@@ -198,9 +224,10 @@ class Returns403Test:
             # Then
             assert response.status_code == 403
             assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
-            assert Booking.query.get(booking_id).isUsed is False
+            booking = Booking.query.get(booking.id)
+            assert not booking.isUsed
+            assert booking.status is not BookingStatus.USED
 
-        @pytest.mark.usefixtures("db_session")
         def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
             # Given
             admin = users_factories.AdminFactory()
@@ -213,11 +240,62 @@ class Returns403Test:
             # Then
             assert response.status_code == 403
             assert response.json["booking"] == ["Cette réservation a été annulée"]
-            assert Booking.query.get(booking.id).isUsed is False
+            booking = Booking.query.get(booking.id)
+            assert not booking.isUsed
+            assert booking.status is not BookingStatus.USED
+
+        def test_when_user_is_logged_in_and_offer_is_educational_but_not_validated_by_institution_yet(self, app):
+            # Given
+            booking = bookings_factories.EducationalBookingFactory(
+                token="ABCDEF",
+                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+                educationalBooking__status=None,
+            )
+            pro_user = users_factories.ProFactory(email="pro@example.com")
+            offerer = booking.stock.offer.venue.managingOfferer
+            offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+
+            # When
+            url = f"/v2/bookings/use/token/{booking.token}"
+            response = TestClient(app.test_client()).with_session_auth("pro@example.com").patch(url)
+
+            # Then
+            assert response.status_code == 403
+            assert (
+                response.json["educationalBooking"]
+                == "Cette réservation pour une offre éducationnelle n'est pas encore validée par le chef d'établissement"
+            )
+            booking = Booking.query.get(booking.id)
+            assert not booking.isUsed
+            assert booking.status is not BookingStatus.USED
+
+        def test_when_user_is_logged_in_and_offer_is_educational_but_has_been_refused_by_institution(self, app):
+            # Given
+            booking = bookings_factories.EducationalBookingFactory(
+                token="ABCDEF",
+                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+                educationalBooking__status=EducationalBookingStatus.REFUSED,
+            )
+            pro_user = users_factories.ProFactory(email="pro@example.com")
+            offerer = booking.stock.offer.venue.managingOfferer
+            offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+
+            # When
+            url = f"/v2/bookings/use/token/{booking.token}"
+            response = TestClient(app.test_client()).with_session_auth("pro@example.com").patch(url)
+
+            # Then
+            assert response.status_code == 403
+            assert (
+                response.json["educationalBooking"]
+                == "Cette réservation pour une offre éducationnelle a été refusée par le chef d'établissement"
+            )
+            booking = Booking.query.get(booking.id)
+            assert booking.isUsed is False
+            assert booking.status is not BookingStatus.USED
 
 
 class Returns404Test:
-    @pytest.mark.usefixtures("db_session")
     def test_when_booking_is_not_provided_at_all(self, app):
         # Given
         user = users_factories.BeneficiaryFactory(email="user@example.com")
@@ -236,7 +314,6 @@ class Returns404Test:
         assert response.status_code == 404
 
     class WithApiKeyAuthTest:
-        @pytest.mark.usefixtures("db_session")
         def test_when_api_key_is_provided_and_booking_does_not_exist(self, app):
             # Given
             user = users_factories.BeneficiaryFactory()
@@ -261,7 +338,6 @@ class Returns404Test:
             assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
 
     class WithBasicAuthTest:
-        @pytest.mark.usefixtures("db_session")
         def test_when_user_is_logged_in_and_booking_does_not_exist(self, app):
             # Given
             user = users_factories.BeneficiaryFactory()

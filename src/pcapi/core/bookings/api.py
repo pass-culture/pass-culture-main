@@ -265,7 +265,7 @@ def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
     # removed ASAP.
     with transaction():
         objects_to_save = [booking]
-        if uncancel and booking.isCancelled:
+        if uncancel and (booking.isCancelled or booking.status == BookingStatus.CANCELLED):
             booking.uncancel_booking()
             booking.cancellationReason = None
             stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
@@ -276,7 +276,8 @@ def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
         repository.save(*objects_to_save)
     logger.info("Booking was marked as used", extra={"booking": booking.id})
 
-    update_external_user(booking.user)
+    if booking.individualBookingId is not None:
+        update_external_user(booking.user)
 
 
 def mark_as_cancelled(booking: Booking) -> None:

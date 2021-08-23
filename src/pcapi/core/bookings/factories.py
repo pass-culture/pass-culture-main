@@ -74,7 +74,7 @@ class EducationalBookingFactory(BookingFactory):
     user = None
 
 
-class IndividualBookingSubFactory(BookingFactory):
+class IndividualBookingSubFactory(BaseFactory):
     class Meta:
         model = models.IndividualBooking
 

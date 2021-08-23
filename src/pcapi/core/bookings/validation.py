@@ -17,6 +17,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import payment_queries
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
+from ..educational.models import EducationalBookingStatus
 from .exceptions import EducationalOfferCannotBeBooked
 from .exceptions import NoActivationCodeAvailable
 
@@ -134,6 +135,17 @@ def check_is_usable(booking: Booking) -> None:
         forbidden = api_errors.ForbiddenError()
         forbidden.add_error("booking", "Cette réservation a été annulée")
         raise forbidden
+
+    if booking.educationalBookingId is not None:
+        if booking.educationalBooking.status is EducationalBookingStatus.REFUSED:
+            reason = "Cette réservation pour une offre éducationnelle a été refusée par le chef d'établissement"
+            raise api_errors.ForbiddenError(errors={"educationalBooking": reason})
+
+        if booking.educationalBooking.status is not EducationalBookingStatus.USED_BY_INSTITUTE:
+            reason = (
+                "Cette réservation pour une offre éducationnelle n'est pas encore validée par le chef d'établissement"
+            )
+            raise api_errors.ForbiddenError(errors={"educationalBooking": reason})
 
     is_booking_for_event_and_not_confirmed = booking.stock.beginningDatetime and not booking.isConfirmed
     if is_booking_for_event_and_not_confirmed:
