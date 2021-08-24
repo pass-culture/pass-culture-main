@@ -161,7 +161,12 @@ class SynchronizeStocksTest:
         provider = offerers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
         venue = VenueFactory(bookingEmail="booking_email", withdrawalDetails="My withdrawal details")
         product = Product(
-            id=456, name="product_name", description="product_desc", extraData="extra", type="product_type"
+            id=456,
+            name="product_name",
+            description="product_desc",
+            extraData="extra",
+            type="ThingType.LIVRE_EDITION",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         products_by_provider_reference = {"isbn_product_ref": product}
 
@@ -185,7 +190,8 @@ class SynchronizeStocksTest:
                 name="product_name",
                 productId=456,
                 venueId=venue.id,
-                type="product_type",
+                type="ThingType.LIVRE_EDITION",
+                subcategoryId=subcategories.LIVRE_PAPIER.id,
                 withdrawalDetails=venue.withdrawalDetails,
             ),
         ]
@@ -199,7 +205,8 @@ class SynchronizeStocksTest:
         assert new_offer.name == "product_name"
         assert new_offer.productId == 456
         assert new_offer.venueId == venue.id
-        assert new_offer.type == "product_type"
+        assert new_offer.type == "ThingType.LIVRE_EDITION"
+        assert new_offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert new_offer.withdrawalDetails == venue.withdrawalDetails
 
     def test_get_stocks_to_upsert(self):

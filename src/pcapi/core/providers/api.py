@@ -291,6 +291,7 @@ def _build_new_offer(
         productId=product.id,
         venueId=venue.id,
         type=product.type,
+        subcategoryId=product.subcategoryId,
         withdrawalDetails=venue.withdrawalDetails,
     )
 
