@@ -189,6 +189,7 @@ class CreateObjectTest:
         assert isinstance(product, Product)
         assert product.name == "New Product"
         assert product.type == str(ThingType.LIVRE_EDITION)
+        assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.lastProviderId == provider.id
 
     def test_raises_api_errors_exception_when_errors_occur_on_model_and_log_error(self):
@@ -231,6 +232,7 @@ class HandleUpdateTest:
         product = Product.query.one()
         assert product.name == "New Product"
         assert product.type == str(ThingType.LIVRE_EDITION)
+        assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
 
     def test_raises_api_errors_exception_when_errors_occur_on_model(self):
         # Given
