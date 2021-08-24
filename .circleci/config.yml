@@ -461,12 +461,6 @@ jobs:
             yarn test:cafe
       - store_artifacts:
           path: ~/pass-culture-main/webapp/testcafe_screenshots
-      - run:
-          name: Notify PC Ops Bot
-          when: on_fail
-          command: |
-            export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
-            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
 
   functional-tests-pro:
     machine:
@@ -526,12 +520,6 @@ jobs:
             yarn test:cafe
       - store_artifacts:
           path: ~/pass-culture-main/pro/testcafe_screenshots
-      - run:
-          name: Notify PC Ops Bot
-          when: on_fail
-          command: |
-            export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
-            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
 
   restart-pcapi:
     executor: gcp-sdk
