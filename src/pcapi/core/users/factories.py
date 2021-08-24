@@ -1,6 +1,7 @@
 import datetime
 import uuid
 
+from dateutil.relativedelta import relativedelta
 import factory
 
 from pcapi.core.testing import BaseFactory
@@ -129,6 +130,11 @@ class BeneficiaryFactory(BaseFactory):
         if not create:
             return None
         return DepositFactory(user=obj, **kwargs)
+
+
+class UnderageBeneficiaryFactory(BeneficiaryFactory):
+    dateOfBirth = datetime.datetime.now() + relativedelta(years=-15)
+    roles = [pcapi.core.users.models.UserRole.UNDERAGE_BENEFICIARY]
 
 
 class ProFactory(BaseFactory):

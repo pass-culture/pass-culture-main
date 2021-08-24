@@ -72,8 +72,17 @@ def create_beneficiary_with_specific_address() -> None:
     logger.info("created 1 beneficiary with specific address")
 
 
+def create_underage_beneficiary() -> None:
+    users_factories.UnderageBeneficiaryFactory(
+        email="pctest.underage-beneficiary@example.com",
+        deposit__source="sandbox",
+    )
+    logger.info("created 1 underage beneficiary")
+
+
 def save_beneficiaries_sandbox() -> None:
     create_future_beneficiaries()
     create_expiring_beneficiary()
     create_beneficiary_with_empty_deposit()
     create_beneficiary_with_specific_address()
+    create_underage_beneficiary()

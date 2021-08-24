@@ -94,6 +94,7 @@ class UserRole(enum.Enum):
     PRO = "PRO"
     # TODO(bcalvez) : remove this role as soon as we get a proper identification mecanism in F.A.
     JOUVE = "JOUVE"
+    UNDERAGE_BENEFICIARY = "UNDERAGE_BENEFICIARY"
 
 
 @dataclass
