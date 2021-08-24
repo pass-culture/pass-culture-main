@@ -182,5 +182,5 @@ def get_reimbursement_rule(
 def _is_offer_an_exception_to_reimbursement_rules(offer: Offer) -> bool:
     return (
         offer.type in (str(ThingType.CINEMA_CARD), str(ThingType.LIVRE_EDITION))
-        or offer.subcategoryId == subcategories.MUSEE_VENTE_DISTANCE
+        or offer.subcategoryId == subcategories.MUSEE_VENTE_DISTANCE.id
     )
