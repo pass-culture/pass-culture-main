@@ -367,6 +367,9 @@ class User(PcObject, Model, NeedsValidationMixin):
         return cls.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
     def _add_role(self, role: UserRole) -> None:
+        if self.roles and role in self.roles:
+            return
+
         current_roles = copy.deepcopy(self.roles) if self.roles else []
         updated_roles = current_roles + [role]
 
