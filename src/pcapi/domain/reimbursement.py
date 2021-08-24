@@ -12,6 +12,9 @@ from pcapi.models import ThingType
 MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
 MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
 
+# A new set rules are in effect as of 1 September 2021 (i.e. 31 August 22:00 UTC)
+SEPTEMBER_2021 = datetime.datetime(2021, 9, 1) - datetime.timedelta(hours=2)
+
 
 class ReimbursementRule:
     def is_active(self, booking: Booking) -> bool:
@@ -69,10 +72,46 @@ class MaxReimbursementByOfferer(ReimbursementRule):
         return cumulative_revenue > 20000
 
 
-class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
+class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
     rate = Decimal("0.95")
     description = "Remboursement à 95% entre 20 000 € et 40 000 € par lieu"
     valid_from = None
+    valid_until = SEPTEMBER_2021
+
+    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+        if booking.stock.offer.product.isDigital:
+            return False
+        return 20000 < cumulative_revenue <= 40000
+
+
+class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(ReimbursementRule):
+    rate = Decimal("0.85")
+    description = "Remboursement à 85% entre 40 000 € et 150 000 € par lieu"
+    valid_from = None
+    valid_until = SEPTEMBER_2021
+
+    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+        if booking.stock.offer.product.isDigital:
+            return False
+        return 40000 < cumulative_revenue <= 150000
+
+
+class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000(ReimbursementRule):
+    rate = Decimal("0.70")
+    description = "Remboursement à 70% au dessus de 150 000 € par lieu"
+    valid_from = None
+    valid_until = SEPTEMBER_2021
+
+    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+        if booking.stock.offer.product.isDigital:
+            return False
+        return cumulative_revenue > 150000
+
+
+class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
+    rate = Decimal("0.95")
+    description = "Remboursement à 95% entre 20 000 € et 40 000 € par lieu (>= 2021-09-01)"
+    valid_from = SEPTEMBER_2021
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
@@ -82,9 +121,9 @@ class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
 
 
 class ReimbursementRateByVenueBetween40000And150000(ReimbursementRule):
-    rate = Decimal("0.85")
-    description = "Remboursement à 85% entre 40 000 € et 150 000 € par lieu"
-    valid_from = None
+    rate = Decimal("0.92")
+    description = "Remboursement à 92% entre 40 000 € et 150 000 € par lieu (>= 2021-09-01)"
+    valid_from = SEPTEMBER_2021
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
@@ -94,9 +133,9 @@ class ReimbursementRateByVenueBetween40000And150000(ReimbursementRule):
 
 
 class ReimbursementRateByVenueAbove150000(ReimbursementRule):
-    rate = Decimal("0.70")
-    description = "Remboursement à 70% au dessus de 150 000 € par lieu"
-    valid_from = None
+    rate = Decimal("0.90")
+    description = "Remboursement à 90% au dessus de 150 000 € par lieu (>= 2021-09-01)"
+    valid_from = SEPTEMBER_2021
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
@@ -120,6 +159,9 @@ class ReimbursementRateForBookAbove20000(ReimbursementRule):
 REGULAR_RULES = [
     DigitalThingsReimbursement(),
     PhysicalOffersReimbursement(),
+    LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(),
+    LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(),
+    LegacyPreSeptember2021ReimbursementRateByVenueAbove150000(),
     ReimbursementRateByVenueBetween20000And40000(),
     ReimbursementRateByVenueBetween40000And150000(),
     ReimbursementRateByVenueAbove150000(),

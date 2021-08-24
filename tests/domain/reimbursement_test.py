@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 
+from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -19,8 +20,7 @@ def create_non_digital_thing_booking(quantity=1, price=10, user=None, date_used=
     booking_kwargs = {}
     if user:
         booking_kwargs["user"] = user
-    if date_used:
-        booking_kwargs["dateUsed"] = date_used
+    booking_kwargs["dateUsed"] = date_used or datetime.now()
     offer_kwargs = {}
     if product_subcategory_id:
         offer_kwargs = {"product__subcategoryId": product_subcategory_id}
@@ -47,15 +47,14 @@ def create_digital_booking(quantity=1, price=10, user=None, product_subcategory_
         price=price,
         offer=offers_factories.ThingOfferFactory(product=product),
     )
-    return bookings_factories.UsedBookingFactory(user=user, stock=stock, quantity=quantity)
+    return bookings_factories.UsedBookingFactory(user=user, stock=stock, quantity=quantity, dateUsed=datetime.now())
 
 
 def create_event_booking(quantity=1, price=10, user=None, date_used=None):
     booking_kwargs = {}
     if user:
         booking_kwargs["user"] = user
-    if date_used:
-        booking_kwargs["dateUsed"] = date_used
+    booking_kwargs["dateUsed"] = date_used or datetime.now()
     user = user or users_factories.BeneficiaryFactory()
     stock = offers_factories.StockFactory(
         price=price,
@@ -114,6 +113,74 @@ class PhysicalOffersReimbursementTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000Test:
+
+    rule = reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000()
+
+    def test_apply(self):
+        booking = create_event_booking(price=40, quantity=2)
+        assert self.rule.apply(booking) == Decimal("0.95") * 40 * 2
+
+    def test_relevancy_depending_on_revenue(self):
+        booking = create_event_booking()
+
+        assert not self.rule.is_relevant(booking, 20000)
+        assert self.rule.is_relevant(booking, 20001)
+        assert self.rule.is_relevant(booking, 40000)
+        assert not self.rule.is_relevant(booking, 40001)
+
+    def test_relevancy_depending_on_offer_type(self):
+        revenue = 20001
+        assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
+        assert self.rule.is_relevant(create_event_booking(), revenue)
+        assert not self.rule.is_relevant(create_digital_booking(), revenue)
+
+
+@pytest.mark.usefixtures("db_session")
+class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000Test:
+    rule = reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000()
+
+    def test_apply(self):
+        booking = create_event_booking(price=40, quantity=2)
+        assert self.rule.apply(booking) == Decimal("0.85") * 40 * 2
+
+    def test_relevancy_depending_on_revenue(self):
+        booking = create_event_booking()
+
+        assert not self.rule.is_relevant(booking, 40000)
+        assert self.rule.is_relevant(booking, 40001)
+        assert self.rule.is_relevant(booking, 150000)
+        assert not self.rule.is_relevant(booking, 150001)
+
+    def test_relevancy_depending_on_offer_type(self):
+        revenue = 40001
+        assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
+        assert self.rule.is_relevant(create_event_booking(), revenue)
+        assert not self.rule.is_relevant(create_digital_booking(), revenue)
+
+
+@pytest.mark.usefixtures("db_session")
+class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000Test:
+    rule = reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueAbove150000()
+
+    def test_apply(self):
+        booking = create_event_booking(price=40, quantity=2)
+        assert self.rule.apply(booking) == Decimal("0.7") * 40 * 2
+
+    def test_relevancy_depending_on_revenue(self):
+        booking = create_event_booking()
+
+        assert not self.rule.is_relevant(booking, 150000)
+        assert self.rule.is_relevant(booking, 150001)
+
+    def test_relevancy_depending_on_offer_type(self):
+        revenue = 150001
+        assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
+        assert self.rule.is_relevant(create_event_booking(), revenue)
+        assert not self.rule.is_relevant(create_digital_booking(), revenue)
+
+
+@pytest.mark.usefixtures("db_session")
 class ReimbursementRateByVenueBetween20000And40000Test:
 
     rule = reimbursement.ReimbursementRateByVenueBetween20000And40000()
@@ -143,7 +210,7 @@ class ReimbursementRateByVenueBetween40000And150000Test:
 
     def test_apply(self):
         booking = create_event_booking(price=40, quantity=2)
-        assert self.rule.apply(booking) == Decimal("0.85") * 40 * 2
+        assert self.rule.apply(booking) == Decimal("0.92") * 40 * 2
 
     def test_relevancy_depending_on_revenue(self):
         booking = create_event_booking()
@@ -166,7 +233,7 @@ class ReimbursementRateByVenueAbove150000Test:
 
     def test_apply(self):
         booking = create_event_booking(price=40, quantity=2)
-        assert self.rule.apply(booking) == Decimal("0.7") * 40 * 2
+        assert self.rule.apply(booking) == Decimal("0.90") * 40 * 2
 
     def test_relevancy_depending_on_revenue(self):
         booking = create_event_booking()
@@ -271,6 +338,101 @@ class FindAllBookingsReimbursementsTest:
     # It make tests code more simple (since we don't have to specify
     # the venue for each booking).
 
+    @freeze_time("2021-08-31 00:00:00")
+    def test_pre_september_2021_reimbursement_under_20000(self):
+        event = create_event_booking()
+        thing = create_non_digital_thing_booking()
+        digital = create_digital_booking()
+        book = create_book_booking()
+        bookings = [event, thing, digital, book]
+
+        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
+
+        assert_total_reimbursement(reimbursements[0], event)
+        assert_total_reimbursement(reimbursements[1], thing)
+        assert_no_reimbursement_for_digital(reimbursements[2], digital)
+        assert_total_reimbursement(reimbursements[3], book)
+
+    @freeze_time("2021-08-31 00:00:00")
+    def test_pre_september_2021_degressive_reimbursement_around_20000(self):
+        user = create_rich_user(20000)
+        event1 = create_event_booking(user=user, price=20000)
+        event2 = create_event_booking(price=100)
+        thing = create_non_digital_thing_booking(price=100)
+        digital = create_digital_booking(price=100)
+        book = create_book_booking(price=100)
+        bookings = [event1, event2, thing, digital, book]
+
+        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
+
+        assert_total_reimbursement(reimbursements[0], event1)
+        rule = reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000
+        assert_partial_reimbursement(reimbursements[1], event2, rule, Decimal(95))
+        assert_partial_reimbursement(reimbursements[2], thing, rule, 95)
+        assert_no_reimbursement_for_digital(reimbursements[3], digital)
+        assert_partial_reimbursement(reimbursements[4], book, reimbursement.ReimbursementRateForBookAbove20000, 95)
+
+    @freeze_time("2021-08-31 00:00:00")
+    def test_pre_september_2021_degressive_reimbursement_around_40000(self):
+        user = create_rich_user(40000)
+        event1 = create_event_booking(user=user, price=40000)
+        event2 = create_event_booking(price=100)
+        thing = create_non_digital_thing_booking(price=100)
+        digital = create_digital_booking(price=100)
+        book = create_book_booking(price=100)
+        bookings = [event1, event2, thing, digital, book]
+
+        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
+
+        assert_partial_reimbursement(
+            reimbursements[0],
+            event1,
+            reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000,
+            0.95 * 40000,
+        )
+        assert_partial_reimbursement(
+            reimbursements[1],
+            event2,
+            reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000,
+            Decimal(85),
+        )
+        assert_partial_reimbursement(
+            reimbursements[2],
+            thing,
+            reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000,
+            85,
+        )
+        assert_no_reimbursement_for_digital(reimbursements[3], digital)
+        assert_partial_reimbursement(reimbursements[4], book, reimbursement.ReimbursementRateForBookAbove20000, 95)
+
+    @freeze_time("2021-08-31 00:00:00")
+    def test_pre_september_2021_degressive_reimbursement_above_150000(self):
+        user = create_rich_user(150000)
+        event1 = create_event_booking(user=user, price=150000)
+        event2 = create_event_booking(price=100)
+        thing = create_non_digital_thing_booking(price=100)
+        digital = create_digital_booking(price=100)
+        book = create_book_booking(price=100)
+        bookings = [event1, event2, thing, digital, book]
+
+        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
+
+        assert_partial_reimbursement(
+            reimbursements[0],
+            event1,
+            reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000,
+            0.85 * 150000,
+        )
+        assert_partial_reimbursement(
+            reimbursements[1], event2, reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueAbove150000, 70
+        )
+        assert_partial_reimbursement(
+            reimbursements[2], thing, reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueAbove150000, 70
+        )
+        assert_no_reimbursement_for_digital(reimbursements[3], digital)
+        assert_partial_reimbursement(reimbursements[4], book, reimbursement.ReimbursementRateForBookAbove20000, 95)
+
+    @freeze_time("2021-09-01 00:00:00")
     def test_reimbursement_under_20000(self):
         event = create_event_booking()
         thing = create_non_digital_thing_booking()
@@ -285,6 +447,7 @@ class FindAllBookingsReimbursementsTest:
         assert_no_reimbursement_for_digital(reimbursements[2], digital)
         assert_total_reimbursement(reimbursements[3], book)
 
+    @freeze_time("2021-09-01 00:00:00")
     def test_degressive_reimbursement_around_20000(self):
         user = create_rich_user(20000)
         event1 = create_event_booking(user=user, price=20000)
@@ -303,6 +466,7 @@ class FindAllBookingsReimbursementsTest:
         assert_no_reimbursement_for_digital(reimbursements[3], digital)
         assert_partial_reimbursement(reimbursements[4], book, reimbursement.ReimbursementRateForBookAbove20000, 95)
 
+    @freeze_time("2021-09-01 00:00:00")
     def test_degressive_reimbursement_around_40000(self):
         user = create_rich_user(40000)
         event1 = create_event_booking(user=user, price=40000)
@@ -318,14 +482,15 @@ class FindAllBookingsReimbursementsTest:
             reimbursements[0], event1, reimbursement.ReimbursementRateByVenueBetween20000And40000, 0.95 * 40000
         )
         assert_partial_reimbursement(
-            reimbursements[1], event2, reimbursement.ReimbursementRateByVenueBetween40000And150000, Decimal(85)
+            reimbursements[1], event2, reimbursement.ReimbursementRateByVenueBetween40000And150000, Decimal(92)
         )
         assert_partial_reimbursement(
-            reimbursements[2], thing, reimbursement.ReimbursementRateByVenueBetween40000And150000, 85
+            reimbursements[2], thing, reimbursement.ReimbursementRateByVenueBetween40000And150000, 92
         )
         assert_no_reimbursement_for_digital(reimbursements[3], digital)
         assert_partial_reimbursement(reimbursements[4], book, reimbursement.ReimbursementRateForBookAbove20000, 95)
 
+    @freeze_time("2021-09-01 00:00:00")
     def test_degressive_reimbursement_above_150000(self):
         user = create_rich_user(150000)
         event1 = create_event_booking(user=user, price=150000)
@@ -338,10 +503,10 @@ class FindAllBookingsReimbursementsTest:
         reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
 
         assert_partial_reimbursement(
-            reimbursements[0], event1, reimbursement.ReimbursementRateByVenueBetween40000And150000, 0.85 * 150000
+            reimbursements[0], event1, reimbursement.ReimbursementRateByVenueBetween40000And150000, 0.92 * 150000
         )
-        assert_partial_reimbursement(reimbursements[1], event2, reimbursement.ReimbursementRateByVenueAbove150000, 70)
-        assert_partial_reimbursement(reimbursements[2], thing, reimbursement.ReimbursementRateByVenueAbove150000, 70)
+        assert_partial_reimbursement(reimbursements[1], event2, reimbursement.ReimbursementRateByVenueAbove150000, 90)
+        assert_partial_reimbursement(reimbursements[2], thing, reimbursement.ReimbursementRateByVenueAbove150000, 90)
         assert_no_reimbursement_for_digital(reimbursements[3], digital)
         assert_partial_reimbursement(reimbursements[4], book, reimbursement.ReimbursementRateForBookAbove20000, 95)
 
