@@ -10,4 +10,5 @@ gunicorn \
     --workers $GUNICORN_WORKERS \
     --threads $GUNICORN_THREADS \
     --timeout $GUNICORN_TIMEOUT \
+    --log-level debug \
     pcapi.app:app
