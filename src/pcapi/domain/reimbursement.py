@@ -42,7 +42,7 @@ class DigitalThingsReimbursement(ReimbursementRule):
 
     def is_relevant(self, booking: Booking, cumulative_revenue="ignored") -> bool:
         offer = booking.stock.offer
-        return offer.isDigital and not _is_offer_an_exception_to_reimbursement_rules(offer)
+        return offer.isDigital and not _is_reimbursable_digital_offer(offer)
 
 
 class PhysicalOffersReimbursement(ReimbursementRule):
@@ -53,7 +53,7 @@ class PhysicalOffersReimbursement(ReimbursementRule):
 
     def is_relevant(self, booking: Booking, cumulative_revenue="ignored") -> bool:
         offer = booking.stock.offer
-        return _is_offer_an_exception_to_reimbursement_rules(offer) or not offer.isDigital
+        return not offer.isDigital or _is_reimbursable_digital_offer(offer)
 
 
 class MaxReimbursementByOfferer(ReimbursementRule):
@@ -179,7 +179,7 @@ def get_reimbursement_rule(
 
 
 # FIXME (rchaffal, 2021-07-15): temporary workaroud before implementing subcategory reimbursement rules for all offers
-def _is_offer_an_exception_to_reimbursement_rules(offer: Offer) -> bool:
+def _is_reimbursable_digital_offer(offer: Offer) -> bool:
     return (
         offer.type in (str(ThingType.CINEMA_CARD), str(ThingType.LIVRE_EDITION))
         or offer.subcategoryId == subcategories.MUSEE_VENTE_DISTANCE.id
