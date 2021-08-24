@@ -4,17 +4,16 @@ Goal: some users do not have all the expected attributes, this script should
 fix this issue.
 """
 from itertools import islice
-import logging
 from typing import Generator
 
 from pcapi.core.users.external import batch
 from pcapi.core.users.external import get_user_attributes
+from pcapi.core.users.external import sendinblue
+from pcapi.core.users.external.sendinblue import SendinblueUserUpdateData
+from pcapi.core.users.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.models import User
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.backends.batch import UserUpdateData
-
-
-logger = logging.getLogger(__name__)
 
 
 def get_users(batch_size: int) -> Generator[User, None, None]:
@@ -40,19 +39,41 @@ def get_users_chunks(chunk_size: int) -> Generator[list[User], None, None]:
             break
 
 
-def format_users(users: list[User]) -> list[UserUpdateData]:
+def format_batch_users(users: list[User]) -> list[UserUpdateData]:
     res = []
     for user in users:
         attributes = batch.format_user_attributes(get_user_attributes(user))
-
         res.append(UserUpdateData(user_id=str(user.id), attributes=attributes))
-    print(f"{len(res)} users formatted...")
+    print(f"{len(res)} users formatted for batch...")
     return res
 
 
-def run(chunk_size: int) -> None:
-    logger.info("Update multiple user attributes in Batch started")
+def format_sendinblue_users(users: list[User]) -> list[SendinblueUserUpdateData]:
+    res = []
+    for user in users:
+        attributes = sendinblue.format_user_attributes(get_user_attributes(user))
+        res.append(SendinblueUserUpdateData(email=user.email, attributes=attributes))
+    print(f"{len(res)} users formatted for sendinblue...")
+    return res
+
+
+def run(chunk_size: int, synchronize_batch: bool = True, synchronize_sendinblue: bool = True) -> None:
+    if not synchronize_batch and not synchronize_sendinblue:
+        print("No user synchronized, please set synchronize_batch or synchronize_sendinblue to True")
+        return
+
+    message = (
+        "Update multiple user attributes in "
+        f"[{'Batch, ' if synchronize_batch else ''}{'Sendinblue' if synchronize_sendinblue else ''}]"
+    )
+
+    print("%s started" % message)
     for chunk in get_users_chunks(chunk_size):
-        users_data = format_users(chunk)
-        update_users_attributes(users_data)
-    logger.info("Update multiple user attributes in Batch finished")
+        if synchronize_batch:
+            batch_users_data = format_batch_users(chunk)
+            update_users_attributes(batch_users_data)
+        if synchronize_sendinblue:
+            sendinblue_users_data = format_sendinblue_users(chunk)
+            import_contacts_in_sendinblue(sendinblue_users_data)
+
+    print("%s finished" % message)

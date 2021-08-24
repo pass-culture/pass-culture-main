@@ -1,7 +1,13 @@
+from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
 import logging
+from typing import List
+from typing import Optional
+from typing import Union
 
 import sib_api_v3_sdk
+from sib_api_v3_sdk.api.contacts_api import ContactsApi
 from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
 
 from pcapi import settings
@@ -12,6 +18,12 @@ from pcapi.tasks.sendinblue_tasks import update_contact_attributes_task
 
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class SendinblueUserUpdateData:
+    email: str
+    attributes: dict
 
 
 class SendinblueAttributes(Enum):
@@ -44,7 +56,7 @@ class SendinblueAttributes(Enum):
         return list(map(lambda c: c.value, cls))
 
 
-def update_contact_attributes(user_email: str, user_attributes: UserAttributes):
+def update_contact_attributes(user_email: str, user_attributes: UserAttributes) -> None:
     formatted_attributes = format_user_attributes(user_attributes)
 
     constact_list_ids = (
@@ -60,10 +72,14 @@ def update_contact_attributes(user_email: str, user_attributes: UserAttributes):
     )
 
 
+def format_list(raw_list: List[str]) -> str:
+    return ",".join(raw_list)
+
+
 def format_user_attributes(user_attributes: UserAttributes) -> dict:
     return {
-        SendinblueAttributes.BOOKED_OFFER_CATEGORIES.value: ",".join(user_attributes.booking_categories),
-        SendinblueAttributes.BOOKED_OFFER_SUBCATEGORIES.value: ",".join(user_attributes.booking_subcategories),
+        SendinblueAttributes.BOOKED_OFFER_CATEGORIES.value: format_list(user_attributes.booking_categories),
+        SendinblueAttributes.BOOKED_OFFER_SUBCATEGORIES.value: format_list(user_attributes.booking_subcategories),
         SendinblueAttributes.BOOKING_COUNT.value: user_attributes.booking_count,
         SendinblueAttributes.CREDIT.value: user_attributes.domains_credit.all.remaining
         if user_attributes.domains_credit
@@ -122,3 +138,72 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
     except SendinblueApiException as e:
         logger.exception("Exception when calling ContactsApi->create_contact: %s\n", e)
         return False
+
+
+def send_import_contacts_request(api_instance: ContactsApi, file_body: str, list_ids: List[int]) -> None:
+    request_contact_import = sib_api_v3_sdk.RequestContactImport(
+        email_blacklist=False, sms_blacklist=False, update_existing_contacts=True, empty_contacts_attributes=False
+    )
+    request_contact_import.file_body = file_body
+    request_contact_import.list_ids = list_ids
+
+    try:
+        api_instance.import_contacts(request_contact_import)
+    except SendinblueApiException as e:
+        print("Exception when calling ContactsApi->import_contacts: %s\n" % e)
+
+
+def format_file_value(value: Optional[Union[str, bool, int, datetime]]) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, datetime):
+        return value.strftime("%d-%m-%Y")
+    if isinstance(value, bool):
+        return "Yes" if value else "No"
+    return str(value)
+
+
+def build_file_body(users_data: List[SendinblueUserUpdateData]) -> str:
+    """Generates a csv-like string for bulk import, based on SendinblueAttributes
+       e.g.: "EMAIL;FIRSTNAME;SMS\n#john@example.com;John;Doe;31234567923"
+
+    Args:
+        users_data (List[SendinblueUserUpdateData]): users data
+
+    Returns:
+        str: corresponding csv string
+    """
+    file_body = ";".join(sorted(SendinblueAttributes.list())) + ";EMAIL"
+    for user in users_data:
+        file_body += "\n"
+        file_body += ";".join([format_file_value(value) for _, value in sorted(user.attributes.items())])
+        file_body += f";{user.email}"
+
+    return file_body
+
+
+def import_contacts_in_sendinblue(sendinblue_users_data: List[SendinblueUserUpdateData]) -> None:
+    configuration = sib_api_v3_sdk.Configuration()
+    configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
+    api_instance = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
+
+    # Split users in sendinblue lists
+    pro_users = [
+        user_data for user_data in sendinblue_users_data if user_data.attributes[SendinblueAttributes.IS_PRO.value]
+    ]
+    young_users = [
+        user_data for user_data in sendinblue_users_data if not user_data.attributes[SendinblueAttributes.IS_PRO.value]
+    ]
+
+    # send pro users request
+    if pro_users:
+        pro_users_file_body = build_file_body(pro_users)
+        send_import_contacts_request(
+            api_instance, file_body=pro_users_file_body, list_ids=[settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
+        )
+    # send young users request
+    if young_users:
+        young_users_file_body = build_file_body(young_users)
+        send_import_contacts_request(
+            api_instance, file_body=young_users_file_body, list_ids=[settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
+        )

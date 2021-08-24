@@ -9,7 +9,6 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.external import TRACKED_PRODUCT_IDS
 from pcapi.core.users.external import _get_bookings_categories_and_subcategories
-from pcapi.core.users.external import _get_offer_subcategory
 from pcapi.core.users.external import _get_user_bookings
 from pcapi.core.users.external import get_user_attributes
 from pcapi.core.users.external import update_external_user
@@ -132,19 +131,7 @@ def test_get_bookings_categories_and_subcategories():
     )
     assert set(_get_bookings_categories_and_subcategories(_get_user_bookings(user))[1]) == set(
         [
-            "CAPTATION_MUSIQUE",
+            "SUPPORT_PHYSIQUE_MUSIQUE",
             "SUPPORT_PHYSIQUE_FILM",
         ]
     )
-
-
-@pytest.mark.parametrize(
-    "offer_type,subcategory,result",
-    [
-        ("ThingType.MUSIQUE", None, "CAPTATION_MUSIQUE"),
-        ("ThingType.JEUX", "CAPTATION_MUSIQUE", "CAPTATION_MUSIQUE"),
-    ],
-)
-def test_get_offer_subcategory(offer_type, subcategory, result):
-    offer = OfferFactory(type=offer_type, subcategoryId=subcategory)
-    assert _get_offer_subcategory(offer) == result

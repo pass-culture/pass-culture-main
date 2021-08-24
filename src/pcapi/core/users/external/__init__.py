@@ -1,9 +1,10 @@
+from typing import List
 from typing import Tuple
 
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings.models import Booking
-from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
+from pcapi.core.categories.conf import get_subcategory_from_type
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -21,18 +22,18 @@ from .sendinblue import update_contact_attributes as update_sendinblue_user
 TRACKED_PRODUCT_IDS = {3084625: "brut_x"}
 
 
-def update_external_user(user: User):
+def update_external_user(user: User) -> None:
     user_attributes = get_user_attributes(user)
 
     update_batch_user(user.id, user_attributes)
     update_sendinblue_user(user.email, user_attributes)
 
 
-def get_user_attributes(user: User) -> dict:
+def get_user_attributes(user: User) -> UserAttributes:
     from pcapi.core.users.api import get_domains_credit
 
     is_pro_user = user.has_pro_role or db.session.query(UserOfferer.query.filter_by(userId=user.id).exists()).scalar()
-    user_bookings = _get_user_bookings(user) if not is_pro_user else []
+    user_bookings: List[Booking] = _get_user_bookings(user) if not is_pro_user else []
     last_favorite = (
         Favorite.query.filter_by(userId=user.id).order_by(Favorite.id.desc()).first() if not is_pro_user else None
     )
@@ -71,34 +72,25 @@ def get_user_attributes(user: User) -> dict:
     )
 
 
-# FIXME: corentinn(2021-08-20): deprecated after type -> subcategory transition
-def _get_offer_subcategory(offer: Offer) -> str:
-    """Returns an offer subcategory, falling back on the type to find it if subcategoryId is None
-
-    Args:
-        offer (Offer): The offer
-
-    Returns:
-        str: subcategoryId
-    """
-    return offer.subcategoryId or next(
-        subcategory.id for subcategory in ALL_SUBCATEGORIES if subcategory.matching_type == offer.type
+def _get_bookings_categories_and_subcategories(user_bookings: List[Booking]) -> Tuple[List[str], List[str]]:
+    booking_subcategories_ids = list(
+        set(
+            get_subcategory_from_type(booking.stock.offer.type, booking.stock.offer.venue.isVirtual)
+            for booking in user_bookings
+        )
     )
-
-
-def _get_bookings_categories_and_subcategories(user_bookings: list[Booking]) -> Tuple[list[str], list[str]]:
-    booking_subcategories_ids = list(set(_get_offer_subcategory(booking.stock.offer) for booking in user_bookings))
     booking_subcategories = [ALL_SUBCATEGORIES_DICT[subcategory_id] for subcategory_id in booking_subcategories_ids]
     booking_categories = list(set(subcategory.category_id for subcategory in booking_subcategories))
     return booking_categories, booking_subcategories_ids
 
 
-def _get_user_bookings(user: User) -> list[Booking]:
+def _get_user_bookings(user: User) -> List[Booking]:
     return (
         Booking.query.options(
             joinedload(Booking.stock)
             .joinedload(Stock.offer)
             .load_only(Offer.type, Offer.url, Offer.productId, Offer.subcategoryId)
+            .joinedload(Offer.venue)
         )
         .filter_by(userId=user.id, isCancelled=False)
         .order_by(db.desc(Booking.dateCreated))
