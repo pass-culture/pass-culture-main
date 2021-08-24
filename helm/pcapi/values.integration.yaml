@@ -417,6 +417,8 @@ secrets:
     version: 2
   - name: GCP_BUCKET_CREDENTIALS
     version: 1
+  - name: OBJECT_STORAGE_URL
+    version: 3
   - name: FLASK_SECRET
     version: 2
   - name: JWT_SECRET_KEY
