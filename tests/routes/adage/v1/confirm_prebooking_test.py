@@ -8,6 +8,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.offers.utils import offer_webapp_link
 from pcapi.routes.adage.v1.serialization import constants
@@ -168,3 +169,26 @@ class ReturnsErrorTest:
 
         assert response.status_code == 422
         assert response.json == {"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"}
+
+    def test_educational_booking_is_refused(self, app, db_session) -> None:
+        booking = EducationalBookingFactory(
+            educationalBooking__status=EducationalBookingStatus.REFUSED,
+            status=BookingStatus.CANCELLED,
+        )
+
+        client = TestClient(app.test_client()).with_eac_token()
+        response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/confirm")
+
+        assert response.status_code == 422
+        assert response.json == {"code": "EDUCATIONAL_BOOKING_IS_REFUSED"}
+
+    def test_educational_booking_is_cancelled(self, app, db_session) -> None:
+        booking = EducationalBookingFactory(
+            status=BookingStatus.CANCELLED,
+        )
+
+        client = TestClient(app.test_client()).with_eac_token()
+        response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/confirm")
+
+        assert response.status_code == 422
+        assert response.json == {"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"}

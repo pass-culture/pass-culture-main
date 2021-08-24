@@ -51,6 +51,10 @@ def confirm_prebooking(educational_booking_id: int) -> prebooking_serialization.
         raise ApiErrors({"code": "INSUFFICIENT_FUND"}, status_code=422)
     except exceptions.InsufficientTemporaryFund:
         raise ApiErrors({"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"}, status_code=422)
+    except exceptions.EducationalBookingIsRefused:
+        raise ApiErrors({"code": "EDUCATIONAL_BOOKING_IS_REFUSED"}, status_code=422)
+    except exceptions.BookingIsCancelled:
+        raise ApiErrors({"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"}, status_code=422)
     except exceptions.EducationalBookingNotFound:
         raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
     except exceptions.EducationalDepositNotFound:
