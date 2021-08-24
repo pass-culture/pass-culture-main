@@ -19,7 +19,7 @@ class ReimbursementRule:
         valid_until = self.valid_until or MAX_DATETIME
         return valid_from < booking.dateUsed <= valid_until
 
-    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
         raise NotImplementedError()
 
     @property
@@ -40,7 +40,7 @@ class DigitalThingsReimbursement(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue="ignored") -> bool:
         offer = booking.stock.offer
         return offer.isDigital and not _is_offer_an_exception_to_reimbursement_rules(offer)
 
@@ -51,7 +51,7 @@ class PhysicalOffersReimbursement(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue="ignored") -> bool:
         offer = booking.stock.offer
         return _is_offer_an_exception_to_reimbursement_rules(offer) or not offer.isDigital
 
@@ -63,10 +63,10 @@ class MaxReimbursementByOfferer(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
         if booking.stock.offer.product.isDigital:
             return False
-        return kwargs["cumulative_value"] > 20000
+        return cumulative_revenue > 20000
 
 
 class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
@@ -75,10 +75,10 @@ class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
         if booking.stock.offer.product.isDigital:
             return False
-        return 20000 < kwargs["cumulative_value"] <= 40000
+        return 20000 < cumulative_revenue <= 40000
 
 
 class ReimbursementRateByVenueBetween40000And150000(ReimbursementRule):
@@ -87,10 +87,10 @@ class ReimbursementRateByVenueBetween40000And150000(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
         if booking.stock.offer.product.isDigital:
             return False
-        return 40000 < kwargs["cumulative_value"] <= 150000
+        return 40000 < cumulative_revenue <= 150000
 
 
 class ReimbursementRateByVenueAbove150000(ReimbursementRule):
@@ -99,10 +99,10 @@ class ReimbursementRateByVenueAbove150000(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
         if booking.stock.offer.product.isDigital:
             return False
-        return kwargs["cumulative_value"] > 150000
+        return cumulative_revenue > 150000
 
 
 class ReimbursementRateForBookAbove20000(ReimbursementRule):
@@ -111,10 +111,10 @@ class ReimbursementRateForBookAbove20000(ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
+    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
         if not booking.stock.offer.type == str(ThingType.LIVRE_EDITION):
             return False
-        return kwargs["cumulative_value"] > 20000
+        return cumulative_revenue > 20000
 
 
 REGULAR_RULES = [
@@ -157,7 +157,7 @@ def find_all_booking_reimbursements(
 
 
 def get_reimbursement_rule(
-    booking: Booking, custom_rules: tuple[ReimbursementRule], total_per_year: Decimal
+    booking: Booking, custom_rules: tuple[ReimbursementRule], cumulative_revenue: Decimal
 ) -> ReimbursementRule:
     # FIXME (dbaty, 2021-06-07): review this inner import once the
     # code has been moved to the `pcapi.core.payments` package.
@@ -167,7 +167,7 @@ def get_reimbursement_rule(
     for rule in custom_rules + REGULAR_RULES:
         if not rule.is_active(booking):
             continue
-        if not rule.is_relevant(booking, cumulative_value=total_per_year):
+        if not rule.is_relevant(booking, cumulative_revenue):
             continue
         if isinstance(rule, CustomReimbursementRule):
             return rule

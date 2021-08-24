@@ -50,7 +50,7 @@ class CustomReimbursementRule(ReimbursementRule, Model):
             return False
         return self.timespan.upper is None or booking.dateCreated < self.timespan.upper
 
-    def is_relevant(self, booking: Booking, **kwargs):
+    def is_relevant(self, booking: Booking, cumulative_revenue="ignored"):
         return booking.stock.offerId == self.offerId
 
     def apply(self, booking: Booking):
