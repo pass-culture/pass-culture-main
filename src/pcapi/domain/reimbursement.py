@@ -70,7 +70,7 @@ class MaxReimbursementByOfferer(ReimbursementRule):
 
 
 class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
-    rate = Decimal(0.95)
+    rate = Decimal("0.95")
     description = "Remboursement à 95% entre 20 000 € et 40 000 € par lieu"
     valid_from = None
     valid_until = None
@@ -82,7 +82,7 @@ class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
 
 
 class ReimbursementRateByVenueBetween40000And150000(ReimbursementRule):
-    rate = Decimal(0.85)
+    rate = Decimal("0.85")
     description = "Remboursement à 85% entre 40 000 € et 150 000 € par lieu"
     valid_from = None
     valid_until = None
@@ -94,7 +94,7 @@ class ReimbursementRateByVenueBetween40000And150000(ReimbursementRule):
 
 
 class ReimbursementRateByVenueAbove150000(ReimbursementRule):
-    rate = Decimal(0.7)
+    rate = Decimal("0.70")
     description = "Remboursement à 70% au dessus de 150 000 € par lieu"
     valid_from = None
     valid_until = None
@@ -106,7 +106,7 @@ class ReimbursementRateByVenueAbove150000(ReimbursementRule):
 
 
 class ReimbursementRateForBookAbove20000(ReimbursementRule):
-    rate = Decimal(0.95)
+    rate = Decimal("0.95")
     description = "Remboursement à 95% au dessus de 20 000 € pour les livres"
     valid_from = None
     valid_until = None
