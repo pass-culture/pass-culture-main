@@ -18,6 +18,7 @@ from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import User
 from pcapi.models import ApiErrors
 from pcapi.models import BeneficiaryImport
+from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import ImportStatus
 import pcapi.notifications.push.testing as push_testing
 from pcapi.scripts.beneficiary import remote_import
@@ -861,10 +862,13 @@ class RunIntegrationTest:
         assert fraud_content.address == "11 Rue du Test"
 
         beneficiary_import = BeneficiaryImport.query.first()
+        beneficiary_import_status = BeneficiaryImportStatus.query.first()
         assert beneficiary_import.source == "demarches_simplifiees"
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.beneficiary == user
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
+        assert beneficiary_import_status.beneficiaryImportId == beneficiary_import.id
+        assert beneficiary_import_status.detail == f"Nr de piece déjà utilisé par {user.id}"
 
     @override_features(FORCE_PHONE_VALIDATION=False)
     @patch(

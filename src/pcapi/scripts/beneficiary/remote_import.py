@@ -92,12 +92,16 @@ def run(
             _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
             continue
 
-        if (
-            information.id_piece_number
-            and User.query.filter(User.idPieceNumber == information.id_piece_number).count() > 0
-        ):
-            _process_rejection(information, procedure_id=procedure_id, reason="Nr de piece déjà utilisé", user=user)
-            continue
+        if information.id_piece_number:
+            _duplicated_user = User.query.filter(User.idPieceNumber == information.id_piece_number).first()
+            if _duplicated_user:
+                _process_rejection(
+                    information,
+                    procedure_id=procedure_id,
+                    reason=f"Nr de piece déjà utilisé par {_duplicated_user.id}",
+                    user=user,
+                )
+                continue
 
         if not is_already_imported(information.application_id):
             duplicate_users = get_beneficiary_duplicates(
