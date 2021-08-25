@@ -547,6 +547,31 @@ jobs:
           build_path: ./webapp/build/
           bucket_name: ${GCP_PROJECT}-${CIRCLE_BRANCH}-webapp
 
+  deploy-adage-front:
+    executor: node-gcp-14
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - authenticate_gcp:
+          gcp-key-name: GCP_METIER_KEY
+      - build-frontend-app:
+          node_env: ${CIRCLE_BRANCH}
+          build_dir: ./adage-front
+          yarn_build_subcommand: "build:${CIRCLE_BRANCH}"
+      - push-to-bucket:
+          build_path: ./adage-front/build/
+          bucket_name: ${GCP_PROJECT}-${CIRCLE_BRANCH}-adage
+      - invalidate-cache:
+          url_map_name: ${CIRCLE_BRANCH}-adage-url-map
+      - run:
+          name: Send failure notification
+          command: |
+            VERSION_TO_DEPLOY=$(git describe --contains)
+            BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *Adage-front* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
+            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
+          when: on_fail
+
   release-synthesis:
     machine:
       image: ubuntu-2004:202101-01
@@ -661,6 +686,12 @@ workflows:
       - deploy-webapp:
           requires:
             - deploy-pcapi
+      - deploy-adage-front:
+          requires:
+            - deploy-pcapi
+          context:
+            - GCP
+            - GCP_EHP
       - release-synthesis:
           requires:
             - restart-pcapi
@@ -707,6 +738,12 @@ workflows:
             - GCP
             - GCP_PROD
       - deploy-pro:
+          requires:
+            - deploy-pcapi
+          context:
+            - GCP
+            - GCP_PROD
+      - deploy-adage-front:
           requires:
             - deploy-pcapi
           context:
