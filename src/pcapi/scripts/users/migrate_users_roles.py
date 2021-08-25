@@ -1,5 +1,7 @@
 import logging
 
+from sqlalchemy import text
+
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
@@ -15,6 +17,7 @@ def migrate_users_roles() -> None:
     _migrate_admins()
     _migrate_beneficiaries()
     _migrate_pros()
+    _remove_duplicated_roles()
     print("Migration ended")
 
 
@@ -71,6 +74,25 @@ def _migrate_pros() -> None:
     logger.info("Pros migrated", extra={"script": "migrate_users_roles", "migrated_pros_count": migrated_pros_count})
 
 
+def _remove_duplicated_roles() -> None:
+    print("Remove duplicated roles")
+    deduplicated_users_count = 0
+    users_to_deduplicate = _get_batch_of_multiple_role_occurences()
+
+    while len(users_to_deduplicate) > 0:
+        for user_to_deduplicate in users_to_deduplicate:
+            user_to_deduplicate.roles = list(set(user_to_deduplicate.roles))
+        repository.save(*users_to_deduplicate)
+
+        deduplicated_users_count += len(users_to_deduplicate)
+        users_to_deduplicate = _get_batch_of_multiple_role_occurences()
+
+    logger.info(
+        "Roles deduplicated",
+        extra={"script": "migrate_users_roles", "deduplicated_users_count": deduplicated_users_count},
+    )
+
+
 def _get_batch_of_admins_to_migrate() -> list[User]:
     return User.query.filter(User.isAdmin).filter(~User.roles.contains([UserRole.ADMIN])).limit(1000).all()
 
@@ -87,3 +109,11 @@ def _get_batch_of_pros_to_migrate() -> list[User]:
         .limit(1000)
         .all()
     )
+
+
+def _get_batch_of_multiple_role_occurences() -> list[User]:
+    textual_sql = text(
+        """SELECT id FROM (SELECT (SELECT count(distinct val) FROM ( SELECT unnest(roles) as val ) as u ) as roles_distinct, roles, id FROM "user" WHERE array_length(roles,1)>1 LIMIT 1000) as t WHERE array_length(t.roles, 1)> t.roles_distinct"""
+    )
+    textual_sql = textual_sql.columns(User.id)
+    return User.query.from_statement(textual_sql).all()

@@ -154,3 +154,16 @@ def test_migrate_admin_with_admin_role():
     # Then
     assert user.has_admin_role
     assert user.roles == [UserRole.ADMIN]
+
+
+def test_remove_duplicated_roles():
+    # Given
+    user = users_factories.UserFactory(roles=[UserRole.BENEFICIARY, UserRole.PRO, UserRole.PRO])
+
+    # When
+    migrate_users_roles()
+
+    # Then
+    assert user.has_beneficiary_role
+    assert user.has_pro_role
+    assert Counter(user.roles) == Counter([UserRole.BENEFICIARY, UserRole.PRO])
