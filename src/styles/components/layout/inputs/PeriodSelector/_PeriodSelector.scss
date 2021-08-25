@@ -30,38 +30,29 @@
     }
   }
 
-  .period-filter-inputs .field-date-begin {
+  .field-date-begin,
+  .field-date-end {
+    height: rem(40px);
+    padding: 0 rem(1px);
+  }
+
+  .field-date-begin {
     border-bottom-right-radius: 0;
     border-right: none;
     border-top-right-radius: 0;
-    height: rem(40px);
-    padding: 0 rem(1px);
-
-    &:focus-within {
-      border-color: $primary;
-      border-width: rem(2px);
-      padding: 0;
-    }
   }
 
-  .period-filter-inputs .field-date-end {
+  .field-date-end {
     border-bottom-left-radius: 0;
     border-left: none;
     border-top-left-radius: 0;
-    height: rem(40px);
-    padding: 0 rem(1px);
-
-    &:focus-within {
-      border-color: $primary;
-      border-width: rem(2px);
-      padding: 0;
-    }
   }
 
-  .period-filter-end-picker:focus-within {
-    .field-date-end {
-      border-color: $primary;
-    }
+  .period-filter-begin-picker:focus-within .field-date-begin,
+  .period-filter-end-picker:focus-within .field-date-end {
+    border-color: $primary;
+    border-width: rem(2px);
+    padding: 0;
   }
 
   .period-filter-input {

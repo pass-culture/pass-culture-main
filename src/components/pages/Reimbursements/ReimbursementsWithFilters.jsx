@@ -1,3 +1,4 @@
+import isEqual from 'lodash.isequal'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import AppLayout from 'app/AppLayout'
@@ -122,7 +123,9 @@ const Reimbursements = () => {
       {venuesOptions.length ? (
         <>
           <p>
-            Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une contremarque dans le guichet ou à la validation automatique des contremarques d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.
+            Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation
+            d’une contremarque dans le guichet ou à la validation automatique des contremarques
+            d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.
           </p>
           <Banner type="notification-info">
             En savoir plus sur
@@ -151,7 +154,8 @@ const Reimbursements = () => {
               Affichage des remboursements
             </h2>
             <button
-              className="tertiary-button"
+              className="tertiary-button reset-filters"
+              disabled={isEqual(filters, INITIAL_FILTERS)}
               onClick={resetFilters}
               type="button"
             >

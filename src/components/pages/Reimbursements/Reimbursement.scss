@@ -11,11 +11,27 @@
     }
   }
 
+  /*
+  * @debt duplicated "Gaël : duplicated styles for reset filters (in ...pages/Offers/Offers.scss), + we already have a tertiary-button class that is very close... we should create a component for this and standardise a behavior"
+  */
+
+  .reset-filters {
+    color: $primary;
+
+    &:disabled {
+      &:hover,
+      &:focus {
+        text-decoration: none;
+      }
+    }
+  }
+
   .filters {
     align-content: stretch;
     display: flex;
     justify-content: space-between;
     padding-bottom: rem(32px);
+
 
     .input-select {
       flex: 1;

@@ -163,6 +163,7 @@ describe('reimbursementsWithFilters', () => {
     await expectFilters.toHaveInitialValues()
 
     expect(buttons.resetFilters).toBeInTheDocument()
+    expect(buttons.resetFilters).toBeDisabled()
 
     expect(buttons.download).toBeInTheDocument()
     expect(buttons.display).toBeInTheDocument()
@@ -202,7 +203,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   // eslint-disable-next-line jest/expect-expect
-  it('should initialize filters values when clicking on the button', async () => {
+  it('should reset filters values when clicking on the button', async () => {
     // given
     const { getElementsOnLoadingComplete } = renderReimbursements(store, props)
     const {
@@ -212,6 +213,9 @@ describe('reimbursementsWithFilters', () => {
       setPeriodFilters,
     } = await getElementsOnLoadingComplete()
 
+    // then
+    expect(buttons.resetFilters).toBeDisabled()
+
     // when
     const options = await within(filters.venue).findAllByRole('option')
     setPeriodFilters('12/11/1998', '12/12/1999')
@@ -219,6 +223,7 @@ describe('reimbursementsWithFilters', () => {
 
     // then
     await expectFilters.toHaveValues(options[1].value, '12/11/1998', '12/12/1999')
+    expect(buttons.resetFilters).toBeEnabled()
 
     // when
     userEvent.click(buttons.resetFilters)
