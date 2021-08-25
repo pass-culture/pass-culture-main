@@ -17,6 +17,10 @@ if settings.DATABASE_LOCK_TIMEOUT:
     db_options.append("-c lock_timeout=%i" % settings.DATABASE_LOCK_TIMEOUT)
 if settings.DATABASE_STATEMENT_TIMEOUT:
     db_options.append("-c statement_timeout=%i" % settings.DATABASE_STATEMENT_TIMEOUT)
+if settings.DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT:
+    db_options.append(
+        "-c idle_in_transaction_session_timeout=%i" % settings.DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT
+    )
 
 if db_options:
     engine_options["connect_args"] = {"options": " ".join(db_options)}
