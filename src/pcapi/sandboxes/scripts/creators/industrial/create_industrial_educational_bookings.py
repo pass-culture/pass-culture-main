@@ -91,11 +91,28 @@ def create_industrial_educational_bookings() -> None:
         mediation = MediationFactory(offer=stock.offer, credit="Crédit photo")
         store_public_object_from_sandbox_assets("thumbs", mediation, mediation.offer.type)
 
-    next_year_stock = EventStockFactory(
-        quantity=100,
-        price=1200,
-        beginningDatetime=educational_next_year.beginningDate + datetime.timedelta(days=10),
-    )
+    next_year_stocks = [
+        EventStockFactory(
+            quantity=100,
+            price=1200,
+            beginningDatetime=educational_next_year.beginningDate + datetime.timedelta(days=10),
+            offer__durationMinutes=60,
+            offer__withdrawalDetails="Récupération du ticket à l'adresse du lieu",
+            offer__description="Une description multi-lignes.\nOù il est notamment question du nombre d'élèves.\nNbr d'élèves max: 50",
+            offer__isEducational=True,
+            offer__name="Stage d'initiation à la photographie : prise en main de l'appareil-photo",
+        ),
+        EventStockFactory(
+            quantity=60,
+            price=1400,
+            beginningDatetime=educational_next_year.beginningDate + datetime.timedelta(days=15),
+            offer__durationMinutes=60,
+            offer__withdrawalDetails="Récupération du ticket à l'adresse du lieu",
+            offer__description="Une description multi-lignes.\nOù il est notamment question du nombre d'élèves.\nNbr d'élèves max: 50",
+            offer__isEducational=True,
+            offer__name="Explorer la nature au Parc Zoologique et Botanique de Mulhouse",
+        ),
+    ]
 
     deposits = []
     for educational_institution in educational_institutions:
@@ -129,11 +146,13 @@ def create_industrial_educational_bookings() -> None:
                 stock=stock,
             )
 
-    for educational_institution in educational_institutions:
-        EducationalBookingFactory(
-            educationalBooking__educationalRedactor=educational_redactor,
-            educationalBooking__educationalInstitution=educational_institution,
-            educationalBooking__educationalYear=educational_next_year,
-            status=BookingStatus.PENDING,
-            stock=next_year_stock,
-        )
+    for next_year_stock in next_year_stocks:
+        for educational_institution in educational_institutions:
+            EducationalBookingFactory(
+                educationalBooking__educationalRedactor=educational_redactor,
+                educationalBooking__educationalInstitution=educational_institution,
+                educationalBooking__educationalYear=educational_next_year,
+                educationalBooking__confirmationLimitDate=now + datetime.timedelta(days=30),
+                status=BookingStatus.PENDING,
+                stock=next_year_stock,
+            )
