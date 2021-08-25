@@ -138,7 +138,7 @@ class EducationalBooking(Model):
     educationalRedactorId = Column(
         BigInteger,
         ForeignKey("educational_redactor.id"),
-        nullable=True,
+        nullable=False,
         index=True,
     )
     educationalRedactor: EducationalRedactor = relationship(
