@@ -249,10 +249,21 @@ def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> Non
         )
 
 
-def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
-    """Mark a booking as used.
+def mark_as_used(booking: Booking) -> None:
+    validation.check_is_usable(booking)
+    booking.mark_as_used()
+    db.session.add(booking)
+    db.session.commit()
+    logger.info("Booking was marked as used", extra={"booking": booking.id})
 
-    The ``uncancel`` argument should be provided only if the booking
+    if booking.individualBookingId is not None:
+        update_external_user(booking.user)
+
+
+def mark_as_used_with_uncancelling(booking: Booking) -> None:
+    """Mark a booking as used from cancelled status.
+
+    This function should be called only if the booking
     has been cancelled by mistake or fraudulently after the offer was
     retrieved (for example, when a beneficiary retrieved a book from a
     library and then cancelled their booking before the library marked
@@ -264,20 +275,13 @@ def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
     # Since I lock the stock, I really want to make sure the lock is
     # removed ASAP.
     with transaction():
-        objects_to_save = [booking]
-        if uncancel and (booking.isCancelled or booking.status == BookingStatus.CANCELLED):
+        if booking.isCancelled or booking.status == BookingStatus.CANCELLED:
             booking.uncancel_booking()
             booking.cancellationReason = None
             stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
             stock.dnBookedQuantity += booking.quantity
-            objects_to_save.append(stock)
-        validation.check_is_usable(booking)
-        booking.mark_as_used()
-        repository.save(*objects_to_save)
-    logger.info("Booking was marked as used", extra={"booking": booking.id})
-
-    if booking.individualBookingId is not None:
-        update_external_user(booking.user)
+            db.session.add(stock)
+        mark_as_used(booking)
 
 
 def mark_as_cancelled(booking: Booking) -> None:

@@ -572,7 +572,7 @@ class MarkAsUsedTest:
 
     def test_mark_as_used_with_uncancel(self):
         booking = factories.CancelledBookingFactory()
-        api.mark_as_used(booking, uncancel=True)
+        api.mark_as_used_with_uncancelling(booking)
         assert booking.isUsed
         assert not booking.isCancelled
         assert booking.status is BookingStatus.USED

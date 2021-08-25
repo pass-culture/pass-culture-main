@@ -84,7 +84,7 @@ class BookingView(BaseCustomAdminView):
             return redirect(booking_url)
 
         try:
-            bookings_api.mark_as_used(booking, uncancel=True)
+            bookings_api.mark_as_used_with_uncancelling(booking)
         except Exception as exc:  # pylint: disable=broad-except
             if isinstance(exc, (ClientError, ApiErrors)):
                 err = list(exc.errors.values())[0][0]
