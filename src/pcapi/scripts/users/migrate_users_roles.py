@@ -1,11 +1,13 @@
 import logging
 
 from sqlalchemy import text
+from sqlalchemy.orm import aliased
 
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.models import UserOfferer
+from pcapi.models.db import db
 from pcapi.repository import repository
 
 
@@ -18,6 +20,7 @@ def migrate_users_roles() -> None:
     _migrate_beneficiaries()
     _migrate_pros()
     _remove_duplicated_roles()
+    _remove_wrong_pro_roles()
     print("Migration ended")
 
 
@@ -93,6 +96,24 @@ def _remove_duplicated_roles() -> None:
     )
 
 
+def _remove_wrong_pro_roles() -> None:
+    print("Remove PRO role of users with unvalidated offerer or attachment")
+    corrected_users_count = 0
+    users_to_correct = _get_batch_of_users_with_wrong_pro_role()
+
+    while len(users_to_correct) > 0:
+        for user_to_correct in users_to_correct:
+            user_to_correct.remove_pro_role()
+        repository.save(*users_to_correct)
+
+        corrected_users_count += len(users_to_correct)
+        users_to_correct = _get_batch_of_users_with_wrong_pro_role()
+
+    logger.info(
+        "Pro roles corrected", extra={"script": "migrate_users_roles", "corrected_users_count": corrected_users_count}
+    )
+
+
 def _get_batch_of_admins_to_migrate() -> list[User]:
     return User.query.filter(User.isAdmin).filter(~User.roles.contains([UserRole.ADMIN])).limit(1000).all()
 
@@ -117,3 +138,22 @@ def _get_batch_of_multiple_role_occurences() -> list[User]:
     )
     textual_sql = textual_sql.columns(User.id)
     return User.query.from_statement(textual_sql).all()
+
+
+def _get_batch_of_users_with_wrong_pro_role() -> list[User]:
+    user_alias = aliased(User)
+    user_has_validated_offerer_or_attachment = (
+        db.session.query(user_alias)
+        .join(UserOfferer, UserOfferer.userId == user_alias.id)
+        .join(Offerer, Offerer.id == UserOfferer.offererId)
+        .filter(User.id == user_alias.id)
+        .filter(UserOfferer.validationToken.is_(None), Offerer.validationToken.is_(None))
+        .exists()
+    )
+
+    return (
+        User.query.filter(User.roles.contains([UserRole.PRO]))
+        .filter(~user_has_validated_offerer_or_attachment)
+        .limit(1000)
+        .all()
+    )
