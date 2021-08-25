@@ -36,7 +36,7 @@ def test_patch_beneficiary(app):
             "physical": {"initial": 200.0, "remaining": 200.0},
         },
         "dateCreated": format_into_utc_date(user.dateCreated),
-        "dateOfBirth": "2000-01-01T00:00:00Z",
+        "dateOfBirth": format_into_utc_date(user.dateOfBirth),
         "departementCode": user.departementCode,
         "deposit_version": 1,
         "email": user.email,

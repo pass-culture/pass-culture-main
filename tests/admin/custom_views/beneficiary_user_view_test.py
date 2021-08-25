@@ -264,7 +264,7 @@ class BeneficiaryUserViewTest:
             email="edited@email.com",
             firstName=user_to_edit.firstName,
             lastName=user_to_edit.lastName,
-            dateOfBirth=user_to_edit.dateOfBirth,
+            dateOfBirth=user_to_edit.dateOfBirth.isoformat(sep=" ", timespec="seconds"),
             departementCode=user_to_edit.departementCode,
             postalCode="76000",
         )

@@ -96,7 +96,7 @@ class BeneficiaryFactory(BaseFactory):
     email = factory.Sequence("jeanne.doux{}@example.com".format)
     address = factory.Sequence("{} rue des machines".format)
     city = "Paris"
-    dateOfBirth = datetime.datetime(2000, 1, 1)
+    dateOfBirth = datetime.datetime.today() - relativedelta(years=18, months=1)
     departementCode = "75"
     firstName = "Jeanne"
     lastName = "Doux"
