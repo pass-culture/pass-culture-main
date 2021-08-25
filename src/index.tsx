@@ -5,9 +5,9 @@ import * as ReactDOM from "react-dom"
 import "./index.scss"
 
 import {
-  REACT_APP_ENVIRONMENT_NAME,
-  REACT_APP_SENTRY_SERVER_URL,
-  REACT_APP_SENTRY_SAMPLE_RATE,
+  ENVIRONMENT_NAME,
+  SENTRY_SERVER_URL,
+  SENTRY_SAMPLE_RATE,
 } from "utils/config"
 
 import { version } from "../package.json"
@@ -15,13 +15,13 @@ import { version } from "../package.json"
 import App from "./app/App"
 
 // Initialize sentry
-if (REACT_APP_SENTRY_SERVER_URL) {
+if (SENTRY_SERVER_URL) {
   SentryInit({
-    dsn: REACT_APP_SENTRY_SERVER_URL,
-    environment: REACT_APP_ENVIRONMENT_NAME,
+    dsn: SENTRY_SERVER_URL,
+    environment: ENVIRONMENT_NAME,
     release: version,
     integrations: [new TracingIntegrations.BrowserTracing()],
-    tracesSampleRate: parseFloat(REACT_APP_SENTRY_SAMPLE_RATE),
+    tracesSampleRate: parseFloat(SENTRY_SAMPLE_RATE),
   })
 }
 

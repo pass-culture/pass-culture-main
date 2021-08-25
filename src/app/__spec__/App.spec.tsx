@@ -5,9 +5,9 @@ import * as pcapi from "repository/pcapi/pcapi"
 
 import App from "../App"
 
-jest.mock('utils/config', () => ({
-  REACT_APP_APP_SEARCH_ENDPOINT: 'app-search-endpoint',
-  REACT_APP_APP_SEARCH_KEY: 'app-search-key',
+jest.mock("utils/config", () => ({
+  APP_SEARCH_ENDPOINT: "app-search-endpoint",
+  APP_SEARCH_KEY: "app-search-key",
 }))
 
 jest.mock("repository/pcapi/pcapi", () => ({

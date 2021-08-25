@@ -19,7 +19,7 @@
   "lint-staged": {
     "./public/**/*.svg": "svgo",
     "./src/**/*.svg": "svgo",
-    "*.{js,jsx, ts, tsx}": [
+    "*.{js,jsx,ts,tsx}": [
       "prettier --write",
       "eslint --max-warnings=0 --fix"
     ],

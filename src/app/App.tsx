@@ -4,19 +4,19 @@ import { SearchProvider, Results, SearchBox } from "@elastic/react-search-ui"
 import { Layout } from "@elastic/react-search-ui-views"
 import AppSearchAPIConnector from "@elastic/search-ui-app-search-connector"
 import * as React from "react"
-import {useEffect, useState} from "react"
+import { useEffect, useState } from "react"
 
 import * as pcapi from "repository/pcapi/pcapi"
-import { REACT_APP_APP_SEARCH_ENDPOINT, REACT_APP_APP_SEARCH_KEY } from "utils/config"
+import { APP_SEARCH_ENDPOINT, APP_SEARCH_KEY } from "utils/config"
 
 const connector = new AppSearchAPIConnector({
-  searchKey: REACT_APP_APP_SEARCH_KEY,
+  searchKey: APP_SEARCH_KEY,
   engineName: "offers",
-  endpointBase: REACT_APP_APP_SEARCH_ENDPOINT,
+  endpointBase: APP_SEARCH_ENDPOINT,
 })
 
-const App = ():JSX.Element => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean|null>(null)
+const App = (): JSX.Element => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
 
   useEffect(() => {
     pcapi
@@ -58,7 +58,7 @@ const App = ():JSX.Element => {
         )}
         <SearchProvider
           config={{
-            apiConnector: connector
+            apiConnector: connector,
           }}
         >
           <div className="App">

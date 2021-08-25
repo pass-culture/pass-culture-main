@@ -1,9 +1,9 @@
 import fetch from "jest-fetch-mock"
 
 import { client } from "repository/pcapi/pcapiClient"
-import { REACT_APP_API_URL, REACT_APP_URL_FOR_MAINTENANCE } from "utils/config"
+import { API_URL, URL_FOR_MAINTENANCE } from "utils/config"
 
-Reflect.deleteProperty(global.window, 'location')
+Reflect.deleteProperty(global.window, "location")
 const token = "JWT-token"
 window.location = new URL(`https://www.example.com?token=${token}`)
 const setHrefSpy = jest.fn()
@@ -29,7 +29,7 @@ describe("pcapiClient", () => {
       await client.get(path)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${REACT_APP_API_URL}${path}`, {
+      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
         headers: new Headers({
           Authorization: `Bearer ${token}`,
         }),
@@ -59,7 +59,7 @@ describe("pcapiClient", () => {
       }
       fetch.mockResponseOnce(JSON.stringify(paginatedBookingRecapReturned), {
         status: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       })
 
       // When
@@ -92,7 +92,7 @@ describe("pcapiClient", () => {
       })
 
       // Then
-      expect(setHrefSpy).toHaveBeenCalledWith(REACT_APP_URL_FOR_MAINTENANCE)
+      expect(setHrefSpy).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
     })
   })
 })

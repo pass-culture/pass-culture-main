@@ -1,4 +1,4 @@
-import { REACT_APP_API_URL, REACT_APP_URL_FOR_MAINTENANCE } from "utils/config"
+import { API_URL, URL_FOR_MAINTENANCE } from "utils/config"
 export const HTTP_STATUS = {
   NO_CONTENT: 204,
   FORBIDDEN: 403,
@@ -11,10 +11,10 @@ const buildOptions = (method) => {
   const params = new URLSearchParams(window.location.search)
   const token = params.get("token")
   const headers: HeadersInit = new Headers()
-  headers.set('Authorization', `Bearer ${token}`)
+  headers.set("Authorization", `Bearer ${token}`)
 
   if (method !== GET_HTTP_METHOD && method !== DELETE_HTTP_METHOD) {
-    headers.set('Content-Type', "application/json")
+    headers.set("Content-Type", "application/json")
   }
 
   return {
@@ -23,7 +23,7 @@ const buildOptions = (method) => {
   }
 }
 
-const buildUrl = (path) => `${REACT_APP_API_URL}${path}`
+const buildUrl = (path) => `${API_URL}${path}`
 
 const fetchWithErrorHandler = async (path, options) => {
   const response = await fetch(buildUrl(path), options)
@@ -34,7 +34,7 @@ const fetchWithErrorHandler = async (path, options) => {
       : await response.text()
   if (!response.ok) {
     if (response.status === HTTP_STATUS.SERVICE_UNAVAILABLE) {
-      window.location.href = REACT_APP_URL_FOR_MAINTENANCE
+      window.location.href = URL_FOR_MAINTENANCE
     }
     return Promise.reject(
       results ? { errors: results, status: response.status } : null
