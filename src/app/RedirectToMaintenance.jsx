@@ -1,3 +1,7 @@
+/*
+* @debt standard "Gaël: migration from classes components to function components"
+*/
+
 import React from 'react'
 
 import { URL_FOR_MAINTENANCE } from '../utils/config'

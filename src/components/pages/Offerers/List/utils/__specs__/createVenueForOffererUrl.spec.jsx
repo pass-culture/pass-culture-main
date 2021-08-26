@@ -1,3 +1,7 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+*/
+
 import createVenueForOffererUrl from '../createVenueForOffererUrl'
 
 describe('src | components | pages | Offerers | decorators | createVenueForOffererUrl', () => {

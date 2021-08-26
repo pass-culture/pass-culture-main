@@ -1,3 +1,7 @@
+/*
+* @debt directory "Gaël: this file should be migrated within the new directory structure"
+*/
+
 const createVenueForOffererUrl = offerers => {
   let url = ''
 

@@ -1,3 +1,7 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+*/
+
 import { existsInINSEERegistry } from '../SirenField'
 
 describe('components | SirenField', () => {

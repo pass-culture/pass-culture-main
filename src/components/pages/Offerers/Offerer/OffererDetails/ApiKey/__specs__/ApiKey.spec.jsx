@@ -1,3 +1,9 @@
+/*
+* @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
+* @debt complexity "Gaël: file nested too deep in directory structure"
+* @debt deprecated "Gaël: deprecated usage of redux-saga-data"
+*/
+
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'

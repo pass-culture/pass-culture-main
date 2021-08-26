@@ -1,3 +1,7 @@
+/*
+* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+*/
+
 import state from 'components/utils/mocks/state'
 
 import { mapStateToProps, mapDispatchToProps, createApiPath } from '../OfferersContainer'

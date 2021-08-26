@@ -1,3 +1,7 @@
+/*
+* @debt directory "Gaël: this file should be migrated within storybook"
+*/
+
 import React, { useState } from 'react'
 
 import Select from 'components/layout/inputs/Select'

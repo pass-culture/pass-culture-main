@@ -1,3 +1,7 @@
+/*
+* @debt complexity "Gaël: file over 300 lines"
+*/
+
 export const musicOptionsTree = [
   {
     code: 501,

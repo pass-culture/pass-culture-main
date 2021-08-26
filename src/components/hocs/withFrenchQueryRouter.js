@@ -1,3 +1,7 @@
+/*
+* @debt deprecated "Gaël: deprecated usage of withQueryRouter"
+*/
+
 import { withQueryRouter } from 'components/hocs/with-query-router/withQueryRouter'
 
 import { mapBrowserToApi } from '../../utils/translate'

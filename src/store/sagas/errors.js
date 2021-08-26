@@ -1,3 +1,7 @@
+/*
+* @debt deprecated "Gaël: deprecated usage of redux-saga-data"
+*/
+
 import { put, takeEvery } from 'redux-saga/effects'
 
 import { mergeErrors } from '../reducers/errors'

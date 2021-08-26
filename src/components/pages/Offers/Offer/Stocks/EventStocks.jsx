@@ -1,3 +1,9 @@
+/*
+* @debt complexity "Gaël: file over 300 lines"
+* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+* @debt directory "Gaël: this file should be migrated within the new directory structure"
+*/
+
 import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'

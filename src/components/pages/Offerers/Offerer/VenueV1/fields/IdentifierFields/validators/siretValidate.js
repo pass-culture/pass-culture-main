@@ -1,3 +1,7 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+*/
+
 import { getSiretInformations } from '../../../siret/selectSiretInformations'
 
 const siretValidate = async siret => {

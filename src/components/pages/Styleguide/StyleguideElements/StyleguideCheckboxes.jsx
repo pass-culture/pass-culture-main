@@ -1,3 +1,7 @@
+/*
+* @debt directory "Gaël: this file should be migrated within storybook"
+*/
+
 import React, { useCallback, useState } from 'react'
 
 import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'

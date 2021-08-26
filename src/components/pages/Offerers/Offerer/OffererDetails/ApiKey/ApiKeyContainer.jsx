@@ -1,3 +1,10 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+* @debt directory "Gaël: this file should be migrated within the new directory structure"
+* @debt deprecated "Gaël: deprecated usage of redux-saga-data"
+* @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
+*/
+
 import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
 

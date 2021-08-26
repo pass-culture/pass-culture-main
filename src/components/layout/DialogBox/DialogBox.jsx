@@ -1,3 +1,7 @@
+/*
+* @debt directory "Gaël: this file should be migrated within the new directory structure"
+*/
+
 import { DialogContent, DialogOverlay } from '@reach/dialog'
 import '@reach/dialog/styles.css'
 import PropTypes from 'prop-types'

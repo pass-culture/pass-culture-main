@@ -1,3 +1,8 @@
+/*
+* @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
+* @debt deprecated "Gaël: deprecated usage of withQueryRouter"
+*/
+
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 

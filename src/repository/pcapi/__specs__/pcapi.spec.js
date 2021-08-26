@@ -1,3 +1,8 @@
+/*
+* @debt complexity "Gaël: file over 300 lines"
+* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+*/
+
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
 import {

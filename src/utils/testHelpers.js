@@ -1,3 +1,7 @@
+/*
+* @debt rtl "Gaël: bad use of act in testing library"
+*/
+
 import { render } from '@testing-library/react'
 import omit from 'lodash.omit'
 import sass from 'node-sass'

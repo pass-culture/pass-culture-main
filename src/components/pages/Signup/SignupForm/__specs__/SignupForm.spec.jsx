@@ -1,3 +1,8 @@
+/*
+* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+* @debt rtl "Gaël: migration from enzyme to RTL"
+*/
+
 import { mount } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'

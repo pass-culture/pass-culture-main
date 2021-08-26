@@ -1,3 +1,8 @@
+/*
+* @debt deprecated "Gaël: deprecated usage of withQueryRouter"
+* @debt standard "Gaël: migration from classes components to function components"
+*/
+
 import PropTypes from 'prop-types'
 import { Component } from 'react'
 

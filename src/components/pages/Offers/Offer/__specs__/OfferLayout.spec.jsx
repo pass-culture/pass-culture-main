@@ -1,3 +1,8 @@
+/*
+* @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
+* @debt rtl "Gaël: bad use of act in testing library"
+*/
+
 import { fireEvent } from '@testing-library/dom'
 import '@testing-library/jest-dom'
 import { act, render, screen, waitForElementToBeRemoved } from '@testing-library/react'

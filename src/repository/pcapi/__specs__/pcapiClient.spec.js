@@ -1,3 +1,7 @@
+/*
+* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+*/
+
 import fetch from 'jest-fetch-mock'
 
 import { client } from 'repository/pcapi/pcapiClient'

@@ -1,3 +1,7 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+*/
+
 import { removeWhitespaces } from 'react-final-form-utils'
 
 export const formatSiret = string => {

@@ -1,3 +1,7 @@
+/*
+* @debt directory "Gaël: this file should be migrated within storybook"
+*/
+
 import React from 'react'
 
 import TextareaInput from 'components/layout/inputs/TextareaInput'

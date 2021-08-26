@@ -1,3 +1,8 @@
+/*
+* @debt deprecated "Gaël: deprecated usage of redux-saga-data"
+* @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
+*/
+
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'

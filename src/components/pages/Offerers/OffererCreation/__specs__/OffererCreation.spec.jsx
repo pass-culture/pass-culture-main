@@ -1,3 +1,8 @@
+/*
+* @debt deprecated "Gaël: deprecated usage of react-final-form"
+* @debt rtl "Gaël: migration from enzyme to RTL"
+*/
+
 import { shallow } from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'

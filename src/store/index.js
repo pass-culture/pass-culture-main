@@ -1,3 +1,7 @@
+/*
+* @debt deprecated "Gaël: deprecated usage of redux-saga-data"
+*/
+
 import { applyMiddleware, compose, createStore } from 'redux'
 import { persistReducer, persistStore } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web and AsyncStorage for react-native

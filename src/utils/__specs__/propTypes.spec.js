@@ -1,3 +1,7 @@
+/*
+* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+*/
+
 const { requiredIfComponentHasProp } = require('utils/propTypes')
 
 const VALIDATING_PROP_NAME = 'hrefName'

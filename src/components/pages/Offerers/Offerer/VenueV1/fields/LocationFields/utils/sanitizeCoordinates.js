@@ -1,3 +1,7 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+*/
+
 const sanitizeCoordinates = input => {
   const stringNumberWithoutComa = String(input).replace(',', '.')
   const isNegativeNumber = parseFloat(stringNumberWithoutComa) < 0

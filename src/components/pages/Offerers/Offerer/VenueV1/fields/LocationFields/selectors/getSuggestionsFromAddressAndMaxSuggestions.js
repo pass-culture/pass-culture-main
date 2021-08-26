@@ -1,3 +1,7 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+*/
+
 import createCachedSelector from 're-reselect'
 
 import fetchAddressData from '../utils/fetchAddressData'

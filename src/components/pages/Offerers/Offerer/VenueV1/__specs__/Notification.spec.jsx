@@ -1,3 +1,8 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+* @debt rtl "Gaël: migration from enzyme to RTL"
+*/
+
 import { mount } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'

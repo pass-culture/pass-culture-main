@@ -1,3 +1,7 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+*/
+
 const MAX_FILE_SIZE = 1048576
 const CARRIAGE_RETURN = '\n'
 const UNAUTHORIZED_CHARACTERS = /[,;.]/

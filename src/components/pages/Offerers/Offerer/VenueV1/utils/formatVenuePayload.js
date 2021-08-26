@@ -1,3 +1,8 @@
+/*
+* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+* @debt complexity "Gaël: file nested too deep in directory structure"
+*/
+
 export const formatVenuePayload = (payload, isCreatedEntity) => {
   const creation_authorized_input_field = [
     'address',

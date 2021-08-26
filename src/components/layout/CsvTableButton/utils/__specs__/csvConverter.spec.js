@@ -1,3 +1,7 @@
+/*
+* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+*/
+
 import csvConverter from '../csvConverter'
 
 describe('src | components | layout | CsvTableButton | utils', () => {

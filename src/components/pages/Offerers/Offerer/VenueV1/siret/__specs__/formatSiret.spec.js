@@ -1,3 +1,7 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+*/
+
 import { formatSiret } from '../formatSiret'
 
 describe('src | components | pages | Venue | siret | formatSiret', () => {

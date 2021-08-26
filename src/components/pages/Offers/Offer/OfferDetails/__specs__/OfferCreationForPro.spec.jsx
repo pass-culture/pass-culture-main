@@ -1,3 +1,11 @@
+/*
+* @debt complexity "Gaël: file over 300 lines"
+* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+* @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
+* @debt complexity "Gaël: file nested too deep in directory structure"
+* @debt rtl "Gaël: bad use of act in testing library"
+*/
+
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -1790,7 +1798,7 @@ describe('offerDetails - Creation - pro user', () => {
       fireEvent.click(screen.getByText('Annuler et quitter'))
 
       // Then
-      const e = screen.getByText('Voulez-vous quitter la création d’offre ?')
+      const e = screen.getByText('Voulez-vous quitter la création d��offre ?')
       expect(e).toBeInTheDocument()
     })
   })

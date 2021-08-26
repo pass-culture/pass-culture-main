@@ -1,3 +1,7 @@
+/*
+* @debt rtl "Gaël: bad use of act in testing library"
+*/
+
 import { setUser } from '@sentry/browser'
 import '@testing-library/jest-dom'
 import { act, render, screen } from '@testing-library/react'
