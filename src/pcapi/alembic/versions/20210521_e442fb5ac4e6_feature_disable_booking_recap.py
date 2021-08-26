@@ -5,6 +5,8 @@ Revises: 8824ce692699
 Create Date: 2021-05-21 09:33:28.418695
 
 """
+import enum
+
 from pcapi.models import feature
 
 
@@ -14,7 +16,14 @@ down_revision = "8824ce692699"
 branch_labels = None
 depends_on = None
 
-FLAG = feature.FeatureToggle.DISABLE_BOOKINGS_RECAP_FOR_SOME_PROS
+
+class FeatureToggle(enum.Enum):
+    DISABLE_BOOKINGS_RECAP_FOR_SOME_PROS = (
+        "Désactivation de l'appel qui est fait sur la route mes réservations pour certains acteurs"
+    )
+
+
+FLAG = FeatureToggle.DISABLE_BOOKINGS_RECAP_FOR_SOME_PROS
 
 
 def upgrade() -> None:
