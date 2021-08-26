@@ -1,5 +1,6 @@
 {% extends 'admin/model/list.html' %}
 {% import 'admin/custom_model_layout.html' as custom_model_layout with context %}
+{% import 'admin/edit_many_offers_components/bulk_edit_modal.html' as bulk_edit_modal with context %}
 
 {% block body %}
     {% block model_menu_bar %}
@@ -68,4 +69,9 @@
     {%- if admin_view.edit_modal or admin_view.create_modal or admin_view.details_modal -%}
         {{ lib.add_modal_window() }}
     {%- endif -%}
+    {{ bulk_edit_modal.modal_display(lib) }}
 {% endblock %}
+{% block tail %}
+    {{ super() }}
+    {{ bulk_edit_modal.modal_script()}}
+{% endblock tail %}

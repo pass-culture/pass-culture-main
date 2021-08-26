@@ -202,7 +202,7 @@ class OfferView(BaseAdminView):
             if remove_other_tags:
                 OfferCriterion.query.filter(OfferCriterion.offerId.in_(offer_ids)).delete(synchronize_session=False)
 
-            offer_criteria: list[OfferCriterion] = []
+            offer_criteria: List[OfferCriterion] = []
             for criterion in criteria:
                 offer_criteria.extend(
                     OfferCriterion(offerId=offer_id, criterionId=criterion.id)
@@ -300,8 +300,10 @@ class OfferForVenueSubview(OfferView):
     column_searchable_list = ["name", "criteria.name"]
     list_template = "admin/venue_offers_list.html"
 
-    @expose("/", methods=(["GET"]))
+    @expose("/", methods=(["GET", "POST"]))
     def index(self):
+        if request.method == "POST":
+            return super().index()
         self._template_args["venue_name"] = self._get_venue_name()
         return super().index_view()
 
