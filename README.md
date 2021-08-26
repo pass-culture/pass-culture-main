@@ -52,3 +52,36 @@ La documentation est intégrée au projet, aux travers de fichiers README à la 
 Vous trouverez une documentation générale ainsi que des liens vers les différents README en suivant ce lien :
 
 [Standards de code et d'architecture](./src/README.md)
+
+## Dette technique
+
+Nous utilisons un outil nommé Tyrion afin de visualiser et de suivre l'évolution de notre dette technique. 
+Tyrion se base sur les commentaires de code pour produire des rapports de dette technique. 
+Nous invitons les développeurs à ajouter des commentaires à leur guise pour marquer les parties du code qui leur semble complexe, peu compréhensible, déprécié etc...
+
+### la syntaxe pour ajouter un commentaire de dette : 
+
+```
+/*
+* @debt <label> "<author-name> : mon commentaire"
+*/
+```
+
+les labels sont les suivants :
+
+- **directory** : quand le fichier en question ne suit pas [les standards de notre architecture](./src/README.md)
+- **bugRisk** : quand le code représente un risque de bug 
+- **securityRisk** : quand le code représente un risque de securité 
+- **complexity** : quand un fichiers ou une partie du code est trop compliqué à comprendre ou trop long
+- **standard** : quand le code ne suit pas nos standards de code
+- **testWarning** : quand le test (ou fichier de test) génère des warning (proptypes, act, unhandled promise etc...)
+- **testInitialize** : quand le fichier de test n'a pas de fonction d'initialisation (banc de test)
+- **rtl** : quand le fichier de test doit être migré de enzyme vers react-testing-library
+- **deprecated** : quand un bout de code fait usage d'une fonctionalité ou outil à dé-commissioner
+- **duplicated** : quand un bout de code est dupliqué, ou que plusieurs éléments devraient être regroupé en un seul
+
+
+### lancer tyrion : 
+
+`dept:report` : génère un rapport de la dette actuelle
+`dept:tendency` : génère un rapport sur l'évolution de la dette durant les 100 derniers commits
