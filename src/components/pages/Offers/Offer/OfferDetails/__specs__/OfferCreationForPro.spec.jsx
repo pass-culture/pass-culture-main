@@ -1798,7 +1798,7 @@ describe('offerDetails - Creation - pro user', () => {
       fireEvent.click(screen.getByText('Annuler et quitter'))
 
       // Then
-      const e = screen.getByText('Voulez-vous quitter la création d��offre ?')
+      const e = screen.getByText('Voulez-vous quitter la création d’offre ?')
       expect(e).toBeInTheDocument()
     })
   })

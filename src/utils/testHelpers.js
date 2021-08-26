@@ -46,7 +46,7 @@ export function renderWithStyles(ui, options = {}) {
     ${options.componentStylesheet ? `@import 'src/${options.componentStylesheet}';` : ''}
     `
 
-    const styles = sass.renderSync({ data: stylesData })
+    const styles = sass.renderSync({ data: stylesData, outputStyle: 'compressed' })
 
     const styleElement = document.createElement('style')
     styleElement.innerHTML = styles.css.toString()
