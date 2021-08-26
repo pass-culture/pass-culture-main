@@ -341,13 +341,11 @@ jobs:
       - export_app_version
       - run: |
           source ${BASH_ENV}
-          if [[ ${CIRCLE_BRANCH} == "staging" ]];then
-            gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
-            docker build ./api \
-              -f ./api/Dockerfile.gcp \
-              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${APP_VERSION}
-            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${APP_VERSION}
-          fi
+          gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
+          docker build ./api \
+            -f ./api/Dockerfile.gcp \
+            -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${APP_VERSION}
+          docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${APP_VERSION}
       - run:
           name: Send failure notification
           command: |
@@ -376,7 +374,6 @@ jobs:
             --build-arg BASE_PCAPI_TAG=${APP_VERSION} \
             -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:${APP_VERSION} \
             -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
-      - run: |
           docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:${APP_VERSION}
           docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
 
@@ -531,22 +528,6 @@ jobs:
             curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Webapp,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
           when: on_fail
 
-  deploy-webapp-cloudstorage:
-    executor: node-gcp-12
-    steps:
-      - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
-      - authenticate_gcp:
-          gcp-key-name: GCP_METIER_KEY
-      - build-frontend-app:
-          node_env: ${CIRCLE_BRANCH}
-          build_dir: ./webapp
-          yarn_build_subcommand: "build"
-      - push-to-bucket:
-          build_path: ./webapp/build/
-          bucket_name: ${GCP_PROJECT}-${CIRCLE_BRANCH}-webapp
-
   deploy-adage-front:
     executor: node-gcp-14
     steps:
@@ -638,10 +619,10 @@ workflows:
     jobs:
       - build-and-push-image:
           filters:
+            tags:
+              only: /^v.*/
             branches:
-              only:
-                - staging
-                - integration
+              ignore: /.*/
           context:
             - GCP
             - GCP_EHP
@@ -649,15 +630,14 @@ workflows:
           requires:
             - build-and-push-image
           filters:
+            tags:
+              only: /^v.*/
             branches:
-              only:
-                - staging
+              ignore: /.*/
           context:
             - GCP
             - GCP_EHP
       - deploy-dbops:
-          requires:
-            - build-and-push-image-db-ops
           filters:
             branches:
               only:
@@ -666,14 +646,11 @@ workflows:
             - GCP
             - GCP_EHP
       - deploy-pcapi:
-          requires:
-            - build-and-push-image
-          context:
-            - GCP
-            - GCP_EHP
-      - deploy-webapp-cloudstorage:
-          requires:
-            - deploy-pcapi
+          filters:
+            branches:
+              only:
+                - staging
+                - integration
           context:
             - GCP
             - GCP_EHP
@@ -706,14 +683,6 @@ workflows:
 
   gcp-prod:
     jobs:
-      - build-and-push-image:
-          filters:
-            branches:
-              only:
-                - production
-          context:
-            - GCP
-            - GCP_PROD
       - deploy-dbops:
           filters:
             branches:
@@ -723,20 +692,16 @@ workflows:
             - GCP
             - GCP_PROD
       - deploy-pcapi:
-          requires:
-            - build-and-push-image
+          filters:
+            branches:
+              only:
+                - production
           context:
             - GCP
             - GCP_PROD
       - deploy-webapp:
           requires:
             - deploy-pcapi
-      - deploy-webapp-cloudstorage:
-          requires:
-            - deploy-pcapi
-          context:
-            - GCP
-            - GCP_PROD
       - deploy-pro:
           requires:
             - deploy-pcapi
