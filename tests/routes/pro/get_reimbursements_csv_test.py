@@ -55,27 +55,6 @@ def test_with_user_with_no_offerer(app):
 
 
 @pytest.mark.usefixtures("db_session")
-@override_features(DISABLE_BOOKINGS_RECAP_FOR_SOME_PROS=True)
-def test_with_blacklisted_offerer(app):
-    # Given
-    offerer = offers_factories.OffererFactory(siren="343282380")
-    payments_factories.PaymentFactory(
-        booking__stock__offer__venue__managingOfferer=offerer,
-        transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
-    )
-    pro = users_factories.ProFactory(offerers=[offerer])
-
-    # When
-    client = TestClient(app.test_client()).with_session_auth(pro.email)
-    response = client.get("/reimbursements/csv")
-
-    # Then
-    assert response.status_code == 200
-    rows = response.data.decode("utf-8").splitlines()
-    assert len(rows) == 1  # header
-
-
-@pytest.mark.usefixtures("db_session")
 @override_features(PRO_REIMBURSEMENTS_FILTERS=True)
 def test_with_venue_filter(app):
     beginning_date_iso_format = (date.today() - timedelta(days=2)).isoformat()

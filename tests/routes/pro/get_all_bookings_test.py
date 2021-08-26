@@ -10,7 +10,6 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -107,7 +106,7 @@ class Returns200Test:
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
-        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 3):
+        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
             response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
 
         expected_bookings_recap = [
@@ -172,7 +171,7 @@ class Returns200Test:
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
-        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 3):
+        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
             response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&eventDate={requested_date_iso_format}")
 
         assert response.status_code == 200
@@ -193,7 +192,7 @@ class Returns200Test:
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
-        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 3):
+        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
             response = client.get(
                 "/bookings/pro?bookingPeriodBeginningDate=%s&bookingPeriodEndingDate=%s"
                 % (booking_period_beginning_date_iso, booking_period_ending_date_iso)
@@ -229,18 +228,3 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["bookingPeriodBeginningDate"] == ["Ce champ est obligatoire"]
         assert response.json["bookingPeriodEndingDate"] == ["Ce champ est obligatoire"]
-
-
-@pytest.mark.usefixtures("db_session")
-class Returns401Test:
-    @override_features(DISABLE_BOOKINGS_RECAP_FOR_SOME_PROS=True)
-    def when_user_is_blacklisted(self, app):
-        pro = users_factories.ProFactory(offerers=[offers_factories.OffererFactory(siren="334473352")])
-
-        client = TestClient(app.test_client()).with_session_auth(pro.email)
-        response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
-
-        assert response.status_code == 401
-        assert response.json == {
-            "global": ["Le statut d'administrateur ne permet pas d'accéder au suivi des réservations"]
-        }

@@ -23,14 +23,6 @@ def get_reimbursements_csv():
 
     all_validated_offerers_for_the_current_user = query.all()
 
-    # FIXME: due to generalisation, the performance issue has led to DDOS many
-    # users checking the many bookings of these offerers
-    temporarily_banned_sirens = ["334473352", "434001954", "343282380"]
-    if FeatureToggle.DISABLE_BOOKINGS_RECAP_FOR_SOME_PROS.is_active():
-        if any(offerer.siren in temporarily_banned_sirens for offerer in all_validated_offerers_for_the_current_user):
-            # Here we use the same process as for admins
-            all_validated_offerers_for_the_current_user = []
-
     if FeatureToggle.PRO_REIMBURSEMENTS_FILTERS.is_active():
         reimbursement_period_field_names = ("reimbursementPeriodBeginningDate", "reimbursementPeriodEndingDate")
         reimbursement_period_beginning_date, reimbursement_period_ending_date = validate_reimbursement_period(
