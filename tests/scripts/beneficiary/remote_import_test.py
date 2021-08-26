@@ -22,7 +22,6 @@ from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import ImportStatus
 import pcapi.notifications.push.testing as push_testing
 from pcapi.scripts.beneficiary import remote_import
-from pcapi.scripts.beneficiary.remote_import import parse_beneficiary_information
 
 from tests.scripts.beneficiary.fixture import APPLICATION_DETAIL_STANDARD_RESPONSE
 from tests.scripts.beneficiary.fixture import make_new_beneficiary_application_details
@@ -424,7 +423,9 @@ class ParseBeneficiaryInformationTest:
     class BeforeGeneralOpenningTest:
         def test_personal_information_of_beneficiary_are_parsed_from_application_detail(self):
             # when
-            information = parse_beneficiary_information(APPLICATION_DETAIL_STANDARD_RESPONSE, procedure_id=201201)
+            information = remote_import.parse_beneficiary_information(
+                APPLICATION_DETAIL_STANDARD_RESPONSE, procedure_id=201201
+            )
 
             # then
             assert information.last_name == "Doe"
@@ -441,7 +442,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", department_code="67 - Bas-Rhin")
 
             # when
-            information = parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.department == "67"
@@ -451,7 +452,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", department_code="973 - Guyane")
 
             # when
-            information = parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.department == "973"
@@ -463,7 +464,7 @@ class ParseBeneficiaryInformationTest:
             )
 
             # when
-            information = parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.department == "2B"
@@ -475,7 +476,7 @@ class ParseBeneficiaryInformationTest:
             )
 
             # when
-            information = parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.department == "2a"
@@ -489,7 +490,7 @@ class ParseBeneficiaryInformationTest:
                     field["type_de_champ"]["libelle"] = "Veuillez indiquer votre département de résidence"
 
             # when
-            information = parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.department == "67"
@@ -499,7 +500,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="  93130  ")
 
             # when
-            information = parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.postal_code == "93130"
@@ -509,7 +510,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="67 200")
 
             # when
-            information = parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.postal_code == "67200"
@@ -519,7 +520,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="67 200 Strasbourg ")
 
             # when
-            information = parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.postal_code == "67200"
@@ -529,7 +530,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", civility="M.")
 
             # when
-            information = parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.civility == "M."
@@ -539,7 +540,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed")
 
             # when
-            information = parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.activity == "Étudiant"
@@ -549,7 +550,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", activity=None)
 
             # when
-            information = parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.activity is None
@@ -557,7 +558,7 @@ class ParseBeneficiaryInformationTest:
     class AfterGeneralOpenningTest:
         def test_personal_information_of_beneficiary_are_parsed_from_application_detail(self):
             # when
-            information = parse_beneficiary_information(
+            information = remote_import.parse_beneficiary_information(
                 APPLICATION_DETAIL_STANDARD_RESPONSE_AFTER_GENERALISATION, procedure_id=201201
             )
 
