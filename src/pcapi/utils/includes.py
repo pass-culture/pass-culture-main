@@ -68,6 +68,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                     "-authorId",
                     "-lastValidationDate",
                     "-rankingWeight",
+                    "-dateUpdated",
                     {
                         "key": "stocks",
                         "includes": [

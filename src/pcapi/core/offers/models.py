@@ -350,6 +350,8 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     subcategoryId = Column(Text, nullable=True, index=True)
 
+    dateUpdated: datetime = Column(DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
+
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
     Index("venueId_idAtProvider_index", venueId, idAtProvider, unique=True)
