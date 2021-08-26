@@ -130,6 +130,7 @@ class JouveFraudCheckTest:
             "I III1",
             "I I 1JII 11IB I E",
             "",
+            "Passeport n: XXXXX",
         ],
     )
     def test_jouve_id_piece_number_wrong_format(self, id_piece_number):
