@@ -394,7 +394,7 @@ def recompute_dnBookedQuantity(stock_ids: list[int]) -> None:
     db.session.execute(query, {"stock_ids": tuple(stock_ids)})
 
 
-def auto_mark_as_used_after_event():
+def auto_mark_as_used_after_event() -> None:
     """Automatically mark as used bookings that correspond to events that
     have happened (with a delay).
     """

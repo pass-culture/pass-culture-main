@@ -8,7 +8,7 @@ from pcapi.models import Stock
 from pcapi.repository import repository
 
 
-def cancel_booking_status_for_events_happening_during_quarantine():
+def cancel_booking_status_for_events_happening_during_quarantine() -> None:
     bookings = find_bookings_to_cancel()
     cancel_bookings(bookings)
 
@@ -26,7 +26,7 @@ def find_bookings_to_cancel() -> list[Booking]:
     )
 
 
-def cancel_bookings(bookings: list[Booking]):
+def cancel_bookings(bookings: list[Booking]) -> None:
     for booking in bookings:
         booking.mark_as_unused_set_confirmed()
     repository.save(*bookings)

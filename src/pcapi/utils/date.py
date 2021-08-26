@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from babel.dates import format_date
 from babel.dates import format_datetime as babel_format_datetime
@@ -80,7 +81,7 @@ def get_department_timezone(departement_code: str) -> str:
     return CUSTOM_TIMEZONES.get(departement_code, METROPOLE_TIMEZONE)
 
 
-def utc_datetime_to_department_timezone(date_time: datetime, departement_code: str) -> datetime:
+def utc_datetime_to_department_timezone(date_time: Optional[datetime], departement_code: str) -> datetime:
     from_zone = tz.gettz(DEFAULT_STORED_TIMEZONE)
     to_zone = tz.gettz(get_department_timezone(departement_code))
     utc_datetime = date_time.replace(tzinfo=from_zone)

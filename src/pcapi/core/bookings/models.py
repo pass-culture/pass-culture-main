@@ -25,6 +25,7 @@ from pcapi.core.bookings.exceptions import BookingIsAlreadyUsed
 from pcapi.core.bookings.exceptions import BookingIsCancelled
 from pcapi.core.bookings.exceptions import BookingIsNotCancelledCannotBeUncancelled
 from pcapi.core.educational.models import EducationalBooking
+from pcapi.core.offers.models import Mediation
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.human_ids import humanize
@@ -179,14 +180,14 @@ class Booking(PcObject, Model):
         return self.dateCreated + BOOKINGS_AUTO_EXPIRY_DELAY
 
     @property
-    def total_amount(self):
+    def total_amount(self) -> float:
         return self.amount * self.quantity
 
     # FIXME: many functions here are only used when serializing
     # bookings in the web API. They can be moved elsewhere once we
     # have replaced the auto-magic serialization ("includes").
     @property
-    def completedUrl(self):
+    def completedUrl(self) -> Optional[str]:
         offer = self.stock.offer
         url = offer.url
         if url is None:
@@ -201,7 +202,7 @@ class Booking(PcObject, Model):
         )
 
     @staticmethod
-    def restize_internal_error(ie):
+    def restize_internal_error(ie: Exception) -> list[str]:
         if "tooManyBookings" in str(ie.orig):
             return ["global", "La quantité disponible pour cette offre est atteinte."]
         if "insufficientFunds" in str(ie.orig):
@@ -209,21 +210,21 @@ class Booking(PcObject, Model):
         return PcObject.restize_integrity_error(ie)
 
     @property
-    def isEventExpired(self):
+    def isEventExpired(self) -> bool:
         return self.stock.isEventExpired
 
     @property
-    def thumbUrl(self):
+    def thumbUrl(self) -> str:
         if self.mediation:
             return self.mediation.thumbUrl
         return self.stock.offer.product.thumbUrl
 
     @property
-    def mediation(self):
+    def mediation(self) -> Optional[Mediation]:
         return self.stock.offer.activeMediation
 
     @property
-    def qrCode(self):
+    def qrCode(self) -> Optional[str]:
         from . import api  # avoid import loop
 
         offer = self.stock.offer
