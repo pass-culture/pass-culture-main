@@ -63,7 +63,7 @@ def _process_educational_csv(educational_institutions_rows: Iterable[dict]) -> N
             extra={
                 "educational_deposit_id": educational_deposit.id,
                 "script": "import_educational_institutions_and_deposits",
-                "amount": educational_deposit.amount,
+                "amount": str(educational_deposit.amount),
                 "uai_code": institution_id,
                 "year_id": educational_year.id,
             },
