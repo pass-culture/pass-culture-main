@@ -13,7 +13,7 @@ from pcapi.repository import repository
 
 @dataclass
 class DummyBooking:
-    dateCreated: datetime.datetime
+    dateUsed: datetime.datetime
 
 
 @pytest.mark.usefixtures("db_session")
@@ -69,10 +69,18 @@ class CustomReimbursementRuleTest:
         booking2 = bookings_factories.BookingFactory()
         assert not rule.is_relevant(booking2)
 
-    def test_apply(self):
+    def test_apply_with_amount(self):
         rule = factories.CustomReimbursementRuleFactory(amount=10)
         single = bookings_factories.BookingFactory(quantity=1)
         double = bookings_factories.BookingFactory(quantity=2)
 
         assert rule.apply(single) == 10
         assert rule.apply(double) == 20
+
+    def test_apply_with_rate(self):
+        rule = factories.CustomReimbursementRuleFactory(rate=0.8)
+        single = bookings_factories.BookingFactory(quantity=1)
+        double = bookings_factories.BookingFactory(quantity=2)
+
+        assert rule.apply(single) == 8
+        assert rule.apply(double) == 16

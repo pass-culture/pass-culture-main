@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 
 import pytest
 
@@ -317,7 +318,7 @@ class GenerateNewPaymentsTest:
         assert get_not_processable_payments().count() == 0
 
     @pytest.mark.usefixtures("db_session")
-    def test_use_custom_reimbursement_rule(self):
+    def test_use_custom_reimbursement_rule_with_amount(self):
         offer = offers_factories.DigitalOfferFactory()
         offers_factories.BankInformationFactory(venue=offer.venue, iban="iban1", bic="bic1")
         bookings_factories.UsedBookingFactory(amount=10, quantity=2, stock__offer=offer)
@@ -329,3 +330,19 @@ class GenerateNewPaymentsTest:
         payment = Payment.query.one()
         assert payment.amount == 14  # 2 (booking.quantity) * 7 (Rule.amount)
         assert payment.customReimbursementRule == rule
+        assert payment.reimbursementRate is None
+
+    @pytest.mark.usefixtures("db_session")
+    def test_use_custom_reimbursement_rule_with_rate(self):
+        booking = bookings_factories.UsedBookingFactory(amount=10, quantity=2)
+        offerer = booking.offerer
+        rule = payments_factories.CustomReimbursementRuleFactory(offerer=booking.offerer, rate=0.8)
+        offers_factories.BankInformationFactory(offerer=offerer, iban="iban1", bic="bic1")
+
+        cutoff = batch_date = datetime.datetime.now()
+        generate_new_payments(cutoff, batch_date)
+
+        payment = Payment.query.one()
+        assert payment.amount == 16  # 2 (quantity) * 0.8 (rate) * 10 (amount)
+        assert payment.customReimbursementRule == rule
+        assert payment.reimbursementRate == Decimal("0.8")

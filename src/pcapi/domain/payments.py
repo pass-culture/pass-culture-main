@@ -82,8 +82,8 @@ class PaymentDetails:
         self.booking_used_date = payment.booking.dateUsed
         self.payment_iban = payment.iban
         self.payment_id = payment.id
-        # `Payment.reimbursementRate` is None if a custom
-        # reimbursement rule has been applied.
+        # `Payment.reimbursementRate` is None for custom reimbursement
+        # rules that define a specific amount for an offer.
         self.reimbursement_rate = payment.reimbursementRate or (
             Decimal(payment.amount / payment.booking.total_amount).quantize(Decimal("0.01"))
         )
@@ -123,7 +123,7 @@ def create_payment_for_booking(reimbursement: BookingReimbursement, batch_date: 
         payment.customReimbursementRuleId = reimbursement.rule.id
     else:
         payment.reimbursementRule = reimbursement.rule.description
-        payment.reimbursementRate = reimbursement.rule.rate
+    payment.reimbursementRate = reimbursement.rule.rate
     payment.author = "batch"
     payment.transactionLabel = make_transaction_label(datetime.utcnow())
     payment.batchDate = batch_date

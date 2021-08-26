@@ -98,6 +98,14 @@ class CustomReimbursementRuleFactory(BaseFactory):
     )
     amount = 5
 
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        if "rate" in kwargs:
+            kwargs["amount"] = None
+        if "offerer" in kwargs:
+            kwargs["offer"] = None
+        return super()._create(model_class, *args, **kwargs)
+
 
 class PaymentWithCustomRuleFactory(PaymentFactory):
     amount = factory.LazyAttribute(lambda payment: payment.customReimbursementRule.amount)

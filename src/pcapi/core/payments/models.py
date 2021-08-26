@@ -7,10 +7,12 @@ from sqlalchemy import CheckConstraint
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Numeric
+from sqlalchemy import Text
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.categories import subcategories
 from pcapi.models.db import Model
 
 
@@ -19,16 +21,17 @@ MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
 
 
 class ReimbursementRule:
+
+    # A `rate` attribute (or property) must be defined by subclasses.
+    # It's not defined in this abstract class because SQLAlchemy would
+    # then miss the `rate` column in `CustomReimbursementRule`.
+
     def is_active(self, booking: Booking) -> bool:
         valid_from = self.valid_from or MIN_DATETIME
         valid_until = self.valid_until or MAX_DATETIME
         return valid_from <= booking.dateUsed < valid_until
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        raise NotImplementedError()
-
-    @property
-    def rate(self) -> Decimal:
         raise NotImplementedError()
 
     @property
@@ -49,19 +52,36 @@ class CustomReimbursementRule(ReimbursementRule, Model):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    offerId = Column(BigInteger, ForeignKey("offer.id"), nullable=False)
+    offerId = Column(BigInteger, ForeignKey("offer.id"), nullable=True)
 
     offer = relationship("Offer", foreign_keys=[offerId], backref="custom_reimbursement_rules")
 
-    amount = Column(Numeric(10, 2), nullable=False)
+    offererId = Column(BigInteger, ForeignKey("offerer.id"), nullable=True)
+
+    offerer = relationship("Offerer", foreign_keys=[offererId], backref="custom_reimbursement_rules")
+
+    # A list of identifiers of categories for which the rule applies.
+    # If the list is empty, the rule applies on all offers of an
+    # offerer.
+    categories = Column(postgresql.ARRAY(Text()), server_default="{}")
+
+    amount = Column(Numeric(10, 2), nullable=True)
+
+    # rate is between 0 and 1 (included), or NULL if `amount` is set.
+    rate = Column(Numeric(3, 2), nullable=True)
 
     timespan = Column(postgresql.TSRANGE)
 
     __table_args__ = (
         # No overlapping timespan for any given offer id.
         postgresql.ExcludeConstraint(("offerId", "="), ("timespan", "&&")),
+        # A rule relates to an offer or an offerer, never both.
+        CheckConstraint('num_nonnulls("offerId", "offererId") = 1'),
+        # A rule has an amount or a rate, never both.
+        CheckConstraint("num_nonnulls(amount, rate) = 1"),
         # A timespan must have a lower bound. Upper bound is optional.
         CheckConstraint("lower(timespan) IS NOT NULL"),
+        CheckConstraint("rate IS NULL OR (rate BETWEEN 0 AND 1)"),
     )
 
     def __init__(self, **kwargs):
@@ -73,20 +93,26 @@ class CustomReimbursementRule(ReimbursementRule, Model):
         return psycopg2.extras.DateTimeRange(start.isoformat(), end.isoformat() if end else None, bounds="[)")
 
     def is_active(self, booking: Booking):
-        if booking.dateCreated < self.timespan.lower:
+        if booking.dateUsed < self.timespan.lower:
             return False
-        return self.timespan.upper is None or booking.dateCreated < self.timespan.upper
+        return self.timespan.upper is None or booking.dateUsed < self.timespan.upper
 
     def is_relevant(self, booking: Booking, cumulative_revenue="ignored"):
-        return booking.stock.offerId == self.offerId
+        if booking.stock.offerId == self.offerId:
+            return True
+        if self.categories:
+            sub_category = subcategories.ALL_SUBCATEGORIES_DICT[booking.stock.offer.subcategoryId]
+            if sub_category.category_id not in self.categories:
+                return False
+        if booking.offererId == self.offererId:
+            return True
+        return False
 
     def apply(self, booking: Booking):
-        return booking.quantity * self.amount
+        if self.amount is not None:
+            return booking.quantity * self.amount
+        return booking.total_amount * self.rate
 
     @property
     def description(self):  # implementation of ReimbursementRule.description
         raise TypeError("A custom reimbursement rule does not have any description")
-
-    @property
-    def rate(self):  # implementation of ReimbursementRule.rate
-        raise TypeError("A custom reimbursement rule does not have any rate")

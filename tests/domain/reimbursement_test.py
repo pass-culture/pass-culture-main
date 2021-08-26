@@ -6,6 +6,7 @@ from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
@@ -548,7 +549,7 @@ class CustomRuleFinderTest:
         far_in_the_past = datetime.now() - timedelta(days=800)
         booking1 = bookings_factories.UsedBookingFactory()
         offer = booking1.stock.offer
-        booking2 = bookings_factories.UsedBookingFactory(stock=booking1.stock, dateCreated=far_in_the_past)
+        booking2 = bookings_factories.UsedBookingFactory(stock=booking1.stock, dateUsed=far_in_the_past)
         booking3 = bookings_factories.UsedBookingFactory()
         rule = payments_factories.CustomReimbursementRuleFactory(offer=offer, timespan=(yesterday, None))
 
@@ -556,6 +557,42 @@ class CustomRuleFinderTest:
         assert finder.get_rule(booking1) == rule
         assert finder.get_rule(booking2) is None  # outside `rule.timespan`
         assert finder.get_rule(booking3) is None  # no rule for this offer
+
+    def test_offerer_without_category_rule(self):
+        yesterday = datetime.now() - timedelta(days=1)
+        far_in_the_past = datetime.now() - timedelta(days=800)
+        booking1 = bookings_factories.UsedBookingFactory()
+        offerer = booking1.offerer
+        booking2 = bookings_factories.UsedBookingFactory(offerer=offerer, dateUsed=far_in_the_past)
+        booking3 = bookings_factories.UsedBookingFactory()
+        rule = payments_factories.CustomReimbursementRuleFactory(offerer=offerer, timespan=(yesterday, None))
+
+        finder = reimbursement.CustomRuleFinder()
+        assert finder.get_rule(booking1) == rule
+        assert finder.get_rule(booking2) is None  # outside `rule.timespan`
+        assert finder.get_rule(booking3) is None  # no rule for this offerer
+
+    def test_offerer_with_category_rule(self):
+        yesterday = datetime.now() - timedelta(days=1)
+        far_in_the_past = datetime.now() - timedelta(days=800)
+        booking1 = bookings_factories.UsedBookingFactory(stock__offer__subcategoryId=subcategories.FESTIVAL_CINE.id)
+        offerer = booking1.offerer
+        booking2 = bookings_factories.UsedBookingFactory(
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id, stock__offer__venue__managingOfferer=offerer
+        )
+        booking3 = bookings_factories.UsedBookingFactory(
+            offerer=offerer, stock__offer__subcategoryId=subcategories.FESTIVAL_CINE.id, dateUsed=far_in_the_past
+        )
+        booking4 = bookings_factories.UsedBookingFactory()
+        rule = payments_factories.CustomReimbursementRuleFactory(
+            offerer=offerer, categories=[categories.CINEMA.id], timespan=(yesterday, None)
+        )
+
+        finder = reimbursement.CustomRuleFinder()
+        assert finder.get_rule(booking1) == rule
+        assert finder.get_rule(booking2) is None  # wrong category
+        assert finder.get_rule(booking3) is None  # outside `rule.timespan`
+        assert finder.get_rule(booking4) is None  # no rule for this offerer
 
 
 def assert_total_reimbursement(booking_reimbursement, booking):

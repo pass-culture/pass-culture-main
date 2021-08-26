@@ -158,6 +158,7 @@ class CustomRuleFinder:
     def __init__(self):
         self.rules = payments_models.CustomReimbursementRule.query.all()
         self.rules_by_offer = self._partition_by_field("offerId")
+        self.rules_by_offerer = self._partition_by_field("offererId")
 
     def _partition_by_field(self, field: str):
         cache = {}
@@ -167,6 +168,9 @@ class CustomRuleFinder:
 
     def get_rule(self, booking: Booking) -> Optional[payments_models.CustomReimbursementRule]:
         for rule in self.rules_by_offer.get(booking.stock.offerId, ()):
+            if rule.is_relevant(booking) and rule.is_active(booking):
+                return rule
+        for rule in self.rules_by_offerer.get(booking.offererId, ()):
             if rule.is_relevant(booking) and rule.is_active(booking):
                 return rule
         return None
