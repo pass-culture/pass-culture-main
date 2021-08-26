@@ -66,11 +66,11 @@ class Booking(PcObject, Model):
 
     stock = relationship("Stock", foreign_keys=[stockId], backref="bookings")
 
-    venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=True)
+    venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
 
     venue = relationship("Venue", foreign_keys=[venueId], backref="bookings")
 
-    offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=True)
+    offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
 
     offerer = relationship("Offerer", foreign_keys=[offererId], backref="bookings")
 
