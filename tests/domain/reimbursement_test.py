@@ -274,7 +274,7 @@ class ReimbursementRateForBookAbove20000Test:
 
 
 class ReimbursementRuleIsActiveTest:
-    class DummyRule(reimbursement.ReimbursementRule):
+    class DummyRule(payments_models.ReimbursementRule):
         rate = Decimal(10)
         description = "Dummy rule"
 

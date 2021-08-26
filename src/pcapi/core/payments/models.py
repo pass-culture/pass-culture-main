@@ -1,3 +1,6 @@
+import datetime
+from decimal import Decimal
+
 import psycopg2.extras
 from sqlalchemy import BigInteger
 from sqlalchemy import CheckConstraint
@@ -8,8 +11,32 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
 
 from pcapi.core.bookings.models import Booking
-from pcapi.domain.reimbursement import ReimbursementRule
 from pcapi.models.db import Model
+
+
+MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
+MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
+
+
+class ReimbursementRule:
+    def is_active(self, booking: Booking) -> bool:
+        valid_from = self.valid_from or MIN_DATETIME
+        valid_until = self.valid_until or MAX_DATETIME
+        return valid_from <= booking.dateUsed < valid_until
+
+    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+        raise NotImplementedError()
+
+    @property
+    def rate(self) -> Decimal:
+        raise NotImplementedError()
+
+    @property
+    def description(self) -> str:
+        raise NotImplementedError()
+
+    def apply(self, booking: Booking) -> Decimal:
+        return Decimal(booking.total_amount * self.rate)
 
 
 class CustomReimbursementRule(ReimbursementRule, Model):

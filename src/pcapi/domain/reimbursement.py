@@ -5,39 +5,16 @@ from decimal import Decimal
 
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import Offer
+import pcapi.core.payments.models as payments_models
 from pcapi.models import Booking
 from pcapi.models import ThingType
 
-
-MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
-MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
 
 # A new set rules are in effect as of 1 September 2021 (i.e. 31 August 22:00 UTC)
 SEPTEMBER_2021 = datetime.datetime(2021, 9, 1) - datetime.timedelta(hours=2)
 
 
-class ReimbursementRule:
-    def is_active(self, booking: Booking) -> bool:
-        valid_from = self.valid_from or MIN_DATETIME
-        valid_until = self.valid_until or MAX_DATETIME
-        return valid_from <= booking.dateUsed < valid_until
-
-    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        raise NotImplementedError()
-
-    @property
-    def rate(self) -> Decimal:
-        raise NotImplementedError()
-
-    @property
-    def description(self) -> str:
-        raise NotImplementedError()
-
-    def apply(self, booking: Booking) -> Decimal:
-        return Decimal(booking.total_amount * self.rate)
-
-
-class DigitalThingsReimbursement(ReimbursementRule):
+class DigitalThingsReimbursement(payments_models.ReimbursementRule):
     rate = Decimal(0)
     description = "Pas de remboursement pour les offres digitales"
     valid_from = None
@@ -48,7 +25,7 @@ class DigitalThingsReimbursement(ReimbursementRule):
         return offer.isDigital and not _is_reimbursable_digital_offer(offer)
 
 
-class PhysicalOffersReimbursement(ReimbursementRule):
+class PhysicalOffersReimbursement(payments_models.ReimbursementRule):
     rate = Decimal(1)
     description = "Remboursement total pour les offres physiques"
     valid_from = None
@@ -59,7 +36,7 @@ class PhysicalOffersReimbursement(ReimbursementRule):
         return not offer.isDigital or _is_reimbursable_digital_offer(offer)
 
 
-class MaxReimbursementByOfferer(ReimbursementRule):
+class MaxReimbursementByOfferer(payments_models.ReimbursementRule):
     # This rule is not used anymore.
     rate = Decimal(0)
     description = "Pas de remboursement au dessus du plafond de 20 000 € par acteur culturel"
@@ -72,7 +49,7 @@ class MaxReimbursementByOfferer(ReimbursementRule):
         return cumulative_revenue > 20000
 
 
-class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
+class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(payments_models.ReimbursementRule):
     rate = Decimal("0.95")
     description = "Remboursement à 95% entre 20 000 € et 40 000 € par lieu"
     valid_from = None
@@ -84,7 +61,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(Reimbur
         return 20000 < cumulative_revenue <= 40000
 
 
-class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(ReimbursementRule):
+class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(payments_models.ReimbursementRule):
     rate = Decimal("0.85")
     description = "Remboursement à 85% entre 40 000 € et 150 000 € par lieu"
     valid_from = None
@@ -96,7 +73,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(Reimbu
         return 40000 < cumulative_revenue <= 150000
 
 
-class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000(ReimbursementRule):
+class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000(payments_models.ReimbursementRule):
     rate = Decimal("0.70")
     description = "Remboursement à 70% au dessus de 150 000 € par lieu"
     valid_from = None
@@ -108,7 +85,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000(ReimbursementRul
         return cumulative_revenue > 150000
 
 
-class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
+class ReimbursementRateByVenueBetween20000And40000(payments_models.ReimbursementRule):
     rate = Decimal("0.95")
     description = "Remboursement à 95% entre 20 000 € et 40 000 € par lieu (>= 2021-09-01)"
     valid_from = SEPTEMBER_2021
@@ -120,7 +97,7 @@ class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
         return 20000 < cumulative_revenue <= 40000
 
 
-class ReimbursementRateByVenueBetween40000And150000(ReimbursementRule):
+class ReimbursementRateByVenueBetween40000And150000(payments_models.ReimbursementRule):
     rate = Decimal("0.92")
     description = "Remboursement à 92% entre 40 000 € et 150 000 € par lieu (>= 2021-09-01)"
     valid_from = SEPTEMBER_2021
@@ -132,7 +109,7 @@ class ReimbursementRateByVenueBetween40000And150000(ReimbursementRule):
         return 40000 < cumulative_revenue <= 150000
 
 
-class ReimbursementRateByVenueAbove150000(ReimbursementRule):
+class ReimbursementRateByVenueAbove150000(payments_models.ReimbursementRule):
     rate = Decimal("0.90")
     description = "Remboursement à 90% au dessus de 150 000 € par lieu (>= 2021-09-01)"
     valid_from = SEPTEMBER_2021
@@ -144,7 +121,7 @@ class ReimbursementRateByVenueAbove150000(ReimbursementRule):
         return cumulative_revenue > 150000
 
 
-class ReimbursementRateForBookAbove20000(ReimbursementRule):
+class ReimbursementRateForBookAbove20000(payments_models.ReimbursementRule):
     rate = Decimal("0.95")
     description = "Remboursement à 95% au dessus de 20 000 € pour les livres"
     valid_from = None
@@ -172,12 +149,12 @@ REGULAR_RULES = [
 @dataclass
 class BookingReimbursement:
     booking: Booking
-    rule: ReimbursementRule
+    rule: payments_models.ReimbursementRule
     reimbursed_amount: Decimal
 
 
 def find_all_booking_reimbursements(
-    bookings: list[Booking], custom_rules: list[ReimbursementRule]
+    bookings: list[Booking], custom_rules: list[payments_models.ReimbursementRule]
 ) -> list[BookingReimbursement]:
     reimbursements = []
     total_per_year = defaultdict(lambda: Decimal(0))
@@ -199,19 +176,15 @@ def find_all_booking_reimbursements(
 
 
 def get_reimbursement_rule(
-    booking: Booking, custom_rules: tuple[ReimbursementRule], cumulative_revenue: Decimal
-) -> ReimbursementRule:
-    # FIXME (dbaty, 2021-06-07): review this inner import once the
-    # code has been moved to the `pcapi.core.payments` package.
-    from pcapi.core.payments.models import CustomReimbursementRule  # avoid import loop
-
+    booking: Booking, custom_rules: tuple[payments_models.ReimbursementRule], cumulative_revenue: Decimal
+) -> payments_models.ReimbursementRule:
     candidates = []
     for rule in custom_rules + REGULAR_RULES:
         if not rule.is_active(booking):
             continue
         if not rule.is_relevant(booking, cumulative_revenue):
             continue
-        if isinstance(rule, CustomReimbursementRule):
+        if isinstance(rule, payments_models.CustomReimbursementRule):
             return rule
         if isinstance(rule, ReimbursementRateForBookAbove20000):
             return rule
