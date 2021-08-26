@@ -219,3 +219,6 @@ class BeneficiaryFraudReview(PcObject, Model):
 class FraudItem:
     status: FraudStatus
     detail: typing.Optional[str]
+
+    def __bool__(self) -> bool:
+        return self.status == FraudStatus.OK

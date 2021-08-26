@@ -21,6 +21,7 @@ from pcapi.emails.beneficiary_offer_cancellation import (
 from pcapi.emails.beneficiary_pre_subscription_rejected import (
     make_not_eligible_beneficiary_pre_subscription_rejected_data,
 )
+from pcapi.emails.beneficiary_pre_subscription_rejected import make_dms_wrong_values_data
 from pcapi.emails.beneficiary_pre_subscription_rejected import make_duplicate_beneficiary_pre_subscription_rejected_data
 from pcapi.emails.beneficiary_pre_subscription_rejected import make_fraud_suspicion_data
 from pcapi.emails.beneficiary_soon_to_be_expired_bookings import (
@@ -261,3 +262,10 @@ def send_withdrawal_terms_to_newly_validated_offerer(offerer: Offerer) -> None:
 def send_dms_application_emails(users: typing.Iterable[User]) -> None:
     data = beneficiary_activation.get_dms_application_data()
     mails.send(recipients=[user.email for user in users], data=data)
+
+
+def send_dms_wrong_values_emails(
+    user_email: str, postal_code: typing.Optional[str], id_piece_number: typing.Optional[str]
+) -> None:
+    data = make_dms_wrong_values_data(postal_code, id_piece_number)
+    mails.send(recipients=[user_email], data=data)

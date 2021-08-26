@@ -13,11 +13,10 @@ from pcapi.core.users.api import steps_to_become_beneficiary
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
+from pcapi.domain import user_emails
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import get_beneficiary_duplicates
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from pcapi.domain.user_activation import create_beneficiary_from_application
-from pcapi.domain.user_emails import send_accepted_as_beneficiary_email
-from pcapi.domain.user_emails import send_activation_email
 from pcapi.models import ApiErrors
 from pcapi.models import ImportStatus
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
@@ -30,6 +29,12 @@ from pcapi.utils.mailing import MailServiceException
 
 
 logger = logging.getLogger(__name__)
+
+
+class DMSParsingError(ValueError):
+    def __init__(self, errors, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.errors = errors
 
 
 # TODO(xordoquy): remove process_applications_updated_after since it is not used
@@ -61,8 +66,31 @@ def run(
 
     for application_id in retry_ids + applications_ids:
         details = get_application_details(application_id, procedure_id, settings.DMS_TOKEN)
+
         try:
             information = parse_beneficiary_information(details, procedure_id)
+        except DMSParsingError as exc:
+            logger.info(
+                "[BATCH][REMOTE IMPORT BENEFICIARIES] Invalid values (%r) detected in Application %s in procedure %s",
+                exc.errors,
+                application_id,
+                procedure_id,
+            )
+            user_emails.send_dms_wrong_values_emails(
+                details["dossier"]["email"], exc.errors.get("postal_code"), exc.errors.get("id_piece_number")
+            )
+            errors = ",".join([f"'{key}' ({value})" for key, value in exc.errors.items()])
+            error_detail = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
+            # keep a compatibility with BeneficiaryImport table
+            save_beneficiary_import_with_status(
+                ImportStatus.ERROR,
+                application_id,
+                source=BeneficiaryImportSources.demarches_simplifiees,
+                source_id=procedure_id,
+                detail=error_detail,
+            )
+            continue
+
         except Exception as exc:  # pylint: disable=broad-except
             logger.info(
                 "[BATCH][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s had errors and was ignored: %s",
@@ -138,6 +166,7 @@ def parse_beneficiary_information(application_detail: dict, procedure_id: int) -
         "application_id": dossier["id"],
         "procedure_id": procedure_id,
     }
+    parsing_errors = {}
 
     for field in dossier["champs"]:
         label = field["type_de_champ"]["libelle"]
@@ -151,14 +180,23 @@ def parse_beneficiary_information(application_detail: dict, procedure_id: int) -
             information["phone"] = value
         if label == "Quel est le code postal de votre commune de résidence ?":
             space_free = str(value).strip().replace(" ", "")
-            information["postal_code"] = re.search("^[0-9]{5}", space_free).group(0)
+            try:
+                information["postal_code"] = re.search("^[0-9]{5}", space_free).group(0)
+            except Exception:  # pylint: disable=broad-except
+                parsing_errors["postal_code"] = value
+
         if label == "Veuillez indiquer votre statut":
             information["activity"] = value
         if label == "Quelle est votre adresse de résidence":
             information["address"] = value
         if label == "Quel est le numéro de la pièce que vous venez de saisir ?":
-            information["id_piece_number"] = value
+            if not fraud_api._validate_id_piece_number_format_fraud_item(value):
+                parsing_errors["id_piece_number"] = value
+            else:
+                information["id_piece_number"] = value
 
+    if parsing_errors:
+        raise DMSParsingError(parsing_errors, "Error validating")
     return fraud_models.DMSContent(**information)
 
 
@@ -209,9 +247,9 @@ def process_beneficiary_application(
     try:
         if preexisting_account is None:
             token = create_reset_password_token(user, token_life_time=RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED)
-            send_activation_email(user, token=token)
+            user_emails.send_activation_email(user, token=token)
         else:
-            send_accepted_as_beneficiary_email(user)
+            user_emails.send_accepted_as_beneficiary_email(user)
     except MailServiceException as mail_service_exception:
         logger.exception(
             "Email send_activation_email failure for application %s - Procedure %s : %s",

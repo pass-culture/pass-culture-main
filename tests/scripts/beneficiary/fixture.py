@@ -1,4 +1,5 @@
 import copy
+from typing import Optional
 
 
 APPLICATION_DETAIL_STANDARD_RESPONSE = {
@@ -224,6 +225,7 @@ def make_new_beneficiary_application_details(
     department_code: str = "67 - Bas-Rhin",
     civility: str = "Mme",
     activity: str = "Étudiant",
+    id_piece_number: Optional[str] = None,
 ) -> dict:
     application = copy.deepcopy(APPLICATION_DETAIL_STANDARD_RESPONSE)
     application["dossier"]["id"] = application_id
@@ -236,4 +238,18 @@ def make_new_beneficiary_application_details(
             field["value"] = postal_code
         if field["type_de_champ"]["libelle"] == "Veuillez indiquer votre statut":
             field["value"] = activity
+
+    if id_piece_number:
+        application["dossier"]["champs"].append(
+            {
+                "value": id_piece_number,
+                "type_de_champ": {
+                    "id": 123123,
+                    "libelle": "Quel est le numéro de la pièce que vous venez de saisir ?",
+                    "type_champ": "unknown",
+                    "order_place": 123,
+                    "description": "WIP",
+                },
+            }
+        )
     return application

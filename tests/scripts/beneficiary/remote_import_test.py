@@ -375,7 +375,7 @@ class ProcessBeneficiaryApplicationTest:
 
     @patch("pcapi.scripts.beneficiary.remote_import.create_beneficiary_from_application")
     @patch("pcapi.scripts.beneficiary.remote_import.repository")
-    @patch("pcapi.scripts.beneficiary.remote_import.send_activation_email")
+    @patch("pcapi.domain.user_emails.send_activation_email")
     @pytest.mark.usefixtures("db_session")
     def test_account_activation_email_is_sent(
         self, send_activation_email, mock_repository, create_beneficiary_from_application, app
@@ -395,7 +395,7 @@ class ProcessBeneficiaryApplicationTest:
 
     @patch("pcapi.scripts.beneficiary.remote_import.create_beneficiary_from_application")
     @patch("pcapi.scripts.beneficiary.remote_import.repository")
-    @patch("pcapi.scripts.beneficiary.remote_import.send_activation_email")
+    @patch("pcapi.domain.user_emails.send_activation_email")
     @pytest.mark.usefixtures("db_session")
     def test_error_is_collected_if_beneficiary_could_not_be_saved(
         self, send_activation_email, mock_repository, create_beneficiary_from_application, app
@@ -573,6 +573,22 @@ class ParseBeneficiaryInformationTest:
             assert information.application_id == 123
             assert information.procedure_id == 201201
 
+    class ParsingErrorsTest:
+        def test_beneficiary_information_postalcode_error(self):
+            application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="Strasbourg")
+            with pytest.raises(ValueError) as exc_info:
+                remote_import.parse_beneficiary_information(application_detail, procedure_id=123123)
+
+            assert exc_info.value.errors["postal_code"] == "Strasbourg"
+
+        @pytest.mark.parametrize("possible_value", ["Passeport n: XXXXX", "sans numéro"])
+        def test_beneficiary_information_id_piece_number_error(self, possible_value):
+            application_detail = make_new_beneficiary_application_details(1, "closed", id_piece_number=possible_value)
+            with pytest.raises(ValueError) as exc_info:
+                remote_import.parse_beneficiary_information(application_detail, procedure_id=123123)
+
+            assert exc_info.value.errors["id_piece_number"] == possible_value
+
 
 @pytest.mark.usefixtures("db_session")
 class RunIntegrationTest:
@@ -610,7 +626,7 @@ class RunIntegrationTest:
                     {"type_de_champ": {"libelle": "Veuillez indiquer votre statut"}, "value": "Etudiant"},
                     {
                         "type_de_champ": {"libelle": "Quel est le numéro de la pièce que vous venez de saisir ?"},
-                        "value": "121314",
+                        "value": "1234123412",
                     },
                 ],
             }
@@ -754,7 +770,7 @@ class RunIntegrationTest:
         assert user.address == "11 Rue du Test"
         assert user.isBeneficiary
         assert user.phoneNumber == "0102030405"
-        assert user.idPieceNumber == "121314"
+        assert user.idPieceNumber == "1234123412"
 
         assert len(user.beneficiaryFraudChecks) == 1
         fraud_check = user.beneficiaryFraudChecks[0]
@@ -839,7 +855,7 @@ class RunIntegrationTest:
             isEmailValidated=True,
             dateOfBirth=self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S"),
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-            idPieceNumber="121314",
+            idPieceNumber="1234123412",
         )
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
         get_application_details.side_effect = self._get_details
@@ -884,7 +900,7 @@ class RunIntegrationTest:
             isEmailValidated=True,
             dateOfBirth=self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S"),
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-            idPieceNumber="121314",
+            idPieceNumber="1234123412",
         )
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
         get_application_details.side_effect = self._get_details
@@ -910,7 +926,7 @@ class RunIntegrationTest:
 
         assert applicant.beneficiaryFraudResult.status == fraud_models.FraudStatus.SUSPICIOUS
         assert (
-            f"Le n° de cni 121314 est déjà pris par l'utilisateur {beneficiary.id}"
+            f"Le n° de cni 1234123412 est déjà pris par l'utilisateur {beneficiary.id}"
             in applicant.beneficiaryFraudResult.reason
         )
 
@@ -964,7 +980,7 @@ class RunIntegrationTest:
         assert len(push_testing.requests) == 1
         assert push_testing.requests[0]["attribute_values"]["u.is_beneficiary"]
 
-    @patch("pcapi.scripts.beneficiary.remote_import.send_activation_email")
+    @patch("pcapi.domain.user_emails.send_activation_email")
     @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
     @patch(
         "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
@@ -1021,7 +1037,7 @@ class RunIntegrationTest:
         assert applicant.beneficiaryFraudResult.status == fraud_models.FraudStatus.SUSPICIOUS
         assert f"Duplicat de l'utilisateur {beneficiary.id}" in applicant.beneficiaryFraudResult.reason
 
-    @patch("pcapi.scripts.beneficiary.remote_import.send_activation_email")
+    @patch("pcapi.domain.user_emails.send_activation_email")
     @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
     @patch(
         "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
@@ -1068,3 +1084,28 @@ class RunIntegrationTest:
         send_activation_email.assert_called()
         beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
+
+    @patch(
+        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+    )
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    def test_dms_application_value_error(self, application_details, get_closed_application_ids_for_demarche_simplifiee):
+        get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
+
+        application_details.return_value = make_new_beneficiary_application_details(
+            application_id=1, state="closed", postal_code="Strasbourg", id_piece_number="121314"
+        )
+        remote_import.run(
+            ONE_WEEK_AGO,
+            procedure_id=6712558,
+        )
+
+        beneficiary_import = BeneficiaryImport.query.first()
+        assert beneficiary_import.currentStatus == ImportStatus.ERROR
+        assert beneficiary_import.sourceId == 6712558
+        assert (
+            beneficiary_import.statuses[0].detail
+            == "Erreur dans les données soumises dans le dossier DMS : 'postal_code' (Strasbourg),'id_piece_number' (121314)"
+        )
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3124925
