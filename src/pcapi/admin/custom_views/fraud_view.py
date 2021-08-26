@@ -181,6 +181,7 @@ class FraudView(base_configuration.BaseAdminView):
         if review.review == fraud_models.FraudReviewStatus.OK.value:
             users_api.update_user_information_from_external_source(user, fraud_api.get_source_data(user))
             users_api.activate_beneficiary(user, "fraud_validation")
+            user_emails.send_accepted_as_beneficiary_email(user=user)
             flask.flash(f"L'utilisateur à été activé comme bénéficiaire {user.firstName} {user.lastName}")
 
         elif review.review == fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS.value:

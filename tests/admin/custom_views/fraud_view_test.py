@@ -68,6 +68,7 @@ class BeneficiaryFraudValidationViewTest:
         user = users_models.User.query.get(user.id)
         assert user.isBeneficiary is True
         assert len(user.deposits) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
 
         jouve_content = fraud_models.JouveContent(**check.resultContent)
         assert user.firstName == jouve_content.firstName
