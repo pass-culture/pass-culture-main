@@ -252,11 +252,11 @@ def create_user_profiling_check(
 
 
 def get_source_data(user: User) -> models.JouveContent:
-    mapped_class = {models.FraudCheckType.JOUVE: models.JouveContent}
+    mapped_class = {models.FraudCheckType.DMS: models.DMSContent, models.FraudCheckType.JOUVE: models.JouveContent}
     fraud_check_type = (
         models.BeneficiaryFraudCheck.query.filter(
             models.BeneficiaryFraudCheck.userId == user.id,
-            models.BeneficiaryFraudCheck.type.in_([models.FraudCheckType.JOUVE]),
+            models.BeneficiaryFraudCheck.type.in_([models.FraudCheckType.JOUVE, models.FraudCheckType.DMS]),
         )
         .order_by(models.BeneficiaryFraudCheck.dateCreated.desc())
         .first()

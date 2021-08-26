@@ -50,7 +50,7 @@ class BeneficiaryFraudValidationViewTest:
         assert response.headers["Location"] == "http://localhost/pc/back-office/"
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
-    def test_validation_view_validate_user_staging(self, client):
+    def test_validation_view_validate_user_from_jouve_data_staging(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         admin = users_factories.AdminFactory()
@@ -73,6 +73,31 @@ class BeneficiaryFraudValidationViewTest:
         jouve_content = fraud_models.JouveContent(**check.resultContent)
         assert user.firstName == jouve_content.firstName
         assert user.lastName == jouve_content.lastName
+
+    @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
+    def test_validation_view_validate_user_from_dms_data_staging(self, client):
+        user = users_factories.UserFactory(isBeneficiary=False)
+        check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
+        admin = users_factories.AdminFactory()
+        client.with_session_auth(admin.email)
+
+        response = client.post(
+            f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
+            form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
+        )
+        assert response.status_code == 302
+
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one()
+        assert review.review == fraud_models.FraudReviewStatus.OK
+        assert review.reason == "User is granted"
+        user = users_models.User.query.get(user.id)
+        assert user.isBeneficiary is True
+        assert len(user.deposits) == 1
+
+        dms_content = fraud_models.DMSContent(**check.resultContent)
+        assert user.firstName == dms_content.first_name
+        assert user.lastName == dms_content.last_name
+        assert user.idPieceNumber == dms_content.id_piece_number
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_wrong_args(self, client):

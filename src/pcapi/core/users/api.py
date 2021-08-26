@@ -11,6 +11,7 @@ import secrets
 import typing
 from typing import Optional
 from typing import Tuple
+from typing import Union
 
 from flask import current_app as app
 from google.cloud.storage.blob import Blob
@@ -52,6 +53,7 @@ from pcapi.domain import user_emails
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
+from pcapi.domain.user_activation import create_beneficiary_from_application
 from pcapi.emails.beneficiary_email_change import build_beneficiary_confirmation_email_change_data
 from pcapi.emails.beneficiary_email_change import build_beneficiary_information_email_change_data
 from pcapi.models import BeneficiaryImport
@@ -255,38 +257,44 @@ def update_beneficiary_mandatory_information(
     )
 
 
-def update_user_information_from_external_source(user: User, data: fraud_models.JouveContent) -> User:
-    if data.activity:
-        user.activity = data.activity
-    if data.address:
-        user.address = data.address
-    if data.city:
-        user.city = data.city
-    if data.gender:
-        user.civility = "Mme" if data.gender == "F" else "M."
-    if data.birthDateTxt:
-        user.dateOfBirth = data.birthDateTxt
-    if data.firstName:
-        user.firstName = data.firstName
-    if data.lastName:
-        user.lastName = data.lastName
-    if data.postalCode and not user.postalCode:
-        user.postalCode = data.postalCode
-        user.departementCode = PostalCode(data.postalCode).get_departement_code()
-    if data.firstName and data.lastName:
-        user.publicName = f"{user.firstName} {user.lastName}"
+def update_user_information_from_external_source(
+    user: User, data: Union[fraud_models.DMSContent, fraud_models.JouveContent]
+) -> User:
+    if isinstance(data, fraud_models.DMSContent):
+        user = create_beneficiary_from_application(data, user)
 
-    if data.bodyPieceNumber:
-        items = (
-            fraud_api._validate_id_piece_number_format_fraud_item(data.bodyPieceNumber),
-            fraud_api._duplicate_id_piece_number_fraud_item(data.bodyPieceNumber),
-        )
-        if all((item.status == fraud_models.FraudStatus.OK) for item in items):
-            user.idPieceNumber = data.bodyPieceNumber
+    elif isinstance(data, fraud_models.JouveContent):
+        if data.activity:
+            user.activity = data.activity
+        if data.address:
+            user.address = data.address
+        if data.city:
+            user.city = data.city
+        if data.gender:
+            user.civility = "Mme" if data.gender == "F" else "M."
+        if data.birthDateTxt:
+            user.dateOfBirth = data.birthDateTxt
+        if data.firstName:
+            user.firstName = data.firstName
+        if data.lastName:
+            user.lastName = data.lastName
+        if data.postalCode and not user.postalCode:
+            user.postalCode = data.postalCode
+            user.departementCode = PostalCode(data.postalCode).get_departement_code()
+        if data.firstName and data.lastName:
+            user.publicName = f"{user.firstName} {user.lastName}"
 
-    if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
-        if not user.phoneNumber and data.phoneNumber:
-            user.phoneNumber = data.phoneNumber
+        if data.bodyPieceNumber:
+            items = (
+                fraud_api._validate_id_piece_number_format_fraud_item(data.bodyPieceNumber),
+                fraud_api._duplicate_id_piece_number_fraud_item(data.bodyPieceNumber),
+            )
+            if all((item.status == fraud_models.FraudStatus.OK) for item in items):
+                user.idPieceNumber = data.bodyPieceNumber
+
+        if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
+            if not user.phoneNumber and data.phoneNumber:
+                user.phoneNumber = data.phoneNumber
 
     # update user fields to be correctly initialized
     user.hasSeenTutorials = False

@@ -975,7 +975,27 @@ class VerifyIdentityDocumentInformationsTest:
 
 
 class BeneficairyInformationUpdateTest:
-    def test_update_user_information_from_external_source(self):
+    def test_update_user_information_from_dms(self):
+        user = UserFactory(
+            activity=None,
+            address=None,
+            city=None,
+            departementCode=None,
+            firstName=None,
+            lastName=None,
+            postalCode=None,
+            publicName="UNSET",
+        )
+        dms_data = fraud_factories.DMSContentFactory()
+        new_user = users_api.update_user_information_from_external_source(user, dms_data)
+        assert new_user.activity == dms_data.activity
+        assert new_user.address == dms_data.address
+        assert new_user.departementCode == dms_data.department
+        assert new_user.postalCode == dms_data.postal_code
+        assert new_user.firstName == dms_data.first_name
+        assert new_user.lastName == dms_data.last_name
+
+    def test_update_user_information_from_jouve(self):
         user = UserFactory(
             activity=None,
             address=None,
@@ -995,7 +1015,7 @@ class BeneficairyInformationUpdateTest:
         assert new_user.firstName == jouve_data.firstName
         assert new_user.lastName == jouve_data.lastName
 
-    def test_update_user_information_from_external_empty_source(self):
+    def test_update_user_information_from_jouve_empty_source(self):
         user = UserFactory(activity="Etudiant", postalCode="75001")
         jouve_data = fraud_factories.JouveContentFactory(
             activity=None,
