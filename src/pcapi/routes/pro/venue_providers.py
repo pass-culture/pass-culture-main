@@ -1,19 +1,24 @@
 from typing import Union
 
+from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.providers import api
 from pcapi.core.providers import exceptions
 from pcapi.core.providers import repository
+from pcapi.core.providers.api import update_allocine_venue_provider
+from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import VenueProviderCreationPayload
+from pcapi.core.providers.repository import get_venue_provider_by_venue_and_provider_ids
 from pcapi.flask_app import private_api
-from pcapi.models.api_errors import ApiErrors
+from pcapi.models import ApiErrors
 from pcapi.routes.serialization.venue_provider_serialize import ListVenueProviderQuery
 from pcapi.routes.serialization.venue_provider_serialize import ListVenueProviderResponse
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.routes.serialization.venue_provider_serialize import VenueProviderResponse
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.human_ids import dehumanize
+from pcapi.serialization.utils import dehumanize_id
+from pcapi.validation.routes.users_authorizations import check_user_can_alter_venue
 from pcapi.workers.venue_provider_job import venue_provider_job
 
 
@@ -38,8 +43,8 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
 
     try:
         new_venue_provider = api.create_venue_provider(
-            dehumanize(body.providerId),
-            dehumanize(body.venueId),
+            dehumanize_id(body.providerId),
+            dehumanize_id(body.venueId),
             VenueProviderCreationPayload(
                 isDuo=body.isDuo, price=body.price, venueIdAtOfferProvider=body.venueIdAtOfferProvider
             ),
@@ -82,7 +87,27 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     return VenueProviderResponse.from_orm(new_venue_provider)
 
 
-def _allocine_venue_provider_price(venue_provider) -> Union[float, None]:
+@private_api.route("/venueProviders", methods=["PUT"])
+@login_required
+@spectree_serialize(on_success_status=200, response_model=VenueProviderResponse)
+def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
+    venue_id = dehumanize_id(body.venueId)
+    provider_id = dehumanize_id(body.providerId)
+    assert venue_id is not None, "a not None venue_id is required"
+    assert provider_id is not None, "a not None provider_id is required"
+
+    check_user_can_alter_venue(current_user, venue_id)
+
+    venue_provider = get_venue_provider_by_venue_and_provider_ids(venue_id, provider_id)
+    if not venue_provider.isFromAllocineProvider:
+        raise ApiErrors({"provider": "Cannot update non-allocine provider"})
+
+    updated = update_allocine_venue_provider(venue_provider, body)
+    updated.price = _allocine_venue_provider_price(updated)
+    return VenueProviderResponse.from_orm(updated)
+
+
+def _allocine_venue_provider_price(venue_provider: AllocineVenueProvider) -> Union[float, None]:
     for price_rule in venue_provider.priceRules:
         if price_rule.priceRule():
             return price_rule.price

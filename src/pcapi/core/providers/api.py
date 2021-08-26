@@ -1,10 +1,7 @@
 from datetime import datetime
 import logging
-from typing import Dict
-from typing import List
+from typing import Iterable
 from typing import Optional
-from typing import Set
-from typing import Tuple
 from typing import Union
 
 from pcapi.core import search
@@ -19,14 +16,17 @@ from pcapi.core.providers.exceptions import ProviderNotFound
 from pcapi.core.providers.exceptions import ProviderWithoutApiImplementation
 from pcapi.core.providers.exceptions import VenueNotFound
 from pcapi.core.providers.exceptions import VenueSiretNotRegistered
+from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.core.providers.repository import get_provider_enabled_for_pro_by_id
+from pcapi.domain.price_rule import PriceRule
 from pcapi.models import Product
 from pcapi.models.db import db
 from pcapi.repository import repository
 from pcapi.repository.venue_queries import find_by_id
+from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
 from pcapi.validation.models.entity_validator import validate
 
@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_venue_provider(
-    provider_id: int, venue_id: int, payload: Optional[VenueProviderCreationPayload] = VenueProviderCreationPayload()
+    provider_id: int, venue_id: int, payload: VenueProviderCreationPayload = VenueProviderCreationPayload()
 ) -> VenueProvider:
     provider = get_provider_enabled_for_pro_by_id(provider_id)
     if not provider:
@@ -46,10 +46,12 @@ def create_venue_provider(
     if not venue:
         raise VenueNotFound()
 
-    if provider.localClass == "AllocineStocks":
+    if provider.localClass == "AllocineStocks":  # type: ignore
         new_venue_provider = connect_venue_to_allocine(venue, provider_id, payload)
     else:
-        new_venue_provider = connect_venue_to_provider(venue, provider, payload.venueIdAtOfferProvider)
+        new_venue_provider = connect_venue_to_provider(
+            venue, provider, payload.venueIdAtOfferProvider  # type: ignore[arg-type]
+        )
 
     return new_venue_provider
 
@@ -70,6 +72,22 @@ def change_venue_provider(
 
     repository.save(venue_provider)
     return venue_provider
+
+
+def update_allocine_venue_provider(
+    allocine_venue_provider: AllocineVenueProvider, venue_provider_payload: PostVenueProviderBody
+) -> AllocineVenueProvider:
+    allocine_venue_provider.quantity = venue_provider_payload.quantity
+    allocine_venue_provider.isDuo = venue_provider_payload.isDuo
+    for price_rule in allocine_venue_provider.priceRules:
+        # PriceRule.default is the only existing value at this time
+        # could need to be tweaked in the future
+        if price_rule.priceRule == PriceRule.default:
+            price_rule.price = venue_provider_payload.price
+
+    repository.save(allocine_venue_provider, *allocine_venue_provider.priceRules)
+
+    return allocine_venue_provider
 
 
 ERROR_CODE_PROVIDER_NOT_SUPPORTED = 400
@@ -116,7 +134,9 @@ def _siret_can_be_synchronized(
     return False
 
 
-def synchronize_stocks(stock_details, venue: Venue, provider_id: Optional[int] = None):
+def synchronize_stocks(
+    stock_details: Iterable[dict], venue: Venue, provider_id: Optional[int] = None
+) -> dict[str, int]:
     products_provider_references = [stock_detail["products_provider_reference"] for stock_detail in stock_details]
     products_by_provider_reference = get_products_map_by_id_at_providers(products_provider_references)
 
@@ -160,17 +180,17 @@ def synchronize_stocks(stock_details, venue: Venue, provider_id: Optional[int] =
     return {"new_offers": len(new_offers), "new_stocks": len(new_stocks), "updated_stocks": len(update_stock_mapping)}
 
 
-def _get_offers_update_mapping(offer_id_list: List[int], provider_id):
+def _get_offers_update_mapping(offer_id_list: Iterable[int], provider_id: Optional[int]) -> list[dict]:
     return [{"id": offer_id, "lastProviderId": provider_id} for offer_id in offer_id_list]
 
 
 def _build_new_offers_from_stock_details(
-    stock_details: List,
-    existing_offers_by_provider_reference: Dict[str, int],
-    products_by_provider_reference: Dict[str, Product],
+    stock_details: list,
+    existing_offers_by_provider_reference: dict[str, int],
+    products_by_provider_reference: dict[str, Product],
     venue: Venue,
     provider_id: Optional[int],
-) -> List[Offer]:
+) -> list[Offer]:
     new_offers = []
     for stock_detail in stock_details:
         if stock_detail["offers_provider_reference"] in existing_offers_by_provider_reference:
@@ -196,12 +216,12 @@ def _build_new_offers_from_stock_details(
 
 
 def _get_stocks_to_upsert(
-    stock_details: List[Dict],
-    stocks_by_provider_reference: Dict[str, Dict],
-    offers_by_provider_reference: Dict[str, int],
-    products_by_provider_reference: Dict[str, Product],
-    provider_id: int,
-) -> Tuple[List[Dict], List[Stock], Set[int]]:
+    stock_details: list[dict],
+    stocks_by_provider_reference: dict[str, dict],
+    offers_by_provider_reference: dict[str, int],
+    products_by_provider_reference: dict[str, Product],
+    provider_id: Optional[int],
+) -> tuple[list[dict], list[Stock], set[int]]:
     update_stock_mapping = []
     new_stocks = []
     offer_ids = set()
@@ -258,7 +278,9 @@ def _get_stocks_to_upsert(
     return update_stock_mapping, new_stocks, offer_ids
 
 
-def _build_stock_from_stock_detail(stock_detail: Dict, offers_id: int, price: float, provider_id: int) -> Stock:
+def _build_stock_from_stock_detail(
+    stock_detail: dict, offers_id: int, price: float, provider_id: Optional[int]
+) -> Stock:
     return Stock(
         quantity=stock_detail["available_quantity"],
         rawProviderQuantity=stock_detail["available_quantity"],
@@ -285,7 +307,7 @@ def _validate_stock_or_offer(model: Union[Offer, Stock]) -> bool:
 
 
 def _build_new_offer(
-    venue: Venue, product: Product, id_at_providers: str, id_at_provider: str, provider_id: str
+    venue: Venue, product: Product, id_at_providers: str, id_at_provider: str, provider_id: Optional[int]
 ) -> Offer:
     return Offer(
         bookingEmail=venue.bookingEmail,
