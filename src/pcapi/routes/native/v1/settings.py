@@ -36,6 +36,7 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.WHOLE_FRANCE_OPENING,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
         FeatureToggle.WEBAPP_V2_ENABLED,
+        FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL,
     )
 
     return serializers.SettingsResponse(
@@ -53,4 +54,5 @@ def get_settings() -> serializers.SettingsResponse:
         use_app_search=features[FeatureToggle.USE_APP_SEARCH_ON_NATIVE_APP],
         id_check_address_autocompletion=features[FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION],
         is_webapp_v2_enabled=features[FeatureToggle.WEBAPP_V2_ENABLED],
+        enable_native_eac_individual=features[FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL],
     )

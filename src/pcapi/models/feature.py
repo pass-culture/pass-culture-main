@@ -61,6 +61,7 @@ class FeatureToggle(enum.Enum):
     PERF_VENUE_STATS = "Permet de basculer vers une nouvelle implémentation performante de la page d'accueil pro contenant les indicateurs statistiques par venue"
     WEBAPP_V2_ENABLED = "Utiliser la nouvelle web app (décli web/v2) au lieu de l'ancienne"
     PRO_REIMBURSEMENTS_FILTERS = "Permet de filtrer la liste de remboursements"
+    ENABLE_NATIVE_EAC_INDIVIDUAL = "Active l'EAC individuel sur l'app native"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -103,6 +104,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.PERF_VENUE_STATS,
     FeatureToggle.WEBAPP_V2_ENABLED,
     FeatureToggle.PRO_REIMBURSEMENTS_FILTERS,
+    FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL,
 )
 
 

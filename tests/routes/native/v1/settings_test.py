@@ -23,6 +23,7 @@ class SettingsTest:
         DISPLAY_DMS_REDIRECTION=True,
         USE_APP_SEARCH_ON_NATIVE_APP=True,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=True,
+        ENABLE_NATIVE_EAC_INDIVIDUAL=False,
     )
     def test_get_settings_feature_combination_1(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
@@ -42,6 +43,7 @@ class SettingsTest:
             "useAppSearch": True,
             "idCheckAddressAutocompletion": True,
             "isWebappV2Enabled": False,
+            "enableNativeEacIndividual": False,
         }
 
     @override_features(
@@ -58,6 +60,7 @@ class SettingsTest:
         DISPLAY_DMS_REDIRECTION=False,
         USE_APP_SEARCH_ON_NATIVE_APP=False,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
+        ENABLE_NATIVE_EAC_INDIVIDUAL=True,
     )
     def test_get_settings_feature_combination_2(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
@@ -77,4 +80,5 @@ class SettingsTest:
             "useAppSearch": False,
             "idCheckAddressAutocompletion": False,
             "isWebappV2Enabled": True,
+            "enableNativeEacIndividual": True,
         }
