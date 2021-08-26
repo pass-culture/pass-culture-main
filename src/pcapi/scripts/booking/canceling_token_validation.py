@@ -8,7 +8,7 @@ def canceling_token_validation(token: str) -> None:
 
     if booking:
         if not payment_queries.has_payment(booking):
-            booking.mark_as_unused()
+            booking.mark_as_unused_set_confirmed()
             repository.save(booking)
 
             print(f"The token ({token}) is cancelled")

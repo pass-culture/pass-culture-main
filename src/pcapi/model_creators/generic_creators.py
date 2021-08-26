@@ -6,6 +6,7 @@ from typing import Union
 
 from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Mediation
 from pcapi.core.providers.models import AllocineVenueProvider
@@ -104,6 +105,7 @@ def create_booking(
     idx: int = None,
     is_cancelled: bool = False,
     is_used: bool = False,
+    status: BookingStatus = BookingStatus.CONFIRMED,
     quantity: int = 1,
     stock: Stock = None,
     venue: Venue = None,
@@ -138,14 +140,9 @@ def create_booking(
     booking.dateCreated = date_created
     booking.dateUsed = date_used
     booking.id = idx
-    if is_used:
-        booking.mark_as_used()
-    else:
-        booking.mark_as_unused()
-    if is_cancelled:
-        booking.cancel_booking()
-    else:
-        booking.uncancel_booking()
+    booking.isUsed = is_used
+    booking.isCancelled = is_cancelled
+    booking.status = BookingStatus.USED if is_used else (BookingStatus.CANCELLED if is_cancelled else status)
     booking.quantity = quantity
     booking.stock = stock
     booking.offerer = offerer

@@ -6,6 +6,7 @@ from pcapi.core.bookings import api
 from pcapi.core.bookings import conf
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -126,12 +127,12 @@ def check_is_usable(booking: Booking) -> None:
         forbidden.add_error("payment", "Cette réservation a été remboursée")
         raise forbidden
 
-    if booking.isUsed:
+    if booking.isUsed or booking.status is BookingStatus.USED:
         gone = api_errors.ResourceGoneError()
         gone.add_error("booking", "Cette réservation a déjà été validée")
         raise gone
 
-    if booking.isCancelled:
+    if booking.isCancelled or booking.status is BookingStatus.CANCELLED:
         forbidden = api_errors.ForbiddenError()
         forbidden.add_error("booking", "Cette réservation a été annulée")
         raise forbidden

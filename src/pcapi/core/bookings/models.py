@@ -23,6 +23,7 @@ from pcapi.core.bookings.exceptions import BookingHasAlreadyBeenUsed
 from pcapi.core.bookings.exceptions import BookingIsAlreadyCancelled
 from pcapi.core.bookings.exceptions import BookingIsAlreadyUsed
 from pcapi.core.bookings.exceptions import BookingIsCancelled
+from pcapi.core.bookings.exceptions import BookingIsNotCancelledCannotBeUncancelled
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
@@ -142,10 +143,10 @@ class Booking(PcObject, Model):
         self.dateUsed = datetime.utcnow()
         self.status = BookingStatus.USED
 
-    def mark_as_unused(self) -> None:
+    def mark_as_unused_set_confirmed(self) -> None:
         self.isUsed = False
         self.dateUsed = None
-        self.status = None
+        self.status = BookingStatus.CONFIRMED
 
     def cancel_booking(self) -> None:
         if self.status is BookingStatus.CANCELLED or self.isCancelled:
@@ -156,10 +157,14 @@ class Booking(PcObject, Model):
         self.status = BookingStatus.CANCELLED
         self.cancellationDate = datetime.utcnow()
 
-    def uncancel_booking(self) -> None:
+    def uncancel_booking_set_used(self) -> None:
+        if not (self.status is BookingStatus.CANCELLED or self.isCancelled):
+            raise BookingIsNotCancelledCannotBeUncancelled()
         self.isCancelled = False
-        self.status = None
         self.cancellationDate = None
+        self.cancellationReason = None
+        self.status = BookingStatus.USED
+        self.isUsed = True
 
     def mark_as_confirmed(self) -> None:
         self.status = BookingStatus.CONFIRMED

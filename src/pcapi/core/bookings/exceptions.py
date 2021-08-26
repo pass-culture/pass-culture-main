@@ -72,6 +72,11 @@ class BookingIsAlreadyCancelled(ClientError):
         super().__init__("booking", "Cette réservation a déjà été annulée")
 
 
+class BookingIsNotCancelledCannotBeUncancelled(ClientError):
+    def __init__(self):
+        super().__init__("booking", "Cette réservation n'est pas annulée et ne peut pas être dés-annulée")
+
+
 class BookingIsCancelled(ClientError):
     def __init__(self):
         super().__init__("booking", "Cette réservation a été annulée et ne peut être marquée comme étant utilisée")

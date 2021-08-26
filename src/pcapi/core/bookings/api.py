@@ -252,9 +252,8 @@ def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> Non
 def mark_as_used(booking: Booking) -> None:
     validation.check_is_usable(booking)
     booking.mark_as_used()
-    db.session.add(booking)
-    db.session.commit()
-    logger.info("Booking was marked as used", extra={"booking": booking.id})
+    repository.save(booking)
+    logger.info("Booking was marked as used", extra={"bookingId": booking.id})
 
     if booking.individualBookingId is not None:
         update_external_user(booking.user)
@@ -276,12 +275,16 @@ def mark_as_used_with_uncancelling(booking: Booking) -> None:
     # removed ASAP.
     with transaction():
         if booking.isCancelled or booking.status == BookingStatus.CANCELLED:
-            booking.uncancel_booking()
-            booking.cancellationReason = None
+            booking.uncancel_booking_set_used()
             stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
             stock.dnBookedQuantity += booking.quantity
             db.session.add(stock)
-        mark_as_used(booking)
+    db.session.add(booking)
+    db.session.commit()
+    logger.info("Booking was uncancelled and marked as used", extra={"bookingId": booking.id})
+
+    if booking.individualBookingId is not None:
+        update_external_user(booking.user)
 
 
 def mark_as_cancelled(booking: Booking) -> None:
@@ -303,7 +306,7 @@ def mark_as_cancelled(booking: Booking) -> None:
 
 def mark_as_unused(booking: Booking) -> None:
     validation.check_can_be_mark_as_unused(booking)
-    booking.mark_as_unused()
+    booking.mark_as_unused_set_confirmed()
     repository.save(booking)
     logger.info("Booking was marked as unused", extra={"booking": booking.id})
 
