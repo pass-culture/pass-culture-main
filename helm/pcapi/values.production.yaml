@@ -524,7 +524,7 @@ secrets:
   - name: SUPPORT_EMAIL_ADDRESS
     version: 2
   - name: TRANSACTIONS_RECIPIENTS
-    version: 2
+    version: 3
   - name: USER_PROFILING_URL
     version: 1
   - name: USER_PROFILING_ORG_ID
