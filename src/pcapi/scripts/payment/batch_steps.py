@@ -12,7 +12,6 @@ from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.offerers.models import Venue
 import pcapi.core.payments.api as payments_api
-import pcapi.core.payments.models as payments_models
 from pcapi.domain.admin_emails import send_payment_details_email
 from pcapi.domain.admin_emails import send_payment_message_email
 from pcapi.domain.admin_emails import send_payments_report_emails
@@ -26,6 +25,7 @@ from pcapi.domain.payments import generate_venues_csv
 from pcapi.domain.payments import generate_wallet_balances_csv
 from pcapi.domain.payments import make_transaction_label
 from pcapi.domain.payments import validate_message_file_structure
+from pcapi.domain.reimbursement import CustomRuleFinder
 from pcapi.domain.reimbursement import find_all_booking_reimbursements
 from pcapi.models.db import db
 from pcapi.models.payment import Payment
@@ -73,13 +73,13 @@ def generate_new_payments(cutoff_date: datetime, batch_date: datetime) -> None:
     logger.info("Fetching venues to reimburse")
     venues_to_reimburse = get_venues_to_reimburse(cutoff_date)
     logger.info("Found %d venues to reimburse", len(venues_to_reimburse))
-    custom_reimbursement_rules = payments_models.CustomReimbursementRule.query.all()
+    custom_rule_finder = CustomRuleFinder()
     n_payments = 0
     for venue_id, venue_name in venues_to_reimburse:
         logger.info("[BATCH][PAYMENTS] Fetching bookings for venue: %s", venue_name, extra={"venue": venue_id})
         bookings = booking_repository.find_bookings_eligible_for_payment_for_venue(venue_id, cutoff_date)
         logger.info("[BATCH][PAYMENTS] Calculating reimbursements for venue: %s", venue_name, extra={"venue": venue_id})
-        reimbursements = find_all_booking_reimbursements(bookings, custom_reimbursement_rules)
+        reimbursements = find_all_booking_reimbursements(bookings, custom_rule_finder)
         to_pay = filter_out_already_paid_for_bookings(filter_out_bookings_without_cost(reimbursements))
         if not to_pay:
             logger.info("[BATCH][PAYMENTS] No payments generated for venue: %s", venue_name, extra={"venue": venue_id})

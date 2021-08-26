@@ -2,6 +2,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 import datetime
 from decimal import Decimal
+from typing import Optional
 
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import Offer
@@ -153,15 +154,29 @@ class BookingReimbursement:
     reimbursed_amount: Decimal
 
 
+class CustomRuleFinder:
+    def __init__(self):
+        self.rules = payments_models.CustomReimbursementRule.query.all()
+        self.rules_by_offer = self._partition_by_field("offerId")
+
+    def _partition_by_field(self, field: str):
+        cache = {}
+        for rule in self.rules:
+            cache.setdefault(getattr(rule, field), []).append(rule)
+        return cache
+
+    def get_rule(self, booking: Booking) -> Optional[payments_models.CustomReimbursementRule]:
+        for rule in self.rules_by_offer.get(booking.stock.offerId, ()):
+            if rule.is_relevant(booking) and rule.is_active(booking):
+                return rule
+        return None
+
+
 def find_all_booking_reimbursements(
-    bookings: list[Booking], custom_rules: list[payments_models.ReimbursementRule]
+    bookings: list[Booking], custom_rule_finder: CustomRuleFinder
 ) -> list[BookingReimbursement]:
     reimbursements = []
     total_per_year = defaultdict(lambda: Decimal(0))
-
-    custom_offer_rules = defaultdict(list)
-    for rule in custom_rules:
-        custom_offer_rules[rule.offerId].append(rule)
 
     for booking in bookings:
         year = booking.dateUsed.year
@@ -169,23 +184,25 @@ def find_all_booking_reimbursements(
         if PhysicalOffersReimbursement().is_relevant(booking):
             total_per_year[year] += booking.total_amount
 
-        rule = get_reimbursement_rule(booking, custom_offer_rules.get(booking.stock.offerId, []), total_per_year[year])
+        rule = get_reimbursement_rule(booking, custom_rule_finder, total_per_year[year])
         reimbursements.append(BookingReimbursement(booking, rule, reimbursed_amount=rule.apply(booking)))
 
     return reimbursements
 
 
 def get_reimbursement_rule(
-    booking: Booking, custom_rules: tuple[payments_models.ReimbursementRule], cumulative_revenue: Decimal
+    booking: Booking, custom_rule_finder: CustomRuleFinder, cumulative_revenue: Decimal
 ) -> payments_models.ReimbursementRule:
+    custom_rule = custom_rule_finder.get_rule(booking)
+    if custom_rule:
+        return custom_rule
+
     candidates = []
-    for rule in custom_rules + REGULAR_RULES:
+    for rule in REGULAR_RULES:
         if not rule.is_active(booking):
             continue
         if not rule.is_relevant(booking, cumulative_revenue):
             continue
-        if isinstance(rule, payments_models.CustomReimbursementRule):
-            return rule
         if isinstance(rule, ReimbursementRateForBookAbove20000):
             return rule
         candidates.append(rule)

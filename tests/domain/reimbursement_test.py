@@ -346,7 +346,7 @@ class FindAllBookingsReimbursementsTest:
         book = create_book_booking()
         bookings = [event, thing, digital, book]
 
-        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
+        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
         assert_total_reimbursement(reimbursements[0], event)
         assert_total_reimbursement(reimbursements[1], thing)
@@ -363,7 +363,7 @@ class FindAllBookingsReimbursementsTest:
         book = create_book_booking(price=100)
         bookings = [event1, event2, thing, digital, book]
 
-        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
+        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
         assert_total_reimbursement(reimbursements[0], event1)
         rule = reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000
@@ -382,7 +382,7 @@ class FindAllBookingsReimbursementsTest:
         book = create_book_booking(price=100)
         bookings = [event1, event2, thing, digital, book]
 
-        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
+        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
         assert_partial_reimbursement(
             reimbursements[0],
@@ -415,7 +415,7 @@ class FindAllBookingsReimbursementsTest:
         book = create_book_booking(price=100)
         bookings = [event1, event2, thing, digital, book]
 
-        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
+        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
         assert_partial_reimbursement(
             reimbursements[0],
@@ -440,7 +440,7 @@ class FindAllBookingsReimbursementsTest:
         book = create_book_booking()
         bookings = [event, thing, digital, book]
 
-        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
+        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
         assert_total_reimbursement(reimbursements[0], event)
         assert_total_reimbursement(reimbursements[1], thing)
@@ -457,7 +457,7 @@ class FindAllBookingsReimbursementsTest:
         book = create_book_booking(price=100)
         bookings = [event1, event2, thing, digital, book]
 
-        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
+        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
         assert_total_reimbursement(reimbursements[0], event1)
         rule = reimbursement.ReimbursementRateByVenueBetween20000And40000
@@ -476,7 +476,7 @@ class FindAllBookingsReimbursementsTest:
         book = create_book_booking(price=100)
         bookings = [event1, event2, thing, digital, book]
 
-        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
+        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
         assert_partial_reimbursement(
             reimbursements[0], event1, reimbursement.ReimbursementRateByVenueBetween20000And40000, 0.95 * 40000
@@ -500,7 +500,7 @@ class FindAllBookingsReimbursementsTest:
         book = create_book_booking(price=100)
         bookings = [event1, event2, thing, digital, book]
 
-        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
+        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
         assert_partial_reimbursement(
             reimbursements[0], event1, reimbursement.ReimbursementRateByVenueBetween40000And150000, 0.92 * 150000
@@ -516,7 +516,7 @@ class FindAllBookingsReimbursementsTest:
         booking2 = create_event_booking(user=user, price=100, date_used=datetime(2019, 1, 1))
         bookings = [booking1, booking2]
 
-        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
+        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
         assert_total_reimbursement(reimbursements[0], booking1)
         assert_total_reimbursement(reimbursements[1], booking2)
@@ -533,13 +533,29 @@ class FindAllBookingsReimbursementsTest:
         )
 
         bookings = [booking1, booking2]
-        custom_rules = payments_models.CustomReimbursementRule.query.all()
-        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules)
+        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
         assert reimbursements[0].booking == booking1
         assert reimbursements[0].rule == rule1
         assert reimbursements[0].reimbursed_amount == 5
         assert_no_reimbursement_for_digital(reimbursements[1], booking2)
+
+
+@pytest.mark.usefixtures("db_session")
+class CustomRuleFinderTest:
+    def test_offer_rule(self):
+        yesterday = datetime.now() - timedelta(days=1)
+        far_in_the_past = datetime.now() - timedelta(days=800)
+        booking1 = bookings_factories.UsedBookingFactory()
+        offer = booking1.stock.offer
+        booking2 = bookings_factories.UsedBookingFactory(stock=booking1.stock, dateCreated=far_in_the_past)
+        booking3 = bookings_factories.UsedBookingFactory()
+        rule = payments_factories.CustomReimbursementRuleFactory(offer=offer, timespan=(yesterday, None))
+
+        finder = reimbursement.CustomRuleFinder()
+        assert finder.get_rule(booking1) == rule
+        assert finder.get_rule(booking2) is None  # outside `rule.timespan`
+        assert finder.get_rule(booking3) is None  # no rule for this offer
 
 
 def assert_total_reimbursement(booking_reimbursement, booking):
