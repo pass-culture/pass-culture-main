@@ -52,6 +52,19 @@ class Desk extends Component {
     return errorResponse.errors[errorKey]
   }
 
+  resetToken = () => {
+    this.setState(
+      {
+        token: '',
+        isUsedToken: false,
+        isDisabledButton: true,
+      },
+      () => {
+        this.resetTokenField()
+      }
+    )
+  }
+
   resetTokenField = () => {
     this.tokenInputRef.current.value = ''
     this.tokenInputRef.current.focus()
@@ -157,15 +170,7 @@ class Desk extends Component {
           message: 'Contremarque validée !',
         })
         trackValidateBookingSuccess(token)
-      })
-      .then(() => {
-        this.setState({
-          isDisabledButton: false,
-          isUsedToken: true,
-        })
-      })
-      .then(() => {
-        this.resetTokenField()
+        this.resetToken()
       })
       .catch(error => {
         this.setState({
@@ -187,15 +192,7 @@ class Desk extends Component {
         this.setState({
           message: 'Contremarque invalidée !',
         })
-      })
-      .then(() => {
-        this.setState({
-          isUsedToken: false,
-          isDisabledButton: false,
-        })
-      })
-      .then(() => {
-        this.resetTokenField()
+        this.resetToken()
       })
       .catch(error => {
         this.setState({

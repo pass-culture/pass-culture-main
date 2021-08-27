@@ -218,19 +218,19 @@ describe('src | components | Desk', () => {
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
       const submitButton = screen.getByRole('button', { name: 'Valider la contremarque' })
+
+      expect(submitButton).toBeDisabled()
       await waitFor(() => fireEvent.change(tokenInput, { target: { value: 'MEFA01' } }))
 
       // when
+      expect(submitButton).toBeEnabled()
       fireEvent.click(submitButton)
 
       // then
       expect(screen.getByText('Validation en cours...')).toBeInTheDocument()
       const responseFromApi = await screen.findByText('Contremarque validée !')
       expect(responseFromApi).toBeInTheDocument()
-      const newSubmitButton = await screen.findByRole('button', {
-        name: 'Invalider la contremarque',
-      })
-      expect(newSubmitButton).toBeEnabled()
+      expect(submitButton).toBeDisabled()
     })
 
     it('should display a message when booking is invalidated', async () => {
@@ -242,18 +242,23 @@ describe('src | components | Desk', () => {
       jest.spyOn(props, 'invalidateBooking').mockResolvedValue()
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
+
+      const validateTokenButton = screen.getByRole('button', { name: 'Valider la contremarque' })
+      expect(validateTokenButton).toBeDisabled()
+
       fireEvent.change(tokenInput, { target: { value: 'MEFA01' } })
-      const submitButton = await screen.findByRole('button', { name: 'Invalider la contremarque' })
+      const invalidateTokenButton = await screen.findByRole('button', { name: 'Invalider la contremarque' })
+
 
       // when
-      fireEvent.click(submitButton)
+      expect(invalidateTokenButton).toBeEnabled()
+      fireEvent.click(invalidateTokenButton)
 
       // then
       expect(screen.getByText('Invalidation en cours...')).toBeInTheDocument()
       const responseFromApi = await screen.findByText('Contremarque invalidée !')
       expect(responseFromApi).toBeInTheDocument()
-      const newSubmitButton = await screen.findByRole('button', { name: 'Valider la contremarque' })
-      expect(newSubmitButton).toBeEnabled()
+      expect(validateTokenButton).toBeDisabled()
     })
 
     it('should display an error message when the booking validation has failed', async () => {
