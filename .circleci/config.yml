@@ -180,7 +180,7 @@ jobs:
         type: string
     working_directory: ~/pass-culture-api-ci
     docker:
-      - image: cimg/python:3.9.4
+      - image: cimg/python:3.9.7
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -267,7 +267,7 @@ jobs:
   quality:
     working_directory: ~/pass-culture-api-ci
     docker:
-      - image: cimg/python:3.9.4
+      - image: cimg/python:3.9.7
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
