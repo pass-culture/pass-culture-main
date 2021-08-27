@@ -9,16 +9,11 @@ from jwt import InvalidTokenError
 from pcapi.core.users import utils as user_utils
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.routes.adage_iframe.blueprint import JWT_AUTH
+from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.serialization.spec_tree import add_security_scheme
 
 
 logger = logging.getLogger(__name__)
-
-
-class AuthenticatedInformation:
-    def __init__(self, email: str, uai_code: str):
-        self.email = email
-        self.uai_code = uai_code
 
 
 def adage_jwt_required(route_function):
@@ -45,8 +40,11 @@ def adage_jwt_required(route_function):
                 raise InvalidTokenError("No expiration date provided")
 
             authenticated_information = AuthenticatedInformation(
-                email=adage_jwt_decoded.get("email"),
-                uai_code=adage_jwt_decoded.get("UAICode"),
+                civility=adage_jwt_decoded.get("civilite"),
+                lastname=adage_jwt_decoded.get("nom"),
+                firstname=adage_jwt_decoded.get("prenom"),
+                email=adage_jwt_decoded.get("mail"),
+                uai=adage_jwt_decoded.get("uai"),
             )
             kwargs["authenticated_information"] = authenticated_information
             return route_function(*args, **kwargs)

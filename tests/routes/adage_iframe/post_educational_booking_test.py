@@ -21,7 +21,9 @@ class PostEducationalBookingTest:
     educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
 
     def _create_adage_valid_token_with_email(self, email: str) -> ByteString:
-        return create_adage_jwt_fake_valid_token(email=email, uai_code="EAU123")
+        return create_adage_jwt_fake_valid_token(
+            civility="Mme.", lastname="LAPROF", firstname="Jeanne", email=email, uai="EAU123"
+        )
 
     def test_post_educational_booking(self, app):
         # Given

@@ -11,14 +11,20 @@ from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
 
 
 def create_adage_jwt_fake_valid_token(
+    civility: str,
+    lastname: str,
+    firstname: str,
     email: str,
-    uai_code: str,
+    uai: str,
     expiration_date: datetime = datetime.utcnow() + timedelta(days=1),
 ) -> ByteString:
     with open(VALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
         authenticated_informations = {
-            "email": email,
-            "UAICode": uai_code,
+            "civilite": civility,
+            "nom": lastname,
+            "prenom": firstname,
+            "mail": email,
+            "uai": uai,
         }
         if expiration_date:
             authenticated_informations["exp"] = expiration_date
@@ -30,13 +36,18 @@ def create_adage_jwt_fake_valid_token(
         )
 
 
-def create_adage_jwt_fake_invalid_token(email: str, uai_code: str) -> ByteString:
+def create_adage_jwt_fake_invalid_token(
+    civility: str, lastname: str, firstname: str, email: str, uai: str
+) -> ByteString:
     now = datetime.utcnow()
     with open(INVALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
         return jwt.encode(
             {
-                "email": email,
-                "UAICode": uai_code,
+                "civilite": civility,
+                "nom": lastname,
+                "prenom": firstname,
+                "mail": email,
+                "uai": uai,
                 "exp": now + timedelta(days=1),
             },
             key=reader.read(),

@@ -8,8 +8,8 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.routes.adage_iframe import blueprint
-from pcapi.routes.adage_iframe.security import AuthenticatedInformation
 from pcapi.routes.adage_iframe.security import adage_jwt_required
+from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.educational_booking import BookEducationalOfferRequest
 from pcapi.routes.adage_iframe.serialization.educational_booking import BookEducationalOfferResponse
 from pcapi.serialization.decorator import spectree_serialize
@@ -33,7 +33,7 @@ def book_educational_offer(
 
     try:
         booking = educational_api.book_educational_offer(
-            redactor_email=(body.redactorEmail), uai_code=body.UAICode, stock_id=body.stockId
+            redactor_email=body.redactorEmail, uai_code=body.UAICode, stock_id=body.stockId
         )
     except AdageException as exception:
         logger.info(

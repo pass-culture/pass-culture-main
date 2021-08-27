@@ -9,14 +9,20 @@ from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_f
 
 class Returns204Test:
     valid_user = {
-        "email": "delphine.seyrig@example.com",
-        "uai_code": "EAU123",
+        "civilite": "Mme.",
+        "nom": "LAPROF",
+        "prenom": "Sabine",
+        "mail": "sabine.laprof@example.com",
+        "uai": "EAU123",
     }
 
     def _create_adage_valid_token(self) -> ByteString:
         return create_adage_jwt_fake_valid_token(
-            email=self.valid_user.get("email"),
-            uai_code=self.valid_user.get("uai_code"),
+            civility=self.valid_user.get("civilite"),
+            lastname=self.valid_user.get("nom"),
+            firstname=self.valid_user.get("prenom"),
+            email=self.valid_user.get("mail"),
+            uai=self.valid_user.get("uai"),
         )
 
     def test_should_return_success_response_when_jwt_valid(self, app):
@@ -36,27 +42,28 @@ class Returns204Test:
 
 class ReturnsErrorTest:
     valid_user = {
-        "email": "delphine.seyrig@example.com",
-        "uai_code": "EAU123",
-    }
-    invalid_user = {
-        "email": "helene.beltracchi@example.com",
-        "uai_code": "321UAE",
+        "civilite": "Mme.",
+        "nom": "LAPROF",
+        "prenom": "Sabine",
+        "mail": "sabine.laprof@example.com",
+        "uai": "EAU123",
     }
 
     def _create_adage_valid_token_from_expiration_date(
         self, expiration_date: Optional[datetime.datetime]
     ) -> ByteString:
         return create_adage_jwt_fake_valid_token(
-            email=self.valid_user.get("email"),
-            uai_code=self.valid_user.get("uai_code"),
+            civility=self.valid_user.get("civilite"),
+            lastname=self.valid_user.get("nom"),
+            firstname=self.valid_user.get("prenom"),
+            email=self.valid_user.get("mail"),
+            uai=self.valid_user.get("uai"),
             expiration_date=expiration_date,
         )
 
     def _create_adage_invalid_token(self) -> ByteString:
         return create_adage_jwt_fake_invalid_token(
-            email=self.invalid_user.get("email"),
-            uai_code=self.invalid_user.get("uai_code"),
+            civility="M.", lastname="TESTABLE", firstname="Pascal", email="pascal.testable@example.com", uai="321UAE"
         )
 
     def test_should_return_error_response_when_jwt_invalid(self, app):
