@@ -93,7 +93,7 @@ class DMSContentFactory(factory.Factory):
     procedure_id = factory.Faker("pyint")
     departement = factory.Sequence("{}".format)
     birth_date = factory.Faker("date")
-    phone = factory.Faker("phone_number")
+    phone = factory.Sequence("+3361212121{}".format)
     postal_code = "75008"
     activity = "Étudiant"
     address = factory.Faker("address")
