@@ -100,11 +100,17 @@ def already_activated_exception(error: AlreadyActivatedException) -> tuple[dict,
 
 @app.errorhandler(429)
 def ratelimit_handler(error: Exception) -> tuple[dict, int]:
+    # `pcapi.utis.login_manager` cannot be imported at module-scope,
+    # because the application context may not be available and that
+    # module needs it.
+    from pcapi.utils.login_manager import get_request_authorization
+
     identifier = None
     if request.json and "identifier" in request.json:
         identifier = request.json["identifier"]
-    if request.authorization and request.authorization.username:
-        identifier = request.authorization.username
+    auth = get_request_authorization()
+    if auth and auth.username:
+        identifier = auth.username
     extra = {
         "method": request.method,
         "identifier": identifier,

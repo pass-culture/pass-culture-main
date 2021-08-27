@@ -73,7 +73,12 @@ current_api_key = LocalProxy(_get_current_api_key)
 
 
 def basic_authentication(realm=None):
-    auth = request.authorization
+    # `pcapi.utis.login_manager` cannot be imported at module-scope,
+    # because the application context may not be available and that
+    # module needs it.
+    from pcapi.utils.login_manager import get_request_authorization
+
+    auth = get_request_authorization()
     # According to the Werkzeug documentation auth.password is None
     # for any auth that is not basic auth.
     if not auth or not auth.password:

@@ -4,6 +4,7 @@ import uuid
 
 from flask import current_app as app
 from flask import jsonify
+from flask import request
 from flask import session
 
 from pcapi.core.users.models import User
@@ -14,6 +15,18 @@ from pcapi.repository.user_session_queries import register_user_session
 
 
 logger = logging.getLogger(__name__)
+
+
+def get_request_authorization():
+    try:
+        return request.authorization
+    except UnicodeDecodeError:
+        # `werkzeug.http.parse_authorization_header()` raises a
+        # UnicodeDecodeError if the login or the password contains
+        # characters that have not been encoded in "utf-8", which
+        # we'll happily send to Sentry, where the password could
+        # appear as clear text.
+        return None
 
 
 @app.login_manager.user_loader

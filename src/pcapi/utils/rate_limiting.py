@@ -13,7 +13,12 @@ def get_email_from_request() -> str:
 
 
 def get_basic_auth_from_request() -> Optional[str]:
-    auth = request.authorization
+    # `pcapi.utis.login_manager` cannot be imported at module-scope,
+    # because the application context may not be available and that
+    # module needs it.
+    from pcapi.utils.login_manager import get_request_authorization
+
+    auth = get_request_authorization()
     if not auth or not auth.username:
         return None
     return auth.username
