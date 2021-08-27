@@ -194,7 +194,7 @@ class VenueProviderView(BaseAdminView):
         except exceptions.ProviderNotFound:
             flash("Aucun provider actif n'a été trouvé", "error")
         except exceptions.ProviderWithoutApiImplementation:
-            flash("Le provider choisir n'implémente pas notre api", "error")
+            flash("Le provider choisi n'implémente pas notre api", "error")
         except exceptions.NoAllocinePivot:
             flash("Aucun AllocinePivot n'est défini pour ce lieu", "error")
         except exceptions.NoPriceSpecified:

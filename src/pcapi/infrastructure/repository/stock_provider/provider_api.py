@@ -91,7 +91,9 @@ class ProviderAPI:
 
         try:
             response = requests.get(url=api_url, headers=headers, timeout=REQUEST_TIMEOUT_FOR_PROVIDERS_IN_SECOND)
-        except RequestException:
+        except RequestException as error:
+            extra_infos = {"siret": siret, "api_url": self.api_url, "error": str(error)}
+            logger.exception("[PROVIDER] request failed", extra=extra_infos)
             raise ConnexionToProviderApiFailed
 
         return response.status_code == 200

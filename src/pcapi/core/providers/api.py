@@ -116,12 +116,6 @@ def _siret_can_be_synchronized(
     return False
 
 
-def _get_synchronization_error_message(provider_name: str, siret: Optional[str]) -> str:
-    if siret:
-        return f"L’importation d’offres avec {provider_name} n’est pas disponible pour le SIRET {siret}"
-    return f"L’importation d’offres avec {provider_name} n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres."
-
-
 def synchronize_stocks(stock_details, venue: Venue, provider_id: Optional[int] = None):
     products_provider_references = [stock_detail["products_provider_reference"] for stock_detail in stock_details]
     products_by_provider_reference = get_products_map_by_id_at_providers(products_provider_references)

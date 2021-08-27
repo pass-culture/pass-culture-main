@@ -48,22 +48,31 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
         raise ApiErrors(
             {
                 "venue": [
-                    f"L’importation d’offres avec {exc.provider_name} n’est pas disponible pour le SIRET {exc.siret}"
+                    f"L’importation d’offres avec {exc.provider_name} n’est pas disponible pour le SIRET {exc.siret}."
                 ]
             }
         )
     except exceptions.VenueNotFound:
-        raise ApiErrors({"venue": ["Lieu introuvable"]}, 404)
+        raise ApiErrors({"venue": ["Lieu introuvable."]}, 404)
     except exceptions.NoSiretSpecified:
-        raise ApiErrors({"venue": ["Le siret du lieu n'est pas défini, veuillez en définir un"]})
+        raise ApiErrors({"venue": ["Le siret du lieu n'est pas défini, veuillez en définir un."]})
     except exceptions.ProviderWithoutApiImplementation:
-        raise ApiErrors({"provider": ["Le provider choisir n'implémente pas notre api"]})
+        raise ApiErrors(
+            {"provider": ["Le fournisseur choisi n'est pas correctement implémenté, veuillez contacter le support."]}
+        )
     except exceptions.NoAllocinePivot:
-        raise ApiErrors({"allocine": ["Aucun AllocinePivot n'est défini pour ce lieu"]}, 404)
+        raise ApiErrors(
+            {
+                "allocine": [
+                    "Ce lieu n'est pas autorisé à être synchronisé avec Allociné. Veuillez contacter le support si vous souhaitez le faire."
+                ]
+            },
+            404,
+        )
     except exceptions.NoPriceSpecified:
-        raise ApiErrors({"price": ["Il est obligatoire de saisir un prix"]})
+        raise ApiErrors({"price": ["Il est obligatoire de saisir un prix."]})
     except exceptions.VenueProviderException:
-        raise ApiErrors({"global": ["Le provider n'a pas pu être enregistré"]})
+        raise ApiErrors({"global": ["Le fournisseur n'a pas pu être configuré."]})
 
     venue_provider_job.delay(new_venue_provider.id)
 

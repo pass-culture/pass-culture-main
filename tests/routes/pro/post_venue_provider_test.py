@@ -273,7 +273,7 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json["price"] == ["Il est obligatoire de saisir un prix"]
+        assert response.json["price"] == ["Il est obligatoire de saisir un prix."]
         assert VenueProvider.query.count() == 0
 
 
@@ -327,7 +327,11 @@ class Returns404Test:
 
         # Then
         assert response.status_code == 404
-        assert response.json == {"allocine": ["Aucun AllocinePivot n'est défini pour ce lieu"]}
+        assert response.json == {
+            "allocine": [
+                "Ce lieu n'est pas autorisé à être synchronisé avec Allociné. Veuillez contacter le support si vous souhaitez le faire."
+            ]
+        }
         assert VenueProvider.query.count() == 0
 
 
