@@ -443,6 +443,8 @@ secrets:
     version: 1
   - name: BLACKLISTED_SMS_RECIPIENTS
     version: 1
+  - name: COMPLIANCE_EMAIL_ADDRESS
+    version: 2
   - name: DATABASE_URL
     version: 3
   - name: DEMARCHES_SIMPLIFIEES_TOKEN
@@ -515,6 +517,8 @@ secrets:
     version: 2
   - name: REDIS_URL
     version: 2
+  - name: REPORT_OFFER_EMAIL_ADDRESS
+    version: 1
   - name: SENDINBLUE_API_KEY
     version: 1
   - name: SENTRY_DSN
@@ -533,5 +537,3 @@ secrets:
     version: 1
   - name: WALLET_BALANCES_RECIPIENTS
     version: 2
-  - name: COMPLIANCE_EMAIL_ADDRESS
-    version: 1

@@ -114,16 +114,16 @@ MAX_API_KEY_PER_OFFERER = int(os.environ.get("MAX_API_KEY_PER_OFFERER", 5))
 
 
 # MAIL
-EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", _default_email_backend)
-SUPPORT_EMAIL_ADDRESS = os.environ.get("SUPPORT_EMAIL_ADDRESS", "")
-COMPLIANCE_EMAIL_ADDRESS = os.environ.get("COMPLIANCE_EMAIL_ADDRESS", "")
 ADMINISTRATION_EMAIL_ADDRESS = os.environ.get("ADMINISTRATION_EMAIL_ADDRESS")
+COMPLIANCE_EMAIL_ADDRESS = os.environ.get("COMPLIANCE_EMAIL_ADDRESS", "")
 DEV_EMAIL_ADDRESS = os.environ.get("DEV_EMAIL_ADDRESS")
-
-SUPER_ADMIN_EMAIL_ADDRESSES = utils.parse_email_addresses(os.environ.get("SUPER_ADMIN_EMAIL_ADDRESSES"))
-TRANSACTIONS_RECIPIENTS = utils.parse_email_addresses(os.environ.get("TRANSACTIONS_RECIPIENTS"))
-PAYMENTS_REPORT_RECIPIENTS = utils.parse_email_addresses(os.environ.get("PAYMENTS_REPORT_RECIPIENTS"))
+EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", _default_email_backend)
 PAYMENTS_DETAILS_RECIPIENTS = utils.parse_email_addresses(os.environ.get("PAYMENTS_DETAILS_RECIPIENTS"))
+PAYMENTS_REPORT_RECIPIENTS = utils.parse_email_addresses(os.environ.get("PAYMENTS_REPORT_RECIPIENTS"))
+REPORT_OFFER_EMAIL_ADDRESS = os.environ.get("REPORT_OFFER_EMAIL_ADDRESS", "")
+SUPER_ADMIN_EMAIL_ADDRESSES = utils.parse_email_addresses(os.environ.get("SUPER_ADMIN_EMAIL_ADDRESSES"))
+SUPPORT_EMAIL_ADDRESS = os.environ.get("SUPPORT_EMAIL_ADDRESS", "")
+TRANSACTIONS_RECIPIENTS = utils.parse_email_addresses(os.environ.get("TRANSACTIONS_RECIPIENTS"))
 WALLET_BALANCES_RECIPIENTS = utils.parse_email_addresses(os.environ.get("WALLET_BALANCES_RECIPIENTS"))
 WHITELISTED_EMAIL_RECIPIENTS = utils.parse_email_addresses(os.environ.get("WHITELISTED_EMAIL_RECIPIENTS"))
 WHITELISTED_SMS_RECIPIENTS = utils.parse_phone_numbers(os.environ.get("WHITELISTED_SMS_RECIPIENTS"))

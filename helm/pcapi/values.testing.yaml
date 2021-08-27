@@ -407,6 +407,8 @@ secrets:
     version: 1
   - name: BLACKLISTED_SMS_RECIPIENTS
     version: 1
+  - name: COMPLIANCE_EMAIL_ADDRESS
+    version: 2
   - name: DATABASE_URL
     version: 4
   - name: DEMARCHES_SIMPLIFIEES_TOKEN
@@ -501,5 +503,5 @@ secrets:
     version: 1
   - name: WHITELISTED_SMS_RECIPIENTS
     version: 3
-  - name: COMPLIANCE_EMAIL_ADDRESS
+  - name: REPORT_OFFER_EMAIL_ADDRESS
     version: 1

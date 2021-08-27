@@ -7,4 +7,4 @@ from pcapi.emails.offer_report import build_offer_report_data
 
 def send_report_notification(user: User, offer: Offer, reason: str, custom_reason: str) -> bool:
     data = build_offer_report_data(user, offer, reason, custom_reason)
-    return mails.send(recipients=[settings.COMPLIANCE_EMAIL_ADDRESS], data=data)
+    return mails.send(recipients=[settings.REPORT_OFFER_EMAIL_ADDRESS], data=data)

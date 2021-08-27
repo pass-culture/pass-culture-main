@@ -20,6 +20,7 @@ class MakeNewOfferValidationEmailTest:
         assert new_offer_validation_email == {
             "MJ-TemplateID": 2613721,
             "MJ-TemplateLanguage": True,
+            "FromEmail": "offer_validation@example.com",
             "Vars": {
                 "offer_name": "Ma petite offre",
                 "venue_name": "Mon stade",
@@ -37,6 +38,7 @@ class MakeNewOfferValidationEmailTest:
         # Then
         assert new_offer_validation_email == {
             "MJ-TemplateID": 2613942,
+            "FromEmail": "offer_validation@example.com",
             "MJ-TemplateLanguage": True,
             "Vars": {
                 "offer_name": "Ma petite offre",
