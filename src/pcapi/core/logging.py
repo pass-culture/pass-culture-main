@@ -59,6 +59,14 @@ def get_logged_in_user_id():
         return None
 
 
+def get_api_key_offerer_id():
+    return (
+        flask.g.current_api_key.offererId
+        if _is_within_app_context() and hasattr(flask.g, "current_api_key") and flask.g.current_api_key
+        else None
+    )
+
+
 def monkey_patch_logger_makeRecord():
     def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None):
         """Make a record but store ``extra`` arguments in an ``extra``
@@ -94,6 +102,7 @@ class JsonFormatter(logging.Formatter):
         user_id = None if extra.get("avoid_current_user") else get_logged_in_user_id()
 
         json_record = {
+            "api_key_offerer_id": get_api_key_offerer_id(),
             "logging.googleapis.com/trace": get_or_set_correlation_id(),
             "module": record.name,
             "severity": record.levelname,
