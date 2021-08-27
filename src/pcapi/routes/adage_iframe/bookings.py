@@ -29,7 +29,14 @@ def book_educational_offer(
             "Authenticated email and redactor email do not match",
             extra={"email_token": authenticated_information.email, "email_body": (body.redactorEmail)},
         )
-        raise ForbiddenError({"Authorization": "Authenticated email and redactor email do not match"})
+        raise ForbiddenError(
+            {"Authorization": "L'email d'authentification et l'email du rédacteur de projet ne correspondent pas"}
+        )
+
+    if authenticated_information.uai is None:
+        raise ApiErrors(
+            {"jwt": "Le champ 'uai' du token est nécessaire pour effectuer une pré-réservation"}, status_code=400
+        )
 
     try:
         booking = educational_api.book_educational_offer(
