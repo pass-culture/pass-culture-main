@@ -475,6 +475,28 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_duo is True
 
     @pytest.mark.usefixtures("db_session")
+    def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
+        self, app: fixture
+    ):
+        # Given
+        admin = users_factories.AdminFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(offerer=offerer)
+        offers_factories.UserOffererFactory(offerer=offerer)
+
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=admin.id, booking_period=(one_year_before_booking, one_year_after_booking), is_user_admin=True
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 2
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.booking_is_duo is True
+
+    @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_reimbursed_when_a_payment_was_sent(self, app: fixture):
         # Given
         beneficiary = users_factories.BeneficiaryFactory(

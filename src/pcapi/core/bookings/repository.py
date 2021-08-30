@@ -360,7 +360,7 @@ def _duplicate_booking_when_quantity_is_two(bookings_recap_query: Query) -> Quer
 
 
 def _build_bookings_recap_query(bookings_recap_query: Query) -> Query:
-    return bookings_recap_query.with_entities(
+    return bookings_recap_query.distinct(Booking.token).with_entities(
         Booking.token.label("bookingToken"),
         Booking.dateCreated.label("bookingDate"),
         Booking.isCancelled.label("isCancelled"),
