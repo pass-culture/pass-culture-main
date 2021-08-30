@@ -1,6 +1,8 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers.repository import find_offerer_by_validation_token
+from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
 from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.core.offerers.repository import get_all_venue_labels
 from pcapi.core.offerers.repository import get_all_venue_types
@@ -8,9 +10,10 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class GetAllVenueLabelsTest:
-    @pytest.mark.usefixtures("db_session")
     def test_get_all_venue_labels(self):
         label1 = offerers_factories.VenueLabelFactory()
         label2 = offerers_factories.VenueLabelFactory()
@@ -18,7 +21,6 @@ class GetAllVenueLabelsTest:
         assert set(get_all_venue_labels()) == {label1, label2}
 
 
-@pytest.mark.usefixtures("db_session")
 class GetAllVenueTypesTest:
     def test_get_all_venue_types(self):
         # Given
@@ -32,7 +34,6 @@ class GetAllVenueTypesTest:
         assert set(venue_types) == {type_1, type_2}
 
 
-@pytest.mark.usefixtures("db_session")
 class GetAllOfferersForUserTest:
     def should_return_all_offerers_for_an_admin(self) -> None:
         # Given
@@ -225,3 +226,47 @@ class GetAllOfferersForUserTest:
             offerers_ids = [offerer.id for offerer in offerers]
             assert validated_pro_offerer_attachment.offerer.id not in offerers_ids
             assert unvalidated_pro_offerer_attachment.offerer.id in offerers_ids
+
+
+class FindUserOffererByValidationTokenTest:
+    def test_return_user_offerer_given_validation_token(self):
+        # Given
+        user_offerer_expected = offers_factories.UserOffererFactory(validationToken="TOKEN")
+
+        # When
+        user_offerer_received = find_user_offerer_by_validation_token(user_offerer_expected.validationToken)
+
+        # Then
+        assert user_offerer_received.id == user_offerer_expected.id
+
+    def test_return_nothing_when_validation_token_does_not_exist(self):
+        # Given
+        offers_factories.UserOffererFactory(validationToken="TOKEN")
+
+        # When
+        user_offerer_received = find_user_offerer_by_validation_token("ANOTHER TOKEN")
+
+        # Then
+        assert user_offerer_received is None
+
+
+class FindOffererByValidationTokenTest:
+    def test_return_offerer_given_validation_token(self):
+        # Given
+        user_offerer_expected = offers_factories.UserOffererFactory(offerer__validationToken="TOKEN")
+
+        # When
+        offerer_received = find_offerer_by_validation_token(user_offerer_expected.offerer.validationToken)
+
+        # Then
+        assert offerer_received.id == user_offerer_expected.offerer.id
+
+    def test_return_nothing_when_validation_token_does_not_exist(self):
+        # Given
+        offers_factories.UserOffererFactory(offerer__validationToken="TOKEN")
+
+        # When
+        offerer_received = find_offerer_by_validation_token("ANOTHER TOKEN")
+
+        # Then
+        assert offerer_received is None

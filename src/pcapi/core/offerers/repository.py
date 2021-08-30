@@ -84,3 +84,11 @@ def get_api_key_prefixes(offerer_id: int) -> list[str]:
 
 def find_by_siren(siren: str) -> Offerer:
     return Offerer.query.filter_by(siren=siren).one_or_none()
+
+
+def find_user_offerer_by_validation_token(token: str) -> UserOfferer:
+    return UserOfferer.query.filter_by(validationToken=token).one_or_none()
+
+
+def find_offerer_by_validation_token(token: str) -> UserOfferer:
+    return Offerer.query.filter_by(validationToken=token).one_or_none()

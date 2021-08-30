@@ -360,6 +360,17 @@ class ValidateOffererAttachmentTest:
         # Then
         assert user_offerer.validationToken is None
 
+    def test_pro_role_is_added_to_user(self):
+        # Given
+        applicant = users_factories.UserFactory()
+        user_offerer = offers_factories.UserOffererFactory(user=applicant, validationToken="TOKEN")
+
+        # When
+        offerers_api.validate_offerer_attachment(user_offerer.validationToken)
+
+        # Then
+        assert applicant.has_pro_role
+
     @patch("pcapi.core.offerers.api.send_attachment_validation_email_to_pro_offerer", return_value=True)
     def test_send_validation_confirmation_email(self, mocked_send_validation_confirmation_email_to_pro):
         # Given
@@ -400,6 +411,24 @@ class ValidateOffererTest:
         # Then
         assert user_offerer.offerer.validationToken is None
         assert user_offerer.offerer.dateValidated == datetime.utcnow()
+
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_pro_role_is_added_to_user(self, mocked_async_index_venue_ids):
+        # Given
+        applicant = users_factories.UserFactory()
+        user_offerer = offers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
+        another_applicant = users_factories.UserFactory()
+        another_user_on_same_offerer = offers_factories.UserOffererFactory(
+            user=another_applicant, validationToken="TOKEN"
+        )
+
+        # When
+        offerers_api.validate_offerer(user_offerer.offerer.validationToken)
+
+        # Then
+        assert applicant.has_pro_role
+        assert not another_applicant.has_pro_role
+        assert another_user_on_same_offerer.validationToken is not None
 
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_managed_venues_are_reindexed(self, mocked_async_index_venue_ids):

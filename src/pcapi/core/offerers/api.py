@@ -14,6 +14,8 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueContact
 from pcapi.core.offerers.models import VenueType
 from pcapi.core.offerers.repository import find_by_siren
+from pcapi.core.offerers.repository import find_offerer_by_validation_token
+from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
 from pcapi.core.users.models import User
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
@@ -26,6 +28,7 @@ from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 from pcapi.utils import crypto
 
 from . import validation
+from ..users.repository import get_user_with_validated_attachment_by_offerer
 from .exceptions import ApiKeyCountMaxReached
 from .exceptions import ApiKeyDeletionDenied
 from .exceptions import ApiKeyPrefixGenerationError
@@ -187,11 +190,12 @@ def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: 
 
 
 def validate_offerer_attachment(token: str) -> None:
-    user_offerer = UserOfferer.query.filter_by(validationToken=token).one_or_none()
+    user_offerer = find_user_offerer_by_validation_token(token)
     if user_offerer is None:
         raise ValidationTokenNotFoundError()
 
     user_offerer.validationToken = None
+    user_offerer.user.add_pro_role()
     repository.save(user_offerer)
 
     try:
@@ -203,12 +207,14 @@ def validate_offerer_attachment(token: str) -> None:
 
 
 def validate_offerer(token: str) -> None:
-    offerer = Offerer.query.filter_by(validationToken=token).one_or_none()
+    offerer = find_offerer_by_validation_token(token)
     if offerer is None:
         raise ValidationTokenNotFoundError()
 
+    applicant = get_user_with_validated_attachment_by_offerer(offerer)
     offerer.validationToken = None
     offerer.dateValidated = datetime.utcnow()
+    applicant.add_pro_role()
     managed_venues = offerer.managedVenues
 
     repository.save(offerer)

@@ -15,6 +15,7 @@ from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import Booking
 from pcapi.models import ImportStatus
 from pcapi.models import Offer
+from pcapi.models import Offerer
 from pcapi.models import Stock
 from pcapi.models import UserOfferer
 from pcapi.models import Venue
@@ -173,3 +174,11 @@ def get_beneficiary_import_for_beneficiary(user: User) -> Optional[BeneficiaryIm
 
 def does_validated_phone_exist(phone_number: str):
     return bool(User.query.filter(User.phoneNumber == phone_number, User.is_phone_validated).count())
+
+
+def get_user_with_validated_attachment_by_offerer(offerer: Offerer) -> User:
+    return (
+        User.query.join(UserOfferer)
+        .filter(UserOfferer.validationToken.is_(None), UserOfferer.offererId == offerer.id)
+        .one()
+    )
