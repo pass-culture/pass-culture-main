@@ -1,5 +1,6 @@
 # isort: skip_file
 from functools import wraps
+from pathlib import Path
 from pprint import pprint
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -97,6 +98,7 @@ def clear_redis(app):
 @pytest.fixture()
 def clear_tests_assets_bucket():
     try:
+        Path(settings.LOCAL_STORAGE_DIR / "thumbs" / "mediations").mkdir(parents=True, exist_ok=True)
         yield
     finally:
         object_storage_testing.reset_bucket()

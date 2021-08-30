@@ -729,19 +729,12 @@ class DeleteStockTest:
 
 
 class CreateMediationV2Test:
-    THUMBS_DIR = (
-        pathlib.Path(tests.__path__[0])
-        / ".."
-        / "src"
-        / "pcapi"
-        / "static"
-        / "object_store_data"
-        / "thumbs"
-        / "mediations"
-    )
+    BASE_THUMBS_DIR = pathlib.Path(tests.__path__[0]) / ".." / "src" / "pcapi" / "static" / "object_store_data"
+    THUMBS_DIR = BASE_THUMBS_DIR / "thumbs" / "mediations"
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_ok(self, mocked_async_index_offer_ids):
+    @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
+    def test_ok(self, mocked_async_index_offer_ids, clear_tests_assets_bucket):
         # Given
         user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
@@ -759,7 +752,8 @@ class CreateMediationV2Test:
         assert models.Mediation.query.filter(models.Mediation.offerId == offer.id).count() == 1
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
-    def test_erase_former_mediations(self):
+    @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
+    def test_erase_former_mediations(self, clear_tests_assets_bucket):
         # Given
         user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()
@@ -789,7 +783,8 @@ class CreateMediationV2Test:
         assert (self.THUMBS_DIR / (thumb_3_id + ".type")).exists()
 
     @mock.patch("pcapi.core.object_storage.store_public_object", side_effect=Exception)
-    def test_rollback_if_exception(self, mock_store_public_object):
+    @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
+    def test_rollback_if_exception(self, mock_store_public_object, clear_tests_assets_bucket):
         # Given
         user = users_factories.ProFactory()
         offer = factories.ThingOfferFactory()

@@ -243,6 +243,7 @@ DMS_USER_URL = os.environ.get("DEMARCHES_SIMPLIFIEES_USER_URL")
 # OBJECT STORAGE
 OBJECT_STORAGE_URL = os.environ.get("OBJECT_STORAGE_URL")
 OBJECT_STORAGE_PROVIDER = os.environ.get("OBJECT_STORAGE_PROVIDER", "")
+LOCAL_STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__))) / "static" / "object_store_data"
 
 # SWIFT
 SWIFT_AUTH_URL = os.environ.get("SWIFT_AUTH_URL", "https://auth.cloud.ovh.net/v3/")

@@ -4,20 +4,19 @@ from pathlib import Path
 from pathlib import PurePath
 from typing import Optional
 
+from pcapi import settings
+
 
 logger = logging.getLogger(__name__)
 
 from .base import BaseBackend
 
 
-STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__))) / ".." / ".." / ".." / "static" / "object_store_data"
-
-
 class LocalBackend(BaseBackend):
     def local_dir(self, bucket: str, object_id: str) -> Path:
         if "/" in object_id:
-            return STORAGE_DIR / bucket / PurePath(object_id).parent
-        return STORAGE_DIR / bucket
+            return settings.LOCAL_STORAGE_DIR / bucket / PurePath(object_id).parent
+        return settings.LOCAL_STORAGE_DIR / bucket
 
     def local_path(self, bucket: str, object_id: str) -> Path:
         return self.local_dir(bucket, object_id) / PurePath(object_id).name
@@ -57,7 +56,7 @@ class LocalBackend(BaseBackend):
         and it will be mainly used to test the delete_unused_mediations_and_assets script
         """
         try:
-            bucket_local_path = container_name or STORAGE_DIR
+            bucket_local_path = container_name or settings.LOCAL_STORAGE_DIR
             bucket_local_path = str(bucket_local_path) + "/"
             asset_names = []
 
