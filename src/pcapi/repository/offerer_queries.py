@@ -17,10 +17,6 @@ def find_by_id(id):  # pylint: disable=redefined-builtin
     return Offerer.query.filter_by(id=id).one_or_none()
 
 
-def find_by_siren(siren) -> Offerer:
-    return Offerer.query.filter_by(siren=siren).one_or_none()
-
-
 def get_by_offer_id(offer_id):
     return Offerer.query.join(Venue).join(Offer).filter_by(id=offer_id).one_or_none()
 

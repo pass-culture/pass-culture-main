@@ -1,17 +1,24 @@
+import logging
 import secrets
 import typing
 from typing import Optional
 
 from pcapi import settings
 from pcapi.core import search
-from pcapi.core.offerers import models
+from pcapi.core.mails import MailServiceException
 from pcapi.core.offerers.models import ApiKey
+from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.models import VenueContact
 from pcapi.core.offerers.models import VenueType
+from pcapi.core.offerers.repository import find_by_siren
 from pcapi.core.users.models import User
+from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.models.db import db
 from pcapi.repository import repository
 from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
 from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 from pcapi.utils import crypto
 
@@ -21,12 +28,14 @@ from .exceptions import ApiKeyDeletionDenied
 from .exceptions import ApiKeyPrefixGenerationError
 
 
+logger = logging.getLogger(__name__)
+
 UNCHANGED = object()
 VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "postalCode", "city", "latitude", "longitude"]
 API_KEY_SEPARATOR = "_"
 
 
-def create_digital_venue(offerer):
+def create_digital_venue(offerer: Offerer) -> Venue:
     digital_venue = Venue()
     digital_venue.isVirtual = True
     digital_venue.name = "Offre numérique"
@@ -59,14 +68,14 @@ def update_venue(venue: Venue, **attrs: typing.Any) -> Venue:
     return venue
 
 
-def upsert_venue_contact(venue: Venue, contact_data: venues_serialize.VenueContactModel) -> models.Venue:
+def upsert_venue_contact(venue: Venue, contact_data: venues_serialize.VenueContactModel) -> Venue:
     """
     Create and attach a VenueContact to a Venue if it has none.
     Update (replace) an existing VenueContact otherwise.
     """
     venue_contact = venue.contact
     if not venue_contact:
-        venue_contact = models.VenueContact(venue=venue)
+        venue_contact = VenueContact(venue=venue)
 
     venue_contact.email = contact_data.email
     venue_contact.website = contact_data.website
@@ -139,3 +148,35 @@ def delete_api_key_by_user(user: User, api_key_prefix: str) -> None:
         raise ApiKeyDeletionDenied()
 
     db.session.delete(api_key)
+
+
+def create_offerer(user: User, offerer_informations: CreateOffererQueryModel):
+    offerer = find_by_siren(offerer_informations.siren)
+
+    if offerer is not None:
+        user_offerer = offerer.grant_access(user)
+        user_offerer.generate_validation_token()
+        repository.save(user_offerer)
+
+    else:
+        offerer = Offerer()
+        offerer.address = offerer_informations.address
+        offerer.city = offerer_informations.city
+        offerer.name = offerer_informations.name
+        offerer.postalCode = offerer_informations.postalCode
+        offerer.siren = offerer_informations.siren
+        offerer.generate_validation_token()
+        digital_venue = create_digital_venue(offerer)
+        user_offerer = offerer.grant_access(user)
+        repository.save(offerer, digital_venue, user_offerer)
+
+    _send_to_pc_admin_offerer_to_validate_email(offerer, user_offerer)
+
+    return user_offerer
+
+
+def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: UserOfferer) -> None:
+    try:
+        maybe_send_offerer_validation_email(offerer, user_offerer)
+    except MailServiceException as mail_service_exception:
+        logger.exception("Could not send validation email to offerer", extra={"exc": str(mail_service_exception)})

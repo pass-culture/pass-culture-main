@@ -8,9 +8,7 @@ from sqlalchemy.orm import exc as orm_exc
 
 from pcapi.core.bookings.repository import get_active_bookings_quantity_for_offerer
 from pcapi.core.bookings.repository import get_validated_bookings_quantity_for_offerer
-from pcapi.core.offerers.api import create_digital_venue
-from pcapi.core.offerers.api import delete_api_key_by_user
-from pcapi.core.offerers.api import generate_and_save_api_key
+from pcapi.core.offerers import api
 from pcapi.core.offerers.exceptions import ApiKeyCountMaxReached
 from pcapi.core.offerers.exceptions import ApiKeyDeletionDenied
 from pcapi.core.offerers.exceptions import ApiKeyPrefixGenerationError
@@ -18,14 +16,10 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
-from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import list_offerers_for_pro_user
 from pcapi.models import ApiErrors
-from pcapi.models import UserOfferer
-from pcapi.repository import repository
 from pcapi.repository import transaction
-from pcapi.repository.offerer_queries import find_by_siren
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
 from pcapi.routes.serialization.offerers_serialize import GenerateOffererApiKeyResponse
@@ -38,7 +32,6 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.list_offerers_for_pro_user import OfferersRequestParameters
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import OFFERER_INCLUDES
-from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_404
 
@@ -151,7 +144,7 @@ def generate_api_key_route(offerer_id: str) -> GenerateOffererApiKeyResponse:
     check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))
     offerer = load_or_404(Offerer, offerer_id)
     try:
-        clear_key = generate_and_save_api_key(offerer.id)
+        clear_key = api.generate_and_save_api_key(offerer.id)
     except ApiKeyCountMaxReached:
         raise ApiErrors({"api_key_count_max": "Le nombre de clés maximal a été atteint"})
     except ApiKeyPrefixGenerationError:
@@ -166,7 +159,7 @@ def generate_api_key_route(offerer_id: str) -> GenerateOffererApiKeyResponse:
 def delete_api_key(api_key_prefix: str):
     with transaction():
         try:
-            delete_api_key_by_user(current_user, api_key_prefix)
+            api.delete_api_key_by_user(current_user, api_key_prefix)
         except orm_exc.NoResultFound:
             raise ApiErrors({"prefix": "not found"}, 404)
         except ApiKeyDeletionDenied:
@@ -177,32 +170,6 @@ def delete_api_key(api_key_prefix: str):
 @login_required
 @spectree_serialize(on_success_status=201, response_model=GetOffererResponseModel)
 def create_offerer(body: CreateOffererQueryModel) -> GetOffererResponseModel:
-    offerer = find_by_siren(body.siren)
+    user_offerer = api.create_offerer(current_user, body)
 
-    if offerer is not None:
-        user_offerer = offerer.grant_access(current_user)
-        user_offerer.generate_validation_token()
-        repository.save(user_offerer)
-
-    else:
-        offerer = Offerer()
-        offerer.address = body.address
-        offerer.city = body.city
-        offerer.name = body.name
-        offerer.postalCode = body.postalCode
-        offerer.siren = body.siren
-        offerer.generate_validation_token()
-        digital_venue = create_digital_venue(offerer)
-        user_offerer = offerer.grant_access(current_user)
-        repository.save(offerer, digital_venue, user_offerer)
-
-    _send_to_pc_admin_offerer_to_validate_email(offerer, user_offerer)
-
-    return GetOffererResponseModel.from_orm(offerer)
-
-
-def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: UserOfferer) -> None:
-    try:
-        maybe_send_offerer_validation_email(offerer, user_offerer)
-    except MailServiceException as mail_service_exception:
-        logger.exception("Could not send validation email to offerer", extra={"exc": str(mail_service_exception)})
+    return GetOffererResponseModel.from_orm(user_offerer.offerer)

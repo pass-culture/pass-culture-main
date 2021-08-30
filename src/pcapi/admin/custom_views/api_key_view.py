@@ -9,8 +9,8 @@ from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.offerers.api import API_KEY_SEPARATOR
 from pcapi.core.offerers.api import generate_api_key
 from pcapi.core.offerers.models import ApiKey
+from pcapi.core.offerers.repository import find_by_siren
 from pcapi.models.db import db
-from pcapi.repository.offerer_queries import find_by_siren
 
 
 def check_siren(form: Form, field: Field) -> None:

@@ -80,3 +80,7 @@ def get_api_key_prefixes(offerer_id: int) -> list[str]:
         .all()
         if prefix or value
     ]
+
+
+def find_by_siren(siren: str) -> Offerer:
+    return Offerer.query.filter_by(siren=siren).one_or_none()

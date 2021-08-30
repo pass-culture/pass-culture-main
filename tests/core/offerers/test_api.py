@@ -8,13 +8,17 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import ApiKey
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.users import factories as users_factories
 from pcapi.models import api_errors
 from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
 from pcapi.utils.token import random_token
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class EditVenueTest:
-    @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.search.async_index_venue_ids")
     def when_changes_on_name_algolia_indexing_is_triggered(self, mocked_async_index_venue_ids):
         # Given
@@ -31,7 +35,6 @@ class EditVenueTest:
         # Then
         mocked_async_index_venue_ids.assert_called_once_with([venue.id])
 
-    @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.search.async_index_venue_ids")
     def when_changes_on_public_name_algolia_indexing_is_triggered(self, mocked_async_index_venue_ids):
         # Given
@@ -48,7 +51,6 @@ class EditVenueTest:
         # Then
         mocked_async_index_venue_ids.called_once_with([venue.id])
 
-    @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.search.async_index_venue_ids")
     def when_changes_on_city_algolia_indexing_is_triggered(self, mocked_async_index_venue_ids):
         # Given
@@ -65,7 +67,6 @@ class EditVenueTest:
         # Then
         mocked_async_index_venue_ids.assert_called_once_with([venue.id])
 
-    @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.search.async_index_venue_ids")
     def when_changes_are_not_on_algolia_fields_it_should_not_trigger_indexing(self, mocked_async_index_venue_ids):
         # Given
@@ -83,7 +84,6 @@ class EditVenueTest:
         # Then
         mocked_async_index_venue_ids.assert_not_called()
 
-    @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.search.async_index_venue_ids")
     def when_changes_in_payload_are_same_as_previous_it_should_not_trigger_indexing(self, mocked_async_index_venue_ids):
         # Given
@@ -100,7 +100,6 @@ class EditVenueTest:
         # Then
         mocked_async_index_venue_ids.assert_not_called()
 
-    @pytest.mark.usefixtures("db_session")
     def test_empty_siret_is_editable(self, app) -> None:
         # Given
         venue = offers_factories.VenueFactory(
@@ -118,7 +117,6 @@ class EditVenueTest:
         # Then
         assert updated_venue.siret == venue_data["siret"]
 
-    @pytest.mark.usefixtures("db_session")
     def test_existing_siret_is_not_editable(self, app) -> None:
         # Given
         venue = offers_factories.VenueFactory()
@@ -133,7 +131,6 @@ class EditVenueTest:
         # Then
         assert error.value.errors["siret"] == ["Vous ne pouvez pas modifier le siret d'un lieu"]
 
-    @pytest.mark.usefixtures("db_session")
     def test_latitude_and_longitude_wrong_format(self, app) -> None:
         # given
         venue = offers_factories.VenueFactory(
@@ -152,7 +149,6 @@ class EditVenueTest:
         assert error.value.errors["latitude"] == ["La latitude doit être comprise entre -90.0 et +90.0"]
         assert error.value.errors["longitude"] == ["Format incorrect"]
 
-    @pytest.mark.usefixtures("db_session")
     def test_accessibility_fields_are_updated(self, app) -> None:
         # given
         venue = offers_factories.VenueFactory()
@@ -173,7 +169,6 @@ class EditVenueTest:
         assert venue.motorDisabilityCompliant is False
         assert venue.visualDisabilityCompliant is False
 
-    @pytest.mark.usefixtures("db_session")
     def test_no_modifications(self, app) -> None:
         # given
         venue = offers_factories.VenueFactory()
@@ -190,7 +185,6 @@ class EditVenueTest:
             offerers_api.update_venue(venue, **venue_data)
 
 
-@pytest.mark.usefixtures("db_session")
 class EditVenueContactTest:
     def test_create_venue_contact(self, app):
         user_offerer = offers_factories.UserOffererFactory(
@@ -224,7 +218,6 @@ class EditVenueContactTest:
         assert not venue.contact.phone_number
 
 
-@pytest.mark.usefixtures("db_session")
 class ApiKeyTest:
     def test_generate_and_save_api_key(self):
         offerer = offers_factories.OffererFactory()
@@ -247,3 +240,102 @@ class ApiKeyTest:
     def test_no_key_found(self):
         assert not offerers_api.find_api_key("legacy-key")
         assert not offerers_api.find_api_key("development_prefix_value")
+
+
+class CreateOffererTest:
+    @patch("pcapi.core.offerers.api.maybe_send_offerer_validation_email", return_value=True)
+    def test_create_new_offerer_with_validation_token_if_siren_is_not_already_registered(
+        self, mock_maybe_send_offerer_validation_email
+    ):
+        # Given
+        offerers_factories.VirtualVenueTypeFactory()
+        user = users_factories.UserFactory()
+        offerer_informations = CreateOffererQueryModel(
+            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+        )
+
+        # When
+        created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+
+        # Then
+        created_offerer = created_user_offerer.offerer
+        assert created_offerer.name == offerer_informations.name
+        assert created_offerer.siren == offerer_informations.siren
+        assert created_offerer.address == offerer_informations.address
+        assert created_offerer.postalCode == offerer_informations.postalCode
+        assert created_offerer.city == offerer_informations.city
+        assert created_offerer.validationToken is not None
+
+        assert created_user_offerer.userId == user.id
+        assert created_user_offerer.validationToken is None
+
+        mock_maybe_send_offerer_validation_email.assert_called_once_with(
+            created_user_offerer.offerer, created_user_offerer
+        )
+
+    @patch("pcapi.core.offerers.api.maybe_send_offerer_validation_email", return_value=True)
+    def test_create_digital_venue_if_siren_is_not_already_registered(self, mock_maybe_send_offerer_validation_email):
+        # Given
+        offerers_factories.VirtualVenueTypeFactory()
+        user = users_factories.UserFactory()
+        offerer_informations = CreateOffererQueryModel(
+            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+        )
+
+        # When
+        created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+
+        # Then
+        created_offerer = created_user_offerer.offerer
+        assert len(created_offerer.managedVenues) == 1
+        assert created_offerer.managedVenues[0].isVirtual is True
+
+    @patch("pcapi.core.offerers.api.maybe_send_offerer_validation_email", return_value=True)
+    def test_create_new_offerer_attachment_with_validation_token_if_siren_is_already_registered(
+        self, mock_maybe_send_offerer_validation_email
+    ):
+        # Given
+        offerers_factories.VirtualVenueTypeFactory()
+        user = users_factories.UserFactory()
+        offerer_informations = CreateOffererQueryModel(
+            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+        )
+        offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
+
+        # When
+        created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+
+        # Then
+        created_offerer = created_user_offerer.offerer
+        assert created_offerer.name == offerer.name
+        assert created_offerer.validationToken is None
+
+        assert created_user_offerer.userId == user.id
+        assert created_user_offerer.validationToken is not None
+
+        mock_maybe_send_offerer_validation_email.assert_called_once_with(
+            created_user_offerer.offerer, created_user_offerer
+        )
+
+    @patch("pcapi.core.offerers.api.maybe_send_offerer_validation_email", return_value=True)
+    def test_keep_offerer_validation_token_if_siren_is_already_registered_but_not_validated(
+        self, mock_maybe_send_offerer_validation_email
+    ):
+        # Given
+        offerers_factories.VirtualVenueTypeFactory()
+        user = users_factories.UserFactory()
+        offerer_informations = CreateOffererQueryModel(
+            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+        )
+        offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren, validationToken="TOKEN")
+
+        # When
+        created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+
+        # Then
+        created_offerer = created_user_offerer.offerer
+        assert created_offerer.name == offerer.name
+        assert created_offerer.validationToken == "TOKEN"
+
+        assert created_user_offerer.userId == user.id
+        assert created_user_offerer.validationToken is not None
