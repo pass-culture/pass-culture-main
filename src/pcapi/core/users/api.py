@@ -623,7 +623,6 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
     new_pro_user.remove_admin_role()
     new_pro_user.remove_beneficiary_role()
     new_pro_user.needsToFillCulturalSurvey = False
-    new_pro_user.add_pro_role()
     new_pro_user.generate_validation_token()
 
     if pro_user.postal_code:

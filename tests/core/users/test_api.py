@@ -781,7 +781,7 @@ class CreateProUserTest:
         assert not pro_user.isBeneficiary
         assert not pro_user.isAdmin
         assert not pro_user.needsToFillCulturalSurvey
-        assert pro_user.has_pro_role
+        assert not pro_user.has_pro_role
         assert not pro_user.has_admin_role
         assert not pro_user.has_beneficiary_role
         assert pro_user.deposits == []
@@ -798,7 +798,7 @@ class CreateProUserTest:
         assert pro_user.isBeneficiary
         assert not pro_user.isAdmin
         assert not pro_user.needsToFillCulturalSurvey
-        assert pro_user.has_pro_role
+        assert not pro_user.has_pro_role
         assert not pro_user.has_admin_role
         assert pro_user.has_beneficiary_role
         assert pro_user.deposits != []

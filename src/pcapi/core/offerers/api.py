@@ -17,6 +17,7 @@ from pcapi.core.offerers.repository import find_by_siren
 from pcapi.core.offerers.repository import find_offerer_by_validation_token
 from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
 from pcapi.core.users.models import User
+from pcapi.core.users.repository import get_user_with_validated_attachment_by_offerer
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
 from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
@@ -28,7 +29,6 @@ from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 from pcapi.utils import crypto
 
 from . import validation
-from ..users.repository import get_user_with_validated_attachment_by_offerer
 from .exceptions import ApiKeyCountMaxReached
 from .exceptions import ApiKeyDeletionDenied
 from .exceptions import ApiKeyPrefixGenerationError
