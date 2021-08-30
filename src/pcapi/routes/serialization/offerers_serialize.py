@@ -122,3 +122,17 @@ class GetOfferersNamesQueryModel(BaseModel):
 
 class GenerateOffererApiKeyResponse(BaseModel):
     apiKey: str
+
+
+class CreateOffererQueryModel(BaseModel):
+    address: Optional[str]
+    city: str
+    latitude: Optional[float]
+    longitude: Optional[float]
+    name: str
+    postalCode: str
+    siren: str
+
+    class Config:
+        extra = "forbid"
+        anystr_strip_whitespace = True

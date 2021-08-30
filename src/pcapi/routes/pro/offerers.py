@@ -27,6 +27,7 @@ from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.repository.offerer_queries import find_by_siren
 from pcapi.routes.serialization import as_dict
+from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
 from pcapi.routes.serialization.offerers_serialize import GenerateOffererApiKeyResponse
 from pcapi.routes.serialization.offerers_serialize import GetOffererNameResponseModel
 from pcapi.routes.serialization.offerers_serialize import GetOffererResponseModel
@@ -39,7 +40,6 @@ from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import OFFERER_INCLUDES
 from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.rest import check_user_has_access_to_offerer
-from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import load_or_404
 
 
@@ -173,13 +173,11 @@ def delete_api_key(api_key_prefix: str):
             raise ApiErrors({"api_key": "deletion forbidden"}, 403)
 
 
-# @debt api-migration
 @private_api.route("/offerers", methods=["POST"])
 @login_required
-@expect_json_data
-def create_offerer():
-    siren = request.json["siren"]
-    offerer = find_by_siren(siren)
+@spectree_serialize(on_success_status=201, response_model=GetOffererResponseModel)
+def create_offerer(body: CreateOffererQueryModel) -> GetOffererResponseModel:
+    offerer = find_by_siren(body.siren)
 
     if offerer is not None:
         user_offerer = offerer.grant_access(current_user)
@@ -188,15 +186,19 @@ def create_offerer():
 
     else:
         offerer = Offerer()
-        offerer.populate_from_dict(request.json)
-        digital_venue = create_digital_venue(offerer)
+        offerer.address = body.address
+        offerer.city = body.city
+        offerer.name = body.name
+        offerer.postalCode = body.postalCode
+        offerer.siren = body.siren
         offerer.generate_validation_token()
+        digital_venue = create_digital_venue(offerer)
         user_offerer = offerer.grant_access(current_user)
         repository.save(offerer, digital_venue, user_offerer)
 
     _send_to_pc_admin_offerer_to_validate_email(offerer, user_offerer)
 
-    return jsonify(get_dict_offerer(offerer)), 201
+    return GetOffererResponseModel.from_orm(offerer)
 
 
 def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: UserOfferer) -> None:
