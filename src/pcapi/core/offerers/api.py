@@ -19,8 +19,8 @@ from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_user_with_validated_attachment_by_offerer
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
-from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
-from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
+from pcapi.domain.pro_emails import send_attachment_validation_email_to_pro_offerer
+from pcapi.domain.pro_emails import send_validation_confirmation_email_to_pro
 from pcapi.models.db import db
 from pcapi.repository import repository
 from pcapi.routes.serialization import venues_serialize

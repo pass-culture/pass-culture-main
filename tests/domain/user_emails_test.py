@@ -18,7 +18,6 @@ from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_admin_user_validation_email
-from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
 from pcapi.domain.user_emails import send_beneficiary_booking_cancellation_email
 from pcapi.domain.user_emails import send_booking_confirmation_email_to_beneficiary
 from pcapi.domain.user_emails import send_booking_confirmation_email_to_offerer
@@ -35,7 +34,6 @@ from pcapi.domain.user_emails import send_reset_password_email_to_pro
 from pcapi.domain.user_emails import send_reset_password_email_to_user
 from pcapi.domain.user_emails import send_soon_to_be_expired_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
-from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
 from pcapi.domain.user_emails import send_warning_to_beneficiary_after_pro_booking_cancellation
 from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
 from pcapi.model_creators.generic_creators import create_booking
@@ -187,26 +185,6 @@ class SendBookingConfirmationEmailToOffererTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class SendValidationConfirmationEmailTest:
-    @patch(
-        "pcapi.domain.user_emails.retrieve_data_for_new_offerer_validation_email",
-        return_value={"Mj-TemplateID": 778723},
-    )
-    def when_feature_send_mail_to_users_is_enabled_sends_email_to_all_users_linked_to_offerer(
-        self, mock_retrieve_data_for_new_offerer_validation_email
-    ):
-        # Given
-        offerer = UserOffererFactory().offerer
-
-        # When
-        send_validation_confirmation_email_to_pro(offerer)
-
-        # Then
-        mock_retrieve_data_for_new_offerer_validation_email.assert_called_once_with(offerer)
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 778723
-
-
-@pytest.mark.usefixtures("db_session")
 class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
     @patch(
         "pcapi.domain.user_emails.retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation",
@@ -281,24 +259,6 @@ class SendActivationEmailTest:
         # then
         native_app_link = mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
         assert token.value in native_app_link
-
-
-class SendAttachmentValidationEmailToProOffererTest:
-    @patch("pcapi.domain.user_emails.retrieve_data_for_offerer_attachment_validation_email")
-    @pytest.mark.usefixtures("db_session")
-    def test_send_attachment_validation_email_to_pro_offerer(
-        self, mocked_retrieve_data_for_offerer_attachment_validation_email, app
-    ):
-        # given
-        user_offerer = UserOffererFactory()
-        mocked_retrieve_data_for_offerer_attachment_validation_email.return_value = {"Html-part": ""}
-
-        # when
-        send_attachment_validation_email_to_pro_offerer(user_offerer)
-
-        # then
-        mocked_retrieve_data_for_offerer_attachment_validation_email.assert_called_once_with(user_offerer.offerer)
-        assert mails_testing.outbox[0].sent_data["Html-part"] == ""
 
 
 @pytest.mark.usefixtures("db_session")

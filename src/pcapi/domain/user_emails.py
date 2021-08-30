@@ -35,9 +35,7 @@ from pcapi.emails.new_offer_validation import retrieve_data_for_offer_rejection_
 from pcapi.emails.new_offerer_validated_withdrawal_terms import (
     retrieve_data_for_new_offerer_validated_withdrawal_terms_email,
 )
-from pcapi.emails.new_offerer_validation import retrieve_data_for_new_offerer_validation_email
 from pcapi.emails.offer_webapp_link import build_data_for_offer_webapp_link
-from pcapi.emails.offerer_attachment_validation import retrieve_data_for_offerer_attachment_validation_email
 from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
 from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation,
@@ -52,7 +50,6 @@ from pcapi.emails.user_notification_after_stock_update import (
 from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_native_app_email
 from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_user_email
 from pcapi.models import Offer
-from pcapi.models import UserOfferer
 from pcapi.repository.offerer_queries import find_new_offerer_user_email
 from pcapi.utils.mailing import make_admin_user_validation_email
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
@@ -119,17 +116,6 @@ def send_reset_password_email_to_pro(user: User) -> None:
     token = users_api.create_reset_password_token(user)
     data = retrieve_data_for_reset_password_pro_email(user, token)
     mails.send(recipients=[user.email], data=data)
-
-
-def send_validation_confirmation_email_to_pro(offerer: Offerer) -> None:
-    offerer_email = find_new_offerer_user_email(offerer.id)
-    data = retrieve_data_for_new_offerer_validation_email(offerer)
-    mails.send(recipients=[offerer_email], data=data)
-
-
-def send_attachment_validation_email_to_pro_offerer(user_offerer: UserOfferer) -> None:
-    data = retrieve_data_for_offerer_attachment_validation_email(user_offerer.offerer)
-    mails.send(recipients=[user_offerer.user.email], data=data)
 
 
 def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: list[Booking]) -> None:
