@@ -8,3 +8,7 @@ class ApiKeyPrefixGenerationError(Exception):
 
 class ApiKeyDeletionDenied(Exception):
     pass
+
+
+class ValidationTokenNotFoundError(Exception):
+    pass

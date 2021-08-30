@@ -1,10 +1,13 @@
+from datetime import datetime
 from unittest.mock import patch
 
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers.exceptions import ValidationTokenNotFoundError
 from pcapi.core.offerers.models import ApiKey
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
@@ -343,3 +346,102 @@ class CreateOffererTest:
 
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is not None
+
+
+class ValidateOffererAttachmentTest:
+    def test_offerer_attachment_is_validated(self):
+        # Given
+        applicant = users_factories.UserFactory()
+        user_offerer = offers_factories.UserOffererFactory(user=applicant, validationToken="TOKEN")
+
+        # When
+        offerers_api.validate_offerer_attachment(user_offerer.validationToken)
+
+        # Then
+        assert user_offerer.validationToken is None
+
+    @patch("pcapi.core.offerers.api.send_attachment_validation_email_to_pro_offerer", return_value=True)
+    def test_send_validation_confirmation_email(self, mocked_send_validation_confirmation_email_to_pro):
+        # Given
+        applicant = users_factories.UserFactory()
+        user_offerer = offers_factories.UserOffererFactory(user=applicant, validationToken="TOKEN")
+
+        # When
+        offerers_api.validate_offerer_attachment(user_offerer.validationToken)
+
+        # Then
+        mocked_send_validation_confirmation_email_to_pro.assert_called_once_with(user_offerer)
+
+    def test_do_not_validate_attachment_if_token_does_not_exist(self):
+        # Given
+        applicant = users_factories.UserFactory()
+        user_offerer = offers_factories.UserOffererFactory(user=applicant, validationToken="TOKEN")
+
+        # When
+        with pytest.raises(ValidationTokenNotFoundError):
+            offerers_api.validate_offerer_attachment("OTHER TOKEN")
+
+        # Then
+        assert not applicant.has_pro_role
+        assert user_offerer.validationToken == "TOKEN"
+
+
+@freeze_time("2020-10-15 00:00:00")
+class ValidateOffererTest:
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_offerer_is_validated(self, mocked_async_index_venue_ids):
+        # Given
+        applicant = users_factories.UserFactory()
+        user_offerer = offers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
+
+        # When
+        offerers_api.validate_offerer(user_offerer.offerer.validationToken)
+
+        # Then
+        assert user_offerer.offerer.validationToken is None
+        assert user_offerer.offerer.dateValidated == datetime.utcnow()
+
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_managed_venues_are_reindexed(self, mocked_async_index_venue_ids):
+        # Given
+        applicant = users_factories.UserFactory()
+        user_offerer = offers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
+        venue_1 = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue_2 = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+        # When
+        offerers_api.validate_offerer(user_offerer.offerer.validationToken)
+
+        # Then
+        mocked_async_index_venue_ids.assert_called_once()
+        called_args, _ = mocked_async_index_venue_ids.call_args
+        assert set(called_args[0]) == {venue_1.id, venue_2.id}
+
+    @patch("pcapi.core.offerers.api.send_validation_confirmation_email_to_pro", return_value=True)
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_send_validation_confirmation_email(
+        self, mocked_async_index_venue_ids, mocked_send_validation_confirmation_email_to_pro
+    ):
+        # Given
+        applicant = users_factories.UserFactory()
+        user_offerer = offers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
+
+        # When
+        offerers_api.validate_offerer(user_offerer.offerer.validationToken)
+
+        # Then
+        mocked_send_validation_confirmation_email_to_pro.assert_called_once_with(user_offerer.offerer)
+
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_do_not_validate_attachment_if_token_does_not_exist(self, mocked_async_index_venue_ids):
+        # Given
+        applicant = users_factories.UserFactory()
+        user_offerer = offers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
+
+        # When
+        with pytest.raises(ValidationTokenNotFoundError):
+            offerers_api.validate_offerer("OTHER TOKEN")
+
+        # Then
+        assert not applicant.has_pro_role
+        assert user_offerer.offerer.validationToken == "TOKEN"

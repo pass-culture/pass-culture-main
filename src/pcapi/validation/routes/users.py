@@ -5,7 +5,6 @@ from flask import Request
 
 from pcapi.domain.password import check_password_strength
 from pcapi.models import ApiErrors
-from pcapi.models.api_errors import ResourceNotFoundError
 
 
 def check_valid_signup_webapp(request: Request) -> None:
@@ -56,12 +55,3 @@ def _contact_ok_is_not_checked(contact_ok: Optional[Union[bool, str]]) -> bool:
     contact_ok_is_not_checked_as_bool = contact_ok is not True
     contact_ok_is_not_checked_as_str = str(contact_ok).lower() != "true"
     return contact_ok_is_not_checked_as_bool and contact_ok_is_not_checked_as_str
-
-
-def check_validation_token_has_been_already_used(user) -> None:
-    if user is None:
-        errors = ResourceNotFoundError()
-        errors.add_error(
-            "validation", "Aucun(e) objet ne correspond à ce code de validation" + " ou l'objet est déjà validé"
-        )
-        raise errors

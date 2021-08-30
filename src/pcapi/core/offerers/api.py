@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import secrets
 import typing
@@ -15,6 +16,8 @@ from pcapi.core.offerers.models import VenueType
 from pcapi.core.offerers.repository import find_by_siren
 from pcapi.core.users.models import User
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
+from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
+from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
 from pcapi.models.db import db
 from pcapi.repository import repository
 from pcapi.routes.serialization import venues_serialize
@@ -26,6 +29,7 @@ from . import validation
 from .exceptions import ApiKeyCountMaxReached
 from .exceptions import ApiKeyDeletionDenied
 from .exceptions import ApiKeyPrefixGenerationError
+from .exceptions import ValidationTokenNotFoundError
 
 
 logger = logging.getLogger(__name__)
@@ -180,3 +184,39 @@ def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: 
         maybe_send_offerer_validation_email(offerer, user_offerer)
     except MailServiceException as mail_service_exception:
         logger.exception("Could not send validation email to offerer", extra={"exc": str(mail_service_exception)})
+
+
+def validate_offerer_attachment(token: str) -> None:
+    user_offerer = UserOfferer.query.filter_by(validationToken=token).one_or_none()
+    if user_offerer is None:
+        raise ValidationTokenNotFoundError()
+
+    user_offerer.validationToken = None
+    repository.save(user_offerer)
+
+    try:
+        send_attachment_validation_email_to_pro_offerer(user_offerer)
+    except MailServiceException as mail_service_exception:
+        logger.exception(
+            "Could not send attachment validation email to offerer", extra={"exc": str(mail_service_exception)}
+        )
+
+
+def validate_offerer(token: str) -> None:
+    offerer = Offerer.query.filter_by(validationToken=token).one_or_none()
+    if offerer is None:
+        raise ValidationTokenNotFoundError()
+
+    offerer.validationToken = None
+    offerer.dateValidated = datetime.utcnow()
+    managed_venues = offerer.managedVenues
+
+    repository.save(offerer)
+    search.async_index_venue_ids([venue.id for venue in managed_venues])
+
+    try:
+        send_validation_confirmation_email_to_pro(offerer)
+    except MailServiceException as mail_service_exception:
+        logger.exception(
+            "Could not send validation confirmation email to offerer", extra={"exc": str(mail_service_exception)}
+        )

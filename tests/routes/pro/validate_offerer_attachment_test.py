@@ -1,95 +1,41 @@
-import secrets
-
 import pytest
 
-from pcapi.core.users import factories as users_factories
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user_offerer
+import pcapi.core.offers.factories as offers_factories
 from pcapi.models import UserOfferer
-from pcapi.repository import repository
 
 from tests.conftest import TestClient
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class Returns202Test:
-    @pytest.mark.usefixtures("db_session")
     def expect_user_offerer_attachment_to_be_validated(self, app):
         # Given
-        user_offerer_token = secrets.token_urlsafe(20)
-        offerer_token = secrets.token_urlsafe(20)
-        offerer = create_offerer(
-            siren="349974931",
-            address="12 boulevard de Pesaro",
-            city="Nanterre",
-            postal_code="92000",
-            name="Crédit Coopératif",
-            validation_token=offerer_token,
-        )
-        user = users_factories.ProFactory()
-        user_offerer = create_user_offerer(user, offerer, validation_token=user_offerer_token)
-        repository.save(offerer, user_offerer)
-        user_offerer_id = offerer.id
+        user_offerer = offers_factories.UserOffererFactory(validationToken="TOKEN")
 
         # When
         response = TestClient(app.test_client()).get(
-            "/validate/user-offerer/" + user_offerer_token, headers={"origin": "http://localhost:3000"}
+            "/validate/user-offerer/" + user_offerer.validationToken, headers={"origin": "http://localhost:3000"}
         )
 
         # Then
         assert response.status_code == 202
         assert response.data.decode("utf8") == "Validation du rattachement de la structure effectuée"
 
-        user_offerer = UserOfferer.query.filter_by(offererId=user_offerer_id).first()
+        user_offerer = UserOfferer.query.filter_by(id=user_offerer.id).first()
 
         assert user_offerer.isValidated
 
 
 class Returns404Test:
-    @pytest.mark.usefixtures("db_session")
-    def expect_user_offerer_attachment_not_to_be_validated_with_unknown_token(self, app):
-        # Given
-        user = users_factories.ProFactory()
-
+    def test_user_offerer_attachment_not_to_be_validated_with_unknown_token(self, app):
         # When
-        response = TestClient(app.test_client()).with_session_auth(email=user.email).get("/validate/user-offerer/123")
+        response = TestClient(app.test_client()).get("/validate/user-offerer/123")
 
         # Then
         assert response.status_code == 404
-
-    @pytest.mark.usefixtures("db_session")
-    def expect_user_offerer_attachment_not_to_be_validated_with_same_token(self, app):
-        user_offerer_token = secrets.token_urlsafe(20)
-        offerer_token = secrets.token_urlsafe(20)
-
-        offerer = create_offerer(
-            siren="349974931",
-            address="12 boulevard de Pesaro",
-            city="Nanterre",
-            postal_code="92000",
-            name="Crédit Coopératif",
-            validation_token=offerer_token,
-        )
-        user = users_factories.ProFactory()
-        user_offerer = create_user_offerer(user, offerer, validation_token=user_offerer_token)
-        repository.save(offerer, user_offerer)
-        user_offerer_id = offerer.id
-
-        # When
-        TestClient(app.test_client()).get(
-            "/validate/user-offerer/" + user_offerer_token, headers={"origin": "http://localhost:3000"}
-        )
-
-        response = TestClient(app.test_client()).get(
-            "/validate/user-offerer/" + user_offerer_token, headers={"origin": "http://localhost:3000"}
-        )
-
-        # Then
-        assert response.status_code == 404
-        user_offerer = UserOfferer.query.filter_by(offererId=user_offerer_id).first()
-
         assert (
             response.json["validation"][0]
             == "Aucun(e) objet ne correspond à ce code de validation ou l'objet est déjà validé"
         )
-
-        assert user_offerer.isValidated
