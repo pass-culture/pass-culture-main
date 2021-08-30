@@ -52,7 +52,7 @@ commands:
 ###################
 #  JOBS
 ###################
-
+jobs:
   deploy-maintenance-front:
     executor: node-gcp
     steps:
