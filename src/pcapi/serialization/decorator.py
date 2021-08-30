@@ -35,6 +35,18 @@ def _make_json_response(
     return response
 
 
+def _make_string_response(content: Optional[BaseModel], status_code: int) -> Response:
+    """serializes model, creates JSON response with given status code"""
+    if status_code == 204:
+        return make_response("", 204)
+
+    if not content:
+        raise ApiErrors({"configuration": "You need to provide a response body model if the status code is not 204"})
+
+    response = make_response(content, status_code)
+    return response
+
+
 def spectree_serialize(  # pylint: disable=dangerous-default-value
     headers: Type[BaseModel] = None,
     cookies: Type[BaseModel] = None,
@@ -47,20 +59,22 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
     on_success_status: int = 200,
     on_error_statuses: list[int] = [],
     api: SpecTree = default_api,
+    json_format: bool = True,
 ) -> Callable[[Any], Any]:
     """A decorator that serialize/deserialize and validate input/output
 
     Args:
-        cookies (Type[BaseModel], optional): Describes the cookies. Defaults to None.
-        response_model (Type[BaseModel], optional): Describes the http response Model. Defaults to None.
-        tags (tuple, optional): list of tags’ string. Defaults to ().
-        before (Callable, optional): hook executed before the spectree validation. Defaults to None.
-        after (Callable, optional): hook executed after the spectree validation. Defaults to None.
-        response_by_alias (bool, optional): whether or not the alias generator will be used. Defaults to True.
-        exclude_none (bool, optional): whether or not to remove the none values. Defaults to False.
-        on_success_status (int, optional): status returned when the validation is a success. Defaults to 200.
-        on_error_statuses (list[int], optional): list of possible error statuses. Defaults to [].
-        api (SpecTree, optional): [description]. Defaults to default_api.
+        cookies: Describes the cookies. Defaults to None.
+        response_model: Describes the http response Model. Defaults to None.
+        tags: list of tags’ string. Defaults to ().
+        before: hook executed before the spectree validation. Defaults to None.
+        after: hook executed after the spectree validation. Defaults to None.
+        response_by_alias: whether or not the alias generator will be used. Defaults to True.
+        exclude_none: whether or not to remove the none values. Defaults to False.
+        on_success_status: status returned when the validation is a success. Defaults to 200.
+        on_error_statuses: list of possible error statuses. Defaults to [].
+        api: [description]. Defaults to default_api.
+        json_format: JSON format response if true, else text format response. Defaults to True.
 
     Returns:
         Callable[[Any], Any]: [description]
@@ -105,9 +119,12 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
                 kwargs["form"] = form_in_kwargs(**form)
 
             result = route(*args, **kwargs)
-            return _make_json_response(
-                content=result, status_code=on_success_status, by_alias=response_by_alias, exclude_none=exclude_none
-            )
+            if json_format:
+                return _make_json_response(
+                    content=result, status_code=on_success_status, by_alias=response_by_alias, exclude_none=exclude_none
+                )
+
+            return _make_string_response(content=result, status_code=on_success_status)
 
         return sync_validate
 

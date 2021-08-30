@@ -39,6 +39,19 @@ class SerializationDecoratorTest:
             "optional_string_response": None,
         }
 
+    def should_return_str_response_with_200_when_asked(self, app):
+        # Given
+        @spectree_serialize(json_format=False)
+        def mock_func():
+            return "Some response"
+
+        # When
+        response = mock_func()
+
+        # Then
+        assert response.status_code == 200
+        assert response.data.decode("utf8") == "Some response"
+
     def should_return_json_response_with_custom_status_code(self, app):
         # Given
         @spectree_serialize(response_model=TestResponseModel, on_success_status=217)

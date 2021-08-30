@@ -34,6 +34,7 @@ class Returns202Test:
 
         # Then
         assert response.status_code == 202
+        assert response.data.decode("utf8") == "Validation effectuée"
         offerer = Offerer.query.filter_by(id=offerer.id).first()
         assert offerer.isValidated is True
         assert offerer.dateValidated == datetime(2021, 6, 23, 11)

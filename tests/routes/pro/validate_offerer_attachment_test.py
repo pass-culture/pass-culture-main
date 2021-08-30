@@ -37,6 +37,7 @@ class Returns202Test:
 
         # Then
         assert response.status_code == 202
+        assert response.data.decode("utf8") == "Validation du rattachement de la structure effectuée"
 
         user_offerer = UserOfferer.query.filter_by(offererId=user_offerer_id).first()
 

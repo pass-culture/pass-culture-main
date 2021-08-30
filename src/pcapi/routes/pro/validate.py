@@ -12,6 +12,7 @@ from pcapi.models import UserOfferer
 from pcapi.repository import repository
 from pcapi.repository import user_offerer_queries
 from pcapi.repository import user_queries
+from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.mailing import MailServiceException
 from pcapi.validation.routes.users import check_validation_token_has_been_already_used
 from pcapi.validation.routes.validate import check_valid_token_for_user_validation
@@ -21,9 +22,9 @@ from pcapi.validation.routes.validate import check_validation_request
 logger = logging.getLogger(__name__)
 
 
-# @debt api-migration
 @public_api.route("/validate/user-offerer/<token>", methods=["GET"])
-def validate_offerer_attachment(token):
+@spectree_serialize(on_success_status=202, json_format=False)
+def validate_offerer_attachment(token) -> str:
     check_validation_request(token)
     user_offerer = UserOfferer.query.filter_by(validationToken=token).one_or_none()
     check_validation_token_has_been_already_used(user_offerer)
@@ -38,12 +39,12 @@ def validate_offerer_attachment(token):
             "Could not send attachment validation email to offerer", extra={"exc": str(mail_service_exception)}
         )
 
-    return "Validation du rattachement de la structure effectuée", 202
+    return "Validation du rattachement de la structure effectuée"
 
 
-# @debt api-migration
 @public_api.route("/validate/offerer/<token>", methods=["GET"])
-def validate_new_offerer(token):
+@spectree_serialize(on_success_status=202, json_format=False)
+def validate_new_offerer(token) -> str:
     check_validation_request(token)
     offerer = Offerer.query.filter_by(validationToken=token).one_or_none()
     check_validation_token_has_been_already_used(offerer)
@@ -60,12 +61,12 @@ def validate_new_offerer(token):
         logger.exception(
             "Could not send validation confirmation email to offerer", extra={"exc": str(mail_service_exception)}
         )
-    return "Validation effectuée", 202
+    return "Validation effectuée"
 
 
-# @debt api-migration
 @private_api.route("/validate/user/<token>", methods=["PATCH"])
-def validate_user(token):
+@spectree_serialize(on_success_status=204)
+def validate_user(token) -> None:
     user_to_validate = user_queries.find_by_validation_token(token)
     check_valid_token_for_user_validation(user_to_validate)
 
@@ -79,7 +80,7 @@ def validate_user(token):
         offerer = user_offerer.offerer
         _ask_for_validation(offerer, user_offerer)
 
-    return "", 204
+    return None
 
 
 def _ask_for_validation(offerer: Offerer, user_offerer: UserOfferer):
