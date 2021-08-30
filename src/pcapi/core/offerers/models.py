@@ -349,7 +349,7 @@ class Offerer(
         user_offerer = UserOfferer()
         user_offerer.offerer = self
         user_offerer.user = user
-        user.add_pro_role()
+
         return user_offerer
 
     @property

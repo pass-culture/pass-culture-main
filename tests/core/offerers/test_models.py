@@ -126,18 +126,6 @@ class OffererGrantAccessTest:
     def test_grant_access_to_offerer_to_given_pro(self):
         # Given
         offerer = offers_factories.OffererFactory()
-        user = users_factories.ProFactory()
-
-        # When
-        created_user_offerer = offerer.grant_access(user)
-
-        # Then
-        assert created_user_offerer.user == user
-        assert created_user_offerer.offerer == offerer
-
-    def test_add_pro_role_to_user_if_he_does_not_possess_this_role(self):
-        # Given
-        offerer = offers_factories.OffererFactory()
         user = users_factories.UserFactory()
 
         # When
@@ -146,7 +134,7 @@ class OffererGrantAccessTest:
         # Then
         assert created_user_offerer.user == user
         assert created_user_offerer.offerer == offerer
-        assert user.has_pro_role
+        assert not user.has_pro_role
 
     def test_do_nothing_when_no_user_provided(self):
         # Given

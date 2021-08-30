@@ -269,6 +269,8 @@ class CreateOffererTest:
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is None
 
+        assert not created_user_offerer.user.has_pro_role
+
         mock_maybe_send_offerer_validation_email.assert_called_once_with(
             created_user_offerer.offerer, created_user_offerer
         )
@@ -312,6 +314,8 @@ class CreateOffererTest:
 
         assert created_user_offerer.userId == user.id
         assert created_user_offerer.validationToken is not None
+
+        assert not created_user_offerer.user.has_pro_role
 
         mock_maybe_send_offerer_validation_email.assert_called_once_with(
             created_user_offerer.offerer, created_user_offerer
