@@ -20,7 +20,7 @@ CINEMA = Category(
 )
 CONFERENCE_RENCONTRE = Category(
     id="CONFERENCE",
-    pro_label="Conférences, rencontres, découverte des métiers",
+    pro_label="Conférences, rencontres",
 )
 FILM = Category(
     id="FILM",

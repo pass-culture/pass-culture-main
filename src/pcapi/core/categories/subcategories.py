@@ -310,6 +310,7 @@ DECOUVERTE_METIERS = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    is_selectable=False,
 )
 SALON = Subcategory(
     id="SALON",
@@ -440,6 +441,7 @@ ABO_LUDOTHEQUE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=True,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    is_selectable=False,
 )
 # endregion
 # region LIVRE
