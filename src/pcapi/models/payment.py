@@ -75,18 +75,17 @@ class Payment(PcObject, Model):
 
     __table_args__ = (
         CheckConstraint(
-            # fmt: off
-            '('
-            ' "reimbursementRule" IS NOT NULL '
-            ' AND "reimbursementRate" IS NOT NULL '
-            ' AND "customReimbursementRuleId" IS NULL '
-            ') OR ('
-            ' "reimbursementRule" IS NULL '
-            ' AND "reimbursementRate" IS NULL '
-            ' AND "customReimbursementRuleId" IS NOT NULL '
-            ')',
-            name="payment_reimbursement_constraint"
-            # fmt: on
+            """
+            (
+              "reimbursementRule" IS NOT NULL
+              AND "reimbursementRate" IS NOT NULL
+              AND "customReimbursementRuleId" IS NULL
+            ) OR (
+              "reimbursementRule" IS NULL
+              AND "customReimbursementRuleId" IS NOT NULL
+            )
+            """,
+            name="reimbursement_constraint_check",
         ),
     )
 
