@@ -110,6 +110,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
 
     can_view_details = True
     details_template = "admin/support_beneficiary_details.html"
+    list_template = "admin/support_beneficiary_list.html"
 
     page_size = 100
 
