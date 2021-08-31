@@ -4,11 +4,8 @@ import itertools
 import logging
 import uuid
 
-import pcapi.core.bookings.conf as bookings_conf
-from pcapi.core.payments.api import create_deposit
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import TokenType
-from pcapi.repository import repository
 
 
 logger = logging.getLogger(__name__)
@@ -24,7 +21,7 @@ WEBAPP_TAGS = [
     "has-booked-some-but-deposit-expired",
     "has-no-more-money",
 ]
-DEPOSIT_VERSIONS = bookings_conf.LIMIT_CONFIGURATIONS.keys()
+GRANT_18_DEPOSIT_VERSIONS = [1, 2]
 
 
 def create_industrial_webapp_users():
@@ -39,12 +36,11 @@ def create_industrial_webapp_young_users():
     logger.info("create_industrial_webapp_young_users")
 
     users_by_name = {}
-    deposit_versions = {}
 
     validation_prefix, validation_suffix = "AZERTY", 123
     validation_suffix += 1
 
-    variants = itertools.product(DEPARTEMENT_CODES, WEBAPP_TAGS, DEPOSIT_VERSIONS)
+    variants = itertools.product(DEPARTEMENT_CODES, WEBAPP_TAGS, GRANT_18_DEPOSIT_VERSIONS)
 
     for index, (departement_code, tag, deposit_version) in enumerate(variants, start=0):
         short_tag = "".join([chunk[0].upper() for chunk in tag.split("-")])
@@ -69,21 +65,38 @@ def create_industrial_webapp_young_users():
 
         email = f"pctest.jeune{departement_code}.{tag}.v{deposit_version}@example.com"
 
-        user = users_factories.BeneficiaryFactory.build(
-            culturalSurveyId=cultural_survey_id,
-            departementCode=str(departement_code),
-            email=email,
-            phoneNumber=f"+336{index:0>8}",
-            firstName="PC Test Jeune",
-            dateOfBirth=datetime(2003, 1, 1),
-            hasSeenTutorials=has_seen_tutorials,
-            lastName=f"{departement_code} {short_tag} {deposit_version}",
-            needsToFillCulturalSurvey=needs_to_fill_cultural_survey,
-            postalCode="{}100".format(departement_code),
-            publicName=f"PC Test Jeune {departement_code} {short_tag} {deposit_version}",
-        )
+        if tag in ("has-signed-up", "has-booked-activation"):
+            user = users_factories.UserFactory(
+                culturalSurveyId=cultural_survey_id,
+                departementCode=str(departement_code),
+                email=email,
+                phoneNumber=f"+336{index:0>8}",
+                firstName="PC Test Jeune",
+                dateOfBirth=datetime(2003, 1, 1),
+                hasSeenTutorials=has_seen_tutorials,
+                lastName=f"{departement_code} {short_tag} {deposit_version}",
+                needsToFillCulturalSurvey=needs_to_fill_cultural_survey,
+                postalCode="{}100".format(departement_code),
+                publicName=f"PC Test Jeune {departement_code} {short_tag} {deposit_version}",
+            )
+        else:
+            user = users_factories.BeneficiaryFactory(
+                culturalSurveyId=cultural_survey_id,
+                departementCode=str(departement_code),
+                email=email,
+                phoneNumber=f"+336{index:0>8}",
+                firstName="PC Test Jeune",
+                dateOfBirth=datetime(2003, 1, 1),
+                hasSeenTutorials=has_seen_tutorials,
+                lastName=f"{departement_code} {short_tag} {deposit_version}",
+                needsToFillCulturalSurvey=needs_to_fill_cultural_survey,
+                postalCode="{}100".format(departement_code),
+                publicName=f"PC Test Jeune {departement_code} {short_tag} {deposit_version}",
+                deposit__source="sandbox",
+                deposit__version=deposit_version,
+            )
         if reset_password_token:
-            users_factories.TokenFactory.build(
+            users_factories.TokenFactory(
                 user=user,
                 value=reset_password_token,
                 expirationDate=datetime.utcnow() + timedelta(hours=24),
@@ -91,19 +104,6 @@ def create_industrial_webapp_young_users():
             )
         user_key = f"jeune{departement_code} {tag} v{deposit_version}"
         users_by_name[user_key] = user
-        deposit_versions[user_key] = deposit_version
-
-    repository.save(*users_by_name.values())
-    for user_key, user in users_by_name.items():
-        # FIXME (asaunier, 2021-01-27): There are only 2 accounts in production where beneficiaries have no deposit
-        #  including one passculture account.
-        if not ("has-signed-up" in user_key or "has-booked-activation" in user_key):
-            deposit = create_deposit(
-                user,
-                deposit_source="sandbox",
-                version=deposit_versions[user_key],
-            )
-            repository.save(deposit)
 
     logger.info("created %d young users", len(users_by_name))
 
@@ -117,13 +117,12 @@ def create_industrial_webapp_general_public_users():
     logger.info("create_industrial_webapp_general_public_users")
 
     users_by_name = {}
-    deposit_versions = {}
 
-    variants = itertools.product(AGE_TAGS, DEPOSIT_VERSIONS)
+    variants = itertools.product(AGE_TAGS)
 
-    for index, (age, deposit_version) in enumerate(variants, start=100):
+    for index, (age,) in enumerate(variants, start=100):
         short_age = "".join([chunk[0].upper() for chunk in age.split("-")])
-        email = f"pctest.grandpublic.{age}.v{deposit_version}@example.com"
+        email = f"pctest.grandpublic.{age}@example.com"
         departement_code = 39
         today = datetime.today()
         date_of_birth = today - timedelta(18 * 366)
@@ -144,16 +143,14 @@ def create_industrial_webapp_general_public_users():
             hasSeenTutorials=False,
             isBeneficiary=False,
             roles=[],
-            lastName=f"{short_age} {deposit_version}",
+            lastName=f"{short_age}",
             needsToFillCulturalSurvey=True,
             postalCode="{}100".format(departement_code),
-            publicName=f"PC Test Grand Public {short_age} {deposit_version}",
+            publicName=f"PC Test Grand Public {short_age}",
         )
-        user_key = f"grandpublic{age}v{deposit_version}"
+        user_key = f"grandpublic{age}"
         users_by_name[user_key] = user
-        deposit_versions[user_key] = deposit_version
 
-    repository.save(*users_by_name.values())
     logger.info("created %d general public users", len(users_by_name))
 
     return users_by_name
