@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import './VenueProviderItem.scss'
 
@@ -22,14 +22,16 @@ const VenueProviderItem = ({ venueProvider, venueDepartmentCode }) => {
   return (
     <li className="venue-provider-row">
       <div className="venue-provider-item-info">
-        <Icon
-          height="64px"
-          svg={providerInfo.icon}
-          width="64px"
-        />
+        {!!providerInfo && (
+          <Icon
+            height="64px"
+            svg={providerInfo.icon}
+            width="64px"
+          />
+        )}
 
         <div className="provider-name-container">
-          {providerInfo.name}
+          {providerInfo?.name ?? provider.name}
         </div>
 
         {!lastSyncDate ? (
@@ -92,9 +94,10 @@ const VenueProviderItem = ({ venueProvider, venueDepartmentCode }) => {
                     {'Prix de vente/place : '}
                   </span>
                   <span>
-                    {`${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
-                      venueProvider.price
-                    )}`}
+                    {`${new Intl.NumberFormat('fr-FR', {
+                      style: 'currency',
+                      currency: 'EUR',
+                    }).format(venueProvider.price)}`}
                   </span>
                 </li>
                 <li>
