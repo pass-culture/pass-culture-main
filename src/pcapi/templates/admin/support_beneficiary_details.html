@@ -200,6 +200,10 @@
         </td>
       </tr>
     </table>
+    {% else %}
+    <div class="card card-body">
+      Aucun résultat d'import de bénéficiaire
+    </div>
     {% endif %}
   </div>
   {% if model.beneficiaryFraudReview %}
@@ -229,6 +233,53 @@
   </div>
   {% endif %}
 </div>
+<h3>Beneficiary Imports</h3>
+<div class="row">
+  {% for import in model.beneficiaryImports %}
+  <div class="col-lg-4">
+
+    <table class="table">
+      <tr>
+        <th scope="row">Auteur</th>
+        <td>{{ import.author|default("Aucun") }}</td>
+      </tr>
+
+      <tr>
+        <th scope="row">Application ID</th>
+        <td>{{ import.applicationId }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Source ID</th>
+        <td>{{ import.sourceId }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Source</th>
+        <td>{{ import.source }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Etat</th>
+        <td>{{ import.currentStatus.value }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Historique</th>
+        <td>
+          <ul>
+            {% for status in import.statuses %}
+            <li>{{ status.status.value }} - {{ status.detail }}</li>
+            {% endfor %}
+          </ul>
+        </td>
+      </tr>
+    </table>
+  </div>
+  {% else %}
+  <div class="card card-body">
+    Aucun résultat d'import de bénéficiaire
+  </div>
+  {% endfor %}
+</div>
+
+
 <h3>Vérification des données utilisateurs</h3>
 <div class="row">
   {% for check in model.beneficiaryFraudChecks %}
@@ -251,6 +302,10 @@
     <div class="row">
       <pre class="pre-scrollable"><code>{{ check.resultContent|pprint }}</code></pre>
     </div>
+  </div>
+  {% else %}
+  <div class="card card-body">
+    Aucune vérification externe (Jouve, DMS)
   </div>
   {% endfor %}
 </div>
