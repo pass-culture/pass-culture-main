@@ -33,7 +33,7 @@ class BookingFactory(BaseFactory):
                 self.stock.beginningDatetime, self.dateCreated
             )
         db.session.add(self)
-        db.session.flush()
+        db.session.commit()
 
     @factory.post_generation
     def cancellation_date(self, create, extracted, **kwargs):
