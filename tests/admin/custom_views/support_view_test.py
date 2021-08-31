@@ -14,7 +14,7 @@ import pcapi.models
 
 
 @pytest.mark.usefixtures("db_session")
-class BeneficiaryFraudListViewTest:
+class BeneficiaryListViewTest:
     def test_list_view(self, client):
         admin = users_factories.AdminFactory(email="admin@example.com")
         client.with_session_auth(admin.email)
@@ -24,28 +24,28 @@ class BeneficiaryFraudListViewTest:
             fraud_factories.BeneficiaryFraudCheckFactory(user=user)
             fraud_factories.BeneficiaryFraudResultFactory(user=user)
             fraud_factories.BeneficiaryFraudReviewFactory(user=user, review=review_status)
-        response = client.get("/pc/back-office/beneficiary_fraud/")
+        response = client.get("/pc/back-office/support_beneficiary/")
         assert response.status_code == 200
 
 
 @pytest.mark.usefixtures("db_session")
-class BeneficiaryFraudDetailViewTest:
+class BeneficiaryDetailViewTest:
     def test_detail_view(self, client):
         admin = users_factories.AdminFactory(email="admin@example.com")
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudResultFactory(user=user)
         client.with_session_auth(admin.email)
-        response = client.get("/pc/back-office/beneficiary_fraud/?id={user.id}")
+        response = client.get("/pc/back-office/support_beneficiary/?id={user.id}")
         assert response.status_code == 200
 
 
 @pytest.mark.usefixtures("db_session")
-class BeneficiaryFraudValidationViewTest:
+class BeneficiaryValidationViewTest:
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_auth_required(self, client):
         user = users_factories.UserFactory()
-        response = client.post(f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}")
+        response = client.post(f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}")
         assert response.status_code == 302
         assert response.headers["Location"] == "http://localhost/pc/back-office/"
 
@@ -57,7 +57,7 @@ class BeneficiaryFraudValidationViewTest:
         client.with_session_auth(admin.email)
 
         response = client.post(
-            f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
+            f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
             form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
         )
         assert response.status_code == 302
@@ -82,7 +82,7 @@ class BeneficiaryFraudValidationViewTest:
         client.with_session_auth(admin.email)
 
         response = client.post(
-            f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
+            f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
             form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
         )
         assert response.status_code == 302
@@ -107,7 +107,7 @@ class BeneficiaryFraudValidationViewTest:
         client.with_session_auth(admin.email)
 
         response = client.post(
-            f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
+            f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
             form={"user_id": user.id, "badkey": "User is granted", "review": "OK"},
         )
         assert response.status_code == 302
@@ -126,7 +126,7 @@ class BeneficiaryFraudValidationViewTest:
         client.with_session_auth(admin.email)
 
         response = client.post(
-            f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
+            f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
             form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
         )
         assert response.status_code == 302
@@ -141,7 +141,7 @@ class BeneficiaryFraudValidationViewTest:
 
         with override_settings(IS_PROD=True):
             response = client.post(
-                f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
+                f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
                 form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
             )
         assert response.status_code == 302
@@ -158,7 +158,7 @@ class BeneficiaryFraudValidationViewTest:
 
         with override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[admin.email]):
             response = client.post(
-                f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
+                f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
                 form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
             )
         assert response.status_code == 302
@@ -179,7 +179,7 @@ class BeneficiaryFraudValidationViewTest:
         client.with_session_auth(jouve_admin.email)
 
         response = client.post(
-            f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
+            f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
             form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
         )
         assert response.status_code == 302
@@ -200,7 +200,7 @@ class BeneficiaryFraudValidationViewTest:
 
         with override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[admin.email]):
             response = client.post(
-                f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
+                f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
                 form={"user_id": user.id, "reason": "User is denied", "review": "KO"},
             )
         assert response.status_code == 302
@@ -217,7 +217,7 @@ class BeneficiaryFraudValidationViewTest:
         client.with_session_auth(jouve_admin.email)
 
         client.post(
-            f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
+            f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
             form={"user_id": user.id, "reason": "User is granted", "review": "REDIRECTED_TO_DMS"},
         )
 
@@ -263,7 +263,7 @@ class JouveUpdateIDPieceNumberTest:
 
         client.with_session_auth(self.jouve_admin.email)
         response = client.post(
-            f"/pc/back-office/beneficiary_fraud/update/beneficiary/id_piece_number/{user.id}",
+            f"/pc/back-office/support_beneficiary/update/beneficiary/id_piece_number/{user.id}",
             form={"id_piece_number": "123123123123"},
         )
 
@@ -308,7 +308,7 @@ class JouveUpdateIDPieceNumberTest:
 
         client.with_session_auth(admin.email)
         client.post(
-            f"/pc/back-office/beneficiary_fraud/update/beneficiary/id_piece_number/{user.id}",
+            f"/pc/back-office/support_beneficiary/update/beneficiary/id_piece_number/{user.id}",
             form={"id_piece_number": "123123123123"},
         )
 
@@ -329,10 +329,10 @@ class JouveAccessTest:
         response = client.get("/pc/back-office/")
         assert response.status_code == 200
 
-    def test_access_fraud_views(self, client):
+    def test_access_support_views(self, client):
         user = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
         client.with_session_auth(user.email)
-        response = client.get("/pc/back-office/beneficiary_fraud")
+        response = client.get("/pc/back-office/support_beneficiary")
         assert response.status_code == 200
 
     @pytest.mark.parametrize(
@@ -363,10 +363,10 @@ class ValidatePhoneNumberTest:
         )
         client.with_session_auth(jouve_admin.email)
 
-        response = client.get("/pc/back-office/beneficiary_fraud/?id={user.id}")
+        response = client.get("/pc/back-office/support_beneficiary/?id={user.id}")
         assert "Valider le n° de télépone" not in response.data.decode()
 
-        response = client.post(f"/pc/back-office/beneficiary_fraud/validate/beneficiary/phone_number/{user.id}")
+        response = client.post(f"/pc/back-office/support_beneficiary/validate/beneficiary/phone_number/{user.id}")
         assert response.status_code == 302
         assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.BLOCKED_TOO_MANY_CODE_SENDINGS
 
@@ -378,10 +378,10 @@ class ValidatePhoneNumberTest:
         )
         client.with_session_auth(admin.email)
         with caplog.at_level(logging.INFO):
-            response = client.post(f"/pc/back-office/beneficiary_fraud/validate/beneficiary/phone_number/{user.id}")
+            response = client.post(f"/pc/back-office/support_beneficiary/validate/beneficiary/phone_number/{user.id}")
         assert response.status_code == 302
         assert (
-            response.headers["Location"] == f"http://localhost/pc/back-office/beneficiary_fraud/details/?id={user.id}"
+            response.headers["Location"] == f"http://localhost/pc/back-office/support_beneficiary/details/?id={user.id}"
         )
 
         assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED

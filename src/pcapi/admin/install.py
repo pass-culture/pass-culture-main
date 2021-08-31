@@ -5,8 +5,8 @@ from flask_admin.base import Admin
 from sqlalchemy.orm.session import Session
 
 from pcapi import models
-from pcapi.admin.custom_views import fraud_view
 from pcapi.admin.custom_views import offer_view
+from pcapi.admin.custom_views import support_view
 from pcapi.admin.custom_views.admin_user_view import AdminUserView
 from pcapi.admin.custom_views.allocine_pivot_view import AllocinePivotView
 from pcapi.admin.custom_views.api_key_view import ApiKeyView
@@ -41,7 +41,7 @@ class Category(Enum):
     OFFRES_STRUCTURES_LIEUX = "Offres, Lieux & Structures"
     USERS = "Utilisateurs"
     CUSTOM_OPERATIONS = "Autres fonctionnalités"
-    FRAUD = "Anti Fraude"
+    SUPPORT = "Support"
 
 
 def install_admin_views(admin: Admin, session: Session) -> None:
@@ -49,7 +49,9 @@ def install_admin_views(admin: Admin, session: Session) -> None:
         offer_view.OfferView(models.Offer, session, name="Offres", category=Category.OFFRES_STRUCTURES_LIEUX)
     )
     admin.add_view(
-        fraud_view.FraudView(User, session, name="Bénéficiaires", endpoint="beneficiary_fraud", category=Category.FRAUD)
+        support_view.BeneficiaryView(
+            User, session, name="Bénéficiaires", endpoint="support_beneficiary", category=Category.SUPPORT
+        )
     )
     admin.add_view(
         offer_view.OfferForVenueSubview(

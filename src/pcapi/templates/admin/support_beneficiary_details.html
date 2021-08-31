@@ -5,17 +5,19 @@
 
 {% block details_table %}
 
-<div class="modal fade" id="userValidationModal" tabindex="-1" role="dialog" aria-labelledby="userValidationModalTitle" aria-hidden="true">
+<div class="modal fade" id="userValidationModal" tabindex="-1" role="dialog" aria-labelledby="userValidationModalTitle"
+  aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="userValidationModalTitle">Validation de l'utilisateur {{ model.firstName}} {{model.lastName}}</h5>
+        <h5 class="modal-title" id="userValidationModalTitle">Validation de l'utilisateur {{ model.firstName}}
+          {{model.lastName}}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form method="POST" action="{{ url_for('beneficiary_fraud.validate_beneficiary', user_id=model.id)}}">
-      <div class="modal-body">
+      <form method="POST" action="{{ url_for('support_beneficiary.validate_beneficiary', user_id=model.id)}}">
+        <div class="modal-body">
           <div class="form-group row">
             <label for="review" class="col-4 col-form-label">Revue</label>
             <div class="col-8">
@@ -30,30 +32,34 @@
           <div class="form-group row">
             <label for="reason" class="col-4 col-form-label">Raison</label>
             <div class="col-8">
-              <textarea id="reason" name="reason" cols="40" rows="5" class="form-control" required="required"></textarea>
+              <textarea id="reason" name="reason" cols="40" rows="5" class="form-control"
+                required="required"></textarea>
             </div>
           </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-        <button name="submit" type="submit" class="btn btn-primary">Valider</button>
-      </div>
-    </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+          <button name="submit" type="submit" class="btn btn-primary">Valider</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="userIdPieceNumberUpdate" tabindex="-1" role="dialog" aria-labelledby="userIdPieceNumberUpdateTitle" aria-hidden="true">
+<div class="modal fade" id="userIdPieceNumberUpdate" tabindex="-1" role="dialog"
+  aria-labelledby="userIdPieceNumberUpdateTitle" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="userIdPieceNumberUpdateTitle">Validation de l'utilisateur {{ model.firstName}} {{model.lastName}}</h5>
+        <h5 class="modal-title" id="userIdPieceNumberUpdateTitle">Validation de l'utilisateur {{ model.firstName}}
+          {{model.lastName}}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form method="POST" action="{{ url_for('beneficiary_fraud.update_beneficiary_id_piece_number', user_id=model.id)}}">
-      <div class="modal-body">
+      <form method="POST"
+        action="{{ url_for('support_beneficiary.update_beneficiary_id_piece_number', user_id=model.id)}}">
+        <div class="modal-body">
           <div class="form-group row">
             <label for="id_piece_number" class="col-4 col-form-label">N° de carte d'identité</label>
             <div class="col-8">
@@ -67,12 +73,12 @@
               </div>
             </div>
           </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-        <button name="submit" type="submit" class="btn btn-primary">Valider</button>
-      </div>
-    </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+          <button name="submit" type="submit" class="btn btn-primary">Valider</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -89,9 +95,11 @@
     </button>
     {% endif %}
     {% if current_user.isAdmin %}
-    <button name="submit" form="validate_form_button" type="submit" class="btn btn-primary">Valider le n° de téléphone</button>
+    <button name="submit" form="validate_form_button" type="submit" class="btn btn-primary">Valider le n° de
+      téléphone</button>
     {# avoid putting the button inside the form to get the buttons aligned on the same grid #}
-    <form id="validate_form_button" method="POST" action="{{ url_for('beneficiary_fraud.validate_phone_number', user_id=model.id)}}">
+    <form id="validate_form_button" method="POST"
+      action="{{ url_for('support_beneficiary.validate_phone_number', user_id=model.id)}}">
     </form>
     {% endif %}
   </div>
@@ -100,39 +108,39 @@
   <div class="col">
     <h3>Utilisateur</h3>
     <table class="table">
-    <tr>
-      <th scope="row">Id</th>
-      <td>{{ model.id }}</td>
-    </tr>
-    <tr>
-      <th scope="row">Nom</th>
-      <td>{{ model.lastName }}</td>
-    </tr>
-    <tr>
-      <th scope="row">Prénom</th>
-      <td>{{ model.firstName }}</td>
-    </tr>
-    <tr>
-      <th scope="row">Email</th>
-      <td>{{ model.email }}</td>
-    </tr>
-    <tr>
-      <th scope="row">Numéro de téléphone</th>
-      <td>{{ model.phoneNumber }}</td>
-    </tr>
-    <tr>
-      <th scope="row">Date de naissance</th>
-      <td>{% if model.dateOfBirth %}{{ model.dateOfBirth.strftime('%d/%m/%Y') }}{% else %}Inconnue{% endif %}</td>
-    </tr>
-    <tr>
-      <th scope="row">Code départemental</th>
-      <td>{{ model.departmentCode|default('Inconnu') }}</td>
-    </tr>
-    <tr>
-      <th scope="row">N° de la pièce d'identité</th>
-      <td>{{ model.idPieceNumber }}</td>
-    </tr>
-    <tr>
+      <tr>
+        <th scope="row">Id</th>
+        <td>{{ model.id }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Nom</th>
+        <td>{{ model.lastName }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Prénom</th>
+        <td>{{ model.firstName }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Email</th>
+        <td>{{ model.email }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Numéro de téléphone</th>
+        <td>{{ model.phoneNumber }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Date de naissance</th>
+        <td>{% if model.dateOfBirth %}{{ model.dateOfBirth.strftime('%d/%m/%Y') }}{% else %}Inconnue{% endif %}</td>
+      </tr>
+      <tr>
+        <th scope="row">Code départemental</th>
+        <td>{{ model.departmentCode|default('Inconnu') }}</td>
+      </tr>
+      <tr>
+        <th scope="row">N° de la pièce d'identité</th>
+        <td>{{ model.idPieceNumber }}</td>
+      </tr>
+      <tr>
     </table>
     </dl>
   </div>
@@ -177,15 +185,19 @@
       </tr>
       <tr>
         <th scope="row">Date de création</th>
-        <td>{{ model.beneficiaryFraudResult.dateCreated.strftime('le %d/%m/%Y à %H:%M:%S') }}</dd></td>
+        <td>{{ model.beneficiaryFraudResult.dateCreated.strftime('le %d/%m/%Y à %H:%M:%S') }}</dd>
+        </td>
       </tr>
       <tr>
         <th scope="row">Dernière mise à jour</th>
-        <td>{% if model.beneficiaryFraudResult.dateUpdated %}{{ model.beneficiaryFraudResult.dateUpdated.strftime('le %d/%m/%Y à %H:%M:%S') }}{% else %}Inconnue{% endif %}</dd></td>
+        <td>{% if model.beneficiaryFraudResult.dateUpdated %}{{ model.beneficiaryFraudResult.dateUpdated.strftime('le
+          %d/%m/%Y à %H:%M:%S') }}{% else %}Inconnue{% endif %}</dd>
+        </td>
       </tr>
       <tr>
         <th scope="row">Explication</th>
-        <td>{{ model.beneficiaryFraudResult.reason }}</dd></td>
+        <td>{{ model.beneficiaryFraudResult.reason }}</dd>
+        </td>
       </tr>
     </table>
     {% endif %}
@@ -205,11 +217,13 @@
       </tr>
       <tr>
         <th scope="row">Date de création</th>
-        <td>{{ model.beneficiaryFraudReview.dateReviewed.strftime('le %d/%m/%Y à %H:%M:%S') }}</dd></td>
+        <td>{{ model.beneficiaryFraudReview.dateReviewed.strftime('le %d/%m/%Y à %H:%M:%S') }}</dd>
+        </td>
       </tr>
       <tr>
         <th scope="row">Explication</th>
-        <td>{{ model.beneficiaryFraudReview.reason }}</dd></td>
+        <td>{{ model.beneficiaryFraudReview.reason }}</dd>
+        </td>
       </tr>
     </table>
   </div>

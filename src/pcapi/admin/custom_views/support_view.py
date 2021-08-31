@@ -80,7 +80,7 @@ class IDPieceNumberForm(wtforms.Form):
     )
 
 
-class FraudView(base_configuration.BaseAdminView):
+class BeneficiaryView(base_configuration.BaseAdminView):
 
     column_list = [
         "id",
@@ -108,7 +108,7 @@ class FraudView(base_configuration.BaseAdminView):
     ]
 
     can_view_details = True
-    details_template = "admin/fraud_details.html"
+    details_template = "admin/support_beneficiary_details.html"
 
     @property
     def column_formatters(self):
