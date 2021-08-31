@@ -7,6 +7,8 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
+import pcapi.core.educational.factories as educational_factories
+from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.offerers.factories import ApiKeyFactory
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
@@ -28,9 +30,11 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class Returns200Test:
     @freeze_time("2019-11-26 18:29:20.891028")
-    @pytest.mark.usefixtures("db_session")
     def test_when_user_has_rights_and_regular_offer(self, app):
         # Given
         user = users_factories.BeneficiaryFactory(email="user@example.com", publicName="John Doe")
@@ -89,7 +93,53 @@ class Returns200Test:
             "venueName": "Venue name",
         }
 
-    @pytest.mark.usefixtures("db_session")
+    def test_when_user_has_rights_and_booking_is_educational_validated_by_principal(self, app):
+        # Given
+        redactor = educational_factories.EducationalRedactorFactory(
+            civility="M.",
+            firstName="Jean",
+            lastName="Doudou",
+            email="jean.doux@example.com",
+        )
+        validated_eac_booking = bookings_factories.EducationalBookingFactory(
+            dateCreated=datetime.utcnow() - timedelta(days=5),
+            educationalBooking__educationalRedactor=redactor,
+            educationalBooking__status=EducationalBookingStatus.USED_BY_INSTITUTE,
+        )
+        pro_user = users_factories.ProFactory()
+        offers_factories.UserOffererFactory(
+            user=pro_user, offerer=validated_eac_booking.stock.offer.venue.managingOfferer
+        )
+        url = f"/v2/bookings/token/{validated_eac_booking.token}"
+
+        # When
+        response = TestClient(app.test_client()).with_basic_auth(pro_user.email).get(url)
+
+        # Then
+        assert response.headers["Content-type"] == "application/json"
+        assert response.status_code == 200
+        assert response.json == {
+            "bookingId": humanize(validated_eac_booking.id),
+            "dateOfBirth": "",
+            "datetime": format_into_utc_date(validated_eac_booking.stock.beginningDatetime),
+            "ean13": "",
+            "email": redactor.email,
+            "formula": "PLACE",
+            "isUsed": False,
+            "offerId": validated_eac_booking.stock.offer.id,
+            "offerName": validated_eac_booking.stock.offer.name,
+            "offerType": "EVENEMENT",
+            "phoneNumber": "",
+            "price": float(validated_eac_booking.stock.price),
+            "publicOfferId": humanize(validated_eac_booking.stock.offer.id),
+            "quantity": validated_eac_booking.quantity,
+            "theater": {},
+            "userName": f"{redactor.firstName} {redactor.lastName}",
+            "venueAddress": validated_eac_booking.stock.offer.venue.address,
+            "venueDepartementCode": validated_eac_booking.stock.offer.venue.departementCode,
+            "venueName": validated_eac_booking.stock.offer.venue.name,
+        }
+
     def test_when_api_key_is_provided_and_rights_and_regular_offer(self, app):
         # Given
         user = users_factories.BeneficiaryFactory(email="user@example.com", publicName="John Doe")
@@ -117,7 +167,6 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
 
-    @pytest.mark.usefixtures("db_session")
     def test_when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, app):
         # Given
         user = users_factories.BeneficiaryFactory(email="user@example.com", publicName="John Doe")
@@ -141,7 +190,6 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
 
-    @pytest.mark.usefixtures("db_session")
     def test_when_non_standard_origin_header(self, app):
         # Given
         user = users_factories.BeneficiaryFactory()
@@ -194,7 +242,6 @@ class Returns401Test:
         # Then
         assert response.status_code == 401
 
-    @pytest.mark.usefixtures("db_session")
     def test_when_user_not_logged_in_and_existing_api_key_given_with_no_bearer_prefix(self, app):
         # Given
         url = "/v2/bookings/token/FAKETOKEN"
@@ -209,7 +256,6 @@ class Returns401Test:
 
 
 class Returns403Test:
-    @pytest.mark.usefixtures("db_session")
     def test_when_user_doesnt_have_rights_and_token_exists(self, app):
         # Given
         user = users_factories.BeneficiaryFactory(email="user@example.com")
@@ -230,7 +276,6 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
-    @pytest.mark.usefixtures("db_session")
     def test_when_given_api_key_not_related_to_booking_offerer(self, app):
         # Given
         user = users_factories.BeneficiaryFactory(email="user@example.com")
@@ -253,7 +298,6 @@ class Returns403Test:
         assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
     @mock.patch("pcapi.core.bookings.validation.check_is_usable")
-    @pytest.mark.usefixtures("db_session")
     def test_when_booking_not_confirmed(self, mocked_check_is_usable, app):
         # Given
         next_week = datetime.utcnow() + timedelta(weeks=1)
@@ -271,7 +315,6 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json["booking"] == ["Not confirmed"]
 
-    @pytest.mark.usefixtures("db_session")
     def test_when_booking_is_cancelled(self, app):
         # Given
         user = users_factories.BeneficiaryFactory(email="user@example.com")
@@ -295,7 +338,6 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json["booking"] == ["Cette réservation a été annulée"]
 
-    @pytest.mark.usefixtures("db_session")
     def test_when_booking_is_refunded(self, app):
         # Given
         user = users_factories.BeneficiaryFactory(email="user@example.com")
@@ -320,9 +362,66 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json["payment"] == ["Cette réservation a été remboursée"]
 
+    def test_when_booking_is_educational_and_not_validated_by_principal_yet(self, app):
+        # Given
+        redactor = educational_factories.EducationalRedactorFactory(
+            civility="M.",
+            firstName="Jean",
+            lastName="Doudou",
+            email="jean.doux@example.com",
+        )
+        not_validated_eac_booking = bookings_factories.EducationalBookingFactory(
+            dateCreated=datetime.utcnow() - timedelta(days=5),
+            educationalBooking__educationalRedactor=redactor,
+            educationalBooking__status=None,
+        )
+        pro_user = users_factories.ProFactory()
+        offers_factories.UserOffererFactory(
+            user=pro_user, offerer=not_validated_eac_booking.stock.offer.venue.managingOfferer
+        )
+        url = f"/v2/bookings/token/{not_validated_eac_booking.token}"
+
+        # When
+        response = TestClient(app.test_client()).with_basic_auth(pro_user.email).get(url)
+
+        # Then
+        assert response.status_code == 403
+        assert (
+            response.json["educationalBooking"]
+            == "Cette réservation pour une offre éducationnelle n'est pas encore validée par le chef d'établissement"
+        )
+
+    def test_when_booking_is_educational_and_refused_by_principal(self, app):
+        # Given
+        redactor = educational_factories.EducationalRedactorFactory(
+            civility="M.",
+            firstName="Jean",
+            lastName="Doudou",
+            email="jean.doux@example.com",
+        )
+        refused_eac_booking = bookings_factories.EducationalBookingFactory(
+            dateCreated=datetime.utcnow() - timedelta(days=5),
+            educationalBooking__educationalRedactor=redactor,
+            educationalBooking__status=EducationalBookingStatus.REFUSED,
+        )
+        pro_user = users_factories.ProFactory()
+        offers_factories.UserOffererFactory(
+            user=pro_user, offerer=refused_eac_booking.stock.offer.venue.managingOfferer
+        )
+        url = f"/v2/bookings/token/{refused_eac_booking.token}"
+
+        # When
+        response = TestClient(app.test_client()).with_basic_auth(pro_user.email).get(url)
+
+        # Then
+        assert response.status_code == 403
+        assert (
+            response.json["educationalBooking"]
+            == "Cette réservation pour une offre éducationnelle a été refusée par le chef d'établissement"
+        )
+
 
 class Returns404Test:
-    @pytest.mark.usefixtures("db_session")
     def test_when_booking_is_not_provided_at_all(self, app):
         # Given
         user = users_factories.BeneficiaryFactory(email="user@example.com")
@@ -341,7 +440,6 @@ class Returns404Test:
         # Then
         assert response.status_code == 404
 
-    @pytest.mark.usefixtures("db_session")
     def test_when_token_user_has_rights_but_token_not_found(self, app):
         # Given
         admin_user = users_factories.AdminFactory(email="admin@example.com")
@@ -355,7 +453,6 @@ class Returns404Test:
         assert response.status_code == 404
         assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
 
-    @pytest.mark.usefixtures("db_session")
     def test_when_user_has_api_key_but_token_not_found(self, app):
         # Given
         user = users_factories.BeneficiaryFactory(email="user@example.com")
@@ -383,7 +480,6 @@ class Returns404Test:
 
 
 class Returns410Test:
-    @pytest.mark.usefixtures("db_session")
     def test_when_booking_is_already_validated(self, app):
         # Given
         user = users_factories.BeneficiaryFactory(email="user@example.com")

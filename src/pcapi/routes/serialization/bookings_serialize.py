@@ -13,10 +13,18 @@ from pcapi.utils.human_ids import humanize
 
 def serialize_booking(booking: Booking) -> dict:
     booking_id = humanize(booking.id)
-    user_email = booking.user.email
+    is_educational_booking = booking.educationalBookingId is not None
+    if is_educational_booking:
+        user_email = booking.educationalBooking.educationalRedactor.email
+    else:
+        user_email = booking.user.email
     is_used = booking.isUsed
     offer_name = booking.stock.offer.product.name
-    user_name = booking.user.publicName
+    if is_educational_booking:
+        redactor = booking.educationalBooking.educationalRedactor
+        user_name = f"{redactor.firstName} {redactor.lastName}"
+    else:
+        user_name = booking.user.publicName
     venue_departement_code = booking.stock.offer.venue.departementCode
     offer_id = booking.stock.offer.id
     venue_name = booking.stock.offer.venue.name
@@ -41,7 +49,7 @@ def serialize_booking(booking: Booking) -> dict:
 
     date_of_birth = ""
     phone_number = ""
-    if booking.stock.offer.product.type == str(EventType.ACTIVATION):
+    if booking.educationalBookingId is None and booking.stock.offer.product.type == str(EventType.ACTIVATION):
         date_of_birth = serialize(booking.user.dateOfBirth)
         phone_number = booking.user.phoneNumber
 
