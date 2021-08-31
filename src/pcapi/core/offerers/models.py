@@ -32,8 +32,6 @@ from sqlalchemy.sql.sqltypes import CHAR
 from sqlalchemy.sql.sqltypes import LargeBinary
 from werkzeug.utils import cached_property
 
-from pcapi import settings
-from pcapi.connectors.api_entreprises import ApiEntrepriseException
 from pcapi.connectors.api_entreprises import get_offerer_legal_category
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
@@ -422,13 +420,7 @@ class Offerer(
 
     @cached_property
     def legal_category(self) -> str:
-        try:
-            legal_category = get_offerer_legal_category(self)
-        except ApiEntrepriseException:
-            if settings.IS_PROD:
-                raise
-            legal_category = {"legal_category_code": "XXXX", "legal_category_label": "Catégorie factice (hors Prod)"}
-        return legal_category["legal_category_code"]
+        return get_offerer_legal_category(self)["legal_category_code"]
 
 
 offerer_ts_indexes = [

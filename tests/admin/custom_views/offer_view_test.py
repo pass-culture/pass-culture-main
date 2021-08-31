@@ -6,6 +6,7 @@ import pytest
 
 from pcapi.admin.custom_views.offer_view import OfferView
 from pcapi.admin.custom_views.offer_view import ValidationView
+from pcapi.connectors.api_entreprises import ApiEntrepriseException
 import pcapi.core.bookings.factories as booking_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.api import import_offer_validation_config
@@ -443,22 +444,23 @@ class OfferValidationViewTest:
 
 
 class GetOfferValidationViewTest:
+    CONFIG_YAML = """
+                minimum_score: 0.6
+                rules:
+                   - name: "check offer name"
+                     factor: 0
+                     conditions:
+                       - model: "Offerer"
+                         attribute: "legal_category"
+                         condition:
+                            operator: "=="
+                            comparated: "5202"
+                """
+
     @clean_database
     @patch("pcapi.core.offerers.models.get_offerer_legal_category")
     def test_offer_validation_legal_category_api_calls(self, mocked_get_offerer_legal_category, app):
-        config_yaml = """
-                    minimum_score: 0.6
-                    rules:
-                       - name: "check offer name"
-                         factor: 0
-                         conditions:
-                           - model: "Offerer"
-                             attribute: "legal_category"
-                             condition:
-                                operator: "=="
-                                comparated: "5202"
-                    """
-        import_offer_validation_config(config_yaml)
+        import_offer_validation_config(self.CONFIG_YAML)
         users_factories.AdminFactory(email="admin@example.com")
         offerer = offers_factories.OffererFactory()
         offers_factories.OfferFactory(
@@ -480,6 +482,41 @@ class GetOfferValidationViewTest:
 
         assert response.status_code == 200
         assert mocked_get_offerer_legal_category.call_count == 1
+
+    @clean_database
+    @patch("pcapi.connectors.api_entreprises.get_by_offerer")
+    def test_view_form_loads_if_wrong_siren_on_non_prod_env(self, mocked_get_by_offerer, app, client):
+        import_offer_validation_config(self.CONFIG_YAML)
+        users_factories.AdminFactory(email="admin@example.com")
+        offerer = offers_factories.OffererFactory()
+        offer = offers_factories.OfferFactory(
+            validation=OfferValidationStatus.PENDING, isActive=False, venue__managingOfferer=offerer
+        )
+        client = client.with_session_auth("admin@example.com")
+        mocked_get_by_offerer.side_effect = ApiEntrepriseException(
+            f"Error getting API entreprise DATA for SIREN:{offerer.siren}"
+        )
+
+        response = client.get(f"/pc/back-office/validation/edit?id={offer.id}")
+        assert response.status_code == 200
+
+    @clean_database
+    @patch("pcapi.connectors.api_entreprises.settings")
+    @patch("pcapi.connectors.api_entreprises.get_by_offerer")
+    def test_view_form_fails_if_wrong_siren_on_prod_env(self, mocked_get_by_offerer, mocked_settings, app, client):
+        import_offer_validation_config(self.CONFIG_YAML)
+        users_factories.AdminFactory(email="admin@example.com")
+        offerer = offers_factories.OffererFactory()
+        offer = offers_factories.OfferFactory(
+            validation=OfferValidationStatus.PENDING, isActive=False, venue__managingOfferer=offerer
+        )
+        client = client.with_session_auth("admin@example.com")
+        mocked_settings.IS_PROD = True
+        mocked_get_by_offerer.side_effect = ApiEntrepriseException(
+            f"Error getting API entreprise DATA for SIREN:{offerer.siren}"
+        )
+        response = client.get(f"/pc/back-office/validation/edit?id={offer.id}")
+        assert response.status_code == 500
 
 
 class OfferViewTest:

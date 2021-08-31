@@ -1,5 +1,6 @@
 import typing
 
+from pcapi import settings
 from pcapi.connectors.utils.legal_category_code_to_labels import CODE_TO_CATEGORY_MAPPING
 from pcapi.utils import requests
 
@@ -35,7 +36,13 @@ def _extract_etablissements_communs_siren(etablissements: list[dict]) -> list[di
 
 
 def get_offerer_legal_category(offerer: "Offerer") -> dict:
-    legal_category = get_by_offerer(offerer)["unite_legale"]["categorie_juridique"]
-    legal_category_label = CODE_TO_CATEGORY_MAPPING.get(int(legal_category)) if legal_category else None
+    try:
+        legal_category = get_by_offerer(offerer)["unite_legale"]["categorie_juridique"]
+        legal_category_label = CODE_TO_CATEGORY_MAPPING.get(int(legal_category)) if legal_category else None
+    except ApiEntrepriseException:
+        if settings.IS_PROD:
+            raise
+        legal_category = "XXXX"
+        legal_category_label = "Catégorie factice (hors Prod)"
 
     return {"legal_category_code": legal_category, "legal_category_label": legal_category_label}
