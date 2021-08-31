@@ -8,8 +8,8 @@ from sqlalchemy.orm import Query
 
 from pcapi.core.users import constants
 from pcapi.core.users.models import User
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import ELIGIBLE_DEPARTMENTS
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import EXCLUDED_DEPARTMENTS
+from pcapi.domain.beneficiary_pre_subscription.validator import ELIGIBLE_DEPARTMENTS
+from pcapi.domain.beneficiary_pre_subscription.validator import EXCLUDED_DEPARTMENTS
 from pcapi.domain.user_emails import send_newly_eligible_user_email
 from pcapi.models import UserOfferer
 from pcapi.models.feature import FeatureToggle

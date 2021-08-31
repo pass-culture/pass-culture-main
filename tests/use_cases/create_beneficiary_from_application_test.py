@@ -13,7 +13,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
+from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
 from pcapi.models import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.db import db

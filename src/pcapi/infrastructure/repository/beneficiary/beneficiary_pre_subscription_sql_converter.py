@@ -3,7 +3,7 @@ from typing import Optional
 from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
+from pcapi.domain.beneficiary_pre_subscription.model import BeneficiaryPreSubscription
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
 from pcapi.models.feature import FeatureToggle

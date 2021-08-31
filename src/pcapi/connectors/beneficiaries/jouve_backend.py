@@ -9,7 +9,7 @@ import requests
 
 from pcapi import settings
 from pcapi.core.fraud.models import JouveContent
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
+from pcapi.domain.beneficiary_pre_subscription.model import BeneficiaryPreSubscription
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models.feature import FeatureToggle
 

@@ -302,9 +302,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     @property
     def is_eligible(self) -> bool:
         # To avoid import loops
-        from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import (
-            _is_postal_code_eligible,
-        )
+        from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
 
         return (
             self.age is not None
@@ -315,9 +313,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     @property
     def eligibility_start_datetime(self) -> Optional[datetime]:
         # To avoid import loops
-        from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import (
-            _is_postal_code_eligible,
-        )
+        from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
 
         if not self.dateOfBirth:
             return None
@@ -336,9 +332,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     @property
     def eligibility_end_datetime(self) -> Optional[datetime]:
         # To avoid import loops
-        from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import (
-            _is_postal_code_eligible,
-        )
+        from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
 
         if not self.dateOfBirth:
             return None

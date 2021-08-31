@@ -2,7 +2,7 @@ from typing import Optional
 
 from pcapi.core.users import api as users_api
 from pcapi.core.users.models import User
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
+from pcapi.domain.beneficiary_pre_subscription.model import BeneficiaryPreSubscription
 from pcapi.infrastructure.repository.beneficiary import beneficiary_pre_subscription_sql_converter
 from pcapi.repository import repository
 

@@ -3,7 +3,7 @@ from typing import Optional
 
 from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.offers.models import Mediation
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
+from pcapi.domain.beneficiary_pre_subscription.model import BeneficiaryPreSubscription
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.models import Offer

@@ -4,10 +4,10 @@ import pytest
 
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import validate
+from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
+from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsNotEligible
+from pcapi.domain.beneficiary_pre_subscription.exceptions import CantRegisterBeneficiary
+from pcapi.domain.beneficiary_pre_subscription.validator import validate
 
 from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
 

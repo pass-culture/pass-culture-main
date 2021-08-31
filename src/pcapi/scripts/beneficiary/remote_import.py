@@ -14,7 +14,7 @@ from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.domain import user_emails
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import get_beneficiary_duplicates
+from pcapi.domain.beneficiary_pre_subscription.validator import get_beneficiary_duplicates
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from pcapi.domain.user_activation import create_beneficiary_from_application
 from pcapi.models import ApiErrors

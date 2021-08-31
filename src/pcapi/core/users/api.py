@@ -50,7 +50,7 @@ from pcapi.core.users.utils import get_object
 from pcapi.core.users.utils import sanitize_email
 from pcapi.core.users.utils import store_object
 from pcapi.domain import user_emails
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
+from pcapi.domain.beneficiary_pre_subscription.model import BeneficiaryPreSubscription
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.user_activation import create_beneficiary_from_application

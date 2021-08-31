@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.query import Query
 
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import _is_postal_code_eligible
+from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
 from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
 from pcapi.models import BeneficiaryImport
