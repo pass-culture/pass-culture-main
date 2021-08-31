@@ -3,7 +3,6 @@ import logging
 from pcapi.connectors.beneficiaries import jouve_backend
 from pcapi.core.fraud.api import on_jouve_result
 from pcapi.core.users.api import create_reset_password_token
-from pcapi.core.users.external import update_external_user
 from pcapi.domain import user_emails
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.exceptions import CantRegisterBeneficiary
@@ -117,8 +116,6 @@ class CreateBeneficiaryFromApplication:
                 user_emails.send_activation_email(user=user, token=token)
             else:
                 user_emails.send_accepted_as_beneficiary_email(user=user)
-
-            update_external_user(user)
 
 
 create_beneficiary_from_application = CreateBeneficiaryFromApplication()

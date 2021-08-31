@@ -25,6 +25,7 @@ from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.api import BeneficiaryValidationStep
 from pcapi.core.users.api import _set_offerer_departement_code
 from pcapi.core.users.api import asynchronous_identity_document_verification
@@ -56,6 +57,7 @@ from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.user_session import UserSession
+from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks.account import VerifyIdentityDocumentRequest
 
@@ -456,6 +458,14 @@ class CreateBeneficiaryTest:
 
             assert user.isBeneficiary
             assert len(user.deposits) == 1
+
+    def test_external_users_updated(self):
+        eligible_date = date.today() - relativedelta(years=18, days=30)
+        user = users_factories.UserFactory(isBeneficiary=False, roles=[], dateOfBirth=eligible_date)
+        users_api.activate_beneficiary(user, "test")
+
+        assert len(batch_testing.requests) == 1
+        assert len(sendinblue_testing.sendinblue_requests) == 1
 
 
 class StepsToBecomeBeneficiaryTest:

@@ -249,9 +249,10 @@ def process_beneficiary_application(
     if not steps_to_become_beneficiary(user):
         deposit_source = beneficiary_import.get_detailed_source()
         activate_beneficiary(user, deposit_source)
+    else:
+        update_external_user(user)
 
     new_beneficiaries.append(user)
-    update_external_user(user)
     try:
         if preexisting_account is None:
             token = create_reset_password_token(user, token_life_time=RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED)

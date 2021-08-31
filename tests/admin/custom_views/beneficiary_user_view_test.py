@@ -11,6 +11,7 @@ from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.users import testing as sendinblue_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
@@ -279,6 +280,8 @@ class BeneficiaryUserViewTest:
 
         mocked_flask_flash.assert_not_called()
         assert not mails_testing.outbox
+        assert len(push_testing.requests) == 1
+        assert len(sendinblue_testing.sendinblue_requests) == 1
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")

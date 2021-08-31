@@ -1,6 +1,7 @@
 from typing import Optional
 
 from pcapi.core.users import api as users_api
+from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.model import BeneficiaryPreSubscription
 from pcapi.infrastructure.repository.beneficiary import beneficiary_pre_subscription_sql_converter
@@ -18,6 +19,8 @@ class BeneficiarySQLRepository:
             user_sql_entity = users_api.check_and_activate_beneficiary(
                 user_sql_entity.id, beneficiary_pre_subscription.deposit_source
             )
+        else:
+            update_external_user(user_sql_entity)
 
         return user_sql_entity
 

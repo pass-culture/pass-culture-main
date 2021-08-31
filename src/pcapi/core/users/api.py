@@ -250,6 +250,8 @@ def update_beneficiary_mandatory_information(
 
     if not steps_to_become_beneficiary(user):
         check_and_activate_beneficiary(user.id)
+    else:
+        update_external_user(user)
 
     logger.info(
         "User id check profile updated",
@@ -321,6 +323,7 @@ def activate_beneficiary(user: User, deposit_source: str = None) -> User:
 
     db.session.add_all((user, deposit))
     db.session.commit()
+    update_external_user(user)
 
     logger.info("Activated beneficiary and created deposit", extra={"user": user.id})
     return user
