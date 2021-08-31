@@ -226,11 +226,14 @@ def make_new_beneficiary_application_details(
     civility: str = "Mme",
     activity: str = "Étudiant",
     id_piece_number: Optional[str] = None,
+    email: Optional[str] = None,
 ) -> dict:
     application = copy.deepcopy(APPLICATION_DETAIL_STANDARD_RESPONSE)
     application["dossier"]["id"] = application_id
     application["dossier"]["state"] = state
     application["dossier"]["individual"]["civilite"] = civility
+    if email:
+        application["dossier"]["email"] = email
     for field in application["dossier"]["champs"]:
         if field["type_de_champ"]["libelle"] == "Veuillez indiquer votre département de résidence":
             field["value"] = department_code

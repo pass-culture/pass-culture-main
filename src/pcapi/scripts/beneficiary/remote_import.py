@@ -111,12 +111,20 @@ def run(
             continue
 
         user = find_user_by_email(information.email)
-        if user:
-            try:
-                fraud_api.on_dms_fraud_check(user, information)
-            except Exception as exc:  # pylint: disable=broad-except
-                logger.exception("Error on dms fraud check result: %s", exc)
-        if user and user.isBeneficiary is True:
+        if not user:
+            save_beneficiary_import_with_status(
+                ImportStatus.ERROR,
+                application_id,
+                source=BeneficiaryImportSources.demarches_simplifiees,
+                source_id=procedure_id,
+                detail=f"Aucun utilisateur trouvé pour l'email {information.email}",
+            )
+            continue
+        try:
+            fraud_api.on_dms_fraud_check(user, information)
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.exception("Error on dms fraud check result: %s", exc)
+        if user.isBeneficiary is True:
             _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
             continue
 
