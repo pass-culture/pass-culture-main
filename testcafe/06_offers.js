@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Selector } from 'testcafe'
 
 import { isElementInViewport } from './helpers/custom_assertions'
@@ -83,7 +84,7 @@ test('je peux créer une offre de type événement', async t => {
 
   await t
     .click(categoryInput)
-    .click(categoryOption.withText('Conférences, rencontres, découverte des métiers'))
+    .click(categoryOption.withText('Conférences, rencontres'))
     .click(subcategoryInput)
     .click(subcategoryOption.withText('Conférence'))
     .typeText(nameInput, 'Rencontre avec Franck Lepage')
