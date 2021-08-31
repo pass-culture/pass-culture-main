@@ -10,7 +10,7 @@ import Spinner from 'components/layout/Spinner'
 
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog'
 
-const StocksProviderForm = ({ createVenueProvider, providerId, siret, venueId }) => {
+const StocksProviderForm = ({ saveVenueProvider, providerId, siret, venueId }) => {
   const [isCheckingApi, setIsCheckingApi] = useState(false)
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false)
 
@@ -32,9 +32,9 @@ const StocksProviderForm = ({ createVenueProvider, providerId, siret, venueId })
       venueId,
     }
 
-    createVenueProvider(payload)
+    saveVenueProvider(payload)
     setIsConfirmDialogOpened(false)
-  }, [createVenueProvider, providerId, siret, venueId])
+  }, [saveVenueProvider, providerId, siret, venueId])
 
   if (isCheckingApi) {
     return <Spinner message="Vérification de votre rattachement" />
@@ -74,8 +74,8 @@ const StocksProviderForm = ({ createVenueProvider, providerId, siret, venueId })
 }
 
 StocksProviderForm.propTypes = {
-  createVenueProvider: PropTypes.func.isRequired,
   providerId: PropTypes.string.isRequired,
+  saveVenueProvider: PropTypes.func.isRequired,
   siret: PropTypes.string.isRequired,
   venueId: PropTypes.string.isRequired,
 }

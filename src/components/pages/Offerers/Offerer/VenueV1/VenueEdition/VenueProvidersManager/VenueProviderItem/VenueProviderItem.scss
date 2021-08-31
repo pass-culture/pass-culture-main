@@ -95,5 +95,10 @@
         color: $grey-dark;
       }
     }
+
+    button {
+      margin-top: rem(32px);
+      padding: 0 rem(32px);
+    }
   }
 }

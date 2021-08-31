@@ -12,6 +12,7 @@ import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import AllocineProviderForm from './AllocineProviderForm/AllocineProviderForm'
+import AllocineProviderItem from "./AllocineProviderItem/AllocineProviderItem"
 import StocksProviderForm from './StocksProviderForm/StocksProviderForm'
 import { DEFAULT_PROVIDER_OPTION } from './utils/_constants'
 import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
@@ -77,6 +78,18 @@ const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) =
     [cancelProviderSelection, notifyError, notifySuccess, isAllocineProviderSelected]
   )
 
+  const editVenueProvider = useCallback(
+    payload => {
+      pcapi
+        .editVenueProvider(payload)
+        .then(editedVenueProvider => {
+          const newVenueProviders = venueProviders.map(venueProvider => venueProvider.id === editedVenueProvider.id ? editedVenueProvider : venueProvider)
+          setVenueProviders(newVenueProviders)
+        })
+    },
+    [venueProviders]
+  )
+
   const hasAtLeastOneProvider = providers.length > 0
   const hasNoVenueProvider = venueProviders.length === 0
 
@@ -90,11 +103,21 @@ const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) =
 
       <ul className="provider-list">
         {venueProviders.map(venueProvider => (
-          <VenueProviderItem
-            key={venueProvider.id}
-            venueDepartmentCode={venue.departementCode}
-            venueProvider={venueProvider}
-          />
+          isAllocineProvider(venueProvider.provider) ? (
+            <AllocineProviderItem
+              editVenueProvider={editVenueProvider}
+              key={venueProvider.id}
+              venueDepartmentCode={venue.departementCode}
+              venueProvider={venueProvider}
+            />
+          )
+            : (
+              <VenueProviderItem
+                key={venueProvider.id}
+                venueDepartmentCode={venue.departementCode}
+                venueProvider={venueProvider}
+              />
+              )
         ))}
       </ul>
 
@@ -111,14 +134,15 @@ const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) =
           {selectedProviderId !== DEFAULT_PROVIDER_OPTION.id &&
             (isAllocineProviderSelected ? (
               <AllocineProviderForm
-                createVenueProvider={createVenueProvider}
+                isCreatedEntity
                 providerId={selectedProviderId}
+                saveVenueProvider={createVenueProvider}
                 venueId={venue.id}
               />
             ) : (
               <StocksProviderForm
-                createVenueProvider={createVenueProvider}
                 providerId={selectedProviderId}
+                saveVenueProvider={createVenueProvider}
                 siret={venue.siret}
                 venueId={venue.id}
               />

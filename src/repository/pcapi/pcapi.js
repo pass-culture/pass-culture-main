@@ -248,6 +248,10 @@ export const createVenueProvider = async venueProvider => {
   return client.post('/venueProviders', venueProvider)
 }
 
+export const editVenueProvider = async venueProvider => {
+  return client.put('/venueProviders', venueProvider)
+}
+
 export const loadProviders = async venueId => {
   return client.get(`/providers/${venueId}`)
 }

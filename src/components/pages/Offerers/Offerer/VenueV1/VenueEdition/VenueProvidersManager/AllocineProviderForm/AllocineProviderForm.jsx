@@ -6,17 +6,22 @@
 */
 
 import PropTypes from 'prop-types'
-import React, { useCallback, useState } from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit } from 'react-final-form-utils'
+import ReactTooltip from "react-tooltip"
 
 import CheckboxField from 'components/layout/form/fields/CheckboxField'
 import NumberField from 'components/layout/form/fields/NumberField'
 import Icon from 'components/layout/Icon'
 import Insert from 'components/layout/Insert/Insert'
 
-const AllocineProviderForm = ({ createVenueProvider, providerId, venueId }) => {
+const AllocineProviderForm = ({ saveVenueProvider, providerId, venueId, isCreatedEntity, initialValues, onCancel}) => {
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    ReactTooltip.rebuild()
+  }, [])
 
   const handleSubmit = useCallback(
     formValues => {
@@ -32,9 +37,9 @@ const AllocineProviderForm = ({ createVenueProvider, providerId, venueId }) => {
 
       setIsLoading(true)
 
-      createVenueProvider(payload)
+      saveVenueProvider(payload)
     },
-    [createVenueProvider, providerId, venueId]
+    [saveVenueProvider, providerId, venueId]
   )
 
   const required = useCallback(value => {
@@ -44,7 +49,6 @@ const AllocineProviderForm = ({ createVenueProvider, providerId, venueId }) => {
   const renderForm = useCallback(
     formProps => {
       const canSubmit = getCanSubmit(formProps)
-
       return (
         <form>
           {!isLoading && (
@@ -52,7 +56,7 @@ const AllocineProviderForm = ({ createVenueProvider, providerId, venueId }) => {
               <div className="apf-price-section">
                 <div className="price-section-label">
                   <label htmlFor="price">
-                    Prix de vente/place 
+                    Prix de vente/place
                     {' '}
                     <span className="field-asterisk">
                       *
@@ -93,7 +97,7 @@ const AllocineProviderForm = ({ createVenueProvider, providerId, venueId }) => {
               </div>
               <div className="apf-is-duo-section">
                 <CheckboxField
-                  checked
+                  checked={formProps.initialValues?.isDuo}
                   id="apf-is-duo"
                   label="Accepter les réservations DUO"
                   name="isDuo"
@@ -118,36 +122,71 @@ const AllocineProviderForm = ({ createVenueProvider, providerId, venueId }) => {
                 <br />
                 Nous travaillons actuellement à l’ajout de séances spécifiques.
               </Insert>
-
-              <div className="apf-provider-import-button-section">
-                <button
-                  className="primary-button"
-                  disabled={!canSubmit}
-                  onClick={formProps.handleSubmit}
-                  type="submit"
-                >
-                  Importer les offres
-                </button>
-              </div>
+              {isCreatedEntity ? (
+                <div className="apf-provider-import-button-section">
+                  <button
+                    className="primary-button"
+                    disabled={!canSubmit}
+                    onClick={formProps.handleSubmit}
+                    type="submit"
+                  >
+                    Importer les offres
+                  </button>
+                </div>
+              ): (
+                <div className="actions">
+                  <button
+                    className="secondary-button"
+                    onClick={onCancel}
+                    type="button"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    className="primary-button"
+                    disabled={!canSubmit}
+                    onClick={formProps.handleSubmit}
+                    type="submit"
+                  >
+                    Modifier
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </form>
       )
     },
-    [isLoading, required]
+    [isCreatedEntity, isLoading, onCancel, required]
   )
 
   return (
     <Form
+      initialValues={initialValues}
       onSubmit={handleSubmit}
       render={renderForm}
     />
   )
 }
 
+AllocineProviderForm.defaultProps = {
+  initialValues: {
+    isDuo: true
+  },
+  isCreatedEntity: false,
+  onCancel: () => {}
+}
+
 AllocineProviderForm.propTypes = {
-  createVenueProvider: PropTypes.func.isRequired,
+  initialValues: PropTypes.shape({
+    isDuo: PropTypes.bool,
+    price: PropTypes.number,
+    quantity: PropTypes.number
+  }),
+  isCreatedEntity: PropTypes.bool,
+  onCancel: PropTypes.func,
   providerId: PropTypes.string.isRequired,
+  saveVenueProvider: PropTypes.func.isRequired,
   venueId: PropTypes.string.isRequired,
 }
 

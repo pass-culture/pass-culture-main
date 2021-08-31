@@ -14,7 +14,7 @@ import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
-const VenueProviderItem = ({ venueProvider, venueDepartmentCode }) => {
+const VenueProviderItem = ({ venueProvider, venueDepartmentCode, children }) => {
   const { lastSyncDate, nOffers, provider, venueIdAtOfferProvider } = venueProvider
   const providerInfo = getProviderInfo(provider.name)
   const shouldDisplayProviderInformations = isAllocineProvider(provider) || lastSyncDate
@@ -87,37 +87,7 @@ const VenueProviderItem = ({ venueProvider, venueDepartmentCode }) => {
                 </span>
               </li>
             )}
-            {isAllocineProvider(provider) && (
-              <>
-                <li>
-                  <span>
-                    {'Prix de vente/place : '}
-                  </span>
-                  <span>
-                    {`${new Intl.NumberFormat('fr-FR', {
-                      style: 'currency',
-                      currency: 'EUR',
-                    }).format(venueProvider.price)}`}
-                  </span>
-                </li>
-                <li>
-                  <span>
-                    {'Nombre de places/séance : '}
-                  </span>
-                  <span>
-                    {`${venueProvider.quantity ? venueProvider.quantity : 'Illimité'}`}
-                  </span>
-                </li>
-                <li>
-                  <span>
-                    {'Accepter les offres DUO : '}
-                  </span>
-                  <span>
-                    {`${venueProvider.isDuo ? 'Oui' : 'Non'} `}
-                  </span>
-                </li>
-              </>
-            )}
+            {children}
           </ul>
         </div>
       )}
@@ -125,7 +95,12 @@ const VenueProviderItem = ({ venueProvider, venueDepartmentCode }) => {
   )
 }
 
+VenueProviderItem.defaultProps = {
+  children: null
+}
+
 VenueProviderItem.propTypes = {
+  children: PropTypes.node,
   venueDepartmentCode: PropTypes.string.isRequired,
   venueProvider: PropTypes.shape({
     provider: PropTypes.shape({
@@ -134,9 +109,6 @@ VenueProviderItem.propTypes = {
     lastSyncDate: PropTypes.string,
     nOffers: PropTypes.number.isRequired,
     venueIdAtOfferProvider: PropTypes.string,
-    price: PropTypes.number,
-    quantity: PropTypes.number,
-    isDuo: PropTypes.bool,
   }).isRequired,
 }
 
