@@ -18,27 +18,27 @@ class StorePublicObjectTest:
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.store_public_object")
     def test_local_backend_call(self, mock_local_store_public_object):
         store_public_object("bucket", "object_id", b"mouette", "image/jpeg")
-        mock_local_store_public_object.assert_called_once_with("bucket", "object_id", b"mouette", "image/jpeg", None)
+        mock_local_store_public_object.assert_called_once_with("bucket", "object_id", b"mouette", "image/jpeg")
 
     @override_settings(OBJECT_STORAGE_PROVIDER="OVH")
     @patch("pcapi.core.object_storage.backends.ovh.OVHBackend.store_public_object")
     def test_ovh_backend_call(self, mock_ovh_store_public_object):
         store_public_object("bucket", "object_id", b"mouette", "image/jpeg")
-        mock_ovh_store_public_object.assert_called_once_with("bucket", "object_id", b"mouette", "image/jpeg", None)
+        mock_ovh_store_public_object.assert_called_once_with("bucket", "object_id", b"mouette", "image/jpeg")
 
     @override_settings(OBJECT_STORAGE_PROVIDER="GCP")
     @patch("pcapi.core.object_storage.backends.gcp.GCPBackend.store_public_object")
     def test_gcp_backend_call(self, mock_gcp_store_public_object):
         store_public_object("bucket", "object_id", b"mouette", "image/jpeg")
-        mock_gcp_store_public_object.assert_called_once_with("bucket", "object_id", b"mouette", "image/jpeg", None)
+        mock_gcp_store_public_object.assert_called_once_with("bucket", "object_id", b"mouette", "image/jpeg")
 
     @override_settings(OBJECT_STORAGE_PROVIDER="OVH,GCP")
     @patch("pcapi.core.object_storage.backends.ovh.OVHBackend.store_public_object")
     @patch("pcapi.core.object_storage.backends.gcp.GCPBackend.store_public_object")
     def test_ovh_gcp_backends_call(self, mock_gcp_store_public_object, mock_ovh_store_public_object):
         store_public_object("bucket", "object_id", b"mouette", "image/jpeg")
-        mock_ovh_store_public_object.assert_called_once_with("bucket", "object_id", b"mouette", "image/jpeg", None)
-        mock_gcp_store_public_object.assert_called_once_with("bucket", "object_id", b"mouette", "image/jpeg", None)
+        mock_ovh_store_public_object.assert_called_once_with("bucket", "object_id", b"mouette", "image/jpeg")
+        mock_gcp_store_public_object.assert_called_once_with("bucket", "object_id", b"mouette", "image/jpeg")
 
 
 class CheckBackendSettingTest:

@@ -20,9 +20,7 @@ class GCPBackend(BaseBackend):
 
         return storage_client.bucket(settings.GCP_BUCKET_NAME)
 
-    def store_public_object(
-        self, bucket: str, object_id: str, blob: bytes, content_type: str, symlink_path: str = None
-    ) -> None:
+    def store_public_object(self, bucket: str, object_id: str, blob: bytes, content_type: str) -> None:
         storage_path = bucket + "/" + object_id
         try:
             bucket = self.get_gcp_storage_client_bucket()

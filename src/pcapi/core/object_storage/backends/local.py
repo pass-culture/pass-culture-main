@@ -22,18 +22,12 @@ class LocalBackend(BaseBackend):
     def local_path(self, bucket: str, object_id: str) -> Path:
         return self.local_dir(bucket, object_id) / PurePath(object_id).name
 
-    def store_public_object(
-        self, bucket: str, object_id: str, blob: bytes, content_type: str, symlink_path: str = None
-    ) -> None:
+    def store_public_object(self, bucket: str, object_id: str, blob: bytes, content_type: str) -> None:
         try:
             os.makedirs(self.local_dir(bucket, object_id), exist_ok=True)
             file_local_path = self.local_path(bucket, object_id)
             with open(str(file_local_path) + ".type", "w") as new_type_file:
                 new_type_file.write(content_type)
-
-            if symlink_path and not os.path.isfile(file_local_path) and not os.path.islink(file_local_path):
-                os.symlink(symlink_path, file_local_path)
-                return
 
             with open(file_local_path, "wb") as new_file:
                 new_file.write(blob)

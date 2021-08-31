@@ -23,9 +23,7 @@ class OVHBackend(BaseBackend):
             auth_version="3",
         )
 
-    def store_public_object(
-        self, bucket: str, object_id: str, blob: bytes, content_type: str, symlink_path: str = None
-    ) -> None:
+    def store_public_object(self, bucket: str, object_id: str, blob: bytes, content_type: str) -> None:
         container_name = settings.SWIFT_BUCKET_NAME
         try:
             storage_path = bucket + "/" + object_id

@@ -14,7 +14,7 @@ def store_public_object_from_sandbox_assets(folder, model, offer_type):
 
     with open(thumb_path, mode="rb") as thumb_file:
         if folder == "thumbs":
-            create_thumb(model, thumb_file.read(), 0, symlink_path=thumb_path)
+            create_thumb(model, thumb_file.read(), 0)
             model.thumbCount += 1
         else:
             store_public_object(
@@ -22,7 +22,6 @@ def store_public_object_from_sandbox_assets(folder, model, offer_type):
                 plural_model_name + "/" + thumb_id,
                 thumb_file.read(),
                 mimes_by_folder[folder],
-                symlink_path=thumb_path,
             )
 
     return model
