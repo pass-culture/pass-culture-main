@@ -147,6 +147,13 @@ if [ "$CREATE_USERS" = "true" ];then
     echo "Ended: python3 $(echo_time)"
 fi
 
+if [ "$LAUNCH_BENEFICIARIES_SANDBOX" = "true" ];then
+    # Launch import user script
+    echo "Starting: python3 $(echo_time)"
+    python3 ${PC_API_ROOT_PATH}/src/pcapi/scripts/pc.py sandbox -n beneficiaries -c false
+    echo "Ended: python3 $(echo_time)"
+fi
+
 if [ "$DISABLE_VENUE_PROVIDERS" = "true" ];then
     echo "Starting: disable all venue providers $(echo_time)"
     psql "${POSTGRES_CONNEXION_STRING_DEST}" \
