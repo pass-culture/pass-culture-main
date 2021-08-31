@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 import flask
@@ -90,6 +91,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         "beneficiaryFraudResult",
         "beneficiaryFraudChecks",
         "beneficiaryFraudReview",
+        "dateCreated",
     ]
     column_labels = {
         "firstName": "Prénom",
@@ -97,15 +99,20 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         "beneficiaryFraudResult": "Statut",
         "beneficiaryFraudChecks": "Vérifications anti fraudes",
         "beneficiaryFraudReview": "Evaluation Manuelle",
+        "dateCreated": "Date de creation de compte",
     }
 
     column_searchable_list = ["id", "email", "firstName", "lastName"]
     column_filters = [
-        "postalCode",
         "email",
+        "dateCreated",
         "beneficiaryFraudResult.status",
         "beneficiaryFraudChecks.type",
         "beneficiaryFraudReview",
+    ]
+
+    column_sortable_list = [
+        "dateCreated",
     ]
 
     can_view_details = True
@@ -113,6 +120,12 @@ class BeneficiaryView(base_configuration.BaseAdminView):
     list_template = "admin/support_beneficiary_list.html"
 
     page_size = 100
+
+    @property
+    def column_type_formatters(self):
+        type_formatters = super().column_type_formatters
+        type_formatters[datetime.datetime] = lambda view, value: value.strftime("%d/%m/%Y à %H:%M:%S")
+        return type_formatters
 
     @property
     def column_formatters(self):
