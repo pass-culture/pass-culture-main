@@ -3,16 +3,18 @@ import csv
 from datetime import date
 from io import StringIO
 from typing import Callable
+from typing import Iterable
 from typing import Optional
+from typing import Union
 
 from pcapi.models import ApiErrors
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.repository.reimbursement_queries import find_all_offerer_payments
-from pcapi.repository.reimbursement_queries import legacy_find_all_offerer_payments
+from pcapi.repository.reimbursement_queries import find_all_offerers_payments
+from pcapi.repository.reimbursement_queries import legacy_find_all_offerers_payments
 from pcapi.utils.date import MONTHS_IN_FRENCH
 
 
-def format_number_as_french(num):
+def format_number_as_french(num: Union[int, float]) -> str:
     return str(num).replace(".", ",")
 
 
@@ -108,7 +110,7 @@ class ReimbursementDetails:
         ]
 
 
-def generate_reimbursement_details_csv(reimbursement_details: list[ReimbursementDetails]) -> str:
+def generate_reimbursement_details_csv(reimbursement_details: Iterable[ReimbursementDetails]) -> str:
     output = StringIO()
     csv_lines = [reimbursement_detail.as_csv_row() for reimbursement_detail in reimbursement_details]
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
@@ -118,9 +120,19 @@ def generate_reimbursement_details_csv(reimbursement_details: list[Reimbursement
 
 
 def find_all_offerer_reimbursement_details(
-    offerer_id: int, reimbursements_period: tuple[date, date], venue_id: Optional[int] = None
+    offerer_id: int, reimbursements_period: tuple[Optional[date], Optional[date]], venue_id: Optional[int] = None
 ) -> list[ReimbursementDetails]:
-    offerer_payments = find_all_offerer_payments(offerer_id, reimbursements_period, venue_id)
+    return find_all_offerers_reimbursement_details(
+        [offerer_id],
+        reimbursements_period,
+        venue_id=venue_id,
+    )
+
+
+def find_all_offerers_reimbursement_details(
+    offerer_ids: list[int], reimbursements_period: tuple[Optional[date], Optional[date]], venue_id: Optional[int] = None
+) -> list[ReimbursementDetails]:
+    offerer_payments = find_all_offerers_payments(offerer_ids, reimbursements_period, venue_id)
     reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerer_payments]
 
     return reimbursement_details
@@ -128,13 +140,20 @@ def find_all_offerer_reimbursement_details(
 
 # TODO : delete this legacy function when feature PRO_REIMBURSEMENTS_FILTERS is deleted or activate in production
 def legacy_find_all_offerer_reimbursement_details(offerer_id: int) -> list[ReimbursementDetails]:
-    offerer_payments = legacy_find_all_offerer_payments(offerer_id)
+    return legacy_find_all_offerers_reimbursement_details([offerer_id])
+
+
+# TODO : delete this legacy function when feature PRO_REIMBURSEMENTS_FILTERS is deleted or activate in production
+def legacy_find_all_offerers_reimbursement_details(offerer_ids: list[int]) -> list[ReimbursementDetails]:
+    offerer_payments = legacy_find_all_offerers_payments(offerer_ids)
     reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerer_payments]
 
     return reimbursement_details
 
 
-def _get_reimbursement_current_status_in_details(current_status: str, current_status_details: str) -> str:
+def _get_reimbursement_current_status_in_details(
+    current_status: TransactionStatus, current_status_details: str
+) -> Optional[str]:
     human_friendly_status = ReimbursementDetails.TRANSACTION_STATUSES_DETAILS.get(current_status)
 
     if current_status is not TransactionStatus.NOT_PROCESSABLE or not current_status_details:
@@ -145,7 +164,7 @@ def _get_reimbursement_current_status_in_details(current_status: str, current_st
 
 def validate_reimbursement_period(
     reimbursement_period_field_names: tuple[str, str], get_query_param: Callable
-) -> list[date]:
+) -> Union[list[None], list[date]]:
     api_errors = ApiErrors()
     reimbursement_period_dates = []
     for field_name in reimbursement_period_field_names:

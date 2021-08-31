@@ -149,3 +149,64 @@ def test_with_non_given_reimbursement_period(app):
     assert response.json["reimbursementPeriodEndingDate"] == [
         "Vous devez renseigner une date au format ISO (ex. 2021-12-24)"
     ]
+
+
+@pytest.mark.usefixtures("db_session")
+@override_features(PRO_REIMBURSEMENTS_FILTERS=True)
+def test_admin_can_access_reimbursements_data_with_venue_filter(app, client):
+    # Given
+    beginning_date = date.today() - timedelta(days=2)
+    ending_date = date.today() + timedelta(days=2)
+    admin = users_factories.AdminFactory()
+    user_offerer = offers_factories.UserOffererFactory()
+    offerer = user_offerer.offerer
+    status = payments_factories.PaymentStatusFactory(
+        payment__booking__stock__offer__venue__managingOfferer=offerer,
+        status=TransactionStatus.SENT,
+        payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
+        date=date.today(),
+    )
+    venue = status.payment.booking.venue
+
+    # When
+    admin_client = client.with_session_auth(admin.email)
+    response = admin_client.get(
+        "/reimbursements/csv?venueId={}&reimbursementPeriodBeginningDate={}&reimbursementPeriodEndingDate={}".format(
+            humanize(venue.id), beginning_date.isoformat(), ending_date.isoformat()
+        )
+    )
+
+    # Then
+    assert response.status_code == 200
+    assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
+    assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
+    rows = response.data.decode("utf-8").splitlines()
+    assert len(rows) == 2  # header + payments
+
+
+@pytest.mark.usefixtures("db_session")
+@override_features(PRO_REIMBURSEMENTS_FILTERS=True)
+def test_admin_cannot_access_reimbursements_data_without_venue_filter(app, client):
+    # Given
+    beginning_date = date.today() - timedelta(days=2)
+    ending_date = date.today() + timedelta(days=2)
+    admin = users_factories.AdminFactory()
+    user_offerer = offers_factories.UserOffererFactory()
+    offerer = user_offerer.offerer
+    payments_factories.PaymentStatusFactory(
+        payment__booking__stock__offer__venue__managingOfferer=offerer,
+        status=TransactionStatus.SENT,
+        payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
+        date=date.today(),
+    )
+
+    # When
+    admin_client = client.with_session_auth(admin.email)
+    response = admin_client.get(
+        "/reimbursements/csv?reimbursementPeriodBeginningDate={}&reimbursementPeriodEndingDate={}".format(
+            beginning_date.isoformat(), ending_date.isoformat()
+        )
+    )
+
+    # Then
+    assert response.status_code == 400

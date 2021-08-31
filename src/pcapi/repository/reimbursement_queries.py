@@ -21,6 +21,16 @@ from pcapi.models.payment_status import TransactionStatus
 def find_all_offerer_payments(
     offerer_id: int, reimbursement_period: tuple[date, date], venue_id: Optional[int] = None
 ) -> list[tuple]:
+    return find_all_offerers_payments(
+        offerer_ids=[offerer_id],
+        reimbursement_period=reimbursement_period,
+        venue_id=venue_id,
+    )
+
+
+def find_all_offerers_payments(
+    offerer_ids: list[int], reimbursement_period: tuple[date, date], venue_id: Optional[int] = None
+) -> list[tuple]:
     payment_date = cast(PaymentStatus.date, Date)
     sent_payments = (
         Payment.query.join(PaymentStatus)
@@ -28,7 +38,7 @@ def find_all_offerer_payments(
         .filter(
             PaymentStatus.status == TransactionStatus.SENT,
             payment_date.between(*reimbursement_period, symmetric=True),
-            Booking.offererId == offerer_id,
+            Booking.offererId.in_(offerer_ids),
             Booking.isUsed,
             (Booking.venueId == venue_id) if venue_id else (Booking.venueId is not None),
         )
@@ -58,17 +68,21 @@ def find_all_offerer_payments(
             PaymentStatus.status.label("status"),
             PaymentStatus.detail.label("detail"),
         )
-        .all()
     )
 
-    return sent_payments
+    return sent_payments.all()
 
 
-# TODO : delete this legacy function when feature PRO_REIMBURSEMENTS_FILTERS is deleted or activate in production
+# TODO(AnthonySkorski, 2021-09-15): delete this legacy function when feature PRO_REIMBURSEMENTS_FILTERS is deleted or activate in production
 def legacy_find_all_offerer_payments(offerer_id: int) -> list[namedtuple]:
+    return legacy_find_all_offerers_payments([offerer_id])
+
+
+# TODO(AnthonySkorski, 2021-09-15): delete this legacy function when feature PRO_REIMBURSEMENTS_FILTERS is deleted or activate in production
+def legacy_find_all_offerers_payments(offerer_ids: list[int]) -> list[namedtuple]:
     payment_status_query = _legacy_build_payment_status_subquery()
 
-    return (
+    query = (
         Payment.query.join(payment_status_query)
         .reset_joinpoint()
         .join(Booking)
@@ -77,7 +91,7 @@ def legacy_find_all_offerer_payments(offerer_id: int) -> list[namedtuple]:
         .join(Stock)
         .join(Offer)
         .join(Venue)
-        .filter(Venue.managingOffererId == offerer_id)
+        .filter(Venue.managingOffererId.in_(offerer_ids))
         .join(Offerer)
         .distinct(payment_status_query.c.paymentId)
         .order_by(payment_status_query.c.paymentId.desc(), payment_status_query.c.date.desc())
@@ -100,8 +114,8 @@ def legacy_find_all_offerer_payments(offerer_id: int) -> list[namedtuple]:
             payment_status_query.c.status.label("status"),
             payment_status_query.c.detail.label("detail"),
         )
-        .all()
     )
+    return query.all()
 
 
 # TODO : delete this legacy function when feature PRO_REIMBURSEMENTS_FILTERS is deleted or activate in production
