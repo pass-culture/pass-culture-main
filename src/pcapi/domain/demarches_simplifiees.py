@@ -91,7 +91,7 @@ def get_all_application_ids_for_demarche_simplifiee(
     return [application["id"] for application in _sort_applications_by_date(applications)]
 
 
-def get_closed_application_ids_for_demarche_simplifiee(procedure_id: str, token: str) -> list[int]:
+def get_closed_application_ids_for_demarche_simplifiee(procedure_id: int, token: str) -> list[int]:
     application_ids = set(
         get_all_application_ids_for_demarche_simplifiee(
             procedure_id, settings.DMS_TOKEN, last_update=None, accepted_states=ACCEPTED_DMS_STATUS

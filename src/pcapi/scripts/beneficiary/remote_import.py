@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 class DMSParsingError(ValueError):
-    def __init__(self, errors, *args, **kwargs):
+    def __init__(self, errors: dict[str, str], *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.errors = errors
 
@@ -268,7 +268,7 @@ def process_beneficiary_application(
 
 
 def _process_duplication(
-    duplicate_users: list[User], error_messages: list[str], information: dict, procedure_id: int
+    duplicate_users: list[User], error_messages: list[str], information: fraud_models.DMSContent, procedure_id: int
 ) -> None:
     number_of_beneficiaries = len(duplicate_users)
     duplicate_ids = ", ".join([str(u.id) for u in duplicate_users])
@@ -284,7 +284,7 @@ def _process_duplication(
     )
 
 
-def _process_rejection(information: dict, procedure_id: int, reason: str, user: User = None) -> None:
+def _process_rejection(information: fraud_models.DMSContent, procedure_id: int, reason: str, user: User = None) -> None:
     save_beneficiary_import_with_status(
         ImportStatus.REJECTED,
         information.application_id,
