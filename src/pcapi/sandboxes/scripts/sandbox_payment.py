@@ -26,26 +26,11 @@ three_days = timedelta(days=3)
 
 
 def save_users_with_deposits():
-    user1 = users_factories.BeneficiaryFactory(
-        email="user1@test.com",
-        reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
-    )
-    user2 = users_factories.BeneficiaryFactory(
-        email="user2@test.com",
-        reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
-    )
-    user3 = users_factories.BeneficiaryFactory(
-        email="user3@test.com",
-        reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
-    )
-    user4 = users_factories.BeneficiaryFactory(
-        email="user4@test.com",
-        reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
-    )
-    user5 = users_factories.BeneficiaryFactory(
-        email="user5@test.com",
-        reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
-    )
+    user1 = users_factories.BeneficiaryFactory(email="user1@test.com")
+    user2 = users_factories.BeneficiaryFactory(email="user2@test.com")
+    user3 = users_factories.BeneficiaryFactory(email="user3@test.com")
+    user4 = users_factories.BeneficiaryFactory(email="user4@test.com")
+    user5 = users_factories.BeneficiaryFactory(email="user5@test.com")
     deposit1 = payments_api.create_deposit(user1, "sandbox")
     deposit2 = payments_api.create_deposit(user2, "sandbox")
     deposit3 = payments_api.create_deposit(user3, "sandbox")

@@ -19,7 +19,6 @@ from pcapi.flask_app import private_api
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
-from pcapi.repository.user_queries import find_user_by_reset_password_token
 from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.mailing import MailServiceException
@@ -85,10 +84,6 @@ def post_new_password():
     check_password_strength("newPassword", new_password)
 
     user = users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD], delete_token=True)
-
-    # TODO(xordoquy): remove the fallback on "old-style" token once the migration is over
-    if not user:
-        user = find_user_by_reset_password_token(token)
 
     if not user:
         errors = ApiErrors()

@@ -366,7 +366,6 @@ class CreateAnEntireOffererFromCSVRowTest:
         user = User.query.first()
         token = Token.query.first()
         assert not user.validationToken
-        assert user.resetPasswordToken is None
         assert token.user == user
         assert token.expirationDate == datetime(2021, 8, 2)
 

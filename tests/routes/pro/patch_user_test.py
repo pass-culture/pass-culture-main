@@ -53,8 +53,6 @@ def test_forbid_some_attributes(app):
         "isAdmin": True,
         "isBeneficiary": True,
         "dateCreated": "2018-08-01 12:00:00",
-        "resetPasswordToken": "abc",
-        "resetPasswordTokenValidityLimit": "2020-07-01 12:00:00",
     }
 
     client = TestClient(app.test_client()).with_session_auth(email=pro.email)

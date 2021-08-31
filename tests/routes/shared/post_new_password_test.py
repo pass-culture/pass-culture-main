@@ -47,22 +47,6 @@ def test_change_password_validates_email(app):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_change_password_with_legacy_reset_token(app):
-    user = users_factories.UserFactory(
-        resetPasswordToken="TOKEN",
-        resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
-    )
-    data = {"token": "TOKEN", "newPassword": "N3W_p4ssw0rd"}
-
-    client = TestClient(app.test_client())
-    response = client.post("/users/new-password", json=data)
-
-    assert response.status_code == 204
-    assert user.checkPassword("N3W_p4ssw0rd")
-    assert len(user.tokens) == 0
-
-
-@pytest.mark.usefixtures("db_session")
 def test_fail_if_token_has_expired(app):
     user = users_factories.UserFactory(password="Old_P4ssword")
     token = users_factories.TokenFactory(
@@ -81,25 +65,9 @@ def test_fail_if_token_has_expired(app):
 
 
 @pytest.mark.usefixtures("db_session")
-def test_fail_if_token_has_expired_with_legacy_reset_token(app):
-    user = users_factories.UserFactory(
-        password="Old_P4ssword",
-        resetPasswordToken="TOKEN",
-        resetPasswordTokenValidityLimit=datetime.utcnow() - timedelta(hours=24),
-    )
-    data = {"token": "TOKEN", "newPassword": "N3W_p4ssw0rd"}
-
-    client = TestClient(app.test_client())
-    response = client.post("/users/new-password", json=data)
-
-    assert response.status_code == 400
-    assert response.json["token"] == ["Votre lien de changement de mot de passe est invalide."]
-    assert user.checkPassword("Old_P4ssword")
-
-
-@pytest.mark.usefixtures("db_session")
 def test_fail_if_token_is_unknown(app):
-    users_factories.UserFactory(resetPasswordToken="TOKEN")
+    user = users_factories.UserFactory()
+    users_factories.TokenFactory(user=user, type=TokenType.RESET_PASSWORD, value="ONE TOKEN")
     data = {"token": "OTHER TOKEN", "newPassword": "N3W_p4ssw0rd"}
 
     client = TestClient(app.test_client())

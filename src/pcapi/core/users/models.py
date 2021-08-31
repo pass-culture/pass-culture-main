@@ -162,10 +162,6 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     publicName = Column(String(255), nullable=False)
 
-    resetPasswordToken = Column(String(10), unique=True)
-
-    resetPasswordTokenValidityLimit = Column(DateTime)
-
     roles = Column(
         MutableList.as_mutable(ARRAY(Enum(UserRole, native_enum=False, create_constraint=False))),
         nullable=False,

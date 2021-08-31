@@ -94,7 +94,6 @@ class Returns204Test:
         # then
         assert response.status_code == 204
         user = User.query.get(user.id)
-        assert not user.resetPasswordToken
 
     @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
     def when_email_is_known(self, check_recaptcha_token_is_valid_mock, app, db_session):
