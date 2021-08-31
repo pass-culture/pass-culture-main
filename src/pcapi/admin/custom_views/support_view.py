@@ -86,6 +86,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         "id",
         "firstName",
         "lastName",
+        "email",
         "beneficiaryFraudResult",
         "beneficiaryFraudChecks",
         "beneficiaryFraudReview",
