@@ -15,6 +15,9 @@ from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_fraud_suspicion_email
 from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_subscription
 from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
+from pcapi.models import ImportStatus
+from pcapi.models.beneficiary_import import BeneficiaryImportSources
+from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
 from pcapi.repository.user_queries import find_user_by_email
 
 
@@ -56,11 +59,20 @@ class CreateBeneficiaryFromApplication:
             return
 
         preexisting_account = find_user_by_email(beneficiary_pre_subscription.email)
-        if preexisting_account:
-            try:
-                on_jouve_result(preexisting_account, jouve_content)
-            except Exception as exc:  # pylint: disable=broad-except
-                logger.exception("Error on jouve result: %s", exc)
+        if not preexisting_account:
+            save_beneficiary_import_with_status(
+                ImportStatus.ERROR,
+                application_id,
+                source=BeneficiaryImportSources.demarches_simplifiees,
+                source_id=jouve_backend.DEFAULT_JOUVE_SOURCE_ID,
+                detail=f"Aucun utilisateur trouvé pour l'email {beneficiary_pre_subscription.email}",
+            )
+            return
+
+        try:
+            on_jouve_result(preexisting_account, jouve_content)
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.exception("Error on jouve result: %s", exc)
 
         try:
             validate(

@@ -59,8 +59,8 @@ class Returns200Test:
         mocked_beneficiary_job.assert_called_once_with(5)
 
     @override_features(APPLY_BOOKING_LIMITS_V2=False)
-    @patch("pcapi.use_cases.create_beneficiary_from_application.send_accepted_as_beneficiary_email")
-    @patch("pcapi.use_cases.create_beneficiary_from_application.send_activation_email")
+    @patch("pcapi.domain.user_emails.send_accepted_as_beneficiary_email")
+    @patch("pcapi.domain.user_emails.send_activation_email")
     @patch("pcapi.domain.password.random_token")
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     @freeze_time("2013-05-15 09:00:00")
@@ -136,8 +136,8 @@ class Returns200Test:
         assert len(users_testing.sendinblue_requests) == 1
 
     @override_features(FORCE_PHONE_VALIDATION=True)
-    @patch("pcapi.use_cases.create_beneficiary_from_application.send_accepted_as_beneficiary_email")
-    @patch("pcapi.use_cases.create_beneficiary_from_application.send_activation_email")
+    @patch("pcapi.domain.user_emails.send_accepted_as_beneficiary_email")
+    @patch("pcapi.domain.user_emails.send_activation_email")
     @patch("pcapi.domain.password.random_token")
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     @freeze_time("2013-05-15 09:00:00")
@@ -159,7 +159,9 @@ class Returns200Test:
         application_id = 35
         stubed_random_token.return_value = "token"
         _get_raw_content.return_value = JOUVE_CONTENT
-
+        users_factories.UserFactory(
+            firstName=JOUVE_CONTENT["firstName"], lastName=JOUVE_CONTENT["lastName"], email=JOUVE_CONTENT["email"]
+        )
         # When
         data = {"id": "35"}
         response = TestClient(app.test_client()).post("/beneficiaries/application_update", json=data)
@@ -193,9 +195,8 @@ class Returns200Test:
         assert beneficiary_import.applicationId == application_id
         assert beneficiary_import.beneficiary == user
 
-        assert len(user.tokens) == 1
-        mocked_send_activation_email.assert_called_once()
-        mocked_send_accepted_as_beneficiary_email.assert_not_called()
+        mocked_send_activation_email.assert_not_called()
+        mocked_send_accepted_as_beneficiary_email.assert_called_once()
 
         assert len(push_testing.requests) == 1
         assert len(users_testing.sendinblue_requests) == 1

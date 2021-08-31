@@ -11,7 +11,6 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.factories import UserFactory
-from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
 from pcapi.models import BeneficiaryImport
@@ -60,7 +59,9 @@ JOUVE_CONTENT = {
 def test_saved_a_beneficiary_from_application(stubed_random_token, app):
     # Given
     stubed_random_token.return_value = "token"
-
+    users_factories.UserFactory(
+        firstName=JOUVE_CONTENT["firstName"], lastName=JOUVE_CONTENT["lastName"], email=JOUVE_CONTENT["email"]
+    )
     # When
     create_beneficiary_from_application.execute(APPLICATION_ID)
 
@@ -93,9 +94,6 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, app):
     assert beneficiary_import.currentStatus == ImportStatus.CREATED
     assert beneficiary_import.applicationId == APPLICATION_ID
     assert beneficiary_import.beneficiary == beneficiary
-
-    assert len(beneficiary.tokens) == 1
-    assert beneficiary.tokens[0].type == TokenType.RESET_PASSWORD
 
     assert len(mails_testing.outbox) == 1
 
@@ -241,24 +239,24 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     first_name = "Thomas"
     last_name = "DURAND"
     date_of_birth = datetime(1995, 5, 22)
-    existing_user_id = 4
 
-    users_factories.BeneficiaryFactory(
-        firstName=first_name, lastName=last_name, dateOfBirth=date_of_birth, id=existing_user_id
+    applicant = users_factories.UserFactory(
+        firstName=JOUVE_CONTENT["firstName"], lastName=JOUVE_CONTENT["lastName"], email=JOUVE_CONTENT["email"]
+    )
+
+    existing_user = users_factories.BeneficiaryFactory(
+        firstName=first_name, lastName=last_name, dateOfBirth=date_of_birth
     )
 
     # When
     create_beneficiary_from_application.execute(APPLICATION_ID)
 
     # Then
-    user = User.query.one()
-    assert user.id == existing_user_id
-
     beneficiary_import = BeneficiaryImport.query.one()
     assert beneficiary_import.currentStatus == ImportStatus.REJECTED
     assert beneficiary_import.applicationId == APPLICATION_ID
-    assert beneficiary_import.beneficiary is None
-    assert beneficiary_import.detail == f"User with id {existing_user_id} is a duplicate."
+    assert beneficiary_import.detail == f"User with id {existing_user.id} is a duplicate."
+    assert beneficiary_import.beneficiary is applicant
 
 
 @pytest.mark.usefixtures("db_session")
@@ -268,18 +266,18 @@ def test_cannot_save_beneficiary_if_department_is_not_eligible_legacy_behaviour(
     # Given
     postal_code = "75000"
     get_application_content.return_value = JOUVE_CONTENT | {"postalCode": postal_code}
+    applicant = users_factories.UserFactory(
+        firstName=JOUVE_CONTENT["firstName"], lastName=JOUVE_CONTENT["lastName"], email=JOUVE_CONTENT["email"]
+    )
 
     # When
     create_beneficiary_from_application.execute(APPLICATION_ID)
 
     # Then
-    users_count = User.query.count()
-    assert users_count == 0
-
     beneficiary_import = BeneficiaryImport.query.one()
     assert beneficiary_import.currentStatus == ImportStatus.REJECTED
     assert beneficiary_import.applicationId == APPLICATION_ID
-    assert beneficiary_import.beneficiary is None
+    assert beneficiary_import.beneficiary == applicant
     assert beneficiary_import.detail == f"Postal code {postal_code} is not eligible."
 
 
@@ -290,18 +288,18 @@ def test_cannot_save_beneficiary_if_department_is_not_eligible(get_application_c
     # Given
     postal_code = "984"
     get_application_content.return_value = JOUVE_CONTENT | {"postalCode": postal_code}
+    applicant = users_factories.UserFactory(
+        firstName=JOUVE_CONTENT["firstName"], lastName=JOUVE_CONTENT["lastName"], email=JOUVE_CONTENT["email"]
+    )
 
     # When
     create_beneficiary_from_application.execute(APPLICATION_ID)
 
     # Then
-    users_count = User.query.count()
-    assert users_count == 0
-
     beneficiary_import = BeneficiaryImport.query.one()
     assert beneficiary_import.currentStatus == ImportStatus.REJECTED
     assert beneficiary_import.applicationId == APPLICATION_ID
-    assert beneficiary_import.beneficiary is None
+    assert beneficiary_import.beneficiary == applicant
     assert beneficiary_import.detail == f"Postal code {postal_code} is not eligible."
 
 
@@ -313,6 +311,9 @@ def test_calls_send_rejection_mail_with_validation_error(_get_raw_content, stube
     error = BeneficiaryIsADuplicate("Some reason")
     stubed_validate.side_effect = error
     _get_raw_content.return_value = JOUVE_CONTENT
+    users_factories.UserFactory(
+        firstName=JOUVE_CONTENT["firstName"], lastName=JOUVE_CONTENT["lastName"], email=JOUVE_CONTENT["email"]
+    )
 
     # When
     create_beneficiary_from_application.execute(APPLICATION_ID)
@@ -321,6 +322,19 @@ def test_calls_send_rejection_mail_with_validation_error(_get_raw_content, stube
     assert len(mails_testing.outbox) == 1
     assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1530996
     assert mails_testing.outbox[0].sent_data["To"] == "rennes@example.org"
+
+
+@pytest.mark.usefixtures("db_session")
+@patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
+def test_user_pre_creation_is_required(_get_raw_content):
+    _get_raw_content.return_value = JOUVE_CONTENT
+
+    create_beneficiary_from_application.execute(APPLICATION_ID)
+    beneficiary_import = BeneficiaryImport.query.one()
+    assert beneficiary_import.currentStatus == ImportStatus.ERROR
+    assert beneficiary_import.applicationId == APPLICATION_ID
+    assert beneficiary_import.beneficiary is None
+    assert beneficiary_import.statuses[-1].detail == f"Aucun utilisateur trouvé pour l'email {JOUVE_CONTENT['email']}"
 
 
 BASE_APPLICATION_ID = 35
@@ -389,6 +403,11 @@ def test_doesnt_save_beneficiary_when_suspicious(
 ):
     # Given
     mocked_get_content.return_value = BASE_JOUVE_CONTENT | {"bodyBirthDateLevel": "20"}
+    users_factories.UserFactory(
+        firstName=BASE_JOUVE_CONTENT["firstName"],
+        lastName=BASE_JOUVE_CONTENT["lastName"],
+        email=BASE_JOUVE_CONTENT["email"],
+    )
 
     # When
     create_beneficiary_from_application.execute(BASE_APPLICATION_ID)
