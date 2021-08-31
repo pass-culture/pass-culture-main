@@ -24,7 +24,7 @@ export const CSV_HEADERS = [
 ]
 
 function formatEventDatetimeIfEventType(booking) {
-  if (booking.stock.type === 'event') {
+  if (booking.stock.event_beginning_datetime) {
     return format(
       toDateStrippedOfTimezone(booking.stock.event_beginning_datetime),
       FORMAT_DD_MM_YYYY_HH_mm

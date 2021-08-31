@@ -49,7 +49,6 @@ describe('generateBookingsCsvFile', () => {
     canceled_booking = {
       stock: {
         offer_name: 'Jurassic Park',
-        type: 'thing',
       },
       beneficiary: {
         lastname: 'LaMerguez',
@@ -141,7 +140,6 @@ describe('generateBookingsCsvFile', () => {
         ...validated_booking,
         stock: {
           offer_name: 'Avez-vous déjà vu',
-          type: 'thing',
           offer_isbn: '9781234567654',
         },
       },
@@ -192,7 +190,6 @@ describe('generateBookingsCsvFile', () => {
         ...validated_booking,
         stock: {
           offer_name: 'Avez-vous "déjà" "vu"',
-          type: 'thing',
           offer_isbn: '9781234567654',
         },
       },
@@ -200,7 +197,6 @@ describe('generateBookingsCsvFile', () => {
         ...canceled_booking,
         stock: {
           offer_name: 'Jurassic "Park"',
-          type: 'thing',
         },
       },
     ]
