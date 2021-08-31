@@ -4,16 +4,13 @@ from pcapi.connectors.beneficiaries import jouve_backend
 from pcapi.core.fraud.api import on_jouve_result
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.external import update_external_user
+from pcapi.domain import user_emails
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.exceptions import CantRegisterBeneficiary
 from pcapi.domain.beneficiary_pre_subscription.exceptions import FraudDetected
 from pcapi.domain.beneficiary_pre_subscription.exceptions import SuspiciousFraudDetected
 from pcapi.domain.beneficiary_pre_subscription.fraud_validator import validate_fraud
 from pcapi.domain.beneficiary_pre_subscription.validator import validate
-from pcapi.domain.user_emails import send_accepted_as_beneficiary_email
-from pcapi.domain.user_emails import send_activation_email
-from pcapi.domain.user_emails import send_fraud_suspicion_email
-from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_subscription
 from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from pcapi.models import ImportStatus
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
@@ -86,7 +83,7 @@ class CreateBeneficiaryFromApplication:
                 validate_fraud(beneficiary_pre_subscription)
 
         except SuspiciousFraudDetected:
-            send_fraud_suspicion_email(beneficiary_pre_subscription)
+            user_emails.send_fraud_suspicion_email(beneficiary_pre_subscription)
         except FraudDetected as cant_register_beneficiary_exception:
             # detail column cannot contain more than 255 characters
             detail = f"Fraud controls triggered: {cant_register_beneficiary_exception}"[:255]
@@ -107,7 +104,7 @@ class CreateBeneficiaryFromApplication:
             self.beneficiary_repository.reject(
                 beneficiary_pre_subscription, detail=exception_reason, user=preexisting_account
             )
-            send_rejection_email_to_beneficiary_pre_subscription(
+            user_emails.send_rejection_email_to_beneficiary_pre_subscription(
                 beneficiary_pre_subscription=beneficiary_pre_subscription,
                 beneficiary_is_eligible=isinstance(cant_register_beneficiary_exception, BeneficiaryIsADuplicate),
             )
@@ -117,9 +114,9 @@ class CreateBeneficiaryFromApplication:
 
             if preexisting_account is None:
                 token = create_reset_password_token(user)
-                send_activation_email(user=user, token=token)
+                user_emails.send_activation_email(user=user, token=token)
             else:
-                send_accepted_as_beneficiary_email(user=user)
+                user_emails.send_accepted_as_beneficiary_email(user=user)
 
             update_external_user(user)
 
