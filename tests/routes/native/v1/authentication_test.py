@@ -9,9 +9,11 @@ import pytest
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.models import db
+import pcapi.notifications.push.testing as bash_testing
 from pcapi.utils import crypto
 
 from tests.conftest import TestClient
@@ -326,6 +328,9 @@ def test_validate_email_when_eligible(app):
     refresh_response = test_client.post("/native/v1/refresh_access_token", json={})
     assert refresh_response.status_code == 200
 
+    assert len(bash_testing.requests) == 1
+    assert len(sendinblue_testing.sendinblue_requests) == 1
+
 
 @freeze_time("2018-06-01")
 def test_validate_email_when_not_eligible(app):
@@ -351,3 +356,6 @@ def test_validate_email_when_not_eligible(app):
     test_client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
     refresh_response = test_client.post("/native/v1/refresh_access_token", json={})
     assert refresh_response.status_code == 200
+
+    assert len(bash_testing.requests) == 1
+    assert len(sendinblue_testing.sendinblue_requests) == 1

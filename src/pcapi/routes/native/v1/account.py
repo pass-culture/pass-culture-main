@@ -74,7 +74,6 @@ def update_beneficiary_mandatory_information(user: User, body: serializers.Benef
         activity=body.activity,
         phone_number=body.phone,
     )
-    update_external_user(user)
 
 
 @blueprint.native_v1.route("/me/cultural_survey", methods=["POST"])

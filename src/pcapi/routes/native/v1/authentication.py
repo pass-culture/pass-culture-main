@@ -7,6 +7,7 @@ from pcapi.connectors import api_recaptcha
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
+from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.domain.password import check_password_strength
@@ -131,6 +132,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
 
     user.isEmailValidated = True
     repository.save(user)
+    update_external_user(user)
 
     response = ValidateEmailResponse(
         access_token=create_user_access_token(user),
