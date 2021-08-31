@@ -49,7 +49,7 @@ const doesBookingTokenMatchFilter = (bookingToken, booking) => {
 
 const doesISBNMatchFilter = (isbn, booking) => {
   if (isbn !== EMPTY_FILTER_VALUE) {
-    return booking.stock.type === 'book' && booking.stock.offer_isbn.includes(isbn.trim())
+    return booking.stock.offer_isbn && booking.stock.offer_isbn.includes(isbn.trim())
   }
   return true
 }
