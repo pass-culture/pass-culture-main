@@ -2,31 +2,33 @@
 {% import 'admin/forms.html' as forms %}
 
 {% block body %}
-<h2>Suspension d'utilisateurs via noms de domaines</h2>
+  <h2>Suspension d'utilisateurs via noms de domaines</h2>
 
-<form action="{{ action }}" method="POST">
-  <div class="mb-3">
-    <label for="domainsInput" class="form-label">Noms de domaine</label>
-    <textarea name="domains" placeholder="domaine.fr,fraude.com,mechant.gg" class="form-control" id="domainsInput"></textarea>
-    <p class=form-help>Veuillez séparer chaque nom de domaine par une virgule. Ne pas inclure le @.</p>
-  </div>
-  <input class="btn btn-danger" type="submit" value="Suspendre les utilisateurs associés">
-</form>
+  <form action="{{ action }}" method="POST">
+    {{ form["csrf_token"] }}
+    <div class="mb-3">
+      <label for="domainsInput" class="form-label">Noms de domaine</label>
+      <textarea name="domains" placeholder="domaine.fr,fraude.com,mechant.gg" class="form-control"
+        id="domainsInput"></textarea>
+      <p class=form-help>Veuillez séparer chaque nom de domaine par une virgule. Ne pas inclure le @.</p>
+    </div>
+    <input class="btn btn-danger" type="submit" value="Suspendre les utilisateurs associés">
+  </form>
 
-{% if fraudulent_users %}
-  <div class="col mb-3">
-    <div>
-      Nombre d'utilisateurs suspendus : {{ nb_fraud_users }}
+  {% if fraudulent_users %}
+    <div class="col mb-3">
+      <div>
+        Nombre d'utilisateurs suspendus : {{ nb_fraud_users }}
+      </div>
+      <div>
+        ID des utilisateurs suspendus :
+      </div>
+      {% for user in fraudulent_users %}
+        <div>{{ user.id }}</div>
+      {% endfor %}
+      <div>
+        Nombre de bookings annulés : {{ nb_cancelled_bookings }}
+      </div>
     </div>
-    <div>
-      ID des utilisateurs suspendus :
-    </div>
-    {% for user in fraudulent_users %}
-      <div>{{ user.id }}</div>
-    {% endfor %}
-    <div>
-      Nombre de bookings annulés : {{ nb_cancelled_bookings }}
-    </div>
-  </div>
-{% endif %}
+  {% endif %}
 {% endblock %}

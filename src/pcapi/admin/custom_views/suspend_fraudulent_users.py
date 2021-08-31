@@ -5,13 +5,19 @@ from flask_admin.form import SecureForm
 from flask_login import current_user
 from werkzeug import Response
 from wtforms import StringField
+from wtforms.validators import DataRequired
 
 from pcapi.admin.base_configuration import BaseCustomAdminView
 from pcapi.scripts.suspend_fraudulent_beneficiary_users import suspend_fraudulent_beneficiary_users_by_email_providers
 
 
 class EmailDomainsForm(SecureForm):
-    domains = StringField("Noms de domaine")
+    domains = StringField(
+        "Noms de domaine",
+        [
+            DataRequired(),
+        ],
+    )
 
 
 class SuspendFraudulentUsersView(BaseCustomAdminView):
@@ -26,7 +32,7 @@ class SuspendFraudulentUsersView(BaseCustomAdminView):
             else:
                 form = EmailDomainsForm(request.form)
                 domains = form.domains.data
-                if domains:
+                if form.validate():
                     formatted_domains = domains.replace(" ", "").split(",")
 
                     result = suspend_fraudulent_beneficiary_users_by_email_providers(
