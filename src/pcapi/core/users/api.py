@@ -158,6 +158,10 @@ def delete_expired_tokens() -> None:
     Token.query.filter(Token.expirationDate < datetime.now()).delete()
 
 
+def delete_all_users_tokens(user: User) -> None:
+    Token.query.filter(Token.user == user).delete()
+
+
 def create_account(
     email: str,
     password: str,

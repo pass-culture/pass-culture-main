@@ -240,6 +240,20 @@ class DeleteExpiredTokensTest:
         assert set(Token.query.all()) == {never_expire_token, not_expired_token}
 
 
+class DeleteUserTokenTest:
+    def test_delete_user_token(self):
+        user = users_factories.UserFactory()
+        users_factories.ResetPasswordToken(user=user)
+        users_factories.EmailValidationToken(user=user)
+
+        other_user = users_factories.BeneficiaryFactory()
+        other_token = users_factories.EmailValidationToken(user=other_user)
+
+        users_api.delete_all_users_tokens(user)
+
+        assert Token.query.one_or_none() == other_token
+
+
 class SuspendAccountTest:
     def test_suspend_admin(self):
         user = users_factories.AdminFactory()

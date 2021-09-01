@@ -397,6 +397,34 @@ class AccountCreationTest:
 
     @override_features(WHOLE_FRANCE_OPENING=True)
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    def test_account_creation_with_unvalidated_email_sends_email(self, mocked_check_recaptcha_token_is_valid, app):
+        test_client = TestClient(app.test_client())
+        subscriber = users_factories.UserFactory(email=self.identifier, isEmailValidated=False)
+        previous_token = users_factories.EmailValidationToken(user=subscriber).value
+        mocked_check_recaptcha_token_is_valid.return_value = None
+
+        data = {
+            "email": "eMail@example.com",
+            "password": "Aazflrifaoi6@",
+            "birthdate": "1960-12-31",
+            "notifications": True,
+            "token": "some-token",
+            "marketingEmailSubscription": True,
+        }
+
+        response = test_client.post("/native/v1/account", json=data)
+        assert response.status_code == 204, response.json
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
+        assert push_testing.requests == []
+        subscriber.checkPassword(data["password"])
+
+        tokens = Token.query.all()
+        assert len(tokens) == 1
+        assert previous_token != tokens[0].value
+
+    @override_features(WHOLE_FRANCE_OPENING=True)
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
         assert User.query.first() is None

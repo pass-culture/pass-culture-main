@@ -117,11 +117,20 @@ def create_account(body: serializers.AccountRequest) -> None:
             apps_flyer_platform=body.apps_flyer_platform,
         )
     except exceptions.UserAlreadyExistsException:
-        try:
-            user = find_user_by_email(body.email)
-            api.request_password_reset(user)
-        except exceptions.EmailNotSent:
-            raise ApiErrors({"email": ["L'email n'a pas pu être envoyé"]})
+        user = find_user_by_email(body.email)
+        if not user.isEmailValidated:
+            user.setPassword(body.password)
+            repository.save(user)
+            api.delete_all_users_tokens(user)
+            try:
+                api.request_email_confirmation(user)
+            except exceptions.EmailNotSent:
+                raise ApiErrors({"email": ["L'email n'a pas pu être envoyé"]})
+        else:
+            try:
+                api.request_password_reset(user)
+            except exceptions.EmailNotSent:
+                raise ApiErrors({"email": ["L'email n'a pas pu être envoyé"]})
     except exceptions.UnderAgeUserException:
         raise ApiErrors({"dateOfBirth": "The birthdate is invalid"})
 
