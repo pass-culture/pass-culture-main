@@ -31,9 +31,7 @@ class ReimbursementDetailsTest:
         )
         payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT)
 
-        payments_info = find_all_offerer_payments(
-            payment.booking.stock.offer.venue.managingOfferer.id, reimbursement_period
-        )
+        payments_info = find_all_offerer_payments(payment.booking.offerer.id, reimbursement_period)
 
         # when
         raw_csv = ReimbursementDetails(payments_info[0]).as_csv_row()
@@ -66,9 +64,7 @@ class ReimbursementDetailsTest:
         )
         payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT)
 
-        payments_info = find_all_offerer_payments(
-            payment.booking.stock.offer.venue.managingOfferer.id, reimbursement_period
-        )
+        payments_info = find_all_offerer_payments(payment.booking.offererId, reimbursement_period)
 
         # when
         raw_csv = ReimbursementDetails(payments_info[0]).as_csv_row()

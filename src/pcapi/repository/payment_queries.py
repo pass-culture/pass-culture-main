@@ -44,14 +44,12 @@ def find_not_processable_with_bank_information() -> list[Payment]:
     )
 
     predicate_matches_venue_or_offerer = (
-        (Venue.id == BankInformation.venueId) | (Offerer.id == BankInformation.offererId)
+        (Booking.venueId == BankInformation.venueId) | (Booking.offererId == BankInformation.offererId)
     ) & (BankInformation.status == BankInformationStatus.ACCEPTED)
 
     not_processable_payments_with_bank_information = (
         Payment.query.filter(Payment.id.in_(not_processable_payment_ids))
         .join(Booking)
-        .join(Venue)
-        .join(Offerer)
         .join(BankInformation, predicate_matches_venue_or_offerer)
         .all()
     )
@@ -148,8 +146,6 @@ def group_by_iban_and_bic(payment_query):
 def group_by_venue(payment_query) -> list:
     query = (
         payment_query.join(Booking)
-        .join(Stock)
-        .join(Offer)
         .join(Venue)
         .join(Offerer)
         .group_by(Venue.id, Offerer.name, Offerer.siren, Payment.iban, Payment.bic)

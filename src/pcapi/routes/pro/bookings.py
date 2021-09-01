@@ -55,7 +55,7 @@ def get_booking_by_token(token: str):
     booking = booking_repository.find_by(token, email, offer_id)
     bookings_validation.check_is_usable(booking)
 
-    if check_user_can_validate_bookings(current_user, booking.stock.offer.venue.managingOffererId):
+    if check_user_can_validate_bookings(current_user, booking.offererId):
         response = _create_response_to_get_booking_by_token(booking)
         return jsonify(response), 200
 
@@ -70,7 +70,7 @@ def patch_booking_by_token(token: str):
     booking = booking_repository.find_by(token, email, offer_id)
 
     if current_user.is_authenticated:
-        check_user_has_access_to_offerer(current_user, booking.stock.offer.venue.managingOffererId)
+        check_user_has_access_to_offerer(current_user, booking.offererId)
     else:
         check_email_and_offer_id_for_anonymous_user(email, offer_id)
 
@@ -129,14 +129,13 @@ def get_booking_by_token_v2(token: str) -> GetBookingResponse:
     Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.
     """
     booking = booking_repository.find_by(token=token)
-    offerer_id = booking.stock.offer.venue.managingOffererId
 
     if current_user.is_authenticated:
         # warning : current user is not none when user is not logged in
-        check_user_can_validate_bookings_v2(current_user, offerer_id)
+        check_user_can_validate_bookings_v2(current_user, booking.offererId)
 
     if current_api_key:
-        check_api_key_allows_to_validate_booking(current_api_key, offerer_id)
+        check_api_key_allows_to_validate_booking(current_api_key, booking.offererId)
 
     bookings_validation.check_is_usable(booking)
 
@@ -160,13 +159,12 @@ def patch_booking_use_by_token(token: str):
     Pour confirmer que la réservation a bien été utilisée par le jeune.
     """
     booking = booking_repository.find_by(token=token)
-    offerer_id = booking.stock.offer.venue.managingOffererId
 
     if current_user.is_authenticated:
-        check_user_can_validate_bookings_v2(current_user, offerer_id)
+        check_user_can_validate_bookings_v2(current_user, booking.offererId)
 
     if current_api_key:
-        check_api_key_allows_to_validate_booking(current_api_key, offerer_id)
+        check_api_key_allows_to_validate_booking(current_api_key, booking.offererId)
 
     bookings_api.mark_as_used(booking)
 
@@ -195,13 +193,12 @@ def patch_cancel_booking_by_token(token: str):
     """
     token = token.upper()
     booking = booking_repository.find_by(token=token)
-    offerer_id = booking.stock.offer.venue.managingOffererId
 
     if current_user.is_authenticated:
-        check_user_has_access_to_offerer(current_user, offerer_id)
+        check_user_has_access_to_offerer(current_user, booking.offererId)
 
     if current_api_key:
-        check_api_key_allows_to_cancel_booking(current_api_key, offerer_id)
+        check_api_key_allows_to_cancel_booking(current_api_key, booking.offererId)
 
     bookings_api.cancel_booking_by_offerer(booking)
 
@@ -224,13 +221,12 @@ def patch_booking_keep_by_token(token: str):
     # in French, to be used by Swagger for the API documentation
     """Annulation de la validation d'une réservation."""
     booking = booking_repository.find_by(token=token)
-    offerer_id = booking.stock.offer.venue.managingOffererId
 
     if current_user.is_authenticated:
-        check_user_can_validate_bookings_v2(current_user, offerer_id)
+        check_user_can_validate_bookings_v2(current_user, booking.offererId)
 
     if current_api_key:
-        check_api_key_allows_to_validate_booking(current_api_key, offerer_id)
+        check_api_key_allows_to_validate_booking(current_api_key, booking.offererId)
 
     bookings_api.mark_as_unused(booking)
 

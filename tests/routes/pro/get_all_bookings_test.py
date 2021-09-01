@@ -148,7 +148,7 @@ class Returns200Test:
                     "name": offerer.name,
                 },
                 "venue": {
-                    "identifier": humanize(booking.stock.offer.venue.id),
+                    "identifier": humanize(booking.venueId),
                     "is_virtual": booking.stock.offer.venue.isVirtual,
                     "name": booking.stock.offer.venue.name,
                 },
