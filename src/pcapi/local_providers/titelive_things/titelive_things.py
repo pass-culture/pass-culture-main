@@ -326,6 +326,12 @@ def get_extra_data_from_infos(infos: dict) -> dict:
         extra_data["comic_series"] = infos["libelle_serie_bd"]
     if infos["commentaire"] != "":
         extra_data["comment"] = trim_with_elipsis(infos["commentaire"], 92)
+    if infos["editeur"] != "":
+        extra_data["editeur"] = infos["editeur"]
+    if infos["date_parution"] != "":
+        extra_data["date_parution"] = infos["date_parution"]
+    if infos["distributeur"] != "":
+        extra_data["distributeur"] = infos["distributeur"]
     return extra_data
 
 
