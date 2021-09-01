@@ -15,7 +15,6 @@ from pcapi.models.pc_object import PcObject
 class FeatureToggle(enum.Enum):
     BENEFICIARIES_IMPORT = "Permettre limport des comptes jeunes depuis DMS"
     QR_CODE = "Permettre la validation dune contremarque via QR code"
-    SYNCHRONIZE_ALGOLIA = "Permettre la mise à jour des données pour la recherche via Algolia"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
     SYNCHRONIZE_BANK_INFORMATION = (
         "Permettre la synchronisation journalière avec DMS pour récupérer les informations bancaires des acteurs"
