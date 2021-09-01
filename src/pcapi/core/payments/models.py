@@ -73,8 +73,6 @@ class CustomReimbursementRule(ReimbursementRule, Model):
     timespan = Column(postgresql.TSRANGE)
 
     __table_args__ = (
-        # No overlapping timespan for any given offer id.
-        postgresql.ExcludeConstraint(("offerId", "="), ("timespan", "&&")),
         # A rule relates to an offer or an offerer, never both.
         CheckConstraint('num_nonnulls("offerId", "offererId") = 1'),
         # A rule has an amount or a rate, never both.
