@@ -16,6 +16,8 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.repository import generate_booking_token
+from pcapi.core.educational.models import EducationalBooking
+from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -406,12 +408,34 @@ def auto_mark_as_used_after_event() -> None:
     # fmt: off
     bookings = (
         Booking.query
-        .filter_by(isUsed=False, isCancelled=False)
-        .filter(Stock.id == Booking.stockId)
-        .filter(Stock.beginningDatetime < threshold)
+            .filter_by(isUsed=False, isCancelled=False)
+            .filter(Stock.id == Booking.stockId)
+            .filter(Stock.beginningDatetime < threshold)
+    )
+
+    individual_bookings = (
+        bookings
+        .filter(Booking.educationalBookingId == None)
+    )
+
+    educational_bookings = (
+        bookings
+        .filter(EducationalBooking.id == Booking.educationalBookingId)
+        .filter(EducationalBooking.status == EducationalBookingStatus.USED_BY_INSTITUTE)
     )
     # fmt: on
-    n_updated = bookings.update(
+    n_individual_updated = individual_bookings.update(
         {"isUsed": True, "status": BookingStatus.USED, "dateUsed": now}, synchronize_session=False
     )
-    logger.info("Automatically marked bookings as used after event", extra={"bookings": n_updated})
+
+    n_educational_updated = educational_bookings.update(
+        {"isUsed": True, "status": BookingStatus.USED, "dateUsed": now}, synchronize_session=False
+    )
+
+    logger.info(
+        "Automatically marked individual bookings as used after event",
+        extra={
+            "individualBookingsUpdatedCount": n_individual_updated,
+            "educationalBookingsUpdatedCount": n_educational_updated,
+        },
+    )

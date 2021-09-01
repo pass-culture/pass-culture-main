@@ -16,6 +16,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
@@ -803,7 +804,6 @@ class AutoMarkAsUsedAfterEventTest:
         assert booking.dateUsed == datetime(2021, 1, 1)
 
     @freeze_time("2021-01-01")
-    @pytest.mark.usefixtures("db_session")
     def test_does_not_update_when_event_date_is_only_1_day_before(self):
         event_date = datetime.now() - timedelta(days=1)
         factories.BookingFactory(stock__beginningDatetime=event_date)
@@ -826,6 +826,45 @@ class AutoMarkAsUsedAfterEventTest:
         booking = Booking.query.first()
         assert booking.isUsed
         assert booking.dateUsed == initial_date_used
+
+    def test_update_educational_booking_if_not_used_and_validated_by_principal(self):
+        event_date = datetime.now() - timedelta(days=3)
+        factories.EducationalBookingFactory(
+            stock__beginningDatetime=event_date,
+            educationalBooking__status=EducationalBookingStatus.USED_BY_INSTITUTE,
+        )
+
+        api.auto_mark_as_used_after_event()
+
+        validated_educational_booking = Booking.query.first()
+        assert validated_educational_booking.isUsed
+        assert validated_educational_booking.status == BookingStatus.USED
+
+    def test_does_not_update_educational_booking_if_not_used_and_refused_by_principal(self):
+        event_date = datetime.now() - timedelta(days=3)
+        factories.EducationalBookingFactory(
+            stock__beginningDatetime=event_date,
+            educationalBooking__status=EducationalBookingStatus.REFUSED,
+        )
+
+        api.auto_mark_as_used_after_event()
+
+        validated_educational_booking = Booking.query.first()
+        assert not validated_educational_booking.isUsed
+        assert validated_educational_booking.status is not BookingStatus.USED
+
+    def test_update_educational_booking_if_not_used_and_not_validated_by_principal_yet(self):
+        event_date = datetime.now() - timedelta(days=3)
+        factories.EducationalBookingFactory(
+            stock__beginningDatetime=event_date,
+            educationalBooking__status=None,
+        )
+
+        api.auto_mark_as_used_after_event()
+
+        validated_educational_booking = Booking.query.first()
+        assert not validated_educational_booking.isUsed
+        assert validated_educational_booking.status is not BookingStatus.USED
 
     @pytest.mark.usefixtures("db_session")
     @override_features(UPDATE_BOOKING_USED=False)
