@@ -158,7 +158,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ABO_MEDIATHEQUE',
@@ -176,7 +175,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'VOD',
@@ -194,7 +192,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ABO_PLATEFORME_VIDEO',
@@ -212,7 +209,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'AUTRE_SUPPORT_NUMERIQUE',
@@ -230,7 +226,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'CARTE_CINE_MULTISEANCES',
@@ -248,7 +243,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'CARTE_CINE_ILLIMITE',
@@ -266,7 +260,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'SEANCE_CINE',
@@ -284,7 +277,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'EVENEMENT_CINE',
@@ -302,7 +294,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'FESTIVAL_CINE',
@@ -320,7 +311,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'CINE_VENTE_DISTANCE',
@@ -338,7 +328,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'CONFERENCE',
@@ -356,7 +345,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'RENCONTRE',
@@ -374,7 +362,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'DECOUVERTE_METIERS',
@@ -392,7 +379,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'SALON',
@@ -410,7 +396,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'CONCOURS',
@@ -428,7 +413,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'RENCONTRE_JEU',
@@ -446,7 +430,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ESCAPE_GAME',
@@ -464,7 +447,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'EVENEMENT_JEU',
@@ -482,7 +464,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'JEU_EN_LIGNE',
@@ -500,7 +481,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ABO_JEU_VIDEO',
@@ -518,7 +498,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ABO_LUDOTHEQUE',
@@ -536,7 +515,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'LIVRE_PAPIER',
@@ -554,7 +532,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'BOOK',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'LIVRE_NUMERIQUE',
@@ -572,7 +549,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'BOOK',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'TELECHARGEMENT_LIVRE_AUDIO',
@@ -590,7 +566,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'LIVRE_AUDIO_PHYSIQUE',
@@ -608,7 +583,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ABO_BIBLIOTHEQUE',
@@ -626,7 +600,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ABO_LIVRE_NUMERIQUE',
@@ -644,7 +617,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'BOOK',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'FESTIVAL_LIVRE',
@@ -662,7 +634,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'CARTE_MUSEE',
@@ -680,7 +651,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ABO_MUSEE',
@@ -698,7 +668,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'VISITE',
@@ -716,7 +685,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'VISITE_GUIDEE',
@@ -734,7 +702,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'EVENEMENT_PATRIMOINE',
@@ -752,7 +719,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'VISITE_VIRTUELLE',
@@ -770,7 +736,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'CONCERT',
@@ -788,7 +753,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'EVENEMENT_MUSIQUE',
@@ -806,7 +770,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'LIVESTREAM_MUSIQUE',
@@ -824,7 +787,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ABO_CONCERT',
@@ -842,7 +804,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'SUPPORT_PHYSIQUE_MUSIQUE',
@@ -860,7 +821,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'TELECHARGEMENT_MUSIQUE',
@@ -878,7 +838,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ABO_PLATEFORME_MUSIQUE',
@@ -896,7 +855,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'CAPTATION_MUSIQUE',
@@ -914,7 +872,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'FESTIVAL_MUSIQUE',
@@ -932,7 +889,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'SEANCE_ESSAI_PRATIQUE_ART',
@@ -950,7 +906,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ATELIER_PRATIQUE_ART',
@@ -968,7 +923,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ABO_PRATIQUE_ART',
@@ -986,7 +940,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ABO_PRESSE_EN_LIGNE',
@@ -1004,7 +957,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ARTICLE_PRESSE',
@@ -1022,7 +974,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'PODCAST',
@@ -1040,7 +991,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'APP_CULTURELLE',
@@ -1058,7 +1008,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'SPECTACLE_REPRESENTATION',
@@ -1076,7 +1025,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'SPECTACLE_ENREGISTRE',
@@ -1094,7 +1042,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'NOT_REIMBURSED',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'LIVESTREAM_EVENEMENT',
@@ -1112,7 +1059,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'FESTIVAL_SPECTACLE',
@@ -1130,7 +1076,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ABO_SPECTACLE',
@@ -1148,7 +1093,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: false,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'ACHAT_INSTRUMENT',
@@ -1166,7 +1110,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'BON_ACHAT_INSTRUMENT',
@@ -1184,7 +1127,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'LOCATION_INSTRUMENT',
@@ -1202,7 +1144,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'PARTITION',
@@ -1220,7 +1161,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
       {
         id: 'MATERIEL_ART_CREATIF',
@@ -1238,7 +1178,6 @@ export const loadFakeApiCategories = () => {
         isPhysicalDeposit: true,
         reimbursementRule: 'STANDARD',
         isSelectable: true,
-        isActive: true,
       },
     ],
   }
