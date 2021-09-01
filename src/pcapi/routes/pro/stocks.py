@@ -80,7 +80,7 @@ def delete_stock(stock_id: str) -> StockIdResponseModel:
 @api_key_required
 @spectree_serialize(on_success_status=204, on_error_statuses=[401, 404], api=api, tags=["API Stocks"])
 def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:
-    """Public endpoint to update stocks of a venue registered on pass Passculture.
+    """Public endpoint to update stocks of a venue registered on pass Culture.
 
     This endpoint can only works for venues attached to the same account the api key was issued for.
     Only books, pre existing on the pass Culture database and whitelisted by pass Culture's cgu will be taken, all other stocks are filtered.
