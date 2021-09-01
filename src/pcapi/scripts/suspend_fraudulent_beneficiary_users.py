@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def suspend_fraudulent_beneficiary_users_by_email_providers(
     fraudulent_email_providers: list[str], admin_user_email: str, dry_run: bool = True
-) -> None:
+) -> dict:
     fraudulent_users = []
     admin_user = find_user_by_email(admin_user_email)
 
@@ -44,7 +44,7 @@ def suspend_fraudulent_beneficiary_users_by_email_providers(
     return {"fraudulent_users": fraudulent_users, "nb_cancelled_bookings": n_bookings}
 
 
-def _suspend_fraudulent_beneficiary_users(fraudulent_users: list[User], admin_user: User) -> None:
+def _suspend_fraudulent_beneficiary_users(fraudulent_users: list[User], admin_user: User) -> int:
     n_bookings = 0
     for fraudulent_user in fraudulent_users:
         result = suspend_account(fraudulent_user, SuspensionReason.FRAUD, admin_user)

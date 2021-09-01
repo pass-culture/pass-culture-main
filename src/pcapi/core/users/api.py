@@ -387,7 +387,7 @@ def _generate_random_password(user):
     user.password = random_hashed_password()
 
 
-def suspend_account(user: User, reason: constants.SuspensionReason, actor: User) -> None:
+def suspend_account(user: User, reason: constants.SuspensionReason, actor: User) -> dict[str, int]:
     import pcapi.core.bookings.api as bookings_api  # avoid import loop
 
     user.isActive = False
