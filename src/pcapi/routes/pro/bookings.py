@@ -102,8 +102,8 @@ def get_all_bookings(query: ListBookingsQueryModel) -> ListBookingsResponseModel
 
 # @debt api-migration
 @public_api.route("/v2/bookings/token/<token>", methods=["GET"])
-@ip_rate_limiter(deduct_when=lambda response: response.status_code != 200)
-@email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code != 200)
+@ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
+@email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
 @login_or_api_key_required
 def get_booking_by_token_v2(token: str):
     booking = booking_repository.find_by(token=token)
@@ -125,8 +125,8 @@ def get_booking_by_token_v2(token: str):
 
 # @debt api-migration
 @public_api.route("/v2/bookings/use/token/<token>", methods=["PATCH"])
-@ip_rate_limiter(deduct_when=lambda response: response.status_code != 204)
-@email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code != 204)
+@ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
+@email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
 @login_or_api_key_required
 def patch_booking_use_by_token(token: str):
     """Let a pro user mark a booking as used."""
@@ -146,8 +146,8 @@ def patch_booking_use_by_token(token: str):
 
 # @debt api-migration
 @private_api.route("/v2/bookings/cancel/token/<token>", methods=["PATCH"])
-@ip_rate_limiter(deduct_when=lambda response: response.status_code != 204)
-@email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code != 204)
+@ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
+@email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
 @login_or_api_key_required
 def patch_cancel_booking_by_token(token: str):
     """Let a pro user cancel a booking."""
@@ -168,8 +168,8 @@ def patch_cancel_booking_by_token(token: str):
 
 # @debt api-migration
 @public_api.route("/v2/bookings/keep/token/<token>", methods=["PATCH"])
-@ip_rate_limiter(deduct_when=lambda response: response.status_code != 204)
-@email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code != 204)
+@ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
+@email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
 @login_or_api_key_required
 def patch_booking_keep_by_token(token: str):
     """Let a pro user mark a booking as _not_ used."""
