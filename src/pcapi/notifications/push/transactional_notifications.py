@@ -4,6 +4,8 @@ from enum import Enum
 from typing import Optional
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_webapp_link
@@ -49,15 +51,19 @@ def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> Optio
 
 
 def get_tomorrow_stock_notification_data(stock_id: int) -> Optional[TransactionalNotificationData]:
-    stock = Stock.query.filter_by(id=stock_id).join(Booking).join(Stock.offer).one()
-    bookings = [booking for booking in stock.bookings if not booking.isCancelled]
+    stock = Stock.query.filter_by(id=stock_id).one()
+    individual_bookings = (
+        IndividualBooking.query.join(Booking, Booking.stockId == stock_id)
+        .filter(Booking.status != BookingStatus.CANCELLED)
+        .all()
+    )
 
-    if not bookings:
+    if not individual_bookings:
         return None
 
     return TransactionalNotificationData(
         group_id=GroupId.TOMORROW_STOCK.value,
-        user_ids=[booking.userId for booking in bookings],
+        user_ids=[booking.userId for booking in individual_bookings],
         message=TransactionalNotificationMessage(
             title=f"{stock.offer.name}, c'est demain !",
             body="Retrouve les détails de la réservation sur l’application pass Culture",
