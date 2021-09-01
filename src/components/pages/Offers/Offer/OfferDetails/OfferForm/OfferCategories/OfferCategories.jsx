@@ -33,7 +33,7 @@ const OfferCategories = ({
     function onCategoryChange() {
       if (categoriesFormValues.categoryId !== DEFAULT_FORM_VALUES.categoryId) {
         const options = categories.subCategories.filter(
-          subCategory => subCategory.categoryId === categoriesFormValues.categoryId
+          subCategory => subCategory.categoryId === categoriesFormValues.categoryId && subCategory.isSelectable
         )
         setSubCategoriesOptions(buildSelectOptions('id', 'proLabel', options))
       } else {

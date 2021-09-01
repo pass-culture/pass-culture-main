@@ -132,6 +132,7 @@ describe('offerDetails - Edition', () => {
           conditionalFields: ['author', 'musicType', 'performer'],
           canExpire: true,
           canBeDuo: false,
+          isSelectable: true,
         },
       ],
     }

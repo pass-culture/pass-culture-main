@@ -81,6 +81,7 @@ describe('offerDetails - Creation - admin user', () => {
           conditionalFields: ['author', 'musicType', 'performer'],
           canExpire: true,
           canBeDuo: false,
+          isSelectable: true,
         },
       ],
     }

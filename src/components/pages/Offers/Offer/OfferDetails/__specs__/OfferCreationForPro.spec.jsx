@@ -1816,7 +1816,7 @@ describe('offerDetails - Creation - pro user', () => {
       ).toBeInTheDocument()
     })
 
-    it('should display dropdown with sub categories belonging to its category', async () => {
+    it('should display dropdown with sub categories belonging to its category and are selectable', async () => {
       // Given
       await renderOffers(props, store)
 
@@ -1829,6 +1829,9 @@ describe('offerDetails - Creation - pro user', () => {
       ).toBeInTheDocument()
       expect(
         screen.queryByText('Carte cinéma illimité', { selector: 'option' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Sous-catégorie non sélectionnable', { selector: 'option' })
       ).not.toBeInTheDocument()
       expect(screen.getByLabelText('Sous-catégorie')).toBeInTheDocument()
       expect(screen.queryByText('Informations artistiques')).not.toBeInTheDocument()
