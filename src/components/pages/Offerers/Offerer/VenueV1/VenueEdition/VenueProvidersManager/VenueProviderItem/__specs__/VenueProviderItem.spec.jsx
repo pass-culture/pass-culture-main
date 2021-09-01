@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import { act, render, screen } from '@testing-library/react'
@@ -38,7 +38,6 @@ const renderVenueProvidersManager = async props => {
 describe('src | components | pages | Venue | VenueProvidersManager | VenueProviderItem', () => {
   let props
   let titeliveVenueProvider
-  let allocineVenueProvider
 
   beforeEach(async () => {
     const venue = {
@@ -56,20 +55,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       provider: {
         name: 'TiteLive',
       },
-      venueId: venue.id,
-      venueIdAtOfferProvider: 'venueIdAtOfferProvider',
-    }
-    allocineVenueProvider = {
-      id: 'venueProviderId',
-      isActive: true,
-      isDuo: true,
-      lastSyncDate: '2018-01-01T00:00:00Z',
-      nOffers: 35,
-      price: 10.1,
-      provider: {
-        name: 'Allociné',
-      },
-      quantity: 30,
       venueId: venue.id,
       venueIdAtOfferProvider: 'venueIdAtOfferProvider',
     }
@@ -141,31 +126,9 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
     expect(numberOfOffersLabel).toBeInTheDocument()
   })
 
-  it('should show synchronization modalities when venue provider is allocine', async () => {
-    // given
-    pcapi.loadVenueProviders.mockResolvedValue([allocineVenueProvider])
-
-    // when
-    await renderVenueProvidersManager(props)
-
-    // then
-    const price = queryByTextTrimHtml(screen, `Prix de vente/place : 10,10`)
-    expect(price).toBeInTheDocument()
-    const quantity = queryByTextTrimHtml(
-      screen,
-      `Nombre de places/séance : ${allocineVenueProvider.quantity}`
-    )
-    expect(quantity).toBeInTheDocument()
-    const isDuo = queryByTextTrimHtml(
-      screen,
-      `Accepter les offres DUO : ${allocineVenueProvider.isDuo ? 'Oui' : 'Non'}`
-    )
-    expect(isDuo).toBeInTheDocument()
-  })
-
   it('should show the last synchronization date', async () => {
     // given
-    pcapi.loadVenueProviders.mockResolvedValue([allocineVenueProvider])
+    pcapi.loadVenueProviders.mockResolvedValue([titeliveVenueProvider])
 
     // when
     await renderVenueProvidersManager(props)
