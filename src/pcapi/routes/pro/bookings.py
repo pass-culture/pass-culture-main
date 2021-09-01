@@ -12,10 +12,11 @@ from pcapi.flask_app import public_api
 from pcapi.models import EventType
 from pcapi.models.offer_type import ProductType
 from pcapi.routes.serialization import serialize
-from pcapi.routes.serialization import serialize_booking
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResponseModel
 from pcapi.routes.serialization.bookings_recap_serialize import _serialize_booking_recap
+from pcapi.routes.serialization.bookings_serialize import GetBookingResponse
+from pcapi.routes.serialization.bookings_serialize import get_booking_response
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
@@ -31,6 +32,9 @@ from pcapi.validation.routes.users_authorizations import check_api_key_allows_to
 from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_validate_booking
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings_v2
+
+from .blueprints import api
+from .blueprints import pro_api_v2
 
 
 # @debt api-migration
@@ -100,12 +104,29 @@ def get_all_bookings(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     )
 
 
-# @debt api-migration
-@public_api.route("/v2/bookings/token/<token>", methods=["GET"])
+@pro_api_v2.route("/bookings/token/<token>", methods=["GET"])
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
+@spectree_serialize(
+    api=api,
+    response_model=GetBookingResponse,
+    tags=["API Contremarque"],
+    code_descriptions={
+        "HTTP_200": "La contremarque existe et n’est pas validée",
+        "HTTP_401": "Authentification nécessaire",
+        "HTTP_403": "Vous n'avez pas les droits nécessaires pour voir cette contremarque",
+        "HTTP_404": "La contremarque n'existe pas",
+        "HTTP_410": "La contremarque n'est plus valide car elle a déjà été validée ou a été annulée",
+    },
+)
 @login_or_api_key_required
-def get_booking_by_token_v2(token: str):
+def get_booking_by_token_v2(token: str) -> GetBookingResponse:
+    # in French, to be used by Swagger for the API documentation
+    """Consultation d'une réservation.
+
+    Le code “contremarque” ou "token" est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation.
+    Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.
+    """
     booking = booking_repository.find_by(token=token)
 
     if current_user.is_authenticated:
@@ -117,9 +138,7 @@ def get_booking_by_token_v2(token: str):
 
     bookings_validation.check_is_usable(booking)
 
-    response = serialize_booking(booking)
-
-    return jsonify(response), 200
+    return get_booking_response(booking)
 
 
 # @debt api-migration
