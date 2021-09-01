@@ -38,6 +38,9 @@ class ReimbursementRule:
     def description(self) -> str:
         raise NotImplementedError()
 
+    def matches(self, booking: Booking, cumulative_revenue="ignored") -> bool:
+        return self.is_active(booking) and self.is_relevant(booking, cumulative_revenue)
+
     def apply(self, booking: Booking) -> Decimal:
         return Decimal(booking.total_amount * self.rate)
 

@@ -168,10 +168,10 @@ class CustomRuleFinder:
 
     def get_rule(self, booking: Booking) -> Optional[payments_models.CustomReimbursementRule]:
         for rule in self.rules_by_offer.get(booking.stock.offerId, ()):
-            if rule.is_relevant(booking) and rule.is_active(booking):
+            if rule.matches(booking):
                 return rule
         for rule in self.rules_by_offerer.get(booking.offererId, ()):
-            if rule.is_relevant(booking) and rule.is_active(booking):
+            if rule.matches(booking):
                 return rule
         return None
 
@@ -203,9 +203,7 @@ def get_reimbursement_rule(
 
     candidates = []
     for rule in REGULAR_RULES:
-        if not rule.is_active(booking):
-            continue
-        if not rule.is_relevant(booking, cumulative_revenue):
+        if not rule.matches(booking, cumulative_revenue):
             continue
         if isinstance(rule, ReimbursementRateForBookAbove20000):
             return rule
