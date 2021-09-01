@@ -22,4 +22,4 @@ class UpdateSendinblueContactRequest(BaseModel):
 @task(SENDINBLUE_CONTACTS_QUEUE_NAME, "/sendinblue/update_contact_attributes")
 def update_contact_attributes_task(payload: UpdateSendinblueContactRequest) -> None:
     if not sendinblue.make_update_request(payload):
-        raise ApiErrors(status_code=503)
+        raise ApiErrors(status_code=400)
