@@ -286,6 +286,10 @@ A la fin de l'opération, une fenêtre de votre navigateur s'ouvrira sur le work
 
 Après avoir livré en production, ne pas oublier de livrer ensuite sur les environnements d'integration.
 
+Pour connaitre le numéro de la version de l'API déployée :
+https://backend.passculture.beta.gouv.fr/health/api
+https://backend.passculture-staging.beta.gouv.fr/health/api
+
 ### Tagging des versions
 
 _Poser un tag_ consiste à sélectionner un ensemble de commits et de leur attribuer un numéro de version.
