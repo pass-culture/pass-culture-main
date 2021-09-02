@@ -122,5 +122,6 @@ def test_format_sendinblue_user():
         "LAST_VISIT_DATE": None,
         "MARKETING_EMAIL_SUBSCRIPTION": True,
         "POSTAL_CODE": None,
+        "PRODUCT_BRUT_X_USE_DATE": None,
         "USER_ID": user.id,
     }

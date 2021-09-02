@@ -49,6 +49,7 @@ class SendinblueAttributes(Enum):
     LASTNAME = "LASTNAME"
     MARKETING_EMAIL_SUBSCRIPTION = "MARKETING_EMAIL_SUBSCRIPTION"
     POSTAL_CODE = "POSTAL_CODE"
+    PRODUCT_BRUT_X_USE_DATE = "PRODUCT_BRUT_X_USE_DATE"
     USER_ID = "USER_ID"
 
     @classmethod
@@ -104,6 +105,7 @@ def format_user_attributes(user_attributes: UserAttributes) -> dict:
         SendinblueAttributes.LASTNAME.value: user_attributes.last_name,
         SendinblueAttributes.MARKETING_EMAIL_SUBSCRIPTION.value: user_attributes.marketing_email_subscription,
         SendinblueAttributes.POSTAL_CODE.value: user_attributes.postal_code,
+        SendinblueAttributes.PRODUCT_BRUT_X_USE_DATE.value: user_attributes.products_use_date.get("product_brut_x_use"),
         SendinblueAttributes.USER_ID.value: user_attributes.user_id,
     }
 
