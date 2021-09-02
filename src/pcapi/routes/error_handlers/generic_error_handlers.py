@@ -51,7 +51,7 @@ def internal_error(error: Exception) -> Union[tuple[dict, int], HTTPException]:
 
 @app.errorhandler(UnauthorizedError)
 def unauthorized_error(error: UnauthorizedError) -> Response:
-    headers = {}
+    headers: dict = {}
     if error.www_authenticate:
         headers["WWW-Authenticate"] = error.www_authenticate
         if error.realm:
@@ -110,8 +110,8 @@ def ratelimit_handler(error: Exception) -> tuple[dict, int]:
     try:
         if request.is_json and "identifier" in request.json:
             identifier = request.json["identifier"]
-    except json.JSONDecodeError:
-        pass
+    except json.JSONDecodeError as e:
+        logger.info("Could not extract user identifier from request: %s", e)
     auth = get_request_authorization()
     if auth and auth.username:
         identifier = auth.username
