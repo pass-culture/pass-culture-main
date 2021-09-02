@@ -21,6 +21,7 @@ from sqlalchemy.util._collections import AbstractKeyedTuple
 from pcapi.core.bookings import conf
 from pcapi.core.bookings.conf import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
@@ -214,7 +215,7 @@ def find_expiring_bookings_ids() -> Query:
 
 
 # TODO(yacine) remove this fonction 20 days after activation of FF ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
-def old_find_soon_to_be_expiring_booking_ordered_by_user(given_date: date = None) -> Query:
+def old_find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: date = None) -> Query:
     given_date = given_date or date.today()
     given_date = datetime.combine(given_date, time(0, 0)) + conf.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
     window = (datetime.combine(given_date, time(0, 0)), datetime.combine(given_date, time(23, 59, 59)))
@@ -225,6 +226,7 @@ def old_find_soon_to_be_expiring_booking_ordered_by_user(given_date: date = None
         .filter(
             ~Booking.isCancelled,
             ~Booking.isUsed,
+            Booking.educationalBookingId == None,
             (Booking.dateCreated + conf.BOOKINGS_AUTO_EXPIRY_DELAY).between(*window),
             Offer.canExpire,
         )
@@ -232,10 +234,10 @@ def old_find_soon_to_be_expiring_booking_ordered_by_user(given_date: date = None
     )
 
 
-def find_soon_to_be_expiring_booking_ordered_by_user(given_date: date = None) -> Query:
+def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: date = None) -> Query:
     # call old fonction if FF is disabled
     if not FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS.is_active():
-        return old_find_soon_to_be_expiring_booking_ordered_by_user(given_date)
+        return old_find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date)
 
     given_date = given_date or date.today()
     books_expiring_date = datetime.combine(given_date, time(0, 0)) + conf.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY
@@ -250,7 +252,8 @@ def find_soon_to_be_expiring_booking_ordered_by_user(given_date: date = None) ->
     )
 
     return (
-        Booking.query.join(Stock)
+        IndividualBooking.query.join(Booking)
+        .join(Stock)
         .join(Offer)
         .filter(
             ~Booking.isCancelled,

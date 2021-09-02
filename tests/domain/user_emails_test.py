@@ -32,7 +32,7 @@ from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_sub
 from pcapi.domain.user_emails import send_reset_password_email_to_native_app_user
 from pcapi.domain.user_emails import send_reset_password_email_to_pro
 from pcapi.domain.user_emails import send_reset_password_email_to_user
-from pcapi.domain.user_emails import send_soon_to_be_expired_bookings_recap_email_to_beneficiary
+from pcapi.domain.user_emails import send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_warning_to_beneficiary_after_pro_booking_cancellation
 from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
@@ -415,7 +415,7 @@ class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
         )
 
         # when
-        send_soon_to_be_expired_bookings_recap_email_to_beneficiary(
+        send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
             user, [soon_to_be_expired_cd_booking, soon_to_be_expired_dvd_booking]
         )
 

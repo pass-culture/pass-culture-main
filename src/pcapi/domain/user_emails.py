@@ -161,7 +161,9 @@ def send_admin_user_validation_email(user: User, token: Token) -> None:
     mails.send(recipients=[user.email], data=data)
 
 
-def send_soon_to_be_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings: list[Booking]) -> None:
+def send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
+    beneficiary: User, bookings: list[Booking]
+) -> None:
     data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(beneficiary, bookings)
     mails.send(recipients=[beneficiary.email], data=data)
 

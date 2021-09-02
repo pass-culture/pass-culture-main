@@ -1231,7 +1231,7 @@ class FindByProUserIdTest:
 
 class FindSoonToBeExpiredBookingsTest:
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_only_soon_to_be_expired_bookings(self, app: fixture):
+    def test_should_return_only_soon_to_be_expired_individual_bookings(self, app: fixture):
         # Given
         expired_creation_date = date.today() - timedelta(days=23)
         expired_creation_date = datetime.combine(expired_creation_date, time(12, 34, 17))
@@ -1240,29 +1240,34 @@ class FindSoonToBeExpiredBookingsTest:
         too_old_expired_creation_date = date.today() - timedelta(days=22)
         too_old_expired_creation_date = datetime.combine(too_old_expired_creation_date, time(12, 34, 17))
 
-        expected_booking = bookings_factories.BookingFactory(
+        expected_booking = bookings_factories.IndividualBookingFactory(
             dateCreated=expired_creation_date,
             stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         # offer type not expirable
-        bookings_factories.BookingFactory(
+        bookings_factories.IndividualBookingFactory(
             dateCreated=expired_creation_date,
             stock__offer__product__subcategoryId=subcategories.LIVRE_AUDIO_PHYSIQUE.id,
         )
-        bookings_factories.BookingFactory(
+        bookings_factories.IndividualBookingFactory(
             dateCreated=non_expired_creation_date,
             stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
-        bookings_factories.BookingFactory(
+        bookings_factories.IndividualBookingFactory(
             dateCreated=too_old_expired_creation_date,
+            stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        )
+        # educational booking : not concerned with notifications
+        bookings_factories.EducationalBookingFactory(
+            dateCreated=expired_creation_date,
             stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
 
         # When
-        expired_bookings = booking_repository.find_soon_to_be_expiring_booking_ordered_by_user().all()
+        expired_bookings = booking_repository.find_soon_to_be_expiring_individual_bookings_ordered_by_user().all()
 
         # Then
-        assert expired_bookings == [expected_booking]
+        assert expired_bookings == [expected_booking.individualBooking]
 
     @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
     @patch(
@@ -1275,25 +1280,25 @@ class FindSoonToBeExpiredBookingsTest:
         too_old_creation_date = datetime.combine(date.today() - timedelta(days=6), time(12, 34, 17))
         non_expired_creation_date = datetime.combine(date.today() - timedelta(days=4), time(12, 34, 17))
 
-        soon_expired_books_booking = bookings_factories.BookingFactory(
+        soon_expired_books_booking = bookings_factories.IndividualBookingFactory(
             dateCreated=soon_expired_creation_date,
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
-        bookings_factories.BookingFactory(
+        bookings_factories.IndividualBookingFactory(
             dateCreated=soon_expired_creation_date,
             stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
-        bookings_factories.BookingFactory(
+        bookings_factories.IndividualBookingFactory(
             dateCreated=too_old_creation_date,
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
-        bookings_factories.BookingFactory(
+        bookings_factories.IndividualBookingFactory(
             dateCreated=non_expired_creation_date,
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
 
-        assert booking_repository.find_soon_to_be_expiring_booking_ordered_by_user().all() == [
-            soon_expired_books_booking
+        assert booking_repository.find_soon_to_be_expiring_individual_bookings_ordered_by_user().all() == [
+            soon_expired_books_booking.individualBooking
         ]
 
     # TODO(yacine) this test should be removed 20 days after enabling FF ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
@@ -1308,20 +1313,23 @@ class FindSoonToBeExpiredBookingsTest:
         too_old_creation_date = datetime.combine(date.today() - timedelta(days=15), time(12, 34, 17))
         soon_expired_with_old_creation_date = datetime.combine(date.today() - timedelta(days=23), time(12, 34, 17))
 
-        soon_expired_with_new_creation_date = bookings_factories.BookingFactory(
+        soon_expired_with_new_creation_date = bookings_factories.IndividualBookingFactory(
             dateCreated=soon_expired_with_new_creation_date,
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
-        soon_expired_with_old_creation_date = bookings_factories.BookingFactory(
+        soon_expired_with_old_creation_date = bookings_factories.IndividualBookingFactory(
             dateCreated=soon_expired_with_old_creation_date,
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
-        bookings_factories.BookingFactory(
+        bookings_factories.IndividualBookingFactory(
             dateCreated=too_old_creation_date, stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id
         )
 
-        soon_expired_bookings = booking_repository.find_soon_to_be_expiring_booking_ordered_by_user().all()
-        assert set(soon_expired_bookings) == {soon_expired_with_new_creation_date, soon_expired_with_old_creation_date}
+        soon_expired_bookings = booking_repository.find_soon_to_be_expiring_individual_bookings_ordered_by_user().all()
+        assert set(soon_expired_bookings) == {
+            soon_expired_with_new_creation_date.individualBooking,
+            soon_expired_with_old_creation_date.individualBooking,
+        }
 
 
 class GetActiveBookingsQuantityForOffererTest:

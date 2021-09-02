@@ -33,7 +33,7 @@ from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron
 from pcapi.scripts.beneficiary import remote_import, remote_tag_has_completed
 from pcapi.scripts.booking.handle_expired_bookings import handle_expired_bookings
-from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_bookings
+from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_individual_bookings
 from pcapi.workers.push_notification_job import send_tomorrow_stock_notification
 
 
@@ -110,8 +110,8 @@ def pc_handle_expired_bookings(app: Flask) -> None:
 
 @log_cron
 @cron_context
-def pc_notify_soon_to_be_expired_bookings(app: Flask) -> None:
-    notify_soon_to_be_expired_bookings()
+def pc_notify_soon_to_be_expired_individual_bookings(app: Flask) -> None:
+    notify_soon_to_be_expired_individual_bookings()
 
 
 @log_cron
@@ -189,7 +189,7 @@ def main() -> None:
     )
 
     scheduler.add_job(
-        pc_notify_soon_to_be_expired_bookings,
+        pc_notify_soon_to_be_expired_individual_bookings,
         "cron",
         [app],
         day="*",
