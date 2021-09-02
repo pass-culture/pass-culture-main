@@ -298,10 +298,11 @@ def find_expired_individual_bookings_ordered_by_user(expired_on: date = None) ->
     )
 
 
-def find_expired_bookings_ordered_by_offerer(expired_on: date = None) -> Query:
+def find_expired_individual_bookings_ordered_by_offerer(expired_on: date = None) -> Query:
     expired_on = expired_on or date.today()
     return (
-        Booking.query.join(Stock)
+        IndividualBooking.query.join(Booking)
+        .join(Stock)
         .join(Offer)
         .join(Venue)
         .join(Offerer)

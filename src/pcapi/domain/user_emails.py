@@ -144,7 +144,7 @@ def send_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings
     mails.send(recipients=[beneficiary.email], data=data)
 
 
-def send_expired_bookings_recap_email_to_offerer(offerer: Offerer, bookings: list[Booking]) -> None:
+def send_expired_individual_bookings_recap_email_to_offerer(offerer: Offerer, bookings: list[Booking]) -> None:
     offerer_booking_email = bookings[0].stock.offer.bookingEmail
     if offerer_booking_email:
         data = build_expired_bookings_recap_email_data_for_offerer(offerer, bookings)

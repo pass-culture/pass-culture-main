@@ -22,7 +22,7 @@ from pcapi.domain.user_emails import send_beneficiary_booking_cancellation_email
 from pcapi.domain.user_emails import send_booking_confirmation_email_to_beneficiary
 from pcapi.domain.user_emails import send_booking_confirmation_email_to_offerer
 from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_beneficiary
-from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_offerer
+from pcapi.domain.user_emails import send_expired_individual_bookings_recap_email_to_offerer
 from pcapi.domain.user_emails import send_newly_eligible_user_email
 from pcapi.domain.user_emails import send_offer_validation_status_update_email
 from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
@@ -377,7 +377,9 @@ class SendExpiredBookingsRecapEmailToOffererTest:
         expired_today_dvd_booking = BookingFactory(stock__offer__bookingEmail="offerer.booking@example.com")
         expired_today_cd_booking = BookingFactory(stock__offer__bookingEmail="offerer.booking@example.com")
 
-        send_expired_bookings_recap_email_to_offerer(offerer, [expired_today_cd_booking, expired_today_dvd_booking])
+        send_expired_individual_bookings_recap_email_to_offerer(
+            offerer, [expired_today_cd_booking, expired_today_dvd_booking]
+        )
 
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1952508
 

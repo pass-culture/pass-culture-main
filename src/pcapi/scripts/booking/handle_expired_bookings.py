@@ -10,7 +10,7 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_beneficiary
-from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_offerer
+from pcapi.domain.user_emails import send_expired_individual_bookings_recap_email_to_offerer
 from pcapi.models import db
 
 
@@ -36,7 +36,7 @@ def handle_expired_bookings() -> None:
 
         try:
             logger.info("[handle_expired_bookings] STEP 3 : notify_offerers_of_expired_bookings()")
-            notify_offerers_of_expired_bookings()
+            notify_offerers_of_expired_individual_bookings()
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("[handle_expired_bookings] Error in STEP 3 : %s", e)
 
@@ -123,21 +123,23 @@ def notify_users_of_expired_individual_bookings(expired_on: datetime.date = None
     logger.info("[notify_users_of_expired_bookings] End")
 
 
-def notify_offerers_of_expired_bookings(expired_on: datetime.date = None) -> None:
+def notify_offerers_of_expired_individual_bookings(expired_on: datetime.date = None) -> None:
     expired_on = expired_on or datetime.date.today()
     logger.info("[notify_offerers_of_expired_bookings] Start")
 
-    expired_bookings_ordered_by_offerer = bookings_repository.find_expired_bookings_ordered_by_offerer(expired_on)
-    expired_bookings_grouped_by_offerer = dict()
-    for offerer, booking in groupby(
-        expired_bookings_ordered_by_offerer, attrgetter("stock.offer.venue.managingOfferer")
+    expired_individual_bookings_ordered_by_offerer = (
+        bookings_repository.find_expired_individual_bookings_ordered_by_offerer(expired_on)
+    )
+    expired_individual_bookings_grouped_by_offerer = dict()
+    for offerer, individual_bookings in groupby(
+        expired_individual_bookings_ordered_by_offerer, attrgetter("booking.stock.offer.venue.managingOfferer")
     ):
-        expired_bookings_grouped_by_offerer[offerer] = list(booking)
+        expired_individual_bookings_grouped_by_offerer[offerer] = list(individual_bookings)
 
     notified_offerers = []
 
-    for offerer, bookings in expired_bookings_grouped_by_offerer.items():
-        send_expired_bookings_recap_email_to_offerer(offerer, bookings)
+    for offerer, individual_bookings in expired_individual_bookings_grouped_by_offerer.items():
+        send_expired_individual_bookings_recap_email_to_offerer(offerer, individual_bookings)
         notified_offerers.append(offerer)
 
     logger.info(
@@ -146,4 +148,4 @@ def notify_offerers_of_expired_bookings(expired_on: datetime.date = None) -> Non
         notified_offerers,
     )
 
-    logger.info("[notify_offerers_of_expired_bookings] End")
+    logger.info("[notify_offerers_of_expired_individual_bookings] End")
