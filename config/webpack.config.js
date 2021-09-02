@@ -167,8 +167,8 @@ module.exports = function (webpackEnv) {
     bail: isEnvProduction,
     devtool: isEnvProduction
       ? shouldUseSourceMap
-          ? 'source-map'
-          : false
+        ? 'source-map'
+        : false
       : isEnvDevelopment && 'cheap-module-source-map',
     // These are the "entry points" to our application.
     // This means they will be the "root" imports that are included in JS bundle.
@@ -393,6 +393,10 @@ module.exports = function (webpackEnv) {
                 customize: require.resolve('babel-preset-react-app/webpack-overrides'),
 
                 plugins: [
+                  [
+                    require.resolve('babel-plugin-typescript-to-proptypes'), 
+                    { implicitChildren: true }
+                  ],
                   [
                     require.resolve('babel-plugin-named-asset-import'),
                     {

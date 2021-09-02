@@ -19,7 +19,7 @@ const comonConfig = {
   globals: {
     fixture: 'readonly',
   },
-  parser: 'babel-eslint',
+  parser: '@typescript-eslint/parser',
   plugins: ['only-warn'],
   rules: {
     indent: [
@@ -35,6 +35,7 @@ const comonConfig = {
         alphabetize: { order: 'asc', caseInsensitive: true },
       },
     ],
+    'object-curly-spacing': ['error', 'always'],
     'jest/no-hooks': 'off',
     'jest/prefer-expect-assertions': 'off',
     'jest/prefer-inline-snapshots': 'off',
@@ -51,6 +52,7 @@ const comonConfig = {
     ],
     'react/jsx-no-literals': 'off',
     'react/jsx-curly-brace-presence': [2, { props: 'never', children: 'never' }],
+    'react/jsx-filename-extension': [1, { extensions: ['.jsx', '.tsx'] }],
     'react/jsx-fragments': 'off',
     'react/jsx-indent': [2, 2, { indentLogicalExpressions: true }],
     'react/jsx-indent-props': [2, 2],
@@ -96,11 +98,19 @@ const comonConfig = {
         'react/jsx-child-element-spacing': 'off',
       },
     },
+    {
+      files: ['**/*.ts?(x)'],
+      plugins: ['@typescript-eslint/eslint-plugin'],
+      extends: ["plugin:@typescript-eslint/recommended"],
+      rules: {
+        'react/prop-types': 'off',
+      },
+    },
   ],
   settings: {
     'import/resolver': {
       node: {
-        extensions: ['.js', '.jsx'],
+        extensions: ['.js', '.jsx', '.ts', '.jsx', '.tsx'],
         paths: ['.'],
         moduleDirectory: ['node_modules', 'src'],
       },
