@@ -14,7 +14,7 @@ from tests.conftest import TestClient
 
 @pytest.mark.usefixtures("db_session")
 def test_patch_beneficiary(app):
-    user = BeneficiaryFactory()
+    user = BeneficiaryFactory(deposit__version=1)
     data = {
         "publicName": "Anne",
     }

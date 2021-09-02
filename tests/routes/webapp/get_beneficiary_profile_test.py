@@ -89,10 +89,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_booked_some_offers(self, app):
         # Given
-        user = BeneficiaryFactory(
-            email="wallet_test@email.com",
-            postalCode="93020",
-        )
+        user = BeneficiaryFactory(email="wallet_test@email.com", postalCode="93020", deposit__version=1)
 
         offerer = create_offerer(
             siren="999199987", address="2 Test adress", city="Test city", postal_code="93000", name="Test offerer"
@@ -120,10 +117,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_cancelled_some_offers(self, app):
         # Given
-        CancelledBookingFactory(
-            user__email="wallet_test@email.com",
-            user__postalCode="75130",
-        )
+        CancelledBookingFactory(user__email="wallet_test@email.com", user__postalCode="75130", user__deposit__version=1)
 
         # When
         response = (

@@ -252,7 +252,7 @@ class InsufficientFundsSQLCheckTest:
 
     def test_insufficient_funds_when_user_has_negative_deposit(self):
         # The user once booked.
-        booking = factories.BookingFactory()
+        booking = factories.BookingFactory(user__deposit__version=1)
         user = booking.user
         assert user.wallet_balance == 490
 

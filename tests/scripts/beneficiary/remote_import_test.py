@@ -5,6 +5,7 @@ from unittest.mock import ANY
 from unittest.mock import Mock
 from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
 from mailjet_rest import Client
 import pytest
 
@@ -282,11 +283,12 @@ class ProcessBeneficiaryApplicationTest:
         # given
         app.mailjet_client = Mock(spec=Client)
         app.mailjet_client.send = Mock()
+        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
         information = fraud_models.DMSContent(
             department="93",
             last_name="Doe",
             first_name="Jane",
-            birth_date=datetime(2000, 5, 1),
+            birth_date=eighteen_years_in_the_past,
             email="jane.doe@example.com",
             phone="0612345678",
             postal_code="93130",
@@ -316,11 +318,12 @@ class ProcessBeneficiaryApplicationTest:
         # given
         app.mailjet_client = Mock(spec=Client)
         app.mailjet_client.send = Mock()
+        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
         information = fraud_models.DMSContent(
             department="93",
             last_name="Doe",
             first_name="Jane",
-            birth_date=datetime(2000, 5, 1),
+            birth_date=eighteen_years_in_the_past,
             email="jane.doe@example.com",
             phone="0612345678",
             postal_code="93130",
@@ -985,11 +988,12 @@ class RunIntegrationTest:
         send_activation_email,
     ):
         # given
+        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
         information = fraud_factories.DMSContentFactory(
             department="93",
             last_name="Doe",
             first_name="Jane",
-            birth_date=datetime(2000, 5, 1),
+            birth_date=eighteen_years_in_the_past,
             email="jane.doe@example.com",
             phone="0612345678",
             postal_code="93130",
@@ -1044,11 +1048,12 @@ class RunIntegrationTest:
         send_accepted_as_beneficiary_email,
     ):
         # given
+        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
         information = fraud_factories.DMSContentFactory(
             department="93",
             last_name="Doe",
             first_name="Jane",
-            birth_date=datetime(2000, 5, 1),
+            birth_date=eighteen_years_in_the_past,
             email="jane.doe@example.com",
             phone="0612345678",
             postal_code="93130",
@@ -1058,7 +1063,7 @@ class RunIntegrationTest:
             activity="Étudiant",
         )
         users_factories.UserFactory(
-            email="unexistant@example.com", dateOfBirth=datetime(2000, 5, 1), firstName="Jane", lastName="Doe"
+            email="unexistant@example.com", dateOfBirth=eighteen_years_in_the_past, firstName="Jane", lastName="Doe"
         )
         users_factories.UserFactory(firstName="Jane", lastName="Doe", email="jane.doe@example.com")
         find_applications_ids_to_retryretry_ids.return_value = [123]

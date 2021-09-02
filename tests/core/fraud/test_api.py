@@ -1,6 +1,7 @@
 import datetime
 from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
 import pytest
 
 import pcapi.core.fraud.api as fraud_api
@@ -16,12 +17,13 @@ from pcapi.flask_app import db
 class JouveFraudCheckTest:
     application_id = 35
     user_email = "tour.de.passpass@example.com"
+    eighteen_years_in_the_past = datetime.datetime.now() - relativedelta(years=18, months=4)
 
     JOUVE_CONTENT = {
         "activity": "Etudiant",
         "address": "",
-        "birthDate": "06/08/2002",
-        "birthDateTxt": "06/08/2002",
+        "birthDate": f"{eighteen_years_in_the_past:%d/%m/%Y}",
+        "birthDateTxt": f"{eighteen_years_in_the_past:%d/%m/%Y}",
         "birthLocation": "STRASBOURG I67)",
         "birthLocationCtrl": "OK",
         "bodyBirthDate": "06 06 2002",
@@ -60,9 +62,8 @@ class JouveFraudCheckTest:
     def test_jouve_update(self, _get_raw_content, client):
         user = users_factories.UserFactory(
             hasCompletedIdCheck=True,
-            isBeneficiary=False,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            dateOfBirth=datetime.datetime(2002, 6, 8),
+            dateOfBirth=self.eighteen_years_in_the_past,
             email=self.user_email,
         )
         _get_raw_content.return_value = self.JOUVE_CONTENT
@@ -89,14 +90,14 @@ class JouveFraudCheckTest:
         existing_user = users_factories.BeneficiaryFactory(
             firstName="Christophe",
             lastName="Dupo",
-            dateOfBirth=datetime.datetime(2002, 6, 8),
+            dateOfBirth=self.eighteen_years_in_the_past,
             idPieceNumber="140767100016",
         )
         user = users_factories.UserFactory(
             hasCompletedIdCheck=True,
             isBeneficiary=False,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            dateOfBirth=datetime.datetime(2002, 6, 8),
+            dateOfBirth=self.eighteen_years_in_the_past,
             email=self.user_email,
         )
         _get_raw_content.return_value = self.JOUVE_CONTENT
@@ -107,7 +108,10 @@ class JouveFraudCheckTest:
         fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(user=user).first()
 
         assert fraud_result.status == fraud_models.FraudStatus.SUSPICIOUS
-        assert fraud_result.reason == f"Le n° de cni 140767100016 est déjà pris par l'utilisateur {existing_user.id}"
+        assert (
+            fraud_result.reason
+            == f"Duplicat de l'utilisateur {existing_user.id} ; Le n° de cni 140767100016 est déjà pris par l'utilisateur {existing_user.id}"
+        )
 
         db.session.refresh(user)
         assert not user.isBeneficiary

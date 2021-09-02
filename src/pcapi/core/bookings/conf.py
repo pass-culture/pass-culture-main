@@ -1,6 +1,8 @@
 import datetime
 from decimal import Decimal
 
+from dateutil.relativedelta import relativedelta
+
 from pcapi import settings
 from pcapi.models.deposit import DepositType
 from pcapi.models.feature import FeatureToggle
@@ -34,6 +36,8 @@ BOOKING_CONFIRMATION_ERROR_CLAUSES = {
     f" avant le début de l'événement",
 }
 
+GRANT_18_VALIDITY_IN_YEARS = 2
+
 
 class BaseLimitConfiguration:
     TOTAL_CAP = None
@@ -58,8 +62,62 @@ class BaseLimitConfiguration:
         )
     # fmt: on
 
+    def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
+        pass
 
-class Age18LimitConfigurationV1(BaseLimitConfiguration):
+
+class Grant15LimitConfiguration(BaseLimitConfiguration):
+    TOTAL_CAP = Decimal(20)
+    DIGITAL_CAP = None
+    PHYSICAL_CAP = None
+
+    def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
+        return datetime.datetime(
+            year=datetime.date.today().year,
+            month=birth_date.month,
+            day=birth_date.day,
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
+
+
+class Grant16LimitConfiguration(BaseLimitConfiguration):
+    TOTAL_CAP = Decimal(30)
+    DIGITAL_CAP = None
+    PHYSICAL_CAP = None
+
+    def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
+        return datetime.datetime(
+            year=datetime.date.today().year,
+            month=birth_date.month,
+            day=birth_date.day,
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
+
+
+class Grant17LimitConfiguration(BaseLimitConfiguration):
+    TOTAL_CAP = Decimal(30)
+    DIGITAL_CAP = None
+    PHYSICAL_CAP = None
+
+    def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
+        return datetime.datetime(
+            year=datetime.date.today().year,
+            month=birth_date.month,
+            day=birth_date.day,
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
+
+
+class Grant18LimitConfigurationV1(BaseLimitConfiguration):
     # For now this total cap duplicates what we store in `Deposit.amount`.
     TOTAL_CAP = Decimal(500)
 
@@ -86,8 +144,11 @@ class Age18LimitConfigurationV1(BaseLimitConfiguration):
         ThingType.MATERIEL_ART_CREA,
     }
 
+    def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
+        return datetime.datetime.utcnow() + relativedelta(years=GRANT_18_VALIDITY_IN_YEARS)
 
-class Age18LimitConfigurationV2(BaseLimitConfiguration):
+
+class Grant18LimitConfigurationV2(BaseLimitConfiguration):
     # For now this total cap duplicates what we store in `Deposit.amount`.
     TOTAL_CAP = Decimal(300)
 
@@ -104,12 +165,24 @@ class Age18LimitConfigurationV2(BaseLimitConfiguration):
 
     PHYSICAL_CAP = None
 
+    def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
+        return datetime.datetime.utcnow() + relativedelta(years=GRANT_18_VALIDITY_IN_YEARS)
+
 
 LIMIT_CONFIGURATIONS = {
+    DepositType.GRANT_15: {
+        1: Grant15LimitConfiguration(),
+    },
+    DepositType.GRANT_16: {
+        1: Grant16LimitConfiguration(),
+    },
+    DepositType.GRANT_17: {
+        1: Grant17LimitConfiguration(),
+    },
     DepositType.GRANT_18: {
-        1: Age18LimitConfigurationV1(),
-        2: Age18LimitConfigurationV2(),
-    }
+        1: Grant18LimitConfigurationV1(),
+        2: Grant18LimitConfigurationV2(),
+    },
 }
 
 

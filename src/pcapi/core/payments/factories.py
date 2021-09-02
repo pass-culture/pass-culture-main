@@ -14,31 +14,61 @@ from pcapi.domain import reimbursement
 from pcapi.models import payment_status
 from pcapi.models.deposit import DepositType
 
-from . import api
 from . import models as payments_models
 
 
 REIMBURSEMENT_RULE_DESCRIPTIONS = {t.description for t in reimbursement.REGULAR_RULES}
 
 
-class DepositAge18Factory(BaseFactory):
+class DepositGrant17Factory(BaseFactory):
     class Meta:
         model = models.Deposit
 
     user = factory.SubFactory(users_factories.BeneficiaryFactory)
     source = "public"
-    type = DepositType.GRANT_18
     version = 1
-    expirationDate = factory.LazyFunction(api._get_expiration_date)
+    type = DepositType.GRANT_17
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        if "amount" in kwargs:
+            raise ValueError("You cannot directly set deposit amount: set version instead")
+        version = kwargs.get("version", bookings_conf.get_current_deposit_version_for_type(DepositType.GRANT_17))
+        deposit_configuration = bookings_conf.get_limit_configuration_for_type_and_version(
+            DepositType.GRANT_17, version
+        )
+        amount = deposit_configuration.TOTAL_CAP
+        kwargs["version"] = version
+        kwargs["amount"] = amount
+        if "expirationDate" not in kwargs:
+            beneficiary = kwargs.get("user")
+            kwargs["expirationDate"] = deposit_configuration.compute_expiration_date(beneficiary.dateOfBirth)
+        return super()._create(model_class, *args, **kwargs)
+
+
+class DepositGrant18Factory(BaseFactory):
+    class Meta:
+        model = models.Deposit
+
+    user = factory.SubFactory(users_factories.BeneficiaryFactory)
+    source = "public"
+    version = 2
+    type = DepositType.GRANT_18
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         if "amount" in kwargs:
             raise ValueError("You cannot directly set deposit amount: set version instead")
         version = kwargs.get("version", bookings_conf.get_current_deposit_version_for_type(DepositType.GRANT_18))
-        amount = bookings_conf.get_limit_configuration_for_type_and_version(DepositType.GRANT_18, version).TOTAL_CAP
+        deposit_configuration = bookings_conf.get_limit_configuration_for_type_and_version(
+            DepositType.GRANT_18, version
+        )
+        amount = deposit_configuration.TOTAL_CAP
         kwargs["version"] = version
         kwargs["amount"] = amount
+        if "expirationDate" not in kwargs:
+            beneficiary = kwargs.get("user")
+            kwargs["expirationDate"] = deposit_configuration.compute_expiration_date(beneficiary.dateOfBirth)
         return super()._create(model_class, *args, **kwargs)
 
 

@@ -13,13 +13,13 @@ import requests_mock
 
 from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings.conf import GRANT_18_VALIDITY_IN_YEARS
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.payments.api import DEPOSIT_VALIDITY_IN_YEARS
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
@@ -181,7 +181,7 @@ class ValidateJwtTokenTest:
 class GenerateIdCheckTokenIfEligibleTest:
     @freeze_time("2018-06-01")
     def test_when_elible(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False)
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
         token = create_id_check_token(user)
         assert token
 
@@ -446,7 +446,7 @@ class ChangeUserEmailTest:
 class CreateBeneficiaryTest:
     def test_with_eligible_user(self):
         eligible_date = date.today() - relativedelta(years=18, days=30)
-        user = users_factories.UserFactory(isBeneficiary=False, roles=[], dateOfBirth=eligible_date)
+        user = users_factories.UserFactory(roles=[], dateOfBirth=eligible_date)
         user = users_api.activate_beneficiary(user, "test")
         assert user.isBeneficiary
         assert user.has_beneficiary_role
@@ -455,7 +455,7 @@ class CreateBeneficiaryTest:
     def test_apps_flyer_called(self):
         eligible_date = date.today() - relativedelta(years=18, days=30)
         apps_flyer_data = {"apps_flyer": {"user": "some-user-id", "platform": "ANDROID"}}
-        user = users_factories.UserFactory(isBeneficiary=False, dateOfBirth=eligible_date, externalIds=apps_flyer_data)
+        user = users_factories.UserFactory(dateOfBirth=eligible_date, externalIds=apps_flyer_data)
 
         expected = {
             "customer_user_id": str(user.id),
@@ -475,7 +475,7 @@ class CreateBeneficiaryTest:
 
     def test_external_users_updated(self):
         eligible_date = date.today() - relativedelta(years=18, days=30)
-        user = users_factories.UserFactory(isBeneficiary=False, roles=[], dateOfBirth=eligible_date)
+        user = users_factories.UserFactory(roles=[], dateOfBirth=eligible_date)
         users_api.activate_beneficiary(user, "test")
 
         assert len(batch_testing.requests) == 1
@@ -487,9 +487,7 @@ class StepsToBecomeBeneficiaryTest:
         eligible_date = date.today() - relativedelta(years=18, days=30)
         phone_validation_status = PhoneValidationStatusType.VALIDATED if validate_phone else None
 
-        return users_factories.UserFactory(
-            isBeneficiary=False, dateOfBirth=eligible_date, phoneValidationStatus=phone_validation_status
-        )
+        return users_factories.UserFactory(dateOfBirth=eligible_date, phoneValidationStatus=phone_validation_status)
 
     def set_beneficiary_import(self, user, status: str = ImportStatus.CREATED) -> BeneficiaryImport:
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user, source=BeneficiaryImportSources.jouve)
@@ -546,7 +544,8 @@ class StepsToBecomeBeneficiaryTest:
 class FulfillBeneficiaryDataTest:
     def test_fill_user_with_password_token_and_deposit(self):
         # given
-        user = User()
+        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
+        user = users_factories.UserFactory(dateOfBirth=eighteen_years_in_the_past)
 
         # when
         user = fulfill_beneficiary_data(user, "deposit_source", None)
@@ -558,7 +557,8 @@ class FulfillBeneficiaryDataTest:
 
     def test_fill_user_with_specific_deposit_version(self):
         # given
-        user = User()
+        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
+        user = users_factories.UserFactory(dateOfBirth=eighteen_years_in_the_past)
 
         # when
         user = fulfill_beneficiary_data(user, "deposit_source", 2)
@@ -713,7 +713,7 @@ class DomainsCreditTest:
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
-        with freeze_time(datetime.now() + relativedelta(years=DEPOSIT_VALIDITY_IN_YEARS, days=2)):
+        with freeze_time(datetime.now() + relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, days=2)):
             assert get_domains_credit(user) == DomainsCredit(
                 all=Credit(initial=Decimal(300), remaining=Decimal(0)),
                 digital=Credit(initial=Decimal(100), remaining=Decimal(0)),
@@ -721,7 +721,7 @@ class DomainsCreditTest:
             )
 
     def test_get_domains_credit_no_deposit(self):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory()
 
         assert not get_domains_credit(user)
 
@@ -733,9 +733,9 @@ class UpdateBeneficiaryMandatoryInformationTest:
         Test that the user's id check profile information are updated and that
         it becomes beneficiary (and therefore has a deposit)
         """
+        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
         user = users_factories.UserFactory(
-            isBeneficiary=False,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED, dateOfBirth=eighteen_years_in_the_past
         )
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.CREATED)
@@ -767,7 +767,6 @@ class UpdateBeneficiaryMandatoryInformationTest:
         imported
         """
         user = users_factories.UserFactory(
-            isBeneficiary=False,
             phoneValidationStatus=None,  # missing step to become beneficiary
         )
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
@@ -926,7 +925,7 @@ class VerifyIdentityDocumentInformationsTest:
         self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
     ):
         # Given
-        existing_user = users_factories.BeneficiaryFactory(isBeneficiary=False)
+        existing_user = users_factories.UserFactory()
         mocked_get_identity_informations.return_value = (existing_user.email, b"")
         mocked_ask_for_identity.return_value = (False, "invalid-document-date")
 

@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi.core.testing import override_settings
@@ -47,7 +50,8 @@ def test_send_phone_validation_and_become_beneficiary(app):
     Test that a user with a CREATED import becomes a beneficiary once its phone
     number is vaidated.
     """
-    user = UserFactory(isBeneficiary=False, isEmailValidated=True, phoneNumber="+33601020304")
+    eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
+    user = UserFactory(dateOfBirth=eighteen_years_in_the_past, isEmailValidated=True, phoneNumber="+33601020304")
     beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
     beneficiary_import.setStatus(ImportStatus.CREATED)
 

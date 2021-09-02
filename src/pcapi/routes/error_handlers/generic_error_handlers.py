@@ -11,7 +11,7 @@ from werkzeug.exceptions import MethodNotAllowed
 from werkzeug.exceptions import NotFound
 
 import pcapi.core.offers.exceptions as offers_exceptions
-from pcapi.core.payments.exceptions import AlreadyActivatedException
+from pcapi.core.payments.exceptions import DepositTypeAlreadyGrantedException
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
@@ -92,8 +92,8 @@ def date_time_cast_error(error: DateTimeCastError) -> tuple[dict, int]:
     return jsonify(api_errors.errors), 400
 
 
-@app.errorhandler(AlreadyActivatedException)
-def already_activated_exception(error: AlreadyActivatedException) -> tuple[dict, int]:
+@app.errorhandler(DepositTypeAlreadyGrantedException)
+def already_activated_exception(error: DepositTypeAlreadyGrantedException) -> tuple[dict, int]:
     logger.error(json.dumps(error.errors))
     return jsonify(error.errors), 405
 

@@ -70,7 +70,7 @@ def test_run_sendinblue_only(mock_import_contacts):
 
 @pytest.mark.usefixtures("db_session")
 def test_format_batch_user():
-    user = BeneficiaryFactory()
+    user = BeneficiaryFactory(deposit__version=1)
     booking = BookingFactory(user=user)
 
     res = format_batch_users([user])
@@ -92,7 +92,7 @@ def test_format_batch_user():
 
 @pytest.mark.usefixtures("db_session")
 def test_format_sendinblue_user():
-    user = BeneficiaryFactory()
+    user = BeneficiaryFactory(deposit__version=1)
     booking = BookingFactory(user=user)
 
     res = format_sendinblue_users([user])

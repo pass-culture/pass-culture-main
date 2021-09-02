@@ -110,7 +110,7 @@ class BookOfferConcurrencyTest:
 class BookOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_create_booking(self, mocked_async_index_offer_ids, app):
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryFactory(deposit__version=1)
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
 
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
@@ -199,7 +199,7 @@ class BookOfferTest:
 
     def test_create_event_booking(self):
         ten_days_from_now = datetime.utcnow() + timedelta(days=10)
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryFactory(deposit__version=1)
         stock = offers_factories.StockFactory(price=10, beginningDatetime=ten_days_from_now, dnBookedQuantity=5)
 
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)

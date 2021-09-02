@@ -1,3 +1,7 @@
+from datetime import datetime
+
+from dateutil.relativedelta import relativedelta
+
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -10,8 +14,11 @@ def test_should_grant_wallet_to_existing_users(app, db_session):
     # given
     # The build method is explicitly called to avoid the deposit generation
     # which is done if the Factory saves the object.
-    beneficiary = users_factories.UserFactory.build(email="email@example.com")
-    beneficiary_2 = users_factories.UserFactory.build(email="email2@example.com")
+    eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
+    beneficiary = users_factories.UserFactory.build(dateOfBirth=eighteen_years_in_the_past, email="email@example.com")
+    beneficiary_2 = users_factories.UserFactory.build(
+        dateOfBirth=eighteen_years_in_the_past, email="email2@example.com"
+    )
     repository.save(beneficiary, beneficiary_2)
 
     # when
@@ -37,8 +44,11 @@ def test_should_grant_wallet_to_existing_users(app, db_session):
 @override_features(APPLY_BOOKING_LIMITS_V2=False)
 def test_should_grant_wallet_to_existing_users_with_v1_deposit(app, db_session):
     # given
-    beneficiary = users_factories.UserFactory.build(email="email@example.com")
-    beneficiary_2 = users_factories.UserFactory.build(email="email2@example.com")
+    eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
+    beneficiary = users_factories.UserFactory.build(dateOfBirth=eighteen_years_in_the_past, email="email@example.com")
+    beneficiary_2 = users_factories.UserFactory.build(
+        dateOfBirth=eighteen_years_in_the_past, email="email2@example.com"
+    )
     repository.save(beneficiary, beneficiary_2)
 
     # when

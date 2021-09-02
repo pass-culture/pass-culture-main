@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from freezegun import freeze_time
+from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi.core.testing import override_features
@@ -17,10 +17,12 @@ from pcapi.notifications.push import testing as push_testing
 from tests.conftest import TestClient
 
 
+eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
 JOUVE_CONTENT = {
     "activity": "Apprenti",
     "address": "3 rue de Valois",
-    "birthDateTxt": "22/05/1995",
+    "birthDate": f"{eighteen_years_in_the_past:%d/%m/%Y}",
+    "birthDateTxt": f"{eighteen_years_in_the_past:%d/%m/%Y}",
     "birthLocationCtrl": "OK",
     "bodyBirthDateCtrl": "OK",
     "bodyBirthDateLevel": 100,
@@ -63,7 +65,6 @@ class Returns200Test:
     @patch("pcapi.domain.user_emails.send_activation_email")
     @patch("pcapi.domain.password.random_token")
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-    @freeze_time("2013-05-15 09:00:00")
     @pytest.mark.usefixtures("db_session")
     def test_user_becomes_beneficiary(
         self,
@@ -85,7 +86,6 @@ class Returns200Test:
 
         users_factories.UserFactory(
             email="rennes@example.org",
-            isBeneficiary=False,
             isEmailValidated=True,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
         )
@@ -103,7 +103,7 @@ class Returns200Test:
         assert beneficiary.isBeneficiary is True
         assert beneficiary.city == "Paris"
         assert beneficiary.civility == "Mme"
-        assert beneficiary.dateOfBirth == datetime(1995, 5, 22)
+        assert beneficiary.dateOfBirth.date() == eighteen_years_in_the_past.date()
         assert beneficiary.departementCode == "35"
         assert beneficiary.email == "rennes@example.org"
         assert beneficiary.firstName == "Thomas"
@@ -140,7 +140,6 @@ class Returns200Test:
     @patch("pcapi.domain.user_emails.send_activation_email")
     @patch("pcapi.domain.password.random_token")
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-    @freeze_time("2013-05-15 09:00:00")
     @pytest.mark.usefixtures("db_session")
     def test_user_does_not_become_beneficiary(
         self,
@@ -175,7 +174,7 @@ class Returns200Test:
         assert not user.isBeneficiary
         assert user.city == "Paris"
         assert user.civility == "Mme"
-        assert user.dateOfBirth == datetime(1995, 5, 22)
+        assert user.dateOfBirth.date() == eighteen_years_in_the_past.date()
         assert user.departementCode == "35"
         assert user.email == "rennes@example.org"
         assert user.firstName == "Thomas"

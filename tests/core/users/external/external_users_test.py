@@ -64,7 +64,7 @@ def test_update_external_pro_user():
 
 
 def test_get_user_attributes():
-    user = BeneficiaryFactory(dateOfBirth=datetime(2000, 1, 1))
+    user = BeneficiaryFactory(deposit__version=1, dateOfBirth=datetime(2000, 1, 1))
     offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
     b1 = BookingFactory(user=user, amount=10, stock__offer=offer)
     b2 = BookingFactory(user=user, amount=10, dateUsed=datetime(2021, 5, 6), stock__offer=offer)

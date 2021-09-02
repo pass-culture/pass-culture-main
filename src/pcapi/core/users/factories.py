@@ -125,15 +125,15 @@ class BeneficiaryFactory(BaseFactory):
 
     @factory.post_generation
     def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
-        from pcapi.core.payments.factories import DepositAge18Factory
+        from pcapi.core.payments.factories import DepositGrant18Factory
 
         if not create:
             return None
-        return DepositAge18Factory(user=obj, **kwargs)
+        return DepositGrant18Factory(user=obj, **kwargs)
 
 
 class UnderageBeneficiaryFactory(BeneficiaryFactory):
-    dateOfBirth = datetime.datetime.now() + relativedelta(years=-15)
+    dateOfBirth = datetime.datetime.now() - relativedelta(years=15, months=5)
     roles = [pcapi.core.users.models.UserRole.UNDERAGE_BENEFICIARY]
 
 

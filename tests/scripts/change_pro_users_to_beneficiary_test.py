@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi.core.testing import override_features
@@ -15,9 +18,12 @@ def test_should_change_pro_users_to_beneficiary(app):
     offerer_1 = create_offerer(siren="987654321")
     offerer_2 = create_offerer(siren="567890342")
     offerer_3 = create_offerer(siren="345987987")
-    pro_1 = users_factories.ProFactory(email="email@example.com", needsToFillCulturalSurvey=False)
-    pro_2 = users_factories.ProFactory(email="email2@example.com")
-    pro_3 = users_factories.ProFactory(email="email3@example.com")
+    eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
+    pro_1 = users_factories.ProFactory(
+        dateOfBirth=eighteen_years_in_the_past, email="email@example.com", needsToFillCulturalSurvey=False
+    )
+    pro_2 = users_factories.ProFactory(dateOfBirth=eighteen_years_in_the_past, email="email2@example.com")
+    pro_3 = users_factories.ProFactory(dateOfBirth=eighteen_years_in_the_past, email="email3@example.com")
     user_offerer_1 = create_user_offerer(pro_1, offerer_1)
     user_offerer_2 = create_user_offerer(pro_1, offerer_2)
     user_offerer_3 = create_user_offerer(pro_3, offerer_3)

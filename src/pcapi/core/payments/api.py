@@ -1,8 +1,6 @@
-from datetime import datetime
-
-from dateutil.relativedelta import relativedelta
 from sqlalchemy import sql
 
+from pcapi import settings
 import pcapi.core.bookings.conf as bookings_conf
 from pcapi.core.users.models import User
 from pcapi.models import db
@@ -13,14 +11,19 @@ from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
 
 from . import exceptions
+from . import repository
 
 
-DEPOSIT_VALIDITY_IN_YEARS = 2
-
-
-def _get_expiration_date(start=None):
-    start = start or datetime.utcnow()
-    return start + relativedelta(years=DEPOSIT_VALIDITY_IN_YEARS)
+def _get_grant_by_age(age: int) -> DepositType:
+    if age == 15:
+        return DepositType.GRANT_15
+    if age == 16:
+        return DepositType.GRANT_16
+    if age == 17:
+        return DepositType.GRANT_17
+    if age == 18 or settings.IS_INTEGRATION:
+        return DepositType.GRANT_18
+    raise exceptions.NoMatchingGrantForUserException(age)
 
 
 def create_deposit(beneficiary: User, deposit_source: str, version: int = None) -> Deposit:
@@ -28,21 +31,22 @@ def create_deposit(beneficiary: User, deposit_source: str, version: int = None) 
 
     The ``version`` argument MUST NOT be used outside (very specific) tests.
     """
-    existing_deposits = bool(Deposit.query.filter_by(userId=beneficiary.id).count())
+    deposit_type = _get_grant_by_age(beneficiary.age)
+    existing_deposits = repository.does_deposit_exists_for_beneficiary_and_type(beneficiary, deposit_type)
     if existing_deposits:
-        raise exceptions.AlreadyActivatedException({"user": ["Cet utilisateur a déjà crédité son pass Culture"]})
+        raise exceptions.DepositTypeAlreadyGrantedException(deposit_type)
 
     if version is None:
-        version = bookings_conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
-    booking_configuration = bookings_conf.get_limit_configuration_for_type_and_version(DepositType.GRANT_18, version)
+        version = bookings_conf.get_current_deposit_version_for_type(deposit_type)
+    booking_configuration = bookings_conf.get_limit_configuration_for_type_and_version(deposit_type, version)
 
     deposit = Deposit(
         version=version,
-        type=DepositType.GRANT_18,
+        type=deposit_type,
         amount=booking_configuration.TOTAL_CAP,
         source=deposit_source,
         user=beneficiary,
-        expirationDate=_get_expiration_date(),
+        expirationDate=booking_configuration.compute_expiration_date(beneficiary.dateOfBirth),
     )
     return deposit
 

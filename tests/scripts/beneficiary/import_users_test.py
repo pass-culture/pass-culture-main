@@ -1,6 +1,7 @@
 import datetime
 import io
 
+from dateutil.relativedelta import relativedelta
 import pytest
 
 import pcapi.core.users.factories as users_factories
@@ -8,9 +9,11 @@ from pcapi.core.users.models import User
 from pcapi.scripts.beneficiary import import_users
 
 
-CSV = """Nom,Prénom,Mail,Téléphone,Département,Code postal,Date de naissance
-Doux,Jeanne,jeanne.doux@example.com,0102030405,86,86140,2000-01-01
-Smisse,Jean,jean.smisse@example.com,0102030406,44,44000,2000-01-02
+eighteen_years_in_the_past = datetime.datetime.now() - relativedelta(years=18, months=4)
+
+CSV = f"""Nom,Prénom,Mail,Téléphone,Département,Code postal,Date de naissance
+Doux,Jeanne,jeanne.doux@example.com,0102030405,86,86140,{eighteen_years_in_the_past:%Y-%m-%d}
+Smisse,Jean,jean.smisse@example.com,0102030406,44,44000,{eighteen_years_in_the_past:%Y-%m-%d}
 """
 
 
@@ -29,7 +32,7 @@ class ReadFileTest:
         assert jeanne.firstName == "Jeanne"
         assert jeanne.lastName == "Doux"
         assert jeanne.publicName == "Jeanne Doux"
-        assert jeanne.dateOfBirth == datetime.datetime(2000, 1, 1)
+        assert jeanne.dateOfBirth.date() == eighteen_years_in_the_past.date()
         assert jeanne.email == "jeanne.doux@example.com"
         assert jeanne.phoneNumber == "0102030405"
         assert jeanne.departementCode == "86"

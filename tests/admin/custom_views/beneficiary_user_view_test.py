@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
 import pytest
 from requests.auth import _basic_auth_str
 
@@ -43,12 +44,13 @@ class BeneficiaryUserViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_beneficiary_user_creation(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="admin@example.com")
+        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
 
         data = dict(
             email="LAMA@example.com",
             firstName="Serge",
             lastName="Lama",
-            dateOfBirth="2002-07-13 10:05:00",
+            dateOfBirth=f"{eighteen_years_in_the_past:%Y-%m-%d %H:%M:%S}",
             departementCode="93",
             postalCode="93000",
             phoneNumber="0601020304",
@@ -65,7 +67,7 @@ class BeneficiaryUserViewTest:
         assert user_created.firstName == "Serge"
         assert user_created.lastName == "Lama"
         assert user_created.publicName == "Serge Lama"
-        assert user_created.dateOfBirth == datetime(2002, 7, 13, 10, 5)
+        assert user_created.dateOfBirth.date() == eighteen_years_in_the_past.date()
         assert user_created.departementCode == "93"
         assert user_created.postalCode == "93000"
         assert user_created.phoneNumber == "0601020304"
@@ -99,12 +101,13 @@ class BeneficiaryUserViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_beneficiary_user_creation_for_deposit_v2(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="user@example.com")
+        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
 
         data = dict(
             email="toto@example.com",
             firstName="Serge",
             lastName="Lama",
-            dateOfBirth="2002-07-13 10:05:00",
+            dateOfBirth=f"{eighteen_years_in_the_past:%Y-%m-%d %H:%M:%S}",
             departementCode="93",
             postalCode="93000",
             phoneNumber="0601020304",
@@ -128,11 +131,12 @@ class BeneficiaryUserViewTest:
         # Given
         beneficiary_view = BeneficiaryUserView(User, db_session)
         beneficiary_view_create_form = beneficiary_view.get_create_form()
+        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
         data = dict(
             email="toto@example.com",
             firstName="Serge",
             lastName="Lama",
-            dateOfBirth="2002-07-13 10:05:00",
+            dateOfBirth=f"{eighteen_years_in_the_past:%Y-%m-%d %H:%M:%S}",
             departementCode="93",
             postalCode="93000",
             phoneNumber="0601020304",
@@ -140,7 +144,7 @@ class BeneficiaryUserViewTest:
         )
 
         form = beneficiary_view_create_form(data=data)
-        user = User()
+        user = users_factories.UserFactory(dateOfBirth=eighteen_years_in_the_past)
 
         # When
         beneficiary_view.on_model_change(form, user, True)
@@ -165,12 +169,13 @@ class BeneficiaryUserViewTest:
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[])
     def test_beneficiary_user_creation_is_restricted_in_prod(self, app, db_session):
         users_factories.AdminFactory(email="user@example.com")
+        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
 
         data = dict(
             email="toto@example.com",
             firstName="Serge",
             lastName="Lama",
-            dateOfBirth="2002-07-13 10:05:00",
+            dateOfBirth=f"{eighteen_years_in_the_past:%Y-%m-%d %H:%M:%S}",
             departementCode="93",
             postalCode="93000",
         )

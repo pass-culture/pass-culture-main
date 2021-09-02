@@ -2,7 +2,6 @@ from datetime import datetime
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
-from freezegun import freeze_time
 import pytest
 
 from pcapi.connectors.beneficiaries import jouve_backend
@@ -21,12 +20,16 @@ from pcapi.notifications.push import testing as push_testing
 from pcapi.use_cases.create_beneficiary_from_application import create_beneficiary_from_application
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
 APPLICATION_ID = 35
+eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
 
 JOUVE_CONTENT = {
     "activity": "Apprenti",
     "address": "3 rue de Valois",
-    "birthDateTxt": "22/05/1995",
+    "birthDate": f"{eighteen_years_in_the_past:%d/%m/%Y}",
+    "birthDateTxt": f"{eighteen_years_in_the_past:%d/%m/%Y}",
     "birthLocationCtrl": "OK",
     "bodyBirthDateCtrl": "OK",
     "bodyBirthDateLevel": 100,
@@ -54,8 +57,6 @@ JOUVE_CONTENT = {
 @override_features(FORCE_PHONE_VALIDATION=False)
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
 @patch("pcapi.domain.password.random_token")
-@freeze_time("2013-05-15 09:00:00")
-@pytest.mark.usefixtures("db_session")
 def test_saved_a_beneficiary_from_application(stubed_random_token, app):
     # Given
     stubed_random_token.return_value = "token"
@@ -72,7 +73,7 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, app):
     assert beneficiary.isBeneficiary is True
     assert beneficiary.city == "Paris"
     assert beneficiary.civility == "Mme"
-    assert beneficiary.dateOfBirth == datetime(1995, 5, 22)
+    assert beneficiary.dateOfBirth.date() == eighteen_years_in_the_past.date()
     assert beneficiary.departementCode == "35"
     assert beneficiary.email == "rennes@example.org"
     assert beneficiary.firstName == "Thomas"
@@ -102,8 +103,6 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, app):
 
 @override_features(FORCE_PHONE_VALIDATION=False)
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
-@freeze_time("2013-05-15 09:00:00")
-@pytest.mark.usefixtures("db_session")
 def test_application_for_native_app_user(app):
     # Given
     users_api.create_account(
@@ -141,14 +140,13 @@ def test_application_for_native_app_user(app):
     assert len(push_testing.requests) == 1
 
 
-@freeze_time("2013-05-15 09:00:00")
 @override_features(FORCE_PHONE_VALIDATION=False)
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
 def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, app, db_session):
     # Given
     application_id = 35
     user = UserFactory(
-        dateOfBirth=datetime(2003, 10, 25),
+        dateOfBirth=eighteen_years_in_the_past,
         phoneNumber="0607080900",
         isBeneficiary=False,
         address="an address",
@@ -168,7 +166,8 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
         "city": "",
         "gender": "M",
         "bodyPieceNumber": "140767100016",
-        "birthDateTxt": "25/10/2003",
+        "birthDate": f"{eighteen_years_in_the_past:%d/%m/%Y}",
+        "birthDateTxt": f"{eighteen_years_in_the_past:%d/%m/%Y}",
         "postalCode": "",
         "phoneNumber": "0102030405",
         "posteCodeCtrl": "OK",
@@ -210,7 +209,6 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
 
 @override_features(FORCE_PHONE_VALIDATION=False)
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
-@pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     # Given
     email = "rennes@example.org"
@@ -233,12 +231,11 @@ def test_cannot_save_beneficiary_if_email_is_already_taken(app):
 
 
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
-@pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_if_duplicate(app):
     # Given
     first_name = "Thomas"
     last_name = "DURAND"
-    date_of_birth = datetime(1995, 5, 22)
+    date_of_birth = eighteen_years_in_the_past.replace(hour=0, minute=0, second=0, microsecond=0)
 
     applicant = users_factories.UserFactory(
         firstName=JOUVE_CONTENT["firstName"], lastName=JOUVE_CONTENT["lastName"], email=JOUVE_CONTENT["email"]
@@ -259,7 +256,6 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     assert beneficiary_import.beneficiary is applicant
 
 
-@pytest.mark.usefixtures("db_session")
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
 @override_features(WHOLE_FRANCE_OPENING=False)
 def test_cannot_save_beneficiary_if_department_is_not_eligible_legacy_behaviour(get_application_content, app):
@@ -281,7 +277,6 @@ def test_cannot_save_beneficiary_if_department_is_not_eligible_legacy_behaviour(
     assert beneficiary_import.detail == f"Postal code {postal_code} is not eligible."
 
 
-@pytest.mark.usefixtures("db_session")
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
 @override_features(WHOLE_FRANCE_OPENING=True)
 def test_cannot_save_beneficiary_if_department_is_not_eligible(get_application_content, app):
@@ -305,7 +300,6 @@ def test_cannot_save_beneficiary_if_department_is_not_eligible(get_application_c
 
 @patch("pcapi.use_cases.create_beneficiary_from_application.validate")
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-@pytest.mark.usefixtures("db_session")
 def test_calls_send_rejection_mail_with_validation_error(_get_raw_content, stubed_validate, app):
     # Given
     error = BeneficiaryIsADuplicate("Some reason")
@@ -324,7 +318,6 @@ def test_calls_send_rejection_mail_with_validation_error(_get_raw_content, stube
     assert mails_testing.outbox[0].sent_data["To"] == "rennes@example.org"
 
 
-@pytest.mark.usefixtures("db_session")
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
 def test_user_pre_creation_is_required(_get_raw_content):
     _get_raw_content.return_value = JOUVE_CONTENT
@@ -370,7 +363,6 @@ BASE_JOUVE_CONTENT = {
 #     [{"serviceCodeCtrl": "KO"}, {"posteCodeCtrl": "KO"}, {"birthLocationCtrl": "KO"}],
 # )
 # @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-# @pytest.mark.usefixtures("db_session")
 # def test_cannot_save_beneficiary_when_fraud_is_detected(
 #     mocked_get_content,
 #     fraud_strict_detection_parameter,
@@ -396,7 +388,6 @@ BASE_JOUVE_CONTENT = {
 
 
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-@pytest.mark.usefixtures("db_session")
 def test_doesnt_save_beneficiary_when_suspicious(
     mocked_get_content,
     app,
@@ -420,7 +411,6 @@ def test_doesnt_save_beneficiary_when_suspicious(
 
 
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-@pytest.mark.usefixtures("db_session")
 def test_id_piece_number_no_duplicate(
     mocked_get_content,
     app,
@@ -450,7 +440,6 @@ def test_id_piece_number_no_duplicate(
 
 
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-@pytest.mark.usefixtures("db_session")
 def test_id_piece_number_duplicate(
     mocked_get_content,
     app,
@@ -478,7 +467,6 @@ def test_id_piece_number_duplicate(
 
 
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-@pytest.mark.usefixtures("db_session")
 def test_id_piece_number_invalid_format_avoid_duplicate(
     mocked_get_content,
     app,
@@ -506,7 +494,6 @@ def test_id_piece_number_invalid_format_avoid_duplicate(
 
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
 @pytest.mark.parametrize("wrong_piece_number", ["NOT_APPLICABLE", "KO", ""])
-@pytest.mark.usefixtures("db_session")
 def test_id_piece_number_invalid(mocked_get_content, wrong_piece_number):
     subscribing_user = UserFactory(
         isBeneficiary=False,
@@ -529,7 +516,6 @@ def test_id_piece_number_invalid(mocked_get_content, wrong_piece_number):
 
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
 @pytest.mark.parametrize("wrong_piece_number", ["NOT_APPLICABLE", "KO", ""])
-@pytest.mark.usefixtures("db_session")
 def test_id_piece_number_wrong_return_control(mocked_get_content, wrong_piece_number):
     subscribing_user = UserFactory(
         isBeneficiary=False,
@@ -559,7 +545,6 @@ def test_id_piece_number_wrong_return_control(mocked_get_content, wrong_piece_nu
         "",
     ],
 )
-@pytest.mark.usefixtures("db_session")
 def test_id_piece_number_wrong_format(mocked_get_content, id_piece_number):
     subscribing_user = UserFactory(
         isBeneficiary=False,
@@ -581,7 +566,6 @@ def test_id_piece_number_wrong_format(mocked_get_content, id_piece_number):
 
 
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-@pytest.mark.usefixtures("db_session")
 def test_id_piece_number_by_pass(
     mocked_get_content,
     app,
@@ -621,7 +605,6 @@ def test_jouve_raise_403(mocked_get_content, caplog):
     assert caplog.messages[0] == "Error getting API Jouve authentication token"
 
 
-@pytest.mark.usefixtures("db_session")
 class JouveDataValidationTest:
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     @pytest.mark.parametrize(
