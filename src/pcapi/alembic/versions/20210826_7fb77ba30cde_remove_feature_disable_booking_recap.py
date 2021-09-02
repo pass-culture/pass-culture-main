@@ -1,7 +1,7 @@
 """remove_feature_disable_booking_recap
 
 Revision ID: 7fb77ba30cde
-Revises: 289494f36088
+Revises: 1c32a0f0f539
 Create Date: 2021-08-26 15:06:53.087556
 
 """
@@ -12,7 +12,7 @@ from pcapi.models import feature
 
 
 revision = "7fb77ba30cde"
-down_revision = "289494f36088"
+down_revision = "1c32a0f0f539"
 branch_labels = None
 depends_on = None
 
