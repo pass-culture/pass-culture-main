@@ -7,6 +7,7 @@ function resolve(dir) {
 
 const aliases = {
   'components': resolve('../src/components'),
+  'ui-kit': resolve('../src/ui-kit'),
   'styles': resolve('../src/styles'),
   'images': resolve('../src/images'),
   'icons': resolve('../src/icons'),
@@ -24,45 +25,41 @@ const sassResourcesLoader = {
 }
 
 module.exports = {
-  "stories": [
-    "../src/**/*.stories.mdx",
-    "../src/**/*.stories.@(js|jsx|ts|tsx)"
+  stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
+  addons: [
+    '@storybook/addon-links',
+    '@storybook/addon-essentials',
+    'storybook-svgr-react-component',
+    '@storybook/addon-a11y',
   ],
-  "addons": [
-    "@storybook/addon-links",
-    "@storybook/addon-essentials",
-    "storybook-svgr-react-component",
-  ],
-   "webpackFinal": (config) => {
-     config.module.rules.push(
-      {
-        test: /\.scss$/,
-        use: [
-          'style-loader',
-          'css-loader',
-          {
-            loader: 'resolve-url-loader',
-            options: {
-              sourceMap: true,
-              root: configPaths.appSrc,
-            },
+  webpackFinal: config => {
+    config.module.rules.push({
+      test: /\.scss$/,
+      use: [
+        'style-loader',
+        'css-loader',
+        {
+          loader: 'resolve-url-loader',
+          options: {
+            sourceMap: true,
+            root: configPaths.appSrc,
           },
-          'sass-loader',
-          sassResourcesLoader,
-        ],
-        include: path.resolve(__dirname, '../'),
-      },
-    );
+        },
+        'sass-loader',
+        sassResourcesLoader,
+      ],
+      include: path.resolve(__dirname, '../'),
+    })
 
     return {
-     ...config,
+      ...config,
       resolve: {
         ...config.resolve,
         alias: {
           ...config.resolve?.alias,
           ...aliases,
         },
-      }
+      },
     }
   },
 }
