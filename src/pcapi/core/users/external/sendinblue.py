@@ -139,9 +139,17 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
 
     except SendinblueApiException as exception:
         if exception.status == 524:
-            logger.warning("Timeout when calling ContactsApi->create_contact: %s\n", exception)
+            logger.warning(
+                "Timeout when calling ContactsApi->create_contact: %s\n",
+                exception,
+                extra={"email": payload.email, "attributes": payload.attributes},
+            )
         else:
-            logger.exception("Exception when calling ContactsApi->create_contact: %s\n", exception)
+            logger.exception(
+                "Exception when calling ContactsApi->create_contact: %s\n",
+                exception,
+                extra={"email": payload.email, "attributes": payload.attributes},
+            )
         return False
 
 
