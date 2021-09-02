@@ -221,12 +221,12 @@ def old_find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date:
     window = (datetime.combine(given_date, time(0, 0)), datetime.combine(given_date, time(23, 59, 59)))
 
     return (
-        Booking.query.join(Stock)
+        IndividualBooking.query.join(Booking)
+        .join(Stock)
         .join(Offer)
         .filter(
             ~Booking.isCancelled,
             ~Booking.isUsed,
-            Booking.educationalBookingId == None,
             (Booking.dateCreated + conf.BOOKINGS_AUTO_EXPIRY_DELAY).between(*window),
             Offer.canExpire,
         )
@@ -286,10 +286,11 @@ def generate_booking_token():
     raise ValueError("Could not generate new booking token")
 
 
-def find_expired_bookings_ordered_by_user(expired_on: date = None) -> Query:
+def find_expired_individual_bookings_ordered_by_user(expired_on: date = None) -> Query:
     expired_on = expired_on or date.today()
     return (
-        Booking.query.filter(Booking.isCancelled.is_(True))
+        IndividualBooking.query.join(Booking)
+        .filter(Booking.isCancelled.is_(True))
         .filter(cast(Booking.cancellationDate, Date) == expired_on)
         .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
         .order_by(Booking.userId)

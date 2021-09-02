@@ -83,3 +83,7 @@ class IndividualBookingSubFactory(BaseFactory):
 
 class IndividualBookingFactory(BookingFactory):
     individualBooking = factory.SubFactory(IndividualBookingSubFactory)
+
+
+class CancelledIndividualBookingFactory(CancelledBookingFactory):
+    individualBooking = factory.SubFactory(IndividualBookingSubFactory)

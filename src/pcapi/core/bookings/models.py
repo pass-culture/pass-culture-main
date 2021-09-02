@@ -58,6 +58,14 @@ class IndividualBooking(Model):
     userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
     user = relationship("User", foreign_keys=[userId], backref="userIndividualBookings")
 
+    booking = relationship(
+        "Booking",
+        back_populates="individualBooking",
+        uselist=False,
+        lazy="joined",
+        innerjoin=True,
+    )
+
 
 class Booking(PcObject, Model):
     __tablename__ = "booking"
@@ -135,7 +143,7 @@ class Booking(PcObject, Model):
     )
     individualBooking = relationship(
         IndividualBooking,
-        backref="booking",
+        back_populates="booking",
         uselist=False,
     )
 

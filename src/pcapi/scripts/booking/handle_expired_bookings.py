@@ -30,7 +30,7 @@ def handle_expired_bookings() -> None:
     else:
         try:
             logger.info("[handle_expired_bookings] STEP 2 : notify_users_of_expired_bookings()")
-            notify_users_of_expired_bookings()
+            notify_users_of_expired_individual_bookings()
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("[handle_expired_bookings] Error in STEP 2 : %s", e)
 
@@ -98,11 +98,11 @@ def cancel_expired_bookings(batch_size: int = 500) -> None:
     logger.info("[cancel_expired_bookings] End")
 
 
-def notify_users_of_expired_bookings(expired_on: datetime.date = None) -> None:
+def notify_users_of_expired_individual_bookings(expired_on: datetime.date = None) -> None:
     expired_on = expired_on or datetime.date.today()
 
     logger.info("[notify_users_of_expired_bookings] Start")
-    expired_bookings_ordered_by_user = bookings_repository.find_expired_bookings_ordered_by_user(expired_on)
+    expired_bookings_ordered_by_user = bookings_repository.find_expired_individual_bookings_ordered_by_user(expired_on)
 
     expired_bookings_grouped_by_user = dict()
     for user, booking in groupby(expired_bookings_ordered_by_user, attrgetter("user")):
@@ -141,7 +141,7 @@ def notify_offerers_of_expired_bookings(expired_on: datetime.date = None) -> Non
         notified_offerers.append(offerer)
 
     logger.info(
-        "[notify_users_of_expired_bookings] %d Offerers have been notified: %s",
+        "[notify_users_of_expired_individual_bookings] %d Offerers have been notified: %s",
         len(notified_offerers),
         notified_offerers,
     )
