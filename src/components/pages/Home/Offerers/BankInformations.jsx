@@ -17,7 +17,7 @@ const BankInformations = ({
   return (
     <>
       <h3 className="h-card-secondary-title">
-        {'Coordonnées bancaires'}
+        Coordonnées bancaires
         {hasMissingBankInformations && (
           <Icon
             alt="Informations bancaires manquantes"

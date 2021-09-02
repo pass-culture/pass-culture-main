@@ -90,7 +90,7 @@ const ApiKey = ({
         </div>
         <div className={`counter${isMaxAllowedReached ? ' counter--error' : ''}`}>
           {generatedKeysCount}
-          {'/'}
+          /
           {maxAllowedApiKeys}
         </div>
       </div>
@@ -110,7 +110,7 @@ const ApiKey = ({
             >
               <span className="text">
                 {savedApiKey}
-                {'********'}
+                ********
               </span>
               <button
                 className="action  tertiary-button with-icon"

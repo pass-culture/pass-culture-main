@@ -42,7 +42,7 @@ const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable
               to={createOfferLink}
             >
               <AddOfferSvg />
-              {'Nouvelle offre'}
+              Nouvelle offre
               {canCreateOnlyVirtualOffer && ' numérique'}
             </Link>
           </li>

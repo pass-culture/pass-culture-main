@@ -131,7 +131,7 @@ class IdentifierFields extends PureComponent {
     return (
       <div className="section identifier-field-section">
         <h2 className="main-list-title">
-          {'Informations lieu'}
+          Informations lieu
           {!readOnly && (
             <span className="required-fields-hint">
               Les champs marqués d’un 

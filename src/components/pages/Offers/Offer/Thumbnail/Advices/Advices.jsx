@@ -26,7 +26,7 @@ const Advices = ({ hidden, setHidden }) => {
         onClick={toggle}
         type="button"
       >
-        {'Conseils pour votre image'}
+        Conseils pour votre image
         {hidden ? <ArrowDown /> : <ArrowUp />}
       </button>
       <div
