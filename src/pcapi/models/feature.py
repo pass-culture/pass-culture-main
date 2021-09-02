@@ -58,6 +58,7 @@ class FeatureToggle(enum.Enum):
     WEBAPP_V2_ENABLED = "Utiliser la nouvelle web app (décli web/v2) au lieu de l'ancienne"
     PRO_REIMBURSEMENTS_FILTERS = "Permet de filtrer la liste de remboursements"
     ENABLE_NATIVE_EAC_INDIVIDUAL = "Active l'EAC individuel sur l'app native"
+    ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS = "Active le nouveau délai de rétractation pour les livres"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -100,6 +101,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.WEBAPP_V2_ENABLED,
     FeatureToggle.PRO_REIMBURSEMENTS_FILTERS,
     FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL,
+    FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS,
 )
 
 
