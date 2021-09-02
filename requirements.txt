@@ -23,6 +23,7 @@ freezegun==0.3.12
 google-auth==1.23.0
 google-cloud-storage==1.35.0
 google-cloud-tasks==2.3.0
+gql[requests]
 gspread==3.6.0
 gunicorn==20.0.4
 inflect==4.1.0
