@@ -119,11 +119,13 @@ def create_account(body: serializers.AccountRequest) -> None:
     except exceptions.UserAlreadyExistsException:
         user = find_user_by_email(body.email)
         if not user.isEmailValidated:
-            user.setPassword(body.password)
-            repository.save(user)
-            api.delete_all_users_tokens(user)
             try:
-                api.request_email_confirmation(user)
+                api.initialize_account(
+                    user,
+                    body.password,
+                    apps_flyer_user_id=body.apps_flyer_user_id,
+                    apps_flyer_platform=body.apps_flyer_platform,
+                )
             except exceptions.EmailNotSent:
                 raise ApiErrors({"email": ["L'email n'a pas pu être envoyé"]})
         else:

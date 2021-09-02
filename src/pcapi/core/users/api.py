@@ -194,22 +194,37 @@ def create_account(
         lastConnectionDate=datetime.now(),
     )
 
+    if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
+        raise exceptions.UnderAgeUserException()
+
+    return initialize_account(
+        user, password, apps_flyer_user_id, apps_flyer_platform, send_activation_mail, remote_updates
+    )
+
+
+def initialize_account(
+    user: User,
+    password: str,
+    apps_flyer_user_id: str = None,
+    apps_flyer_platform: str = None,
+    send_activation_mail: bool = True,
+    remote_updates: bool = True,
+) -> User:
+
+    user.setPassword(password)
     if apps_flyer_user_id and apps_flyer_platform:
         if user.externalIds is None:
             user.externalIds = {}
         user.externalIds["apps_flyer"] = {"user": apps_flyer_user_id, "platform": apps_flyer_platform.upper()}
 
-    if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
-        raise exceptions.UnderAgeUserException()
-
-    user.setPassword(password)
     repository.save(user)
     logger.info("Created user account", extra={"user": user.id})
+    delete_all_users_tokens(user)
 
     if remote_updates:
         update_external_user(user)
 
-    if not is_email_validated and send_activation_mail:
+    if not user.isEmailValidated and send_activation_mail:
         request_email_confirmation(user)
 
     return user

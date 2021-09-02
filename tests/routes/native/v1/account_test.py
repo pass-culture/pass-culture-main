@@ -416,7 +416,7 @@ class AccountCreationTest:
         assert response.status_code == 204, response.json
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
-        assert push_testing.requests == []
+        assert len(push_testing.requests) == 1
         subscriber.checkPassword(data["password"])
 
         tokens = Token.query.all()
