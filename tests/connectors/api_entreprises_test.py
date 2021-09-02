@@ -340,9 +340,9 @@ class GetOffererLegalCategoryTest:
 
         assert "Error getting API entreprise DATA for SIREN : xxx" in str(error.value)
 
-    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
-    def test_error_get_by_offerer_on_non_prod_env(self, mocked_get_offerer_legal_category):
-        mocked_get_offerer_legal_category.side_effect = [ApiEntrepriseException]
+    @patch("pcapi.connectors.api_entreprises.get_by_offerer")
+    def test_error_get_by_offerer_on_non_prod_env(self, mocked_get_by_offerer):
+        mocked_get_by_offerer.side_effect = [ApiEntrepriseException]
         offerer = offers_factories.OffererFactory()
 
         assert get_offerer_legal_category(offerer) == {
