@@ -125,11 +125,11 @@ class BeneficiaryFactory(BaseFactory):
 
     @factory.post_generation
     def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
-        from pcapi.core.payments.factories import DepositFactory
+        from pcapi.core.payments.factories import DepositAge18Factory
 
         if not create:
             return None
-        return DepositFactory(user=obj, **kwargs)
+        return DepositAge18Factory(user=obj, **kwargs)
 
 
 class UnderageBeneficiaryFactory(BeneficiaryFactory):

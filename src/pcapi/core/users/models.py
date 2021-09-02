@@ -42,6 +42,7 @@ from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.deposit import Deposit
+from pcapi.models.deposit import DepositType
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.user_offerer import UserOfferer
@@ -265,6 +266,10 @@ class User(PcObject, Model, NeedsValidationMixin):
     @property
     def deposit_version(self) -> Optional[int]:
         return self.deposit.version if self.deposit else None
+
+    @property
+    def deposit_type(self) -> Optional[DepositType]:
+        return self.deposit.type if self.deposit else None
 
     @property
     def has_active_deposit(self):

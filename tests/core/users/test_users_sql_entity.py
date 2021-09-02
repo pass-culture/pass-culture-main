@@ -68,7 +68,7 @@ class WalletBalanceTest:
     def test_balance_is_the_sum_of_deposits_if_no_bookings(self):
         # given
         user = users_factories.BeneficiaryFactory(deposit__version=1)
-        payments_factories.DepositFactory(user=user, version=1)
+        payments_factories.DepositAge18Factory(user=user, version=1)
 
         # then
         assert user.wallet_balance == 500 + 500

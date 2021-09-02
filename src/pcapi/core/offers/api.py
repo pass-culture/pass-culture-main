@@ -19,7 +19,7 @@ from pcapi.core import search
 from pcapi.core.bookings.api import cancel_bookings_when_offerer_deletes_stock
 from pcapi.core.bookings.api import mark_as_unused
 from pcapi.core.bookings.api import update_cancellation_limit_dates
-from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
+from pcapi.core.bookings.conf import get_limit_configuration_for_type_and_version
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories
@@ -49,6 +49,7 @@ from pcapi.models import Product
 from pcapi.models import Venue
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.deposit import DepositType
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import offer_queries
 from pcapi.repository import repository
@@ -585,9 +586,13 @@ def update_offer_and_stock_id_at_providers(venue: Venue, old_siret: str) -> None
 
 
 def get_expense_domains(offer: Offer) -> list[ExpenseDomain]:
+    # TODO(venaud, 08-09-2021): Deposits type GRANT_15, GRANT_16 and GRANT_17 does not have caps, so this hack works.
+    #  It will need to be adapted (and the frontend updated) if others types or versions change that (or for a better implementation)
     domains = {ExpenseDomain.ALL.value}
 
-    for configuration in LIMIT_CONFIGURATIONS.values():
+    grant_18_versions = [1, 2]
+    for grant_18_version in grant_18_versions:
+        configuration = get_limit_configuration_for_type_and_version(DepositType.GRANT_18, grant_18_version)
         if configuration.digital_cap_applies(offer):
             domains.add(ExpenseDomain.DIGITAL.value)
         if configuration.physical_cap_applies(offer):

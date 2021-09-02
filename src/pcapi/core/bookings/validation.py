@@ -1,6 +1,5 @@
 import datetime
 from decimal import Decimal
-from typing import Union
 
 from pcapi.core.bookings import api
 from pcapi.core.bookings import conf
@@ -71,7 +70,9 @@ def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer) -
     if not domains_credit or not deposit:
         raise exceptions.UserHasInsufficientFunds()
 
-    config: Union[conf.LimitConfigurationV1, conf.LimitConfigurationV2] = conf.LIMIT_CONFIGURATIONS[deposit.version]
+    config: conf.BaseLimitConfiguration = conf.get_limit_configuration_for_type_and_version(
+        deposit.type, deposit.version
+    )
 
     if requested_amount > domains_credit.all.remaining:
         raise exceptions.UserHasInsufficientFunds()

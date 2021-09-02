@@ -1,4 +1,5 @@
 from pcapi.core.bookings import conf
+from pcapi.models.deposit import DepositType
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.serialization.decorator import spectree_serialize
@@ -20,8 +21,7 @@ def _get_features(*requested_features: FeatureToggle):
 @blueprint.native_v1.route("/settings", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.SettingsResponse)
 def get_settings() -> serializers.SettingsResponse:
-    current_deposit_version = conf.get_current_deposit_version()
-    booking_configuration = conf.LIMIT_CONFIGURATIONS[current_deposit_version]
+    booking_configuration = conf.get_current_limit_configuration_for_type(DepositType.GRANT_18)
 
     features = _get_features(
         FeatureToggle.ALLOW_IDCHECK_REGISTRATION,

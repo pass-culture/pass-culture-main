@@ -1,8 +1,10 @@
 from datetime import datetime
+import enum
 
 from sqlalchemy import BigInteger
 from sqlalchemy import Column
 from sqlalchemy import DateTime
+from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy import Numeric
 from sqlalchemy import String
@@ -12,6 +14,13 @@ from sqlalchemy.sql.sqltypes import SmallInteger
 
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
+
+
+class DepositType(enum.Enum):
+    GRANT_15 = "GRANT_15"
+    GRANT_16 = "GRANT_16"
+    GRANT_17 = "GRANT_17"
+    GRANT_18 = "GRANT_18"
 
 
 class Deposit(PcObject, Model):
@@ -30,3 +39,5 @@ class Deposit(PcObject, Model):
     expirationDate = Column(DateTime, nullable=True)
 
     version = Column(SmallInteger, nullable=False)
+
+    type = Column("type", Enum(DepositType, native_enum=False, create_constraint=False), nullable=False)

@@ -26,7 +26,7 @@ from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
 from pcapi.connectors.beneficiaries.id_check_middleware import ask_for_identity_document_verification
 from pcapi.core import mails
-from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
+from pcapi.core.bookings.conf import get_limit_configuration_for_type_and_version
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
@@ -566,14 +566,13 @@ def _build_link_for_email_change(current_email: str, new_email: str) -> str:
 
 
 def get_domains_credit(user: User, bookings: list[Booking] = None) -> Optional[DomainsCredit]:
-    version = user.deposit_version
-    if not version or version not in LIMIT_CONFIGURATIONS:
+    if not user.deposit:
         return None
 
     if bookings == None:
         bookings = user.get_not_cancelled_bookings()
 
-    config = LIMIT_CONFIGURATIONS[version]
+    config = get_limit_configuration_for_type_and_version(user.deposit_type, user.deposit_version)
 
     domains_credit = DomainsCredit(
         all=Credit(

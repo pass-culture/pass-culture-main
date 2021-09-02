@@ -2,6 +2,7 @@ import datetime
 from decimal import Decimal
 
 from pcapi import settings
+from pcapi.models.deposit import DepositType
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_type import ThingType
 
@@ -35,24 +36,30 @@ BOOKING_CONFIRMATION_ERROR_CLAUSES = {
 
 
 class BaseLimitConfiguration:
+    TOTAL_CAP = None
+    DIGITAL_CAP = None
+    DIGITAL_CAPPED_TYPES = {}
+    PHYSICAL_CAP = None
+    PHYSICAL_CAPPED_TYPES = {}
+
     # fmt: off
     def digital_cap_applies(self, offer):
         return (
-            offer.isDigital
-            and bool(self.DIGITAL_CAP)
-            and offer.type in {str(type_) for type_ in self.DIGITAL_CAPPED_TYPES}
+                offer.isDigital
+                and bool(self.DIGITAL_CAP)
+                and offer.type in {str(type_) for type_ in self.DIGITAL_CAPPED_TYPES}
         )
 
     def physical_cap_applies(self, offer):
         return (
-            not offer.isDigital
-            and bool(self.PHYSICAL_CAP)
-            and offer.type in {str(type_) for type_ in self.PHYSICAL_CAPPED_TYPES}
+                not offer.isDigital
+                and bool(self.PHYSICAL_CAP)
+                and offer.type in {str(type_) for type_ in self.PHYSICAL_CAPPED_TYPES}
         )
     # fmt: on
 
 
-class LimitConfigurationV1(BaseLimitConfiguration):
+class Age18LimitConfigurationV1(BaseLimitConfiguration):
     # For now this total cap duplicates what we store in `Deposit.amount`.
     TOTAL_CAP = Decimal(500)
 
@@ -80,7 +87,7 @@ class LimitConfigurationV1(BaseLimitConfiguration):
     }
 
 
-class LimitConfigurationV2(BaseLimitConfiguration):
+class Age18LimitConfigurationV2(BaseLimitConfiguration):
     # For now this total cap duplicates what we store in `Deposit.amount`.
     TOTAL_CAP = Decimal(300)
 
@@ -99,10 +106,27 @@ class LimitConfigurationV2(BaseLimitConfiguration):
 
 
 LIMIT_CONFIGURATIONS = {
-    1: LimitConfigurationV1(),
-    2: LimitConfigurationV2(),
+    DepositType.GRANT_18: {
+        1: Age18LimitConfigurationV1(),
+        2: Age18LimitConfigurationV2(),
+    }
 }
 
 
-def get_current_deposit_version():
-    return 2 if FeatureToggle.APPLY_BOOKING_LIMITS_V2.is_active() else 1
+def get_current_limit_configuration_for_type(deposit_type: DepositType) -> BaseLimitConfiguration:
+    version = get_current_deposit_version_for_type(deposit_type)
+
+    return LIMIT_CONFIGURATIONS[deposit_type][version]
+
+
+def get_limit_configuration_for_type_and_version(deposit_type: DepositType, version: int) -> BaseLimitConfiguration:
+    if version is None:
+        version = get_current_deposit_version_for_type(deposit_type)
+
+    return LIMIT_CONFIGURATIONS[deposit_type][version]
+
+
+def get_current_deposit_version_for_type(deposit_type: DepositType) -> int:
+    if deposit_type == DepositType.GRANT_18:
+        return 2 if FeatureToggle.APPLY_BOOKING_LIMITS_V2.is_active() else 1
+    return 1

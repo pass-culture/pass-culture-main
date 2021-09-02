@@ -7,6 +7,7 @@ import pcapi.core.bookings.conf as bookings_conf
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.deposit import Deposit
+from pcapi.models.deposit import DepositType
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
@@ -32,11 +33,12 @@ def create_deposit(beneficiary: User, deposit_source: str, version: int = None) 
         raise exceptions.AlreadyActivatedException({"user": ["Cet utilisateur a déjà crédité son pass Culture"]})
 
     if version is None:
-        version = bookings_conf.get_current_deposit_version()
-    booking_configuration = bookings_conf.LIMIT_CONFIGURATIONS[version]
+        version = bookings_conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
+    booking_configuration = bookings_conf.get_limit_configuration_for_type_and_version(DepositType.GRANT_18, version)
 
     deposit = Deposit(
         version=version,
+        type=DepositType.GRANT_18,
         amount=booking_configuration.TOTAL_CAP,
         source=deposit_source,
         user=beneficiary,
