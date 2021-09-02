@@ -22,6 +22,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
+from pcapi.models.deposit import DepositType
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -119,6 +120,7 @@ class UserProfileResponse(BaseModel):
     dateOfBirth: Optional[datetime.date]
     deposit_expiration_date: Optional[datetime.datetime]
     deposit_version: Optional[int]
+    deposit_type: Optional[DepositType]
     eligibility_end_datetime: Optional[datetime.datetime]
     eligibility_start_datetime: Optional[datetime.datetime]
     email: str
