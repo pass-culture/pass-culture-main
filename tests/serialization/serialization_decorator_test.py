@@ -54,7 +54,7 @@ class SerializationDecoratorTest:
 
     def should_return_json_response_with_custom_status_code(self, app):
         # Given
-        @spectree_serialize(response_model=TestResponseModel, on_success_status=217)
+        @spectree_serialize(response_model=TestResponseModel, on_success_status=206)
         def mock_func():
             return TestResponseModel(compulsory_int_response=1)
 
@@ -62,12 +62,12 @@ class SerializationDecoratorTest:
         response = mock_func()
 
         # Then
-        assert response.status_code == 217
+        assert response.status_code == 206
 
     @patch.object(api, "validate")
     def should_call_validation_with_the_right_params(self, mocked_validate):
         # Given
-        @spectree_serialize(response_model=TestResponseModel, on_success_status=217)
+        @spectree_serialize(response_model=TestResponseModel, on_success_status=206)
         def mock_func(body: TestBodyModel, query: TestQueryModel):
             return
 
@@ -85,4 +85,4 @@ class SerializationDecoratorTest:
         _, kwargs = mocked_validate.call_args
         assert kwargs["json"] == TestBodyModel
         assert kwargs["query"] == TestQueryModel
-        assert kwargs["resp"].code_models["HTTP_217"] == TestResponseModel
+        assert kwargs["resp"].code_models["HTTP_206"] == TestResponseModel
