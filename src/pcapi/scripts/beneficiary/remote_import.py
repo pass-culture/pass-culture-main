@@ -37,9 +37,7 @@ class DMSParsingError(ValueError):
         self.errors = errors
 
 
-# TODO(xordoquy): remove process_applications_updated_after since it is not used
 def run(
-    process_applications_updated_after: datetime,
     procedure_id: int,
 ) -> None:
     logger.info(

@@ -72,7 +72,7 @@ def pc_remote_import_beneficiaries(app: Flask) -> None:
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
         BeneficiaryImportSources.demarches_simplifiees, procedure_id
     )
-    remote_import.run(import_from_date, procedure_id)
+    remote_import.run(procedure_id)
     remote_tag_has_completed.run(import_from_date, procedure_id)
 
 
@@ -87,7 +87,7 @@ def pc_remote_import_beneficiaries_from_old_dms(app: Flask) -> None:
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
         BeneficiaryImportSources.demarches_simplifiees, procedure_id
     )
-    remote_import.run(import_from_date, procedure_id)
+    remote_import.run(procedure_id)
     remote_tag_has_completed.run(import_from_date, procedure_id)
 
 
@@ -98,7 +98,7 @@ def pc_import_beneficiaries_from_dms(app: Flask) -> None:
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
         BeneficiaryImportSources.demarches_simplifiees, procedure_id
     )
-    remote_import.run(import_from_date, procedure_id)
+    remote_import.run(procedure_id)
     remote_tag_has_completed.run(import_from_date, procedure_id)
 
 

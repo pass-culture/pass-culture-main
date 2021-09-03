@@ -58,7 +58,6 @@ class RunTest:
 
         # when
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -92,7 +91,6 @@ class RunTest:
 
         # when
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -126,7 +124,6 @@ class RunTest:
 
         # when
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -153,7 +150,6 @@ class RunTest:
 
         # when
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -187,7 +183,6 @@ class RunTest:
 
         # when
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -215,7 +210,6 @@ class RunTest:
 
         # when
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -249,7 +243,6 @@ class RunTest:
 
         # when
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -619,7 +612,6 @@ class RunIntegrationTest:
         user = users_factories.UserFactory(firstName="john", lastName="doe", email="john.doe@example.com")
 
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -652,7 +644,6 @@ class RunIntegrationTest:
         get_application_details.side_effect = self._get_details
 
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
         beneficiary_import = BeneficiaryImport.query.first()
@@ -690,7 +681,6 @@ class RunIntegrationTest:
 
         # when
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -751,7 +741,6 @@ class RunIntegrationTest:
 
         # when
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -815,7 +804,6 @@ class RunIntegrationTest:
 
         # when
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -857,7 +845,6 @@ class RunIntegrationTest:
         # when
         process_mock = mocker.patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -902,7 +889,6 @@ class RunIntegrationTest:
         # when
         process_mock = mocker.patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -945,7 +931,6 @@ class RunIntegrationTest:
 
         # when
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -1018,7 +1003,6 @@ class RunIntegrationTest:
 
         # when
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -1073,7 +1057,6 @@ class RunIntegrationTest:
 
         # when
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
@@ -1093,7 +1076,6 @@ class RunIntegrationTest:
             application_id=1, state="closed", postal_code="Strasbourg", id_piece_number="121314"
         )
         remote_import.run(
-            ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
