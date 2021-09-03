@@ -94,6 +94,21 @@ class CreateDepositTest:
         assert deposit.user.id == beneficiary.id
         assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
 
+    def test_deposit_created_with_a_grant_18_which_expire_in_two_years_when_beneficiary_is_more_than_18_years_old(self):
+        # Given
+        nineteen_years_in_the_past = datetime.now() - relativedelta(years=19, days=4)
+        beneficiary = users_factories.UserFactory(dateOfBirth=nineteen_years_in_the_past)
+
+        # When
+        deposit = api.create_deposit(beneficiary, "created by test")
+
+        # Then
+        assert deposit.type == DepositType.GRANT_18
+        assert deposit.version == conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
+        assert deposit.amount == conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
+        assert deposit.user.id == beneficiary.id
+        assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
+
     @override_settings(IS_INTEGRATION=True)
     def test_deposit_created_with_a_grant_18_which_expire_in_two_years_when_on_integration(self):
         # Given
@@ -134,19 +149,6 @@ class CreateDepositTest:
         # Then
         assert Deposit.query.filter(Deposit.userId == beneficiary.id).count() == 1
         assert error.value.errors["user"] == ['Cet utilisateur a déjà été crédité de la subvention "GRANT_18".']
-
-    def test_cannot_create_deposit_if_no_grant_for_user_age(self):
-        # Given
-        fourteen_years_in_the_past = datetime.now() - relativedelta(years=14, months=4)
-        beneficiary = users_factories.UserFactory(dateOfBirth=fourteen_years_in_the_past)
-
-        # When
-        with pytest.raises(exceptions.NoMatchingGrantForUserException) as error:
-            api.create_deposit(beneficiary, "created by test")
-
-        # Then
-        assert Deposit.query.filter(Deposit.userId == beneficiary.id).count() == 0
-        assert error.value.errors["user"] == ["Aucune subvention n'existe pour l'âge de l'utilisateur (14 ans)"]
 
 
 class BulkCreatePaymentStatusesTest:

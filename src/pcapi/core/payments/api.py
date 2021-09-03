@@ -1,6 +1,5 @@
 from sqlalchemy import sql
 
-from pcapi import settings
 import pcapi.core.bookings.conf as bookings_conf
 from pcapi.core.users.models import User
 from pcapi.models import db
@@ -21,9 +20,7 @@ def _get_grant_by_age(age: int) -> DepositType:
         return DepositType.GRANT_16
     if age == 17:
         return DepositType.GRANT_17
-    if age == 18 or settings.IS_INTEGRATION:
-        return DepositType.GRANT_18
-    raise exceptions.NoMatchingGrantForUserException(age)
+    return DepositType.GRANT_18
 
 
 def create_deposit(beneficiary: User, deposit_source: str, version: int = None) -> Deposit:
