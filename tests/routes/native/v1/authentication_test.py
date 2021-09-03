@@ -365,7 +365,6 @@ def test_refresh_token_route_updates_user_last_connection_date(client):
     assert response.status_code == 200
     assert response.json["refreshToken"]
     refresh_token = response.json["refreshToken"]
-    bash_testing.reset_requests()
     sendinblue_testing.reset_sendinblue_requests()
 
     client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
@@ -373,5 +372,4 @@ def test_refresh_token_route_updates_user_last_connection_date(client):
     assert refresh_response.status_code == 200
 
     assert user.lastConnectionDate == datetime(2020, 3, 15)
-    assert len(bash_testing.requests) == 1
     assert len(sendinblue_testing.sendinblue_requests) == 1

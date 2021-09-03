@@ -35,7 +35,7 @@ from .serialization import authentication
 def _update_user_last_connection_date(user):
     user.lastConnectionDate = datetime.now()
     repository.save(user)
-    update_external_user(user)
+    update_external_user(user, update_batch=False)
 
 
 def create_user_access_token(user: User) -> str:
