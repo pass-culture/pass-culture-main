@@ -16,19 +16,16 @@ from pcapi.models import db
 import pcapi.notifications.push.testing as bash_testing
 from pcapi.utils import crypto
 
-from tests.conftest import TestClient
-
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def test_user_logs_in_and_refreshes_token(app):
+def test_user_logs_in_and_refreshes_token(client):
     data = {"identifier": "user@test.com", "password": users_factories.DEFAULT_PASSWORD}
     user = users_factories.UserFactory(email=data["identifier"], password=data["password"])
-    test_client = TestClient(app.test_client())
 
     # Get the refresh and access token
-    response = test_client.post("/native/v1/signin", json=data)
+    response = client.post("/native/v1/signin", json=data)
     assert response.status_code == 200
     assert response.json["refreshToken"]
     assert response.json["accessToken"]
@@ -37,8 +34,8 @@ def test_user_logs_in_and_refreshes_token(app):
     access_token = response.json["accessToken"]
 
     # Ensure the access token is valid
-    test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-    response = test_client.get("/native/v1/me")
+    client.auth_header = {"Authorization": f"Bearer {access_token}"}
+    response = client.get("/native/v1/me")
     assert response.status_code == 200
 
     # Ensure the access token contains user.id
@@ -46,15 +43,15 @@ def test_user_logs_in_and_refreshes_token(app):
     assert decoded["user_claims"]["user_id"] == user.id
 
     # Ensure the refresh token can generate a new access token
-    test_client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
-    response = test_client.post("/native/v1/refresh_access_token", json={})
+    client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+    response = client.post("/native/v1/refresh_access_token", json={})
     assert response.status_code == 200, response.json
     assert response.json["accessToken"]
     access_token = response.json["accessToken"]
 
     # Ensure the new access token is valid
-    test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-    response = test_client.get("/native/v1/me")
+    client.auth_header = {"Authorization": f"Bearer {access_token}"}
+    response = client.get("/native/v1/me")
     assert response.status_code == 200
 
     # Ensure the new access token contains user.id
@@ -62,32 +59,29 @@ def test_user_logs_in_and_refreshes_token(app):
     assert decoded["user_claims"]["user_id"] == user.id
 
 
-def test_user_logs_in_with_wrong_password(app):
+def test_user_logs_in_with_wrong_password(client):
     data = {"identifier": "user@test.com", "password": users_factories.DEFAULT_PASSWORD}
     users_factories.UserFactory(email=data["identifier"], password=data["password"])
-    test_client = TestClient(app.test_client())
 
     # signin with invalid password and ensures the result messsage is generic
     data["password"] = data["password"][:-2]
-    response = test_client.post("/native/v1/signin", json=data)
+    response = client.post("/native/v1/signin", json=data)
     assert response.status_code == 400
     assert response.json == {"general": ["Identifiant ou Mot de passe incorrect"]}
 
 
-def test_unknown_user_logs_in(app):
+def test_unknown_user_logs_in(client):
     data = {"identifier": "user@test.com", "password": users_factories.DEFAULT_PASSWORD}
-    test_client = TestClient(app.test_client())
 
     # signin with invalid password and ensures the result messsage is generic
-    response = test_client.post("/native/v1/signin", json=data)
+    response = client.post("/native/v1/signin", json=data)
     assert response.status_code == 400
     assert response.json == {"general": ["Identifiant ou Mot de passe incorrect"]}
 
 
-def test_user_logs_in_with_missing_fields(app):
-    test_client = TestClient(app.test_client())
+def test_user_logs_in_with_missing_fields(client):
 
-    response = test_client.post("/native/v1/signin", json={})
+    response = client.post("/native/v1/signin", json={})
     assert response.status_code == 400
     assert response.json == {
         "identifier": ["Ce champ est obligatoire"],
@@ -95,16 +89,16 @@ def test_user_logs_in_with_missing_fields(app):
     }
 
 
-def test_send_reset_password_email_without_email(app):
-    response = TestClient(app.test_client()).post("/native/v1/request_password_reset")
+def test_send_reset_password_email_without_email(client):
+    response = client.post("/native/v1/request_password_reset")
 
     assert response.status_code == 400
     assert response.json["email"] == ["Ce champ est obligatoire"]
 
 
-def test_request_reset_password_for_unknown_email(app):
+def test_request_reset_password_for_unknown_email(client):
     data = {"email": "not_existing_user@example.com"}
-    response = TestClient(app.test_client()).post("/native/v1/request_password_reset", json=data)
+    response = client.post("/native/v1/request_password_reset", json=data)
 
     assert response.status_code == 204
 
@@ -113,7 +107,7 @@ def test_request_reset_password_for_unknown_email(app):
 @override_features(ENABLE_NATIVE_APP_RECAPTCHA=True)
 def test_request_reset_password_with_recaptcha_ok(
     mock_check_native_app_recaptcha_token,
-    app,
+    client,
 ):
     email = "existing_user@example.com"
     data = {"email": email}
@@ -124,7 +118,7 @@ def test_request_reset_password_with_recaptcha_ok(
 
     mock_check_native_app_recaptcha_token.return_value = None
 
-    response = TestClient(app.test_client()).post("/native/v1/request_password_reset", json=data)
+    response = client.post("/native/v1/request_password_reset", json=data)
 
     mock_check_native_app_recaptcha_token.assert_called_once()
     assert response.status_code == 204
@@ -136,7 +130,7 @@ def test_request_reset_password_with_recaptcha_ok(
     assert mails_testing.outbox[0].sent_data["Vars"]["native_app_link"]
 
 
-def test_request_reset_password_for_existing_email(app):
+def test_request_reset_password_for_existing_email(client):
     email = "existing_user@example.com"
     data = {"email": email}
     user = users_factories.UserFactory(email=email)
@@ -144,7 +138,7 @@ def test_request_reset_password_for_existing_email(app):
     saved_token = Token.query.filter_by(user=user).first()
     assert saved_token is None
 
-    response = TestClient(app.test_client()).post("/native/v1/request_password_reset", json=data)
+    response = client.post("/native/v1/request_password_reset", json=data)
 
     assert response.status_code == 204
 
@@ -155,51 +149,51 @@ def test_request_reset_password_for_existing_email(app):
 
 
 @patch("pcapi.domain.user_emails.send_reset_password_email_to_native_app_user")
-def test_request_reset_password_for_inactive_account(mock_send_reset_password_email_to_native_app_user, app):
+def test_request_reset_password_for_inactive_account(mock_send_reset_password_email_to_native_app_user, client):
     email = "existing_user@example.com"
     data = {"email": email}
     users_factories.UserFactory(email=email, isActive=False)
 
-    response = TestClient(app.test_client()).post("/native/v1/request_password_reset", json=data)
+    response = client.post("/native/v1/request_password_reset", json=data)
 
     assert response.status_code == 204
     mock_send_reset_password_email_to_native_app_user.assert_not_called()
 
 
 @patch("pcapi.domain.user_emails.send_reset_password_email_to_native_app_user")
-def test_request_reset_password_with_mail_service_exception(mock_send_reset_password_email_to_native_app_user, app):
+def test_request_reset_password_with_mail_service_exception(mock_send_reset_password_email_to_native_app_user, client):
     email = "existing_user@example.com"
     data = {"email": email}
     users_factories.UserFactory(email=email)
 
     mock_send_reset_password_email_to_native_app_user.return_value = False
 
-    response = TestClient(app.test_client()).post("/native/v1/request_password_reset", json=data)
+    response = client.post("/native/v1/request_password_reset", json=data)
 
     mock_send_reset_password_email_to_native_app_user.assert_called_once()
     assert response.status_code == 400
     assert response.json["email"] == ["L'email n'a pas pu être envoyé"]
 
 
-def test_reset_password_with_not_valid_token(app):
+def test_reset_password_with_not_valid_token(client):
     data = {"reset_password_token": "unknwon_token", "new_password": "new_password"}
     user = users_factories.UserFactory()
     old_password = user.password
 
-    response = TestClient(app.test_client()).post("/native/v1/reset_password", json=data)
+    response = client.post("/native/v1/reset_password", json=data)
 
     assert response.status_code == 400
     assert user.password == old_password
 
 
-def test_reset_password_success(app):
+def test_reset_password_success(client):
     new_password = "New_password1998!"
 
     user = users_factories.UserFactory()
     token = users_factories.ResetPasswordToken(user=user)
 
     data = {"reset_password_token": token.value, "new_password": new_password}
-    response = TestClient(app.test_client()).post("/native/v1/reset_password", json=data)
+    response = client.post("/native/v1/reset_password", json=data)
 
     assert response.status_code == 204
     db.session.refresh(user)
@@ -209,14 +203,14 @@ def test_reset_password_success(app):
     assert token.isUsed
 
 
-def test_reset_password_for_unvalidated_email(app):
+def test_reset_password_for_unvalidated_email(client):
     new_password = "New_password1998!"
 
     user = users_factories.UserFactory(isEmailValidated=False)
     token = users_factories.ResetPasswordToken(user=user)
 
     data = {"reset_password_token": token.value, "new_password": new_password}
-    response = TestClient(app.test_client()).post("/native/v1/reset_password", json=data)
+    response = client.post("/native/v1/reset_password", json=data)
 
     assert response.status_code == 204
     db.session.refresh(user)
@@ -224,7 +218,7 @@ def test_reset_password_for_unvalidated_email(app):
     assert user.isEmailValidated
 
 
-def test_reset_password_fail_for_password_strength(app):
+def test_reset_password_fail_for_password_strength(client):
     user = users_factories.UserFactory()
     token = users_factories.ResetPasswordToken(user=user)
 
@@ -233,7 +227,7 @@ def test_reset_password_fail_for_password_strength(app):
 
     data = {"reset_password_token": token.value, "new_password": new_password}
 
-    response = TestClient(app.test_client()).post("/native/v1/reset_password", json=data)
+    response = client.post("/native/v1/reset_password", json=data)
 
     assert response.status_code == 400
     db.session.refresh(user)
@@ -241,15 +235,14 @@ def test_reset_password_fail_for_password_strength(app):
     assert Token.query.get(token.id)
 
 
-def test_change_password_success(app):
+def test_change_password_success(client):
     new_password = "New_password1998!"
     user = users_factories.UserFactory()
 
     access_token = create_access_token(identity=user.email)
-    test_client = TestClient(app.test_client())
-    test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+    client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
-    response = test_client.post(
+    response = client.post(
         "/native/v1/change_password",
         json={"currentPassword": users_factories.DEFAULT_PASSWORD, "newPassword": new_password},
     )
@@ -259,15 +252,14 @@ def test_change_password_success(app):
     assert user.password == crypto.hash_password(new_password)
 
 
-def test_change_password_failures(app):
+def test_change_password_failures(client):
     new_password = "New_password1998!"
     user = users_factories.UserFactory()
 
     access_token = create_access_token(identity=user.email)
-    test_client = TestClient(app.test_client())
-    test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+    client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
-    response = test_client.post(
+    response = client.post(
         "/native/v1/change_password",
         json={"currentPassword": "wrong_password", "newPassword": new_password},
     )
@@ -275,7 +267,7 @@ def test_change_password_failures(app):
     assert response.status_code == 400
     assert response.json["code"] == "INVALID_PASSWORD"
 
-    response = test_client.post(
+    response = client.post(
         "/native/v1/change_password",
         json={"currentPassword": users_factories.DEFAULT_PASSWORD, "newPassword": "weak_password"},
     )
@@ -287,10 +279,10 @@ def test_change_password_failures(app):
 
 
 @patch("pcapi.core.users.repository.get_user_with_valid_token", return_value=None)
-def test_validate_email_with_invalid_token(mock_get_user_with_valid_token, app):
+def test_validate_email_with_invalid_token(mock_get_user_with_valid_token, client):
     token = "email-validation-token"
 
-    response = TestClient(app.test_client()).post("/native/v1/validate_email", json={"email_validation_token": token})
+    response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
 
     mock_get_user_with_valid_token.assert_called_once_with(token, [TokenType.EMAIL_VALIDATION], use_token=False)
 
@@ -298,7 +290,7 @@ def test_validate_email_with_invalid_token(mock_get_user_with_valid_token, app):
 
 
 @freeze_time("2018-06-01")
-def test_validate_email_when_eligible(app):
+def test_validate_email_when_eligible(client):
     user = users_factories.UserFactory(
         isEmailValidated=False, dateOfBirth=datetime(2000, 6, 1), departementCode="93", isBeneficiary=False
     )
@@ -306,16 +298,15 @@ def test_validate_email_when_eligible(app):
 
     assert not user.isEmailValidated
 
-    test_client = TestClient(app.test_client())
-    response = test_client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
+    response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
 
     assert user.isEmailValidated
     assert response.status_code == 200
 
     # Ensure the access token is valid
     access_token = response.json["accessToken"]
-    test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-    protected_response = test_client.get("/native/v1/me")
+    client.auth_header = {"Authorization": f"Bearer {access_token}"}
+    protected_response = client.get("/native/v1/me")
     assert protected_response.status_code == 200
 
     # assert we updated the external users
@@ -328,20 +319,19 @@ def test_validate_email_when_eligible(app):
 
     # Ensure the refresh token is valid
     refresh_token = response.json["refreshToken"]
-    test_client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
-    refresh_response = test_client.post("/native/v1/refresh_access_token", json={})
+    client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+    refresh_response = client.post("/native/v1/refresh_access_token", json={})
     assert refresh_response.status_code == 200
 
 
 @freeze_time("2018-06-01")
-def test_validate_email_when_not_eligible(app):
+def test_validate_email_when_not_eligible(client):
     user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1))
     token = users_factories.TokenFactory(userId=user.id, type=TokenType.EMAIL_VALIDATION)
 
     assert not user.isEmailValidated
 
-    test_client = TestClient(app.test_client())
-    response = test_client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
+    response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
 
     assert user.isEmailValidated
     assert response.status_code == 200
@@ -352,35 +342,34 @@ def test_validate_email_when_not_eligible(app):
 
     # Ensure the access token is valid
     access_token = response.json["accessToken"]
-    test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-    protected_response = test_client.get("/native/v1/me")
+    client.auth_header = {"Authorization": f"Bearer {access_token}"}
+    protected_response = client.get("/native/v1/me")
     assert protected_response.status_code == 200
 
     # Ensure the refresh token is valid
     refresh_token = response.json["refreshToken"]
-    test_client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
-    refresh_response = test_client.post("/native/v1/refresh_access_token", json={})
+    client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+    refresh_response = client.post("/native/v1/refresh_access_token", json={})
     assert refresh_response.status_code == 200
 
 
 @freeze_time("2020-03-15")
-def test_refresh_token_route_updates_user_last_connection_date(app):
+def test_refresh_token_route_updates_user_last_connection_date(client):
     data = {"identifier": "user@test.com", "password": users_factories.DEFAULT_PASSWORD}
     user = users_factories.UserFactory(
         email=data["identifier"], password=data["password"], lastConnectionDate=datetime(1990, 1, 1)
     )
-    test_client = TestClient(app.test_client())
 
     # Get the refresh token
-    response = test_client.post("/native/v1/signin", json=data)
+    response = client.post("/native/v1/signin", json=data)
     assert response.status_code == 200
     assert response.json["refreshToken"]
     refresh_token = response.json["refreshToken"]
     bash_testing.reset_requests()
     sendinblue_testing.reset_sendinblue_requests()
 
-    test_client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
-    refresh_response = test_client.post("/native/v1/refresh_access_token", json={})
+    client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+    refresh_response = client.post("/native/v1/refresh_access_token", json={})
     assert refresh_response.status_code == 200
 
     assert user.lastConnectionDate == datetime(2020, 3, 15)
