@@ -1,9 +1,9 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
@@ -17,6 +17,9 @@ import Titles from 'components/layout/Titles/Titles'
 
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
+import AccessibilityFields, {
+  autoFillNoDisabilityCompliantDecorator,
+} from '../fields/AccessibilityFields'
 import BankInformation from '../fields/BankInformationFields'
 import IdentifierFields, {
   bindGetSiretInformationToSiret,
@@ -143,6 +146,7 @@ class VenueCreation extends PureComponent {
           formLongitude={formLongitude === '' ? FRANCE_POSITION.longitude : formLongitude}
           readOnly={readOnly}
         />
+        <AccessibilityFields />
         <hr />
         <div
           className="field is-grouped is-grouped-centered"
@@ -178,6 +182,7 @@ class VenueCreation extends PureComponent {
     } = this.props
 
     const decorators = [
+      autoFillNoDisabilityCompliantDecorator,
       bindGetSuggestionsToLatitude,
       bindGetSuggestionsToLongitude,
       bindGetSiretInformationToSiret,

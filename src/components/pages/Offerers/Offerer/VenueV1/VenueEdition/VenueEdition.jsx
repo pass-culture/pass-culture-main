@@ -1,9 +1,9 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
@@ -18,6 +18,7 @@ import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
+import AccessibilityFields, { autoFillNoDisabilityCompliantDecorator } from '../fields/AccessibilityFields'
 import BankInformation from '../fields/BankInformationFields/BankInformationFields'
 import IdentifierFields from '../fields/IdentifierFields/IdentifierFields'
 import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
@@ -29,6 +30,7 @@ import VenueLabel from '../ValueObjects/VenueLabel'
 import VenueType from '../ValueObjects/VenueType'
 
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
+
 
 /**
  * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel -> à faire lors de la V2 ?"
@@ -106,6 +108,7 @@ class VenueEdition extends PureComponent {
     const { siret: initialSiret, withdrawalDetails: initialWithdrawalDetails } = venue || {}
 
     const canSubmit = getCanSubmit(formProps)
+
     const { form, handleSubmit, values } = formProps
     const {
       bookingEmail,
@@ -155,6 +158,10 @@ class VenueEdition extends PureComponent {
           formLongitude={formLongitude === '' ? FRANCE_POSITION.longitude : formLongitude}
           readOnly={readOnly}
         />
+        <AccessibilityFields
+          formValues={values}
+          readOnly={readOnly}
+        />
         <hr />
         <div
           className="field is-grouped is-grouped-centered"
@@ -194,7 +201,7 @@ class VenueEdition extends PureComponent {
 
     const { id: initialId, isVirtual: initialIsVirtual, name: initialName } = venue || {}
 
-    const decorators = [bindGetSuggestionsToLatitude, bindGetSuggestionsToLongitude]
+    const decorators = [autoFillNoDisabilityCompliantDecorator, bindGetSuggestionsToLatitude, bindGetSuggestionsToLongitude]
 
     const showForm = !initialIsVirtual && typeof offerer !== 'undefined'
 
