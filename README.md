@@ -70,6 +70,12 @@ Le repo `main` contient 6 sub modules du pass Culture suivants :
 - `http://localhost:3001/` devrait être lancé et fonctionnel
 - Connectez-vous avec `pctest.admin93.0@example.com` et `user@AZERTY123`
 
+#### Adage-front
+
+- `pc start-adage-front`
+- `http://localhost:3002/` devrait être lancé et fonctionnel
+- Connectez-vous avec un token valide en le passant en query param (pour générer un token valide, générez le via le helper de test dans l'API)
+
 #### Flask Admin
 
 - lancer l'`api`
@@ -77,14 +83,14 @@ Le repo `main` contient 6 sub modules du pass Culture suivants :
 - se connecter avec les identifiants d'un compte admin
 - visiter `http://localhost/pc/back-office/`
 
-### Exécution des tests (API, WebApp, Pro)
+### Exécution des tests (API, WebApp, Pro, adage-front)
 
 - API
   1. `pc start-backend`
   2. `pc test-backend` (permet de lancer tous les tests de l'API)
   3. `pc test-backend <path_to_test_file> -k <test_name>` (permet de lancer des tests spécifiques)
   4. `pc test-backend <path_to_test_file> -x <test_name>` (permet de lancer des tests spécifiques et d'arrêter l'exécution au premier test fail)
-- WEBAPP / PRO
+- WEBAPP / PRO / ADAGE-FRONT
   1. `yarn test:unit`
   2. `yarn test:cafe` (tests end2end)
   - le backend (`api`) doit être lancé
@@ -245,11 +251,12 @@ Le mot de passe est toujours : `user@AZERTY123`
 
 ### Testing
 
-Le déploiement se lance lors d'un merge sur la branche `master` pour les 3 repos :
+Le déploiement se lance lors d'un merge sur la branche `master` pour les 4 repos :
 
 - api : [configuration circlecI](api/.circleci/config.yml)
 - pro : [configuration circlecI](pro/.circleci/config.yml)
-- wepapp : [configuration circlecI](webapp/.circleci/config.yml)
+- webapp : [configuration circlecI](webapp/.circleci/config.yml)
+- adage-front : [configuration circlecI](adage-front/.circleci/config.yml)
 
 Pré-requis : installer [jq](https://stedolan.github.io/jq/download/)
 
@@ -263,12 +270,13 @@ Le déploiement en staging et production suit les étapes suivantes :
 4.  Déploiement du tag en `production`
 5.  Déploiement du tag en `integration`
 
-Les 3 repos suivants sont taggés et déployés simultanément :
+Les 5 repos suivants sont taggés et déployés simultanément :
 
 - `api`
 - `pro`
 - `webapp`
 - `doc`
+- `adage-front`
 
 Une fois le tag posé (les tests doivent être **verts**) réaliser le déploiement avec la commande
 
@@ -293,10 +301,11 @@ _Poser un tag_ consiste à sélectionner un ensemble de commits et de leur attri
 1. Se placer sur les 4 repos et checkout la branche voulue
 
 - repo main : `git checkout master && git pull`
-- repo api : `git chekout master && git pull`
-- repo pro : `git chekout master && git pull`
-- repo webapp : `git chekout master && git pull`
-- repo doc : `git chekout master && git pull`
+- repo api : `git checkout master && git pull`
+- repo pro : `git checkout master && git pull`
+- repo webapp : `git checkout master && git pull`
+- repo doc : `git checkout master && git pull`
+- repo adage-front : `git checkout master && git pull`
 
 La seule branche devant être taguée de cette façon est master. Pour les hotfixes, [voir plus bas](#hot-fixes).
 
@@ -336,8 +345,8 @@ Pour déterminer le numéro de version
 - Je m'aperçois que mon fix est lui-même buggé, je relivre un fix en staging => `20.2.1`
 - Mes deux fix sont cette fois OK, je livre en production => `20.2.1`
 
-Le fichier version.txt de l'API est mis à jours ainsi que le package.json de Webapp et Pro.
-Le tag est posé sur les branches locales checkout (de préférence master): Api, Webapp et Pro.
+Le fichier version.txt de l'API est mis à jours ainsi que le package.json de Webapp, Pro et dage-front.
+Le tag est posé sur les branches locales checkout (de préférence master): Api, Webapp, Pro et adage-front.
 Elles sont ensuite poussées sur le repository distant.
 Les tests sont enfin joués et on déploie sur staging.
 
@@ -349,9 +358,10 @@ Faire un hotfix consiste à créer un nouveau tag à partir du tag précédents 
 2. Se placer en local sur le dernier tag
 
 - repo main : `git checkout v{numero_de_version}`
-- repo api : `git chekout v{numero_de_version}`
-- repo pro : `git chekout v{numero_de_version}`
-- repo webapp : `git chekout v{numero_de_version}`
+- repo api : `git checkout v{numero_de_version}`
+- repo pro : `git checkout v{numero_de_version}`
+- repo webapp : `git checkout v{numero_de_version}`
+- repo adage-front : `git checkout v{numero_de_version}`
 
 3. Cherry-pick les commits voulus
 
