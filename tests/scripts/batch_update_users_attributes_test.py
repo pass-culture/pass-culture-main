@@ -113,7 +113,7 @@ def test_format_sendinblue_user():
         "HAS_COMPLETED_ID_CHECK": None,
         "INITIAL_CREDIT": Decimal("500"),
         "IS_BENEFICIARY": True,
-        "IS_ELIGIBLE": False,
+        "IS_ELIGIBLE": True,
         "IS_EMAIL_VALIDATED": True,
         "IS_PRO": False,
         "LASTNAME": "Doux",
