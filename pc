@@ -408,6 +408,9 @@ elif [[ "$CMD" == "tag" ]]; then
     # TAG PRO
     tag_frontend_component pro "$TAG_NAME"
 
+    # TAG ADAGE-FRONT
+    tag_frontend_component adage-front "$TAG_NAME"
+
     # TAG MAIN
     cd "$ROOT_PATH"
     git add .

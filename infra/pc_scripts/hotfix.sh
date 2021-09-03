@@ -31,6 +31,14 @@ function tag_hotfix {
     git push origin "$BRANCH_NAME"
     git push origin "$TAG_VERSION"
 
+    echo --- Tag Adage-front $TAG_VERSION ---
+    cd $ROOT_PATH/adage-front
+    git checkout -b hotfix-$TAG_VERSION
+    yarn version --new-version "$TAG_NAME"
+    git tag "$TAG_VERSION"
+    git push origin "$BRANCH_NAME"
+    git push origin "$TAG_VERSION"
+
     echo --- Tag Main $TAG_VERSION ---
     cd "$ROOT_PATH"
     git checkout -b hotfix-$TAG_VERSION
