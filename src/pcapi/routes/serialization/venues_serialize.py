@@ -165,6 +165,11 @@ class GetVenueResponseModel(BaseModel):
     venueLabelId: Optional[str]
     venueTypeId: Optional[str]
     withdrawalDetails: Optional[str]
+    description: Optional[VenueDescription]  # type: ignore
+    audioDisabilityCompliant: Optional[bool]
+    mentalDisabilityCompliant: Optional[bool]
+    motorDisabilityCompliant: Optional[bool]
+    visualDisabilityCompliant: Optional[bool]
     contact: Optional[VenueContactModel]
 
     _humanize_id = humanize_field("id")

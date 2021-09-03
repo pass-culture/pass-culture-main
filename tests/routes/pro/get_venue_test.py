@@ -18,6 +18,7 @@ class Returns200Test:
 
         expected_serialized_venue = {
             "address": venue.address,
+            "audioDisabilityCompliant": venue.audioDisabilityCompliant,
             "bic": bank_information.bic,
             "bookingEmail": venue.bookingEmail,
             "city": venue.city,
@@ -32,6 +33,7 @@ class Returns200Test:
             "dateModifiedAtLastProvider": format_into_utc_date(venue.dateModifiedAtLastProvider),
             "demarchesSimplifieesApplicationId": str(venue.demarchesSimplifieesApplicationId),
             "departementCode": venue.departementCode,
+            "description": venue.description,
             "fieldsUpdated": venue.fieldsUpdated,
             "iban": bank_information.iban,
             "id": humanize(venue.id),
@@ -59,12 +61,15 @@ class Returns200Test:
                 "siren": venue.managingOfferer.siren,
             },
             "managingOffererId": humanize(venue.managingOffererId),
+            "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
+            "motorDisabilityCompliant": venue.motorDisabilityCompliant,
             "name": venue.name,
             "postalCode": venue.postalCode,
             "publicName": venue.publicName,
             "siret": venue.siret,
             "venueLabelId": humanize(venue.venueLabelId),
             "venueTypeId": humanize(venue.venueTypeId),
+            "visualDisabilityCompliant": venue.visualDisabilityCompliant,
             "withdrawalDetails": None,
         }
 
