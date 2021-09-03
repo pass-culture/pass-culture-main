@@ -177,7 +177,9 @@ def get_distant_image(
     max_size: int = MAX_THUMBNAIL_SIZE,
 ) -> bytes:
     try:
-        streaming_response = pcapi_requests.get(url, timeout=DISTANT_IMAGE_REQUEST_TIMEOUT, stream=True)
+        streaming_response = pcapi_requests.get(
+            url, timeout=DISTANT_IMAGE_REQUEST_TIMEOUT, stream=True, log_at_error_level=False
+        )
         streaming_response.raise_for_status()
     except Exception:
         raise exceptions.FailureToRetrieve()

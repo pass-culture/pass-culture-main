@@ -28,12 +28,19 @@ logger = logging.getLogger(__name__)
 REQUEST_TIMEOUT_IN_SECOND = 10
 
 
-def _wrapper(request_func: Callable, method: str, url: str, **kwargs: Any) -> Response:
+def _wrapper(request_func: Callable, method: str, url: str, log_at_error_level=True, **kwargs: Any) -> Response:
     timeout = kwargs.pop("timeout", REQUEST_TIMEOUT_IN_SECOND)
     try:
         response = request_func(method=method, url=url, timeout=timeout, **kwargs)
     except Exception as exc:
-        logger.exception("Call to external service failed with %s", exc, extra={"method": method, "url": url})
+        # If the URL is not controlled by us, there is probably no
+        # reason to send the error to Sentry. Logging an INFO message
+        # is enough if we ever need to debug.
+        if log_at_error_level:
+            logger_method = logger.exception
+        else:
+            logger_method = logger.info
+        logger_method("Call to external service failed with %s", exc, extra={"method": method, "url": url})
         raise exc
     else:
         logger.info(
