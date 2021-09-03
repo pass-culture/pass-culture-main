@@ -95,6 +95,7 @@ logger = logging.getLogger(__name__)
 class BeneficiaryValidationStep(Enum):
     PHONE_VALIDATION = "phone-validation"
     ID_CHECK = "id-check"
+    BENEFICIARY_INFORMATION = "beneficiary-information"
 
 
 def create_email_validation_token(user: User) -> Token:
@@ -239,6 +240,9 @@ def steps_to_become_beneficiary(user: User) -> list[BeneficiaryValidationStep]:
     beneficiary_import = get_beneficiary_import_for_beneficiary(user)
     if not beneficiary_import:
         missing_steps.append(BeneficiaryValidationStep.ID_CHECK)
+
+    if not user.hasCompletedIdCheck:
+        missing_steps.append(BeneficiaryValidationStep.BENEFICIARY_INFORMATION)
 
     return missing_steps
 
@@ -798,7 +802,9 @@ def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryVali
     if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
         return BeneficiaryValidationStep.PHONE_VALIDATION
     if not user.hasCompletedIdCheck:
-        return BeneficiaryValidationStep.ID_CHECK
+        if not user.extraData.get("is_identity_document_uploaded"):
+            return BeneficiaryValidationStep.ID_CHECK
+        return BeneficiaryValidationStep.BENEFICIARY_INFORMATION
 
     return None
 

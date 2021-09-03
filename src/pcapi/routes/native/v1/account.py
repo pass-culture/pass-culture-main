@@ -203,7 +203,8 @@ def upload_identity_document(
         image = form.get_image_as_bytes(request)
         api.asynchronous_identity_document_verification(image, user.email)
         token.isUsed = True
-        repository.save(token)
+        user.extraData["is_identity_document_uploaded"] = True
+        repository.save(token, user)
         return
     except exceptions.ExpiredCode:
         raise ApiErrors(

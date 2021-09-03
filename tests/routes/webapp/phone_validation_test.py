@@ -51,7 +51,12 @@ def test_send_phone_validation_and_become_beneficiary(app):
     number is vaidated.
     """
     eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
-    user = UserFactory(dateOfBirth=eighteen_years_in_the_past, isEmailValidated=True, phoneNumber="+33601020304")
+    user = UserFactory(
+        dateOfBirth=eighteen_years_in_the_past,
+        isEmailValidated=True,
+        phoneNumber="+33601020304",
+        hasCompletedIdCheck=True,
+    )
     beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
     beneficiary_import.setStatus(ImportStatus.CREATED)
 

@@ -1128,7 +1128,9 @@ class ValidatePhoneNumberTest:
 
     def test_validate_phone_number_and_become_beneficiary(self, app):
         eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
-        user = users_factories.UserFactory(dateOfBirth=eighteen_years_in_the_past, phoneNumber="+33607080900")
+        user = users_factories.UserFactory(
+            dateOfBirth=eighteen_years_in_the_past, phoneNumber="+33607080900", hasCompletedIdCheck=True
+        )
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.CREATED)

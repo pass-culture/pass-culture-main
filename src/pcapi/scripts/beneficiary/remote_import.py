@@ -220,6 +220,7 @@ def process_beneficiary_application(
     Note that a 'user' is not always a beneficiary.
     """
     user = create_beneficiary_from_application(information, user=preexisting_account)
+    user.hasCompletedIdCheck = True
     try:
         repository.save(user)
     except ApiErrors as api_errors:

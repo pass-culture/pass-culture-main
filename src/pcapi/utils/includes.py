@@ -4,6 +4,7 @@ import copy
 BENEFICIARY_INCLUDES = [
     "-culturalSurveyId",
     "-culturalSurveyFilledDate",
+    "-extraData",
     "-hasSeenTutorials",
     "-lastConnectionDate",
     "-password",
@@ -28,6 +29,7 @@ OFFERER_INCLUDES = [
 USER_INCLUDES = [
     "-culturalSurveyId",
     "-culturalSurveyFilledDate",
+    "-extraData",
     "-hasSeenTutorials",
     "-isActive",
     "-password",

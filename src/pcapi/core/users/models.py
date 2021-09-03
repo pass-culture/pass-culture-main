@@ -198,6 +198,8 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     externalIds = Column(JSONB, nullable=True, default={}, server_default="{}")
 
+    extraData = Column(MutableDict.as_mutable(JSONB), nullable=True, default={}, server_default="{}")
+
     def checkPassword(self, passwordToCheck):
         return crypto.check_password(passwordToCheck, self.password)
 
