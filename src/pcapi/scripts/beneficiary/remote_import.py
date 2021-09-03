@@ -105,55 +105,61 @@ def run(
             )
             continue
 
-        user = find_user_by_email(information.email)
-        if not user:
-            save_beneficiary_import_with_status(
-                ImportStatus.ERROR,
-                application_id,
-                source=BeneficiaryImportSources.demarches_simplifiees,
-                source_id=procedure_id,
-                detail=f"Aucun utilisateur trouvé pour l'email {information.email}",
-            )
-            continue
-        try:
-            fraud_api.on_dms_fraud_check(user, information)
-        except Exception as exc:  # pylint: disable=broad-except
-            logger.exception("Error on dms fraud check result: %s", exc)
-        if user.isBeneficiary is True:
-            _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
-            continue
-
-        if information.id_piece_number:
-            _duplicated_user = User.query.filter(User.idPieceNumber == information.id_piece_number).first()
-            if _duplicated_user:
-                _process_rejection(
-                    information,
-                    procedure_id=procedure_id,
-                    reason=f"Nr de piece déjà utilisé par {_duplicated_user.id}",
-                    user=user,
-                )
-                continue
-
-        if not is_already_imported(information.application_id):
-            duplicate_users = get_beneficiary_duplicates(
-                first_name=information.first_name,
-                last_name=information.last_name,
-                date_of_birth=information.birth_date,
-            )
-
-            if duplicate_users and information.application_id not in retry_ids:
-                _process_duplication(duplicate_users, information, procedure_id)
-
-            else:
-                process_beneficiary_application(
-                    information=information,
-                    procedure_id=procedure_id,
-                    preexisting_account=user,
-                )
+        process_application(procedure_id, application_id, information, retry_ids)
 
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées - Procedure %s", procedure_id
     )
+
+
+def process_application(
+    procedure_id: int, application_id: int, information: fraud_models.DMSContent, retry_ids: list[int]
+) -> None:
+    user = find_user_by_email(information.email)
+    if not user:
+        save_beneficiary_import_with_status(
+            ImportStatus.ERROR,
+            application_id,
+            source=BeneficiaryImportSources.demarches_simplifiees,
+            source_id=procedure_id,
+            detail=f"Aucun utilisateur trouvé pour l'email {information.email}",
+        )
+        return
+    try:
+        fraud_api.on_dms_fraud_check(user, information)
+    except Exception as exc:  # pylint: disable=broad-except
+        logger.exception("Error on dms fraud check result: %s", exc)
+    if user.isBeneficiary is True:
+        _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
+        return
+
+    if information.id_piece_number:
+        _duplicated_user = User.query.filter(User.idPieceNumber == information.id_piece_number).first()
+        if _duplicated_user:
+            _process_rejection(
+                information,
+                procedure_id=procedure_id,
+                reason=f"Nr de piece déjà utilisé par {_duplicated_user.id}",
+                user=user,
+            )
+            return
+
+    if not is_already_imported(information.application_id):
+        duplicate_users = get_beneficiary_duplicates(
+            first_name=information.first_name,
+            last_name=information.last_name,
+            date_of_birth=information.birth_date,
+        )
+
+        if duplicate_users and information.application_id not in retry_ids:
+            _process_duplication(duplicate_users, information, procedure_id)
+
+        else:
+            process_beneficiary_application(
+                information=information,
+                procedure_id=procedure_id,
+                preexisting_account=user,
+            )
 
 
 def parse_beneficiary_information(application_detail: dict, procedure_id: int) -> fraud_models.DMSContent:
