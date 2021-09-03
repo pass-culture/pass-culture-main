@@ -30,7 +30,6 @@ from tests.scripts.beneficiary.fixture_dms_with_selfie import APPLICATION_DETAIL
 
 
 NOW = datetime.utcnow()
-ONE_WEEK_AGO = NOW - timedelta(days=7)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -248,7 +247,6 @@ class RunTest:
 
         # then
         process_beneficiary_application.assert_called_with(
-            error_messages=[],
             information=fraud_models.DMSContent(
                 last_name="Doe",
                 first_name="John",
@@ -294,7 +292,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # when
         remote_import.process_beneficiary_application(
-            error_messages=[], information=information, new_beneficiaries=[], procedure_id=123456
+            information=information, new_beneficiaries=[], procedure_id=123456
         )
 
         # then
@@ -329,7 +327,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # when
         remote_import.process_beneficiary_application(
-            error_messages=[], information=information, new_beneficiaries=[], procedure_id=123456
+            information=information, new_beneficiaries=[], procedure_id=123456
         )
 
         # then
@@ -352,7 +350,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # when
         remote_import.process_beneficiary_application(
-            error_messages=[], information=information, new_beneficiaries=[], procedure_id=123456
+            information=information, new_beneficiaries=[], procedure_id=123456
         )
 
         # then
@@ -370,17 +368,13 @@ class ProcessBeneficiaryApplicationTest:
         create_beneficiary_from_application.side_effect = [User()]
         mock_repository.save.side_effect = [ApiErrors({"postalCode": ["baaaaad value"]})]
         new_beneficiaries = []
-        error_messages = []
 
         # when
-        remote_import.process_beneficiary_application(
-            error_messages, information, new_beneficiaries, procedure_id=123456
-        )
+        remote_import.process_beneficiary_application(information, new_beneficiaries, procedure_id=123456)
 
         # then
         send_activation_email.assert_not_called()
         assert len(push_testing.requests) == 0
-        assert error_messages == ['{\n  "postalCode": [\n    "baaaaad value"\n  ]\n}']
         assert not new_beneficiaries
 
 

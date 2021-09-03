@@ -46,7 +46,6 @@ def run(
         procedure_id,
         procedure_id,
     )
-    error_messages: list[str] = []
     new_beneficiaries: list[User] = []
     applications_ids = get_closed_application_ids_for_demarche_simplifiee(procedure_id, settings.DMS_TOKEN)
     retry_ids = find_applications_ids_to_retry()
@@ -98,7 +97,6 @@ def run(
                 exc_info=True,
             )
             error = f"Le dossier {application_id} contient des erreurs et a été ignoré - Procedure {procedure_id}"
-            error_messages.append(error)
             save_beneficiary_import_with_status(
                 ImportStatus.ERROR,
                 application_id,
@@ -145,11 +143,10 @@ def run(
             )
 
             if duplicate_users and information.application_id not in retry_ids:
-                _process_duplication(duplicate_users, error_messages, information, procedure_id)
+                _process_duplication(duplicate_users, information, procedure_id)
 
             else:
                 process_beneficiary_application(
-                    error_messages=error_messages,
                     information=information,
                     new_beneficiaries=new_beneficiaries,
                     procedure_id=procedure_id,
@@ -207,7 +204,6 @@ def parse_beneficiary_information(application_detail: dict, procedure_id: int) -
 
 
 def process_beneficiary_application(
-    error_messages: list[str],
     information: fraud_models.DMSContent,
     new_beneficiaries: list[User],
     procedure_id: int,
@@ -228,7 +224,6 @@ def process_beneficiary_application(
             api_errors,
             procedure_id,
         )
-        error_messages.append(str(api_errors))
         return
 
     logger.info(
@@ -267,14 +262,11 @@ def process_beneficiary_application(
         )
 
 
-def _process_duplication(
-    duplicate_users: list[User], error_messages: list[str], information: fraud_models.DMSContent, procedure_id: int
-) -> None:
+def _process_duplication(duplicate_users: list[User], information: fraud_models.DMSContent, procedure_id: int) -> None:
     number_of_beneficiaries = len(duplicate_users)
     duplicate_ids = ", ".join([str(u.id) for u in duplicate_users])
     message = f"{number_of_beneficiaries} utilisateur(s) en doublon {duplicate_ids} pour le dossier {information.application_id} - Procedure {procedure_id}"
     logger.warning("[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : %s", message)
-    error_messages.append(message)
     save_beneficiary_import_with_status(
         ImportStatus.DUPLICATE,
         information.application_id,
