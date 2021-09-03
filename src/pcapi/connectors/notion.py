@@ -27,7 +27,7 @@ def add_to_synchronization_error_database(
             parent={"database_id": PROVIDER_API_ERRORS_DATABASE_ID},
             properties={
                 "Détail": {
-                    "title": [{"text": {"content": str(exception)}}],
+                    "title": [{"text": {"content": str(exception)[:2000]}}],
                 },
                 "Type": {"select": {"name": exception.__class__.__name__}},
                 "Provider": {"select": {"name": provider_name}},
