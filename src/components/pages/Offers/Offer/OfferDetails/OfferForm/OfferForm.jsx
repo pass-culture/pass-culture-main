@@ -15,7 +15,6 @@ import useActiveFeature from 'components/hooks/useActiveFeature'
 import InternalBanner from 'components/layout/Banner/InternalBanner'
 import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
-import InputError from 'components/layout/inputs/Errors/InputError'
 import Select, {
   buildSelectOptions,
   buildSelectOptionsWithOptionalFields,
@@ -32,10 +31,6 @@ import {
   PLATFORM,
   NOT_REIMBURSED,
 } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
-import { ReactComponent as AudioDisabilitySvg } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/assets/audio-disability.svg'
-import { ReactComponent as MentalDisabilitySvg } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/assets/mental-disability.svg'
-import { ReactComponent as MotorDisabilitySvg } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/assets/motor-disability.svg'
-import { ReactComponent as VisualDisabilitySvg } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/assets/visual-disability.svg'
 import OfferRefundWarning from 'components/pages/Offers/Offer/OfferDetails/OfferForm/Messages/OfferRefundWarning'
 import WithdrawalReminder from 'components/pages/Offers/Offer/OfferDetails/OfferForm/Messages/WithdrawalReminder'
 import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/SynchronizedProviderInformation'
@@ -43,6 +38,7 @@ import { SubmitButton } from 'ui-kit'
 import { CGU_URL } from 'utils/config'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
+import AccessibilityCheckboxList from './AccessibilityCheckboxList'
 import OfferCategories from './OfferCategories/OfferCategories'
 
 // JOCONDE React:component "Ce composant est vraiment le plus beau et le plus lisible que nous ayons côté pro. Prenez en de la graine !"
@@ -406,43 +402,7 @@ const OfferForm = ({
   )
 
   const handleDisabilityCompliantUpdate = useCallback(
-    event => {
-      let disabilityCompliantValues = {
-        noDisabilityCompliant: formValues.noDisabilityCompliant,
-        audioDisabilityCompliant: formValues.audioDisabilityCompliant,
-        mentalDisabilityCompliant: formValues.mentalDisabilityCompliant,
-        motorDisabilityCompliant: formValues.motorDisabilityCompliant,
-        visualDisabilityCompliant: formValues.visualDisabilityCompliant,
-      }
-
-      const field = event.target.name
-      disabilityCompliantValues[field] = !formValues[field]
-
-      if (field === 'noDisabilityCompliant') {
-        if (disabilityCompliantValues[field]) {
-          disabilityCompliantValues.audioDisabilityCompliant = false
-          disabilityCompliantValues.mentalDisabilityCompliant = false
-          disabilityCompliantValues.motorDisabilityCompliant = false
-          disabilityCompliantValues.visualDisabilityCompliant = false
-        } else {
-          const hasNoDisabilityCompliance = ![
-            disabilityCompliantValues.audioDisabilityCompliant,
-            disabilityCompliantValues.mentalDisabilityCompliant,
-            disabilityCompliantValues.motorDisabilityCompliant,
-            disabilityCompliantValues.visualDisabilityCompliant,
-          ].includes(true)
-          if (hasNoDisabilityCompliance) {
-            disabilityCompliantValues[field] = true
-          }
-        }
-      } else {
-        if (Object.values(disabilityCompliantValues).includes(true)) {
-          disabilityCompliantValues.noDisabilityCompliant = false
-        } else {
-          disabilityCompliantValues.noDisabilityCompliant = true
-        }
-      }
-
+    (disabilityCompliantValues) => {
       if (
         Object.values(disabilityCompliantValues).includes(true) &&
         'disabilityCompliant' in formErrors
@@ -453,8 +413,7 @@ const OfferForm = ({
       }
 
       handleFormUpdate(disabilityCompliantValues)
-    },
-    [formErrors, formValues, handleFormUpdate, setFormErrors]
+    }, [formErrors, handleFormUpdate, setFormErrors]
   )
 
   const handleDurationChange = useCallback(value => handleFormUpdate({ durationMinutes: value }), [
@@ -505,6 +464,14 @@ const OfferForm = ({
     offerSubCategory &&
     offerSubCategory.onlineOfflinePlatform === PLATFORM.OFFLINE &&
     areAllVenuesVirtual
+
+  // If one of disability fields is disabled, all of them are.
+  const isDisabilityFieldsReadOnly = readOnlyFields.filter((field) => [
+    'audioDisabilityCompliant',
+    'mentalDisabilityCompliant',
+    'motorDisabilityCompliant',
+    'visualDisabilityCompliant',
+  ].includes(field)).length > 0
 
   if (isLoading) {
     return <Spinner />
@@ -793,61 +760,13 @@ const OfferForm = ({
               <p className="section-description">
                 Cette offre est-elle accessible aux publics en situation de handicaps :
               </p>
-              <CheckboxInput
-                SvgElement={VisualDisabilitySvg}
-                checked={formValues.visualDisabilityCompliant}
-                disabled={readOnlyFields.includes('visualDisabilityCompliant')}
+              <AccessibilityCheckboxList
+                disabled={isDisabled}
+                formValues={formValues}
                 isInError={Boolean(getErrorMessage('disabilityCompliant'))}
-                isLabelDisable={isDisabled}
-                label="Visuel"
-                name="visualDisabilityCompliant"
                 onChange={handleDisabilityCompliantUpdate}
+                readOnly={isDisabilityFieldsReadOnly}
               />
-              <CheckboxInput
-                SvgElement={MentalDisabilitySvg}
-                checked={formValues.mentalDisabilityCompliant}
-                disabled={readOnlyFields.includes('mentalDisabilityCompliant')}
-                isInError={Boolean(getErrorMessage('disabilityCompliant'))}
-                isLabelDisable={isDisabled}
-                label="Psychique ou cognitif"
-                name="mentalDisabilityCompliant"
-                onChange={handleDisabilityCompliantUpdate}
-              />
-              <CheckboxInput
-                SvgElement={MotorDisabilitySvg}
-                checked={formValues.motorDisabilityCompliant}
-                disabled={readOnlyFields.includes('motorDisabilityCompliant')}
-                isInError={Boolean(getErrorMessage('disabilityCompliant'))}
-                isLabelDisable={isDisabled}
-                label="Moteur"
-                name="motorDisabilityCompliant"
-                onChange={handleDisabilityCompliantUpdate}
-              />
-              <CheckboxInput
-                SvgElement={AudioDisabilitySvg}
-                checked={formValues.audioDisabilityCompliant}
-                disabled={readOnlyFields.includes('audioDisabilityCompliant')}
-                isInError={Boolean(getErrorMessage('disabilityCompliant'))}
-                isLabelDisable={isDisabled}
-                label="Auditif"
-                name="audioDisabilityCompliant"
-                onChange={handleDisabilityCompliantUpdate}
-              />
-              <CheckboxInput
-                checked={formValues.noDisabilityCompliant}
-                disabled={readOnlyFields.includes('noDisabilityCompliant')}
-                isInError={Boolean(getErrorMessage('disabilityCompliant'))}
-                isLabelDisable={isDisabled}
-                label="Non accessible"
-                name="noDisabilityCompliant"
-                onChange={handleDisabilityCompliantUpdate}
-              />
-
-              {Boolean(getErrorMessage('disabilityCompliant')) && (
-                <InputError>
-                  Vous devez cocher l’une des options ci-dessus
-                </InputError>
-              )}
             </section>
 
             <section className="form-section">
