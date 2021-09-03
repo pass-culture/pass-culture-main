@@ -46,7 +46,6 @@ def run(
         procedure_id,
         procedure_id,
     )
-    new_beneficiaries: list[User] = []
     applications_ids = get_closed_application_ids_for_demarche_simplifiee(procedure_id, settings.DMS_TOKEN)
     retry_ids = find_applications_ids_to_retry()
 
@@ -148,7 +147,6 @@ def run(
             else:
                 process_beneficiary_application(
                     information=information,
-                    new_beneficiaries=new_beneficiaries,
                     procedure_id=procedure_id,
                     preexisting_account=user,
                 )
@@ -205,7 +203,6 @@ def parse_beneficiary_information(application_detail: dict, procedure_id: int) -
 
 def process_beneficiary_application(
     information: fraud_models.DMSContent,
-    new_beneficiaries: list[User],
     procedure_id: int,
     preexisting_account: Optional[User] = None,
 ) -> None:
@@ -246,7 +243,6 @@ def process_beneficiary_application(
     else:
         update_external_user(user)
 
-    new_beneficiaries.append(user)
     try:
         if preexisting_account is None:
             token = create_reset_password_token(user, token_life_time=RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED)
