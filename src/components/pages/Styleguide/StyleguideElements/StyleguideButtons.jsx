@@ -5,7 +5,7 @@
 import React, { useCallback, useState } from 'react'
 
 import Icon from 'components/layout/Icon'
-import SubmitButton from 'components/layout/SubmitButton/SubmitButton'
+import { SubmitButton } from 'ui-kit'
 
 const StyleguideButtons = () => {
   const primaryButton = (

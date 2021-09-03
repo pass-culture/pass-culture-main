@@ -23,7 +23,6 @@ import Select, {
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Spinner from 'components/layout/Spinner'
-import SubmitButton from 'components/layout/SubmitButton/SubmitButton'
 import {
   BASE_OFFER_FIELDS,
   DEFAULT_FORM_VALUES,
@@ -40,6 +39,7 @@ import { ReactComponent as VisualDisabilitySvg } from 'components/pages/Offers/O
 import OfferRefundWarning from 'components/pages/Offers/Offer/OfferDetails/OfferForm/Messages/OfferRefundWarning'
 import WithdrawalReminder from 'components/pages/Offers/Offer/OfferDetails/OfferForm/Messages/WithdrawalReminder'
 import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/SynchronizedProviderInformation'
+import { SubmitButton } from 'ui-kit'
 import { CGU_URL } from 'utils/config'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 

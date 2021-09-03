@@ -9,7 +9,6 @@ import { Link } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import SubmitButton from 'components/layout/SubmitButton/SubmitButton'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
 import {
@@ -22,6 +21,7 @@ import StockItemContainer from 'components/pages/Offers/Offer/Stocks/StockItem/S
 import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
+import { SubmitButton } from 'ui-kit'
 
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 

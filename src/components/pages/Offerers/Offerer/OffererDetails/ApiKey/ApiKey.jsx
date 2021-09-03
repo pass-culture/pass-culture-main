@@ -10,8 +10,9 @@ import React, { useCallback, useState } from 'react'
 import Banner from 'components/layout/Banner/Banner'
 import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import Icon from 'components/layout/Icon'
-import { ReactComponent as SpinnerIcon } from 'components/layout/SubmitButton/assets/loader.svg'
 import { deleteOffererApiKey, generateOffererApiKey } from 'repository/pcapi/pcapi'
+/* @debt duplicated "Gaël: delete icon import and regroup buttons within one component"*/
+import { ReactComponent as SpinnerIcon } from 'ui-kit/SubmitButton/assets/loader.svg'
 import { ENV_WORDING } from 'utils/config'
 
 import { ReactComponent as DeleteSvg } from './assets/illus-delete.svg'

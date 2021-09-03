@@ -7,7 +7,7 @@ import React from 'react'
 import SubmitButton from './SubmitButton'
 
 export default {
-  title: 'layout/SubmitButton',
+  title: 'ui-kit/SubmitButton',
   component: SubmitButton,
 }
 

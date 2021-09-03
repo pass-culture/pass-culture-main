@@ -7,9 +7,9 @@ import * as PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import SubmitButton from 'components/layout/SubmitButton/SubmitButton'
 import { ReactComponent as ThumbnailSampleIcon } from 'components/pages/Offers/Offer/Thumbnail/assets/thumbnail-sample.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
+import { SubmitButton } from 'ui-kit'
 
 const ImportFromURL = ({ isLoading, setIsLoading, setStep, setPreviewBase64, setURL, step }) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true)
