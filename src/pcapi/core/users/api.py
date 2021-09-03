@@ -187,6 +187,7 @@ def create_account(
         postalCode=postal_code,
         departementCode=departement_code,
         phoneNumber=phone_number,
+        lastConnectionDate=datetime.now(),
     )
 
     if apps_flyer_user_id and apps_flyer_platform:

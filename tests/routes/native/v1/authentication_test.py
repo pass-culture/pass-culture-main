@@ -318,6 +318,10 @@ def test_validate_email_when_eligible(app):
     protected_response = test_client.get("/native/v1/me")
     assert protected_response.status_code == 200
 
+    # assert we updated the external users
+    assert len(bash_testing.requests) == 1
+    assert len(sendinblue_testing.sendinblue_requests) == 1
+
     # Ensure the access token contains user.id
     decoded = decode_token(access_token)
     assert decoded["user_claims"]["user_id"] == user.id
@@ -327,9 +331,6 @@ def test_validate_email_when_eligible(app):
     test_client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
     refresh_response = test_client.post("/native/v1/refresh_access_token", json={})
     assert refresh_response.status_code == 200
-
-    assert len(bash_testing.requests) == 1
-    assert len(sendinblue_testing.sendinblue_requests) == 1
 
 
 @freeze_time("2018-06-01")
@@ -345,6 +346,10 @@ def test_validate_email_when_not_eligible(app):
     assert user.isEmailValidated
     assert response.status_code == 200
 
+    # assert we updated the external users
+    assert len(bash_testing.requests) == 1
+    assert len(sendinblue_testing.sendinblue_requests) == 1
+
     # Ensure the access token is valid
     access_token = response.json["accessToken"]
     test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
@@ -357,5 +362,27 @@ def test_validate_email_when_not_eligible(app):
     refresh_response = test_client.post("/native/v1/refresh_access_token", json={})
     assert refresh_response.status_code == 200
 
+
+@freeze_time("2020-03-15")
+def test_refresh_token_route_updates_user_last_connection_date(app):
+    data = {"identifier": "user@test.com", "password": users_factories.DEFAULT_PASSWORD}
+    user = users_factories.UserFactory(
+        email=data["identifier"], password=data["password"], lastConnectionDate=datetime(1990, 1, 1)
+    )
+    test_client = TestClient(app.test_client())
+
+    # Get the refresh token
+    response = test_client.post("/native/v1/signin", json=data)
+    assert response.status_code == 200
+    assert response.json["refreshToken"]
+    refresh_token = response.json["refreshToken"]
+    bash_testing.reset_requests()
+    sendinblue_testing.reset_sendinblue_requests()
+
+    test_client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+    refresh_response = test_client.post("/native/v1/refresh_access_token", json={})
+    assert refresh_response.status_code == 200
+
+    assert user.lastConnectionDate == datetime(2020, 3, 15)
     assert len(bash_testing.requests) == 1
     assert len(sendinblue_testing.sendinblue_requests) == 1
