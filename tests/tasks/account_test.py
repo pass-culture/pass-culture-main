@@ -1,13 +1,10 @@
-from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
 
-from flask_jwt_extended.utils import create_access_token
 import pytest
 from requests import Response
 
 from pcapi.core.testing import override_settings
-from pcapi.core.users import factories as users_factories
 
 import tests
 from tests.conftest import TestClient
@@ -30,12 +27,6 @@ class VerifyIdentityDocumentTest:
         mocked_delete_object,
         app,
     ):
-        user = users_factories.UserFactory(
-            email="another@email.com",
-            dateOfBirth=datetime(2000, 1, 1),
-            departementCode="93",
-            isBeneficiary=False,
-        )
         identity_document = (self.IMAGES_DIR / "mouette_small.jpg").read_bytes()
         storage_path = "fake_storage_path.jpg"
         mocked_get_identity_document_informations.return_value = ("fake@email.com", identity_document)
@@ -44,11 +35,12 @@ class VerifyIdentityDocumentTest:
         mocked_response._content = b'{"code": "registration:completed"}'
         mocked_middleware_post.return_value = mocked_response
         json_data = {"image_storage_path": storage_path}
-
-        access_token = create_access_token(identity=user.email)
         test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-        response = test_client.post("/cloud-tasks/verify_identity_document", json=json_data)
+        response = test_client.post(
+            "/cloud-tasks/verify_identity_document",
+            json=json_data,
+            headers={"AUTHORIZATION": "Bearer cloud-task-bearer-token"},
+        )
 
         assert response.status_code == 204
         mocked_get_identity_document_informations.assert_called_once_with(storage_path)
@@ -63,11 +55,7 @@ class VerifyIdentityDocumentTest:
         mocked_delete_object.assert_called_once_with(storage_path)
 
     def test_bad_requests_parameters(self, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False)
-
-        access_token = create_access_token(identity=user.email)
         test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
         response = test_client.post("/cloud-tasks/verify_identity_document")
 
         assert response.status_code == 400

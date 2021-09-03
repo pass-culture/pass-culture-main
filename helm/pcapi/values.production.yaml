@@ -443,6 +443,8 @@ secrets:
     version: 1
   - name: BLACKLISTED_SMS_RECIPIENTS
     version: 1
+  - name: CLOUD_TASK_BEARER_TOKEN
+    version: 1
   - name: COMPLIANCE_EMAIL_ADDRESS
     version: 2
   - name: DATABASE_URL

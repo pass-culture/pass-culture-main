@@ -8,6 +8,7 @@ import pydantic
 import requests
 
 from pcapi import settings
+from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import cloud_task
@@ -48,11 +49,16 @@ def task(queue: str, path: str):
 def _define_handler(f, path, payload_type):
     @cloud_task_api.route(path, methods=["POST"], endpoint=path)
     @spectree_serialize(on_success_status=204)
-    def handle_task(body: payload_type):
+    def handle_task(body: payload_type = None):
         queue_name = request.headers.get("HTTP_X_CLOUDTASKS_QUEUENAME")
         task_id = request.headers.get("HTTP_X_CLOUDTASKS_TASKNAME")
+
         job_details = {"queue": queue_name, "handler": path, "task": task_id, "body": request.get_json()}
         logger.info("Received cloud task %s", path, extra=job_details)
+
+        if request.headers.get(cloud_task.AUTHORIZATION_HEADER_KEY) != cloud_task.AUTHORIZATION_HEADER_VALUE:
+            logger.info("Unauthorized request on cloud task %s", path, extra=job_details)
+            raise ApiErrors("Unauthorized", status_code=299)  # status code 2xx to prevent retry
 
         try:
             f(body)
@@ -79,6 +85,7 @@ def _call_task_handler(queue, url, payload):
         url,
         headers={
             "HTTP_X_CLOUDTASKS_QUEUENAME": queue,
+            cloud_task.AUTHORIZATION_HEADER_KEY: cloud_task.AUTHORIZATION_HEADER_VALUE,
         },
         json=payload,
     )
