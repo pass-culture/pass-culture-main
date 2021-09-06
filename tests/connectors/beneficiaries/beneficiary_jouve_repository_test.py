@@ -96,7 +96,7 @@ class JouveBackendTest:
         assert beneficiary_pre_subscription.application_id == 5
         assert beneficiary_pre_subscription.city == "RENNES"
         assert beneficiary_pre_subscription.civility == "Mme"
-        assert beneficiary_pre_subscription.date_of_birth == datetime(1995, 8, 24).date()
+        assert beneficiary_pre_subscription.date_of_birth.date() == datetime(1995, 8, 24).date()
         assert beneficiary_pre_subscription.department_code == "35"
         assert beneficiary_pre_subscription.email == "rennes@example.org"
         assert beneficiary_pre_subscription.first_name == "Céline"

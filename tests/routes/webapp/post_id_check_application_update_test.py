@@ -21,7 +21,6 @@ eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
 JOUVE_CONTENT = {
     "activity": "Apprenti",
     "address": "3 rue de Valois",
-    "birthDate": f"{eighteen_years_in_the_past:%d/%m/%Y}",
     "birthDateTxt": f"{eighteen_years_in_the_past:%d/%m/%Y}",
     "birthLocationCtrl": "OK",
     "bodyBirthDateCtrl": "OK",

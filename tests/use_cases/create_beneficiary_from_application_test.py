@@ -28,7 +28,6 @@ eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
 JOUVE_CONTENT = {
     "activity": "Apprenti",
     "address": "3 rue de Valois",
-    "birthDate": f"{eighteen_years_in_the_past:%d/%m/%Y}",
     "birthDateTxt": f"{eighteen_years_in_the_past:%d/%m/%Y}",
     "birthLocationCtrl": "OK",
     "bodyBirthDateCtrl": "OK",
@@ -166,7 +165,6 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
         "city": "",
         "gender": "M",
         "bodyPieceNumber": "140767100016",
-        "birthDate": f"{eighteen_years_in_the_past:%d/%m/%Y}",
         "birthDateTxt": f"{eighteen_years_in_the_past:%d/%m/%Y}",
         "postalCode": "",
         "phoneNumber": "0102030405",

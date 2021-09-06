@@ -34,7 +34,7 @@ class FraudReviewStatus(enum.Enum):
     REDIRECTED_TO_DMS = "REDIRECTED_TO_DMS"
 
 
-def _parse_level(level: typing.Optional[str]) -> typing.Optional[None]:
+def _parse_level(level: typing.Optional[str]) -> typing.Optional[int]:
     if not level:
         return None
     try:
@@ -43,15 +43,15 @@ def _parse_level(level: typing.Optional[str]) -> typing.Optional[None]:
         return None
 
 
-def _parse_date(date: typing.Optional[str]) -> typing.Optional[None]:
+def _parse_date(date: typing.Optional[str]) -> typing.Optional[datetime.datetime]:
     if not date:
         return None
     # this function has to support two parsings string format:
     # 1. the "classical" format such as "year/month/day" which is expressed when calling .dict()
     # 2. jouve format, when parsing incoming data
     try:
-        return pydantic.datetime_parse.parse_date(date)
-    except pydantic.DateError:
+        return pydantic.datetime_parse.parse_datetime(date)
+    except pydantic.DateTimeError:
         pass
     try:
         return datetime.datetime.strptime(date, "%d/%m/%Y")
@@ -63,7 +63,7 @@ class JouveContent(pydantic.BaseModel):
     # TODO: analyze jouve results to see where we can remove "optional"
     activity: typing.Optional[str]
     address: typing.Optional[str]
-    birthDateTxt: typing.Optional[datetime.date]
+    birthDateTxt: typing.Optional[datetime.datetime]
     birthLocationCtrl: typing.Optional[str]
     bodyBirthDateCtrl: typing.Optional[str]
     bodyBirthDateLevel: typing.Optional[int]

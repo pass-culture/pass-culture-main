@@ -22,7 +22,6 @@ class JouveFraudCheckTest:
     JOUVE_CONTENT = {
         "activity": "Etudiant",
         "address": "",
-        "birthDate": f"{eighteen_years_in_the_past:%d/%m/%Y}",
         "birthDateTxt": f"{eighteen_years_in_the_past:%d/%m/%Y}",
         "birthLocation": "STRASBOURG I67)",
         "birthLocationCtrl": "OK",
