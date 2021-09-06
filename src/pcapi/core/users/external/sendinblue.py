@@ -140,13 +140,13 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
     except SendinblueApiException as exception:
         if exception.status == 524:
             logger.warning(
-                "Timeout when calling ContactsApi->create_contact: %s\n",
+                "Timeout when calling ContactsApi->create_contact: %s",
                 exception,
                 extra={"email": payload.email, "attributes": payload.attributes},
             )
         else:
             logger.exception(
-                "Exception when calling ContactsApi->create_contact: %s\n",
+                "Exception when calling ContactsApi->create_contact: %s",
                 exception,
                 extra={"email": payload.email, "attributes": payload.attributes},
             )
@@ -163,7 +163,7 @@ def send_import_contacts_request(api_instance: ContactsApi, file_body: str, list
     try:
         api_instance.import_contacts(request_contact_import)
     except SendinblueApiException as e:
-        print("Exception when calling ContactsApi->import_contacts: %s\n" % e)
+        print("Exception when calling ContactsApi->import_contacts: %s" % e)
 
 
 def format_file_value(value: Optional[Union[str, bool, int, datetime]]) -> str:
