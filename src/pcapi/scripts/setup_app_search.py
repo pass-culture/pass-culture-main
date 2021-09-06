@@ -36,6 +36,11 @@ def setup_engine(engine):
             return
     print(f"{engine.engine_name}: Synonyms have been set.")
 
+    response = engine.set_search_settings()
+    if hasattr(response, "ok") and not _check_errors(response):
+        return
+    print(f"{engine.engine_name}: Search settings have been set.")
+
 
 def setup_offers_engine():
     backend = appsearch.AppSearchBackend()

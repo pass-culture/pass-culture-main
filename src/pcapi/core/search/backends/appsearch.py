@@ -64,6 +64,49 @@ OFFERS_SCHEMA = {
     "venue_public_name": "text",
 }
 
+OFFERS_FIELD_WEIGHTS = {
+    "category": 0,
+    "label": 0,
+    "search_group": 0,
+    "subcategory_label": 0,
+    "tags": 0,
+    "thumb_url": 0,
+    "venue_department_code": 0,
+    "artist": 1,
+    "group": 1,
+    "description": 2,
+    "offerer_name": 3,
+    "venue_name": 3,
+    "venue_public_name": 3,
+    "name": 5,
+}
+
+
+def check_offers_field_weights():
+    expected = {field for field, type_ in OFFERS_SCHEMA.items() if type_ == "text"}
+    diff = expected.difference(set(OFFERS_FIELD_WEIGHTS))
+    if diff:
+        raise ValueError(f"Missing or additional fields in OFFERS_FIELD_WEIGHTS: {diff}")
+
+
+check_offers_field_weights()
+
+OFFERS_FIELD_BOOSTS = {
+    "ranking_weight": {
+        "type": "functional",
+        "function": "linear",
+        "operation": "multiply",
+        "factor": 1,
+    }
+}
+
+
+def check_offers_field_boosts():
+    unknown = set(OFFERS_FIELD_BOOSTS) - set(OFFERS_SCHEMA)
+    if unknown:
+        raise ValueError(f"Unknown fields in OFFERS_FIELD_BOOSTS: {unknown}")
+
+
 OFFERS_SYNONYM_SET = (
     {"anime digital network", "ADN"},
     {"deezer", "spotify"},
@@ -154,6 +197,8 @@ class AppSearchBackend(base.SearchBackend):
             api_key=settings.APPSEARCH_API_KEY,
             engine_name=OFFERS_ENGINE_NAME,
             synonyms=OFFERS_SYNONYM_SET,
+            field_weights=OFFERS_FIELD_WEIGHTS,
+            field_boosts=OFFERS_FIELD_BOOSTS,
             schema=OFFERS_SCHEMA,
         )
 
@@ -162,6 +207,8 @@ class AppSearchBackend(base.SearchBackend):
             api_key=settings.APPSEARCH_API_KEY,
             engine_name=VENUES_ENGINE_NAME,
             synonyms=VENUES_SYNONYM_SET,
+            field_weights=None,
+            field_boosts=None,
             schema=VENUES_SCHEMA,
         )
 
@@ -371,11 +418,22 @@ class AppSearchBackend(base.SearchBackend):
 
 
 class AppSearchApiClient:
-    def __init__(self, host: str, api_key: str, engine_name: str, synonyms: Iterable[set[str]], schema: dict[str, str]):
+    def __init__(
+        self,
+        host: str,
+        api_key: str,
+        engine_name: str,
+        synonyms: Iterable[set[str]],
+        field_weights: typing.Optional[dict],
+        field_boosts: typing.Optional[dict],
+        schema: dict[str, str],
+    ):
         self.host = host.rstrip("/")
         self.api_key = api_key
         self.engine_name = engine_name
         self.synonyms = synonyms
+        self.field_weights = field_weights or {}
+        self.field_boosts = field_boosts or {}
         self.schema = schema
 
     @property
@@ -414,6 +472,24 @@ class AppSearchApiClient:
             data = {"synonyms": list(synonym_set)}
             response = requests.post(self.synonyms_url, headers=self.headers, json=data)
             yield response
+
+    # Search settings API: https://www.elastic.co/guide/en/app-search/current/search-settings.html
+    @property
+    def search_settings_url(self):
+        path = f"/api/as/v1/engines/{self.engine_name}/search_settings"
+        return f"{self.host}{path}"
+
+    def set_search_settings(self):
+        search_settings = {}
+        if self.field_weights:
+            search_settings["search_fields"] = {
+                field: {"weight": weight} for field, weight in self.field_weights.items()
+            }
+        if self.field_boosts:
+            search_settings["boosts"] = self.field_boosts
+        if not search_settings:
+            return True
+        return requests.put(self.search_settings_url, headers=self.headers, json=search_settings)
 
     # Documents API: https://www.elastic.co/guide/en/app-search/current/documents.html
     @property
