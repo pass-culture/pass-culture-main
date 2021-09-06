@@ -21,7 +21,7 @@ from pcapi.scripts.booking import handle_expired_bookings
 class CancelExpiredBookingsTest:
     @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
     @patch(
-        "pcapi.core.bookings.repository.ACTIVATION_NEW_BOOKING_AUTO_EXPIRY_DELAY_DATE",
+        "pcapi.core.bookings.repository.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE",
         date.today() - timedelta(days=20),
     )
     def should_cancel_old_thing_that_can_expire_booking(self, app) -> None:
