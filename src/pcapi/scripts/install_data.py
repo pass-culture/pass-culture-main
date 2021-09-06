@@ -3,17 +3,16 @@ import logging
 from flask import current_app as app
 
 from pcapi.install_database_extensions import install_database_extensions
+from pcapi.scripts.install_database_feature_flags import install_database_feature_flags
 
 
 logger = logging.getLogger(__name__)
 
 
-# FIXME (apibrac, 2021-04-08): this command is used during deploy process
-# Remove it when the post deploy command is brought back in this repo
-# and it is modified wihtout install_data, but not before
 @app.manager.command
 def install_data():
-    logger.info("install_data: Nothing to do here")
+    install_database_feature_flags(app)
+    logger.info("Feature flags installed")
 
 
 @app.manager.command

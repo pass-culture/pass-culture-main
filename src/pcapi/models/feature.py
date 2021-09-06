@@ -1,4 +1,5 @@
 import enum
+import logging
 
 from alembic import op
 import flask
@@ -8,8 +9,12 @@ from sqlalchemy import Text
 from sqlalchemy.sql import text
 
 from pcapi.models.db import Model
+from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
+
+
+logger = logging.getLogger(__name__)
 
 
 class FeatureToggle(enum.Enum):
@@ -131,3 +136,25 @@ def remove_feature_from_database(feature: FeatureToggle) -> None:
     """
     statement = text("DELETE FROM feature WHERE name = :name").bindparams(name=feature.name)
     op.execute(statement)
+
+
+def install_feature_flags() -> None:
+    installed_flag_names = {f[0] for f in Feature.query.with_entities(Feature.name).all()}
+    defined_flag_name = {f.name for f in list(FeatureToggle)}
+
+    to_install_flags = defined_flag_name - installed_flag_names
+    to_remove_flags = installed_flag_names - defined_flag_name
+
+    for flag in to_install_flags:
+        db.session.add(
+            Feature(
+                name=FeatureToggle[flag].name,
+                description=FeatureToggle[flag].value,
+                isActive=FeatureToggle[flag] not in FEATURES_DISABLED_BY_DEFAULT,
+            ),
+        )
+
+    db.session.commit()
+
+    if to_remove_flags:
+        logger.error("The following feature flags are present in database but not present in code: %s", to_remove_flags)

@@ -44,7 +44,7 @@ from pcapi.models import UserOfferer
 from pcapi.models import UserSession
 from pcapi.models import Venue
 from pcapi.models.db import db
-from pcapi.models.install import install_features
+from pcapi.models.feature import install_feature_flags
 
 
 def clean_all_database(*args, **kwargs):
@@ -105,5 +105,5 @@ def clean_all_database(*args, **kwargs):
     db.session.execute("SELECT setval('educational_booking_id_seq', 1, FALSE)")
 
     db.session.commit()
-    install_features()
+    install_feature_flags()
     install_local_providers()

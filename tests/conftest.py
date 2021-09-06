@@ -29,6 +29,7 @@ from pcapi.flask_app import admin
 from pcapi.install_database_extensions import install_database_extensions
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models.db import db
+from pcapi.models.feature import install_feature_flags
 from pcapi.notifications.push import testing as push_notifications_testing
 from pcapi.notifications.sms import testing as sms_notifications_testing
 from pcapi.repository.clean_database import clean_all_database
@@ -82,6 +83,8 @@ def app_fixture():
     install_database_extensions(app)
 
     run_migrations()
+
+    install_feature_flags()
 
     install_routes(app)
     install_handlers(app)
@@ -152,6 +155,7 @@ def _db(app):
     mock_db.init_app(app)
     install_database_extensions(app)
     run_migrations()
+    install_feature_flags()
 
     install_routes(app)
     install_local_providers()

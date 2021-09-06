@@ -2,6 +2,7 @@ import flask
 import pytest
 
 from pcapi.core.testing import assert_num_queries
+from pcapi.models.feature import FEATURES_DISABLED_BY_DEFAULT
 from pcapi.models.feature import Feature
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
@@ -51,3 +52,13 @@ class FeatureToggleTest:
 
         finally:
             flask._request_ctx_stack.push(context)
+
+
+@pytest.mark.usefixtures("db_session")
+class FeatureTest:
+    def test_features_installation(self):
+        # assert all defined feature flags are present in the database with the right initial value
+        for flag in list(FeatureToggle):
+            assert Feature.query.filter_by(name=flag.name).first().isActive == (
+                flag not in FEATURES_DISABLED_BY_DEFAULT
+            )

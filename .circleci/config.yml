@@ -153,6 +153,7 @@ jobs:
           command: |
             RUN_ENV=tests venv/bin/python src/pcapi/install_database_extensions.py
             RUN_ENV=tests venv/bin/alembic upgrade head
+            RUN_ENV=tests venv/bin/python src/pcapi/scripts/install_database_feature_flags.py
             RUN_ENV=tests venv/bin/python tests/alembic/check_db_schema.py
       - when:
           condition: << parameters.is_nightly_build >>
