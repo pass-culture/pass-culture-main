@@ -58,6 +58,7 @@ def get_venues_to_reimburse(cutoff_date: datetime) -> Iterable[tuple[id, str]]:
         .outerjoin(Payment, Booking.id == Payment.bookingId)
         .filter(Payment.id.is_(None))
         .with_entities(Booking.venueId)
+        .distinct()
     )
     return (
         Venue.query
