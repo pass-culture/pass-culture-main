@@ -10,6 +10,7 @@ from pcapi.models import Venue
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
+from tests.routes.pro.post_venue_test import venue_malformed_test_data
 
 
 def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Venue) -> dict:
@@ -159,17 +160,16 @@ class Returns200Test:
 
 
 @pytest.mark.usefixtures("db_session")
-def test_update_venue_description_too_long(app, client):
+@pytest.mark.parametrize("data, key", venue_malformed_test_data)
+def test_update_venue_malformed(app, client, data, key):
     user_offerer = offers_factories.UserOffererFactory()
     venue = offers_factories.VenueFactory(
         managingOfferer=user_offerer.offerer,
     )
-
-    data = {"description": "a" * 1024}
 
     client = client.with_session_auth(user_offerer.user.email)
     venue_id = humanize(venue.id)
     response = client.patch(f"/venues/{venue_id}", json=data)
 
     assert response.status_code == 400
-    assert "description" in response.json
+    assert key in response.json

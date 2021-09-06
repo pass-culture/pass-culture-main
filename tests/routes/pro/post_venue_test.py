@@ -34,6 +34,9 @@ def test_should_register_new_venue(app):
         "publicName": "Ma venue publique",
         "venueTypeId": humanize(venue_type.id),
         "venueLabelId": humanize(venue_label.id),
+        "description": "Some description",
+        "audioDisabilityCompliant": True,
+        "contact": {"email": "some@email.com"},
     }
 
     # when
@@ -50,6 +53,11 @@ def test_should_register_new_venue(app):
     assert venue.isValidated
     assert venue.venueTypeId == venue_type.id
     assert venue.venueLabelId == venue_label.id
+    assert venue.description == "Some description"
+    assert venue.audioDisabilityCompliant
+    assert venue.contact.email == "some@email.com"
+    assert not venue.contact.phone_number
+    assert not venue.contact.social_medias
 
 
 @pytest.mark.usefixtures("db_session")
@@ -171,3 +179,25 @@ def test_should_return_403_when_user_is_not_managing_offerer_create_venue(app):
 
     assert response.status_code == 403
     assert response.json["global"] == ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
+
+
+venue_malformed_test_data = [
+    ({"description": "a" * 1024}, "description"),
+    ({"contact": {"email": "not_an_email"}}, "contact.email"),
+    ({"contact": {"website": "not_an_url"}}, "contact.website"),
+    ({"contact": {"phoneNumber": "not_a_phone_number"}}, "contact.phoneNumber"),
+    ({"contact": {"social_medias": {"a": "b"}}}, "contact.socialMedias.__key__"),
+    ({"contact": {"social_medias": {"facebook": "not_an_url"}}}, "contact.socialMedias.facebook"),
+]
+
+
+@pytest.mark.usefixtures("db_session")
+@pytest.mark.parametrize("data, key", venue_malformed_test_data)
+def test_create_venue_malformed(app, client, data, key):
+    user_offerer = offers_factories.UserOffererFactory()
+
+    client = client.with_session_auth(user_offerer.user.email)
+    response = client.post("/venues", json=data)
+
+    assert response.status_code == 400
+    assert key in response.json

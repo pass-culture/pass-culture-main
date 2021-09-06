@@ -73,6 +73,8 @@ def post_create_venue(body: PostVenueBodyModel) -> VenueResponseModel:
     dehumanized_managing_offerer_id = dehumanize(body.managingOffererId)
     check_user_has_access_to_offerer(current_user, dehumanized_managing_offerer_id)
     venue = offerers_api.create_venue(body)
+    if body.contact:
+        venue = offerers_api.upsert_venue_contact(venue, body.contact)
 
     return VenueResponseModel.from_orm(venue)
 

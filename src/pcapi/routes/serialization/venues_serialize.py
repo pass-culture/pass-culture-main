@@ -21,6 +21,37 @@ MAX_LONGITUDE = 180
 MAX_LATITUDE = 90
 
 
+SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
+SocialMedias = dict[SocialMedia, pydantic.HttpUrl]  # type: ignore
+
+
+class VenueContactModel(BaseModel):
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
+        anystr_strip_whitespace = True
+        extra = pydantic.Extra.forbid
+
+    email: Optional[pydantic.EmailStr]
+    website: Optional[pydantic.HttpUrl]
+    phone_number: Optional[str]
+    social_medias: Optional[SocialMedias]
+
+    @validator("phone_number")
+    def validate_phone_number(cls, phone_number: str) -> str:  # pylint: disable=no-self-argument
+        if phone_number is None:
+            return phone_number
+
+        try:
+            return phone_number_utils.ParsedPhoneNumber(phone_number, "FR").phone_number
+        except Exception:
+            raise ValueError(f"numéro de téléphone invalide: {phone_number}")
+
+
+VenueDescription = pydantic.constr(max_length=1000, strip_whitespace=True)
+
+
 class PostVenueBodyModel(BaseModel):
     address: str
     bookingEmail: str
@@ -36,6 +67,12 @@ class PostVenueBodyModel(BaseModel):
     venueLabelId: Optional[str]
     venueTypeId: str
     withdrawalDetails: Optional[str]
+    description: Optional[VenueDescription]  # type: ignore
+    audioDisabilityCompliant: Optional[bool]
+    mentalDisabilityCompliant: Optional[bool]
+    motorDisabilityCompliant: Optional[bool]
+    visualDisabilityCompliant: Optional[bool]
+    contact: Optional[VenueContactModel]
 
     class Config:
         extra = "forbid"
@@ -104,37 +141,6 @@ class GetVenueManagingOffererResponseModel(BaseModel):
     class Config:
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
-
-
-SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
-SocialMedias = dict[SocialMedia, pydantic.HttpUrl]  # type: ignore
-
-
-class VenueContactModel(BaseModel):
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
-        anystr_strip_whitespace = True
-        extra = pydantic.Extra.forbid
-
-    email: Optional[pydantic.EmailStr]
-    website: Optional[pydantic.HttpUrl]
-    phone_number: Optional[str]
-    social_medias: Optional[SocialMedias]
-
-    @validator("phone_number")
-    def validate_phone_number(cls, phone_number: str) -> str:  # pylint: disable=no-self-argument
-        if phone_number is None:
-            return phone_number
-
-        try:
-            return phone_number_utils.ParsedPhoneNumber(phone_number, "FR").phone_number
-        except Exception:
-            raise ValueError(f"numéro de téléphone invalide: {phone_number}")
-
-
-VenueDescription = pydantic.constr(max_length=1000, strip_whitespace=True)
 
 
 class GetVenueResponseModel(BaseModel):
