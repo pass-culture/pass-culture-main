@@ -1,6 +1,9 @@
 from typing import Optional
 
 from flask.helpers import flash
+from flask_admin.contrib.sqla.filters import BaseSQLAFilter
+from sqlalchemy import and_
+from sqlalchemy.orm import aliased
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import query
 from sqlalchemy.sql.functions import func
@@ -17,7 +20,8 @@ from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.user_emails import send_activation_email
-from pcapi.models import UserOfferer
+from pcapi.models import Deposit
+from pcapi.models.deposit import DepositType
 from pcapi.utils.mailing import build_pc_webapp_reset_password_link
 
 
@@ -25,6 +29,46 @@ def filter_email(value: Optional[str]) -> Optional[str]:
     if not value:
         return value
     return sanitize_email(value)
+
+
+class FilterByDepositTypeEqual(BaseSQLAFilter):
+    def apply(self, current_query, value, alias=None):
+        aliased_deposit = aliased(Deposit)
+        current_deposit_by_user = (
+            Deposit.query.outerjoin(
+                aliased_deposit,
+                and_(Deposit.userId == aliased_deposit.userId, Deposit.expirationDate < aliased_deposit.expirationDate),
+            )
+            .filter(aliased_deposit.id.is_(None))
+            .subquery()
+        )
+        return current_query.join(current_deposit_by_user).filter(current_deposit_by_user.c.type == value)
+
+    def operation(self):
+        return "equals"
+
+    def get_options(self, view):
+        return [(deposit_type.name, deposit_type.name) for deposit_type in DepositType]
+
+
+class FilterByDepositTypeNotEqual(BaseSQLAFilter):
+    def apply(self, current_query, value, alias=None):
+        aliased_deposit = aliased(Deposit)
+        current_deposit_by_user = (
+            Deposit.query.outerjoin(
+                aliased_deposit,
+                and_(Deposit.userId == aliased_deposit.userId, Deposit.expirationDate < aliased_deposit.expirationDate),
+            )
+            .filter(aliased_deposit.id.is_(None))
+            .subquery()
+        )
+        return current_query.join(current_deposit_by_user).filter(current_deposit_by_user.c.type != value)
+
+    def operation(self):
+        return "not equal"
+
+    def get_options(self, view):
+        return [(deposit_type.name, deposit_type.name) for deposit_type in DepositType]
 
 
 class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView):
@@ -47,12 +91,14 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         "postalCode",
         "isEmailValidated",
         "has_active_deposit",
+        "deposit_type",
         "deposit_version",
         "actions",
     ]
     column_labels = dict(
         email="Email",
         isActive="Est activé",
+        isBeneficiary="Est bénéficiaire ?",
         firstName="Prénom",
         lastName="Nom",
         publicName="Nom d'utilisateur",
@@ -62,10 +108,17 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         postalCode="Code postal",
         isEmailValidated="Email validé ?",
         has_active_deposit="Dépôt valable ?",
-        deposit_version="Version du dépot",
+        deposit_type="Type du portefeuille",
+        deposit_version="Version du portefeuille",
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
-    column_filters = ["postalCode", "isBeneficiary", "isEmailValidated"]
+    column_filters = [
+        "postalCode",
+        "isBeneficiary",
+        "isEmailValidated",
+        FilterByDepositTypeEqual(column=None, name="Type du portefeuille"),
+        FilterByDepositTypeNotEqual(column=None, name="Type du portefeuille"),
+    ]
 
     @property
     def form_columns(self):
@@ -93,7 +146,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
 
         if not settings.IS_PROD:
             form_class.depositVersion = SelectField(
-                "Version du déposit",
+                "Version du portefeuille",
                 [DataRequired()],
                 choices=[
                     (1, "500€ - Deux seuils de dépense (300€ en physique et 200€ en numérique)"),
@@ -128,9 +181,8 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
 
     def get_query(self) -> query:
         return (
-            User.query.outerjoin(UserOfferer)
-            .filter(UserOfferer.userId.is_(None))
-            .filter(User.isBeneficiary.is_(True))
+            User.query.filter(User.has_pro_role.is_(False))
+            .filter(User.has_beneficiary_role.is_(True))
             .options(joinedload(User.deposits))
         )
 
@@ -138,7 +190,6 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         return (
             self.session.query(func.count("*"))
             .select_from(self.model)
-            .outerjoin(UserOfferer)
-            .filter(UserOfferer.userId.is_(None))
-            .filter(User.isBeneficiary.is_(True))
+            .filter(User.has_pro_role.is_(False))
+            .filter(User.has_beneficiary_role.is_(True))
         )
