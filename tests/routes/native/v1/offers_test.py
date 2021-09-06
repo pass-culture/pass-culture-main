@@ -376,7 +376,7 @@ class ReportOfferTest:
         assert len(mails_testing.outbox) == 1
 
         email = mails_testing.outbox[0]
-        assert email.sent_data["To"] == "report_offer@example.com"
+        assert email.sent_data["To"] == "support@example.com"
         assert email.sent_data["Vars"]["user_id"] == user.id
         assert email.sent_data["Vars"]["offer_id"] == offer.id
         assert "saynul" in email.sent_data["Vars"]["reason"]
