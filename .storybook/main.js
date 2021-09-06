@@ -11,6 +11,7 @@ const aliases = {
   'styles': resolve('../src/styles'),
   'images': resolve('../src/images'),
   'icons': resolve('../src/icons'),
+  'utils': resolve('../src/utils'),
 }
 
 const sassResourcesLoader = {
