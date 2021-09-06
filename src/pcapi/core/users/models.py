@@ -6,6 +6,7 @@ from datetime import datetime
 from datetime import time
 from decimal import Decimal
 import enum
+from operator import attrgetter
 from typing import Optional
 
 from dateutil.relativedelta import relativedelta
@@ -253,7 +254,9 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @property
     def deposit(self) -> Optional[Deposit]:
-        return self.deposits[0] if len(self.deposits) > 0 else None
+        if len(self.deposits) == 0:
+            return None
+        return sorted(self.deposits, key=attrgetter("expirationDate"), reverse=True)[0]
 
     @property
     def deposit_activation_date(self) -> Optional[datetime]:
