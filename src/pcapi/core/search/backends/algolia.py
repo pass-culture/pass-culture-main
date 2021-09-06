@@ -222,6 +222,7 @@ class AlgoliaBackend(base.SearchBackend):
         object_to_index = {
             "objectID": offer.id,
             "offer": {
+                "subcategoryLabel": offer.subcategory.app_label,
                 "author": author,
                 "category": offer.offer_category_name_for_app,
                 "rankingWeight": offer.rankingWeight,
@@ -236,6 +237,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "isEducational": offer.isEducational,
                 "isEvent": offer.isEvent,
                 "isThing": offer.isThing,
+                # FIXME remove once subcategory logic is fully implemented
                 "label": offer.offerType["appLabel"],
                 "musicSubType": music_sub_type,
                 "musicType": music_type,

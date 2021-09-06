@@ -38,6 +38,7 @@ def test_serialize():
     stock = offers_factories.StockFactory(offer=offer, price=10)
     serialized = appsearch.AppSearchBackend().serialize_offer(offer)
     assert serialized == {
+        "subcategory_label": "Livre",
         "artist": "Author Performer Speaker Stage Director",
         "category": "LIVRE",
         "date_created": offer.dateCreated,

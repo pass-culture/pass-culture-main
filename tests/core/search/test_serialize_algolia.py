@@ -95,6 +95,7 @@ class BuildObjectTest:
         assert result == {
             "objectID": 3,
             "offer": {
+                "subcategoryLabel": "Autre type d'événement musical",
                 "author": None,
                 "category": "MUSIQUE",
                 "dateCreated": 1577872800.0,
@@ -460,6 +461,7 @@ class BuildObjectTest:
         assert result == {
             "objectID": 3,
             "offer": {
+                "subcategoryLabel": "Autre type d'événement musical",
                 "author": None,
                 "category": "MUSIQUE",
                 "dateCreated": 1577872800.0,
@@ -554,6 +556,7 @@ class BuildObjectTest:
         assert result == {
             "objectID": 3,
             "offer": {
+                "subcategoryLabel": "Autre type d'événement musical",
                 "author": None,
                 "category": "MUSIQUE",
                 "dateCreated": 1577872800.0,

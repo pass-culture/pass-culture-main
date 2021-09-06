@@ -28,6 +28,7 @@ DOCUMENTS_PER_REQUEST_LIMIT = 100
 
 
 SCHEMA = {
+    "subcategory_label": "text",
     "artist": "text",
     "category": "text",
     "date_created": "date",
@@ -39,6 +40,7 @@ SCHEMA = {
     "is_educational": "number",
     "is_event": "number",
     "is_thing": "number",
+    # FIXME remove once subcategory logic is fully implemented
     "label": "text",
     "name": "text",
     # "id": "number",  must not be provided when creating the schema.
@@ -221,6 +223,7 @@ class AppSearchBackend(base.SearchBackend):
             position = None
 
         return {
+            "subcategory_label": offer.subcategory.app_label,
             "artist": artist.strip() or None,
             "category": offer.offer_category_name_for_app,
             "date_created": offer.dateCreated,  # used only to rank results
