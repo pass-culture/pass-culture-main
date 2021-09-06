@@ -3,7 +3,11 @@ import logging
 import re
 from typing import Optional
 
+from dateutil import parser as date_parser
+
 from pcapi import settings
+from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
+from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
@@ -25,6 +29,7 @@ from pcapi.repository.beneficiary_import_queries import find_applications_ids_to
 from pcapi.repository.beneficiary_import_queries import is_already_imported
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
 from pcapi.repository.user_queries import find_user_by_email
+from pcapi.utils.date import FrenchParserInfo
 from pcapi.utils.mailing import MailServiceException
 
 
@@ -37,84 +42,112 @@ class DMSParsingError(ValueError):
         self.errors = errors
 
 
-def run(
-    procedure_id: int,
-) -> None:
+def run(procedure_id: int, use_graphql_api: bool = False) -> None:
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées for "
         "procedure = %s - Procedure %s",
         procedure_id,
         procedure_id,
     )
-    applications_ids = get_closed_application_ids_for_demarche_simplifiee(procedure_id, settings.DMS_TOKEN)
     retry_ids = find_applications_ids_to_retry()
-
-    logger.info(
-        "[BATCH][REMOTE IMPORT BENEFICIARIES] %i new applications to process - Procedure %s",
-        len(applications_ids),
-        procedure_id,
-    )
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] %i previous applications to retry - Procedure %s",
         len(retry_ids),
         procedure_id,
     )
 
-    for application_id in retry_ids + applications_ids:
-        details = get_application_details(application_id, procedure_id, settings.DMS_TOKEN)
-
-        try:
-            information = parse_beneficiary_information(details, procedure_id)
-        except DMSParsingError as exc:
-            logger.info(
-                "[BATCH][REMOTE IMPORT BENEFICIARIES] Invalid values (%r) detected in Application %s in procedure %s",
-                exc.errors,
-                application_id,
+    if use_graphql_api:
+        client = DMSGraphQLClient()
+        for application_details in client.get_applications_with_details(
+            procedure_id, GraphQLApplicationStates.accepted
+        ):
+            application_id = application_details["number"]
+            process_application(
                 procedure_id,
-            )
-            user_emails.send_dms_wrong_values_emails(
-                details["dossier"]["email"], exc.errors.get("postal_code"), exc.errors.get("id_piece_number")
-            )
-            errors = ",".join([f"'{key}' ({value})" for key, value in exc.errors.items()])
-            error_detail = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
-            # keep a compatibility with BeneficiaryImport table
-            save_beneficiary_import_with_status(
-                ImportStatus.ERROR,
                 application_id,
-                source=BeneficiaryImportSources.demarches_simplifiees,
-                source_id=procedure_id,
-                detail=error_detail,
+                application_details,
+                retry_ids,
+                parsing_function=parse_beneficiary_information_graphql,
             )
-            continue
 
-        except Exception as exc:  # pylint: disable=broad-except
-            logger.info(
-                "[BATCH][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s had errors and was ignored: %s",
-                application_id,
+    else:
+        applications_ids = get_closed_application_ids_for_demarche_simplifiee(procedure_id, settings.DMS_TOKEN)
+        logger.info(
+            "[BATCH][REMOTE IMPORT BENEFICIARIES] %i new applications to process - Procedure %s",
+            len(applications_ids),
+            procedure_id,
+        )
+
+        for application_id in retry_ids + applications_ids:
+            application_details = get_application_details(application_id, procedure_id, settings.DMS_TOKEN)
+
+            process_application(
                 procedure_id,
-                exc,
-                exc_info=True,
-            )
-            error = f"Le dossier {application_id} contient des erreurs et a été ignoré - Procedure {procedure_id}"
-            save_beneficiary_import_with_status(
-                ImportStatus.ERROR,
                 application_id,
-                source=BeneficiaryImportSources.demarches_simplifiees,
-                source_id=procedure_id,
-                detail=error,
+                application_details,
+                retry_ids,
+                parsing_function=parse_beneficiary_information,
             )
-            continue
-
-        process_application(procedure_id, application_id, information, retry_ids)
 
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées - Procedure %s", procedure_id
     )
 
 
+def process_parsing_exception(exception: Exception, procedure_id: int, application_id: int) -> None:
+    logger.info(
+        "[BATCH][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s had errors and was ignored: %s",
+        application_id,
+        procedure_id,
+        exception,
+        exc_info=True,
+    )
+    error = f"Le dossier {application_id} contient des erreurs et a été ignoré - Procedure {procedure_id}"
+    save_beneficiary_import_with_status(
+        ImportStatus.ERROR,
+        application_id,
+        source=BeneficiaryImportSources.demarches_simplifiees,
+        source_id=procedure_id,
+        detail=error,
+    )
+
+
+def process_parsing_error(exception: DMSParsingError, user_email: str, procedure_id: int, application_id: int) -> None:
+    logger.info(
+        "[BATCH][REMOTE IMPORT BENEFICIARIES] Invalid values (%r) detected in Application %s in procedure %s",
+        exception.errors,
+        application_id,
+        procedure_id,
+    )
+    user_emails.send_dms_wrong_values_emails(
+        user_email, exception.errors.get("postal_code"), exception.errors.get("id_piece_number")
+    )
+    errors = ",".join([f"'{key}' ({value})" for key, value in exception.errors.items()])
+    error_detail = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
+    # keep a compatibility with BeneficiaryImport table
+    save_beneficiary_import_with_status(
+        ImportStatus.ERROR,
+        application_id,
+        source=BeneficiaryImportSources.demarches_simplifiees,
+        source_id=procedure_id,
+        detail=error_detail,
+    )
+
+
 def process_application(
-    procedure_id: int, application_id: int, information: fraud_models.DMSContent, retry_ids: list[int]
+    procedure_id: int, application_id: int, application_details: dict, retry_ids: list[int], parsing_function
 ) -> None:
+
+    try:
+        information = parsing_function(application_details, procedure_id)
+    except DMSParsingError as exc:
+        process_parsing_error(exc, application_details["dossier"]["email"], procedure_id, application_id)
+        return
+
+    except Exception as exc:  # pylint: disable=broad-except
+        process_parsing_exception(exc, procedure_id, application_id)
+        return
+
     user = find_user_by_email(information.email)
     if not user:
         save_beneficiary_import_with_status(
@@ -185,6 +218,49 @@ def parse_beneficiary_information(application_detail: dict, procedure_id: int) -
             information["birth_date"] = datetime.strptime(value, "%Y-%m-%d")
         if label == "Quel est votre numéro de téléphone":
             information["phone"] = value
+        if label == "Quel est le code postal de votre commune de résidence ?":
+            space_free = str(value).strip().replace(" ", "")
+            try:
+                information["postal_code"] = re.search("^[0-9]{5}", space_free).group(0)
+            except Exception:  # pylint: disable=broad-except
+                parsing_errors["postal_code"] = value
+
+        if label == "Veuillez indiquer votre statut":
+            information["activity"] = value
+        if label == "Quelle est votre adresse de résidence":
+            information["address"] = value
+        if label == "Quel est le numéro de la pièce que vous venez de saisir ?":
+            if not fraud_api._validate_id_piece_number_format_fraud_item(value):
+                parsing_errors["id_piece_number"] = value
+            else:
+                information["id_piece_number"] = value
+
+    if parsing_errors:
+        raise DMSParsingError(parsing_errors, "Error validating")
+    return fraud_models.DMSContent(**information)
+
+
+def parse_beneficiary_information_graphql(application_detail: dict, procedure_id: int) -> fraud_models.DMSContent:
+    information = {
+        "last_name": application_detail["demandeur"]["nom"],
+        "first_name": application_detail["demandeur"]["prenom"],
+        "civility": application_detail["demandeur"]["civilite"],
+        "email": application_detail["usager"]["email"],
+        "application_id": application_detail["number"],
+        "procedure_id": procedure_id,
+    }
+    parsing_errors = {}
+
+    for field in application_detail["champs"]:
+        label = field["label"]
+        value = field["stringValue"]
+
+        if "Veuillez indiquer votre département" in label:
+            information["department"] = re.search("^[0-9]{2,3}|[2BbAa]{2}", value).group(0)
+        if label == "Quelle est votre date de naissance":
+            information["birth_date"] = date_parser.parse(value, FrenchParserInfo())
+        if label == "Quel est votre numéro de téléphone":
+            information["phone"] = value.replace(" ", "")
         if label == "Quel est le code postal de votre commune de résidence ?":
             space_free = str(value).strip().replace(" ", "")
             try:

@@ -9,6 +9,7 @@ from dateutil.relativedelta import relativedelta
 from mailjet_rest import Client
 import pytest
 
+from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
@@ -25,6 +26,7 @@ import pcapi.notifications.push.testing as push_testing
 from pcapi.scripts.beneficiary import remote_import
 
 from tests.scripts.beneficiary.fixture import APPLICATION_DETAIL_STANDARD_RESPONSE
+from tests.scripts.beneficiary.fixture import make_graphql_application
 from tests.scripts.beneficiary.fixture import make_new_beneficiary_application_details
 from tests.scripts.beneficiary.fixture_dms_with_selfie import APPLICATION_DETAIL_STANDARD_RESPONSE_AFTER_GENERALISATION
 
@@ -1073,3 +1075,56 @@ class RunIntegrationTest:
         )
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3124925
+
+
+@pytest.mark.usefixtures("db_session")
+class GraphQLSourceProcessApplicationTest:
+    def test_parsing(self):
+        application_id = 123123
+        application_details = make_graphql_application(application_id, "closed")
+
+        beneficiary_information = remote_import.parse_beneficiary_information_graphql(
+            application_details,
+            procedure_id=123,
+        )
+        assert beneficiary_information.last_name == "Doe"
+        assert beneficiary_information.first_name == "John"
+        assert beneficiary_information.civility == "Mme"
+        assert beneficiary_information.email == "young.individual@example.com"
+        assert beneficiary_information.application_id == application_id
+        assert beneficiary_information.procedure_id == 123
+        assert beneficiary_information.department == "67"
+        assert beneficiary_information.birth_date == date(2002, 5, 12)
+        assert beneficiary_information.phone == "0783442376"
+        assert beneficiary_information.postal_code == "67200"
+        assert beneficiary_information.activity == "Étudiant"
+        assert beneficiary_information.address == "3 La Bigotais 22800 Saint-Donan"
+        assert beneficiary_information.id_piece_number == "123123123"
+
+    def test_process_application_user_already_created(self):
+        user = users_factories.UserFactory()
+        application_id = 123123
+        application_details = make_graphql_application(application_id, "closed", email=user.email)
+        # fixture
+        remote_import.process_application(
+            123123, 4234, application_details, [], parsing_function=remote_import.parse_beneficiary_information_graphql
+        )
+        assert BeneficiaryImport.query.count() == 1
+        import_status = BeneficiaryImport.query.one_or_none()
+        assert import_status.currentStatus == ImportStatus.CREATED
+        assert import_status.beneficiary == user
+
+    @patch.object(DMSGraphQLClient, "get_applications_with_details")
+    def test_run(self, get_applications_with_details):
+        user = users_factories.UserFactory()
+        application_id = 123123
+
+        get_applications_with_details.return_value = [
+            make_graphql_application(application_id, "closed", email=user.email)
+        ]
+        remote_import.run(123123, use_graphql_api=True)
+
+        import_status = BeneficiaryImport.query.one_or_none()
+
+        assert import_status.currentStatus == ImportStatus.CREATED
+        assert import_status.beneficiary == user

@@ -256,3 +256,119 @@ def make_new_beneficiary_application_details(
             }
         )
     return application
+
+
+def make_graphql_application(
+    application_id: int,
+    state: str,
+    postal_code: int = 67200,
+    department_code: str = "67 - Bas-Rhin",
+    civility: str = "Mme",
+    activity: str = "Étudiant",
+    id_piece_number: Optional[str] = "123123123",
+    email: Optional[str] = "young.individual@example.com",
+    full_graphql_response: bool = False,
+    has_next_page: bool = False,
+) -> dict:
+    data = {
+        "id": "RG9zc2llci0xNzEwMDc0",
+        "number": application_id,
+        "archived": False,
+        "state": state,
+        "dateDerniereModification": "2020-05-13T10:41:23+02:00",
+        "datePassageEnConstruction": "2020-05-13T09:09:46+02:00",
+        "datePassageEnInstruction": "2020-05-13T10:37:31+02:00",
+        "dateTraitement": "2020-05-13T10:41:21+02:00",
+        "motivation": "",
+        "motivationAttachment": None,
+        "attestation": None,
+        "instructeurs": [{"email": "instructor@example.com", "id": "SomeRandomId"}],
+        "groupeInstructeur": {"id": "R3JvdXBlSW5zdHJ1Y3RldXItMjYxMzg=", "number": 2613, "label": "défaut"},
+        "champs": [
+            {
+                "id": "Q2hhbXAtNjA5NDQ3",
+                "label": "Comment remplir ce formulaire de pré-inscription au pass Culture",
+                "stringValue": "",
+            },
+            {
+                "id": "Q2hhbXAtNTk2NDUz",
+                "label": "Veuillez indiquer votre département de résidence",
+                "stringValue": department_code,
+            },
+            {"id": "Q2hhbXAtNTgyMjIw", "label": "Quelle est votre date de naissance", "stringValue": "12 mai 2002"},
+            {"id": "Q2hhbXAtNzE4MjIy", "label": "Pièces justificatives acceptées", "stringValue": ""},
+            {
+                "id": "Q2hhbXAtNDU5ODE5",
+                "label": "Pièce d'identité (photocopie de la page avec votre photo)",
+                "stringValue": "",
+                "file": {
+                    "filename": "Carte Identité THOMAS MERLE.PDF",
+                    "url": "https://static.demarches-simplifiees.fr:443/v1/AUTH_db3cbfc79c914f87b192ff7c6bb176f0/ds_activestorage_backup/Z8h7GD96s6ctNqFuaw2RF93q?temp_url_sig=152db74cdd9ccd8934a79b6e012f79c29922f04b&temp_url_expires=1630920007&filename=Carte%20Identit%C3%A9%20THOMAS%20MERLE.PDF&inline",
+                },
+            },
+            {
+                "id": "Q2hhbXAtMTg3Mzc0Mw==",
+                "label": "Quel est le numéro de la pièce que vous venez de saisir ?",
+                "stringValue": id_piece_number,
+            },
+            {"id": "Q2hhbXAtNTgyMjE5", "label": "Quel est votre numéro de téléphone", "stringValue": "07 83 44 23 76"},
+            {
+                "id": "Q2hhbXAtNTgyMjIx",
+                "label": "Quel est le code postal de votre commune de résidence ?",
+                "stringValue": postal_code,
+            },
+            {
+                "id": "Q2hhbXAtNTgyMjIz",
+                "label": "Quelle est votre adresse de résidence",
+                "stringValue": "3 La Bigotais 22800 Saint-Donan",
+            },
+            {"id": "Q2hhbXAtNzE4MDk0", "label": "Veuillez indiquer votre statut", "stringValue": activity},
+            {"id": "Q2hhbXAtNDUxMjg0", "label": "Déclaration de résidence", "stringValue": ""},
+            {"id": "Q2hhbXAtNTgyMzI4", "label": "Certification sur l'honneur", "stringValue": ""},
+            {
+                "id": "Q2hhbXAtNzE4MTA2",
+                "label": "Je certifie sur l’honneur résider dans l'un des départements ouverts à l'expérimentation du pass Culture.",
+                "stringValue": "true",
+            },
+            {
+                "id": "Q2hhbXAtNzE4MjU0",
+                "label": "Je certifie sur l’honneur résider légalement et habituellement sur le territoire français depuis plus de un an.",
+                "stringValue": "true",
+            },
+            {"id": "Q2hhbXAtNDY2Njk1", "label": "Consentement à l'utilisation de mes données", "stringValue": ""},
+            {
+                "id": "Q2hhbXAtNDY2Njk0",
+                "label": "J'accepte les conditions générales d'utilisation du pass Culture",
+                "stringValue": "true",
+            },
+            {
+                "id": "Q2hhbXAtNDU3MzAz",
+                "label": "Je donne mon accord au traitement de mes données à caractère personnel. *",
+                "stringValue": "true",
+            },
+            {
+                "id": "Q2hhbXAtMTE0NTg4Mg==",
+                "label": "Je déclare sur l’honneur que l'ensemble des réponses et documents fournis sont corrects et authentiques.",
+                "stringValue": "true",
+            },
+            {
+                "id": "Q2hhbXAtNDU0Nzc1",
+                "label": "Un grand merci et à très vite sur le pass Culture !",
+                "stringValue": "",
+            },
+        ],
+        "annotations": [],
+        "usager": {"email": email},
+        "demandeur": {"civilite": civility, "nom": "Doe", "prenom": "John", "dateDeNaissance": None},
+    }
+    if full_graphql_response:
+        enveloppe = {
+            "demarche": {
+                "dossiers": {"nodes": [], "pageInfo": {"endCursor": "MTc", "hasNextPage": has_next_page}},
+                "id": "UHJvY2VkdXJlLTQ0Njgy",
+                "number": 44682,
+            }
+        }
+        enveloppe["demarche"]["dossiers"]["nodes"] = [data]
+        return enveloppe
+    return data

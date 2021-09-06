@@ -3,6 +3,7 @@ import datetime
 import dateutil
 
 from pcapi.utils.date import CUSTOM_TIMEZONES
+from pcapi.utils.date import FrenchParserInfo
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import get_postal_code_timezone
@@ -61,3 +62,8 @@ class GetPostalCodeTimezoneTest:
 
     def test_should_return_custom_timezones(self):
         assert get_postal_code_timezone("97300") == "America/Cayenne"
+
+
+class FrenchParserInfoTest:
+    def test_parse_french_date(self):
+        assert dateutil.parser.parse("12 mai 2021", FrenchParserInfo()) == datetime.datetime(2021, 5, 12)

@@ -4,6 +4,7 @@ from typing import Optional
 from babel.dates import format_date
 from babel.dates import format_datetime as babel_format_datetime
 from dateutil import tz
+from dateutil.parser import parserinfo
 
 from pcapi.domain.postal_code.postal_code import PostalCode
 
@@ -46,6 +47,32 @@ CUSTOM_TIMEZONES = {
     # very few events, there...
 }
 METROPOLE_TIMEZONE = "Europe/Paris"
+
+
+class FrenchParserInfo(parserinfo):
+    WEEKDAYS = [
+        ("lun.", "Lundi"),
+        ("mar.", "Mardi"),  # TODO: "Tues"
+        ("mer.", "Mercredi"),
+        ("jeu.", "Jeudi"),  # TODO: "Thurs"
+        ("ven.", "Vendredi"),
+        ("sam.", "Samedi"),
+        ("dim.", "Dimanche"),
+    ]
+    MONTHS = [
+        ("janv.", "Janvier"),
+        ("fevr.", "Février"),  # TODO: "Febr"
+        ("mars", "Mars"),
+        ("avr.", "Avril"),
+        ("mai", "Mai"),
+        ("juin", "Juin"),
+        ("juill.", "Juillet"),
+        ("août", "Août"),
+        ("sept.", "Septembre"),
+        ("oct.", "Octobre"),
+        ("nov.", "Novembre"),
+        ("déc.", "Décembre"),
+    ]
 
 
 class DateTimes:
