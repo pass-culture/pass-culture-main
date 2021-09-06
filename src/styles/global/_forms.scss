@@ -37,6 +37,14 @@
   background-color: $white;
 }
 
+.checkbox-field {
+  display: flex;
+
+  svg {
+    margin-top: rem(-2px);
+  }
+}
+
 .checkbox-field,
 .checkboxes-field {
   .field-inner {

@@ -11,10 +11,10 @@ import { Form } from 'react-final-form'
 import { getCanSubmit } from 'react-final-form-utils'
 import ReactTooltip from "react-tooltip"
 
-import CheckboxField from 'components/layout/form/fields/CheckboxField'
 import NumberField from 'components/layout/form/fields/NumberField'
 import Icon from 'components/layout/Icon'
 import Insert from 'components/layout/Insert/Insert'
+import { CheckboxField } from 'ui-kit'
 
 const AllocineProviderForm = ({ saveVenueProvider, providerId, venueId, isCreatedEntity, initialValues, onCancel }) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -98,7 +98,6 @@ const AllocineProviderForm = ({ saveVenueProvider, providerId, venueId, isCreate
               </div>
               <div className="apf-is-duo-section">
                 <CheckboxField
-                  checked={formProps.initialValues?.isDuo}
                   id="apf-is-duo"
                   label="Accepter les réservations DUO"
                   name="isDuo"

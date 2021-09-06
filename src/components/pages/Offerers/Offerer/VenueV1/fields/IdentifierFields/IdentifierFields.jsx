@@ -15,11 +15,11 @@ import { Field } from 'react-final-form'
 import { removeWhitespaces } from 'react-final-form-utils'
 import ReactTooltip from 'react-tooltip'
 
-import CheckboxField from 'components/layout/form/fields/CheckboxField'
 import HiddenField from 'components/layout/form/fields/HiddenField'
 import TextareaField from 'components/layout/form/fields/TextareaField'
 import TextField from 'components/layout/form/fields/TextField'
 import Icon from 'components/layout/Icon'
+import { CheckboxField } from 'ui-kit'
 
 import { formatSiret } from '../../siret/formatSiret'
 import VenueLabel from '../../ValueObjects/VenueLabel'
@@ -170,7 +170,6 @@ class IdentifierFields extends PureComponent {
           />
           {!isCreatedEntity && !readOnly && isDirtyFieldBookingEmail && (
             <CheckboxField
-              checked={false}
               id="isEmailAppliedOnAllOffers"
               label="Utiliser cet email pour me notifier des réservations de toutes les offres déjà postées dans ce lieu."
               labelAligned
