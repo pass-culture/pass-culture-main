@@ -1,6 +1,7 @@
 import datetime
 from decimal import Decimal
 
+from pcapi import settings
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_type import ThingType
 
@@ -8,6 +9,14 @@ from pcapi.models.offer_type import ThingType
 CONFIRM_BOOKING_AFTER_CREATION_DELAY = datetime.timedelta(hours=48)
 CONFIRM_BOOKING_BEFORE_EVENT_DELAY = datetime.timedelta(hours=48)
 BOOKINGS_AUTO_EXPIRY_DELAY = datetime.timedelta(days=30)
+BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY = datetime.timedelta(days=10)
+# TODO(yacine) This date is used to avoid cancellation of bookings created before this date after
+#  Should be removed 20 days after activation of the new auto expiry delay
+ACTIVATION_NEW_BOOKING_AUTO_EXPIRY_DELAY_DATE = (
+    datetime.date.today() - datetime.timedelta(days=10)
+    if (settings.IS_TESTING or settings.IS_DEV)
+    else datetime.date(2021, 9, 22)
+)
 BOOKINGS_EXPIRY_NOTIFICATION_DELAY = datetime.timedelta(days=7)
 AUTO_USE_AFTER_EVENT_TIME_DELAY = datetime.timedelta(hours=48)
 

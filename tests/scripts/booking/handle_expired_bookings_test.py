@@ -1,6 +1,8 @@
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from unittest import mock
+from unittest.mock import patch
 
 import pytest
 
@@ -11,16 +13,25 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.scripts.booking import handle_expired_bookings
 
 
 @pytest.mark.usefixtures("db_session")
 class CancelExpiredBookingsTest:
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @patch(
+        "pcapi.core.bookings.repository.ACTIVATION_NEW_BOOKING_AUTO_EXPIRY_DELAY_DATE",
+        date.today() - timedelta(days=20),
+    )
     def should_cancel_old_thing_that_can_expire_booking(self, app) -> None:
         now = datetime.utcnow()
+        eleven_days_ago = now - timedelta(days=11)
         two_months_ago = now - timedelta(days=60)
         book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        old_book_booking = BookingFactory(stock__offer__product=book, dateCreated=two_months_ago)
+        old_book_booking = BookingFactory(stock__offer__product=book, dateCreated=eleven_days_ago)
+        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
+        old_dvd_booking = BookingFactory(stock__offer__product=dvd, dateCreated=two_months_ago)
 
         handle_expired_bookings.cancel_expired_bookings()
 
@@ -29,6 +40,12 @@ class CancelExpiredBookingsTest:
         assert old_book_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
         assert old_book_booking.cancellationReason == BookingCancellationReasons.EXPIRED
         assert old_book_booking.stock.dnBookedQuantity == 0
+
+        assert old_dvd_booking.isCancelled
+        assert old_dvd_booking.status is BookingStatus.CANCELLED
+        assert old_dvd_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
+        assert old_dvd_booking.cancellationReason == BookingCancellationReasons.EXPIRED
+        assert old_dvd_booking.stock.dnBookedQuantity == 0
 
     def should_not_cancel_new_thing_that_can_expire_booking(self, app) -> None:
         book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
@@ -119,7 +136,8 @@ class CancelExpiredBookingsTest:
         book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         BookingFactory.create_batch(size=10, stock__offer__product=book, dateCreated=two_months_ago)
         n_queries = (
-            1  # select count
+            1  # select feature."isActive"
+            + 1  # select count
             + 1  # select initial booking ids
             + 1  # release savepoint/COMMIT
             + 4

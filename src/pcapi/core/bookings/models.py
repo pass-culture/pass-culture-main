@@ -18,15 +18,19 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
+from pcapi.core.bookings.conf import ACTIVATION_NEW_BOOKING_AUTO_EXPIRY_DELAY_DATE
 from pcapi.core.bookings.conf import BOOKINGS_AUTO_EXPIRY_DELAY
+from pcapi.core.bookings.conf import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.exceptions import BookingHasAlreadyBeenUsed
 from pcapi.core.bookings.exceptions import BookingIsAlreadyCancelled
 from pcapi.core.bookings.exceptions import BookingIsAlreadyUsed
 from pcapi.core.bookings.exceptions import BookingIsCancelled
 from pcapi.core.bookings.exceptions import BookingIsNotCancelledCannotBeUncancelled
+from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.offers.models import Mediation
 from pcapi.models.db import Model
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.human_ids import humanize
 
@@ -177,6 +181,12 @@ class Booking(PcObject, Model):
             return None
         if not self.stock.offer.canExpire:
             return None
+        if (
+            self.stock.offer.subcategoryId == subcategories.LIVRE_PAPIER.id
+            and FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
+            and self.dateCreated > ACTIVATION_NEW_BOOKING_AUTO_EXPIRY_DELAY_DATE
+        ):
+            return self.dateCreated + BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
         return self.dateCreated + BOOKINGS_AUTO_EXPIRY_DELAY
 
     @property

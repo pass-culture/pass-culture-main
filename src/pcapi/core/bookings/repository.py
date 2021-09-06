@@ -6,6 +6,8 @@ from typing import Optional
 
 from dateutil import tz
 from sqlalchemy import Date
+from sqlalchemy import and_
+from sqlalchemy import case
 from sqlalchemy import cast
 from sqlalchemy import func
 from sqlalchemy import or_
@@ -17,7 +19,9 @@ from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.util._collections import AbstractKeyedTuple
 
 from pcapi.core.bookings import conf
+from pcapi.core.bookings.conf import ACTIVATION_NEW_BOOKING_AUTO_EXPIRY_DELAY_DATE
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
@@ -31,6 +35,7 @@ from pcapi.models import UserOfferer
 from pcapi.models import Venue
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.db import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.utils.date import get_department_timezone
@@ -158,7 +163,8 @@ def find_used_by_token(token: str) -> Booking:
     return Booking.query.filter_by(token=token.upper(), isUsed=True).one_or_none()
 
 
-def find_expiring_bookings() -> Query:
+# TODO(yacine) remove this fonction 20 days after activation of FF ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
+def old_find_expiring_bookings() -> Query:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
     return (
         Booking.query.join(Stock)
@@ -168,6 +174,37 @@ def find_expiring_bookings() -> Query:
             ~Booking.isUsed,
             (Booking.dateCreated + conf.BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight,
             Offer.canExpire,
+        )
+    )
+
+
+def find_expiring_bookings() -> Query:
+    # call old fonction if FF is disabled
+    if not FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS.is_active():
+        return old_find_expiring_bookings()
+
+    today_at_midnight = datetime.combine(date.today(), time(0, 0))
+    return (
+        Booking.query.join(Stock)
+        .join(Offer)
+        .filter(
+            ~Booking.isCancelled,
+            ~Booking.isUsed,
+            Offer.canExpire,
+            case(
+                [
+                    (
+                        and_(
+                            Offer.subcategoryId == subcategories.LIVRE_PAPIER.id,
+                            # TODO(yacine) remove this condition 20 days after activation of FF
+                            #  ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
+                            Booking.dateCreated >= ACTIVATION_NEW_BOOKING_AUTO_EXPIRY_DELAY_DATE,
+                        ),
+                        (Booking.dateCreated + conf.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight,
+                    ),
+                ],
+                else_=((Booking.dateCreated + conf.BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight),
+            ),
         )
     )
 

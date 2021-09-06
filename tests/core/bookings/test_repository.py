@@ -2,8 +2,10 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+from unittest.mock import patch
 
 from dateutil import tz
+from freezegun import freeze_time
 import pytest
 from pytest import fixture
 
@@ -14,6 +16,7 @@ from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.payments.factories import PaymentFactory
 from pcapi.core.payments.factories import PaymentStatusFactory
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
 from pcapi.model_creators.generic_creators import create_booking
@@ -1516,3 +1519,39 @@ class FindBookingsByFraudulentUsersTest:
         # Then
         assert len(bookings) == 2
         assert set(bookings) == {booking_booked_by_fraudulent_user, another_booking_booked_by_fraudulent_user}
+
+
+class FindExpiringBookingsTest:
+    @patch("pcapi.core.bookings.repository.ACTIVATION_NEW_BOOKING_AUTO_EXPIRY_DELAY_DATE", datetime(2021, 8, 5))
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_find_expired_bookings_before_and_after_enabling_feature_flag(self):
+        with freeze_time("2021-08-01 15:00:00") as frozen_time:
+            book_offer = offers_factories.OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+            movie_offer = offers_factories.OfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
+
+            book_booking_before_new_delay = bookings_factories.BookingFactory(
+                stock__offer=book_offer, dateCreated=datetime.utcnow()
+            )
+            movie_booking = bookings_factories.BookingFactory(stock__offer=movie_offer, dateCreated=datetime.utcnow())
+
+            print("book_booking_before_new_delay.dateCreated", book_booking_before_new_delay.dateCreated)
+
+            frozen_time.move_to("2021-08-06 15:00:00")
+            book_booking_new_expiry_delay = bookings_factories.BookingFactory(
+                stock__offer=book_offer, dateCreated=datetime.utcnow()
+            )
+            bookings_factories.BookingFactory(stock__offer=movie_offer, dateCreated=datetime.utcnow())
+
+            bookings = booking_repository.find_expiring_bookings().all()
+            assert bookings == []
+
+            frozen_time.move_to("2021-08-17 17:00:00")
+
+            bookings = booking_repository.find_expiring_bookings().all()
+            assert bookings == [book_booking_new_expiry_delay]
+
+            frozen_time.move_to("2021-09-01 17:00:00")
+
+            bookings = booking_repository.find_expiring_bookings().all()
+            assert set(bookings) == {book_booking_new_expiry_delay, movie_booking, book_booking_before_new_delay}
