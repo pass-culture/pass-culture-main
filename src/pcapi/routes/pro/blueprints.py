@@ -20,10 +20,11 @@ security_schemes = {
 
 api = ExtendedSpecTree(
     "flask",
-    title="Pass Culture public API version 2",
+    title="pass Culture public API",
     MODE="strict",
     before=before_handler,
     PATH="/",
     security_schemes=security_schemes,
+    version=2,
 )
 api.register(pro_api_v2)
