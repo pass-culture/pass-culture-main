@@ -80,13 +80,18 @@ def delete_stock(stock_id: str) -> StockIdResponseModel:
 @api_key_required
 @spectree_serialize(on_success_status=204, on_error_statuses=[401, 404], api=api, tags=["API Stocks"])
 def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:
-    """Public endpoint to update stocks of a venue registered on pass Culture.
+    # in French, to be used by Swagger for the API documentation
+    """Mise à jour des stocks d'un lieu enregistré auprès du pass Culture.
 
-    This endpoint can only works for venues attached to the same account the api key was issued for.
-    Only books, pre existing on the pass Culture database and whitelisted by pass Culture's cgu will be taken, all other stocks are filtered.
-    Stocks are referenced by their isbn format EAN13.
-    The 'available' quantity is the number of items that could be bought at the library.
-    If provided, the 'price' must be in euros (not cents).
+    Seuls les livres, préalablement présents dans le catalogue du pass Culture seront pris en compte, tous les autres stocks
+    seront filtrés.
+
+    Les stocks sont référencés par leur isbn au format EAN13.
+
+    Le champ "available" représente la quantité de stocks disponible en librairie.
+    Le champ "price" (optionnel) correspond au prix en euros.
+
+    Le paramètre {venue_id} correspond à un lieu qui doit être attaché à la structure à laquelle la clé d'API utilisée est reliée.
     """
     offerer_id = current_api_key.offererId
     venue = Venue.query.join(Offerer).filter(Venue.id == venue_id, Offerer.id == offerer_id).first_or_404()
