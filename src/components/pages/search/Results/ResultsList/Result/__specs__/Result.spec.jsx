@@ -33,7 +33,7 @@ describe('components | Result', () => {
           dates: [1585484866, 1585484866],
           id: 'AE',
           isDigital: false,
-          label: 'Livre',
+          subcategoryLabel: 'Livre',
           name: 'Les fleurs du mal',
           priceMin: 8,
           priceMax: 12,

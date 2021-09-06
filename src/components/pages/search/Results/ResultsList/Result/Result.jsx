@@ -12,7 +12,7 @@ import { SearchHit } from '../ResultsList'
 
 const Result = ({ result, geolocation, search }) => {
   const { _geoloc = {}, objectID, offer, venue } = result
-  const { dates, isDigital, isDuo, label, name, priceMin, priceMax, thumbUrl } = offer
+  const { dates, isDigital, isDuo, subcategoryLabel, name, priceMin, priceMax, thumbUrl } = offer
   const { latitude: userLatitude, longitude: userLongitude } = geolocation
   const { lat: venueLatitude, lng: venueLongitude } = _geoloc
   const { departementCode } = venue || {}
@@ -53,7 +53,7 @@ const Result = ({ result, geolocation, search }) => {
             )}
           </div>
           <p className="result-type">
-            {label}
+            {subcategoryLabel}
           </p>
           {formattedDate && (
             <p
