@@ -27,15 +27,17 @@ class VenuesTest:
             "postalCode": venue.postalCode,
             "venueTypeCode": venue.venueTypeCode.value,
             "description": venue.description,
-            "audioDisabilityCompliant": venue.audioDisabilityCompliant,
-            "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
-            "motorDisabilityCompliant": venue.motorDisabilityCompliant,
-            "visualDisabilityCompliant": venue.visualDisabilityCompliant,
             "contact": {
                 "email": venue.contact.email,
                 "phoneNumber": venue.contact.phone_number,
                 "website": venue.contact.website,
                 "socialMedias": venue.contact.social_medias,
+            },
+            "accessibility": {
+                "audioDisability": venue.audioDisabilityCompliant,
+                "mentalDisability": venue.mentalDisabilityCompliant,
+                "motorDisability": venue.motorDisabilityCompliant,
+                "visualDisability": venue.visualDisabilityCompliant,
             },
         }
 

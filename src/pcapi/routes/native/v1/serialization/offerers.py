@@ -7,6 +7,13 @@ from pcapi.serialization.utils import to_camel
 from . import BaseModel
 
 
+class VenueAccessibilityModel(BaseModel):
+    audioDisability: typing.Optional[bool]
+    mentalDisability: typing.Optional[bool]
+    motorDisability: typing.Optional[bool]
+    visualDisability: typing.Optional[bool]
+
+
 class VenueResponse(BaseModel):
     class Config:
         orm_mode = True
@@ -26,8 +33,16 @@ class VenueResponse(BaseModel):
     postalCode: typing.Optional[str]
     venueTypeCode: typing.Optional[offerers_models.VenueTypeCode]
     description: typing.Optional[venues_serialize.VenueDescription]  # type: ignore
-    audioDisabilityCompliant: typing.Optional[bool]
-    mentalDisabilityCompliant: typing.Optional[bool]
-    motorDisabilityCompliant: typing.Optional[bool]
-    visualDisabilityCompliant: typing.Optional[bool]
     contact: typing.Optional[venues_serialize.VenueContactModel]
+    accessibility: VenueAccessibilityModel
+
+    @classmethod
+    def from_orm(cls, venue: offerers_models.Venue) -> "VenueResponse":
+        venue.accessibility = {
+            "audioDisability": venue.audioDisabilityCompliant,
+            "mentalDisability": venue.mentalDisabilityCompliant,
+            "motorDisability": venue.motorDisabilityCompliant,
+            "visualDisability": venue.visualDisabilityCompliant,
+        }
+
+        return super().from_orm(venue)
