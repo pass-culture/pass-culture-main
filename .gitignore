@@ -92,6 +92,10 @@ ENV/
 ftp_mirrors
 postgres_data
 
+# Sandbox assets
+/src/pcapi/sandboxes/thumbs/mediations/
+
+
 # Secret
 private
 secret.py
