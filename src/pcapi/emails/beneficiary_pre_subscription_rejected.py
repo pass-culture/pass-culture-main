@@ -35,6 +35,6 @@ def make_dms_wrong_values_data(
         data["Vars"]["field_name1"] = "Code Postal"
         data["Vars"]["field_input1"] = postal_code_value
     if id_piece_number_value:
-        data["Vars"]["field_name2"] = ("N° de pièce d'identité",)
+        data["Vars"]["field_name2"] = "N° de pièce d'identité"
         data["Vars"]["field_input2"] = id_piece_number_value
     return data
