@@ -93,7 +93,7 @@ class AccountTest:
             "phoneNumber": "+33102030405",
             "needsToFillCulturalSurvey": True,
         }
-        user = users_factories.BeneficiaryFactory(
+        user = users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(2000, 1, 1),
             deposit__version=1,
             # The expiration date is taken in account in
@@ -917,7 +917,7 @@ class SendPhoneValidationCodeTest:
         assert user.beneficiaryFraudResult.reason == expected_reason
 
     def test_send_phone_validation_code_already_beneficiary(self, app):
-        user = users_factories.BeneficiaryFactory(
+        user = users_factories.BeneficiaryGrant18Factory(
             isEmailValidated=True, phoneNumber="+33601020304", roles=[UserRole.BENEFICIARY]
         )
         access_token = create_access_token(identity=user.email)
@@ -932,7 +932,7 @@ class SendPhoneValidationCodeTest:
         assert not Token.query.filter_by(userId=user.id).first()
 
     def test_send_phone_validation_code_for_new_phone_with_already_beneficiary(self, app):
-        user = users_factories.BeneficiaryFactory(
+        user = users_factories.BeneficiaryGrant18Factory(
             isEmailValidated=True, phoneNumber="+33601020304", roles=[UserRole.BENEFICIARY]
         )
         access_token = create_access_token(identity=user.email)

@@ -18,7 +18,7 @@ class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def when_offer_id_is_not_received(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="test@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="test@example.com")
 
         json = {
             "mediationId": "DA",
@@ -36,7 +36,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_offer_is_not_found(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory.build(email="test@example.com")
+        user = users_factories.BeneficiaryGrant18Factory.build(email="test@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
         offer = create_offer_with_thing_product(venue, thumb_count=0)
@@ -57,7 +57,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_mediation_is_not_found(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="test@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="test@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
         offer = create_offer_with_thing_product(venue, thumb_count=0)
@@ -80,7 +80,7 @@ class Returns201Test:
     @pytest.mark.usefixtures("db_session")
     def when_offer_is_added_as_favorite_for_current_user(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="test@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="test@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
         offer = create_offer_with_thing_product(venue, thumb_count=0)
@@ -112,7 +112,7 @@ class Returns201Test:
     @pytest.mark.usefixtures("db_session")
     def when_mediation_id_doest_not_exist(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="test@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="test@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
         offer = create_offer_with_thing_product(venue, thumb_count=0)

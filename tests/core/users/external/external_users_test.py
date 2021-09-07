@@ -13,7 +13,7 @@ from pcapi.core.users.external import _get_user_bookings
 from pcapi.core.users.external import get_user_attributes
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.external.models import UserAttributes
-from pcapi.core.users.factories import BeneficiaryFactory
+from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -26,7 +26,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def test_update_external_user():
-    user = BeneficiaryFactory()
+    user = BeneficiaryGrant18Factory()
     BookingFactory(user=user)
 
     n_query_get_user = 1
@@ -64,7 +64,7 @@ def test_update_external_pro_user():
 
 
 def test_get_user_attributes():
-    user = BeneficiaryFactory(deposit__version=1, dateOfBirth=datetime(2000, 1, 1))
+    user = BeneficiaryGrant18Factory(deposit__version=1, dateOfBirth=datetime(2000, 1, 1))
     offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
     b1 = BookingFactory(user=user, amount=10, stock__offer=offer)
     b2 = BookingFactory(user=user, amount=10, dateUsed=datetime(2021, 5, 6), stock__offer=offer)
@@ -116,7 +116,7 @@ def test_get_user_attributes():
 
 
 def test_get_bookings_categories_and_subcategories():
-    user = BeneficiaryFactory(dateOfBirth=datetime(2000, 1, 1))
+    user = BeneficiaryGrant18Factory(dateOfBirth=datetime(2000, 1, 1))
     offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
 
     assert _get_bookings_categories_and_subcategories(_get_user_bookings(user)) == ([], [])

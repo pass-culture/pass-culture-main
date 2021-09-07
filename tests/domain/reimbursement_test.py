@@ -39,7 +39,7 @@ def create_book_booking(quantity=1, price=10):
 
 
 def create_digital_booking(quantity=1, price=10, user=None, product_subcategory_id=None):
-    user = user or users_factories.BeneficiaryFactory()
+    user = user or users_factories.BeneficiaryGrant18Factory()
     product_kwargs = {}
     if product_subcategory_id:
         product_kwargs = {"subcategoryId": product_subcategory_id}
@@ -56,7 +56,7 @@ def create_event_booking(quantity=1, price=10, user=None, date_used=None):
     if user:
         booking_kwargs["user"] = user
     booking_kwargs["dateUsed"] = date_used or datetime.now()
-    user = user or users_factories.BeneficiaryFactory()
+    user = user or users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.StockFactory(
         price=price,
         offer=offers_factories.EventOfferFactory(),
@@ -69,7 +69,7 @@ def create_rich_user(total_deposit):
     # that by creating many bookings, or creating a very big booking
     # (that would exceed the usual 300/500 euros limitation). We do
     # the latter for simplicity's sake.
-    user = users_factories.BeneficiaryFactory()
+    user = users_factories.BeneficiaryGrant18Factory()
     user.deposit.amount = total_deposit
     repository.save(user.deposit)
     return user

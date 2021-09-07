@@ -611,7 +611,7 @@ class GetCappedOffersForFiltersTest:
 
             five_days_ago = datetime.now() - timedelta(days=5)
             in_five_days = datetime.now() + timedelta(days=5)
-            beneficiary = users_factories.BeneficiaryFactory(email="jane.doe@example.com")
+            beneficiary = users_factories.BeneficiaryGrant18Factory(email="jane.doe@example.com")
             offers_factories.ThingStockFactory(offer=self.sold_old_thing_offer_with_all_stocks_empty, quantity=0)
             offers_factories.ThingStockFactory(
                 offer=self.active_thing_offer_with_one_stock_with_remaining_quantity, quantity=5

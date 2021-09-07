@@ -85,7 +85,7 @@ class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_editor_and_valid_email(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory(email="pro@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -146,7 +146,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_editor_and_invalid_email(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         admin_user = users_factories.AdminFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -168,7 +168,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_booking_user_email_with_special_character_not_url_encoded(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user+plus@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="user+plus@example.com")
         admin_user = users_factories.AdminFactory(email="admin@example.com")
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
@@ -192,7 +192,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_editor_and_valid_email_but_invalid_offer_id(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         admin_user = users_factories.AdminFactory(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)

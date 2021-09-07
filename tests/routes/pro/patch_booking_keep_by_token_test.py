@@ -124,7 +124,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_not_logged_in_and_doesnt_give_api_key(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user@example.net")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.net")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name="Event Name")
@@ -144,7 +144,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_not_logged_in_and_given_api_key_that_does_not_exists(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user@example.net")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.net")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name="Event Name")
@@ -170,7 +170,7 @@ class Returns403Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_the_api_key_is_not_linked_to_the_right_offerer(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory(email="user@example.net")
+            user = users_factories.BeneficiaryGrant18Factory(email="user@example.net")
             pro_user = users_factories.ProFactory(email="pro@example.net")
 
             offerer = offers_factories.OffererFactory(siren="123456789")
@@ -222,7 +222,7 @@ class Returns403Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_user_is_not_attached_to_linked_offerer(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             pro_user = users_factories.ProFactory(email="pro@example.net")
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -276,7 +276,7 @@ class Returns404Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_api_key_is_provided_and_booking_does_not_exist(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -302,7 +302,7 @@ class Returns404Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_user_is_logged_in_and_booking_does_not_exist(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             pro_user = users_factories.ProFactory(email="pro@example.net")
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
@@ -323,7 +323,7 @@ class Returns404Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_user_is_logged_in_and_booking_token_is_null(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             pro_user = users_factories.ProFactory(email="pro@example.net")
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
@@ -347,7 +347,7 @@ class Returns410Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_user_is_logged_in_and_booking_has_not_been_validated_already(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             pro_user = users_factories.ProFactory(email="pro@example.net")
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
@@ -369,7 +369,7 @@ class Returns410Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_user_is_logged_in_and_booking_payment_exists(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             pro_user = users_factories.ProFactory(email="pro@example.net")
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
@@ -394,7 +394,7 @@ class Returns410Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_api_key_is_provided_and_booking_has_not_been_validated_already(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             pro_user = users_factories.ProFactory(email="pro@example.net")
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
@@ -420,7 +420,7 @@ class Returns410Test:
         @pytest.mark.usefixtures("db_session")
         def test_when_api_key_is_provided_and_booking_payment_exists(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             pro_user = users_factories.ProFactory(email="pro@example.net")
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)

@@ -6,7 +6,7 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.factories import VenueFactory
-from pcapi.core.users.factories import BeneficiaryFactory
+from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
@@ -20,8 +20,8 @@ class Returns200Test:
         self, qr_code_is_active, app
     ):
         # Given
-        user1 = BeneficiaryFactory(email="user1+plus@example.com")
-        user2 = BeneficiaryFactory(email="user2+plus@example.com")
+        user1 = BeneficiaryGrant18Factory(email="user1+plus@example.com")
+        user2 = BeneficiaryGrant18Factory(email="user2+plus@example.com")
         venue = VenueFactory(latitude=None, longitude=None)
         offer = ThingOfferFactory(venue=venue)
         offer2 = ThingOfferFactory()
@@ -128,8 +128,8 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_bookings_and_qr_code_feature_is_active(self, qr_code_is_active, app):
         # Given
-        user1 = BeneficiaryFactory(email="user1+plus@example.com")
-        user2 = BeneficiaryFactory(email="user2+plus@example.com")
+        user1 = BeneficiaryGrant18Factory(email="user1+plus@example.com")
+        user2 = BeneficiaryGrant18Factory(email="user2+plus@example.com")
         venue = VenueFactory(latitude=None, longitude=None)
         offer = ThingOfferFactory(venue=venue)
         offer2 = ThingOfferFactory()

@@ -4,7 +4,7 @@ import pytest
 
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.users.factories import AdminFactory
-from pcapi.core.users.factories import BeneficiaryFactory
+from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import ProFactory
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -22,7 +22,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_and_has_no_deposit(self, app):
         # Given
-        user = BeneficiaryFactory(
+        user = BeneficiaryGrant18Factory(
             email="toto@example.com",
             postalCode="93020",
         )
@@ -70,7 +70,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_and_has_a_deposit(self, app):
         # Given
-        BeneficiaryFactory(
+        BeneficiaryGrant18Factory(
             email="wallet_test@email.com",
             postalCode="93020",
             deposit__dateCreated=datetime(2000, 1, 1, 2, 2),
@@ -89,7 +89,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_booked_some_offers(self, app):
         # Given
-        user = BeneficiaryFactory(email="wallet_test@email.com", postalCode="93020", deposit__version=1)
+        user = BeneficiaryGrant18Factory(email="wallet_test@email.com", postalCode="93020", deposit__version=1)
 
         offerer = create_offerer(
             siren="999199987", address="2 Test adress", city="Test city", postal_code="93000", name="Test offerer"
@@ -135,7 +135,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_created_without_postal_code(self, app):
         # Given
-        BeneficiaryFactory(email="wallet_test@email.com", postalCode=None, departementCode=None)
+        BeneficiaryGrant18Factory(email="wallet_test@email.com", postalCode=None, departementCode=None)
 
         # When
         response = (
@@ -173,7 +173,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def should_return_deposit_version(self, app):
         # Given
-        BeneficiaryFactory(email="wallet_test@email.com", postalCode="93020", deposit__version=1)
+        BeneficiaryGrant18Factory(email="wallet_test@email.com", postalCode="93020", deposit__version=1)
 
         # When
         response = (

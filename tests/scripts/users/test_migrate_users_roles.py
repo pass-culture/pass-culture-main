@@ -25,7 +25,7 @@ def test_migrate_beneficiary_with_no_roles():
 
 def test_migrate_beneficiary_with_beneficiary_role():
     # Given
-    user = users_factories.BeneficiaryFactory()
+    user = users_factories.BeneficiaryGrant18Factory()
 
     # When
     migrate_users_roles()
@@ -89,7 +89,7 @@ def test_migrate_pro_with_no_roles_when_attachment_and_offerer_are_validated():
 
 def test_migrate_pro_with_beneficiary_role():
     # Given
-    user = users_factories.BeneficiaryFactory()
+    user = users_factories.BeneficiaryGrant18Factory()
     offers_factories.UserOffererFactory(user=user)
 
     # When

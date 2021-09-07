@@ -17,8 +17,10 @@ CSV = """,email,adresse
 class CatchingUpDMSBeneficiariesAddressesTest:
     def test_catching_up_dms_beneficiaries_addresses(self):
         # Given
-        alice = users_factories.BeneficiaryFactory(id=1, firstName="Alice", email="alice@example.com", address=None)
-        bob = users_factories.BeneficiaryFactory(id=2, firstName="Bob", email="bob@example.com", address=None)
+        alice = users_factories.BeneficiaryGrant18Factory(
+            id=1, firstName="Alice", email="alice@example.com", address=None
+        )
+        bob = users_factories.BeneficiaryGrant18Factory(id=2, firstName="Bob", email="bob@example.com", address=None)
 
         csv_file = io.StringIO(CSV)
 

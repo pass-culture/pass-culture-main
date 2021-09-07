@@ -4,7 +4,7 @@ from pcapi import settings
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.models import Reason
-from pcapi.core.users.factories import BeneficiaryFactory
+from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.domain.offer_report_emails import send_report_notification
 
 
@@ -14,7 +14,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class OfferReportEmailTest:
     def test_report_other(self):
         # Given
-        user = BeneficiaryFactory()
+        user = BeneficiaryGrant18Factory()
         offer = OfferFactory()
         reason = Reason.OTHER.value
 
@@ -26,7 +26,7 @@ class OfferReportEmailTest:
 
     def test_report_inappropriate(self):
         # Given
-        user = BeneficiaryFactory()
+        user = BeneficiaryGrant18Factory()
         offer = OfferFactory()
         reason = Reason.INAPPROPRIATE.value
 

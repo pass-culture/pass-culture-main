@@ -5,7 +5,7 @@ from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
-from pcapi.core.users.factories import BeneficiaryFactory
+from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
@@ -16,7 +16,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_expect_booking_to_have_completed_url(self, app):
         # Given
-        user = BeneficiaryFactory(email="user@example.com")
+        user = BeneficiaryGrant18Factory(email="user@example.com")
         offerer = OffererFactory()
         product = ThingProductFactory()
         offer = ThingOfferFactory(

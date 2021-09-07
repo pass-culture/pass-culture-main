@@ -7,7 +7,7 @@ import pytest
 from pcapi.core.bookings import factories
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import ThingStockFactory
-from pcapi.core.users.factories import BeneficiaryFactory
+from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
 
 
@@ -16,7 +16,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
     def test_should_return_thing_data_when_booking_is_a_thing(self):
         # Given
         booking = factories.CancelledBookingFactory(
-            user=BeneficiaryFactory(email="fabien@example.com", firstName="Fabien"),
+            user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
             stock=ThingStockFactory(
                 price=10.2,
                 beginningDatetime=datetime.now() - timedelta(days=1),
@@ -49,7 +49,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
     def test_should_return_event_data_when_booking_is_an_event(self):
         # Given
         booking = factories.CancelledBookingFactory(
-            user=BeneficiaryFactory(email="fabien@example.com", firstName="Fabien"),
+            user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
             stock=EventStockFactory(
                 price=10.2,
                 beginningDatetime=datetime.utcnow(),

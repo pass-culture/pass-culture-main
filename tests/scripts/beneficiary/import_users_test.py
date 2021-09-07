@@ -20,7 +20,7 @@ Smisse,Jean,jean.smisse@example.com,0102030406,44,44000,{eighteen_years_in_the_p
 @pytest.mark.usefixtures("db_session")
 class ReadFileTest:
     def test_read_file(self):
-        jean = users_factories.BeneficiaryFactory(email="jean.smisse@example.com", lastName="Old name")
+        jean = users_factories.BeneficiaryGrant18Factory(email="jean.smisse@example.com", lastName="Old name")
         assert len(jean.deposits) == 1
 
         csv_file = io.StringIO(CSV)

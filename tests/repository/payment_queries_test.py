@@ -21,7 +21,7 @@ class FindPaymentsByMessageTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_payments_matching_message(self, app):
         # given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(user=beneficiary)
         offerer = booking.stock.offer.venue.managingOfferer
         transaction1 = create_payment_message(name="XML1")
@@ -48,7 +48,7 @@ class FindPaymentsByMessageTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_if_message_is_not_matched(self, app):
         # given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(user=beneficiary)
         offerer = booking.stock.offer.venue.managingOfferer
         message1 = create_payment_message(name="XML1")

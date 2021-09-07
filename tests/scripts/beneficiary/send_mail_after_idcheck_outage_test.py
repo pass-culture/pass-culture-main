@@ -33,7 +33,7 @@ class SendMailAfterIdcheckOutageTest:
             postalCode="98712",
         )
         # Beneficiary
-        factories.BeneficiaryFactory(
+        factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(2000, 1, 1),
             dateCreated=datetime.now(),
             postalCode="93000",

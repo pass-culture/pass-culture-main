@@ -17,7 +17,7 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0)
         new_beginning_datetime = datetime(2019, 8, 20, 12, 0, 0)
 
-        beneficiary = users_factories.BeneficiaryFactory.build()
+        beneficiary = users_factories.BeneficiaryGrant18Factory.build()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name="Offer name")

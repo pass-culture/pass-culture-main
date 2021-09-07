@@ -5,7 +5,7 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.users.external.batch import BATCH_DATETIME_FORMAT
-from pcapi.core.users.factories import BeneficiaryFactory
+from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import UserFactory
 import pcapi.notifications.push.testing as push_testing
 from pcapi.scripts.batch_update_users_attributes import format_batch_users
@@ -70,7 +70,7 @@ def test_run_sendinblue_only(mock_import_contacts):
 
 @pytest.mark.usefixtures("db_session")
 def test_format_batch_user():
-    user = BeneficiaryFactory(deposit__version=1)
+    user = BeneficiaryGrant18Factory(deposit__version=1)
     booking = BookingFactory(user=user)
 
     res = format_batch_users([user])
@@ -92,7 +92,7 @@ def test_format_batch_user():
 
 @pytest.mark.usefixtures("db_session")
 def test_format_sendinblue_user():
-    user = BeneficiaryFactory(deposit__version=1)
+    user = BeneficiaryGrant18Factory(deposit__version=1)
     booking = BookingFactory(user=user)
 
     res = format_sendinblue_users([user])

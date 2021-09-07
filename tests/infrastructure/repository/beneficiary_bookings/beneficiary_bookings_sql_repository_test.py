@@ -11,7 +11,7 @@ from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingStockFactory
-from pcapi.core.users.factories import BeneficiaryFactory
+from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import (
     BeneficiaryBookingsSQLRepository,
@@ -26,7 +26,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_beneficiary_bookings_with_expected_information(self, app):
         # Given
-        beneficiary = BeneficiaryFactory()
+        beneficiary = BeneficiaryGrant18Factory()
         offer = ThingOfferFactory(isActive=True, url="http://url.com", product__thumbCount=1)
         stock = ThingStockFactory(offer=offer, price=0, quantity=10)
         booking = UsedBookingFactory(
@@ -71,8 +71,8 @@ class BeneficiaryBookingsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_by_beneficiary_id(self, app):
         # Given
-        beneficiary_1 = BeneficiaryFactory()
-        beneficiary_2 = BeneficiaryFactory()
+        beneficiary_1 = BeneficiaryGrant18Factory()
+        beneficiary_2 = BeneficiaryGrant18Factory()
         offer = EventOfferFactory()
         stock = EventStockFactory(offer=offer)
         booking1 = BookingFactory(user=beneficiary_1, stock=stock)
@@ -88,7 +88,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_activation_bookings(self, app):
         # Given
-        beneficiary = BeneficiaryFactory()
+        beneficiary = BeneficiaryGrant18Factory()
         offer1 = EventOfferFactory(subcategoryId=subcategories.ACTIVATION_THING.id)
         offer2 = EventOfferFactory(subcategoryId=subcategories.ACTIVATION_THING.id)
         offer3 = EventOfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
@@ -112,7 +112,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
         now = datetime.utcnow()
         two_days_ago = now - timedelta(days=2)
         three_days_ago = now - timedelta(days=3)
-        beneficiary = BeneficiaryFactory()
+        beneficiary = BeneficiaryGrant18Factory()
         offer = EventOfferFactory()
         stock = EventStockFactory(offer=offer)
         booking1 = CancelledBookingFactory(user=beneficiary, stock=stock, dateCreated=two_days_ago)
@@ -133,7 +133,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
         two_days_bis = now + timedelta(days=2, hours=20)
         three_days = now + timedelta(days=3)
 
-        beneficiary = BeneficiaryFactory()
+        beneficiary = BeneficiaryGrant18Factory()
 
         booking1 = BookingFactory(
             user=beneficiary,

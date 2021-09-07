@@ -31,7 +31,7 @@ class Returns204Test:
         book_offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=book_offer)
 
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(user=beneficiary, stock=stock, venue=venue)
 
         repository.save(booking, user_offerer)
@@ -72,7 +72,7 @@ class Returns204Test:
         book_offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=book_offer)
 
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(user=user, stock=stock, venue=venue)
 
         repository.save(booking, user_offerer)
@@ -105,7 +105,7 @@ class Returns401Test:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(user=beneficiary, stock=stock, venue=venue)
         repository.save(user_offerer, booking)
 
@@ -126,7 +126,7 @@ class Returns401Test:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(user=beneficiary, stock=stock, venue=venue)
         repository.save(user_offerer, booking)
 
@@ -152,7 +152,7 @@ class Returns403Test:
         book_offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=book_offer)
 
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(user=user, stock=stock, venue=venue)
 
         repository.save(booking, user_offerer)
@@ -183,7 +183,7 @@ class Returns403Test:
         book_offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=book_offer)
 
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(user=user, stock=stock, venue=venue)
 
         repository.save(booking, user_offerer)
@@ -244,7 +244,7 @@ class Returns404Test:
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(user=beneficiary, stock=stock, venue=venue)
         repository.save(user_offerer, booking)
 
@@ -273,7 +273,7 @@ class Returns410Test:
         book_offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=book_offer)
 
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
 
         repository.save(booking, user_offerer)

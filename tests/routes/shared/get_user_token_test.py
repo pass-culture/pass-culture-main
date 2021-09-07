@@ -10,7 +10,7 @@ class Returns200Test:
     def when_activation_token_exists(self, app):
         # given
         token = "U2NCXTNB2"
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         users_factories.ResetPasswordToken(value=token, user=user)
 
         # when

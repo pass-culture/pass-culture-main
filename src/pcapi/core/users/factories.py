@@ -89,7 +89,7 @@ class AdminFactory(BaseFactory):
         return instance
 
 
-class BeneficiaryFactory(BaseFactory):
+class BeneficiaryGrant18Factory(BaseFactory):
     class Meta:
         model = pcapi.core.users.models.User
 
@@ -132,9 +132,44 @@ class BeneficiaryFactory(BaseFactory):
         return DepositGrant18Factory(user=obj, **kwargs)
 
 
-class UnderageBeneficiaryFactory(BeneficiaryFactory):
-    dateOfBirth = datetime.datetime.now() - relativedelta(years=15, months=5)
+class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
     roles = [pcapi.core.users.models.UserRole.UNDERAGE_BENEFICIARY]
+
+
+class BeneficiaryGrant15Factory(UnderageBeneficiaryFactory):
+    dateOfBirth = datetime.datetime.now() - relativedelta(years=15, months=5)
+
+    @factory.post_generation
+    def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+        from pcapi.core.payments.factories import DepositGrant15Factory
+
+        if not create:
+            return None
+        return DepositGrant15Factory(user=obj, **kwargs)
+
+
+class BeneficiaryGrant16Factory(UnderageBeneficiaryFactory):
+    dateOfBirth = datetime.datetime.now() - relativedelta(years=16, months=5)
+
+    @factory.post_generation
+    def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+        from pcapi.core.payments.factories import DepositGrant16Factory
+
+        if not create:
+            return None
+        return DepositGrant16Factory(user=obj, **kwargs)
+
+
+class BeneficiaryGrant17Factory(UnderageBeneficiaryFactory):
+    dateOfBirth = datetime.datetime.now() - relativedelta(years=17, months=5)
+
+    @factory.post_generation
+    def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+        from pcapi.core.payments.factories import DepositGrant17Factory
+
+        if not create:
+            return None
+        return DepositGrant17Factory(user=obj, **kwargs)
 
 
 class ProFactory(BaseFactory):

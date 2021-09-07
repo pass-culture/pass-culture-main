@@ -69,7 +69,7 @@ class SendBeneficiaryBookingCancellationEmailTest:
         self, mocked_make_beneficiary_booking_cancellation_email_data
     ):
         # given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(beneficiary, idx=23)
 
         # when
@@ -89,7 +89,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         self, make_offerer_driven_cancellation_email_for_offerer
     ):
         # Given
-        user = users_factories.BeneficiaryFactory.build(email="user@example.com")
+        user = users_factories.BeneficiaryGrant18Factory.build(email="user@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         venue.bookingEmail = "booking@example.com"
@@ -160,7 +160,7 @@ class SendBookingConfirmationEmailToBeneficiaryTest:
     )
     def when_called_calls_send_email(self, mocked_retrieve_data_for_beneficiary_booking_confirmation_email):
         # Given
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(user=user, idx=23)
 
         # When
@@ -237,7 +237,7 @@ class SendActivationEmailTest:
     @patch("pcapi.emails.beneficiary_activation.get_activation_email_data")
     def test_send_activation_email(self, mocked_get_activation_email_data):
         # given
-        beneficiary = users_factories.BeneficiaryFactory.build()
+        beneficiary = users_factories.BeneficiaryGrant18Factory.build()
         token = users_factories.EmailValidationToken.build(user=beneficiary)
         mocked_get_activation_email_data.return_value = {"Html-part": ""}
 
@@ -250,7 +250,7 @@ class SendActivationEmailTest:
 
     def test_send_activation_email_for_native(self):
         # given
-        beneficiary = users_factories.BeneficiaryFactory.build()
+        beneficiary = users_factories.BeneficiaryGrant18Factory.build()
         token = users_factories.EmailValidationToken.build(user=beneficiary)
 
         # when
@@ -355,7 +355,7 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
 class SendExpiredBookingsRecapEmailToBeneficiaryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_send_email_to_beneficiary_when_expired_bookings_cancelled(self, app):
-        amnesiac_user = users_factories.BeneficiaryFactory(email="dory@example.com")
+        amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
         expired_today_dvd_booking = BookingFactory(
             user=amnesiac_user,
         )
@@ -393,7 +393,7 @@ class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
     ):
         # given
         now = datetime.utcnow()
-        user = users_factories.BeneficiaryFactory(email="isasimov@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="isasimov@example.com")
         created_23_days_ago = now - timedelta(days=23)
 
         dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)

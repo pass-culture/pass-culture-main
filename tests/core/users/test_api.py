@@ -246,7 +246,7 @@ class DeleteUserTokenTest:
         users_factories.ResetPasswordToken(user=user)
         users_factories.EmailValidationToken(user=user)
 
-        other_user = users_factories.BeneficiaryFactory()
+        other_user = users_factories.BeneficiaryGrant18Factory()
         other_token = users_factories.EmailValidationToken(user=other_user)
 
         users_api.delete_all_users_tokens(user)
@@ -271,7 +271,7 @@ class SuspendAccountTest:
         assert actor.isActive
 
     def test_suspend_beneficiary(self):
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         cancellable_booking = bookings_factories.BookingFactory(user=user)
         yesterday = datetime.now() - timedelta(days=1)
         confirmed_booking = bookings_factories.BookingFactory(
@@ -647,7 +647,7 @@ class UpdateUserInfoTest:
 @pytest.mark.usefixtures("db_session")
 class DomainsCreditTest:
     def test_get_domains_credit_v1(self):
-        user = users_factories.BeneficiaryFactory(deposit__version=1)
+        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
 
         # booking only in all domains
         bookings_factories.BookingFactory(
@@ -690,7 +690,7 @@ class DomainsCreditTest:
         )
 
     def test_get_domains_credit_v2(self):
-        user = users_factories.BeneficiaryFactory(deposit__version=2)
+        user = users_factories.BeneficiaryGrant18Factory(deposit__version=2)
 
         # booking in physical domain
         bookings_factories.BookingFactory(
@@ -706,7 +706,7 @@ class DomainsCreditTest:
         )
 
     def test_get_domains_credit_deposit_expired(self):
-        user = users_factories.BeneficiaryFactory(deposit__version=2)
+        user = users_factories.BeneficiaryGrant18Factory(deposit__version=2)
         bookings_factories.BookingFactory(
             user=user,
             amount=250,

@@ -211,7 +211,7 @@ class RunTest:
 
         # same user, but different
         get_details.return_value = make_new_beneficiary_application_details(123, "closed", email="john.doe@example.com")
-        users_factories.BeneficiaryFactory(email="john.doe@example.com")
+        users_factories.BeneficiaryGrant18Factory(email="john.doe@example.com")
 
         # when
         remote_import.run(
@@ -355,7 +355,7 @@ class ProcessBeneficiaryApplicationTest:
         # given
         information = fraud_factories.DMSContentFactory(application_id=123)
 
-        create_beneficiary_from_application.return_value = users_factories.BeneficiaryFactory.build()
+        create_beneficiary_from_application.return_value = users_factories.BeneficiaryGrant18Factory.build()
 
         # when
         remote_import.process_beneficiary_application(
@@ -791,7 +791,7 @@ class RunIntegrationTest:
     @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
     def test_import_duplicated_user(self, get_application_details, get_closed_application_ids_for_demarche_simplifiee):
         # given
-        user = users_factories.BeneficiaryFactory(
+        user = users_factories.BeneficiaryGrant18Factory(
             firstName="john",
             lastName="doe",
             email="john.doe@example.com",
@@ -890,7 +890,7 @@ class RunIntegrationTest:
         self, get_application_details, get_closed_application_ids_for_demarche_simplifiee, mocker
     ):
         applicant = users_factories.UserFactory(email=self.EMAIL, isBeneficiary=False)
-        beneficiary = users_factories.BeneficiaryFactory(
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
             isEmailValidated=True,
             dateOfBirth=self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S"),
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
@@ -1010,7 +1010,7 @@ class RunIntegrationTest:
             lastName=information.last_name,
             email=information.email,
         )
-        beneficiary = users_factories.BeneficiaryFactory(
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=information.birth_date,
             firstName=information.first_name,
             lastName=information.last_name,

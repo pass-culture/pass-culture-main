@@ -89,7 +89,7 @@ class DeleteUnwantedExistingProductTest:
     ):
         # Given
         isbn = "1111111111111"
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         offerer = create_offerer(siren="775671464")
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
         product = create_product_with_thing_subcategory(id_at_providers=isbn, is_gcu_compatible=True)
@@ -134,7 +134,7 @@ class DeleteUnwantedExistingProductTest:
     def test_should_delete_product_when_related_offer_is_on_user_favorite_list(self, app):
         # Given
         isbn = "1111111111111"
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         offerer = create_offerer(siren="775671464")
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
         product = create_product_with_thing_subcategory(id_at_providers=isbn)

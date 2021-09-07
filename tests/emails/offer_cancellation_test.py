@@ -23,7 +23,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
         booking_limit_datetime = beginning_datetime - timedelta(hours=1)
 
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.EventStockFactory(
             beginningDatetime=beginning_datetime, price=20, quantity=10, bookingLimitDatetime=booking_limit_datetime
         )
@@ -57,7 +57,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
     @pytest.mark.usefixtures("db_session")
     def test_make_offerer_driven_cancellation_email_for_offerer_event_when_other_booking(self, app):
         # Given
-        other_beneficiary = users_factories.BeneficiaryFactory()
+        other_beneficiary = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.EventStockFactory(
             beginningDatetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc), price=20, quantity=10
         )
@@ -82,11 +82,11 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
     @pytest.mark.usefixtures("db_session")
     def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_existing_booking(self, app):
         # Given
-        user1 = users_factories.BeneficiaryFactory()
+        user1 = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.ThingStockFactory(price=0, quantity=10)
         booking = bookings_factories.BookingFactory(user=user1, stock=stock, token="12346")
 
-        user2 = users_factories.BeneficiaryFactory()
+        user2 = users_factories.BeneficiaryGrant18Factory()
         booking2 = bookings_factories.BookingFactory(user=user2, stock=stock, token="12345")
         ongoing_bookings = [booking2]
 
@@ -129,7 +129,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
         self, mock_is_offer_active, mock_build_pc_pro_offer_link
     ):
         # Given
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime(2019, 10, 9, 10, 20, 00))
         booking = bookings_factories.CancelledBookingFactory(user=user, stock=stock, quantity=2)
 

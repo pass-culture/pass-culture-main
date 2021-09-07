@@ -3,7 +3,7 @@ import uuid
 
 import pytest
 
-from pcapi.core.users.factories import BeneficiaryFactory
+from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import User
 from pcapi.utils.date import format_into_utc_date
@@ -14,7 +14,7 @@ from tests.conftest import TestClient
 
 @pytest.mark.usefixtures("db_session")
 def test_patch_beneficiary(app):
-    user = BeneficiaryFactory(deposit__version=1)
+    user = BeneficiaryGrant18Factory(deposit__version=1)
     data = {
         "publicName": "Anne",
     }
@@ -63,7 +63,7 @@ def test_patch_beneficiary(app):
 
 @pytest.mark.usefixtures("db_session")
 def test_patch_beneficiary_tutorial_related_attributes(app):
-    user = BeneficiaryFactory()
+    user = BeneficiaryGrant18Factory()
 
     client = TestClient(app.test_client()).with_session_auth(email=user.email)
     data = {"hasSeenTutorials": True}
@@ -74,7 +74,7 @@ def test_patch_beneficiary_tutorial_related_attributes(app):
 
 @pytest.mark.usefixtures("db_session")
 def test_patch_beneficiary_survey_related_attributes(app):
-    user = BeneficiaryFactory()
+    user = BeneficiaryGrant18Factory()
 
     client = TestClient(app.test_client()).with_session_auth(email=user.email)
     survey_id = uuid.uuid4()
@@ -110,7 +110,7 @@ def test_reject_pro_user(app):
 
 @pytest.mark.usefixtures("db_session")
 def test_forbid_some_attributes(app):
-    user = BeneficiaryFactory()
+    user = BeneficiaryGrant18Factory()
     # It's tedious to test all attributes. We focus on the most sensitive ones.
     forbidden_attributes = {
         "email": "new@example.com",

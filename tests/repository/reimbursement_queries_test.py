@@ -44,7 +44,7 @@ class FindAllOffererPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_payment_info_with_sent_status(self, app):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory(lastName="User", firstName="Plus")
+        beneficiary = users_factories.BeneficiaryGrant18Factory(lastName="User", firstName="Plus")
         stock = offers_factories.ThingStockFactory(
             offer__name="Test Book",
             offer__venue__managingOfferer__address="7 rue du livre",
@@ -97,7 +97,7 @@ class FindAllOffererPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_last_matching_status_based_on_date_for_each_payment(self, app):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory(lastName="User", firstName="Plus")
+        beneficiary = users_factories.BeneficiaryGrant18Factory(lastName="User", firstName="Plus")
         stock = offers_factories.ThingStockFactory(
             offer__name="Test Book",
             offer__venue__managingOfferer__address="7 rue du livre",
@@ -277,7 +277,7 @@ class LegacyFindAllOffererPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_payment_info_with_sent_status(self, app):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory(lastName="User", firstName="Plus")
+        beneficiary = users_factories.BeneficiaryGrant18Factory(lastName="User", firstName="Plus")
         stock = offers_factories.ThingStockFactory(
             offer__name="Test Book",
             offer__venue__managingOfferer__address="7 rue du livre",
@@ -330,7 +330,7 @@ class LegacyFindAllOffererPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_last_matching_status_based_on_date_for_each_payment(self, app):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory(lastName="User", firstName="Plus")
+        beneficiary = users_factories.BeneficiaryGrant18Factory(lastName="User", firstName="Plus")
         stock = offers_factories.ThingStockFactory(
             offer__name="Test Book",
             offer__venue__managingOfferer__address="7 rue du livre",

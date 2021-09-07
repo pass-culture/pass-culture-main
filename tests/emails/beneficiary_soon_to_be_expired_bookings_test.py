@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.users.factories import BeneficiaryFactory
+from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.emails.beneficiary_soon_to_be_expired_bookings import (
     build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary,
 )
@@ -11,7 +11,7 @@ from pcapi.emails.beneficiary_soon_to_be_expired_bookings import (
 class BuildSoonToBeExpiredBookingsRecapEmailDataForBeneficiaryTest:
     def test_build_soon_to_be_expired_bookings_data(self, app):
         # Given
-        beneficiary = BeneficiaryFactory(email="isasimov@example.com", firstName="ASIMOV")
+        beneficiary = BeneficiaryGrant18Factory(email="isasimov@example.com", firstName="ASIMOV")
         bookings = [
             BookingFactory(
                 stock__offer__name="offre 1",

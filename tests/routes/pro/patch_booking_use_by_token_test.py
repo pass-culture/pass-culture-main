@@ -123,7 +123,7 @@ class Returns204Test:
 class Returns401Test:
     def test_when_user_not_logged_in_and_doesnt_give_api_key(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -140,7 +140,7 @@ class Returns401Test:
 
     def test_when_user_not_logged_in_and_not_existing_api_key_given(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         users_factories.ProFactory(email="pro@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -164,7 +164,7 @@ class Returns403Test:
     class WithApiKeyAuthTest:
         def test_when_api_key_given_not_related_to_booking_offerer(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory(email="user@example.com")
+            user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
             offerer2 = offers_factories.OffererFactory(siren="987654321")
             offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
             stock = offers_factories.EventStockFactory(offer=offer, price=0)
@@ -186,7 +186,7 @@ class Returns403Test:
 
         def test_when_api_key_is_provided_and_booking_has_been_cancelled_already(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
@@ -209,7 +209,7 @@ class Returns403Test:
     class WithBasicAuthTest:
         def test_when_user_is_not_attached_to_linked_offerer(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             users_factories.ProFactory(email="pro@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -298,7 +298,7 @@ class Returns403Test:
 class Returns404Test:
     def test_when_booking_is_not_provided_at_all(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -316,7 +316,7 @@ class Returns404Test:
     class WithApiKeyAuthTest:
         def test_when_api_key_is_provided_and_booking_does_not_exist(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -340,7 +340,7 @@ class Returns404Test:
     class WithBasicAuthTest:
         def test_when_user_is_logged_in_and_booking_does_not_exist(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             pro_user = users_factories.ProFactory(email="pro@example.com")
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)

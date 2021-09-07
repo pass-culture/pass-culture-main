@@ -15,7 +15,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_account_is_known(self, app):
         # given
-        user = users_factories.BeneficiaryFactory(
+        user = users_factories.BeneficiaryGrant18Factory(
             civility="M.",
             departementCode="93",
             city=None,

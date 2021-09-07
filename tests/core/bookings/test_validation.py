@@ -23,7 +23,7 @@ from pcapi.repository import repository
 @pytest.mark.usefixtures("db_session")
 class CheckCanBookFreeOfferTest:
     def test_dont_raise(self):
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.StockFactory()
         validation.check_can_book_free_offer(user, stock)  # should not raise
 
@@ -119,7 +119,7 @@ class CheckStockIsBookableTest:
 @pytest.mark.usefixtures("db_session")
 class CheckExpenseLimitsDepositVersion1Test:
     def _get_beneficiary(self):
-        return users_factories.BeneficiaryFactory(deposit__version=1)
+        return users_factories.BeneficiaryGrant18Factory(deposit__version=1)
 
     def test_physical_limit(self):
         beneficiary = self._get_beneficiary()
@@ -186,7 +186,7 @@ class CheckExpenseLimitsDepositVersion1Test:
 @pytest.mark.usefixtures("db_session")
 class CheckExpenseLimitsDepositVersion2Test:
     def _get_beneficiary(self, **kwargs):
-        return users_factories.BeneficiaryFactory(deposit__version=2, **kwargs)
+        return users_factories.BeneficiaryGrant18Factory(deposit__version=2, **kwargs)
 
     def test_raise_if_deposit_expired(self):
         yesterday = datetime.now() - timedelta(days=1)

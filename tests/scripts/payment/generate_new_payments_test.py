@@ -34,7 +34,7 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         offerer = offers_factories.OffererFactory()
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
         paying_stock = offers_factories.ThingStockFactory(offer=offer)
@@ -72,7 +72,7 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         offerer1 = offers_factories.OffererFactory(siren="123456789")
         offerer2 = offers_factories.OffererFactory(siren="987654321")
         offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
@@ -102,7 +102,7 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         offerer1 = offers_factories.OffererFactory(siren="123456789")
         offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
         venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
@@ -139,7 +139,7 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         offerer1 = offers_factories.OffererFactory(siren="123456789")
         offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
         venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
@@ -176,7 +176,7 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         offerer1 = offers_factories.OffererFactory(siren="123456789")
         offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
         venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
@@ -210,7 +210,7 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         offerer1 = offers_factories.OffererFactory(siren="123456789")
         offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
         venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
@@ -247,7 +247,7 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         offerer1 = offers_factories.OffererFactory(siren="123456789")
         offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
         venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")
@@ -285,7 +285,7 @@ class GenerateNewPaymentsTest:
         cutoff = datetime.datetime.now()
         before_cutoff = cutoff - datetime.timedelta(days=1)
 
-        beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         offerer1 = offers_factories.OffererFactory(siren="123456789")
         offers_factories.BankInformationFactory(bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", offerer=offerer1)
         venue1 = offers_factories.VenueFactory(managingOfferer=offerer1, siret="12345678912345")

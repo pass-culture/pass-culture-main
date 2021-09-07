@@ -37,7 +37,7 @@ class Returns200Test:
     @freeze_time("2019-11-26 18:29:20.891028")
     def test_when_user_has_rights_and_regular_offer(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user@example.com", publicName="John Doe")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com", publicName="John Doe")
         admin_user = users_factories.AdminFactory(email="admin@example.com")
         offerer = create_offerer()
         create_user_offerer(admin_user, offerer)
@@ -142,7 +142,7 @@ class Returns200Test:
 
     def test_when_api_key_is_provided_and_rights_and_regular_offer(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user@example.com", publicName="John Doe")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com", publicName="John Doe")
         user2 = users_factories.UserFactory(email="user2@example.com", publicName="Jane Doe")
         offerer = create_offerer()
         user_offerer = create_user_offerer(user2, offerer)
@@ -169,7 +169,7 @@ class Returns200Test:
 
     def test_when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user@example.com", publicName="John Doe")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com", publicName="John Doe")
         admin_user = users_factories.AdminFactory(email="admin@example.com")
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
@@ -192,7 +192,7 @@ class Returns200Test:
 
     def test_when_non_standard_origin_header(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         admin_user = users_factories.AdminFactory(email="admin@example.com")
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
@@ -258,7 +258,7 @@ class Returns401Test:
 class Returns403Test:
     def test_when_user_doesnt_have_rights_and_token_exists(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         querying_user = users_factories.UserFactory(email="querying@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -278,7 +278,7 @@ class Returns403Test:
 
     def test_when_given_api_key_not_related_to_booking_offerer(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         offerer2 = offers_factories.OffererFactory(siren="987654321")
         offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
         stock = offers_factories.EventStockFactory(offer=offer, price=0)
@@ -317,7 +317,7 @@ class Returns403Test:
 
     def test_when_booking_is_cancelled(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         admin_user = users_factories.AdminFactory(email="admin@example.com")
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
@@ -340,7 +340,7 @@ class Returns403Test:
 
     def test_when_booking_is_refunded(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         admin_user = users_factories.AdminFactory(email="admin@example.com")
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
@@ -424,7 +424,7 @@ class Returns403Test:
 class Returns404Test:
     def test_when_booking_is_not_provided_at_all(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue, event_name="Event Name")
@@ -455,7 +455,7 @@ class Returns404Test:
 
     def test_when_user_has_api_key_but_token_not_found(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         admin_user = users_factories.AdminFactory(email="admin@example.com")
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)
@@ -482,7 +482,7 @@ class Returns404Test:
 class Returns410Test:
     def test_when_booking_is_already_validated(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="user@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         admin_user = users_factories.AdminFactory(email="admin@example.com")
         offerer = create_offerer()
         user_offerer = create_user_offerer(admin_user, offerer)

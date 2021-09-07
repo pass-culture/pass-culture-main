@@ -20,7 +20,7 @@ class BookingFactory(BaseFactory):
     quantity = 1
     stock = factory.SubFactory(offers_factories.StockFactory)
     token = factory.LazyFunction(random_token)
-    user = factory.SubFactory(users_factories.BeneficiaryFactory)
+    user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
     amount = factory.SelfAttribute("stock.price")
     status = models.BookingStatus.CONFIRMED
 
@@ -78,7 +78,7 @@ class IndividualBookingSubFactory(BaseFactory):
     class Meta:
         model = models.IndividualBooking
 
-    user = factory.SubFactory(users_factories.BeneficiaryFactory)
+    user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
 
 
 class IndividualBookingFactory(BookingFactory):

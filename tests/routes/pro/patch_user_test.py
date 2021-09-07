@@ -27,7 +27,7 @@ def test_patch_user(app):
 
 @pytest.mark.usefixtures("db_session")
 def test_reject_beneficiary(app):
-    beneficiary = users_factories.BeneficiaryFactory()
+    beneficiary = users_factories.BeneficiaryGrant18Factory()
     initial = {
         "email": beneficiary.email,
         "publicName": beneficiary.publicName,

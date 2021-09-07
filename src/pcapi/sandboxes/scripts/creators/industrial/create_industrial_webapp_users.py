@@ -80,7 +80,7 @@ def create_industrial_webapp_young_users():
                 publicName=f"PC Test Jeune {departement_code} {short_tag} {deposit_version}",
             )
         else:
-            user = users_factories.BeneficiaryFactory(
+            user = users_factories.BeneficiaryGrant18Factory(
                 culturalSurveyId=cultural_survey_id,
                 departementCode=str(departement_code),
                 email=email,

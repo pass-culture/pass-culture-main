@@ -14,7 +14,7 @@ from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.factories import AdminFactory
-from pcapi.core.users.factories import BeneficiaryFactory
+from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import ProFactory
 from pcapi.scripts.suspend_fraudulent_pro_users import suspend_fraudulent_pro_by_email_providers
 
@@ -44,7 +44,7 @@ def test_only_suspend_pro_users_in_given_emails_providers_list():
     admin_user = AdminFactory(email="admin@example.net")
     pro_fraudulent_user_with_uppercase_domain = ProFactory(email="jesuisunefraude@EXAmple.com")
     pro_fraudulent_user_with_subdomain = ProFactory(email="jesuisunefraude@sub.example.com")
-    beneficiary_fraudulent_user = BeneficiaryFactory(email="jesuisuneautrefraude@example.com")
+    beneficiary_fraudulent_user = BeneficiaryGrant18Factory(email="jesuisuneautrefraude@example.com")
     offerer1 = OffererFactory()
     UserOffererFactory(user=pro_fraudulent_user_with_uppercase_domain, offerer=offerer1)
     offerer2 = OffererFactory()
@@ -116,8 +116,8 @@ def test_cancel_bookings_when_offerer_has_one_or_more():
     # Given
     fraudulent_emails_providers = ["example.com"]
     admin_user = AdminFactory(email="admin@example.net")
-    beneficiary1 = BeneficiaryFactory(email="beneficiary1@example.net")
-    beneficiary2 = BeneficiaryFactory(email="beneficiary2@example.net")
+    beneficiary1 = BeneficiaryGrant18Factory(email="beneficiary1@example.net")
+    beneficiary2 = BeneficiaryGrant18Factory(email="beneficiary2@example.net")
     fraudulent_user = ProFactory(
         email="jesuisunefraude@example.com",
     )

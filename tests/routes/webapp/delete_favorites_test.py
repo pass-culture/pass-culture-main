@@ -17,7 +17,7 @@ class Returns204Test:
     @pytest.mark.usefixtures("db_session")
     def when_favorite_exists_with_offerId(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="test@email.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="test@email.com")
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
         offer = create_offer_with_thing_product(venue, thumb_count=0)
@@ -41,7 +41,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_expected_parameters_are_not_given(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="test@email.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="test@email.com")
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
         offer = create_offer_with_thing_product(venue, thumb_count=0)
@@ -58,7 +58,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_favorite_does_not_exist(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="test@email.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="test@email.com")
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
         offer = create_offer_with_thing_product(venue, thumb_count=0)

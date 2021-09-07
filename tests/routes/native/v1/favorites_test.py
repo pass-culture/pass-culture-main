@@ -373,7 +373,7 @@ class DeleteTest:
         def when_user_delete_another_user_favorite(self, app):
             # Given
             _, test_client = utils.create_user_and_test_client(app)
-            other_beneficiary = users_factories.BeneficiaryFactory()
+            other_beneficiary = users_factories.BeneficiaryGrant18Factory()
             offerer = offers_factories.OffererFactory()
             venue = offers_factories.VenueFactory(managingOfferer=offerer)
             offer = offers_factories.ThingOfferFactory(venue=venue)

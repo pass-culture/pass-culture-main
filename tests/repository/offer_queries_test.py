@@ -61,7 +61,7 @@ class QueryOfferWithRemainingStocksTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_1_offer_when_all_available_stock_is_not_booked(self, app):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         offer = ThingOfferFactory()
         stock = ThingStockFactory(offer=offer, price=0, quantity=4)
         BookingFactory(user=beneficiary, stock=stock, quantity=2)
@@ -82,7 +82,7 @@ class QueryOfferWithRemainingStocksTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_0_offer_when_all_available_stock_is_booked(self, app):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         offer = ThingOfferFactory()
         stock = ThingStockFactory(offer=offer, price=0, quantity=3)
         BookingFactory(user=beneficiary, stock=stock, quantity=2)
@@ -103,7 +103,7 @@ class QueryOfferWithRemainingStocksTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_1_offer_when_booking_was_cancelled(self, app):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         product = ThingProductFactory(name="Lire un livre", isNational=True)
         venue = VenueFactory(postalCode="34000", departementCode="34")
         offer = ThingOfferFactory(product=product, venue=venue)
@@ -125,7 +125,7 @@ class QueryOfferWithRemainingStocksTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_0_offer_when_there_is_no_remaining_stock(self):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         product = ThingProductFactory(name="Lire un livre", isNational=True)
         venue = VenueFactory(postalCode="34000", departementCode="34")
         offer = ThingOfferFactory(product=product, venue=venue)
@@ -154,7 +154,7 @@ class QueryOfferWithRemainingStocksTest:
         offer = create_offer_with_thing_product(venue=venue, product=product)
         stock1 = create_stock_from_offer(offer, price=0, quantity=2)
         stock2 = create_stock_from_offer(offer, price=0, quantity=2)
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking1 = create_booking(user=beneficiary, stock=stock1, quantity=2, venue=venue)
         repository.save(booking1, stock2)
         bookings_quantity = _build_bookings_quantity_subquery()

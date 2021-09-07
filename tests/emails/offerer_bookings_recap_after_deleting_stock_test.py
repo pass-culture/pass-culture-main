@@ -21,7 +21,7 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
     )
     def test_should_return_mailjet_data_with_correct_information_when_offer_is_an_event(self, build_pc_pro_offer_link):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory.build(
+        beneficiary = users_factories.BeneficiaryGrant18Factory.build(
             publicName="John Doe", firstName="John", lastName="Doe", email="john@example.com"
         )
         offerer = create_offerer()
@@ -60,7 +60,7 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
     )
     def test_should_return_mailjet_data_when_multiple_bookings_and_offer_is_a_thing(self, build_pc_pro_offer_link):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory.build(
+        beneficiary = users_factories.BeneficiaryGrant18Factory.build(
             publicName="John Doe", firstName="John", lastName="Doe", email="john@example.com"
         )
         offerer = create_offerer()
@@ -70,7 +70,7 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
         stock = create_stock_from_offer(offer, price=0)
         booking = create_booking(user=beneficiary, stock=stock, token="12346", quantity=6)
 
-        other_beneficiary = users_factories.BeneficiaryFactory.build(
+        other_beneficiary = users_factories.BeneficiaryGrant18Factory.build(
             publicName="James Bond", firstName="James", lastName="Bond", email="bond@example.com"
         )
         booking2 = create_booking(user=other_beneficiary, stock=stock, token="12345")

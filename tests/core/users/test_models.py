@@ -55,7 +55,7 @@ class UserTest:
             assert User.query.filter(User.has_admin_role.is_(True)).all() == [user]
 
         def test_has_beneficiary_role(self):
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
 
             assert user.has_beneficiary_role
             assert User.query.filter(User.has_beneficiary_role.is_(False)).all() == []
@@ -149,7 +149,7 @@ class UserTest:
                 assert user.has_admin_role
 
         def test_cannot_add_admin_role_to_a_beneficiary(self):
-            user = users_factories.BeneficiaryFactory.build()
+            user = users_factories.BeneficiaryGrant18Factory.build()
 
             with pytest.raises(InvalidUserRoleException):
                 user.add_admin_role()
@@ -188,7 +188,7 @@ class UserTest:
             assert not user.isAdmin
 
         def test_remove_admin_role_when_user_is_not_admin(self):
-            user = users_factories.BeneficiaryFactory.build()
+            user = users_factories.BeneficiaryGrant18Factory.build()
 
             user.remove_admin_role()
 
@@ -197,7 +197,7 @@ class UserTest:
             assert not user.isAdmin
 
         def test_remove_beneficiary_role(self):
-            user = users_factories.BeneficiaryFactory.build()
+            user = users_factories.BeneficiaryGrant18Factory.build()
 
             user.remove_beneficiary_role()
 
@@ -221,7 +221,7 @@ class UserTest:
             assert not user.has_pro_role
 
         def test_remove_pro_role_when_user_is_not_pro(self):
-            user = users_factories.BeneficiaryFactory.build()
+            user = users_factories.BeneficiaryGrant18Factory.build()
 
             user.remove_pro_role()
 

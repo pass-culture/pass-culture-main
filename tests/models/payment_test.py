@@ -99,7 +99,7 @@ class PaymentDateTest:
         @pytest.mark.usefixtures("db_session")
         def test_payment_date_should_return_payment_date_for_status_sent(self, app):
             # Given
-            beneficiary = users_factories.BeneficiaryFactory()
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
             booking = create_booking(user=beneficiary)
             today = datetime.utcnow()
             offerer = booking.stock.offer.venue.managingOfferer
@@ -118,7 +118,7 @@ class PaymentDateTest:
         @pytest.mark.usefixtures("db_session")
         def test_payment_date_should_return_oldest_payment_date_for_status_sent_if_several(self, app):
             # Given
-            beneficiary = users_factories.BeneficiaryFactory()
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
             booking = create_booking(user=beneficiary)
             today = datetime.utcnow()
             yesterday = datetime.utcnow() - timedelta(days=1)
@@ -139,7 +139,7 @@ class PaymentDateTest:
         @pytest.mark.usefixtures("db_session")
         def test_payment_date_should_return_no_payment_date_for_status_pending(self, app):
             # Given
-            beneficiary = users_factories.BeneficiaryFactory()
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
             booking = create_booking(user=beneficiary)
             today = datetime.utcnow()
             offerer = booking.stock.offer.venue.managingOfferer

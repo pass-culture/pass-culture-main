@@ -140,7 +140,7 @@ class CreateDepositTest:
     def test_cannot_create_twice_a_deposit_of_same_type(self):
         # Given
         eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=2)
-        beneficiary = users_factories.BeneficiaryFactory(dateOfBirth=eighteen_years_in_the_past)
+        beneficiary = users_factories.BeneficiaryGrant18Factory(dateOfBirth=eighteen_years_in_the_past)
 
         # When
         with pytest.raises(exceptions.DepositTypeAlreadyGrantedException) as error:

@@ -106,7 +106,7 @@ class Returns400Test:
     class WhenUserIsAnonymousTest:
         def when_email_is_missing(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -125,7 +125,7 @@ class Returns400Test:
 
         def when_offer_id_is_missing(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -142,7 +142,7 @@ class Returns400Test:
 
         def when_both_email_and_offer_id_are_missing(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -165,7 +165,7 @@ class Returns400Test:
 class Returns403Test:  # Forbidden
     def when_user_is_not_attached_to_linked_offerer(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory.build()
+        user = users_factories.BeneficiaryGrant18Factory.build()
         pro = users_factories.ProFactory.build(email="pro@example.com")
 
         offerer = create_offerer()
@@ -208,7 +208,7 @@ class Returns404Test:
     class WhenUserIsAnonymousTest:
         def when_booking_does_not_exist(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -228,7 +228,7 @@ class Returns404Test:
     class WhenUserIsLoggedInTest:
         def when_user_is_not_editor_and_email_does_not_match(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             users_factories.AdminFactory(email="admin@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -247,7 +247,7 @@ class Returns404Test:
 
         def when_email_has_special_characters_but_is_not_url_encoded(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory(email="user+plus@example.com")
+            user = users_factories.BeneficiaryGrant18Factory(email="user+plus@example.com")
             user_admin = users_factories.AdminFactory(email="admin@example.com")
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_admin, offerer)
@@ -267,7 +267,7 @@ class Returns404Test:
 
         def when_user_is_not_editor_and_offer_id_is_invalid(self, app):
             # Given
-            user = users_factories.BeneficiaryFactory()
+            user = users_factories.BeneficiaryGrant18Factory()
             users_factories.AdminFactory(email="admin@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)

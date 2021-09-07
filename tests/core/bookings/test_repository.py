@@ -41,7 +41,7 @@ ONE_WEEK_FROM_NOW = NOW + timedelta(weeks=1)
 @pytest.mark.usefixtures("db_session")
 def test_find_all_ongoing_bookings(app):
     # Given
-    user = users_factories.BeneficiaryFactory()
+    user = users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.StockFactory(price=0, quantity=10)
     bookings_factories.CancelledBookingFactory(user=user, stock=stock)
     bookings_factories.UsedBookingFactory(user=user, stock=stock)
@@ -57,7 +57,7 @@ def test_find_all_ongoing_bookings(app):
 @pytest.mark.usefixtures("db_session")
 def test_find_not_cancelled_bookings_by_stock(app):
     # Given
-    user = users_factories.BeneficiaryFactory()
+    user = users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.ThingStockFactory(price=0)
     bookings_factories.CancelledBookingFactory(user=user, stock=stock)
     used_booking = bookings_factories.UsedBookingFactory(user=user, stock=stock)
@@ -76,7 +76,7 @@ class FindPaymentEligibleBookingsForVenueTest:
         # Given
         cutoff = datetime.now()
         before_cutoff = cutoff - timedelta(days=1)
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         offerer = offers_factories.OffererFactory(siren="123456789")
 
         venue = offers_factories.VenueFactory(managingOfferer=offerer, siret=f"{offerer.siren}12345")
@@ -150,7 +150,7 @@ class FindByTest:
             offerer = offers_factories.OffererFactory()
             offers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-            beneficiary = users_factories.BeneficiaryFactory()
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
             stock = offers_factories.ThingStockFactory(price=0)
             booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
@@ -167,7 +167,7 @@ class FindByTest:
             offerer = offers_factories.OffererFactory()
             offers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-            beneficiary = users_factories.BeneficiaryFactory()
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
             stock = offers_factories.ThingStockFactory(price=0)
             bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
@@ -185,7 +185,7 @@ class FindByTest:
             offerer = offers_factories.OffererFactory()
             offers_factories.UserOffererFactory(offerer=offerer)
 
-            beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
+            beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
             stock = offers_factories.ThingStockFactory(price=0)
             booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
@@ -201,7 +201,7 @@ class FindByTest:
             offerer = offers_factories.OffererFactory()
             offers_factories.UserOffererFactory(offerer=offerer)
 
-            beneficiary = users_factories.BeneficiaryFactory(email="USer@eXAMple.COm")
+            beneficiary = users_factories.BeneficiaryGrant18Factory(email="USer@eXAMple.COm")
             stock = offers_factories.ThingStockFactory(price=0)
             booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
@@ -217,7 +217,7 @@ class FindByTest:
             offerer = offers_factories.OffererFactory()
             offers_factories.UserOffererFactory(offerer=offerer)
 
-            beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
+            beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
             stock = offers_factories.ThingStockFactory(price=0)
             booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
@@ -233,7 +233,7 @@ class FindByTest:
             offerer = offers_factories.OffererFactory()
             offers_factories.UserOffererFactory(offerer=offerer)
 
-            beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
+            beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
             stock = offers_factories.ThingStockFactory(price=0)
             booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
@@ -251,7 +251,7 @@ class FindByTest:
             offerer = offers_factories.OffererFactory()
             offers_factories.UserOffererFactory(offerer=offerer)
 
-            beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
+            beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
             stock = offers_factories.ThingStockFactory(price=0)
             booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
@@ -267,7 +267,7 @@ class FindByTest:
             offerer = offers_factories.OffererFactory()
             offers_factories.UserOffererFactory(offerer=offerer)
 
-            beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
+            beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
             stock = offers_factories.ThingStockFactory(price=0)
             booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
@@ -283,7 +283,7 @@ class FindByTest:
             offerer = offers_factories.OffererFactory()
             offers_factories.UserOffererFactory(offerer=offerer)
 
-            beneficiary = users_factories.BeneficiaryFactory(email="user@example.com")
+            beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
             stock = offers_factories.ThingStockFactory(price=0)
             booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
@@ -303,8 +303,8 @@ class SaveBookingTest:
         offers_factories.UserOffererFactory(offerer=offerer)
 
         stock = offers_factories.ThingStockFactory(price=0, quantity=1)
-        user_cancelled = users_factories.BeneficiaryFactory(email="cancelled@example.com")
-        user_booked = users_factories.BeneficiaryFactory(email="booked@example.com")
+        user_cancelled = users_factories.BeneficiaryGrant18Factory(email="cancelled@example.com")
+        user_booked = users_factories.BeneficiaryGrant18Factory(email="booked@example.com")
 
         bookings_factories.CancelledBookingFactory(user=user_cancelled, stock=stock)
         booking = create_booking(user=user_booked, stock=stock, is_cancelled=False)
@@ -323,8 +323,8 @@ class SaveBookingTest:
         offers_factories.UserOffererFactory(offerer=offerer)
 
         stock = offers_factories.ThingStockFactory(price=0, quantity=1)
-        user_cancelled = users_factories.BeneficiaryFactory(email="cancelled@example.com")
-        user_booked = users_factories.BeneficiaryFactory(email="booked@example.com")
+        user_cancelled = users_factories.BeneficiaryGrant18Factory(email="cancelled@example.com")
+        user_booked = users_factories.BeneficiaryGrant18Factory(email="booked@example.com")
 
         bookings_factories.BookingFactory(user=user_cancelled, stock=stock, isCancelled=False)
         booking2 = create_booking(user=user_booked, stock=stock, is_cancelled=False)
@@ -356,7 +356,7 @@ class FindByTokenTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_a_booking_when_valid_token_is_given(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
 
         valid_booking = create_booking(user=beneficiary, token="123456", is_used=True)
         repository.save(valid_booking)
@@ -371,7 +371,7 @@ class FindByTokenTest:
     def test_should_return_nothing_when_invalid_token_is_given(self, app: fixture):
         # Given
         invalid_token = "fake_token"
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         valid_booking = create_booking(user=beneficiary, token="123456", is_used=True)
         repository.save(valid_booking)
 
@@ -384,7 +384,7 @@ class FindByTokenTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_nothing_when_valid_token_is_given_but_its_not_used(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         valid_booking = create_booking(user=beneficiary, token="123456", is_used=False)
         repository.save(valid_booking)
 
@@ -404,7 +404,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory(
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
@@ -454,7 +454,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory(
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
@@ -502,7 +502,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_reimbursed_when_a_payment_was_sent(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory(
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
@@ -534,7 +534,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory(
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
@@ -580,7 +580,7 @@ class FindByProUserIdTest:
         self, app: fixture
     ):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory(
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
@@ -611,7 +611,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_payment_date_when_booking_has_been_reimbursed(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -650,7 +650,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory(
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
@@ -686,7 +686,7 @@ class FindByProUserIdTest:
         self, app: fixture
     ):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -721,7 +721,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory(
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
@@ -754,7 +754,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_from_first_page(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory(email="beneficiary@example.com")
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -782,7 +782,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_from_second_page_without_page_count(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -811,7 +811,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory(postalCode="97300")
         offers_factories.UserOffererFactory(user=pro, offerer=offerer, validationToken="token")
@@ -833,7 +833,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory(postalCode="97300")
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -859,7 +859,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory(postalCode="97300")
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -888,7 +888,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory(postalCode="97300")
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -918,7 +918,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_isbn_when_information_is_available(self, app: fixture):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory(postalCode="97300")
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -947,7 +947,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_venue_name_when_public_name_is_not_provided(self, app):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -1006,7 +1006,7 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_venue_public_name_when_public_name_is_provided(self, app):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -1328,7 +1328,7 @@ class GetActiveBookingsQuantityForOffererTest:
     @pytest.mark.usefixtures("db_session")
     def test_return_active_bookings_by_venues_for_offerer(self):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         offerer = offers_factories.OffererFactory()
 
         venue_1 = offers_factories.VenueFactory(managingOfferer=offerer)
@@ -1416,7 +1416,7 @@ class GetValidatedBookingsQuantityForOffererTest:
     @pytest.mark.usefixtures("db_session")
     def test_return_validated_bookings_by_venues_for_offerer(self):
         # Given
-        beneficiary = users_factories.BeneficiaryFactory()
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         offerer = offers_factories.OffererFactory()
 
         venue_1 = offers_factories.VenueFactory(managingOfferer=offerer)
@@ -1515,11 +1515,11 @@ class GetOffersBookedByFraudulentUsersTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_only_offers_booked_by_fraudulent_users(self):
         # Given
-        fraudulent_beneficiary_user = users_factories.BeneficiaryFactory(email="jesuisunefraude@example.com")
-        another_fraudulent_beneficiary_user = users_factories.BeneficiaryFactory(
+        fraudulent_beneficiary_user = users_factories.BeneficiaryGrant18Factory(email="jesuisunefraude@example.com")
+        another_fraudulent_beneficiary_user = users_factories.BeneficiaryGrant18Factory(
             email="jesuisuneautrefraude@example.com"
         )
-        beneficiary_user = users_factories.BeneficiaryFactory(email="jenesuispasunefraude@EXAmple.com")
+        beneficiary_user = users_factories.BeneficiaryGrant18Factory(email="jenesuispasunefraude@EXAmple.com")
         offer_booked_by_fraudulent_users = offers_factories.OfferFactory()
         offer_booked_by_non_fraudulent_users = offers_factories.OfferFactory()
         offer_booked_by_both = offers_factories.OfferFactory()
@@ -1549,11 +1549,11 @@ class FindBookingsByFraudulentUsersTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_only_bookings_by_fraudulent_users(self):
         # Given
-        fraudulent_beneficiary_user = users_factories.BeneficiaryFactory(email="jesuisunefraude@example.com")
-        another_fraudulent_beneficiary_user = users_factories.BeneficiaryFactory(
+        fraudulent_beneficiary_user = users_factories.BeneficiaryGrant18Factory(email="jesuisunefraude@example.com")
+        another_fraudulent_beneficiary_user = users_factories.BeneficiaryGrant18Factory(
             email="jesuisuneautrefraude@example.com"
         )
-        beneficiary_user = users_factories.BeneficiaryFactory(email="jenesuispasunefraude@EXAmple.com")
+        beneficiary_user = users_factories.BeneficiaryGrant18Factory(email="jenesuispasunefraude@EXAmple.com")
         offer_booked_by_fraudulent_users = offers_factories.OfferFactory()
         other_offer_booked_by_fraudulent_users = offers_factories.OfferFactory()
         offer_booked_by_non_fraudulent_users = offers_factories.OfferFactory()

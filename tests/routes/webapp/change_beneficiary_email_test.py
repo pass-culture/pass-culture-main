@@ -21,7 +21,7 @@ class Returns204Test:
     def when_account_is_known(self, app):
         # given
 
-        user = users_factories.BeneficiaryFactory(email="test@mail.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="test@mail.com")
         data = {"new_email": "new@email.com", "password": users_factories.DEFAULT_PASSWORD}
 
         # when
@@ -66,7 +66,7 @@ class Returns204Test:
     @freeze_time("2020-10-15 09:00:00")
     def when_token_is_valid(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(email="oldemail@mail.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="oldemail@mail.com")
 
         expiration_date = datetime.now() + timedelta(hours=1)
         token_payload = dict(
@@ -97,7 +97,7 @@ class Returns204Test:
 class Returns400Test:
     def when_password_is_missing(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         data = {"new_email": "toto"}
 
         # When
@@ -110,7 +110,7 @@ class Returns400Test:
 
     def when_new_email_is_missing(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         data = {"password": users_factories.DEFAULT_PASSWORD}
 
         # When
@@ -126,7 +126,7 @@ class Returns400Test:
 class Returns401Test:
     def when_password_is_incorrect(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         data = {"new_email": "new email", "password": "wrong password"}
 
         # When
@@ -139,7 +139,7 @@ class Returns401Test:
 
     def when_account_is_not_active(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory(isActive=True)
+        user = users_factories.BeneficiaryGrant18Factory(isActive=True)
         data = {"new_email": user.email, "password": users_factories.DEFAULT_PASSWORD}
         client = TestClient(app.test_client()).with_session_auth(user.email)
         user.isActive = False
@@ -154,7 +154,7 @@ class Returns401Test:
 
     def when_account_is_not_validated(self, app):
         # Given
-        user = users_factories.BeneficiaryFactory()
+        user = users_factories.BeneficiaryGrant18Factory()
         client = TestClient(app.test_client()).with_session_auth(user.email)
         user.generate_validation_token()
         data = {"new_email": user.email, "password": users_factories.DEFAULT_PASSWORD}

@@ -21,8 +21,8 @@ class GetAllUsersWalletBalancesTest:
     @pytest.mark.usefixtures("db_session")
     def test_users_are_sorted_by_user_id(self):
         # given
-        user1 = users_factories.BeneficiaryFactory()
-        user2 = users_factories.BeneficiaryFactory()
+        user1 = users_factories.BeneficiaryGrant18Factory()
+        user2 = users_factories.BeneficiaryGrant18Factory()
 
         # when
         balances = get_all_users_wallet_balances()
@@ -34,8 +34,8 @@ class GetAllUsersWalletBalancesTest:
     @pytest.mark.usefixtures("db_session")
     def test_users_with_no_deposits_are_ignored(self):
         # given
-        user1 = users_factories.BeneficiaryFactory()
-        user2 = users_factories.BeneficiaryFactory()
+        user1 = users_factories.BeneficiaryGrant18Factory()
+        user2 = users_factories.BeneficiaryGrant18Factory()
         repository.delete(user2.deposit)
 
         # when
@@ -52,7 +52,7 @@ class GetAllUsersWalletBalancesTest:
         stock1 = offers_factories.StockFactory(offer=offer, price=20)
         stock2 = offers_factories.StockFactory(offer=offer, price=30)
         stock3 = offers_factories.StockFactory(offer=offer, price=40)
-        user = users_factories.BeneficiaryFactory(deposit__version=1)
+        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
 
         bookings_factories.BookingFactory(user=user, stock=stock1)
         bookings_factories.CancelledBookingFactory(user=user, stock=stock2)
@@ -103,10 +103,10 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_case(self, app):
         # given
-        users_factories.BeneficiaryFactory(
+        users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(2000, 5, 1), email="john@example.com", firstName="john", lastName="DOe"
         )
-        users_factories.BeneficiaryFactory(
+        users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
         )
 
@@ -120,10 +120,10 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_dash(self, app):
         # given
-        users_factories.BeneficiaryFactory(
+        users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
         )
-        users_factories.BeneficiaryFactory(
+        users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(2000, 5, 1), email="john.b@example.com", firstName="john-bob", lastName="doe"
         )
 
@@ -137,10 +137,10 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_spaces(self, app):
         # given
-        users_factories.BeneficiaryFactory(
+        users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
         )
-        users_factories.BeneficiaryFactory(
+        users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(2000, 5, 1), email="john.b@example.com", firstName="john bob", lastName="doe"
         )
 
@@ -154,10 +154,10 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_accents(self, app):
         # given
-        users_factories.BeneficiaryFactory(
+        users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
         )
-        users_factories.BeneficiaryFactory(
+        users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(2000, 5, 1), email="john.b@example.com", firstName="john bob", lastName="doe"
         )
 
@@ -171,7 +171,7 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_if_one_criteria_does_not_match(self, app):
         # given
-        users_factories.BeneficiaryFactory(dateOfBirth=datetime(2000, 5, 1), firstName="Jean", lastName="DOe")
+        users_factories.BeneficiaryGrant18Factory(dateOfBirth=datetime(2000, 5, 1), firstName="Jean", lastName="DOe")
 
         # when
         users = find_beneficiary_by_civility("john", "doe", datetime(2000, 5, 1))
@@ -182,10 +182,10 @@ class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_first_and_last_names_and_birthdate_and_invalid_email(self, app):
         # given
-        users_factories.BeneficiaryFactory(
+        users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(2000, 5, 1), email="john@example.com", firstName="john", lastName="DOe"
         )
-        users_factories.BeneficiaryFactory(
+        users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
         )
 
@@ -207,9 +207,9 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
         two_days_ago = now - timedelta(days=2)
         three_days_ago = now - timedelta(days=3)
 
-        users_factories.BeneficiaryFactory(dateCreated=yesterday, email="user1@example.com")
-        user2 = users_factories.BeneficiaryFactory(dateCreated=two_days_ago, email="user2@example.com")
-        user3 = users_factories.BeneficiaryFactory(dateCreated=three_days_ago, email="user3@example.com")
+        users_factories.BeneficiaryGrant18Factory(dateCreated=yesterday, email="user1@example.com")
+        user2 = users_factories.BeneficiaryGrant18Factory(dateCreated=two_days_ago, email="user2@example.com")
+        user3 = users_factories.BeneficiaryGrant18Factory(dateCreated=three_days_ago, email="user3@example.com")
         beneficiary_import = [
             create_beneficiary_import(
                 user=user2, status=ImportStatus.ERROR, date=two_days_ago, application_id=1, source_id=source_id
@@ -237,7 +237,7 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
         now = datetime.utcnow()
         yesterday = now - timedelta(days=1)
 
-        user = users_factories.BeneficiaryFactory(dateCreated=yesterday, email="user@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(dateCreated=yesterday, email="user@example.com")
         beneficiary_import = create_beneficiary_import(
             user=user, status=ImportStatus.CREATED, date=yesterday, application_id=3, source_id=old_source_id
         )
@@ -256,7 +256,7 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
     def test_returns_min_year_if_no_beneficiary_import_exist(self, app):
         # given
         yesterday = datetime.utcnow() - timedelta(days=1)
-        users_factories.BeneficiaryFactory(dateCreated=yesterday)
+        users_factories.BeneficiaryGrant18Factory(dateCreated=yesterday)
 
         # when
         most_recent_creation_date = find_most_recent_beneficiary_creation_date_for_source(
