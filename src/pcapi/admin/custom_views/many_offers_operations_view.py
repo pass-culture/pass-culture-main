@@ -13,12 +13,11 @@ from wtforms import StringField
 from wtforms import validators
 
 from pcapi.admin.base_configuration import BaseCustomAdminView
+from pcapi.core.categories import categories
 from pcapi.core.offers.api import add_criteria_to_offers
 from pcapi.core.offers.api import deactivate_inappropriate_products
 from pcapi.core.offers.models import Offer
 from pcapi.models.criterion import Criterion
-from pcapi.models.offer_type import EventType
-from pcapi.models.offer_type import ThingType
 from pcapi.models.product import Product
 
 
@@ -87,9 +86,9 @@ def _get_products_compatible_status(products: list[Product]) -> dict[str, str]:
 
 
 def _get_product_type(product: Product) -> str:
-    if product.type == str(EventType.CINEMA):
+    if product.subcategory.category_id == categories.FILM:
         return "cinema"
-    if product.type == str(ThingType.LIVRE_EDITION):
+    if product.subcategory.category_id == categories.LIVRE:
         return "book"
 
     return "unknown"

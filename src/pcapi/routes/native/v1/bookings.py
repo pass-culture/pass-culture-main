@@ -82,7 +82,6 @@ def get_bookings(user: User) -> BookingsResponse:
             .load_only(
                 Offer.name,
                 Offer.url,
-                Offer.type,
                 Offer.subcategoryId,
                 Offer.withdrawalDetails,
                 Offer.extraData,

@@ -112,7 +112,7 @@ class CancelExpiredBookingsTest:
         old_guitar_booking = BookingFactory(stock__offer__product=guitar, dateCreated=two_months_ago)
         disc = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
         old_disc_booking = BookingFactory(stock__offer__product=disc, dateCreated=two_months_ago)
-        audio_book = ProductFactory(subcategoryId=subcategories.LIVRE_AUDIO_PHYSIQUE.id)
+        audio_book = ProductFactory(subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id)
         old_audio_book_booking = BookingFactory(stock__offer__product=audio_book, dateCreated=two_months_ago)
 
         handle_expired_bookings.cancel_expired_bookings()

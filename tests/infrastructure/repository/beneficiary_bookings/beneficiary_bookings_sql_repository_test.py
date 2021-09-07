@@ -58,7 +58,6 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert expected_booking.userId == beneficiary.id
         assert expected_booking.offerId == stock.offer.id
         assert expected_booking.name == stock.offer.name
-        assert expected_booking.type == stock.offer.type
         assert expected_booking.url == stock.offer.url
         assert expected_booking.email == beneficiary.email
         assert expected_booking.beginningDatetime == stock.beginningDatetime

@@ -13,7 +13,6 @@ from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.offers.utils import offer_webapp_link
 from pcapi.routes.adage.v1.serialization import constants
-from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.utils.date import format_into_utc_date
 
 from tests.conftest import TestClient
@@ -68,7 +67,6 @@ class Returns200Test:
             "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
             "cancellationDate": None,
             "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
-            "category": get_serialized_offer_category(offer),
             "city": venue.city,
             "confirmationDate": "2021-10-15T09:00:00Z",
             "confirmationLimitDate": format_into_utc_date(educational_booking.confirmationLimitDate),

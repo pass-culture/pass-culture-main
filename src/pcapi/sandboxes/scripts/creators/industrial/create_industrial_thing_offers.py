@@ -11,7 +11,7 @@ DEACTIVATED_OFFERS_PICK_MODULO = 3
 THINGS_PER_OFFERER = 5
 
 
-def create_industrial_thing_offers(things_by_name, offerers_by_name, venues_by_name):
+def create_industrial_thing_offers(thing_products_by_name, offerers_by_name, venues_by_name):
     logger.info("create_industrial_thing_offers")
 
     thing_offers_by_name = {}
@@ -19,7 +19,7 @@ def create_industrial_thing_offers(things_by_name, offerers_by_name, venues_by_n
     id_at_providers = 1234
     thing_index = 0
     offer_index = 0
-    thing_items = list(things_by_name.items())
+    thing_items = list(thing_products_by_name.items())
     for offerer in offerers_by_name.values():
 
         virtual_venue = [venue for venue in offerer.managedVenues if venue.isVirtual][0]
@@ -32,15 +32,12 @@ def create_industrial_thing_offers(things_by_name, offerers_by_name, venues_by_n
             thing_venue = None
             while thing_venue is None:
                 rest_thing_index = (venue_thing_index + thing_index) % len(thing_items)
-
-                (thing_name, thing) = thing_items[rest_thing_index]
-
-                if thing.offerType["offlineOnly"]:
+                (thing_name, thing_product) = thing_items[rest_thing_index]
+                if thing_product.is_offline_only:
                     thing_venue = physical_venue
-                elif thing.offerType["onlineOnly"] and thing.url:
+                elif thing_product.is_online_only:
                     thing_venue = virtual_venue
                 else:
-
                     thing_venue = physical_venue
 
                 thing_index += 1
@@ -51,9 +48,9 @@ def create_industrial_thing_offers(things_by_name, offerers_by_name, venues_by_n
             else:
                 is_active = True
             thing_offers_by_name[name] = create_offer_with_thing_product(
-                thing_venue,
-                product=thing,
-                thing_subcategory_id=thing.subcategoryId,
+                venue=thing_venue,
+                product=thing_product,
+                thing_subcategory_id=thing_product.subcategoryId,
                 is_active=is_active,
                 id_at_providers=str(id_at_providers),
             )

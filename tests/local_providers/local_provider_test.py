@@ -11,7 +11,6 @@ from pcapi.model_creators.provider_creators import create_providable_info
 from pcapi.models import ApiErrors
 from pcapi.models import LocalProviderEvent
 from pcapi.models import Product
-from pcapi.models import ThingType
 from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import repository
 
@@ -63,7 +62,6 @@ class UpdateObjectsTest:
         new_product = Product.query.one()
         assert new_product.name == "New Product"
         assert new_product.subcategoryId == subcategories.LIVRE_PAPIER.id
-        assert new_product.type == str(ThingType.LIVRE_EDITION)
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_updates_existing_object(self, next_function):
@@ -86,7 +84,6 @@ class UpdateObjectsTest:
         # Then
         product = Product.query.one()
         assert product.name == "New Product"
-        assert product.type == str(ThingType.LIVRE_EDITION)
         assert product.dateModifiedAtLastProvider == providable_info.date_modified_at_provider
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
@@ -110,7 +107,6 @@ class UpdateObjectsTest:
         # Then
         product = Product.query.one()
         assert product.name == "Old product name"
-        assert product.type == str(ThingType.INSTRUMENT)
         assert product.dateModifiedAtLastProvider == datetime(2020, 1, 1)
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
@@ -171,7 +167,7 @@ class UpdateObjectsTest:
         # Then
         new_product = Product.query.one()
         assert new_product.name == "New Product"
-        assert new_product.type == str(ThingType.LIVRE_EDITION)
+        assert new_product.subcategoryId == subcategories.LIVRE_PAPIER.id
 
 
 @pytest.mark.usefixtures("db_session")
@@ -188,7 +184,6 @@ class CreateObjectTest:
         # Then
         assert isinstance(product, Product)
         assert product.name == "New Product"
-        assert product.type == str(ThingType.LIVRE_EDITION)
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.lastProviderId == provider.id
 
@@ -204,7 +199,7 @@ class CreateObjectTest:
 
         # Then
         assert api_errors.value.errors["url"] == [
-            "Une offre de type Vente et location d’instruments de musique ne peut pas être numérique"
+            "Un produit de sous-catégorie ACHAT_INSTRUMENT ne peut pas être numérique"
         ]
         assert Product.query.count() == 0
         provider_event = LocalProviderEvent.query.one()
@@ -231,7 +226,6 @@ class HandleUpdateTest:
         # Then
         product = Product.query.one()
         assert product.name == "New Product"
-        assert product.type == str(ThingType.LIVRE_EDITION)
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
 
     def test_raises_api_errors_exception_when_errors_occur_on_model(self):
@@ -252,7 +246,7 @@ class HandleUpdateTest:
 
         # Then
         assert api_errors.value.errors["url"] == [
-            "Une offre de type Vente et location d’instruments de musique ne peut pas être numérique"
+            "Un produit de sous-catégorie ACHAT_INSTRUMENT ne peut pas être numérique"
         ]
         provider_event = LocalProviderEvent.query.one()
         assert provider_event.type == LocalProviderEventType.SyncError

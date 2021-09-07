@@ -3,10 +3,10 @@ import logging
 from random import choice
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.categories import subcategories
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.models.offer_type import EventType
 from pcapi.repository import repository
 
 
@@ -67,7 +67,10 @@ def _create_bookings_for_other_beneficiaries(
             "has-booked-activation" in user.email or "has-confirmed-activation" in user.email
         )
 
-        is_activation_offer = offer.product.offerType["value"] == str(EventType.ACTIVATION)
+        is_activation_offer = offer.product.subcategoryId in (
+            subcategories.ACTIVATION_EVENT.id,
+            subcategories.ACTIVATION_THING.id,
+        )
 
         if user_has_only_activation_booked and not is_activation_offer:
             continue
@@ -124,7 +127,6 @@ def _create_has_booked_some_bookings(bookings_by_name, offers_by_name, user, use
         #  construction. We currently pick among the list of available offers that may change.
         if offer_index % OFFER_WITH_BOOKINGS_RATIO != 0:
             continue
-
         domains_credit = get_domains_credit(user)
         digital_credit = domains_credit.digital
         all_credit = domains_credit.all
@@ -135,7 +137,9 @@ def _create_has_booked_some_bookings(bookings_by_name, offers_by_name, user, use
         if all_credit.remaining < MAX_RATIO_OF_INITIAL_CREDIT * float(all_credit.initial):
             break
 
-        is_activation_offer = offer.product.offerType["value"] == str(EventType.ACTIVATION)
+        is_activation_offer = offer.product.subcategoryId in (
+            subcategories.ACTIVATION_EVENT.id or subcategories.ACTIVATION_THING.id
+        )
 
         stock = choice(offer.stocks)
 

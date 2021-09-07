@@ -204,7 +204,6 @@ class SynchronizeStocksTest:
         assert new_offer.name == "product_name"
         assert new_offer.productId == 456
         assert new_offer.venueId == venue.id
-        assert new_offer.type == "ThingType.LIVRE_EDITION"
         assert new_offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert new_offer.withdrawalDetails == venue.withdrawalDetails
 

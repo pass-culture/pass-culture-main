@@ -1,3 +1,4 @@
+from pcapi.core.categories import subcategories
 from pcapi.domain.pro_offers.offers_recap import OfferRecap
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
@@ -27,7 +28,7 @@ def should_return_serialized_offers_with_relevant_informations():
         product_isbn=None,
         name="Test Book",
         thumb_url="/thumb/url",
-        offer_type="ThingType.AUDIOVISUEL",
+        subcategory_id=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         venue_id=venue_id,
         venue_is_virtual=False,
         venue_managing_offerer_id=offerer_id,
@@ -37,7 +38,6 @@ def should_return_serialized_offers_with_relevant_informations():
         venue_departement_code=departement_code,
         stocks=[stock],
         status="ACTIVE",
-        subcategoryId=None,
     )
     offers_recap = OffersRecap(offers_recap=[offer])
 
@@ -67,7 +67,6 @@ def should_return_serialized_offers_with_relevant_informations():
             ],
             "subcategoryId": "SUPPORT_PHYSIQUE_FILM",
             "thumbUrl": "/thumb/url",
-            "type": "ThingType.AUDIOVISUEL",
             "venue": {
                 "id": humanize(venue_id),
                 "isVirtual": False,

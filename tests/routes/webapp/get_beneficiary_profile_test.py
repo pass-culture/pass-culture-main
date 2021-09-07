@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 
 from pcapi.core.bookings.factories import CancelledBookingFactory
+from pcapi.core.categories import subcategories
 from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import ProFactory
@@ -95,7 +96,9 @@ class Returns200Test:
             siren="999199987", address="2 Test adress", city="Test city", postal_code="93000", name="Test offerer"
         )
         venue = create_venue(offerer)
-        thing_offer = create_offer_with_thing_product(venue=None)
+        thing_offer = create_offer_with_thing_product(
+            venue=None, thing_subcategory_id=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id
+        )
         stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=5)
         booking = create_booking(user=user, stock=stock, venue=venue, quantity=1)
 

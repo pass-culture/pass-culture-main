@@ -18,7 +18,6 @@ class TestLocalProvider(LocalProvider):
     def fill_object_attributes(self, obj):
         obj.name = "New Product"
         obj.subcategoryId = subcategories.LIVRE_PAPIER.id
-        obj.type = subcategories.LIVRE_PAPIER.matching_type
 
     def __next__(self):
         pass
@@ -35,7 +34,6 @@ class TestLocalProviderWithApiErrors(LocalProvider):
     def fill_object_attributes(self, obj):
         obj.name = "New Product"
         obj.subcategoryId = subcategories.ACHAT_INSTRUMENT.id
-        obj.type = subcategories.ACHAT_INSTRUMENT.matching_type
         obj.url = "http://url.com"
 
     def __next__(self):
@@ -53,7 +51,6 @@ class TestLocalProviderNoCreation(LocalProvider):
     def fill_object_attributes(self, obj):
         obj.name = "New Product"
         obj.subcategoryId = subcategories.LIVRE_PAPIER.id
-        obj.type = subcategories.LIVRE_PAPIER.matching_type
 
     def __next__(self):
         pass

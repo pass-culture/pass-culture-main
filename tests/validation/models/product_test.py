@@ -12,7 +12,9 @@ def test_should_return_error_message_when_product_is_digital_and_offline():
     api_error = validate(product, api_errors)
 
     # Then
-    assert api_error.errors["url"] == ["Une offre de type Cinéma - cartes d'abonnement ne peut pas être numérique"]
+    assert api_error.errors["url"] == [
+        "Un produit de sous-catégorie CARTE_CINE_MULTISEANCES ne peut pas être numérique"
+    ]
 
 
 def test_should_not_return_error_message_when_product_is_not_digital():

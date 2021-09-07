@@ -4,8 +4,6 @@ from typing import Tuple
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings.models import Booking
-from pcapi.core.categories.conf import get_subcategory_from_type
-from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -76,13 +74,10 @@ def get_user_attributes(user: User) -> UserAttributes:
     )
 
 
-def _get_bookings_categories_and_subcategories(user_bookings: List[Booking]) -> Tuple[List[str], List[str]]:
-    booking_subcategories_ids = list(
-        set(get_subcategory_from_type(booking.stock.offer.type, booking.venue.isVirtual) for booking in user_bookings)
-    )
-    booking_subcategories = [ALL_SUBCATEGORIES_DICT[subcategory_id] for subcategory_id in booking_subcategories_ids]
-    booking_categories = list(set(subcategory.category_id for subcategory in booking_subcategories))
-    return booking_categories, booking_subcategories_ids
+def _get_bookings_categories_and_subcategories(user_bookings: list[Booking]) -> Tuple[list[str], list[str]]:
+    booking_subcategories_ids = list(set(booking.stock.offer.subcategoryId for booking in user_bookings))
+    booking_categories_ids = list(set(booking.stock.offer.subcategory.category_id for booking in user_bookings))
+    return booking_categories_ids, booking_subcategories_ids
 
 
 def _get_user_bookings(user: User) -> List[Booking]:
@@ -91,7 +86,8 @@ def _get_user_bookings(user: User) -> List[Booking]:
         .options(
             joinedload(Booking.stock)
             .joinedload(Stock.offer)
-            .load_only(Offer.type, Offer.url, Offer.productId, Offer.subcategoryId)
+            .load_only(Offer.url, Offer.productId, Offer.subcategoryId)
+            .joinedload(Offer.venue)
         )
         .filter_by(userId=user.id, isCancelled=False)
         .order_by(db.desc(Booking.dateCreated))

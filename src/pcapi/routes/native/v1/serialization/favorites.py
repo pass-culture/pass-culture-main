@@ -7,8 +7,6 @@ from pydantic.class_validators import validator
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.users.models import ExpenseDomain
-from pcapi.models.offer_type import CategoryNameEnum
-from pcapi.models.offer_type import CategoryType
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.utils.date import format_into_utc_date
 
@@ -19,12 +17,6 @@ from . import BaseModel
 class Coordinates(BaseModel):
     latitude: Optional[Decimal]
     longitude: Optional[Decimal]
-
-
-class FavoriteCategoryResponse(BaseModel):
-    categoryType: CategoryType
-    label: str
-    name: Optional[CategoryNameEnum]
 
 
 class FavoriteMediationResponse(BaseModel):
@@ -38,8 +30,7 @@ class FavoriteMediationResponse(BaseModel):
 class FavoriteOfferResponse(BaseModel):
     id: int
     name: str
-    category: FavoriteCategoryResponse
-    subcategoryId: SubcategoryIdEnum
+    subcategoryId: str
     externalTicketOfficeUrl: Optional[str]
     image: Optional[FavoriteMediationResponse]
     coordinates: Coordinates
@@ -60,11 +51,6 @@ class FavoriteOfferResponse(BaseModel):
 
     @classmethod
     def from_orm(cls, offer):  # type: ignore
-        offer.category = {
-            "name": offer.offer_category_name_for_app,
-            "label": offer.offerType["appLabel"],
-            "categoryType": offer.category_type,
-        }
         offer.coordinates = {"latitude": offer.venue.latitude, "longitude": offer.venue.longitude}
         offer.expenseDomains = get_expense_domains(offer)
         return super().from_orm(offer)

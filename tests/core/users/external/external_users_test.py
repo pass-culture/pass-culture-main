@@ -134,18 +134,3 @@ def test_get_bookings_categories_and_subcategories():
     BookingFactory(user=user, isCancelled=True)
 
     assert _get_bookings_categories_and_subcategories(_get_user_bookings(user)) == (["FILM"], ["SUPPORT_PHYSIQUE_FILM"])
-
-    offer = OfferFactory(type="ThingType.MUSIQUE", subcategoryId=None)
-    BookingFactory(user=user, stock__offer=offer)
-    BookingFactory(user=user, stock__offer=offer)
-    BookingFactory(user=user, isCancelled=True)
-
-    assert set(_get_bookings_categories_and_subcategories(_get_user_bookings(user))[0]) == set(
-        ["FILM", "MUSIQUE_ENREGISTREE"]
-    )
-    assert set(_get_bookings_categories_and_subcategories(_get_user_bookings(user))[1]) == set(
-        [
-            "SUPPORT_PHYSIQUE_MUSIQUE",
-            "SUPPORT_PHYSIQUE_FILM",
-        ]
-    )

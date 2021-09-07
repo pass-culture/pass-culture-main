@@ -1,10 +1,9 @@
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Mediation
 from pcapi.core.users.models import User
-from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Stock
-from pcapi.models import ThingType
 from pcapi.models import Venue
 from pcapi.repository.offer_queries import filter_bookable_stocks_query
 from pcapi.repository.user_queries import keep_only_webapp_users
@@ -27,8 +26,8 @@ def get_query_join_on_thing(query):
 
 def get_non_free_offers_query_by_type():
     filter_not_free_price = Stock.price > 0
-    filter_not_an_activation_offer = (Offer.type != str(EventType.ACTIVATION)) | (
-        Offer.type != str(ThingType.ACTIVATION)
+    filter_not_an_activation_offer = (Offer.subcategoryId != subcategories.ACTIVATION_EVENT.id) | (
+        Offer.subcategoryId != subcategories.ACTIVATION_THING.id
     )
 
     query = Offer.query
@@ -68,7 +67,7 @@ def get_non_free_thing_offer_with_active_mediation():
 def get_non_free_event_offer():
     query = get_non_free_offers_query_by_type()
     offer = (
-        query.filter(Offer.type.in_([str(event_type) for event_type in EventType]))
+        query.filter(Offer.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES))
         .filter(Offer.mediations.any(Mediation.isActive == True))
         .join(Venue, Venue.id == Offer.venueId)
         .join(Offerer, Offerer.id == Venue.managingOffererId)

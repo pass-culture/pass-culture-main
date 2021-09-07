@@ -102,7 +102,6 @@ class TiteliveThingsTest:
         # Then
         product = Product.query.one()
         assert product.extraData.get("bookFormat") == BookFormat.BEAUX_LIVRES.value
-        assert product.type == "ThingType.LIVRE_EDITION"
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.extraData.get("isbn") == "9782895026310"
 

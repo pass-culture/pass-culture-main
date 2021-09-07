@@ -181,7 +181,7 @@ class DigitalOffersTest:
             is_single_event=0,
             offer_name="Super offre numérique",
             offer_price="Gratuit",
-            can_expire=1,
+            can_expire=0,
             has_offer_url=1,
             digital_offer_url="http://example.com",
             expiration_delay="30",

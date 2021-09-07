@@ -5,10 +5,9 @@ from decimal import Decimal
 from typing import Optional
 
 from pcapi.core.categories import subcategories
-from pcapi.core.offers.models import Offer
 import pcapi.core.payments.models as payments_models
 from pcapi.models import Booking
-from pcapi.models import ThingType
+from pcapi.models import Offer
 
 
 # A new set rules are in effect as of 1 September 2021 (i.e. 31 August 22:00 UTC)
@@ -23,7 +22,10 @@ class DigitalThingsReimbursement(payments_models.ReimbursementRule):
 
     def is_relevant(self, booking: Booking, cumulative_revenue="ignored") -> bool:
         offer = booking.stock.offer
-        return offer.isDigital and not _is_reimbursable_digital_offer(offer) and not offer.isEducational
+        return (
+            offer.subcategory.reimbursement_rule == subcategories.ReimbursementRuleChoices.NOT_REIMBURSED.value
+            and not offer.isEducational
+        )
 
 
 class EducationalOffersReimbursement(payments_models.ReimbursementRule):
@@ -139,7 +141,7 @@ class ReimbursementRateForBookAbove20000(payments_models.ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if booking.stock.offer.type != str(ThingType.LIVRE_EDITION):
+        if booking.stock.offer.subcategory.reimbursement_rule != subcategories.ReimbursementRuleChoices.BOOK.value:
             return False
         if booking.stock.offer.isEducational:
             return False
@@ -225,13 +227,8 @@ def get_reimbursement_rule(
     return min(candidates, key=lambda r: r.apply(booking))
 
 
-# FIXME (rchaffal, 2021-07-15): temporary workaroud before implementing subcategory reimbursement rules for all offers
-def _is_reimbursable_digital_offer(offer: Offer) -> bool:
-    return (
-        offer.type in (str(ThingType.CINEMA_CARD), str(ThingType.LIVRE_EDITION))
-        or offer.subcategoryId == subcategories.MUSEE_VENTE_DISTANCE.id
-    )
-
-
 def is_relevant_for_gradual_decreasing(offer: Offer) -> bool:
-    return not offer.isEducational and (not offer.isDigital or _is_reimbursable_digital_offer(offer))
+    return (
+        not offer.isEducational
+        and offer.subcategory.reimbursement_rule == subcategories.ReimbursementRuleChoices.STANDARD.value
+    )

@@ -3,9 +3,7 @@ import pytest
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models import EventType
 from pcapi.models import Offer
-from pcapi.models import ThingType
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
@@ -42,7 +40,6 @@ class Returns200Test:
         offer_id = dehumanize(response.json["id"])
         offer = Offer.query.get(offer_id)
         assert offer.bookingEmail == "offer@example.com"
-        assert offer.type == str(EventType.SPECTACLE_VIVANT)
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
         assert offer.extraData == {"toto": "text"}
         assert offer.externalTicketOfficeUrl == "http://example.net"
@@ -82,7 +79,6 @@ class Returns200Test:
         offer_id = dehumanize(response.json["id"])
         offer = Offer.query.get(offer_id)
         assert offer.bookingEmail == "offer@example.com"
-        assert offer.type == str(ThingType.JEUX_VIDEO)
         assert offer.subcategoryId == subcategories.JEU_EN_LIGNE.id
         assert offer.venue == venue
         assert offer.product.name == "Les lièvres pas malins"
@@ -255,7 +251,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["offer"] == ["Une offre ne peut être à la fois 'duo' et 'éducationnelle'."]
 
-    def test_fail_when_offer_type_does_not_allow_virtual_offer_and_venue_is_virtuel(self, app):
+    def test_fail_when_offer_subcategory_is_offline_only_and_venue_is_virtuel(self, app):
         # Given
         venue = offers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
@@ -278,9 +274,7 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json["url"] == [
-            "Une offre de type Vente et location d’instruments de musique ne peut pas être numérique"
-        ]
+        assert response.json["url"] == ["Une offre de sous-catégorie ACHAT_INSTRUMENT ne peut pas être numérique"]
 
     def should_fail_when_url_has_no_scheme(self, app):
         # Given

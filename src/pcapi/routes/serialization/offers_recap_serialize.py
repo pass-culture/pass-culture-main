@@ -1,4 +1,3 @@
-from pcapi.core.categories.conf import get_subcategory_from_type
 from pcapi.domain.pro_offers.offers_recap import OfferRecap
 from pcapi.domain.pro_offers.offers_recap import OfferRecapStock
 from pcapi.domain.pro_offers.offers_recap import OfferRecapVenue
@@ -24,8 +23,7 @@ def _serialize_offer_paginated(offer: OfferRecap) -> dict:
         "name": offer.name,
         "stocks": serialized_stocks,
         "thumbUrl": offer.thumb_url,
-        "type": offer.offer_type,
-        "subcategoryId": offer.subcategoryId or get_subcategory_from_type(offer.offer_type, offer.venue.is_virtual),
+        "subcategoryId": offer.subcategoryId,
         "venue": _serialize_venue(offer.venue),
         "venueId": humanize(offer.venue.id),
         "status": offer.status,

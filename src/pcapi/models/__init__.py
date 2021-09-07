@@ -1,6 +1,3 @@
-# FIXME (dbaty, 2021-06-07): fix circular import
-from pcapi.models.offer_type import ThingType  # isort:skip
-
 from pcapi.core.bookings.models import Booking
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
 from pcapi.core.fraud.models import BeneficiaryFraudResult
@@ -41,7 +38,6 @@ from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.local_provider_event import LocalProviderEvent
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.offer_criterion import OfferCriterion
-from pcapi.models.offer_type import EventType
 from pcapi.models.payment import Payment
 from pcapi.models.payment_message import PaymentMessage
 from pcapi.models.payment_status import PaymentStatus
@@ -69,7 +65,6 @@ __all__ = (
     "DeactivableMixin",
     "Deposit",
     "Email",
-    "EventType",
     "ExtraDataMixin",
     "Favorite",
     "Feature",
@@ -90,7 +85,6 @@ __all__ = (
     "PaymentMessage",
     "Product",
     "SubscriptionMessage",
-    "ThingType",
     "Token",
     "UserOfferer",
     "User",

@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from freezegun import freeze_time
 
+from pcapi.core.categories import subcategories
 from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from pcapi.domain.beneficiary_bookings.stock import Stock
@@ -43,7 +44,7 @@ class BeneficiaryBookingsSerializeTest:
                 userId=12,
                 offerId=45,
                 name="Ma super offre",
-                type="EventType.PRATIQUE_ARTISTIQUE",
+                subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
                 url="http://url.com",
                 email="john@example.com",
                 beginningDatetime=datetime(2019, 3, 8),
@@ -106,26 +107,6 @@ class BeneficiaryBookingsSerializeTest:
                             "isNational": False,
                             "name": "Ma super offre",
                             "isBookable": True,
-                            "offerType": {
-                                "appLabel": "Pratique artistique",
-                                "conditionalFields": ["speaker"],
-                                "description": "Jamais osé monter sur les "
-                                "planches ? Tenter "
-                                "d’apprendre la guitare, le "
-                                "piano ou la photographie ? "
-                                "Partir cinq jours découvrir "
-                                "un autre monde ? Bricoler "
-                                "dans un fablab, ou pourquoi "
-                                "pas, enregistrer votre "
-                                "premier titre ?",
-                                "isActive": True,
-                                "offlineOnly": True,
-                                "onlineOnly": False,
-                                "proLabel": "Pratique artistique - séances " "d'essai et stages ponctuels",
-                                "sublabel": "Pratiquer",
-                                "type": "Event",
-                                "value": "EventType.PRATIQUE_ARTISTIQUE",
-                            },
                             "stocks": [
                                 {
                                     "beginningDatetime": "2019-01-07T00:00:00Z",
@@ -196,7 +177,7 @@ class BeneficiaryBookingsSerializeTest:
                 userId=12,
                 offerId=45,
                 name="Ma super offre",
-                type="EventType.PRATIQUE_ARTISTIQUE",
+                subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
                 url="http://url.com",
                 email="john@example.com",
                 beginningDatetime=datetime(2019, 3, 8),
@@ -260,26 +241,6 @@ class BeneficiaryBookingsSerializeTest:
                             "isNational": False,
                             "name": "Ma super offre",
                             "isBookable": True,
-                            "offerType": {
-                                "appLabel": "Pratique artistique",
-                                "conditionalFields": ["speaker"],
-                                "description": "Jamais osé monter sur les "
-                                "planches ? Tenter "
-                                "d’apprendre la guitare, le "
-                                "piano ou la photographie ? "
-                                "Partir cinq jours découvrir "
-                                "un autre monde ? Bricoler "
-                                "dans un fablab, ou pourquoi "
-                                "pas, enregistrer votre "
-                                "premier titre ?",
-                                "isActive": True,
-                                "offlineOnly": True,
-                                "onlineOnly": False,
-                                "proLabel": "Pratique artistique - séances " "d'essai et stages ponctuels",
-                                "sublabel": "Pratiquer",
-                                "type": "Event",
-                                "value": "EventType.PRATIQUE_ARTISTIQUE",
-                            },
                             "stocks": [
                                 {
                                     "beginningDatetime": "2019-01-07T00:00:00Z",
@@ -349,7 +310,7 @@ class BeneficiaryBookingsSerializeTest:
                 userId=12,
                 offerId=45,
                 name="Ma super offre",
-                type="EventType.PRATIQUE_ARTISTIQUE",
+                subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
                 url="http://url.com",
                 email="john@example.com",
                 beginningDatetime=datetime(2019, 3, 8),
@@ -410,26 +371,6 @@ class BeneficiaryBookingsSerializeTest:
                             "isNational": False,
                             "name": "Ma super offre",
                             "isBookable": True,
-                            "offerType": {
-                                "appLabel": "Pratique artistique",
-                                "conditionalFields": ["speaker"],
-                                "description": "Jamais osé monter sur les "
-                                "planches ? Tenter "
-                                "d’apprendre la guitare, le "
-                                "piano ou la photographie ? "
-                                "Partir cinq jours découvrir "
-                                "un autre monde ? Bricoler "
-                                "dans un fablab, ou pourquoi "
-                                "pas, enregistrer votre "
-                                "premier titre ?",
-                                "isActive": True,
-                                "offlineOnly": True,
-                                "onlineOnly": False,
-                                "proLabel": "Pratique artistique - séances " "d'essai et stages ponctuels",
-                                "sublabel": "Pratiquer",
-                                "type": "Event",
-                                "value": "EventType.PRATIQUE_ARTISTIQUE",
-                            },
                             "stocks": [
                                 {
                                     "beginningDatetime": "2019-01-07T00:00:00Z",
@@ -511,7 +452,7 @@ class BeneficiaryBookingsSerializeTest:
                 userId=12,
                 offerId=45,
                 name="Ma super offre",
-                type="EventType.PRATIQUE_ARTISTIQUE",
+                subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
                 url="http://url.com",
                 email="john@example.com",
                 beginningDatetime=datetime(2019, 3, 8),
@@ -591,7 +532,7 @@ class BeneficiaryBookingsSerializeTest:
                 userId=12,
                 offerId=45,
                 name="Ma super offre",
-                type="EventType.PRATIQUE_ARTISTIQUE",
+                subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
                 url="http://url.com",
                 email="john@example.com",
                 beginningDatetime=datetime(2019, 3, 8),

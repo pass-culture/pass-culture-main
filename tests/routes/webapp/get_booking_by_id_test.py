@@ -98,24 +98,6 @@ class Returns200Test:
                     "mentalDisabilityCompliant": None,
                     "motorDisabilityCompliant": None,
                     "name": "Test Book",
-                    "offerType": {
-                        "appLabel": "Film",
-                        "canExpire": True,
-                        "conditionalFields": [],
-                        "description": (
-                            "Action, science-fiction, documentaire ou comédie "
-                            "sentimentale ? En salle, en plein air ou bien au chaud "
-                            "chez soi ? Et si c’était plutôt cette exposition qui "
-                            "allait faire son cinéma ?"
-                        ),
-                        "isActive": True,
-                        "offlineOnly": False,
-                        "onlineOnly": False,
-                        "proLabel": "Audiovisuel - films sur supports physiques et VOD",
-                        "sublabel": "Regarder",
-                        "type": "Thing",
-                        "value": "ThingType.AUDIOVISUEL",
-                    },
                     "productId": humanize(offer.product.id),
                     "stocks": [
                         {
@@ -139,7 +121,6 @@ class Returns200Test:
                     ],
                     "subcategoryId": "SUPPORT_PHYSIQUE_FILM",
                     "thumbUrl": None,
-                    "type": "ThingType.AUDIOVISUEL",
                     "url": "https://host/path/{token}?offerId={offerId}&email={email}",
                     "validation": "APPROVED",
                     "venue": {

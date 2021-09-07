@@ -157,7 +157,6 @@ class ProviderAPICronTest:
         assert created_offer.name == product.name
         assert created_offer.productId == product.id
         assert created_offer.venueId == venue_provider.venue.id
-        assert created_offer.type == product.type
         assert created_offer.idAtProviders == f"{ISBNs[2]}@{siret}"
         assert created_offer.idAtProvider == ISBNs[2]
         assert created_offer.lastProviderId == provider.id

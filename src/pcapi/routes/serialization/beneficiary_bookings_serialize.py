@@ -77,7 +77,6 @@ def _serialize_beneficiary_booking(
                 "isEvent": beneficiary_booking.is_booked_offer_event,
                 "isNational": beneficiary_booking.isNational,
                 "name": beneficiary_booking.name,
-                "offerType": beneficiary_booking.humanized_offer_type,
                 "thumbUrl": beneficiary_booking.thumb_url,
                 "stocks": serialized_stocks,
                 "isBookable": _serialize_offer_is_bookable(serialized_stocks),

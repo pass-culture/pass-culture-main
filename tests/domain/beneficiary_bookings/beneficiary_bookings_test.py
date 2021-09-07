@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 
+from pcapi.core.categories import subcategories
 from pcapi.domain.beneficiary_bookings.active_mediation import ActiveMediation
 from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
 
@@ -23,7 +24,7 @@ class BeneficiaryBookingTest:
                 userId=12,
                 offerId=45,
                 name="Ma super offre",
-                type="EventType.PRATIQUE_ARTISTIQUE",
+                subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
                 url='http://javascript:alert("plop")?token={token}&email={email}',
                 email="bob@example.com",
                 beginningDatetime=None,
@@ -73,7 +74,7 @@ class BeneficiaryBookingTest:
                 userId=12,
                 offerId=45,
                 name="Ma super offre",
-                type="EventType.PRATIQUE_ARTISTIQUE",
+                subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
                 url="http://url.com",
                 email="john@example.com",
                 beginningDatetime=None,
@@ -122,7 +123,7 @@ class BeneficiaryBookingTest:
                 userId=12,
                 offerId=45,
                 name="Ma super offre",
-                type="EventType.PRATIQUE_ARTISTIQUE",
+                subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
                 url="http://url.com",
                 email="john@example.com",
                 beginningDatetime=datetime.now() + timedelta(days=2),
@@ -171,7 +172,7 @@ class BeneficiaryBookingTest:
                 userId=12,
                 offerId=45,
                 name="Ma super offre",
-                type="EventType.PRATIQUE_ARTISTIQUE",
+                subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
                 url="http://url.com",
                 email="john@example.com",
                 beginningDatetime=datetime(2019, 3, 8),
@@ -221,7 +222,7 @@ class BeneficiaryBookingTest:
                 userId=12,
                 offerId=45,
                 name="Ma super offre",
-                type="EventType.PRATIQUE_ARTISTIQUE",
+                subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
                 url="http://url.com",
                 email="john@example.com",
                 beginningDatetime=None,
@@ -267,7 +268,7 @@ class BeneficiaryBookingTest:
                 userId=12,
                 offerId=45,
                 name="Ma super offre",
-                type="EventType.PRATIQUE_ARTISTIQUE",
+                subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id,
                 url="http://url.com",
                 email="john@example.com",
                 beginningDatetime=None,

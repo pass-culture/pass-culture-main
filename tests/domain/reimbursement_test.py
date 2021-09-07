@@ -124,7 +124,7 @@ class PhysicalOffersReimbursementTest:
         assert rule.is_relevant(create_non_digital_thing_booking())
         assert rule.is_relevant(create_event_booking())
         assert not rule.is_relevant(create_digital_booking())
-        digital_book_booking = create_digital_booking(product_subcategory_id=subcategories.LIVRE_PAPIER.id)
+        digital_book_booking = create_digital_booking(product_subcategory_id=subcategories.LIVRE_NUMERIQUE.id)
         assert rule.is_relevant(digital_book_booking)
         cinema_card_booking = create_digital_booking(product_subcategory_id=subcategories.CINE_VENTE_DISTANCE.id)
         assert rule.is_relevant(cinema_card_booking)
@@ -149,7 +149,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000Test:
         assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), 20001)
         assert not self.rule.is_relevant(booking, 40001)
 
-    def test_relevancy_depending_on_offer_type(self):
+    def test_relevancy_depending_on_offer_subcategory(self):
         revenue = 20001
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)

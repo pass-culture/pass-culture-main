@@ -1,3 +1,4 @@
+from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import Mediation
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
@@ -42,7 +43,7 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
                     userId=booking.userId,
                     offerId=booking.offerId,
                     name=booking.name,
-                    type=booking.type,
+                    subcategoryId=booking.subcategoryId,
                     url=booking.url,
                     email=booking.email,
                     beginningDatetime=booking.beginningDatetime,
@@ -103,7 +104,7 @@ def _get_stocks_information(offers_ids: list[int]) -> list[object]:
 
 
 def _get_bookings_information(beneficiary_id: int) -> list[Booking]:
-    offer_activation_types = ["ThingType.ACTIVATION", "EventType.ACTIVATION"]
+    offer_activation_subcategories = [subcategories.ACTIVATION_EVENT.id, subcategories.ACTIVATION_THING.id]
     return (
         Booking.query.join(User, User.id == Booking.userId)
         .join(Stock, Stock.id == Booking.stockId)
@@ -112,7 +113,7 @@ def _get_bookings_information(beneficiary_id: int) -> list[Booking]:
         .join(Venue, Venue.id == Offer.venueId)
         .outerjoin(ActivationCode, ActivationCode.bookingId == Booking.id)
         .filter(Booking.userId == beneficiary_id)
-        .filter(Offer.type.notin_(offer_activation_types))
+        .filter(Offer.subcategoryId.notin_(offer_activation_subcategories))
         .distinct(Booking.stockId)
         .order_by(Booking.stockId, Booking.isCancelled, Booking.dateCreated.desc())
         .with_entities(
@@ -131,7 +132,7 @@ def _get_bookings_information(beneficiary_id: int) -> list[Booking]:
             Booking.displayAsEnded,
             Offer.id.label("offerId"),
             Offer.name,
-            Offer.type,
+            Offer.subcategoryId,
             Offer.url,
             Offer.withdrawalDetails,
             Offer.isDuo,
@@ -140,6 +141,7 @@ def _get_bookings_information(beneficiary_id: int) -> list[Booking]:
             Offer.description,
             Offer.mediaUrls,
             Offer.isNational,
+            Offer.subcategoryId,
             Product.id.label("productId"),
             Product.thumbCount,
             User.email,

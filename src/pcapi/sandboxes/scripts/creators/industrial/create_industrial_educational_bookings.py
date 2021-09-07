@@ -88,7 +88,7 @@ def create_industrial_educational_bookings() -> None:
 
     for stock in stocks:
         mediation = MediationFactory(offer=stock.offer, credit="Crédit photo")
-        store_public_object_from_sandbox_assets("thumbs", mediation, mediation.offer.type)
+        store_public_object_from_sandbox_assets("thumbs", mediation, mediation.offer.subcategoryId)
 
     next_year_stocks = [
         EducationalEventStockFactory(

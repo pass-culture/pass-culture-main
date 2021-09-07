@@ -35,20 +35,11 @@ from sqlalchemy.orm import relationship
 
 import pcapi.core.bookings.conf as bookings_conf
 from pcapi.core.categories import subcategories
-from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
-from pcapi.core.categories.subcategories import Subcategory
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
-from pcapi.models.offer_type import ALL_OFFER_TYPES_DICT
-from pcapi.models.offer_type import CATEGORIES_LABEL_DICT
-from pcapi.models.offer_type import CategoryType
-from pcapi.models.offer_type import EXPIRABLE_OFFER_TYPES
-from pcapi.models.offer_type import PERMANENT_OFFER_TYPES
-from pcapi.models.offer_type import ProductType
-from pcapi.models.offer_type import ThingType
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
@@ -269,6 +260,11 @@ class OfferValidationStatus(enum.Enum):
     REJECTED = "REJECTED"
 
 
+class CategoryType(enum.Enum):
+    EVENT = "Event"
+    THING = "Thing"
+
+
 class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
     __tablename__ = "offer"
 
@@ -284,7 +280,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     bookingEmail = Column(String(120), nullable=True)
 
-    type = Column(String(50), CheckConstraint("type != 'None'"), index=True, nullable=False)
+    type = Column(String(50), index=True, nullable=True)
 
     name = Column(String(140), nullable=False)
     Index("idx_offer_trgm_name", name, postgresql_using="gin")
@@ -388,11 +384,11 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     @hybrid_property
     def canExpire(self) -> bool:
-        return self.type in EXPIRABLE_OFFER_TYPES
+        return self.subcategoryId in subcategories.EXPIRABLE_SUBCATEGORIES
 
     @canExpire.expression
     def canExpire(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.type.in_(EXPIRABLE_OFFER_TYPES)
+        return cls.subcategoryId.in_(subcategories.EXPIRABLE_SUBCATEGORIES)
 
     @property
     def isReleased(self) -> bool:
@@ -406,15 +402,15 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     @hybrid_property
     def isPermanent(self) -> bool:
-        return self.type in PERMANENT_OFFER_TYPES
+        return self.subcategoryId in subcategories.PERMANENT_SUBCATEGORIES
 
     @isPermanent.expression
     def isPermanent(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.type.in_(PERMANENT_OFFER_TYPES)
+        return cls.subcategoryId.in_(subcategories.PERMANENT_SUBCATEGORIES)
 
     @property
     def dateRange(self) -> DateTimes:
-        if ProductType.is_thing(self.type) or not self.activeStocks:
+        if self.isThing or not self.activeStocks:
             return DateTimes()
 
         start = min([stock.beginningDatetime for stock in self.activeStocks])
@@ -423,11 +419,11 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     @property
     def isEvent(self) -> bool:
-        return ProductType.is_event(self.type)
+        return self.subcategory.is_event
 
     @property
     def isThing(self) -> bool:
-        return ProductType.is_thing(self.type)
+        return not self.subcategory.is_event
 
     @property
     def isDigital(self) -> bool:
@@ -480,33 +476,16 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
         return [stock for stock in self.stocks if stock.isBookable]
 
     @property
-    def offerType(self) -> Optional[dict]:
-        if self.type not in ALL_OFFER_TYPES_DICT:
-            raise ValueError(f"Unexpected offer type '{self.type}' for offer {self.id}")
-
-        return ALL_OFFER_TYPES_DICT[self.type]
-
-    # TODO(fseguin, 2021-06-02: remove after fully implementing OfferCategory)
-    @property
-    def offer_category_name_for_app(self) -> str:
-        # offer_types ThingType.OEUVRE_ART, EventType.ACTIVATION and ThingType.ACTIVATION do not have a corresponding Category so return None in this case
-        return CATEGORIES_LABEL_DICT.get(self.offerType["appLabel"])
-
-    @property
-    def subcategory(self) -> Subcategory:
-        if self.subcategoryId not in ALL_SUBCATEGORIES_DICT:
+    def subcategory(self) -> subcategories.Subcategory:
+        if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for offer {self.id}")
-        return ALL_SUBCATEGORIES_DICT[self.subcategoryId]
+        return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
     @property
-    def category_type(self) -> Optional[str]:
+    def category_type(self) -> str:
         if self.isEvent:
             return CategoryType.EVENT.value
-
-        if self.isThing:
-            return CategoryType.THING.value
-
-        return None
+        return CategoryType.THING.value
 
     @property
     def image(self) -> Optional[OfferImage]:
@@ -530,10 +509,6 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
     @property
     def is_offline_only(self) -> bool:
         return self.subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.OFFLINE.value
-
-    def get_label_from_type_string(self):
-        matching_type_thing = next(filter(lambda thing_type: str(thing_type) == self.type, ThingType))
-        return matching_type_thing.value["proLabel"]
 
     @hybrid_property
     def status(self) -> OfferStatus:

@@ -8,12 +8,9 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.models import Offer
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
-from pcapi.routes.native.v1.serialization.offers import OfferCategoryResponse
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
-from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
@@ -56,23 +53,17 @@ class BookingOfferExtraData(BaseModel):
 class BookingOfferResponse(BaseModel):
     id: int
     name: str
-    category: OfferCategoryResponse
-    subcategoryId: SubcategoryIdEnum
     extraData: Optional[BookingOfferExtraData]
     image: Optional[OfferImageResponse]
     isDigital: bool
     isPermanent: bool
+    subcategoryId: str
     url: Optional[str]
     venue: BookingVenueResponse
     withdrawalDetails: Optional[str]
 
     class Config:
         orm_mode = True
-
-    @classmethod
-    def from_orm(cls: Any, offer: Offer):  # type: ignore
-        offer.category = get_serialized_offer_category(offer)
-        return super().from_orm(offer)
 
 
 class BookingStockResponse(BaseModel):

@@ -115,7 +115,9 @@ def test_should_return_errors_when_invalid_product():
     api_errors = validate(product)
 
     # Then
-    assert api_errors.errors == {"url": ["Une offre de type Cinéma - cartes d'abonnement ne peut pas être numérique"]}
+    assert api_errors.errors == {
+        "url": ["Un produit de sous-catégorie CARTE_CINE_MULTISEANCES ne peut pas être numérique"]
+    }
 
 
 def test_should_return_errors_when_valid_product():

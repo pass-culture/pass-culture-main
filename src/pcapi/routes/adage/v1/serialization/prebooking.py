@@ -11,9 +11,7 @@ from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.offers.utils import offer_webapp_link
 from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
-from pcapi.routes.native.v1.serialization.offers import OfferCategoryResponse
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
-from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.serialization.utils import to_camel
 
 
@@ -42,7 +40,6 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     beginningDatetime: datetime = Field(description="Beginnning date of event")
     cancellationDate: Optional[datetime] = Field(description="Date of cancellation if prebooking is cancelled")
     cancellationLimitDate: Optional[datetime] = Field(description="Limit date to cancel the prebooking")
-    category: OfferCategoryResponse
     city: str
     confirmationDate: Optional[datetime] = Field(description="Date of confirmation if prebooking is confirmed")
     confirmationLimitDate: datetime = Field(description="Limit date to confirm the prebooking")
@@ -99,7 +96,6 @@ def serialize_educational_booking(educational_booking: EducationalBooking) -> Ed
         beginningDatetime=stock.beginningDatetime,
         cancellationDate=booking.cancellationDate,
         cancellationLimitDate=booking.cancellationLimitDate,
-        category=get_serialized_offer_category(offer),
         city=venue.city,
         confirmationDate=educational_booking.confirmationDate,
         confirmationLimitDate=educational_booking.confirmationLimitDate,

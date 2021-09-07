@@ -47,7 +47,6 @@ OFFERS_META_ENGINE_NAME = "offers-meta"
 OFFERS_SEARCH_PRECISION = 3
 OFFERS_SCHEMA = {
     "artist": "text",
-    "category": "text",
     "date_created": "date",
     "dates": "date",
     "description": "text",
@@ -426,7 +425,6 @@ class AppSearchBackend(base.SearchBackend):
                 "is_educational": to_app_search_bool(offer.isEducational),
                 "is_event": to_app_search_bool(offer.isEvent),
                 "is_thing": to_app_search_bool(offer.isThing),
-                "label": offer.offerType["appLabel"],
                 "name": offer.name,
                 "id": offer.id,
                 "prices": [int(stock.price * 100) for stock in stocks],

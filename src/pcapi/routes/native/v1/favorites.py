@@ -68,10 +68,9 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
                 Offer.name,
                 Offer.externalTicketOfficeUrl,
                 Offer.url,
-                Offer.type,
+                Offer.subcategoryId,
                 Offer.isActive,
                 Offer.validation,
-                Offer.subcategoryId,
             )
         )
         .options(

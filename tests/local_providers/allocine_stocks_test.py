@@ -16,7 +16,6 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
-from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock
@@ -255,7 +254,6 @@ class UpdateObjectsTest:
         assert created_offer.name == "Les Contes de la mère poule - VF"
         assert created_offer.product == created_product
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_offer.type == str(EventType.CINEMA)
         assert created_offer.withdrawalDetails == venue.withdrawalDetails
 
         assert (
@@ -279,7 +277,6 @@ class UpdateObjectsTest:
 
         assert created_product.name == "Les Contes de la mère poule"
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
-        assert created_product.type == str(EventType.CINEMA)
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
@@ -359,7 +356,6 @@ class UpdateObjectsTest:
         assert original_version_offer.name == "Les Contes de la mère poule - VO"
         assert original_version_offer.product == created_products[0]
         assert original_version_offer.subcategoryId == subcategories.SEANCE_CINE.id
-        assert original_version_offer.type == str(EventType.CINEMA)
 
         dubbed_version_offer = created_offers[1]
         assert dubbed_version_offer.bookingEmail == "toto@example.com"
@@ -374,7 +370,6 @@ class UpdateObjectsTest:
         assert dubbed_version_offer.name == "Les Contes de la mère poule - VF"
         assert dubbed_version_offer.product == created_products[0]
         assert dubbed_version_offer.subcategoryId == subcategories.SEANCE_CINE.id
-        assert dubbed_version_offer.type == str(EventType.CINEMA)
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
@@ -561,7 +556,6 @@ class UpdateObjectsTest:
         existing_product = Product.query.one()
 
         assert existing_product.durationMinutes == 46
-        assert created_offer.type == str(EventType.CINEMA)
         assert created_offer.name == "Les Contes de la mère poule - VF"
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
@@ -637,7 +631,6 @@ class UpdateObjectsTest:
             "cast": ["Chloë Grace Moretz", "Michael Peña"],
         }
 
-        assert created_offer.type == str(EventType.CINEMA)
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offer.name == "Les Contes de la mère poule - VF"
 

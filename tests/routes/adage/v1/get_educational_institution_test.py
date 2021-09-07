@@ -1,13 +1,11 @@
 import pytest
 
-from pcapi import settings
 from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.offers.utils import offer_webapp_link
-from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.utils.date import format_into_utc_date
 
 from tests.conftest import TestClient
@@ -73,7 +71,6 @@ class Returns200Test:
                     "beginningDatetime": format_into_utc_date(stock.beginningDatetime),
                     "cancellationDate": None,
                     "cancellationLimitDate": format_into_utc_date(booking.cancellationLimitDate),
-                    "category": get_serialized_offer_category(offer),
                     "city": venue.city,
                     "confirmationDate": format_into_utc_date(educational_booking.confirmationDate)
                     if educational_booking.confirmationDate

@@ -5,9 +5,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from pcapi.core.categories import subcategories
 from pcapi.models import Booking
-from pcapi.models import EventType
-from pcapi.models import ThingType
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
@@ -47,9 +46,9 @@ class GetBookingResponse(BaseModel):
 
 
 def get_booking_response(booking: Booking) -> GetBookingResponse:
-    if booking.stock.offer.type == str(EventType.CINEMA):
+    if booking.stock.offer.subcategoryId == subcategories.SEANCE_CINE.id:
         formula = BookingFormula.PLACE
-    elif booking.stock.offer.type == str(ThingType.CINEMA_ABO):
+    elif booking.stock.offer.subcategoryId == subcategories.CARTE_CINE_ILLIMITE.id:
         formula = BookingFormula.ABO
     else:
         formula = BookingFormula.VOID
@@ -61,7 +60,12 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         bookingId=humanize(booking.id),
         dateOfBirth=(
             format_into_utc_date(booking.user.dateOfBirth)
-            if not is_educational_booking and booking.stock.offer.product.type == str(EventType.ACTIVATION)
+            if not is_educational_booking
+            and booking.stock.offer.product.subcategoryId
+            in (
+                subcategories.ACTIVATION_EVENT.id,
+                subcategories.ACTIVATION_THING.id,
+            )
             else ""
         ),
         datetime=(format_into_utc_date(booking.stock.beginningDatetime) if booking.stock.beginningDatetime else ""),
@@ -73,7 +77,15 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         publicOfferId=humanize(booking.stock.offer.id),
         offerName=booking.stock.offer.product.name,
         offerType=BookingOfferType.EVENEMENT if booking.stock.offer.isEvent else BookingOfferType.EVENEMENT,
-        phoneNumber=(booking.user.phoneNumber if booking.stock.offer.product.type == str(EventType.ACTIVATION) else ""),
+        phoneNumber=(
+            booking.user.phoneNumber
+            if booking.stock.offer.product.subcategoryId
+            in (
+                subcategories.ACTIVATION_EVENT.id,
+                subcategories.ACTIVATION_THING.id,
+            )
+            else ""
+        ),
         price=booking.amount,
         quantity=booking.quantity,
         theater=extra_data.get("theater", ""),

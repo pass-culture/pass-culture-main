@@ -1,11 +1,9 @@
 import logging
 
-from pcapi.core.categories.conf import get_subcategory_from_type
+from pcapi.core.categories import subcategories
 from pcapi.domain.music_types import music_types
 from pcapi.domain.show_types import show_types
-from pcapi.domain.types import get_formatted_active_product_types
 from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
-from pcapi.models.offer_type import EventType
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_DESCRIPTION
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_NAME
@@ -26,16 +24,16 @@ def create_industrial_event_products():
 
     event_products_by_name = {}
 
-    event_type_dicts = [t for t in get_formatted_active_product_types() if t["type"] == "Event"]
+    event_subcategories = [s for s in subcategories.ALL_SUBCATEGORIES if s.is_event]
 
     activation_index = 0
 
-    for type_index in range(0, EVENT_COUNTS_PER_TYPE):
+    for product_creation_counter in range(0, EVENT_COUNTS_PER_TYPE):
 
-        for (event_type_dict_index, event_type_dict) in enumerate(event_type_dicts):
+        for (event_subcategories_list_index, event_subcategory) in enumerate(event_subcategories):
 
-            mock_index = (type_index + event_type_dict_index) % len(MOCK_NAMES)
-            if event_type_dict["value"] == str(EventType.ACTIVATION):
+            mock_index = (product_creation_counter + event_subcategories_list_index) % len(MOCK_NAMES)
+            if event_subcategory == subcategories.ACTIVATION_EVENT:
                 event_name = "{} {}".format(MOCK_ACTIVATION_NAME, activation_index)
                 description = MOCK_ACTIVATION_DESCRIPTION
                 activation_index += 1
@@ -43,21 +41,19 @@ def create_industrial_event_products():
                 event_name = MOCK_NAMES[mock_index]
                 description = MOCK_DESCRIPTIONS[mock_index]
 
-            event_type = event_type_dict["value"]
-
-            name = "{} / {}".format(event_type_dict["value"], event_name)
+            name = "{} / {}".format(event_subcategory.id, event_name)
             event_product = create_product_with_event_subcategory(
                 description=description,
                 duration_minutes=60,
                 event_name=event_name,
-                event_subcategory_id=get_subcategory_from_type(offer_type=event_type, is_virtual_venue=False),
+                event_subcategory_id=event_subcategory.id,
                 thumb_count=0,
             )
 
             extraData = {}
             extra_data_index = 0
-            for conditionalField in event_product.offerType["conditionalFields"]:
-                conditional_index = type_index + event_type_dict_index + extra_data_index
+            for conditionalField in event_product.subcategory.conditional_fields:
+                conditional_index = product_creation_counter + event_subcategories_list_index + extra_data_index
                 if conditionalField in ["author", "performer", "speaker", "stageDirector"]:
                     mock_first_name_index = conditional_index % len(MOCK_FIRST_NAMES)
                     mock_first_name = MOCK_FIRST_NAMES[mock_first_name_index]
@@ -85,7 +81,7 @@ def create_industrial_event_products():
             event_product.extraData = extraData
             event_products_by_name[name] = event_product
 
-        type_index += len(event_type_dicts)
+        product_creation_counter += len(event_subcategories)
 
     repository.save(*event_products_by_name.values())
 

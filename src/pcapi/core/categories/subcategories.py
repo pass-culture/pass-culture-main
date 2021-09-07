@@ -1404,6 +1404,11 @@ ALL_SUBCATEGORIES = (
     VOD,
 )
 ALL_SUBCATEGORIES_DICT = {subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES}
+PERMANENT_SUBCATEGORIES = {
+    subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if not subcategory.can_expire
+}
+EXPIRABLE_SUBCATEGORIES = {subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.can_expire}
+EVENT_SUBCATEGORIES = {subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.is_event}
 
 assert set(subcategory.id for subcategory in ALL_SUBCATEGORIES) == set(
     subcategory.id for subcategory in locals().values() if isinstance(subcategory, Subcategory)

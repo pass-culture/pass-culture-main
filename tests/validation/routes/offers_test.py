@@ -1,27 +1,8 @@
 import pytest
 
 from pcapi.models import ApiErrors
-from pcapi.models import EventType
-from pcapi.models import ThingType
 from pcapi.validation.routes.offers import check_offer_isbn_is_valid
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
-from pcapi.validation.routes.offers import check_offer_type_is_valid
-
-
-class CheckOfferTypeIsValidTest:
-    def test_raises_api_error_when_offer_type_is_invalid(self):
-        # When
-        with pytest.raises(ApiErrors) as error:
-            check_offer_type_is_valid("")
-
-        # Then
-        assert error.value.errors["type"] == ["Le type de cette offre est inconnu"]
-
-    def test_does_not_raise_exception_when_ThingType_is_given(self):
-        check_offer_type_is_valid(str(ThingType.JEUX_VIDEO))
-
-    def test_does_not_raise_exception_when_EventType_is_given(self):
-        check_offer_type_is_valid(str(EventType.CINEMA))
 
 
 class CheckOfferNameIsValidTest:

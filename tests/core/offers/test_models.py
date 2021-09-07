@@ -58,28 +58,6 @@ class OfferIsDigitalTest:
         assert offer.isDigital
 
 
-class OfferTypeTest:
-    def test_offer_type(self):
-        offer = factories.OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        assert offer.offerType == {
-            "conditionalFields": ["author", "isbn"],
-            "proLabel": "Livres papier ou numérique, abonnements lecture",
-            "appLabel": "Livre ou carte lecture",
-            "offlineOnly": False,
-            "onlineOnly": False,
-            "sublabel": "Lire",
-            "description": "S’abonner à un quotidien d’actualité ?"
-            " À un hebdomadaire humoristique ? "
-            "À un mensuel dédié à la nature ? "
-            "Acheter une BD ou un manga ? "
-            "Ou tout simplement ce livre dont tout le monde parle ?",
-            "value": "ThingType.LIVRE_EDITION",
-            "type": "Thing",
-            "isActive": True,
-            "canExpire": True,
-        }
-
-
 class OfferHasBookingLimitDatetimesPassedTest:
     def test_with_stock_with_no_booking_limit_datetime(self):
         stock = factories.StockFactory(bookingLimitDatetime=None)
@@ -175,12 +153,6 @@ class OfferThumbUrlTest:
     def test_defaults_to_none(self):
         offer = models.Offer()
         assert offer.thumbUrl == None
-
-
-class OfferCategoryNameForAppTest:
-    def test_offer_category(self):
-        offer = factories.OfferFactory(subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id)
-        assert offer.offer_category_name_for_app == "JEUX_VIDEO"
 
 
 class OfferValidationTest:

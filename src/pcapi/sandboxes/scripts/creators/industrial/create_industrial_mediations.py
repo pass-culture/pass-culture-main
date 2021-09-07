@@ -27,7 +27,7 @@ def create_industrial_mediations(offers_by_name):
 
     for mediation in mediations_by_name.values():
         mediations_with_asset[mediation.id] = store_public_object_from_sandbox_assets(
-            "thumbs", mediation, mediation.offer.type
+            "thumbs", mediation, mediation.offer.subcategoryId
         )
 
     repository.save(*mediations_with_asset.values())

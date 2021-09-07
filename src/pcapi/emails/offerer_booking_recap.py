@@ -3,7 +3,6 @@ from pcapi.core.bookings.conf import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.offer_type import ProductType
 from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
@@ -31,7 +30,6 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
     user_lastname = booking.user.lastName
     user_phoneNumber = booking.user.phoneNumber or ""
     departement_code = venue.departementCode or "numérique"
-    offer_type = offer.type
     is_event = int(offer.isEvent)
 
     if (
@@ -42,7 +40,7 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
         can_expire = 0
         is_booking_autovalidated = 1
     else:
-        can_expire = int(offer.offerType.get("canExpire", False))
+        can_expire = int(offer.subcategory.can_expire)
         is_booking_autovalidated = 0
 
     expiration_delay = BOOKINGS_AUTO_EXPIRY_DELAY.days
@@ -70,7 +68,8 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
             "nom_lieu": venue_name,
             "is_event": is_event,
             "ISBN": "",
-            "offer_type": "book",
+            # FIXME: change MJ template variable name
+            "offer_type": offer.subcategoryId,
             "date": "",
             "heure": "",
             "quantity": quantity,
@@ -91,14 +90,11 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
         },
     }
 
-    offer_is_a_book = ProductType.is_book(offer_type)
-
-    if offer_is_a_book:
+    if "isbn" in offer.subcategory.conditional_fields:
         mailjet_json["Vars"]["ISBN"] = (
             offer.extraData["isbn"] if offer.extraData is not None and "isbn" in offer.extraData else ""
         )
-    else:
-        mailjet_json["Vars"]["offer_type"] = offer_type
+        mailjet_json["Vars"]["offer_type"] = "book"
 
     offer_is_an_event = is_event == 1
     if offer_is_an_event:

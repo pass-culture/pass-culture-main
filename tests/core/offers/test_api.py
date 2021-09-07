@@ -46,7 +46,6 @@ from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models import ApiErrors
 from pcapi.models import api_errors
-from pcapi.models import offer_type
 from pcapi.models.product import Product
 from pcapi.notifications.push import testing as push_testing
 from pcapi.routes.serialization import offers_serialize
@@ -821,7 +820,6 @@ class CreateOfferTest:
 
         assert offer.name == "A pretty good offer"
         assert offer.venue == venue
-        assert offer.type == str(offer_type.EventType.CINEMA)
         assert offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert offer.product.owningOfferer == offerer
         assert offer.externalTicketOfficeUrl == "http://example.net"
@@ -831,6 +829,37 @@ class CreateOfferTest:
         assert offer.visualDisabilityCompliant
         assert offer.validation == OfferValidationStatus.DRAFT
         assert not offer.bookingEmail
+        assert Offer.query.count() == 1
+
+    def test_create_offer_from_existing_product(self):
+        product = factories.ProductFactory(
+            name="An excellent offer",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        venue = factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user_offerer = factories.UserOffererFactory(offerer=offerer)
+        user = user_offerer.user
+
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            productId=humanize(product.id),
+            externalTicketOfficeUrl="http://example.net",
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+        )
+        offer = api.create_offer(data, user)
+        assert offer.name == "An excellent offer"
+        assert offer.subcategoryId == subcategories.SEANCE_CINE.id
+        assert offer.product == product
+        assert offer.externalTicketOfficeUrl == "http://example.net"
+        assert offer.audioDisabilityCompliant
+        assert offer.mentalDisabilityCompliant
+        assert offer.motorDisabilityCompliant
+        assert offer.visualDisabilityCompliant
+        assert offer.validation == OfferValidationStatus.DRAFT
         assert Offer.query.count() == 1
 
     @override_features(ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION=True)
@@ -860,7 +889,6 @@ class CreateOfferTest:
 
         assert offer.name == "FONDATION T.1"
         assert offer.subcategoryId == subcategories.LIVRE_PAPIER.id
-        assert offer.type == str(offer_type.ThingType.LIVRE_EDITION)
         assert offer.description == "Les prévisions du psychohistorien Hari Seldon sont formelles."
         assert offer.extraData == {"isbn": "9782207300893", "author": "Isaac Asimov", "bookFormat": "Soft cover"}
         assert offer.audioDisabilityCompliant

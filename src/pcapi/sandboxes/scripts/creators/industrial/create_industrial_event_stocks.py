@@ -1,7 +1,7 @@
 import logging
 
+from pcapi.core.categories import subcategories
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
-from pcapi.models.offer_type import EventType
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.utils.select import remove_every
 
@@ -38,7 +38,10 @@ def create_industrial_event_stocks(event_occurrences_by_name):
             price = price + price_counter
         short_names_to_increase_price.append(short_name)
 
-        if event_occurrence_with_stocks["offer"].product.offerType["value"] == str(EventType.ACTIVATION):
+        if (
+            event_occurrence_with_stocks["offer"].product.subcategoryId == subcategories.ACTIVATION_EVENT.id
+            or subcategories.ACTIVATION_THING.id
+        ):
             price = 0
 
         name = event_occurrence_with_stocks_name + " / " + str(available) + " / " + str(price)

@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from enum import Enum
 import uuid
 
 import pytest
@@ -13,7 +14,6 @@ from sqlalchemy.dialects.postgresql import UUID
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.models import Offer
-from pcapi.models import ThingType
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
 from pcapi.models.api_errors import UuidCastError
@@ -55,6 +55,7 @@ class SerializeTest:
     def test_on_datetime_list_returns_string_with_date_in_ISO_8601_list(self):
         # Given
         offer = Offer()
+        offer.subcategoryId = "LIVRE_PAPIER"
         offer.stocks = [create_stock(beginning_datetime=now, offer=offer)]
 
         # When
@@ -66,25 +67,16 @@ class SerializeTest:
 
     def test_on_enum_returns_dict_with_enum_value(self):
         # Given
-        enum = ThingType.JEUX
+        class EnumTest(Enum):
+            TEST = {"toto": "tata", "is_toto": False, "toto_list": ["toto", "tata"]}
+
+        enum = EnumTest.TEST
 
         # When
         serialized_enum = serialize(enum)
 
         # Then
-        assert serialized_enum == {
-            "conditionalFields": [],
-            "proLabel": "Jeux (support physique)",
-            "appLabel": "Support physique",
-            "offlineOnly": True,
-            "onlineOnly": False,
-            "sublabel": "Jouer",
-            "description": "Résoudre l’énigme d’un jeu de piste dans votre ville ? "
-            "Jouer en ligne entre amis ? "
-            "Découvrir cet univers étrange avec une manette ?",
-            "isActive": False,
-            "canExpire": True,
-        }
+        assert serialized_enum == {"toto": "tata", "is_toto": False, "toto_list": ["toto", "tata"]}
 
     def _assert_is_in_ISO_8601_format(self, date_text):
         try:

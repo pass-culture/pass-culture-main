@@ -31,7 +31,6 @@ from pcapi.models import Stock
 from pcapi.models import UserOfferer
 from pcapi.models import Venue
 from pcapi.models import db
-from pcapi.models.offer_type import ThingType
 
 
 IMPORTED_CREATION_MODE = "imported"
@@ -189,7 +188,7 @@ def get_stocks_for_offer(offer_id: int) -> list[Stock]:
 def get_products_map_by_id_at_providers(id_at_providers: list[str]) -> dict[str, Product]:
     products = (
         Product.query.filter(Product.isGcuCompatible)
-        .filter(Product.type == str(ThingType.LIVRE_EDITION))
+        .filter(Product.subcategoryId == subcategories.LIVRE_PAPIER.id)
         .filter(Product.idAtProviders.in_(id_at_providers))
         .all()
     )

@@ -2,11 +2,9 @@ from datetime import datetime
 from typing import Optional
 
 import pcapi.core.bookings.api as bookings_api
+from pcapi.core.categories import subcategories
 from pcapi.domain.beneficiary_bookings.active_mediation import ActiveMediation
 from pcapi.domain.beneficiary_bookings.thumb_url import ThumbUrl
-from pcapi.models.offer_type import EventType
-from pcapi.models.offer_type import ProductType
-from pcapi.models.offer_type import ThingType
 from pcapi.utils.human_ids import humanize
 
 
@@ -28,7 +26,7 @@ class BeneficiaryBooking:
         userId: int,
         offerId: int,
         name: str,
-        type: str,
+        subcategoryId: str,
         url: Optional[str],
         email: str,
         beginningDatetime: Optional[datetime],
@@ -81,7 +79,7 @@ class BeneficiaryBooking:
         self.userId = userId
         self.offerId = offerId
         self.name = name
-        self.type = type
+        self.subcategoryId = subcategoryId
         self.url = url
         self.email = email
         self.beginningDatetime = beginningDatetime
@@ -131,15 +129,7 @@ class BeneficiaryBooking:
 
     @property
     def is_booked_offer_event(self) -> bool:
-        return ProductType.is_event(self.type)
-
-    @property
-    def humanized_offer_type(self) -> str:
-        all_types = list(ThingType) + list(EventType)
-        for possible_type in all_types:
-            if str(possible_type) == self.type:
-                return possible_type.as_dict()
-        raise ValueError(f"Unexpected offer type '{self.type}'")
+        return self.subcategory.is_event
 
     @property
     def qr_code(self) -> Optional[str]:
@@ -148,3 +138,9 @@ class BeneficiaryBooking:
         if not self.isUsed and not self.isCancelled:
             return bookings_api.generate_qr_code(booking_token=self.token)
         return None
+
+    @property
+    def subcategory(self) -> subcategories.Subcategory:
+        if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
+            raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for BeneficiaryBooking {self.id}")
+        return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]

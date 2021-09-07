@@ -70,24 +70,6 @@ class Returns200Test:
                     "isEvent": False,
                     "isNational": False,
                     "name": offer.product.name,
-                    "offerType": {
-                        "appLabel": "Film",
-                        "canExpire": True,
-                        "conditionalFields": [],
-                        "description": (
-                            "Action, science-fiction, documentaire ou comédie "
-                            "sentimentale ? En salle, en plein air ou bien au chaud "
-                            "chez soi ? Et si c’était plutôt cette exposition qui "
-                            "allait faire son cinéma ?"
-                        ),
-                        "isActive": True,
-                        "offlineOnly": False,
-                        "onlineOnly": False,
-                        "proLabel": "Audiovisuel - films sur " "supports physiques et VOD",
-                        "sublabel": "Regarder",
-                        "type": "Thing",
-                        "value": "ThingType.AUDIOVISUEL",
-                    },
                     "stocks": [
                         {
                             "beginningDatetime": None,
@@ -154,7 +136,6 @@ class Returns200Test:
         assert "isEventExpired" in first_booking["stock"]
         assert "isDigital" in first_booking["stock"]["offer"]
         assert "isEvent" in first_booking["stock"]["offer"]
-        assert "offerType" in first_booking["stock"]["offer"]
         assert "thumbUrl" in first_booking["stock"]["offer"]
         assert "stocks" in first_booking["stock"]["offer"]
         assert "venue" in first_booking["stock"]["offer"]

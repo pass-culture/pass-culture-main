@@ -7,7 +7,6 @@ from typing import Iterable
 from typing import Optional
 
 from pcapi.core.categories import subcategories
-from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.providers.models import Provider
@@ -56,7 +55,6 @@ def create_offer_with_event_product(
     offer.venue = venue
     offer.name = product.name
     offer.subcategoryId = product.subcategoryId
-    offer.type = product.type
     offer.description = description
     offer.isNational = product.isNational
     offer.durationMinutes = product.durationMinutes
@@ -119,7 +117,6 @@ def create_offer_with_thing_product(
         offer.product = product
         offer.productId = product.id
         offer.name = product.name
-        offer.type = getattr(ALL_SUBCATEGORIES_DICT.get(product.subcategoryId, ""), "matching_type", None)
         offer.subcategoryId = product.subcategoryId
         offer.mediaUrls = product.mediaUrls
         offer.extraData = product.extraData
@@ -145,7 +142,6 @@ def create_offer_with_thing_product(
         )
         offer.name = thing_name
         offer.subcategoryId = thing_subcategory_id
-        offer.type = getattr(ALL_SUBCATEGORIES_DICT.get(thing_subcategory_id, ""), "matching_type", None)
         offer.mediaUrls = media_urls
         offer.extraData = {"author": author_name}
         offer.url = url
@@ -194,7 +190,6 @@ def create_product_with_event_subcategory(
     product.isNational = is_national
     product.isDuo = is_duo
     product.subcategoryId = event_subcategory_id
-    product.type = getattr(ALL_SUBCATEGORIES_DICT.get(event_subcategory_id, ""), "matching_type", None)
     product.description = description
 
     return product
@@ -222,7 +217,6 @@ def create_product_with_thing_subcategory(
     product = Product()
     product.id = idx
     product.subcategoryId = thing_subcategory_id
-    product.type = getattr(ALL_SUBCATEGORIES_DICT.get(thing_subcategory_id, ""), "matching_type", None)
     product.name = thing_name
     product.description = description
     if extra_data:
@@ -245,7 +239,6 @@ def create_product_with_thing_subcategory(
         product.url = "fake/url"
     if is_offline_only:
         product.subcategoryId = subcategories.CARTE_CINE_MULTISEANCES.id
-        product.type = ALL_SUBCATEGORIES_DICT[product.subcategoryId].matching_type
     return product
 
 

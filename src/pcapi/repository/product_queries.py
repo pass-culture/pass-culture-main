@@ -1,5 +1,6 @@
 from typing import Optional
 
+from pcapi.core.categories import subcategories
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.users.repository import get_favorites_for_offers
 from pcapi.domain.offers import update_is_active_status
@@ -7,7 +8,6 @@ from pcapi.models import Booking
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock
-from pcapi.models import ThingType
 from pcapi.repository import repository
 from pcapi.repository.mediation_queries import get_mediations_for_offers
 from pcapi.repository.offer_queries import get_offers_by_product_id
@@ -50,7 +50,7 @@ def delete_unwanted_existing_product(isbn: str):
 def find_active_book_product_by_isbn(isbn: str) -> Optional[Product]:
     return (
         Product.query.filter(Product.isGcuCompatible)
-        .filter(Product.type == str(ThingType.LIVRE_EDITION))
+        .filter(Product.subcategoryId == subcategories.LIVRE_PAPIER.id)
         .filter(Product.idAtProviders == isbn)
         .one_or_none()
     )

@@ -143,23 +143,6 @@ class Returns200Test:
             "mediations": [],
             "name": "Derrick",
             "nonHumanizedId": stock.offer.id,
-            "offerType": {
-                "appLabel": "Cinéma",
-                "canExpire": None,
-                "conditionalFields": ["author", "visa", "stageDirector"],
-                "description": "Action, science-fiction, documentaire ou "
-                "comédie sentimentale ? En salle, en plein air "
-                "ou bien au chaud chez soi ? Et si c’était "
-                "plutôt cette exposition qui allait faire son "
-                "cinéma ?",
-                "isActive": True,
-                "offlineOnly": True,
-                "onlineOnly": False,
-                "proLabel": "Cinéma - projections et autres évènements",
-                "sublabel": "Regarder",
-                "type": "Event",
-                "value": "EventType.CINEMA",
-            },
             "product": {
                 "ageMax": None,
                 "ageMin": None,
@@ -208,7 +191,6 @@ class Returns200Test:
             ],
             "subcategoryId": "SEANCE_CINE",
             "thumbUrl": None,
-            "type": "EventType.CINEMA",
             "url": None,
             "venue": {
                 "address": "1 boulevard Poissonnière",
@@ -272,7 +254,6 @@ class Returns200Test:
         assert response.status_code == 200
         data = response.json
         assert data["stocks"][0]["cancellationLimitDate"] is None
-        assert data["offerType"]["canExpire"] is True
         assert data["subcategoryId"] == "LIVRE_PAPIER"
 
     @freeze_time("2019-10-15 00:00:00")
@@ -294,6 +275,5 @@ class Returns200Test:
         assert response.status_code == 200
         data = response.json
         assert data["stocks"][0]["cancellationLimitDate"] is None
-        assert data["offerType"]["canExpire"] is True
         assert data["subcategoryId"] == "ABO_PLATEFORME_MUSIQUE"
         assert data["stocks"][0]["hasActivationCode"] is True

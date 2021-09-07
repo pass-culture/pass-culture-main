@@ -1247,7 +1247,7 @@ class FindSoonToBeExpiredBookingsTest:
         # offer type not expirable
         bookings_factories.IndividualBookingFactory(
             dateCreated=expired_creation_date,
-            stock__offer__product__subcategoryId=subcategories.LIVRE_AUDIO_PHYSIQUE.id,
+            stock__offer__product__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
         )
         bookings_factories.IndividualBookingFactory(
             dateCreated=non_expired_creation_date,

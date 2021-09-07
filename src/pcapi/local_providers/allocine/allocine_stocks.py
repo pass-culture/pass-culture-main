@@ -133,7 +133,6 @@ class AllocineStocks(LocalProvider):
     def fill_product_attributes(self, allocine_product: Product):
         allocine_product.name = self.movie_information["title"]
         allocine_product.subcategoryId = subcategories.SEANCE_CINE.id
-        allocine_product.type = subcategories.SEANCE_CINE.matching_type
         allocine_product.thumbCount = 0
 
         self.update_from_movie_information(allocine_product, self.movie_information)
@@ -169,7 +168,6 @@ class AllocineStocks(LocalProvider):
 
         allocine_offer.name = f"{self.movie_information['title']} - {movie_version}"
         allocine_offer.subcategoryId = subcategories.SEANCE_CINE.id
-        allocine_offer.type = subcategories.SEANCE_CINE.matching_type
         allocine_offer.productId = self.last_product_id
 
         is_new_offer_to_insert = allocine_offer.id is None

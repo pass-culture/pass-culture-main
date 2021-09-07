@@ -63,7 +63,7 @@ def get_expected_base_email_data(booking, mailjet_template_id, **overrides):
             "contremarque": "ABC123",
             "ISBN": "",
             "lien_offre_pcpro": f"http://localhost:3001/offres/{offer_id}/edition",
-            "offer_type": "EventType.SPECTACLE_VIVANT",
+            "offer_type": "SPECTACLE_REPRESENTATION",
             "departement": "75",
             "must_use_token_for_payment": 1,
         },
