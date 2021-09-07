@@ -59,6 +59,7 @@ class FeatureToggle(enum.Enum):
     PRO_REIMBURSEMENTS_FILTERS = "Permet de filtrer la liste de remboursements"
     ENABLE_NATIVE_EAC_INDIVIDUAL = "Active l'EAC individuel sur l'app native"
     ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS = "Active le nouveau délai de rétractation pour les livres"
+    ENABLE_DMS_GRAPHQL_API = "Utilise l'API GraphQL de DMS"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
