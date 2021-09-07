@@ -271,7 +271,7 @@ describe('components | AllocineProviderForm', () => {
       // then
       const saveEditioProvider = screen.getByRole('button', { name: 'Modifier' })
       expect(saveEditioProvider).toBeInTheDocument()
-      const cancelEditionProvider = screen.getByRole('button', {name: 'Annuler'})
+      const cancelEditionProvider = screen.getByRole('button', { name: 'Annuler' })
       expect(cancelEditionProvider).toBeInTheDocument()
     })
 
@@ -292,10 +292,10 @@ describe('components | AllocineProviderForm', () => {
       const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
       expect(priceField).toHaveValue(allocineProvider.price)
 
-      const quantityField = screen.getByLabelText('Nombre de places/séance', {exact: false})
+      const quantityField = screen.getByLabelText('Nombre de places/séance', { exact: false })
       expect(quantityField).toHaveValue(allocineProvider.quantity)
 
-      const isDuoField = screen.getByLabelText('Accepter les réservations DUO', {exact: false})
+      const isDuoField = screen.getByLabelText('Accepter les réservations DUO', { exact: false })
       expect(isDuoField).not.toBeChecked()
 
     })

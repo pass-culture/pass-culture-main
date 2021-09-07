@@ -6,7 +6,7 @@
 */
 
 import PropTypes from 'prop-types'
-import React, {useCallback, useEffect, useState} from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit } from 'react-final-form-utils'
 import ReactTooltip from "react-tooltip"
@@ -16,7 +16,7 @@ import NumberField from 'components/layout/form/fields/NumberField'
 import Icon from 'components/layout/Icon'
 import Insert from 'components/layout/Insert/Insert'
 
-const AllocineProviderForm = ({ saveVenueProvider, providerId, venueId, isCreatedEntity, initialValues, onCancel}) => {
+const AllocineProviderForm = ({ saveVenueProvider, providerId, venueId, isCreatedEntity, initialValues, onCancel }) => {
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {

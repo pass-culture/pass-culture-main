@@ -1,10 +1,10 @@
 import PropTypes from "prop-types"
-import React, {useCallback, useState} from 'react'
+import React, { useCallback, useState } from 'react'
 
 import AllocineProviderFormDialog from "../AllocineProviderFormDialog/AllocineProviderFormDialog"
 import VenueProviderItem from "../VenueProviderItem/VenueProviderItem"
 
-const AllocineProviderItem = ({venueProvider, venueDepartmentCode, editVenueProvider}) => {
+const AllocineProviderItem = ({ venueProvider, venueDepartmentCode, editVenueProvider }) => {
   const [isOpenedFormDialog, setIsOpenedFormDialog] = useState(false)
 
   const openFormDialog = useCallback(() => {

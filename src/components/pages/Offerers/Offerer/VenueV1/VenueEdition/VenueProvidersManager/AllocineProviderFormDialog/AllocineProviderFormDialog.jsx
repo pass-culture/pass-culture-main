@@ -1,12 +1,12 @@
 import PropTypes from "prop-types"
 import React from 'react'
 
-import {DialogBox} from "components/layout/DialogBox/DialogBox"
+import { DialogBox } from "components/layout/DialogBox/DialogBox"
 
 import AllocineProviderForm from "../AllocineProviderForm/AllocineProviderForm"
 import './AllocineProviderFormDialog.scss'
 
-const AllocineProviderFormDialog = ({onCancel, onConfirm, initialValues, providerId, venueId}) => {
+const AllocineProviderFormDialog = ({ onCancel, onConfirm, initialValues, providerId, venueId }) => {
   return (
     <DialogBox
       extraClassNames="allocine-provider-form-dialog"
