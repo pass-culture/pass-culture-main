@@ -18,7 +18,7 @@ export const OFFER_STATUS_LIST = [
 export const ALL_OFFERS = ''
 export const ALL_VENUES = 'all'
 export const ALL_OFFERERS = 'all'
-export const ALL_TYPES = 'all'
+export const ALL_CATEGORIES = 'all'
 export const ALL_STATUS = 'all'
 export const ALL_CREATION_MODES = 'all'
 export const ALL_EVENT_PERIODS = ''
@@ -30,7 +30,7 @@ export const DEFAULT_SEARCH_FILTERS = {
   nameOrIsbn: ALL_OFFERS,
   offererId: ALL_OFFERERS,
   venueId: ALL_VENUES,
-  typeId: ALL_TYPES,
+  categoryId: ALL_CATEGORIES,
   status: ALL_STATUS,
   creationMode: ALL_CREATION_MODES,
   periodBeginningDate: ALL_EVENT_PERIODS,
@@ -38,7 +38,7 @@ export const DEFAULT_SEARCH_FILTERS = {
 }
 
 export const ALL_VENUES_OPTION = { displayName: 'Tous les lieux', id: ALL_VENUES }
-export const ALL_TYPES_OPTION = { displayName: 'Toutes', id: ALL_TYPES }
+export const ALL_CATEGORIES_OPTION = { displayName: 'Toutes', id: ALL_CATEGORIES }
 const CREATION_MODES_OPTIONS = [
   { displayName: 'Tous les modes', id: ALL_CREATION_MODES },
   { displayName: 'Manuelle', id: 'manual' },

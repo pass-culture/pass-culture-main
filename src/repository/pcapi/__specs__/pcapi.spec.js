@@ -140,7 +140,7 @@ describe('pcapi', () => {
           isActive: true,
           offererId: 'IJ',
           venueId: 'KL',
-          typeId: 'ThingType.AUDIOVISUEL',
+          categoryId: 'CINEMA',
           status: 'expired',
           creationMode: 'imported',
         }
@@ -153,7 +153,7 @@ describe('pcapi', () => {
           isActive: true,
           offererId: 'IJ',
           venueId: 'KL',
-          typeId: 'ThingType.AUDIOVISUEL',
+          categoryId: 'CINEMA',
           status: 'expired',
           creationMode: 'imported',
         })

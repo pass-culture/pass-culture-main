@@ -45,7 +45,7 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
         nameOrIsbn: searchFiltersInUri.nameOrIsbn || DEFAULT_SEARCH_FILTERS.nameOrIsbn,
         offererId: searchFiltersInUri.offererId || DEFAULT_SEARCH_FILTERS.offererId,
         venueId: searchFiltersInUri.venueId || DEFAULT_SEARCH_FILTERS.venueId,
-        typeId: searchFiltersInUri.typeId || DEFAULT_SEARCH_FILTERS.typeId,
+        categoryId: searchFiltersInUri.categoryId || DEFAULT_SEARCH_FILTERS.categoryId,
         status: searchFiltersInUri.status
           ? mapBrowserToApi[searchFiltersInUri.status]
           : DEFAULT_SEARCH_FILTERS.status,

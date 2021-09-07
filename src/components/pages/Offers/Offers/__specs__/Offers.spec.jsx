@@ -14,8 +14,8 @@ import {
   ALL_OFFERERS,
   ALL_OFFERS,
   ALL_STATUS,
-  ALL_TYPES,
-  ALL_TYPES_OPTION,
+  ALL_CATEGORIES,
+  ALL_CATEGORIES_OPTION,
   ALL_VENUES,
   ALL_VENUES_OPTION,
   ALL_EVENT_PERIODS,
@@ -41,35 +41,13 @@ const renderOffers = (props, store) => {
   )
 }
 
-const offerTypes = [
-  {
-    appLabel: 'Cinéma',
-    conditionalFields: ['author', 'visa', 'stageDirector'],
-    description:
-      'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
-    isActive: true,
-    offlineOnly: true,
-    onlineOnly: false,
-    proLabel: 'Cinéma - projections et autres évènements',
-    sublabel: 'Regarder',
-    type: 'Event',
-    value: 'EventType.CINEMA',
-    status: 'ACTIVE',
-  },
-  {
-    appLabel: 'Conférences, rencontres et découverte des métiers',
-    conditionalFields: ['speaker'],
-    description: 'Parfois une simple rencontre peut changer une vie...',
-    isActive: true,
-    offlineOnly: true,
-    onlineOnly: false,
-    proLabel: 'Conférences, rencontres et découverte des métiers',
-    sublabel: 'Rencontrer',
-    type: 'Event',
-    value: 'EventType.CONFERENCE_DEBAT_DEDICACE',
-    status: 'ACTIVE',
-  },
-]
+const categoriesAndSubcategories = {
+  categories: [
+    { id: "CINEMA", proLabel: "Cinéma" },
+    { id: "JEU", proLabel: "Jeux" },
+  ],
+  subcategories: [],
+}
 
 jest.mock('repository/venuesService', () => ({
   ...jest.requireActual('repository/venuesService'),
@@ -78,7 +56,7 @@ jest.mock('repository/venuesService', () => ({
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadFilteredOffers: jest.fn(),
-  loadTypes: jest.fn().mockResolvedValue(offerTypes),
+  loadCategories: jest.fn().mockResolvedValue(categoriesAndSubcategories),
 }))
 
 jest.mock('utils/date', () => ({
@@ -142,7 +120,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
         nameOrIsbn: ALL_OFFERS,
         venueId: ALL_VENUES,
-        typeId: ALL_TYPES,
+        categoryId: ALL_CATEGORIES,
         offererId: ALL_OFFERERS,
         status: ALL_STATUS,
         creationMode: DEFAULT_CREATION_MODE.id,
@@ -390,7 +368,7 @@ describe('src | components | pages | Offers | Offers', () => {
             nameOrIsbn: '',
             offererId: DEFAULT_SEARCH_FILTERS.offererId,
             venueId: DEFAULT_SEARCH_FILTERS.venueId,
-            typeId: DEFAULT_SEARCH_FILTERS.typeId,
+            categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
             periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
             periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
             status: 'EXPIRED',
@@ -493,7 +471,7 @@ describe('src | components | pages | Offers | Offers', () => {
             expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
               nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
               venueId: DEFAULT_SEARCH_FILTERS.venueId,
-              typeId: DEFAULT_SEARCH_FILTERS.typeId,
+              categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
               offererId: DEFAULT_SEARCH_FILTERS.offererId,
               status: DEFAULT_SEARCH_FILTERS.status,
               creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
@@ -526,7 +504,7 @@ describe('src | components | pages | Offers | Offers', () => {
             expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
               nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
               venueId: DEFAULT_SEARCH_FILTERS.venueId,
-              typeId: DEFAULT_SEARCH_FILTERS.typeId,
+              categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
               offererId: 'EF',
               status: 'INACTIVE',
               creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
@@ -553,7 +531,7 @@ describe('src | components | pages | Offers | Offers', () => {
             expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
               nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
               venueId: DEFAULT_SEARCH_FILTERS.venueId,
-              typeId: DEFAULT_SEARCH_FILTERS.typeId,
+              categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
               offererId: DEFAULT_SEARCH_FILTERS.offererId,
               status: DEFAULT_SEARCH_FILTERS.status,
               creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
@@ -585,7 +563,7 @@ describe('src | components | pages | Offers | Offers', () => {
             expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
               nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
               venueId: venueId,
-              typeId: DEFAULT_SEARCH_FILTERS.typeId,
+              categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
               offererId: DEFAULT_SEARCH_FILTERS.offererId,
               status: 'INACTIVE',
               creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
@@ -750,7 +728,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
         nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
-        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
@@ -773,7 +751,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
         nameOrIsbn: 'Any word',
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
-        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
@@ -796,7 +774,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
         venueId: proVenues[0].id,
         nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
-        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
@@ -808,8 +786,8 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should load offers with selected type filter', async () => {
       // Given
       await renderOffers(props, store)
-      const firstTypeOption = await screen.findByRole('option', { name: offerTypes[0].proLabel })
-      const typeSelect = screen.getByDisplayValue(ALL_TYPES_OPTION.displayName, {
+      const firstTypeOption = await screen.findByRole('option', { name: 'Cinéma' })
+      const typeSelect = screen.getByDisplayValue(ALL_CATEGORIES_OPTION.displayName, {
         selector: 'select[name="type"]',
       })
       userEvent.selectOptions(typeSelect, firstTypeOption)
@@ -821,7 +799,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
         nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
-        typeId: offerTypes[0].value,
+        categoryId: 'CINEMA',
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
@@ -845,7 +823,7 @@ describe('src | components | pages | Offers | Offers', () => {
         creationMode: 'imported',
         nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
-        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
         periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
@@ -867,7 +845,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
         nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
-        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
@@ -890,7 +868,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
         nameOrIsbn: DEFAULT_SEARCH_FILTERS.nameOrIsbn,
-        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
@@ -915,7 +893,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
         nameOrIsbn: 'Any word',
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
-        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
@@ -938,7 +916,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
         nameOrIsbn: 'Any word',
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
-        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        categoryId: DEFAULT_SEARCH_FILTERS.categoryId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
@@ -1037,7 +1015,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
         venueId: ALL_VENUES,
-        typeId: ALL_TYPES,
+        categoryId: ALL_CATEGORIES,
         nameOrIsbn: 'search string',
         offererId: ALL_OFFERERS,
         status: ALL_STATUS,
@@ -1097,15 +1075,15 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
-      pcapi.loadTypes.mockResolvedValue([
-        { value: 'test_id_1', proLabel: 'My test value' },
-        { value: 'test_id_2', proLabel: 'My second test value' },
-      ])
+      pcapi.loadCategories.mockResolvedValue({ categories: [
+        { id: 'test_id_1', proLabel: 'My test value' },
+        { id: 'test_id_2', proLabel: 'My second test value' },
+      ] })
 
       await renderOffers(props, store)
       const firstTypeOption = await screen.findByRole('option', { name: 'My test value' })
-      const typeSelect = screen.getByDisplayValue(ALL_TYPES_OPTION.displayName, {
-        selector: 'select[name="type"]',
+      const typeSelect = screen.getByDisplayValue(ALL_CATEGORIES_OPTION.displayName, {
+        selector: 'select[name="categorie"]',
       })
 
       // When

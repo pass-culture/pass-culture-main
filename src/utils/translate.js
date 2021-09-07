@@ -91,7 +91,7 @@ export function getObjectWithMappedKeys(obj, keysMap) {
 }
 
 export const mapBrowserToApi = {
-  categorie: 'typeId',
+  categorie: 'categoryId',
   de: 'from',
   lieu: 'venueId',
   'mots-cles': 'keywords',

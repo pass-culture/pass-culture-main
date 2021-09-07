@@ -17,7 +17,7 @@ import { fetchAllVenuesByProUser, formatAndOrderVenues } from 'repository/venues
 import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
 
 import {
-  ALL_TYPES_OPTION,
+  ALL_CATEGORIES_OPTION,
   ALL_VENUES_OPTION,
   CREATION_MODES_FILTERS,
   DEFAULT_CREATION_MODE,
@@ -31,16 +31,17 @@ const SearchFilters = ({
   selectedFilters,
   setSearchFilters,
 }) => {
-  const [typeOptions, setTypeOptions] = useState([])
+  const [categoriesOptions, setCategoriesOptions] = useState([])
   const [venueOptions, setVenueOptions] = useState([])
 
   useEffect(() => {
-    pcapi.loadTypes().then(types => {
-      let typeOptions = types.map(type => ({
-        id: type.value,
-        displayName: type.proLabel,
+    pcapi.loadCategories().then(categoriesAndSubcategories => {
+      let { categories } = categoriesAndSubcategories
+      let categoriesOptions = categories.map(categories => ({
+        id: categories.id,
+        displayName: categories.proLabel,
       }))
-      setTypeOptions(typeOptions.sort((a, b) => a.displayName.localeCompare(b.displayName)))
+      setCategoriesOptions(categoriesOptions.sort((a, b) => a.displayName.localeCompare(b.displayName)))
     })
     fetchAllVenuesByProUser(offerer?.id).then(venues =>
       setVenueOptions(formatAndOrderVenues(venues))
@@ -68,9 +69,9 @@ const SearchFilters = ({
     [updateSearchFilters]
   )
 
-  const storeSelectedType = useCallback(
+  const storeSelectedCategory = useCallback(
     event => {
-      updateSearchFilters({ typeId: event.target.value })
+      updateSearchFilters({ categoryId: event.target.value })
     },
     [updateSearchFilters]
   )
@@ -144,12 +145,12 @@ const SearchFilters = ({
             selectedValue={selectedFilters.venueId}
           />
           <Select
-            defaultOption={ALL_TYPES_OPTION}
-            handleSelection={storeSelectedType}
+            defaultOption={ALL_CATEGORIES_OPTION}
+            handleSelection={storeSelectedCategory}
             label="Catégories"
-            name="type"
-            options={typeOptions}
-            selectedValue={selectedFilters.typeId}
+            name="categorie"
+            options={categoriesOptions}
+            selectedValue={selectedFilters.categoryId}
           />
           <Select
             defaultOption={DEFAULT_CREATION_MODE}
@@ -217,7 +218,7 @@ SearchFilters.propTypes = {
     nameOrIsbn: PropTypes.string,
     offererId: PropTypes.string,
     venueId: PropTypes.string,
-    typeId: PropTypes.string,
+    categoryId: PropTypes.string,
     creationMode: PropTypes.string,
     periodBeginningDate: PropTypes.string,
     periodEndingDate: PropTypes.string,
