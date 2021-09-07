@@ -5,7 +5,8 @@ import sentry_sdk
 
 def sentry_listener(event: cron_events.JobExecutionEvent) -> None:
     if event.exception:
-        sentry_sdk.capture_exception(event.exception)
+        exc_info = type(event.exception), event.exception, event.exception.__traceback__
+        sentry_sdk.capture_exception(exc_info)
 
 
 def activate_sentry(scheduler: base_schedulers.BaseScheduler) -> None:
