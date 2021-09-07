@@ -34,6 +34,8 @@ import algoliasearch.search_client
 import jinja2
 import pytz
 import requests
+import requests.exceptions
+import simplejson.errors
 import yaml
 
 from pcapi.utils import human_ids
@@ -238,15 +240,22 @@ class AppSearchBackend:
             "group": {"field": "group"},
             "sort": self.sort,
         }
-        response = requests.get(self.url, headers=self.headers, json=query)
-        out = response.json()
-        if "errors" in out:
+        try:
+            response = requests.get(self.url, headers=self.headers, json=query, timeout=30)
+            out = response.json()
+            error_details = out.get("errors")
+        except (requests.exceptions.RequestException, simplejson.errors.JSONDecodeError) as exc:
+            response = None
+            error_details = str(exc)
+        if not response or not response.ok:
             print(f'[App Search] Error for "{description}" with the following query: ')
             pprint.pprint(query)
-            print(out["errors"])
-            return []
+            print(error_details)
+            results = []
+        else:
+            results = out["results"]
         return ResultSet(
-            elapsed=response.elapsed.total_seconds(),
+            elapsed=response.elapsed.total_seconds() if response else 0,
             results=[
                 Result(
                     id=int(result["id"]["raw"]),
@@ -254,7 +263,7 @@ class AppSearchBackend:
                     name=result["name"]["raw"],
                     full={key: value["raw"] for key, value in result.items() if not key.startswith("_")},
                 )
-                for result in out["results"]
+                for result in results
             ],
         )
 
