@@ -3,7 +3,7 @@ import datetime
 from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.educational.factories as educational_factories
-from pcapi.core.offers.factories import EventStockFactory
+from pcapi.core.offers.factories import EducationalStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 
@@ -75,14 +75,13 @@ def create_industrial_educational_bookings() -> None:
 
     for stock_data in FAKE_STOCK_DATA:
         stocks.append(
-            EventStockFactory(
+            EducationalStockFactory(
                 quantity=100,
                 price=stock_data["price"],
                 beginningDatetime=now + datetime.timedelta(days=stock_data["timedelta"]),
                 offer__durationMinutes=60,
                 offer__withdrawalDetails="Récupération du ticket à l'adresse du lieu",
                 offer__description="Une description multi-lignes.\nOù il est notamment question du nombre d'élèves.\nNbr d'élèves max: 50",
-                offer__isEducational=True,
                 offer__name=stock_data["name"],
             )
         )
@@ -92,24 +91,22 @@ def create_industrial_educational_bookings() -> None:
         store_public_object_from_sandbox_assets("thumbs", mediation, mediation.offer.type)
 
     next_year_stocks = [
-        EventStockFactory(
+        EducationalStockFactory(
             quantity=100,
             price=1200,
             beginningDatetime=educational_next_year.beginningDate + datetime.timedelta(days=10),
             offer__durationMinutes=60,
             offer__withdrawalDetails="Récupération du ticket à l'adresse du lieu",
             offer__description="Une description multi-lignes.\nOù il est notamment question du nombre d'élèves.\nNbr d'élèves max: 50",
-            offer__isEducational=True,
             offer__name="Stage d'initiation à la photographie : prise en main de l'appareil-photo",
         ),
-        EventStockFactory(
+        EducationalStockFactory(
             quantity=60,
             price=1400,
             beginningDatetime=educational_next_year.beginningDate + datetime.timedelta(days=15),
             offer__durationMinutes=60,
             offer__withdrawalDetails="Récupération du ticket à l'adresse du lieu",
             offer__description="Une description multi-lignes.\nOù il est notamment question du nombre d'élèves.\nNbr d'élèves max: 50",
-            offer__isEducational=True,
             offer__name="Explorer la nature au Parc Zoologique et Botanique de Mulhouse",
         ),
     ]

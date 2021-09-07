@@ -28,7 +28,7 @@ class PostEducationalBookingTest:
 
     def test_post_educational_booking(self, app):
         # Given
-        stock = offer_factories.EventStockFactory(offer__isEducational=True, beginningDatetime=self.stock_date)
+        stock = offer_factories.EducationalStockFactory(beginningDatetime=self.stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_year = educational_factories.EducationalYearFactory(
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
@@ -61,7 +61,7 @@ class PostEducationalBookingTest:
 
     def test_should_not_allow_booking_when_educational_institution_is_unknown(self, app):
         # Given
-        stock = offer_factories.EventStockFactory(offer__isEducational=True, beginningDatetime=self.stock_date)
+        stock = offer_factories.EducationalStockFactory(beginningDatetime=self.stock_date)
         educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory(
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
@@ -88,9 +88,7 @@ class PostEducationalBookingTest:
 
     def test_should_not_allow_booking_when_stock_has_no_remaining_quantity(self, app):
         # Given
-        stock = offer_factories.EventStockFactory(
-            offer__isEducational=True, quantity=0, beginningDatetime=self.stock_date
-        )
+        stock = offer_factories.EducationalStockFactory(quantity=0, beginningDatetime=self.stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory(
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
@@ -117,7 +115,7 @@ class PostEducationalBookingTest:
 
     def test_should_not_allow_booking_when_redactor_email_is_different_from_email_in_adage_jwt(self, app):
         # Given
-        stock = offer_factories.EventStockFactory(offer__isEducational=True, beginningDatetime=self.stock_date)
+        stock = offer_factories.EducationalStockFactory(beginningDatetime=self.stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory(
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
@@ -171,7 +169,7 @@ class PostEducationalBookingTest:
         assert response.status_code == 400
         assert response.json == {"offer": "L'offre n'est pas une offre éducationnelle"}
 
-    def test_should_not_allow_booking_when_offer_is_not_an_event(self, app):
+    def test_should_not_allow_booking_when_educational_offer_is_not_an_event(self, app):
         # Given
         stock = offer_factories.ThingStockFactory(offer__isEducational=True, beginningDatetime=self.stock_date)
         educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
@@ -200,7 +198,7 @@ class PostEducationalBookingTest:
 
     def test_should_not_allow_booking_when_uai_code_is_not_provided_through_jwt(self, app):
         # Given
-        stock = offer_factories.EventStockFactory(offer__isEducational=True, beginningDatetime=self.stock_date)
+        stock = offer_factories.EducationalStockFactory(beginningDatetime=self.stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory(
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]

@@ -6,6 +6,7 @@ import factory
 from pcapi.core.testing import BaseFactory
 
 from . import models
+from .models import EducationalBookingStatus
 
 
 ADAGE_STARTING_EDUCATIONAL_YEAR = 2014
@@ -76,3 +77,7 @@ class EducationalBookingFactory(BaseFactory):
     educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
     educationalYear = factory.SubFactory(EducationalYearFactory)
     educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
+
+
+class UsedEducationalBookingFactory(EducationalBookingFactory):
+    status = EducationalBookingStatus.USED_BY_INSTITUTE

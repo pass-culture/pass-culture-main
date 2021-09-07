@@ -23,7 +23,18 @@ class DigitalThingsReimbursement(payments_models.ReimbursementRule):
 
     def is_relevant(self, booking: Booking, cumulative_revenue="ignored") -> bool:
         offer = booking.stock.offer
-        return offer.isDigital and not _is_reimbursable_digital_offer(offer)
+        return offer.isDigital and not _is_reimbursable_digital_offer(offer) and not offer.isEducational
+
+
+class EducationalOffersReimbursement(payments_models.ReimbursementRule):
+    rate = Decimal(1)
+    description = "Remboursement total pour les offres éducationnelles"
+    valid_from = None
+    valid_until = None
+
+    def is_relevant(self, booking: Booking, cumulative_revenue="ignored") -> bool:
+        offer = booking.stock.offer
+        return offer.isEducational
 
 
 class PhysicalOffersReimbursement(payments_models.ReimbursementRule):
@@ -34,7 +45,7 @@ class PhysicalOffersReimbursement(payments_models.ReimbursementRule):
 
     def is_relevant(self, booking: Booking, cumulative_revenue="ignored") -> bool:
         offer = booking.stock.offer
-        return not offer.isDigital or _is_reimbursable_digital_offer(offer)
+        return not offer.isEducational and (not offer.isDigital or _is_reimbursable_digital_offer(offer))
 
 
 class MaxReimbursementByOfferer(payments_models.ReimbursementRule):
@@ -45,7 +56,7 @@ class MaxReimbursementByOfferer(payments_models.ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if booking.stock.offer.product.isDigital:
+        if _irrevelant_for_gradual_decreasing(booking.stock.offer):
             return False
         return cumulative_revenue > 20000
 
@@ -57,7 +68,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(payment
     valid_until = SEPTEMBER_2021
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if booking.stock.offer.product.isDigital:
+        if _irrevelant_for_gradual_decreasing(booking.stock.offer):
             return False
         return 20000 < cumulative_revenue <= 40000
 
@@ -69,7 +80,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(paymen
     valid_until = SEPTEMBER_2021
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if booking.stock.offer.product.isDigital:
+        if _irrevelant_for_gradual_decreasing(booking.stock.offer):
             return False
         return 40000 < cumulative_revenue <= 150000
 
@@ -81,7 +92,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000(payments_models.
     valid_until = SEPTEMBER_2021
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if booking.stock.offer.product.isDigital:
+        if _irrevelant_for_gradual_decreasing(booking.stock.offer):
             return False
         return cumulative_revenue > 150000
 
@@ -93,7 +104,7 @@ class ReimbursementRateByVenueBetween20000And40000(payments_models.Reimbursement
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if booking.stock.offer.product.isDigital:
+        if _irrevelant_for_gradual_decreasing(booking.stock.offer):
             return False
         return 20000 < cumulative_revenue <= 40000
 
@@ -105,7 +116,7 @@ class ReimbursementRateByVenueBetween40000And150000(payments_models.Reimbursemen
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if booking.stock.offer.product.isDigital:
+        if _irrevelant_for_gradual_decreasing(booking.stock.offer):
             return False
         return 40000 < cumulative_revenue <= 150000
 
@@ -117,7 +128,7 @@ class ReimbursementRateByVenueAbove150000(payments_models.ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if booking.stock.offer.product.isDigital:
+        if _irrevelant_for_gradual_decreasing(booking.stock.offer):
             return False
         return cumulative_revenue > 150000
 
@@ -129,13 +140,16 @@ class ReimbursementRateForBookAbove20000(payments_models.ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if not booking.stock.offer.type == str(ThingType.LIVRE_EDITION):
+        if booking.stock.offer.type != str(ThingType.LIVRE_EDITION):
+            return False
+        if booking.stock.offer.isEducational:
             return False
         return cumulative_revenue > 20000
 
 
 REGULAR_RULES = [
     DigitalThingsReimbursement(),
+    EducationalOffersReimbursement(),
     PhysicalOffersReimbursement(),
     LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(),
     LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(),
@@ -218,3 +232,7 @@ def _is_reimbursable_digital_offer(offer: Offer) -> bool:
         offer.type in (str(ThingType.CINEMA_CARD), str(ThingType.LIVRE_EDITION))
         or offer.subcategoryId == subcategories.MUSEE_VENTE_DISTANCE.id
     )
+
+
+def _irrevelant_for_gradual_decreasing(offer: Offer) -> bool:
+    return offer.isEducational or offer.product.isDigital

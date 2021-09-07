@@ -92,6 +92,23 @@ class DigitalThingsReimbursementTest:
         assert not rule.is_relevant(cinema_card_booking)
         assert not rule.is_relevant(create_non_digital_thing_booking())
         assert not rule.is_relevant(create_event_booking())
+        assert not rule.is_relevant(
+            bookings_factories.EducationalBookingFactory(stock__offer__product=offers_factories.DigitalProductFactory())
+        )
+
+
+@pytest.mark.usefixtures("db_session")
+class EducationalOffersReimbursement:
+    def test_apply(self):
+        booking = bookings_factories.EducationalBookingFactory(amount=3000, quantity=2)
+        rule = reimbursement.EducationalOffersReimbursement()
+        assert rule.apply(booking) == booking.total_amount
+
+    def test_relevancy(self):
+        rule = reimbursement.EducationalOffersReimbursement()
+
+        assert rule.is_relevant(bookings_factories.EducationalBookingFactory())
+        assert not rule.is_relevant(bookings_factories.BookingFactory())
 
 
 @pytest.mark.usefixtures("db_session")
@@ -111,6 +128,7 @@ class PhysicalOffersReimbursementTest:
         assert rule.is_relevant(digital_book_booking)
         cinema_card_booking = create_digital_booking(product_subcategory_id=subcategories.CINE_VENTE_DISTANCE.id)
         assert rule.is_relevant(cinema_card_booking)
+        assert not rule.is_relevant(bookings_factories.EducationalBookingFactory())
 
 
 @pytest.mark.usefixtures("db_session")
@@ -128,6 +146,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000Test:
         assert not self.rule.is_relevant(booking, 20000)
         assert self.rule.is_relevant(booking, 20001)
         assert self.rule.is_relevant(booking, 40000)
+        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), 20001)
         assert not self.rule.is_relevant(booking, 40001)
 
     def test_relevancy_depending_on_offer_type(self):
@@ -135,6 +154,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000Test:
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
+        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -152,12 +172,14 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000Test:
         assert self.rule.is_relevant(booking, 40001)
         assert self.rule.is_relevant(booking, 150000)
         assert not self.rule.is_relevant(booking, 150001)
+        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), 40001)
 
     def test_relevancy_depending_on_offer_type(self):
         revenue = 40001
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
+        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -173,12 +195,14 @@ class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000Test:
 
         assert not self.rule.is_relevant(booking, 150000)
         assert self.rule.is_relevant(booking, 150001)
+        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), 15001)
 
     def test_relevancy_depending_on_offer_type(self):
         revenue = 150001
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
+        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -197,12 +221,14 @@ class ReimbursementRateByVenueBetween20000And40000Test:
         assert self.rule.is_relevant(booking, 20001)
         assert self.rule.is_relevant(booking, 40000)
         assert not self.rule.is_relevant(booking, 40001)
+        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), 20001)
 
     def test_relevancy_depending_on_offer_type(self):
         revenue = 20001
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
+        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -220,12 +246,14 @@ class ReimbursementRateByVenueBetween40000And150000Test:
         assert self.rule.is_relevant(booking, 40001)
         assert self.rule.is_relevant(booking, 150000)
         assert not self.rule.is_relevant(booking, 150001)
+        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), 40001)
 
     def test_relevancy_depending_on_offer_type(self):
         revenue = 40001
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
+        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -241,12 +269,14 @@ class ReimbursementRateByVenueAbove150000Test:
 
         assert not self.rule.is_relevant(booking, 150000)
         assert self.rule.is_relevant(booking, 150001)
+        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), 15001)
 
     def test_relevancy_depending_on_offer_type(self):
         revenue = 150001
         assert self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
+        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -265,6 +295,12 @@ class ReimbursementRateForBookAbove20000Test:
     def test_relevancy_depending_on_revenue(self):
         assert not self.rule.is_relevant(self.book_booking, 20000)
         assert self.rule.is_relevant(self.book_booking, 20001)
+        assert not self.rule.is_relevant(
+            bookings_factories.EducationalBookingFactory(
+                stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id
+            ),
+            20001,
+        )
 
     def test_relevancy_depending_on_offer_type(self):
         revenue = 20001
@@ -272,6 +308,7 @@ class ReimbursementRateForBookAbove20000Test:
         assert not self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert not self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
+        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
 class ReimbursementRuleIsActiveTest:
@@ -335,8 +372,8 @@ class ReimbursementRuleIsActiveTest:
 class FindAllBookingsReimbursementsTest:
     # In all tests below, bookings do not have the same venue.
     # However, we call `find_all_booking_reimbursements()` with these
-    # bookings, with tricks the function into thinking that they do.
-    # It make tests code more simple (since we don't have to specify
+    # bookings, which tricks the function into thinking that they do.
+    # It makes tests code simpler (since we don't have to specify
     # the venue for each booking).
 
     @freeze_time("2021-08-31 00:00:00")
@@ -345,14 +382,16 @@ class FindAllBookingsReimbursementsTest:
         thing = create_non_digital_thing_booking()
         digital = create_digital_booking()
         book = create_book_booking()
-        bookings = [event, thing, digital, book]
+        educational = bookings_factories.UsedEducationalBookingFactory()
+        bookings = [event, thing, digital, book, educational]
 
         reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
-        assert_total_reimbursement(reimbursements[0], event)
-        assert_total_reimbursement(reimbursements[1], thing)
+        assert_total_reimbursement(reimbursements[0], reimbursement.PhysicalOffersReimbursement, event)
+        assert_total_reimbursement(reimbursements[1], reimbursement.PhysicalOffersReimbursement, thing)
         assert_no_reimbursement_for_digital(reimbursements[2], digital)
-        assert_total_reimbursement(reimbursements[3], book)
+        assert_total_reimbursement(reimbursements[3], reimbursement.PhysicalOffersReimbursement, book)
+        assert_total_reimbursement(reimbursements[4], reimbursement.EducationalOffersReimbursement, educational)
 
     @freeze_time("2021-08-31 00:00:00")
     def test_pre_september_2021_degressive_reimbursement_around_20000(self):
@@ -362,16 +401,18 @@ class FindAllBookingsReimbursementsTest:
         thing = create_non_digital_thing_booking(price=100)
         digital = create_digital_booking(price=100)
         book = create_book_booking(price=100)
-        bookings = [event1, event2, thing, digital, book]
+        educational = bookings_factories.UsedEducationalBookingFactory()
+        bookings = [event1, event2, thing, digital, book, educational]
 
         reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
-        assert_total_reimbursement(reimbursements[0], event1)
+        assert_total_reimbursement(reimbursements[0], reimbursement.PhysicalOffersReimbursement, event1)
         rule = reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000
         assert_partial_reimbursement(reimbursements[1], event2, rule, Decimal(95))
         assert_partial_reimbursement(reimbursements[2], thing, rule, 95)
         assert_no_reimbursement_for_digital(reimbursements[3], digital)
         assert_partial_reimbursement(reimbursements[4], book, reimbursement.ReimbursementRateForBookAbove20000, 95)
+        assert_total_reimbursement(reimbursements[5], reimbursement.EducationalOffersReimbursement, educational)
 
     @freeze_time("2021-08-31 00:00:00")
     def test_pre_september_2021_degressive_reimbursement_around_40000(self):
@@ -381,7 +422,8 @@ class FindAllBookingsReimbursementsTest:
         thing = create_non_digital_thing_booking(price=100)
         digital = create_digital_booking(price=100)
         book = create_book_booking(price=100)
-        bookings = [event1, event2, thing, digital, book]
+        educational = bookings_factories.UsedEducationalBookingFactory()
+        bookings = [event1, event2, thing, digital, book, educational]
 
         reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
@@ -405,6 +447,7 @@ class FindAllBookingsReimbursementsTest:
         )
         assert_no_reimbursement_for_digital(reimbursements[3], digital)
         assert_partial_reimbursement(reimbursements[4], book, reimbursement.ReimbursementRateForBookAbove20000, 95)
+        assert_total_reimbursement(reimbursements[5], reimbursement.EducationalOffersReimbursement, educational)
 
     @freeze_time("2021-08-31 00:00:00")
     def test_pre_september_2021_degressive_reimbursement_above_150000(self):
@@ -414,7 +457,8 @@ class FindAllBookingsReimbursementsTest:
         thing = create_non_digital_thing_booking(price=100)
         digital = create_digital_booking(price=100)
         book = create_book_booking(price=100)
-        bookings = [event1, event2, thing, digital, book]
+        educational = bookings_factories.UsedEducationalBookingFactory()
+        bookings = [event1, event2, thing, digital, book, educational]
 
         reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
@@ -432,6 +476,7 @@ class FindAllBookingsReimbursementsTest:
         )
         assert_no_reimbursement_for_digital(reimbursements[3], digital)
         assert_partial_reimbursement(reimbursements[4], book, reimbursement.ReimbursementRateForBookAbove20000, 95)
+        assert_total_reimbursement(reimbursements[5], reimbursement.EducationalOffersReimbursement, educational)
 
     @freeze_time("2021-09-01 00:00:00")
     def test_reimbursement_under_20000(self):
@@ -439,14 +484,16 @@ class FindAllBookingsReimbursementsTest:
         thing = create_non_digital_thing_booking()
         digital = create_digital_booking()
         book = create_book_booking()
-        bookings = [event, thing, digital, book]
+        educational = bookings_factories.UsedEducationalBookingFactory()
+        bookings = [event, thing, digital, book, educational]
 
         reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
-        assert_total_reimbursement(reimbursements[0], event)
-        assert_total_reimbursement(reimbursements[1], thing)
+        assert_total_reimbursement(reimbursements[0], reimbursement.PhysicalOffersReimbursement, event)
+        assert_total_reimbursement(reimbursements[1], reimbursement.PhysicalOffersReimbursement, thing)
         assert_no_reimbursement_for_digital(reimbursements[2], digital)
-        assert_total_reimbursement(reimbursements[3], book)
+        assert_total_reimbursement(reimbursements[3], reimbursement.PhysicalOffersReimbursement, book)
+        assert_total_reimbursement(reimbursements[4], reimbursement.EducationalOffersReimbursement, educational)
 
     @freeze_time("2021-09-01 00:00:00")
     def test_degressive_reimbursement_around_20000(self):
@@ -456,16 +503,18 @@ class FindAllBookingsReimbursementsTest:
         thing = create_non_digital_thing_booking(price=100)
         digital = create_digital_booking(price=100)
         book = create_book_booking(price=100)
-        bookings = [event1, event2, thing, digital, book]
+        educational = bookings_factories.UsedEducationalBookingFactory()
+        bookings = [event1, event2, thing, digital, book, educational]
 
         reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
-        assert_total_reimbursement(reimbursements[0], event1)
+        assert_total_reimbursement(reimbursements[0], reimbursement.PhysicalOffersReimbursement, event1)
         rule = reimbursement.ReimbursementRateByVenueBetween20000And40000
         assert_partial_reimbursement(reimbursements[1], event2, rule, Decimal(95))
         assert_partial_reimbursement(reimbursements[2], thing, rule, 95)
         assert_no_reimbursement_for_digital(reimbursements[3], digital)
         assert_partial_reimbursement(reimbursements[4], book, reimbursement.ReimbursementRateForBookAbove20000, 95)
+        assert_total_reimbursement(reimbursements[5], reimbursement.EducationalOffersReimbursement, educational)
 
     @freeze_time("2021-09-01 00:00:00")
     def test_degressive_reimbursement_around_40000(self):
@@ -475,7 +524,8 @@ class FindAllBookingsReimbursementsTest:
         thing = create_non_digital_thing_booking(price=100)
         digital = create_digital_booking(price=100)
         book = create_book_booking(price=100)
-        bookings = [event1, event2, thing, digital, book]
+        educational = bookings_factories.UsedEducationalBookingFactory()
+        bookings = [event1, event2, thing, digital, book, educational]
 
         reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
@@ -490,6 +540,7 @@ class FindAllBookingsReimbursementsTest:
         )
         assert_no_reimbursement_for_digital(reimbursements[3], digital)
         assert_partial_reimbursement(reimbursements[4], book, reimbursement.ReimbursementRateForBookAbove20000, 95)
+        assert_total_reimbursement(reimbursements[5], reimbursement.EducationalOffersReimbursement, educational)
 
     @freeze_time("2021-09-01 00:00:00")
     def test_degressive_reimbursement_above_150000(self):
@@ -499,7 +550,8 @@ class FindAllBookingsReimbursementsTest:
         thing = create_non_digital_thing_booking(price=100)
         digital = create_digital_booking(price=100)
         book = create_book_booking(price=100)
-        bookings = [event1, event2, thing, digital, book]
+        educational = bookings_factories.UsedEducationalBookingFactory()
+        bookings = [event1, event2, thing, digital, book, educational]
 
         reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
@@ -510,17 +562,20 @@ class FindAllBookingsReimbursementsTest:
         assert_partial_reimbursement(reimbursements[2], thing, reimbursement.ReimbursementRateByVenueAbove150000, 90)
         assert_no_reimbursement_for_digital(reimbursements[3], digital)
         assert_partial_reimbursement(reimbursements[4], book, reimbursement.ReimbursementRateForBookAbove20000, 95)
+        assert_total_reimbursement(reimbursements[5], reimbursement.EducationalOffersReimbursement, educational)
 
     def test_full_reimbursement_for_all_bookings_for_new_civil_year(self):
         user = create_rich_user(30000)
         booking1 = create_event_booking(user=user, price=20000, date_used=datetime(2018, 1, 1))
         booking2 = create_event_booking(user=user, price=100, date_used=datetime(2019, 1, 1))
-        bookings = [booking1, booking2]
+        educational = bookings_factories.UsedEducationalBookingFactory()
+        bookings = [booking1, booking2, educational]
 
         reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
-        assert_total_reimbursement(reimbursements[0], booking1)
-        assert_total_reimbursement(reimbursements[1], booking2)
+        assert_total_reimbursement(reimbursements[0], reimbursement.PhysicalOffersReimbursement, booking1)
+        assert_total_reimbursement(reimbursements[1], reimbursement.PhysicalOffersReimbursement, booking2)
+        assert_total_reimbursement(reimbursements[2], reimbursement.EducationalOffersReimbursement, educational)
 
     @pytest.mark.usefixtures("db_session")
     def test_select_custom_reimbursement_rule_if_applicable(self):
@@ -532,14 +587,15 @@ class FindAllBookingsReimbursementsTest:
         payments_factories.CustomReimbursementRuleFactory(
             offer=offer2, timespan=[booking2.dateCreated + timedelta(days=2), None]
         )
-
-        bookings = [booking1, booking2]
+        educational = bookings_factories.UsedEducationalBookingFactory()
+        bookings = [booking1, booking2, educational]
         reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
         assert reimbursements[0].booking == booking1
         assert reimbursements[0].rule == rule1
         assert reimbursements[0].reimbursed_amount == 5
         assert_no_reimbursement_for_digital(reimbursements[1], booking2)
+        assert_total_reimbursement(reimbursements[2], reimbursement.EducationalOffersReimbursement, educational)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -595,9 +651,9 @@ class CustomRuleFinderTest:
         assert finder.get_rule(booking4) is None  # no rule for this offerer
 
 
-def assert_total_reimbursement(booking_reimbursement, booking):
+def assert_total_reimbursement(booking_reimbursement, rule, booking):
     assert booking_reimbursement.booking == booking
-    assert isinstance(booking_reimbursement.rule, reimbursement.PhysicalOffersReimbursement)
+    assert isinstance(booking_reimbursement.rule, rule)
     assert booking_reimbursement.reimbursed_amount == booking.total_amount
 
 
