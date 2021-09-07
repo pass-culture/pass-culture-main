@@ -140,6 +140,7 @@ class OffersTest:
             "isDigital": False,
             "isReleased": True,
             "name": "l'offre du siècle",
+            "subcategoryId": subcategories.SEANCE_CINE.id,
             "venue": {
                 "id": offer.venue.id,
                 "address": "1 boulevard Poissonnière",

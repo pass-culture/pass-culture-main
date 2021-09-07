@@ -38,6 +38,7 @@ class FavoriteOfferResponse(BaseModel):
     id: int
     name: str
     category: FavoriteCategoryResponse
+    subcategoryId: str
     externalTicketOfficeUrl: Optional[str]
     image: Optional[FavoriteMediationResponse]
     coordinates: Coordinates

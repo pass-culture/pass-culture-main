@@ -185,6 +185,7 @@ class GetBookingsTest:
                 "id": used2.stock.id,
                 "offer": {
                     "category": {"categoryType": "Thing", "label": "Film", "name": "FILM"},
+                    "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
                     "extraData": None,
                     "id": used2.stock.offer.id,
                     "image": {"credit": "street credit", "url": mediation.thumbUrl},

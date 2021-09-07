@@ -56,6 +56,7 @@ class BookingOfferResponse(BaseModel):
     id: int
     name: str
     category: OfferCategoryResponse
+    subcategoryId: str
     extraData: Optional[BookingOfferExtraData]
     image: Optional[OfferImageResponse]
     isDigital: bool
