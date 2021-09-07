@@ -1,5 +1,6 @@
 from sqlalchemy.orm import joinedload
 
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api
@@ -83,3 +84,14 @@ def send_offer_webapp_link(user: User, offer_id: int) -> None:
 def send_offer_link_by_push(user: User, offer_id: int) -> None:
     Offer.query.get_or_404(offer_id)
     send_offer_link_by_push_job.delay(user.id, offer_id)
+
+
+@blueprint.native_v1.route("/subcategories", methods=["GET"])
+@spectree_serialize(response_model=serializers.SubcategoriesResponseModel)
+def get_subcategories() -> serializers.SubcategoriesResponseModel:
+    return serializers.SubcategoriesResponseModel(
+        subcategories=[
+            serializers.SubcategoryResponseModel.from_orm(subcategory)
+            for subcategory in subcategories.ALL_SUBCATEGORIES
+        ],
+    )

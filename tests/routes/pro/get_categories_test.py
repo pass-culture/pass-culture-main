@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.categories import subcategories
 import pcapi.core.users.factories as users_factories
 
 
@@ -20,7 +21,7 @@ class Returns200Test:
             list(category_dict.keys()) == ["id", "proLabel", "isSelectable"]
             for category_dict in response.json["categories"]
         )
-        assert len(response.json["subcategories"]) == 66
+        assert len(response.json["subcategories"]) == len(subcategories.ALL_SUBCATEGORIES)
         assert all(
             list(subcategory_dict.keys())
             == [

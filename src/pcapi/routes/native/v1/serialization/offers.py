@@ -8,6 +8,8 @@ from pydantic.class_validators import validator
 from pydantic.fields import Field
 
 from pcapi.core.bookings.api import compute_cancellation_limit_date
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.models import Offer
@@ -276,3 +278,24 @@ class UserReportedOffersResponse(BaseModel):
 
     class Config:
         alias_generator = to_camel
+
+
+class SubcategoryResponseModel(BaseModel):
+    id: SubcategoryIdEnum
+    app_label: str
+    search_group: Optional[subcategories.SearchGroupChoicesEnum]
+    is_event: bool
+    can_expire: bool
+    can_be_duo: bool
+    online_offline_platform: subcategories.OnlineOfflinePlatformChoicesEnum
+    is_digital_deposit: bool
+    is_physical_deposit: bool
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
+
+
+class SubcategoriesResponseModel(BaseModel):
+    subcategories: list[SubcategoryResponseModel]

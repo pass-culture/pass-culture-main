@@ -1235,3 +1235,16 @@ ALL_SUBCATEGORIES_DICT = {subcategory.id: subcategory for subcategory in ALL_SUB
 assert set(subcategory.id for subcategory in ALL_SUBCATEGORIES) == set(
     subcategory.id for subcategory in locals().values() if isinstance(subcategory, Subcategory)
 )
+
+SubcategoryIdEnum = Enum("SubcategoryIdEnum", {subcategory.id: subcategory.id for subcategory in ALL_SUBCATEGORIES})
+SearchGroupChoicesEnum = Enum(
+    "SearchGroupChoicesEnum",
+    {
+        search_group_choice: search_group_choice
+        for search_group_choice in [c.value for c in SearchGroupChoices if c.value]
+    },
+)
+OnlineOfflinePlatformChoicesEnum = Enum(
+    "OnlineOfflinePlatformChoicesEnum",
+    {choice: choice for choice in [c.value for c in OnlineOfflinePlatformChoices]},
+)

@@ -510,3 +510,28 @@ class ReportedOffersTest:
 
         assert response.status_code == 200
         assert not response.json["reportedOffers"]
+
+
+class SubcategoriesTest:
+    def test_get_subcategories(self, app):
+        with assert_num_queries(0):
+            response = TestClient(app.test_client()).get("/native/v1/subcategories")
+
+        assert response.status_code == 200
+        assert list(response.json.keys()) == ["subcategories"]
+        assert len(response.json["subcategories"]) == len(subcategories.ALL_SUBCATEGORIES)
+        assert all(
+            list(subcategory_dict.keys())
+            == [
+                "id",
+                "appLabel",
+                "searchGroup",
+                "isEvent",
+                "canExpire",
+                "canBeDuo",
+                "onlineOfflinePlatform",
+                "isDigitalDeposit",
+                "isPhysicalDeposit",
+            ]
+            for subcategory_dict in response.json["subcategories"]
+        )
