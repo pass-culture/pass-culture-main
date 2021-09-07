@@ -32,9 +32,7 @@ const parseSiret = value => {
   return value.replace(/[^[0-9]/g, '')
 }
 
-/**
- * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"
- */
+
 class IdentifierFields extends PureComponent {
   componentDidUpdate() {
     ReactTooltip.rebuild()
@@ -45,19 +43,17 @@ class IdentifierFields extends PureComponent {
     if (readOnly) {
       return null
     }
-    if (fieldReadOnlyBecauseFrozenFormSiret) {
-      return (
-        <span
-          className="button"
-          data-place="bottom"
-          data-tip="<p>Il n’est pas possible de modifier le nom, l’addresse et la géolocalisation du lieu quand un siret est renseigné.</p>"
-          data-type="info"
-        >
-          <Icon svg="picto-info" />
-        </span>
-      )
-    }
-    return (
+    
+    return fieldReadOnlyBecauseFrozenFormSiret ? (
+      <span
+        className="button"
+        data-place="bottom"
+        data-tip="<p>Il n’est pas possible de modifier le nom, l’addresse et la géolocalisation du lieu quand un siret est renseigné.</p>"
+        data-type="info"
+      >
+        <Icon svg="picto-info" />
+      </span>
+    ) : (
       <span
         className="button"
         data-place="bottom"
@@ -71,21 +67,16 @@ class IdentifierFields extends PureComponent {
   }
 
   /* eslint-disable react/no-unstable-nested-components */
-  handleRender = readOnly => () => {
-    if (readOnly) {
-      return null
-    }
-    return (
-      <span
-        className="button"
-        data-place="bottom"
-        data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une adresse différente est saisie lors de la création d’une offre)</p>"
-        data-type="info"
-      >
-        <Icon svg="picto-info" />
-      </span>
-    )
-  }
+  handleRender = readOnly => () => readOnly ? null : (
+    <span
+      className="button"
+      data-place="bottom"
+      data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une adresse différente est saisie lors de la création d’une offre)</p>"
+      data-type="info"
+    >
+      <Icon svg="picto-info" />
+    </span>
+  )
 
   commentValidate = comment => {
     const { formSiret } = this.props
@@ -95,9 +86,11 @@ class IdentifierFields extends PureComponent {
     if (formatedSiret && formatedSiret.length === 14) {
       return ''
     }
+    
     if (comment === undefined || comment === '') {
       return 'Ce champ est obligatoire'
     }
+    
     return ''
   }
 
@@ -301,6 +294,11 @@ class IdentifierFields extends PureComponent {
               )}
             </div>
           </div>
+          <TextareaField
+            label="Description : "
+            name="description"
+            rows={10}
+          />
         </div>
       </div>
     )

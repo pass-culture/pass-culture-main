@@ -7,6 +7,7 @@ import { getSiretRequestMockAs } from './helpers/sirenes'
 const addressInput = Selector('input[name="address"]')
 const addressSuggestion = Selector('.location-viewer .menu .item')
 const cityInput = Selector('input[name="city"]')
+const descriptionInput = Selector('textarea[name="description"]')
 const commentInput = Selector('textarea[name="comment"]')
 const venueType = Selector('#venue-type')
 const venueTypeOption = Selector('#venue-type option')
@@ -40,6 +41,9 @@ test('je peux créer un lieu avec un SIRET valide', async t => {
     siret,
   }
 
+  const description =
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc id risus lorem. Curabitur elementum auctor interdum. In quis risus nibh. Ut gravida leo sit amet purus aliquam elementum. Aliquam erat volutpat. Sed mi ligula, porttitor at mi a, sollicitudin blandit diam. Quisque malesuada, ante lobortis luctus luctus, nisi elit porta diam, at imperdiet ex velit nec erat.'
+
   await navigateToOffererAs(user, offerer)(t)
 
   await t
@@ -48,6 +52,7 @@ test('je peux créer un lieu avec un SIRET valide', async t => {
     .click(venueType)
     .click(venueTypeOption.withText('Offre numérique'))
     .typeText(siretInput, siret)
+    .typeText(descriptionInput, description)
     .expect(nameInput.value)
     .eql(venueName)
     .expect(addressInput.value)
@@ -63,7 +68,7 @@ test('je peux créer un lieu avec un SIRET valide', async t => {
   await navigateAfterVenueSubmit('creation')(t)
 })
 
-test('je peux créer un lieu sans SIRET', async t => {
+test('je peux créer un lieu sans SIRET avec une description', async t => {
   const { offerer, user } = await fetchSandbox(
     'pro_05_venue',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'

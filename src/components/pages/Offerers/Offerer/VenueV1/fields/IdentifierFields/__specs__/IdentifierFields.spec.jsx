@@ -62,7 +62,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       expect(textFields).toHaveLength(4)
 
       const textareaField = wrapper.find(TextareaField)
-      expect(textareaField).toHaveLength(1)
+      expect(textareaField).toHaveLength(2)
 
       expect(textFields.at(0).prop('name')).toBe('siret')
       expect(textFields.at(0).prop('required')).toBe(false)
@@ -81,6 +81,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
 
       expect(textareaField.at(0).prop('label')).toBe('Commentaire (si pas de SIRET) : ')
       expect(textareaField.at(0).prop('name')).toBe('comment')
+
+      expect(textareaField.at(1).prop('label')).toBe('Description : ')
+      expect(textareaField.at(1).prop('name')).toBe('description')
     })
 
     describe('siret text field', () => {
@@ -341,7 +344,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         const wrapper = shallow(<IdentifierFields {...props} />)
 
         // then
-        const commentField = wrapper.find(TextareaField)
+        const commentField = wrapper.find(TextareaField).at(0)
         expect(commentField.prop('validate')()).toBe('Ce champ est obligatoire')
       })
 
@@ -353,7 +356,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         const wrapper = shallow(<IdentifierFields {...props} />)
 
         // then
-        const commentField = wrapper.find(TextareaField)
+        const commentField = wrapper.find(TextareaField).at(0)
         expect(commentField.prop('validate')()).toBe('Ce champ est obligatoire')
       })
 
@@ -365,7 +368,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         const wrapper = shallow(<IdentifierFields {...props} />)
 
         // then
-        const commentField = wrapper.find(TextareaField)
+        const commentField = wrapper.find(TextareaField).at(0)
         expect(commentField.prop('validate')()).toBe('')
       })
     })

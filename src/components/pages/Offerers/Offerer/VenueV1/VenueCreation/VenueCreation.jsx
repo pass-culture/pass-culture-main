@@ -17,21 +17,21 @@ import Titles from 'components/layout/Titles/Titles'
 
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
-import BankInformation from '../fields/BankInformationFields/BankInformationFields'
-import bindGetSiretInformationToSiret from '../fields/IdentifierFields/decorators/bindGetSiretInformationToSiret'
-import IdentifierFields from '../fields/IdentifierFields/IdentifierFields'
-import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
-import bindGetSuggestionsToLongitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLongitude'
-import LocationFields from '../fields/LocationFields/LocationFields'
-import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
-import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields/WithdrawalDetailsFields'
+import BankInformation from '../fields/BankInformationFields'
+import IdentifierFields, {
+  bindGetSiretInformationToSiret,
+} from '../fields/IdentifierFields'
+import LocationFields, {
+  bindGetSuggestionsToLatitude,
+  bindGetSuggestionsToLongitude,
+  FRANCE_POSITION,
+} from '../fields/LocationFields'
+import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields'
 import { formatSiret } from '../siret/formatSiret'
 import VenueLabel from '../ValueObjects/VenueLabel'
 import VenueType from '../ValueObjects/VenueType'
 
-/**
- * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel -> à faire lors de la V2 ?"
- */
+
 class VenueCreation extends PureComponent {
   constructor() {
     super()
