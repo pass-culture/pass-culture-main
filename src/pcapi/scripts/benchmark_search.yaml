@@ -42,7 +42,7 @@ cases:
   criteria:
     position: "-20.882057, 55.450675"
 
-- description: "Recherche toutes catégorie sur 1 lieu (Besancon)"
+- description: "Recherche toutes catégorie sur 1 lieu (Besançon)"
   criteria:
     position: "47.237829, 6.0240539"
 
@@ -243,24 +243,24 @@ cases:
     is_digital: false
     price_range: [0, 200]
 
-- description: "Filtres : sorties le 25 août"
+- description: "Filtres : sorties le 15 septembre"
   criteria:
     is_event: true
-    date_range: ["2021-08-25", "2021-08-25"]
+    date_range: ["2021-09-15", "2021-09-15"]
 
-- description: "Filtres : séances cinéma du 23 au 27/08, entre 17h et 23h"
+- description: "Filtres : séances cinéma du 13 au 17/09, entre 17h et 23h"
   criteria:
     categories:
       - CINEMA
-    date_range: ["2021-08-18", "2021-08-24"]
+    date_range: ["2021-09-13", "2021-09-17"]
     time_range: ["17:00", "23:00"]
 
-- description: "Filtres : uniquement les nouveautés cinéma pour les offres du 23 au 27/08, entre 17h et 23h"
+- description: "Filtres : uniquement les nouveautés cinéma pour les offres du 13 au 17/09, entre 17h et 23h"
   criteria:
     categories:
       - CINEMA
     newest_only: True
-    date_range: ["2021-08-23", "2021-08-27"]
+    date_range: ["2021-09-13", "2021-09-17"]
     time_range: ["17:00", "23:00"]
 
 - description: "Filtres : Paris, autour de 30 km"
