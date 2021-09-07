@@ -1,3 +1,4 @@
+from json.decoder import JSONDecodeError
 import logging
 
 import requests
@@ -25,7 +26,7 @@ def ask_for_identity_document_verification(email: str, identity_document: bytes)
 
     try:
         response_data = response.json()
-    except requests.exceptions.RequestException:
+    except JSONDecodeError:
         response_data = {}
 
     if response.status_code != 200 and response.status_code != 400:
