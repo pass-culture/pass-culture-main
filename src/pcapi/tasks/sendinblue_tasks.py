@@ -17,6 +17,7 @@ class UpdateSendinblueContactRequest(BaseModel):
     email: str
     attributes: dict
     contact_list_ids: list[int]
+    emailBlacklisted: bool
 
 
 @task(SENDINBLUE_CONTACTS_QUEUE_NAME, "/sendinblue/update_contact_attributes")

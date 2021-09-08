@@ -68,7 +68,10 @@ def update_contact_attributes(user_email: str, user_attributes: UserAttributes) 
 
     update_contact_attributes_task.delay(
         UpdateSendinblueContactRequest(
-            email=user_email, attributes=formatted_attributes, contact_list_ids=constact_list_ids
+            email=user_email,
+            attributes=formatted_attributes,
+            contact_list_ids=constact_list_ids,
+            emailBlacklisted=not user_attributes.marketing_email_subscription,
         )
     )
 
@@ -112,14 +115,17 @@ def format_user_attributes(user_attributes: UserAttributes) -> dict:
 
 def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
     if settings.IS_RUNNING_TESTS:
-        testing.sendinblue_requests.append({"email": payload.email, "attributes": payload.attributes})
+        testing.sendinblue_requests.append(
+            {"email": payload.email, "attributes": payload.attributes, "emailBlacklisted": payload.emailBlacklisted}
+        )
         return True
 
     if settings.IS_DEV:
         logger.info(
-            "A request to Sendinblue Contact API would be sent for user %s with attributes %s",
+            "A request to Sendinblue Contact API would be sent for user %s with attributes %s emailBlacklisted: %s",
             payload.email,
             payload.attributes,
+            payload.emailBlacklisted,
         )
         return True
 
@@ -131,6 +137,7 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
         attributes=payload.attributes,
         list_ids=payload.contact_list_ids,
         update_enabled=True,
+        email_blacklisted=payload.emailBlacklisted,
     )
 
     try:
@@ -142,13 +149,21 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
             logger.warning(
                 "Timeout when calling ContactsApi->create_contact: %s",
                 exception,
-                extra={"email": payload.email, "attributes": payload.attributes},
+                extra={
+                    "email": payload.email,
+                    "attributes": payload.attributes,
+                    "emailBlacklisted": payload.emailBlacklisted,
+                },
             )
         else:
             logger.exception(
                 "Exception when calling ContactsApi->create_contact: %s",
                 exception,
-                extra={"email": payload.email, "attributes": payload.attributes},
+                extra={
+                    "email": payload.email,
+                    "attributes": payload.attributes,
+                    "emailBlacklisted": payload.emailBlacklisted,
+                },
             )
         return False
 
