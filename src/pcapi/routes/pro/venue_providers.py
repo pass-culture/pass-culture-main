@@ -46,7 +46,10 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
             dehumanize_id(body.providerId),
             dehumanize_id(body.venueId),
             VenueProviderCreationPayload(
-                isDuo=body.isDuo, price=body.price, venueIdAtOfferProvider=body.venueIdAtOfferProvider
+                isDuo=body.isDuo,
+                price=body.price,
+                quantity=body.quantity,
+                venueIdAtOfferProvider=body.venueIdAtOfferProvider,
             ),
         )
     except exceptions.VenueSiretNotRegistered as exc:

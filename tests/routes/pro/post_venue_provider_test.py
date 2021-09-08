@@ -88,7 +88,7 @@ class Returns201Test:
             "providerId": humanize(provider.id),
             "venueId": humanize(venue.id),
             "price": "9.99",
-            "available": 50,
+            "quantity": 50,
             "isDuo": True,
         }
 
@@ -99,7 +99,9 @@ class Returns201Test:
 
         # Then
         assert response.status_code == 201
+        assert response.json["isDuo"]
         assert response.json["price"] == 9.99
+        assert response.json["quantity"] == 50
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
