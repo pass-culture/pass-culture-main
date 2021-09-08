@@ -73,8 +73,6 @@ def post_create_venue(body: PostVenueBodyModel) -> VenueResponseModel:
     dehumanized_managing_offerer_id = dehumanize(body.managingOffererId)
     check_user_has_access_to_offerer(current_user, dehumanized_managing_offerer_id)
     venue = offerers_api.create_venue(body)
-    if body.contact:
-        venue = offerers_api.upsert_venue_contact(venue, body.contact)
 
     return VenueResponseModel.from_orm(venue)
 
@@ -88,9 +86,8 @@ def edit_venue(venue_id: str, body: EditVenueBodyModel) -> GetVenueResponseModel
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     not_venue_fields = {"isEmailAppliedOnAllOffers", "isWithdrawalAppliedOnAllOffers", "contact"}
-    venue = offerers_api.update_venue(venue, **body.dict(exclude=not_venue_fields, exclude_unset=True))
-    if body.contact:
-        venue = offerers_api.upsert_venue_contact(venue, body.contact)
+    venue_attrs = body.dict(exclude=not_venue_fields, exclude_unset=True)
+    venue = offerers_api.update_venue(venue, body.contact, **venue_attrs)
 
     if FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS.is_active():
         if body.withdrawalDetails and body.isWithdrawalAppliedOnAllOffers:
