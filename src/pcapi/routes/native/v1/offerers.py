@@ -14,4 +14,25 @@ def get_venue(venue_id: int) -> serializers.VenueResponse:
     if not venue.isPermanent:
         abort(404)
 
-    return serializers.VenueResponse.from_orm(venue)
+    return serializers.VenueResponse(
+        id=venue.id,
+        name=venue.name,
+        latitude=venue.latitude,
+        longitude=venue.longitude,
+        city=venue.city,
+        publicName=venue.publicName,
+        isVirtual=venue.isVirtual,
+        isPermanent=venue.isPermanent,
+        withdrawalDetails=venue.withdrawalDetails,
+        address=venue.address,
+        postalCode=venue.postalCode,
+        venueTypeCode=venue.venueTypeCode.name,
+        description=venue.description,
+        contact=venue.contact,
+        accessibility={
+            "audioDisability": venue.audioDisabilityCompliant,
+            "mentalDisability": venue.mentalDisabilityCompliant,
+            "motorDisability": venue.motorDisabilityCompliant,
+            "visualDisability": venue.visualDisabilityCompliant,
+        },
+    )

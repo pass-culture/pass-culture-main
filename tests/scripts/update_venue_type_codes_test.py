@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.core.offerers.factories import VenueTypeFactory
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.scripts.update_venue_type_codes import update_venues_codes
 
@@ -19,7 +20,7 @@ def test_update_venue_codes(app):
 
     update_venues_codes()
 
-    assert Venue.query.get(bookstore.id).venueTypeCode.value == "BOOKSTORE"
-    assert Venue.query.get(museum.id).venueTypeCode.value == "MUSEUM"
-    assert Venue.query.get(digital.id).venueTypeCode.value == "DIGITAL"
-    assert Venue.query.get(undefined.id).venueTypeCode.value == "OTHER"
+    assert Venue.query.get(bookstore.id).venueTypeCode == VenueTypeCode.BOOKSTORE
+    assert Venue.query.get(museum.id).venueTypeCode == VenueTypeCode.MUSEUM
+    assert Venue.query.get(digital.id).venueTypeCode == VenueTypeCode.DIGITAL
+    assert Venue.query.get(undefined.id).venueTypeCode == VenueTypeCode.OTHER

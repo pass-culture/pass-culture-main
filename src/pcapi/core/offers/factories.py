@@ -55,7 +55,7 @@ class VenueFactory(BaseFactory):
     publicName = factory.SelfAttribute("name")
     siret = factory.LazyAttributeSequence(lambda o, n: f"{o.managingOfferer.siren}{n:05}")
     isVirtual = False
-    venueTypeCode = offerers_models.VenueTypeCode.OTHER.value
+    venueTypeCode = offerers_models.VenueTypeCode.OTHER
     description = factory.Faker("text", max_nb_chars=64)
 
     contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")

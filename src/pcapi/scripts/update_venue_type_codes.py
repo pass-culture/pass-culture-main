@@ -11,6 +11,7 @@ import logging
 
 from sqlalchemy import exc
 
+from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.models import db
 
 
@@ -39,26 +40,7 @@ def _update_venues_with_label(code: str, label: str) -> set[int]:
 
 def update_venues_codes() -> set[int]:
     logger.info("update venues codes: start")
-    codes_labels = [
-        ("VISUAL_ARTS", "Arts visuels, arts plastiques et galeries"),
-        ("CULTURAL_CENTRE", "Centre culturel"),
-        ("ARTISTIC_COURSE", "Cours et pratique artistiques"),
-        ("SCIENTIFIC_CULTURE", "Culture scientifique"),
-        ("FESTIVAL", "Festival"),
-        ("GAMES", "Jeux / Jeux vidéos"),
-        ("BOOKSTORE", "Librairie"),
-        ("LIBRARY", "Bibliothèque ou médiathèque"),
-        ("MUSEUM", "Musée"),
-        ("RECORD_STORE", "Musique - Disquaire"),
-        ("MUSICAL_INSTRUMENT_STORE", "Musique - Magasin d’instruments"),
-        ("CONCERT_HALL", "Musique - Salle de concerts"),
-        ("DIGITAL", "Offre numérique"),
-        ("PATRIMONY_TOURISM", "Patrimoine et tourisme"),
-        ("MOVIE", "Cinéma - Salle de projections"),
-        ("PERFORMING_ARTS", "Spectacle vivant"),
-        ("CREATIVE_ARTS_STORE", "Magasin arts créatifs"),
-        ("OTHER", "Autre"),
-    ]
+    codes_labels = [(code.name, code.value) for code in VenueTypeCode]
 
     updated_ids = set()
     for code, label in codes_labels:

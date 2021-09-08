@@ -83,24 +83,40 @@ CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
 
 
 class VenueTypeCode(enum.Enum):
-    VISUAL_ARTS = "VISUAL_ARTS"
-    CULTURAL_CENTRE = "CULTURAL_CENTRE"
-    ARTISTIC_COURSE = "ARTISTIC_COURSE"
-    SCIENTIFIC_CULTURE = "SCIENTIFIC_CULTURE"
-    FESTIVAL = "FESTIVAL"
-    GAMES = "GAMES"
-    BOOKSTORE = "BOOKSTORE"
-    LIBRARY = "LIBRARY"
-    MUSEUM = "MUSEUM"
-    RECORD_STORE = "RECORD_STORE"
-    MUSICAL_INSTRUMENT_STORE = "MUSICAL_INSTRUMENT_STORE"
-    CONCERT_HALL = "CONCERT_HALL"
-    DIGITAL = "DIGITAL"
-    PATRIMONY_TOURISM = "PATRIMONY_TOURISM"
-    MOVIE = "MOVIE"
-    PERFORMING_ARTS = "PERFORMING_ARTS"
-    CREATIVE_ARTS_STORE = "CREATIVE_ARTS_STORE"
-    OTHER = "OTHER"
+    VISUAL_ARTS = "Arts visuels, arts plastiques et galeries"
+    CULTURAL_CENTRE = "Centre culturel"
+    ARTISTIC_COURSE = "Cours et pratique artistiques"
+    SCIENTIFIC_CULTURE = "Culture scientifique"
+    FESTIVAL = "Festival"
+    GAMES = "Jeux / Jeux vidéos"
+    BOOKSTORE = "Librairie"
+    LIBRARY = "Bibliothèque ou médiathèque"
+    MUSEUM = "Musée"
+    RECORD_STORE = "Musique - Disquaire"
+    MUSICAL_INSTRUMENT_STORE = "Musique - Magasin d’instruments"
+    CONCERT_HALL = "Musique - Salle de concerts"
+    DIGITAL = "Offre numérique"
+    PATRIMONY_TOURISM = "Patrimoine et tourisme"
+    MOVIE = "Cinéma - Salle de projections"
+    PERFORMING_ARTS = "Spectacle vivant"
+    CREATIVE_ARTS_STORE = "Magasin arts créatifs"
+    OTHER = "Autre"
+
+    @classmethod
+    def __get_validators__(cls):
+        cls.lookup = {v: k.name for v, k in cls.__members__.items()}
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v):
+        try:
+            return cls.lookup[v]
+        except KeyError:
+            raise ValueError(f"{v}: invalide")
+
+    @classmethod
+    def from_label(cls, label: str) -> "VenueTypeCode":
+        return {code.value: code.name for code in cls}[label]
 
 
 class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, NeedsValidationMixin):
@@ -248,6 +264,11 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
         if field not in type(self).__table__.columns:
             raise ValueError(f"Unknown field {field} for model {type(self)}")
         return getattr(self, field) != value
+
+    def fill_venue_type_code_from_label(self) -> None:
+        if not self.venueType:
+            return
+        self.venueTypeCode = VenueTypeCode.from_label(self.venueType.label)
 
 
 class VenueLabel(PcObject, Model):

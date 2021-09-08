@@ -35,14 +35,3 @@ class VenueResponse(BaseModel):
     description: typing.Optional[venues_serialize.VenueDescription]  # type: ignore
     contact: typing.Optional[venues_serialize.VenueContactModel]
     accessibility: VenueAccessibilityModel
-
-    @classmethod
-    def from_orm(cls, venue: offerers_models.Venue) -> "VenueResponse":
-        venue.accessibility = {
-            "audioDisability": venue.audioDisabilityCompliant,
-            "mentalDisability": venue.mentalDisabilityCompliant,
-            "motorDisability": venue.motorDisabilityCompliant,
-            "visualDisability": venue.visualDisabilityCompliant,
-        }
-
-        return super().from_orm(venue)

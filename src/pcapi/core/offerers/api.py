@@ -68,6 +68,9 @@ def update_venue(venue: Venue, contact_data: venues_serialize.VenueContactModel 
     if contact_data:
         upsert_venue_contact(venue, contact_data)
 
+    # TODO: Remove this step when a new stable venue type system is setup
+    venue.fill_venue_type_code_from_label()
+
     repository.save(venue)
 
     indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)
@@ -104,6 +107,9 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
 
     if venue_data.contact:
         upsert_venue_contact(venue, venue_data.contact)
+
+    # TODO: Remove this step when a new stable venue type system is setup
+    venue.fill_venue_type_code_from_label()
 
     repository.save(venue)
 
