@@ -13,6 +13,7 @@ from pcapi.core.users.models import Favorite
 from pcapi.models import AllocineVenueProvider
 from pcapi.models import AllocineVenueProviderPriceRule
 from pcapi.models import BankInformation
+from pcapi.models import BusinessUnit
 from pcapi.models import OfferCriterion
 from pcapi.models import Product
 from pcapi.models import UserOfferer
@@ -72,9 +73,30 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         VenueProvider.venueId == Venue.id, Venue.managingOffererId == offerer_id
     ).delete(synchronize_session=False)
 
+    # Handle relationship loop: Venue->BusinessUnit->BankInformation->Venue.
+    business_unit_ids_to_delete = {
+        id_ for id_, in Venue.query.filter_by(managingOffererId=offerer_id).with_entities(Venue.businessUnitId)
+    }
+    Venue.query.filter_by(managingOffererId=offerer_id).update({"businessUnitId": None}, synchronize_session=False)
+    bank_information_ids_to_delete = {
+        id_
+        for id_, in BusinessUnit.query.filter(BusinessUnit.id.in_(business_unit_ids_to_delete)).with_entities(
+            BusinessUnit.bankAccountId
+        )
+    }
+    deleted_business_unit_count = BusinessUnit.query.filter(BusinessUnit.id.in_(business_unit_ids_to_delete)).delete(
+        synchronize_session=False
+    )
+
     deleted_bank_informations_count = 0
     deleted_bank_informations_count += BankInformation.query.filter(
         BankInformation.venueId == Venue.id, Venue.managingOffererId == offerer_id
+    ).delete(synchronize_session=False)
+    deleted_bank_informations_count += BankInformation.query.filter(BankInformation.offererId == offerer_id).delete(
+        synchronize_session=False
+    )
+    deleted_bank_informations_count += BankInformation.query.filter(
+        BankInformation.id.in_(bank_information_ids_to_delete)
     ).delete(synchronize_session=False)
 
     deleted_venues_count = Venue.query.filter(Venue.managingOffererId == offerer_id).delete(synchronize_session=False)
@@ -84,10 +106,6 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
     )
 
     deleted_product_count = Product.query.filter(Product.owningOffererId == offerer_id).delete(
-        synchronize_session=False
-    )
-
-    deleted_bank_informations_count += BankInformation.query.filter(BankInformation.offererId == offerer_id).delete(
         synchronize_session=False
     )
 
@@ -104,6 +122,7 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         "deleted_api_key_count": deleted_api_key_count,
         "deleted_user_offerers_count": deleted_user_offerers_count,
         "deleted_bank_informations_count": deleted_bank_informations_count,
+        "deleted_business_unit_count": deleted_business_unit_count,
         "deleted_product_count": deleted_product_count,
         "deleted_venues_count": deleted_venues_count,
         "deleted_venue_providers_count": deleted_venue_providers_count,

@@ -77,6 +77,7 @@ class FeatureToggle(enum.Enum):
     IMPROVE_BOOKINGS_PERF = "Améliore les performances pour la page pro des réservations"
     ENABLE_INE_WHITELIST_FILTER = "Active le filtre sur les INE whitelistés"
     ALLOW_EMPTY_USER_PROFILING = "Autorise les inscriptions de bénéficiaires sans profile Threat Metrix"
+    PRICE_BOOKINGS = "Active la valorisation des réservations"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -128,6 +129,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.IMPROVE_BOOKINGS_PERF,
     FeatureToggle.PAUSE_JOUVE_SUBSCRIPTION,
     FeatureToggle.ALLOW_EMPTY_USER_PROFILING,
+    FeatureToggle.PRICE_BOOKINGS,
 )
 
 if not settings.IS_DEV:

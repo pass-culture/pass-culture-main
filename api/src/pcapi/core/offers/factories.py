@@ -53,7 +53,7 @@ class VenueFactory(BaseFactory):
     mentalDisabilityCompliant = False
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
-
+    businessUnit = factory.SubFactory("pcapi.core.finance.factories.BusinessUnitFactory")
     contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")
 
 
