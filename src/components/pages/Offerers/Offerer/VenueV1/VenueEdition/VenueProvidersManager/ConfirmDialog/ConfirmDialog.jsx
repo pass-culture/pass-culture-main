@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -27,9 +27,8 @@ const ConfirmDialog = ({ onConfirm, onCancel }) => {
       </div>
       <div className="explanation">
         <p>
-          {
-            'Vous pouvez retrouver la liste des catégories de livres qui ne sont pas éligibles au pass Culture sur le lien suivant : '
-          }
+          Vous pouvez retrouver la liste des catégories de livres qui ne sont pas éligibles au pass
+          Culture sur le lien suivant :
           <a
             className="tertiary-link"
             href="https://aide.passculture.app/fr/articles/5394935-acteurs-culturels-pourquoi-la-remontee-de-mes-stocks-n-integre-pas-toutes-les-references"
