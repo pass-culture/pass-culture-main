@@ -1071,8 +1071,35 @@ class RunIntegrationTest:
         assert beneficiary_import.sourceId == 6712558
         assert (
             beneficiary_import.statuses[0].detail
-            == "Erreur dans les données soumises dans le dossier DMS : 'postal_code' (Strasbourg),'id_piece_number' (121314)"
+            == "Erreur dans les données soumises dans le dossier DMS : 'id_piece_number' (121314),'postal_code' (Strasbourg)"
         )
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3124925
+
+    @patch(
+        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+    )
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    def test_dms_application_value_error_known_user(
+        self, application_details, get_closed_application_ids_for_demarche_simplifiee
+    ):
+        user = users_factories.UserFactory()
+        get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
+        application_details.return_value = make_new_beneficiary_application_details(
+            application_id=1, state="closed", postal_code="Strasbourg", id_piece_number="121314", email=user.email
+        )
+        remote_import.run(
+            procedure_id=6712558,
+        )
+
+        beneficiary_import = BeneficiaryImport.query.first()
+        assert beneficiary_import.currentStatus == ImportStatus.ERROR
+        assert beneficiary_import.sourceId == 6712558
+        assert (
+            beneficiary_import.statuses[0].detail
+            == "Erreur dans les données soumises dans le dossier DMS : 'id_piece_number' (121314),'postal_code' (Strasbourg)"
+        )
+        assert beneficiary_import.beneficiary == user
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3124925
 
@@ -1128,3 +1155,26 @@ class GraphQLSourceProcessApplicationTest:
 
         assert import_status.currentStatus == ImportStatus.CREATED
         assert import_status.beneficiary == user
+
+    @patch.object(DMSGraphQLClient, "get_applications_with_details")
+    def test_dms_application_value_error(self, get_applications_with_details):
+        user = users_factories.UserFactory()
+        get_applications_with_details.return_value = [
+            make_graphql_application(
+                application_id=1, state="closed", postal_code="Strasbourg", id_piece_number="121314", email=user.email
+            )
+        ]
+
+        remote_import.run(procedure_id=6712558, use_graphql_api=True)
+
+        beneficiary_import = BeneficiaryImport.query.first()
+        assert beneficiary_import.currentStatus == ImportStatus.ERROR
+        assert beneficiary_import.sourceId == 6712558
+        assert beneficiary_import.beneficiary == user
+        assert (
+            beneficiary_import.statuses[0].detail
+            == "Erreur dans les données soumises dans le dossier DMS : 'id_piece_number' (121314),'postal_code' (Strasbourg)"
+        )
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3124925

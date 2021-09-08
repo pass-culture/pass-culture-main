@@ -37,9 +37,10 @@ logger = logging.getLogger(__name__)
 
 
 class DMSParsingError(ValueError):
-    def __init__(self, errors: dict[str, str], *args, **kwargs):
+    def __init__(self, user_email: str, errors: dict[str, str], *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.errors = errors
+        self.user_email = user_email
 
 
 def run(procedure_id: int, use_graphql_api: bool = False) -> None:
@@ -112,17 +113,18 @@ def process_parsing_exception(exception: Exception, procedure_id: int, applicati
     )
 
 
-def process_parsing_error(exception: DMSParsingError, user_email: str, procedure_id: int, application_id: int) -> None:
+def process_parsing_error(exception: DMSParsingError, procedure_id: int, application_id: int) -> None:
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Invalid values (%r) detected in Application %s in procedure %s",
         exception.errors,
         application_id,
         procedure_id,
     )
+    user = find_user_by_email(exception.user_email)
     user_emails.send_dms_wrong_values_emails(
-        user_email, exception.errors.get("postal_code"), exception.errors.get("id_piece_number")
+        exception.user_email, exception.errors.get("postal_code"), exception.errors.get("id_piece_number")
     )
-    errors = ",".join([f"'{key}' ({value})" for key, value in exception.errors.items()])
+    errors = ",".join([f"'{key}' ({value})" for key, value in sorted(exception.errors.items())])
     error_detail = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
     # keep a compatibility with BeneficiaryImport table
     save_beneficiary_import_with_status(
@@ -131,6 +133,7 @@ def process_parsing_error(exception: DMSParsingError, user_email: str, procedure
         source=BeneficiaryImportSources.demarches_simplifiees,
         source_id=procedure_id,
         detail=error_detail,
+        user=user,
     )
 
 
@@ -141,7 +144,7 @@ def process_application(
     try:
         information = parsing_function(application_details, procedure_id)
     except DMSParsingError as exc:
-        process_parsing_error(exc, application_details["dossier"]["email"], procedure_id, application_id)
+        process_parsing_error(exc, procedure_id, application_id)
         return
 
     except Exception as exc:  # pylint: disable=broad-except
@@ -197,12 +200,13 @@ def process_application(
 
 def parse_beneficiary_information(application_detail: dict, procedure_id: int) -> fraud_models.DMSContent:
     dossier = application_detail["dossier"]
+    email = dossier["email"]
 
     information = {
         "last_name": dossier["individual"]["nom"],
         "first_name": dossier["individual"]["prenom"],
         "civility": dossier["individual"]["civilite"],
-        "email": dossier["email"],
+        "email": email,
         "application_id": dossier["id"],
         "procedure_id": procedure_id,
     }
@@ -236,16 +240,18 @@ def parse_beneficiary_information(application_detail: dict, procedure_id: int) -
                 information["id_piece_number"] = value
 
     if parsing_errors:
-        raise DMSParsingError(parsing_errors, "Error validating")
+        raise DMSParsingError(email, parsing_errors, "Error validating")
     return fraud_models.DMSContent(**information)
 
 
 def parse_beneficiary_information_graphql(application_detail: dict, procedure_id: int) -> fraud_models.DMSContent:
+    email = application_detail["usager"]["email"]
+
     information = {
         "last_name": application_detail["demandeur"]["nom"],
         "first_name": application_detail["demandeur"]["prenom"],
         "civility": application_detail["demandeur"]["civilite"],
-        "email": application_detail["usager"]["email"],
+        "email": email,
         "application_id": application_detail["number"],
         "procedure_id": procedure_id,
     }
@@ -279,7 +285,7 @@ def parse_beneficiary_information_graphql(application_detail: dict, procedure_id
                 information["id_piece_number"] = value
 
     if parsing_errors:
-        raise DMSParsingError(parsing_errors, "Error validating")
+        raise DMSParsingError(email, parsing_errors, "Error validating")
     return fraud_models.DMSContent(**information)
 
 
