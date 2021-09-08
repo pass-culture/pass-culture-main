@@ -1,8 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
-from unittest import mock
 
-from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -11,88 +9,70 @@ import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.offerers.factories import ApiKeyFactory
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_payment
-from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_event_occurrence
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
-from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
-from pcapi.models import api_errors
-from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
-
-from tests.conftest import TestClient
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns200Test:
-    @freeze_time("2019-11-26 18:29:20.891028")
-    def test_when_user_has_rights_and_regular_offer(self, app):
+    def test_when_user_has_rights_and_regular_offer(self, client):
         # Given
-        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com", publicName="John Doe")
-        admin_user = users_factories.AdminFactory(email="admin@example.com")
-        offerer = create_offerer()
-        create_user_offerer(admin_user, offerer)
-        venue = create_venue(offerer, name="Venue name", address="Venue address")
-        offer = create_offer_with_event_product(
-            venue=venue,
-            event_name="Event Name",
-            event_subcategory_id=subcategories.SEANCE_CINE.id,
-            extra_data={
-                "theater": {
-                    "allocine_movie_id": 165,
-                    "allocine_room_id": 987,
-                }
-            },
+        past = datetime.now() - timedelta(days=2)
+        booking = bookings_factories.BookingFactory(
+            user__email="beneficiary@example.com",
+            stock__beginningDatetime=past,
+            stock__offer=offers_factories.EventOfferFactory(
+                extraData={
+                    "theater": {
+                        "allocine_movie_id": 165,
+                        "allocine_room_id": 987,
+                    },
+                },
+                subcategoryId=subcategories.SEANCE_CINE.id,
+                product__name="An offer you cannot refuse",
+                venue__name="Le Petit Rintintin",
+            ),
         )
-        four_days_from_now = datetime.utcnow() + timedelta(days=4)
-        event_occurrence = create_event_occurrence(offer, beginning_datetime=four_days_from_now)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=12)
-        unconfirmed_booking = create_booking(
-            user=user, quantity=3, stock=stock, venue=venue, date_created=datetime.utcnow() - timedelta(hours=48)
-        )
-        repository.save(unconfirmed_booking)
-        url = f"/v2/bookings/token/{unconfirmed_booking.token}"
+        user_offerer = offers_factories.UserOffererFactory(offerer=booking.offerer)
+        pro_user = user_offerer.user
 
         # When
-        response = TestClient(app.test_client()).with_basic_auth("admin@example.com").get(url)
+        client = client.with_basic_auth(pro_user.email)
+        response = client.get(f"/v2/bookings/token/{booking.token}")
 
         # Then
         assert response.headers["Content-type"] == "application/json"
         assert response.status_code == 200
         assert response.json == {
-            "bookingId": humanize(unconfirmed_booking.id),
+            "bookingId": humanize(booking.id),
             "dateOfBirth": "",
-            "datetime": format_into_utc_date(stock.beginningDatetime),
+            "datetime": format_into_utc_date(booking.stock.beginningDatetime),
             "ean13": "",
-            "email": "user@example.com",
+            "email": "beneficiary@example.com",
             "formula": "PLACE",
             "isUsed": False,
-            "offerId": offer.id,
-            "offerName": "Event Name",
+            "offerId": booking.stock.offerId,
+            "offerName": "An offer you cannot refuse",
             "offerType": "EVENEMENT",
             "phoneNumber": "",
-            "price": 12.0,
-            "publicOfferId": humanize(offer.id),
-            "quantity": 3,
+            "price": 10.0,
+            "publicOfferId": humanize(booking.stock.offerId),
+            "quantity": 1,
             "theater": {
                 "allocine_movie_id": 165,
                 "allocine_room_id": 987,
             },
-            "userName": "John Doe",
-            "venueAddress": "Venue address",
-            "venueDepartementCode": "93",
-            "venueName": "Venue name",
+            "userName": "Jeanne Doux",
+            "venueAddress": "1 boulevard Poissonnière",
+            "venueDepartementCode": "75",
+            "venueName": "Le Petit Rintintin",
         }
 
-    def test_when_user_has_rights_and_booking_is_educational_validated_by_principal(self, app):
+    def test_when_user_has_rights_and_booking_is_educational_validated_by_principal(self, client):
         # Given
         redactor = educational_factories.EducationalRedactorFactory(
             civility="M.",
@@ -109,10 +89,10 @@ class Returns200Test:
         offers_factories.UserOffererFactory(
             user=pro_user, offerer=validated_eac_booking.stock.offer.venue.managingOfferer
         )
-        url = f"/v2/bookings/token/{validated_eac_booking.token}"
 
         # When
-        response = TestClient(app.test_client()).with_basic_auth(pro_user.email).get(url)
+        client = client.with_basic_auth(pro_user.email)
+        response = client.get(f"/v2/bookings/token/{validated_eac_booking.token}")
 
         # Then
         assert response.headers["Content-type"] == "application/json"
@@ -139,189 +119,114 @@ class Returns200Test:
             "venueName": validated_eac_booking.stock.offer.venue.name,
         }
 
-    def test_when_api_key_is_provided_and_rights_and_regular_offer(self, app):
+    def test_when_api_key_is_provided_and_rights_and_regular_offer(self, client):
         # Given
-        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com", publicName="John Doe")
-        user2 = users_factories.UserFactory(email="user2@example.com", publicName="Jane Doe")
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user2, offerer)
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(
-            venue, event_name="Event Name", event_subcategory_id=subcategories.SEANCE_CINE.id
-        )
-        event_occurrence = create_event_occurrence(offer)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(user_offerer, booking)
-        ApiKeyFactory(offerer=offerer)
-        user2ApiKey = "Bearer development_prefix_clearSecret"
-        booking_token = booking.token.lower()
-        url = f"/v2/bookings/token/{booking_token}"
+        booking = bookings_factories.BookingFactory()
+        ApiKeyFactory(offerer=booking.offerer, prefix="test_prefix")
 
         # When
-        response = TestClient(app.test_client()).get(url, headers={"Authorization": user2ApiKey})
+        url = f"/v2/bookings/token/{booking.token}"
+        response = client.get(url, headers={"Authorization": "Bearer test_prefix_clearSecret"})
 
         # Then
         assert response.status_code == 200
 
-    def test_when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, app):
+    def test_when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, client):
         # Given
-        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com", publicName="John Doe")
-        admin_user = users_factories.AdminFactory(email="admin@example.com")
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(admin_user, offerer)
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(
-            venue, event_name="Event Name", event_subcategory_id=subcategories.SEANCE_CINE.id
+        booking = bookings_factories.BookingFactory(
+            stock__beginningDatetime=datetime.now() - timedelta(days=2),
         )
-        event_occurrence = create_event_occurrence(offer)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(user_offerer, booking)
-        booking_token = booking.token.lower()
-        url = f"/v2/bookings/token/{booking_token}"
+        user_offerer = offers_factories.UserOffererFactory(offerer=booking.offerer)
+        pro_user = user_offerer.user
 
         # When
-        response = TestClient(app.test_client()).with_basic_auth("admin@example.com").get(url)
+        client = client.with_basic_auth(pro_user.email)
+        response = client.get(f"/v2/bookings/token/{booking.token.lower()}")
 
         # Then
         assert response.status_code == 200
 
 
 class Returns401Test:
-    def test_when_user_not_logged_in_and_doesnt_give_api_key(self, app):
-        # Given
-        url = "/v2/bookings/token/MOCKED_TOKEN"
-
-        # When
-        response = TestClient(app.test_client()).get(url)
-
-        # Then
+    def test_when_user_no_auth_nor_api_key(self, client):
+        response = client.get("/v2/bookings/token/TOKEN")
         assert response.status_code == 401
 
-    def test_when_user_not_logged_in_and_given_api_key_does_not_exist(self, app):
-        # Given
+    def test_when_wrong_api_key(self, client):
         url = "/v2/bookings/token/FAKETOKEN"
-
-        # When
-        response = TestClient(app.test_client()).get(url, headers={"Authorization": "Bearer WrongApiKey1234567"})
-
-        # Then
-        assert response.status_code == 401
-
-    def test_when_user_not_logged_in_and_existing_api_key_given_with_no_bearer_prefix(self, app):
-        # Given
-        url = "/v2/bookings/token/FAKETOKEN"
-
-        # When
-        response = TestClient(app.test_client()).get(url, headers={"Authorization": "development_prefix_clearSecret"})
-
-        # Then
+        response = client.get(url, headers={"Authorization": "Bearer WrongApiKey1234567"})
         assert response.status_code == 401
 
 
 class Returns403Test:
-    def test_when_user_doesnt_have_rights_and_token_exists(self, app):
+    def test_when_user_doesnt_have_rights_and_token_exists(self, client):
         # Given
-        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
-        querying_user = users_factories.UserFactory(email="querying@example.com")
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_name="Event Name")
-        event_occurrence = create_event_occurrence(offer)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(querying_user, booking)
-        url = f"/v2/bookings/token/{booking.token}"
+        booking = bookings_factories.BookingFactory()
+        another_pro_user = offers_factories.UserOffererFactory().user
 
         # When
-        response = TestClient(app.test_client()).with_basic_auth("querying@example.com").get(url)
+        url = f"/v2/bookings/token/{booking.token}"
+        response = client.with_basic_auth(another_pro_user.email).get(url)
 
         # Then
         assert response.status_code == 403
         assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
-    def test_when_given_api_key_not_related_to_booking_offerer(self, app):
+    def test_when_given_api_key_not_related_to_booking_offerer(self, client):
         # Given
-        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
-        offerer2 = offers_factories.OffererFactory(siren="987654321")
-        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
-        stock = offers_factories.EventStockFactory(offer=offer, price=0)
-        booking = bookings_factories.BookingFactory(user=user, stock=stock)
-
-        ApiKeyFactory(offerer=offerer2)
-        user2ApiKey = "Bearer development_prefix_clearSecret"
-        url = f"/v2/bookings/token/{booking.token}"
+        booking = bookings_factories.BookingFactory()
+        ApiKeyFactory()  # another offerer's API key
 
         # When
-        response = TestClient(app.test_client()).get(url, headers={"Authorization": user2ApiKey})
+        auth = "Bearer development_prefix_clearSecret"
+        url = f"/v2/bookings/token/{booking.token}"
+        response = client.get(url, headers={"Authorization": auth})
 
         # Then
         assert response.status_code == 403
         assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
-    @mock.patch("pcapi.core.bookings.validation.check_is_usable")
-    def test_when_booking_not_confirmed(self, mocked_check_is_usable, app):
+    def test_when_booking_not_confirmed(self, client):
         # Given
         next_week = datetime.utcnow() + timedelta(weeks=1)
-        unconfirmed_booking = bookings_factories.BookingFactory(stock__beginningDatetime=next_week)
-        pro_user = users_factories.ProFactory(email="pro@example.com")
-        offerer = unconfirmed_booking.stock.offer.venue.managingOfferer
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-        url = f"/v2/bookings/token/{unconfirmed_booking.token}"
-        mocked_check_is_usable.side_effect = api_errors.ForbiddenError(errors={"booking": ["Not confirmed"]})
+        booking = bookings_factories.BookingFactory(stock__beginningDatetime=next_week)
+        pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
 
         # When
-        response = TestClient(app.test_client()).with_basic_auth("pro@example.com").get(url)
+        url = f"/v2/bookings/token/{booking.token}"
+        response = client.with_basic_auth(pro_user.email).get(url)
 
         # Then
         assert response.status_code == 403
-        assert response.json["booking"] == ["Not confirmed"]
+        assert "Veuillez attendre" in response.json["booking"][0]
 
-    def test_when_booking_is_cancelled(self, app):
+    def test_when_booking_is_cancelled(self, client):
         # Given
-        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
-        admin_user = users_factories.AdminFactory(email="admin@example.com")
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(admin_user, offerer)
-        venue = create_venue(offerer)
-        stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
-        booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
-        repository.save(admin_user, booking, user_offerer)
-        ApiKeyFactory(offerer=offerer)
-        user2ApiKey = "Bearer development_prefix_clearSecret"
-        url = f"/v2/bookings/token/{booking.token}"
+        booking = bookings_factories.CancelledBookingFactory()
+        pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
 
         # When
-        response = TestClient(app.test_client()).get(url, headers={"Authorization": user2ApiKey})
+        url = f"/v2/bookings/token/{booking.token}"
+        response = client.with_basic_auth(pro_user.email).get(url)
 
         # Then
         assert response.status_code == 403
         assert response.json["booking"] == ["Cette réservation a été annulée"]
 
-    def test_when_booking_is_refunded(self, app):
+    def test_when_booking_is_refunded(self, client):
         # Given
-        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
-        admin_user = users_factories.AdminFactory(email="admin@example.com")
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(admin_user, offerer)
-        venue = create_venue(offerer)
-        stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
-        booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
-        payment = create_payment(booking=booking, offerer=offerer)
-        repository.save(admin_user, payment, user_offerer)
-        ApiKeyFactory(offerer=offerer)
-        user2ApiKey = "Bearer development_prefix_clearSecret"
-        url = f"/v2/bookings/token/{booking.token}"
+        booking = payments_factories.PaymentFactory().booking
+        pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
 
         # When
-        response = TestClient(app.test_client()).get(url, headers={"Authorization": user2ApiKey})
+        url = f"/v2/bookings/token/{booking.token}"
+        response = client.with_basic_auth(pro_user.email).get(url)
 
         # Then
         assert response.status_code == 403
         assert response.json["payment"] == ["Cette réservation a été remboursée"]
 
-    def test_when_booking_is_educational_and_not_validated_by_principal_yet(self, app):
+    def test_when_booking_is_educational_and_not_validated_by_principal_yet(self, client):
         # Given
         redactor = educational_factories.EducationalRedactorFactory(
             civility="M.",
@@ -341,7 +246,7 @@ class Returns403Test:
         url = f"/v2/bookings/token/{not_validated_eac_booking.token}"
 
         # When
-        response = TestClient(app.test_client()).with_basic_auth(pro_user.email).get(url)
+        response = client.with_basic_auth(pro_user.email).get(url)
 
         # Then
         assert response.status_code == 403
@@ -350,7 +255,7 @@ class Returns403Test:
             == "Cette réservation pour une offre éducationnelle n'est pas encore validée par le chef d'établissement"
         )
 
-    def test_when_booking_is_educational_and_refused_by_principal(self, app):
+    def test_when_booking_is_educational_and_refused_by_principal(self, client):
         # Given
         redactor = educational_factories.EducationalRedactorFactory(
             civility="M.",
@@ -370,7 +275,7 @@ class Returns403Test:
         url = f"/v2/bookings/token/{refused_eac_booking.token}"
 
         # When
-        response = TestClient(app.test_client()).with_basic_auth(pro_user.email).get(url)
+        response = client.with_basic_auth(pro_user.email).get(url)
 
         # Then
         assert response.status_code == 403
@@ -381,79 +286,33 @@ class Returns403Test:
 
 
 class Returns404Test:
-    def test_when_booking_is_not_provided_at_all(self, app):
-        # Given
-        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_name="Event Name")
-        event_occurrence = create_event_occurrence(offer)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(booking)
-        url = "/v2/bookings/token/"
-
-        # When
-        response = TestClient(app.test_client()).get(url)
-
-        # Then
+    def test_missing_token(self, client):
+        response = client.get("/v2/bookings/token/")
         assert response.status_code == 404
 
-    def test_when_token_user_has_rights_but_token_not_found(self, app):
-        # Given
-        admin_user = users_factories.AdminFactory(email="admin@example.com")
-        repository.save(admin_user)
-        url = "/v2/bookings/token/12345"
+    def test_basic_auth_but_unknown_token(self, client):
+        user = offers_factories.UserOffererFactory().user
+        client = client.with_basic_auth(user.email)
+        response = client.get("/v2/bookings/token/UNKNOWN")
 
-        # When
-        response = TestClient(app.test_client()).with_basic_auth("admin@example.com").get(url)
-
-        # Then
         assert response.status_code == 404
         assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
 
-    def test_when_user_has_api_key_but_token_not_found(self, app):
-        # Given
-        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
-        admin_user = users_factories.AdminFactory(email="admin@example.com")
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(admin_user, offerer)
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, event_name="Event Name")
-        event_occurrence = create_event_occurrence(offer)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(admin_user, booking, user_offerer)
-        ApiKeyFactory(offerer=offerer)
-        user2ApiKey = "Bearer development_prefix_clearSecret"
-        url = "/v2/bookings/token/12345"
+    def test_authenticated_with_api_key_but_token_not_found(self, client):
+        ApiKeyFactory(prefix="test_prefix")
+        response = client.get("/v2/bookings/token/12345", headers={"Authorization": "Bearer test_prefix_clearSecret"})
 
-        # When
-        response = TestClient(app.test_client()).get(url, headers={"Authorization": user2ApiKey})
-
-        # Then
         assert response.status_code == 404
         assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
 
 
 class Returns410Test:
-    def test_when_booking_is_already_validated(self, app):
-        # Given
-        user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
-        admin_user = users_factories.AdminFactory(email="admin@example.com")
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(admin_user, offerer)
-        venue = create_venue(offerer)
-        stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
-        booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
-        repository.save(booking, user_offerer)
-        ApiKeyFactory(offerer=offerer)
-        user2ApiKey = "Bearer development_prefix_clearSecret"
-        url = f"/v2/bookings/token/{booking.token}"
+    def test_when_booking_is_already_validated(self, client):
+        booking = bookings_factories.UsedBookingFactory()
+        user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
 
-        # When
-        response = TestClient(app.test_client()).get(url, headers={"Authorization": user2ApiKey})
+        client = client.with_basic_auth(user.email)
+        response = client.get(f"/v2/bookings/token/{booking.token}")
 
-        # Then
         assert response.status_code == 410
         assert response.json["booking"] == ["Cette réservation a déjà été validée"]
