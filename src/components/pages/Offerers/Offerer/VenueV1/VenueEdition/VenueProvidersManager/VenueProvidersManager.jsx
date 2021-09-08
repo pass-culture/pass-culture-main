@@ -66,7 +66,7 @@ const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) =
         .then(createdVenueProvider => {
           setVenueProviders([createdVenueProvider])
           setIsCreationMode(false)
-          notifySuccess()
+          notifySuccess("La synchronisation a bien été initiée.")
         })
         .catch(error => {
           notifyError(error.errors)
@@ -85,9 +85,13 @@ const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) =
         .then(editedVenueProvider => {
           const newVenueProviders = venueProviders.map(venueProvider => venueProvider.id === editedVenueProvider.id ? editedVenueProvider : venueProvider)
           setVenueProviders(newVenueProviders)
+          notifySuccess("Les modifications ont bien été importées et s’appliqueront aux nouvelles séances créées.")
+        })
+        .catch(error => {
+          notifyError(error.errors)
         })
     },
-    [venueProviders]
+    [notifyError, notifySuccess, venueProviders]
   )
 
   const hasAtLeastOneProvider = providers.length > 0

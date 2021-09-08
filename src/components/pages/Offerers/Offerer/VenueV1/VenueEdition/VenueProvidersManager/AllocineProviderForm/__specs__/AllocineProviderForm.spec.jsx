@@ -359,5 +359,63 @@ describe('components | AllocineProviderForm', () => {
         venueId: props.venue.id,
       })
     })
+
+    it('should display a success notification when venue provider was correctly updated', async () => {
+      // given
+      allocineProvider = {
+        ...allocineProvider,
+        price: 15,
+        quantity: 50,
+        isDuo: false
+      }
+      pcapi.loadVenueProviders.mockResolvedValue([allocineProvider])
+      const editedAllocineProvider = {
+        ...allocineProvider,
+        price: 20,
+        quantity: 50,
+        isDuo: false
+      }
+      pcapi.editVenueProvider.mockResolvedValue(editedAllocineProvider)
+
+      await renderAllocineProviderForm()
+      const saveEditioProvider = screen.getByRole('button', { name: 'Modifier' })
+      const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+
+      fireEvent.change(priceField, { target: { value: 10 } })
+
+      // when
+      fireEvent.click(saveEditioProvider)
+
+      // then
+      const successNotification = await screen.findByText('Les modifications ont bien été importées et s’appliqueront aux nouvelles séances créées.')
+      expect(successNotification).toBeInTheDocument()
+    })
+
+    it('should display an error notification if there is something wrong with the server', async () => {
+      // given
+      const editedAllocineProvider = {
+        ...allocineProvider,
+        price: 20,
+        quantity: 50,
+        isDuo: false
+      }
+      pcapi.editVenueProvider.mockResolvedValue(editedAllocineProvider)
+      const apiError = {
+        errors: { global: ['Le prix ne peut pas être négatif'] },
+        status: 400,
+      }
+      pcapi.editVenueProvider.mockRejectedValue(apiError)
+      await renderAllocineProviderForm()
+      const saveEditioProvider = screen.getByRole('button', { name: 'Modifier' })
+      const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+
+      // when
+      fireEvent.change(priceField, { target: { value: -10 } })
+      await fireEvent.click(saveEditioProvider)
+
+      // then
+      const errorNotification = await screen.findByText(apiError.errors.global[0])
+      expect(errorNotification).toBeInTheDocument()
+    })
   })
 })

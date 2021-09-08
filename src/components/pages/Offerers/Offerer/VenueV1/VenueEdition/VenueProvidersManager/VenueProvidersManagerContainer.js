@@ -19,10 +19,10 @@ const mapDispatchToProps = dispatch => ({
       })
     )
   },
-  notifySuccess: () => {
+  notifySuccess: (message) => {
     dispatch(
       showNotification({
-        text: 'La synchronisation a bien été initiée.',
+        text: message,
         type: 'success',
       })
     )
