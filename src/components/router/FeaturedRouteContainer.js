@@ -31,7 +31,7 @@ export const mapDispatchToProps = dispatch => ({
   handleRequestCategories: () => {
     dispatch(
       requestData({
-        apiPath: '/offers/categories',
+        apiPath: '/subcategories',
         stateKey: 'categories',
       })
     )

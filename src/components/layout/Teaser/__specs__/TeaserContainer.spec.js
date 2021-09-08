@@ -33,9 +33,6 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
             isActive: true,
             hasBookingLimitDatetimesPassed: false,
             name: 'Fake offer name',
-            offerType: {
-              appLabel: 'Fake offer type',
-            },
             subcategoryId: 'cinema',
             venue: {
               latitude: 48.91683,
@@ -52,8 +49,11 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
         ],
         categories: [
           {
-            categories: [],
-            subcategories: [{ id: 'cinema', appLabel: 'applabel cinéma' }],
+            subcategories: [{ id: 'cinema', searchGroup: 'CINEMA' }],
+            searchGroups: [
+              { name: 'LIVRE', value: 'Livre' },
+              { name: 'CINEMA', value: 'Cinéma' },
+            ],
           },
         ],
       },
@@ -109,7 +109,7 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
           isEditMode: false,
           name: 'Fake offer name',
           offerId: 'o1',
-          offerSubcategoryLabel: 'applabel cinéma',
+          searchGroupLabel: 'Cinéma',
           statuses: [
             { class: 'booked', label: 'Réservé' },
             {
@@ -139,7 +139,7 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
           isEditMode: false,
           name: 'Fake offer name',
           offerId: 'o1',
-          offerSubcategoryLabel: 'applabel cinéma',
+          searchGroupLabel: 'Cinéma',
           statuses: [],
           thumbUrl: 'fake/thumb/url',
         })

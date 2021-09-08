@@ -16,7 +16,7 @@ class Teaser extends PureComponent {
       humanizeRelativeDistance,
       isEditMode,
       name,
-      offerSubcategoryLabel,
+      searchGroupLabel,
       statuses,
       thumbUrl,
     } = this.props
@@ -34,7 +34,7 @@ class Teaser extends PureComponent {
             {name}
           </div>
           <div className="teaser-sub-title">
-            {offerSubcategoryLabel}
+            {searchGroupLabel}
           </div>
           {date && (
             <div className="teaser-date">
@@ -115,7 +115,7 @@ Teaser.propTypes = {
   isEditMode: PropTypes.bool,
   name: PropTypes.string.isRequired,
   offerId: PropTypes.string.isRequired,
-  offerSubcategoryLabel: PropTypes.string.isRequired,
+  searchGroupLabel: PropTypes.string.isRequired,
   statuses: PropTypes.arrayOf(
     PropTypes.shape({
       class: PropTypes.string,

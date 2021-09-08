@@ -17,7 +17,7 @@ describe('src | components | layout | Teaser | Teaser', () => {
       isEditMode: false,
       name: 'Fake offer name',
       offerId: 'MEFA',
-      offerSubcategoryLabel: 'Fake offer type label',
+      searchGroupLabel: 'Fake offer type label',
       statuses: [
         {
           label: 'Réservé',
