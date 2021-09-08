@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 REDIS_LIST_OFFER_IDS_NAME = "offer_ids"
 REDIS_LIST_OFFER_IDS_IN_ERROR_NAME = "offer_ids_in_error"
 REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME = "venue_ids_for_offers"
-REDIS_LIST_VENUE_IDS_NAME = "venue_ids"
+REDIS_LIST_VENUE_IDS_NAME = "venue_ids_new"
 REDIS_HASHMAP_INDEXED_OFFERS_NAME = "indexed_offers"
 
 DEFAULT_LONGITUDE_FOR_NUMERIC_OFFER = 2.409289

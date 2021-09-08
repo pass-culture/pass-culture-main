@@ -147,17 +147,17 @@ def test_check_number_of_sql_queries():
         appsearch.AppSearchBackend().serialize_offer(offer)
 
 
-def test_schema():
+def test_offers_schema():
     offer = offers_factories.OfferFactory()
     serialized = appsearch.AppSearchBackend().serialize_offer(offer)
 
     # Check that we send the same fields than defined in the schema,
     # nothing more, nothing less.
-    assert set(appsearch.SCHEMA.keys()) ^ set(serialized.keys()) == {"id"}
+    assert set(appsearch.OFFERS_SCHEMA.keys()) ^ set(serialized.keys()) == {"id"}
 
     # Check that we use the right types for all fields. It's a bit
     # rough but it shoud be good enough.
-    for key, type_ in appsearch.SCHEMA.items():
+    for key, type_ in appsearch.OFFERS_SCHEMA.items():
         if type_ == "text":
             expected_types = (str,)
         elif type_ == "number":

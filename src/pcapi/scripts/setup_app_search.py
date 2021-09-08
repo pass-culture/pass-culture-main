@@ -18,22 +18,22 @@ def _check_errors(response):
     return True
 
 
-def setup_engine():
-    client = appsearch.AppSearchBackend().appsearch_client
-    response = client.create_engine()
+def setup_offers_engine():
+    offers_engine = appsearch.AppSearchBackend().offers_engine
+    response = offers_engine.create_engine()
     if not _check_errors(response):
         return
-    print("Engine has been created.")
+    print("Offer engine has been created.")
 
-    response = client.update_schema()
+    response = offers_engine.update_schema()
     if not _check_errors(response):
         return
-    print("Schema has been initialized.")
+    print("Offer schema has been initialized.")
 
-    for response in client.update_synonyms():
+    for response in offers_engine.update_synonyms():
         if not _check_errors(response):
             return
-    print("Synonyms have been set.")
+    print("Offer synonyms have been set.")
 
 
 def index_offers():
@@ -53,7 +53,7 @@ def index_offers():
         print("ERR: Could not find any bookable offers to index")
         return
 
-    backend.appsearch_client.create_or_update_documents(documents)
+    backend.offers_engine.create_or_update_documents(documents)
     print(f"Successfully created or updated {len(documents)} offers")
 
 
@@ -66,7 +66,7 @@ def get_parser():
     engine = main_subparsers.add_parser("engine", help="Commands related to engines.")
     engine_subparsers = engine.add_subparsers()
     engine_setup = engine_subparsers.add_parser("setup", help="Setup a new engine.")
-    engine_setup.set_defaults(callback=setup_engine)
+    engine_setup.set_defaults(callback=setup_offers_engine)
 
     # offers (index)
     offers = main_subparsers.add_parser("offers", help="Commands related to offers.")

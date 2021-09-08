@@ -53,6 +53,20 @@ def test_index_offers_of_venues_in_queue(app):
     assert unbookable_offer.id not in search_testing.search_store
 
 
+@override_settings(REDIS_VENUE_IDS_CHUNK_SIZE=1)
+def test_index_venues_in_queue(app):
+    venue1 = offers_factories.VenueFactory()
+    venue2 = offers_factories.VenueFactory()
+    app.redis_client.lpush("venue_ids_new", venue1.id, venue2.id)
+
+    # `index_venues_in_queue` pops 1 venue from the queue (REDIS_VENUE_IDS_CHUNK_SIZE).
+    search.index_venues_in_queue()
+    assert app.redis_client.lrange("venue_ids_new", 0, 5) == [str(venue1.id).encode()]
+
+    search.index_venues_in_queue()
+    assert app.redis_client.llen("venue_ids_new") == 0
+
+
 class ReindexOfferIdsTest:
     def test_index_new_offer(self):
         offer = make_bookable_offer()

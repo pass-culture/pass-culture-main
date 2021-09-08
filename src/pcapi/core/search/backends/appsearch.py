@@ -19,16 +19,17 @@ from . import base
 REDIS_OFFER_IDS_TO_INDEX = "search:appsearch:offer-ids-to-index"
 REDIS_OFFER_IDS_IN_ERROR_TO_INDEX = "search:appsearch:offer-ids-in-error-to-index"
 REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX = "search:appsearch:venue-ids-for-offers-to-index"
-REDIS_VENUE_IDS_TO_INDEX = "search:appsearch:venue-ids-to-index"
+REDIS_VENUE_IDS_TO_INDEX = "search:appsearch:venue-ids-new-to-index"
 
-ENGINE_NAME = "offers"
 ENGINE_LANGUAGE = "fr"
 # The App Search API accepts up to 100 documents per request
 # (https://www.elastic.co/guide/en/app-search/current/documents.html#documents-create).
 DOCUMENTS_PER_REQUEST_LIMIT = 100
 
 
-SCHEMA = {
+OFFERS_ENGINE_NAME = "offers"
+
+OFFERS_SCHEMA = {
     "subcategory_label": "text",
     "artist": "text",
     "category": "text",
@@ -60,7 +61,7 @@ SCHEMA = {
     "venue_public_name": "text",
 }
 
-SYNONYM_SET = (
+OFFERS_SYNONYM_SET = (
     {"anime digital network", "ADN"},
     {"deezer", "spotify"},
     {"shingeki no kyojin", "snk", "l'attaque des titans"},
@@ -70,6 +71,29 @@ SYNONYM_SET = (
     {"canal", "canal+", "canal +", "canal plus", "netflix"},
     {"tome", "T."},
 )
+
+VENUES_ENGINE_NAME = "venues"
+
+VENUES_SCHEMA = {
+    "name": "text",
+    "offerer_name": "text",
+    "venue_type": "text",
+    "position": "geolocation",
+    "description": "text",
+    "audio_disability": "number",
+    "mental_disability": "number",
+    "motor_disability": "number",
+    "visual_disability": "number",
+    "email": "text",
+    "phone_number": "text",
+    "website": "text",
+    "facebook": "text",
+    "twitter": "text",
+    "instagram": "text",
+    "snapchat": "text",
+}
+
+VENUES_SYNONYM_SET = ()
 
 
 logger = logging.getLogger(__name__)
@@ -102,7 +126,22 @@ def get_batches(iterable, size=1):
 class AppSearchBackend(base.SearchBackend):
     def __init__(self):
         super().__init__()
-        self.appsearch_client = AppSearchApiClient(host=settings.APPSEARCH_HOST, api_key=settings.APPSEARCH_API_KEY)
+        self.offers_engine = AppSearchApiClient(
+            host=settings.APPSEARCH_HOST,
+            api_key=settings.APPSEARCH_API_KEY,
+            engine_name=OFFERS_ENGINE_NAME,
+            synonyms=OFFERS_SYNONYM_SET,
+            schema=OFFERS_SCHEMA,
+        )
+
+        self.venues_engine = AppSearchApiClient(
+            host=settings.APPSEARCH_HOST,
+            api_key=settings.APPSEARCH_API_KEY,
+            engine_name=VENUES_ENGINE_NAME,
+            synonyms=VENUES_SYNONYM_SET,
+            schema=VENUES_SCHEMA,
+        )
+
         self.redis_client = current_app.redis_client
 
     def enqueue_offer_ids(self, offer_ids: Iterable[int]):
@@ -184,17 +223,18 @@ class AppSearchBackend(base.SearchBackend):
         if not offers:
             return
         documents = [self.serialize_offer(offer) for offer in offers]
-        self.appsearch_client.create_or_update_documents(documents)
+        self.offers_engine.create_or_update_documents(documents)
 
     def unindex_offer_ids(self, offer_ids: Iterable[int]) -> None:
         if not offer_ids:
             return
-        self.appsearch_client.delete_documents(offer_ids)
+        self.offers_engine.delete_documents(offer_ids)
 
     def unindex_all_offers(self) -> None:
-        self.appsearch_client.delete_all_documents()
+        self.offers_engine.delete_all_documents()
 
-    def serialize_offer(self, offer: offers_models.Offer) -> dict:
+    @classmethod
+    def serialize_offer(cls, offer: offers_models.Offer) -> dict:
         stocks = offer.bookableStocks
         dates = []
         times = []
@@ -256,9 +296,12 @@ class AppSearchBackend(base.SearchBackend):
 
 
 class AppSearchApiClient:
-    def __init__(self, host: str, api_key: str):
+    def __init__(self, host: str, api_key: str, engine_name: str, synonyms: Iterable[set[str]], schema: dict[str, str]):
         self.host = host.rstrip("/")
         self.api_key = api_key
+        self.engine_name = engine_name
+        self.synonyms = synonyms
+        self.schema = schema
 
     @property
     def headers(self):
@@ -271,28 +314,28 @@ class AppSearchApiClient:
         return f"{self.host}{path}"
 
     def create_engine(self):
-        data = {"name": ENGINE_NAME, "language": ENGINE_LANGUAGE}
+        data = {"name": self.engine_name, "language": ENGINE_LANGUAGE}
         response = requests.post(self.engines_url, headers=self.headers, json=data)
         return response
 
     # Schema API: https://www.elastic.co/guide/en/app-search/current/schema.html
     @property
     def schema_url(self):
-        path = f"/api/as/v1/engines/{ENGINE_NAME}/schema"
+        path = f"/api/as/v1/engines/{self.engine_name}/schema"
         return f"{self.host}{path}"
 
     def update_schema(self):
-        response = requests.post(self.schema_url, headers=self.headers, json=SCHEMA)
+        response = requests.post(self.schema_url, headers=self.headers, json=self.schema)
         return response
 
     # Synonyms API: https://www.elastic.co/guide/en/app-search/current/synonyms.html
     @property
     def synonyms_url(self):
-        path = f"/api/as/v1/engines/{ENGINE_NAME}/synonyms"
+        path = f"/api/as/v1/engines/{self.engine_name}/synonyms"
         return f"{self.host}{path}"
 
     def update_synonyms(self):
-        for synonym_set in SYNONYM_SET:
+        for synonym_set in self.synonyms:
             data = {"synonyms": list(synonym_set)}
             response = requests.post(self.synonyms_url, headers=self.headers, json=data)
             yield response
@@ -300,7 +343,7 @@ class AppSearchApiClient:
     # Documents API: https://www.elastic.co/guide/en/app-search/current/documents.html
     @property
     def documents_url(self):
-        path = f"/api/as/v1/engines/{ENGINE_NAME}/documents"
+        path = f"/api/as/v1/engines/{self.engine_name}/documents"
         return f"{self.host}{path}"
 
     def create_or_update_documents(self, documents: Iterable[dict]):
@@ -316,11 +359,11 @@ class AppSearchApiClient:
             response_data = response.json()
             errors = [item for item in response_data if item["errors"]]
             if errors:
-                logger.error("Some offers could not be indexed, possible typing bug", extra={"errors": errors})
+                logger.error("Some documents could not be indexed, possible typing bug", extra={"errors": errors})
 
-    def delete_documents(self, offer_ids: Iterable[int]):
+    def delete_documents(self, document_ids: Iterable[int]):
         # Error handling is done by the caller.
-        for batch in get_batches(offer_ids, size=DOCUMENTS_PER_REQUEST_LIMIT):
+        for batch in get_batches(document_ids, size=DOCUMENTS_PER_REQUEST_LIMIT):
             data = json.dumps(batch)
             response = requests.delete(self.documents_url, headers=self.headers, data=data)
             response.raise_for_status()
