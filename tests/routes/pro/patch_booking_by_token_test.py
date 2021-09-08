@@ -67,21 +67,6 @@ class Returns204Test:
             assert booking.isUsed
             assert booking.status is BookingStatus.USED
 
-        def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
-            booking = bookings_factories.BookingFactory(token="ABCDEF")
-            pro_user = users_factories.ProFactory(email="pro@example.com")
-            offerer = booking.stock.offer.venue.managingOfferer
-            offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-
-            url = f"/bookings/token/{booking.token.lower()}"
-            client = TestClient(app.test_client()).with_session_auth("pro@example.com")
-            response = client.patch(url, headers={"origin": "http://random_header.fr"})
-
-            assert response.status_code == 204
-            booking = Booking.query.one()
-            assert booking.isUsed
-            assert booking.status is BookingStatus.USED
-
         # FIXME: what is the purpose of this test? Are we testing that
         # Flask knows how to URL-decode parameters?
         def expect_booking_to_be_used_with_special_char_in_url(self, app):

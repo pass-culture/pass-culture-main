@@ -41,7 +41,7 @@ class Returns204Test:
         # When
         response = TestClient(app.test_client()).patch(
             "/v2/bookings/cancel/token/{}".format(booking.token),
-            headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY, "Origin": "http://localhost"},
+            headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY},
         )
 
         # cancellation can trigger more than one request to Batch
@@ -82,7 +82,7 @@ class Returns204Test:
         token = booking.token.lower()
         response = TestClient(app.test_client()).patch(
             "/v2/bookings/cancel/token/{}".format(token),
-            headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY, "Origin": "http://localhost"},
+            headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY},
         )
 
         # cancellation can trigger more than one request to Batch
@@ -133,9 +133,7 @@ class Returns401Test:
         # When
         url = "/v2/bookings/cancel/token/{}".format(booking.token)
         wrong_api_key = "Bearer WrongApiKey1234567"
-        response = TestClient(app.test_client()).patch(
-            url, headers={"Authorization": wrong_api_key, "Origin": "http://localhost"}
-        )
+        response = TestClient(app.test_client()).patch(url, headers={"Authorization": wrong_api_key})
 
         assert response.status_code == 401
         assert push_testing.requests == []
@@ -165,7 +163,7 @@ class Returns403Test:
         # When
         response = TestClient(app.test_client()).patch(
             "/v2/bookings/cancel/token/{}".format(booking.token),
-            headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY, "Origin": "http://localhost"},
+            headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY},
         )
 
         # Then
@@ -221,7 +219,7 @@ class Returns403Test:
             # When
             response = TestClient(app.test_client()).patch(
                 "/v2/bookings/cancel/token/{}".format(booking.token),
-                headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY, "Origin": "http://localhost"},
+                headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY},
             )
 
             # Then
@@ -253,7 +251,7 @@ class Returns404Test:
         # When
         response = TestClient(app.test_client()).patch(
             "/v2/bookings/cancel/token/FAKETOKEN",
-            headers={"Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}", "Origin": "http://localhost"},
+            headers={"Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}"},
         )
 
         # Then
@@ -282,7 +280,7 @@ class Returns410Test:
         # When
         response = TestClient(app.test_client()).patch(
             "/v2/bookings/cancel/token/{}".format(booking.token),
-            headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY, "Origin": "http://localhost"},
+            headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY},
         )
 
         # Then

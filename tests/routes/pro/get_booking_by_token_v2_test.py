@@ -20,7 +20,6 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_event_occurrence
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
-from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models import api_errors
 from pcapi.repository import repository
@@ -160,9 +159,7 @@ class Returns200Test:
         url = f"/v2/bookings/token/{booking_token}"
 
         # When
-        response = TestClient(app.test_client()).get(
-            url, headers={"Authorization": user2ApiKey, "Origin": "http://localhost"}
-        )
+        response = TestClient(app.test_client()).get(url, headers={"Authorization": user2ApiKey})
 
         # Then
         assert response.status_code == 200
@@ -190,34 +187,6 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
 
-    def test_when_non_standard_origin_header(self, app):
-        # Given
-        user = users_factories.BeneficiaryGrant18Factory()
-        admin_user = users_factories.AdminFactory(email="admin@example.com")
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(admin_user, offerer)
-        venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(
-            offerer,
-            venue,
-            price=0,
-            beginning_datetime=datetime.utcnow() + timedelta(hours=46),
-            booking_limit_datetime=datetime.utcnow() + timedelta(hours=24),
-        )
-        booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(booking, user_offerer)
-        url = f"/v2/bookings/token/{booking.token}"
-
-        # When
-        response = (
-            TestClient(app.test_client())
-            .with_basic_auth("admin@example.com")
-            .get(url, headers={"origin": "http://random_header.fr"})
-        )
-
-        # Then
-        assert response.status_code == 200
-
 
 class Returns401Test:
     def test_when_user_not_logged_in_and_doesnt_give_api_key(self, app):
@@ -235,9 +204,7 @@ class Returns401Test:
         url = "/v2/bookings/token/FAKETOKEN"
 
         # When
-        response = TestClient(app.test_client()).get(
-            url, headers={"Authorization": "Bearer WrongApiKey1234567", "Origin": "http://localhost"}
-        )
+        response = TestClient(app.test_client()).get(url, headers={"Authorization": "Bearer WrongApiKey1234567"})
 
         # Then
         assert response.status_code == 401
@@ -247,9 +214,7 @@ class Returns401Test:
         url = "/v2/bookings/token/FAKETOKEN"
 
         # When
-        response = TestClient(app.test_client()).get(
-            url, headers={"Authorization": "development_prefix_clearSecret", "Origin": "http://localhost"}
-        )
+        response = TestClient(app.test_client()).get(url, headers={"Authorization": "development_prefix_clearSecret"})
 
         # Then
         assert response.status_code == 401
@@ -289,9 +254,7 @@ class Returns403Test:
         url = f"/v2/bookings/token/{booking.token}"
 
         # When
-        response = TestClient(app.test_client()).get(
-            url, headers={"Authorization": user2ApiKey, "Origin": "http://localhost"}
-        )
+        response = TestClient(app.test_client()).get(url, headers={"Authorization": user2ApiKey})
 
         # Then
         assert response.status_code == 403
@@ -330,9 +293,7 @@ class Returns403Test:
         url = f"/v2/bookings/token/{booking.token}"
 
         # When
-        response = TestClient(app.test_client()).get(
-            url, headers={"Authorization": user2ApiKey, "Origin": "http://localhost"}
-        )
+        response = TestClient(app.test_client()).get(url, headers={"Authorization": user2ApiKey})
 
         # Then
         assert response.status_code == 403
@@ -354,9 +315,7 @@ class Returns403Test:
         url = f"/v2/bookings/token/{booking.token}"
 
         # When
-        response = TestClient(app.test_client()).get(
-            url, headers={"Authorization": user2ApiKey, "Origin": "http://localhost"}
-        )
+        response = TestClient(app.test_client()).get(url, headers={"Authorization": user2ApiKey})
 
         # Then
         assert response.status_code == 403
@@ -470,9 +429,7 @@ class Returns404Test:
         url = "/v2/bookings/token/12345"
 
         # When
-        response = TestClient(app.test_client()).get(
-            url, headers={"Authorization": user2ApiKey, "Origin": "http://localhost"}
-        )
+        response = TestClient(app.test_client()).get(url, headers={"Authorization": user2ApiKey})
 
         # Then
         assert response.status_code == 404
@@ -495,9 +452,7 @@ class Returns410Test:
         url = f"/v2/bookings/token/{booking.token}"
 
         # When
-        response = TestClient(app.test_client()).get(
-            url, headers={"Authorization": user2ApiKey, "Origin": "http://localhost"}
-        )
+        response = TestClient(app.test_client()).get(url, headers={"Authorization": user2ApiKey})
 
         # Then
         assert response.status_code == 410

@@ -42,27 +42,6 @@ class Returns204Test:
                 url,
                 headers={
                     "Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}",
-                    "Origin": "http://localhost",
-                },
-            )
-
-            assert response.status_code == 204
-            booking = Booking.query.one()
-            assert not booking.isUsed
-            assert booking.status is not BookingStatus.USED
-            assert booking.dateUsed is None
-
-        def test_expect_booking_to_be_used_with_non_standard_origin_header(self, app):
-            booking = UsedBookingFactory()
-            offerer = booking.stock.offer.venue.managingOfferer
-            ApiKeyFactory(offerer=offerer)
-
-            url = f"/v2/bookings/keep/token/{booking.token}"
-            response = TestClient(app.test_client()).patch(
-                url,
-                headers={
-                    "Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}",
-                    "Origin": "http://example.com",
                 },
             )
 
@@ -157,9 +136,7 @@ class Returns401Test:
         # When
         wrong_api_key = "Bearer WrongApiKey1234567"
         url = "/v2/bookings/keep/token/{}".format(booking.token)
-        response = TestClient(app.test_client()).patch(
-            url, headers={"Authorization": wrong_api_key, "Origin": "http://localhost"}
-        )
+        response = TestClient(app.test_client()).patch(url, headers={"Authorization": wrong_api_key})
 
         # Then
         assert response.status_code == 401
@@ -188,9 +165,7 @@ class Returns403Test:
             user2_api_key = f"Bearer {DEFAULT_CLEAR_API_KEY}"
             url = "/v2/bookings/keep/token/{}".format(booking.token)
 
-            response = TestClient(app.test_client()).patch(
-                url, headers={"Authorization": user2_api_key, "Origin": "http://localhost"}
-            )
+            response = TestClient(app.test_client()).patch(url, headers={"Authorization": user2_api_key})
 
             # Then
             assert response.status_code == 403
@@ -207,9 +182,7 @@ class Returns403Test:
             user2_api_key = f"Bearer {DEFAULT_CLEAR_API_KEY}"
 
             # When
-            response = TestClient(app.test_client()).patch(
-                url, headers={"Authorization": user2_api_key, "Origin": "http://localhost"}
-            )
+            response = TestClient(app.test_client()).patch(url, headers={"Authorization": user2_api_key})
 
             # Then
             booking = Booking.query.get(booking.id)
@@ -266,9 +239,7 @@ class Returns404Test:
             url = "/v2/bookings/keep/token/"
             user2_api_key = f"Bearer {DEFAULT_CLEAR_API_KEY}"
 
-            response = TestClient(app.test_client()).patch(
-                url, headers={"Authorization": user2_api_key, "Origin": "http://localhost"}
-            )
+            response = TestClient(app.test_client()).patch(url, headers={"Authorization": user2_api_key})
 
             # Then
             assert response.status_code == 404
@@ -290,9 +261,7 @@ class Returns404Test:
             url = "/v2/bookings/keep/token/{}".format("456789")
             user2_api_key = f"Bearer {DEFAULT_CLEAR_API_KEY}"
 
-            response = TestClient(app.test_client()).patch(
-                url, headers={"Authorization": user2_api_key, "Origin": "http://localhost"}
-            )
+            response = TestClient(app.test_client()).patch(url, headers={"Authorization": user2_api_key})
 
             # Then
             assert response.status_code == 404
@@ -409,9 +378,7 @@ class Returns410Test:
             url = "/v2/bookings/keep/token/{}".format(booking.token)
             user2_api_key = f"Bearer {DEFAULT_CLEAR_API_KEY}"
 
-            response = TestClient(app.test_client()).patch(
-                url, headers={"Authorization": user2_api_key, "Origin": "http://localhost"}
-            )
+            response = TestClient(app.test_client()).patch(url, headers={"Authorization": user2_api_key})
             # Then
             assert response.status_code == 410
             assert response.json["booking"] == ["Cette réservation n'a pas encore été validée"]
@@ -438,9 +405,7 @@ class Returns410Test:
             url = "/v2/bookings/keep/token/{}".format(booking.token)
             user2_api_key = f"Bearer {DEFAULT_CLEAR_API_KEY}"
 
-            response = TestClient(app.test_client()).patch(
-                url, headers={"Authorization": user2_api_key, "Origin": "http://localhost"}
-            )
+            response = TestClient(app.test_client()).patch(url, headers={"Authorization": user2_api_key})
             # Then
             assert response.status_code == 410
             assert response.json["payment"] == ["Le remboursement est en cours de traitement"]

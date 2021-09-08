@@ -41,26 +41,6 @@ class Returns204Test:
                 url,
                 headers={
                     "Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}",
-                    "Origin": "http://localhost",
-                },
-            )
-
-            assert response.status_code == 204
-            booking = Booking.query.one()
-            assert booking.isUsed
-            assert booking.status == BookingStatus.USED
-
-        def test_expect_booking_to_be_used_with_non_standard_origin_header(self, app):
-            booking = bookings_factories.BookingFactory(token="ABCDEF")
-            offerer = booking.stock.offer.venue.managingOfferer
-            ApiKeyFactory(offerer=offerer)
-
-            url = f"/v2/bookings/use/token/{booking.token}"
-            response = TestClient(app.test_client()).patch(
-                url,
-                headers={
-                    "Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}",
-                    "Origin": "http://example.com",
                 },
             )
 
@@ -152,9 +132,7 @@ class Returns401Test:
 
         # When
         url = "/v2/bookings/use/token/{}".format(booking.token)
-        response = TestClient(app.test_client()).patch(
-            url, headers={"Authorization": "Bearer WrongApiKey1234567", "Origin": "http://localhost"}
-        )
+        response = TestClient(app.test_client()).patch(url, headers={"Authorization": "Bearer WrongApiKey1234567"})
 
         # Then
         assert response.status_code == 401
@@ -176,9 +154,7 @@ class Returns403Test:
 
             # When
             url = "/v2/bookings/use/token/{}".format(booking.token)
-            response = TestClient(app.test_client()).patch(
-                url, headers={"Authorization": user2ApiKey, "Origin": "http://localhost"}
-            )
+            response = TestClient(app.test_client()).patch(url, headers={"Authorization": user2ApiKey})
 
             # Then
             assert response.status_code == 403
@@ -329,9 +305,7 @@ class Returns404Test:
 
             # When
             url = "/v2/bookings/use/token/{}".format("456789")
-            response = TestClient(app.test_client()).patch(
-                url, headers={"Authorization": user2ApiKey, "Origin": "http://localhost"}
-            )
+            response = TestClient(app.test_client()).patch(url, headers={"Authorization": user2ApiKey})
 
             # Then
             assert response.status_code == 404
