@@ -87,7 +87,7 @@ def send_offer_link_by_push(user: User, offer_id: int) -> None:
 
 
 @blueprint.native_v1.route("/subcategories", methods=["GET"])
-@spectree_serialize(response_model=serializers.SubcategoriesResponseModel)
+@spectree_serialize(api=blueprint.api, response_model=serializers.SubcategoriesResponseModel)
 def get_subcategories() -> serializers.SubcategoriesResponseModel:
     return serializers.SubcategoriesResponseModel(
         subcategories=[
