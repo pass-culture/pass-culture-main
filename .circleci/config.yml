@@ -664,6 +664,9 @@ workflows:
           requires:
             - deploy-pcapi
       - deploy-adage-front:
+          filters:
+            branches:
+              ignore: integration
           requires:
             - deploy-pcapi
           context:
