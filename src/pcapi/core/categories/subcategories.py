@@ -19,7 +19,7 @@ class SearchGroupChoices(Enum):
     VISITE = "Visites, expositions"
     MUSIQUE = "Musique"
     COURS = "Cours, ateliers"
-    PRESSE = "Presse"
+    PRESSE = "Presse, médias"
     SPECTACLE = "Spectacles"
     INSTRUMENT = "Instruments de musique"
     MATERIEL = "Matériel arts créatifs"
@@ -897,7 +897,7 @@ PODCAST = Subcategory(
     matching_type="ThingType.PRESSE_ABO",
     pro_label="Podcast",
     app_label="Podcast",
-    search_group=SearchGroupChoices.FILM.value,
+    search_group=SearchGroupChoices.PRESSE.value,
     is_event=False,
     conditional_fields=[],
     can_expire=False,
