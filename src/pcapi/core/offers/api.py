@@ -83,7 +83,7 @@ VALIDATION_KEYWORDS_MAPPING = {
 def list_offers_for_pro_user(
     user_id: int,
     user_is_admin: bool,
-    type_id: Optional[str],
+    category_id: Optional[str],
     offerer_id: Optional[int],
     venue_id: Optional[int] = None,
     name_keywords_or_isbn: Optional[str] = None,
@@ -99,7 +99,7 @@ def list_offers_for_pro_user(
         offerer_id=offerer_id,
         status=status,
         venue_id=venue_id,
-        type_id=type_id,
+        category_id=category_id,
         name_keywords_or_isbn=name_keywords_or_isbn,
         creation_mode=creation_mode,
         period_beginning_date=period_beginning_date,

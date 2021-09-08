@@ -61,7 +61,6 @@ class Returns200Test:
                     }
                 ],
                 "thumbUrl": None,
-                "type": "ThingType.AUDIOVISUEL",
                 "subcategoryId": "SUPPORT_PHYSIQUE_FILM",
                 "venue": {
                     "departementCode": departement_code,
@@ -122,7 +121,7 @@ class Returns200Test:
             user_is_admin=pro.isAdmin,
             offerer_id=None,
             venue_id=venue.id,
-            type_id=None,
+            category_id=None,
             name_keywords_or_isbn=None,
             period_beginning_date=None,
             period_ending_date=None,
@@ -147,7 +146,7 @@ class Returns200Test:
             user_is_admin=pro.isAdmin,
             offerer_id=None,
             venue_id=None,
-            type_id=None,
+            category_id=None,
             name_keywords_or_isbn=None,
             period_beginning_date=None,
             period_ending_date=None,
@@ -177,7 +176,7 @@ class Returns200Test:
             user_is_admin=pro.isAdmin,
             offerer_id=offerer.id,
             venue_id=None,
-            type_id=None,
+            category_id=None,
             name_keywords_or_isbn=None,
             period_beginning_date=None,
             period_ending_date=None,
@@ -202,7 +201,7 @@ class Returns200Test:
             user_is_admin=pro.isAdmin,
             offerer_id=None,
             venue_id=None,
-            type_id=None,
+            category_id=None,
             name_keywords_or_isbn=None,
             period_beginning_date=None,
             period_ending_date=None,
@@ -231,7 +230,7 @@ class Returns200Test:
             user_is_admin=pro.isAdmin,
             offerer_id=None,
             venue_id=None,
-            type_id=None,
+            category_id=None,
             name_keywords_or_isbn=None,
             period_beginning_date="2020-10-11T00:00:00Z",
             period_ending_date=None,
@@ -260,10 +259,35 @@ class Returns200Test:
             user_is_admin=pro.isAdmin,
             offerer_id=None,
             venue_id=None,
-            type_id=None,
+            category_id=None,
             name_keywords_or_isbn=None,
             period_beginning_date=None,
             period_ending_date="2020-10-11T23:59:59Z",
+            status=None,
+            creation_mode=None,
+        )
+
+    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
+    def should_filter_offers_by_given_category_id(self, mocked_list_offers, app, db_session):
+        # given
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        # when
+        response = TestClient(app.test_client()).with_session_auth(email=pro.email).get("/offers?categoryId=LIVRE")
+
+        # then
+        assert response.status_code == 200
+        mocked_list_offers.assert_called_once_with(
+            user_id=pro.id,
+            user_is_admin=pro.isAdmin,
+            offerer_id=None,
+            venue_id=None,
+            category_id="LIVRE",
+            name_keywords_or_isbn=None,
+            period_beginning_date=None,
+            period_ending_date=None,
             status=None,
             creation_mode=None,
         )

@@ -35,7 +35,7 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
     paginated_offers = offers_api.list_offers_for_pro_user(
         user_id=current_user.id,
         user_is_admin=current_user.isAdmin,
-        type_id=query.type_id,
+        category_id=query.categoryId,
         offerer_id=query.offerer_id,
         venue_id=query.venue_id,
         name_keywords_or_isbn=query.nameOrIsbn,
@@ -84,7 +84,7 @@ def patch_all_offers_active_status(
         "offerer_id": body.offerer_id,
         "status": body.status,
         "venue_id": body.venue_id,
-        "type_id": body.type_id,
+        "category_id": body.category_id,
         "name_or_isbn": body.name_or_isbn,
         "creation_mode": body.creation_mode,
         "period_beginning_date": body.period_beginning_date,

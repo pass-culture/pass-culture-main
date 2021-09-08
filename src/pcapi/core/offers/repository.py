@@ -13,6 +13,7 @@ from sqlalchemy.orm import load_only
 from sqlalchemy.sql.functions import coalesce
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.models import ActivationCode
@@ -44,7 +45,7 @@ def get_capped_offers_for_filters(
     offerer_id: Optional[int] = None,
     status: Optional[str] = None,
     venue_id: Optional[int] = None,
-    type_id: Optional[str] = None,
+    category_id: Optional[str] = None,
     name_keywords_or_isbn: Optional[str] = None,
     creation_mode: Optional[str] = None,
     period_beginning_date: Optional[str] = None,
@@ -56,7 +57,7 @@ def get_capped_offers_for_filters(
         offerer_id=offerer_id,
         status=status,
         venue_id=venue_id,
-        type_id=type_id,
+        category_id=category_id,
         name_keywords_or_isbn=name_keywords_or_isbn,
         creation_mode=creation_mode,
         period_beginning_date=period_beginning_date,
@@ -95,7 +96,7 @@ def get_offers_by_filters(
     offerer_id: Optional[int] = None,
     status: Optional[str] = None,
     venue_id: Optional[int] = None,
-    type_id: Optional[str] = None,
+    category_id: Optional[str] = None,
     name_keywords_or_isbn: Optional[str] = None,
     creation_mode: Optional[str] = None,
     period_beginning_date: Optional[datetime] = None,
@@ -119,8 +120,11 @@ def get_offers_by_filters(
         query = query.filter(Offer.venueId == venue_id)
     if creation_mode is not None:
         query = _filter_by_creation_mode(query, creation_mode)
-    if type_id is not None:
-        query = query.filter(Offer.type == type_id)
+    if category_id is not None:
+        requested_subcategories = [
+            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category_id == category_id
+        ]
+        query = query.filter(Offer.subcategoryId.in_(requested_subcategories))
     if name_keywords_or_isbn is not None:
         search = name_keywords_or_isbn
         if len(name_keywords_or_isbn) > 3:

@@ -184,7 +184,7 @@ class PatchAllOffersActiveStatusBodyModel(BaseModel):
     offerer_id: Optional[int]
     venue_id: Optional[int]
     name_or_isbn: Optional[str]
-    type_id: Optional[str]
+    category_id: Optional[str]
     creation_mode: Optional[str]
     status: Optional[str]
     period_beginning_date: Optional[datetime]
@@ -236,7 +236,6 @@ class ListOffersOfferResponseModel(BaseModel):
     stocks: list[ListOffersStockResponseModel]
     thumbUrl: Optional[str]
     productIsbn: Optional[str]
-    type: str
     subcategoryId: str
     venue: ListOffersVenueResponseModel
     status: str
@@ -255,7 +254,7 @@ class ListOffersQueryModel(BaseModel):
     offerer_id: Optional[int]
     status: Optional[str]
     venue_id: Optional[int]
-    type_id: Optional[str]
+    categoryId: Optional[str]
     creation_mode: Optional[str]
     period_beginning_date: Optional[str]
     period_ending_date: Optional[str]
