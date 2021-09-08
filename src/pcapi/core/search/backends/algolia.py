@@ -6,6 +6,7 @@ from flask import current_app
 import redis
 
 from pcapi import settings
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import base
 import pcapi.utils.date as date_utils
@@ -53,15 +54,23 @@ class AlgoliaBackend(base.SearchBackend):
                 raise
             logger.exception("Could not add offers to error queue", extra={"offers": offer_ids})
 
+    def enqueue_venue_ids(self, venue_ids: Iterable[int]) -> None:
+        return self._enqueue_venue_ids(venue_ids, REDIS_LIST_VENUE_IDS_NAME)
+
     def enqueue_venue_ids_for_offers(self, venue_ids: Iterable[int]) -> None:
+        return self._enqueue_venue_ids(venue_ids, REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME)
+
+    def _enqueue_venue_ids(self, venue_ids: Iterable[int], queue_name: str) -> None:
         if not venue_ids:
             return
         try:
-            self.redis_client.rpush(REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME, *venue_ids)
+            self.redis_client.rpush(queue_name, *venue_ids)
         except redis.exceptions.RedisError:
             if settings.IS_RUNNING_TESTS:
                 raise
-            logger.exception("Could not add venues to indexation queue", extra={"venues": venue_ids})
+            logger.exception(
+                "Could not add venues to indexation queue", extra={"venues": venue_ids, "queue": queue_name}
+            )
 
     def pop_offer_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
         # Here we should use `LPOP` but its `count` argument has been
@@ -95,9 +104,15 @@ class AlgoliaBackend(base.SearchBackend):
             pipeline.reset()
         return offer_ids
 
+    def get_venue_ids_from_queue(self, count: int) -> set[int]:
+        return self._get_venue_ids_from_queue(count, REDIS_LIST_VENUE_IDS_NAME)
+
     def get_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
+        return self._get_venue_ids_from_queue(count, REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME)
+
+    def _get_venue_ids_from_queue(self, count: int, queue_name: str) -> set[int]:
         try:
-            venue_ids = self.redis_client.lrange(REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME, 0, count - 1)
+            venue_ids = self.redis_client.lrange(queue_name, 0, count - 1)
             return {int(venue_id) for venue_id in venue_ids}  # str -> int
         except redis.exceptions.RedisError:
             if settings.IS_RUNNING_TESTS:
@@ -105,17 +120,23 @@ class AlgoliaBackend(base.SearchBackend):
             logger.exception("Could not get venue ids to index from queue")
             return set()
 
+    def delete_venue_ids_from_queue(self, venue_ids: Iterable[int]) -> None:
+        return self._delete_venue_ids_from_queue(venue_ids, REDIS_LIST_VENUE_IDS_NAME)
+
     def delete_venue_ids_for_offers_from_queue(self, venue_ids: Iterable[int]) -> None:
+        return self._delete_venue_ids_from_queue(venue_ids, REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME)
+
+    def _delete_venue_ids_from_queue(self, venue_ids: Iterable[int], queue_name: str) -> None:
         if not venue_ids:
             return
         try:
             for venue_id in venue_ids:
                 # count=0 means "remove all occurrences of this value"
-                self.redis_client.lrem(REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME, count=0, value=venue_id)
+                self.redis_client.lrem(queue_name, count=0, value=venue_id)
         except redis.exceptions.RedisError:
             if settings.IS_RUNNING_TESTS:
                 raise
-            logger.exception("Could not delete indexed venue ids from queue")
+            logger.exception("Could not delete indexed venue ids from queue", extra={"queue": queue_name})
 
     def count_offers_to_index_from_queue(self, from_error_queue: bool = False) -> int:
         if from_error_queue:
@@ -165,6 +186,11 @@ class AlgoliaBackend(base.SearchBackend):
         finally:
             pipeline.reset()
 
+    def index_venues(self, venues: Iterable[offerers_models.Venue]) -> None:
+        # No need to implement venue indexing now since the Algolia backend
+        # will be removed soon.
+        pass
+
     def unindex_offer_ids(self, offer_ids: Iterable[int]) -> None:
         if not offer_ids:
             return
@@ -186,6 +212,16 @@ class AlgoliaBackend(base.SearchBackend):
             logger.exception(
                 "Could not clear indexed offers cache",
             )
+
+    def unindex_venue_ids(self, venues: Iterable[int]) -> None:
+        # No need to implement venue indexing now since the Algolia backend
+        # will be removed soon.
+        pass
+
+    def unindex_all_venues(self) -> None:
+        # No need to implement venue indexing now since the Algolia backend
+        # will be removed soon.
+        pass
 
     @classmethod
     def serialize_offer(cls, offer: offers_models.Offer) -> dict:
@@ -282,3 +318,9 @@ class AlgoliaBackend(base.SearchBackend):
             )
 
         return object_to_index
+
+    @classmethod
+    def serialize_venue(cls, venue: offerers_models.Venue) -> dict:
+        # No need to implement venue indexing now since the Algolia backend
+        # will be removed soon.
+        return {}

@@ -147,17 +147,24 @@ def test_check_number_of_sql_queries():
         appsearch.AppSearchBackend().serialize_offer(offer)
 
 
-def test_offers_schema():
-    offer = offers_factories.OfferFactory()
-    serialized = appsearch.AppSearchBackend().serialize_offer(offer)
+@pytest.mark.parametrize(
+    "factory,serializer,schema",
+    [
+        (offers_factories.OfferFactory, appsearch.AppSearchBackend.serialize_offer, appsearch.OFFERS_SCHEMA),
+        (offers_factories.VenueFactory, appsearch.AppSearchBackend.serialize_venue, appsearch.VENUES_SCHEMA),
+    ],
+)
+def test_schemas(factory, serializer, schema):
+    obj = factory()
+    serialized = serializer(obj)
 
     # Check that we send the same fields than defined in the schema,
     # nothing more, nothing less.
-    assert set(appsearch.OFFERS_SCHEMA.keys()) ^ set(serialized.keys()) == {"id"}
+    assert set(schema.keys()) ^ set(serialized.keys()) == {"id"}
 
     # Check that we use the right types for all fields. It's a bit
     # rough but it shoud be good enough.
-    for key, type_ in appsearch.OFFERS_SCHEMA.items():
+    for key, type_ in schema.items():
         if type_ == "text":
             expected_types = (str,)
         elif type_ == "number":
@@ -166,11 +173,14 @@ def test_offers_schema():
             expected_types = (str,)
         elif type_ == "date":
             expected_types = (datetime.datetime,)
+
         value = serialized[key]
         if value in (None, []):  # valid for all field types
             continue
+
         if isinstance(value, list):
             value = value[0]  # check the first item only
+
         assert isinstance(value, expected_types), f"Type of {key} should be {expected_types}, got {value}"
 
 
@@ -195,3 +205,39 @@ def test_do_no_return_booleans():
 )
 def test_url_path(url, expected):
     assert appsearch.url_path(url) == expected
+
+
+def test_serialize_venue():
+    venue = offers_factories.VenueFactory(
+        venueTypeCode="VISUAL_ARTS",
+        contact__email="some@email.com",
+        contact__website=None,
+        contact__phone_number=None,
+        contact__social_medias={
+            "facebook": None,
+            "instagram": None,
+            "snapchat": None,
+            "twitter": "https://twitter.com/my.venue",
+        },
+    )
+
+    serialized = appsearch.AppSearchBackend().serialize_venue(venue)
+    assert serialized == {
+        "id": venue.id,
+        "name": venue.name,
+        "offerer_name": venue.managingOfferer.name,
+        "venue_type": venue.venueTypeCode.name,
+        "position": f"{venue.latitude},{venue.longitude}",
+        "description": venue.description,
+        "audio_disability": venue.audioDisabilityCompliant,
+        "mental_disability": venue.mentalDisabilityCompliant,
+        "motor_disability": venue.motorDisabilityCompliant,
+        "visual_disability": venue.visualDisabilityCompliant,
+        "email": "some@email.com",
+        "phone_number": None,
+        "website": None,
+        "facebook": None,
+        "twitter": "https://twitter.com/my.venue",
+        "instagram": None,
+        "snapchat": None,
+    }

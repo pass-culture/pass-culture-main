@@ -1,5 +1,6 @@
 from typing import Iterable
 
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 
 
@@ -13,6 +14,9 @@ class SearchBackend:
     def enqueue_offer_ids_in_error(self, offer_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
+    def enqueue_venue_ids(self, venue_ids: Iterable[int]) -> None:
+        raise NotImplementedError()
+
     def enqueue_venue_ids_for_offers(self, venue_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
@@ -20,6 +24,9 @@ class SearchBackend:
         raise NotImplementedError()
 
     def get_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
+        raise NotImplementedError()
+
+    def delete_venue_ids_from_queue(self, venue_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
     def delete_venue_ids_for_offers_from_queue(self, venue_ids: Iterable[int]) -> None:
@@ -34,12 +41,28 @@ class SearchBackend:
     def index_offers(self, offers: Iterable[offers_models.Offer]) -> None:
         raise NotImplementedError()
 
+    def index_venues(self, offers: Iterable[offerers_models.Venue]) -> None:
+        raise NotImplementedError()
+
     def unindex_offer_ids(self, offers: Iterable[int]) -> None:
         raise NotImplementedError()
 
     def unindex_all_offers(self) -> None:
         raise NotImplementedError()
 
+    def unindex_venue_ids(self, venues: Iterable[int]) -> None:
+        raise NotImplementedError()
+
+    def unindex_all_venues(self) -> None:
+        raise NotImplementedError()
+
+    def get_venue_ids_from_queue(self, count: int) -> set[int]:
+        raise NotImplementedError()
+
     @classmethod
     def serialize_offer(cls, offer: offers_models.Offer) -> dict:
+        raise NotImplementedError()
+
+    @classmethod
+    def serialize_venue(cls, venue: offerers_models.Venue) -> dict:
         raise NotImplementedError()

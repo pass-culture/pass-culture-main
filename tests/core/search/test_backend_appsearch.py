@@ -155,3 +155,27 @@ def test_unindex_offer_ids(app):
 
 def test_unindex_all_offers(app):
     pass  # FIXME (dbaty): this feature is not implemented yet.
+
+
+@pytest.mark.usefixtures("db_session")
+def test_index_venues(app):
+    backend = get_backend()
+    venue = offers_factories.StockFactory().offer.venue
+    with requests_mock.Mocker() as mock:
+        posted = mock.post(
+            "https://appsearch.example.com/api/as/v1/engines/venues/documents", json=[{"item": venue.id, "errors": []}]
+        )
+        backend.index_venues([venue])
+        posted_json = posted.last_request.json()
+        assert posted_json[0]["id"] == venue.id
+        assert posted_json[0]["name"] == venue.name
+
+
+def test_unindex_venue_ids(app):
+    backend = get_backend()
+    app.redis_client.sadd("search:appsearch:indexed-venue-ids", "1")
+    with requests_mock.Mocker() as mock:
+        deleted = mock.delete("https://appsearch.example.com/api/as/v1/engines/venues/documents")
+        backend.unindex_venue_ids([1])
+        deleted_json = deleted.last_request.json()
+        assert deleted_json == [1]

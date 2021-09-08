@@ -1,7 +1,9 @@
 import datetime
 import decimal
+import enum
 import json
 import logging
+import typing
 from typing import Iterable
 import urllib.parse
 
@@ -9,6 +11,7 @@ from flask import current_app
 import redis
 
 from pcapi import settings
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.utils import requests
 import pcapi.utils.date as date_utils
@@ -160,13 +163,21 @@ class AppSearchBackend(base.SearchBackend):
         except redis.exceptions.RedisError:
             logger.exception("Could not add offers to error queue", extra={"offers": offer_ids})
 
+    def enqueue_venue_ids(self, venue_ids: Iterable[int]):
+        return self._enqueue_venue_ids(venue_ids, REDIS_VENUE_IDS_TO_INDEX)
+
     def enqueue_venue_ids_for_offers(self, venue_ids: Iterable[int]):
+        return self._enqueue_venue_ids(venue_ids, REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX)
+
+    def _enqueue_venue_ids(self, venue_ids: Iterable[int], queue_name: str) -> None:
         if not venue_ids:
             return
         try:
-            self.redis_client.sadd(REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX, *venue_ids)
+            self.redis_client.sadd(queue_name, *venue_ids)
         except redis.exceptions.RedisError:
-            logger.exception("Could not add venues to indexation queue", extra={"venues": venue_ids})
+            logger.exception(
+                "Could not add venues to indexation queue", extra={"venues": venue_ids, "queue": queue_name}
+            )
 
     def pop_offer_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
         if from_error_queue:
@@ -181,21 +192,33 @@ class AppSearchBackend(base.SearchBackend):
             logger.exception("Could not pop offer ids to index from queue")
             return set()
 
+    def get_venue_ids_from_queue(self, count: int) -> set[int]:
+        return self._get_venue_ids_from_queue(count, REDIS_VENUE_IDS_TO_INDEX)
+
     def get_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
+        return self._get_venue_ids_from_queue(count, REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX)
+
+    def _get_venue_ids_from_queue(self, count: int, queue_name: str) -> set[int]:
         try:
-            venue_ids = self.redis_client.srandmember(REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX, count)
+            venue_ids = self.redis_client.srandmember(queue_name, count)
             return {int(venue_id) for venue_id in venue_ids}  # str -> int
         except redis.exceptions.RedisError:
-            logger.exception("Could not get venue ids for offers to index from queue")
+            logger.exception("Could not get venue ids for offers to index from queue", extra={"queue": queue_name})
             return set()
 
+    def delete_venue_ids_from_queue(self, venue_ids: Iterable[int]) -> None:
+        return self._delete_venue_ids_from_queue(venue_ids, REDIS_VENUE_IDS_TO_INDEX)
+
     def delete_venue_ids_for_offers_from_queue(self, venue_ids: Iterable[int]) -> None:
+        return self._delete_venue_ids_from_queue(venue_ids, REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX)
+
+    def _delete_venue_ids_from_queue(self, venue_ids: Iterable[int], queue_name: str) -> None:
         if not venue_ids:
             return
         try:
-            self.redis_client.srem(REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX, *venue_ids)
+            self.redis_client.srem(queue_name, *venue_ids)
         except redis.exceptions.RedisError:
-            logger.exception("Could not delete indexed venue ids from queue")
+            logger.exception("Could not delete indexed venue ids from queue", extra={"queue": queue_name})
 
     def count_offers_to_index_from_queue(self, from_error_queue: bool = False) -> int:
         if from_error_queue:
@@ -225,6 +248,12 @@ class AppSearchBackend(base.SearchBackend):
         documents = [self.serialize_offer(offer) for offer in offers]
         self.offers_engine.create_or_update_documents(documents)
 
+    def index_venues(self, venues: Iterable[offerers_models.Venue]) -> None:
+        if not venues:
+            return
+        documents = [self.serialize_venue(venue) for venue in venues]
+        self.venues_engine.create_or_update_documents(documents)
+
     def unindex_offer_ids(self, offer_ids: Iterable[int]) -> None:
         if not offer_ids:
             return
@@ -232,6 +261,14 @@ class AppSearchBackend(base.SearchBackend):
 
     def unindex_all_offers(self) -> None:
         self.offers_engine.delete_all_documents()
+
+    def unindex_venue_ids(self, venue_ids: Iterable[int]) -> None:
+        if not venue_ids:
+            return
+        self.venues_engine.delete_documents(venue_ids)
+
+    def unindex_all_venues(self) -> None:
+        self.venues_engine.delete_all_documents()
 
     @classmethod
     def serialize_offer(cls, offer: offers_models.Offer) -> dict:
@@ -254,15 +291,6 @@ class AppSearchBackend(base.SearchBackend):
         artist = " ".join(extra_data.get(key, "") for key in ("author", "performer", "speaker", "stageDirector"))
 
         venue = offer.venue
-        if venue.longitude is not None and venue.latitude is not None:
-            # It's important to send the position as text, not as an
-            # array of floats. That way, App Search includes the field
-            # in search results (even though the documentation says
-            # that `geolocation` fields are not included).
-            position = f"{venue.latitude},{venue.longitude}"
-        else:
-            position = None
-
         return {
             "subcategory_label": offer.subcategory.app_label,
             "artist": artist.strip() or None,
@@ -290,8 +318,31 @@ class AppSearchBackend(base.SearchBackend):
             "venue_department_code": venue.departementCode,
             "venue_id": venue.id,
             "venue_name": venue.name,
-            "venue_position": position,
+            "venue_position": position(venue),
             "venue_public_name": venue.publicName,
+        }
+
+    @classmethod
+    def serialize_venue(cls, venue: offerers_models.Venue) -> dict:
+        social_medias = getattr(venue.contact, "social_medias", {})
+        return {
+            "id": venue.id,
+            "name": venue.publicName or venue.name,
+            "offerer_name": venue.managingOfferer.name,
+            "venue_type": venue.venueTypeCode.name,
+            "position": position(venue),
+            "description": venue.description,
+            "audio_disability": venue.audioDisabilityCompliant,
+            "mental_disability": venue.mentalDisabilityCompliant,
+            "motor_disability": venue.motorDisabilityCompliant,
+            "visual_disability": venue.visualDisabilityCompliant,
+            "email": getattr(venue.contact, "email", None),
+            "phone_number": getattr(venue.contact, "phone_number", None),
+            "website": getattr(venue.contact, "website", None),
+            "facebook": social_medias.get("facebook"),
+            "twitter": social_medias.get("twitter"),
+            "instagram": social_medias.get("instagram"),
+            "snapchat": social_medias.get("snapchat"),
         }
 
 
@@ -392,4 +443,16 @@ class AppSearchJsonEncoder(json.JSONEncoder):
             return obj.isoformat().split(".")[0] + "Z"
         if isinstance(obj, decimal.Decimal):
             return float(obj)
+        if isinstance(obj, enum.Enum):
+            return obj.name
         return super().default(obj)
+
+
+def position(venue: offerers_models.Venue) -> typing.Optional[str]:
+    if venue.longitude is not None and venue.latitude is not None:
+        # It's important to send the position as text, not as an
+        # array of floats. That way, App Search includes the field
+        # in search results (even though the documentation says
+        # that `geolocation` fields are not included).
+        return f"{venue.latitude},{venue.longitude}"
+    return None

@@ -119,6 +119,7 @@ class VenueView(BaseAdminView):
             update_offer_and_stock_id_at_providers(venue, old_siret)
 
         if has_indexed_attribute_changed:
+            search.async_index_venue_ids([venue.id])
             search.async_index_offers_of_venue_ids([venue.id])
 
         return True

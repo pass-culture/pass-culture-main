@@ -4,6 +4,7 @@ from typing import Iterable
 from pcapi import settings
 from pcapi.core.search.backends import base
 from pcapi.models import Offer
+from pcapi.models import Venue
 from pcapi.repository import offer_queries
 from pcapi.utils.module_loading import import_string
 
@@ -39,6 +40,25 @@ def async_index_offer_ids(offer_ids: Iterable[int]) -> None:
                 raise
             logger.exception(
                 "Could not enqueue offer ids to index", extra={"offers": offer_ids, "backend": str(backend)}
+            )
+
+
+def async_index_venue_ids(venue_ids: Iterable[int]) -> None:
+    """Ask for an asynchronous reindexation of the given list of
+    ``Venue.id``.
+
+    This function returns quickly. The "real" reindexation will be
+    done later through a cron job.
+    """
+    backends = _get_backends()
+    for backend in backends:
+        try:
+            backend.enqueue_venue_ids(venue_ids)
+        except Exception:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
+            logger.exception(
+                "Could not enqueue venue ids to index", extra={"venues": venue_ids, "backend": str(backend)}
             )
 
 
@@ -134,6 +154,32 @@ def _index_offers_in_queue(
         left_to_process = backend.count_offers_to_index_from_queue(from_error_queue=from_error_queue)
         if not stop_only_when_empty and left_to_process < settings.REDIS_OFFER_IDS_CHUNK_SIZE:
             break
+
+
+def index_venues_in_queue() -> None:
+    """Pop venues from indexation queue and reindex them."""
+    backends = _get_backends()
+    for backend in backends:
+        try:
+            _index_venues_in_queue(backend)
+        except Exception as exc:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
+            logger.exception("Could not index venues from queue", extra={"backend": str(backend), "exc": str(exc)})
+
+
+def _index_venues_in_queue(backend: base.SearchBackend) -> None:
+    venue_ids = backend.get_venue_ids_from_queue(count=settings.REDIS_VENUE_IDS_CHUNK_SIZE)
+    if not venue_ids:
+        return
+
+    logger.info("Starting to index venues", extra={"count": len(venue_ids), "backend": str(backend)})
+
+    venues = Venue.query.filter(Venue.id.in_(venue_ids))
+    backend.index_venues(venues)
+
+    logger.info("Finished indexing venues", extra={"count": len(venue_ids), "backend": str(backend)})
+    backend.delete_venue_ids_from_queue(venue_ids)
 
 
 def index_offers_of_venues_in_queue() -> None:
