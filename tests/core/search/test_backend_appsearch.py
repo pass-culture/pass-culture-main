@@ -38,13 +38,13 @@ def test_enqueue_offer_ids_in_error(app):
     assert in_queue == {b"1", b"2", b"3"}
 
 
-def test_enqueue_venue_ids(app):
+def test_enqueue_venue_ids_for_offers(app):
     backend = get_backend()
-    backend.enqueue_venue_ids([1])
-    backend.enqueue_venue_ids({2, 3})
-    backend.enqueue_venue_ids([])
+    backend.enqueue_venue_ids_for_offers([1])
+    backend.enqueue_venue_ids_for_offers({2, 3})
+    backend.enqueue_venue_ids_for_offers([])
 
-    in_queue = app.redis_client.smembers("search:appsearch:venue-ids-to-index")
+    in_queue = app.redis_client.smembers("search:appsearch:venue-ids-for-offers-to-index")
     assert in_queue == {b"1", b"2", b"3"}
 
 
@@ -88,25 +88,25 @@ def test_pop_offer_ids_from_error_queue(app):
     assert offer_ids == set()
 
 
-def test_get_venue_ids_from_queue(app):
+def test_get_venue_ids_for_offers_from_queue(app):
     backend = get_backend()
-    app.redis_client.sadd("search:appsearch:venue-ids-to-index", 1, 2, 3)
+    app.redis_client.sadd("search:appsearch:venue-ids-for-offers-to-index", 1, 2, 3)
 
-    venue_ids = backend.get_venue_ids_from_queue(count=2)
+    venue_ids = backend.get_venue_ids_for_offers_from_queue(count=2)
     assert len(venue_ids) == 2
     assert venue_ids.issubset({1, 2, 3})
 
     # Make sure we did not pop values off the list.
-    in_queue = app.redis_client.smembers("search:appsearch:venue-ids-to-index")
+    in_queue = app.redis_client.smembers("search:appsearch:venue-ids-for-offers-to-index")
     assert in_queue == {b"1", b"2", b"3"}
 
 
-def test_delete_venue_ids_from_queue(app):
+def test_delete_venue_ids_for_offers_from_queue(app):
     backend = get_backend()
-    app.redis_client.sadd("search:appsearch:venue-ids-to-index", 1, 2, 3)
+    app.redis_client.sadd("search:appsearch:venue-ids-for-offers-to-index", 1, 2, 3)
 
-    backend.delete_venue_ids_from_queue({1, 2})
-    in_queue = app.redis_client.smembers("search:appsearch:venue-ids-to-index")
+    backend.delete_venue_ids_for_offers_from_queue({1, 2})
+    in_queue = app.redis_client.smembers("search:appsearch:venue-ids-for-offers-to-index")
     assert in_queue == {b"3"}
 
 

@@ -19,7 +19,7 @@ def process_offers():
 @app.manager.command
 def process_offers_by_venue():
     with app.app_context():
-        search.index_venues_in_queue()
+        search.index_offers_of_venues_in_queue()
 
 
 @app.manager.option("--clear", help="Clear search index", type=bool)

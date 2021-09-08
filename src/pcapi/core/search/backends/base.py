@@ -4,7 +4,7 @@ import pcapi.core.offers.models as offers_models
 
 
 class SearchBackend:
-    def __str__(self):  # useful in logs
+    def __str__(self) -> str:  # useful in logs
         return str(self.__class__.__name__)
 
     def enqueue_offer_ids(self, offer_ids: Iterable[int]) -> None:
@@ -13,16 +13,16 @@ class SearchBackend:
     def enqueue_offer_ids_in_error(self, offer_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
-    def enqueue_venue_ids(self, venue_ids: Iterable[int]) -> None:
+    def enqueue_venue_ids_for_offers(self, venue_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
     def pop_offer_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
         raise NotImplementedError()
 
-    def get_venue_ids_from_queue(self, count: int) -> set[int]:
+    def get_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
         raise NotImplementedError()
 
-    def delete_venue_ids_from_queue(self, venue_ids: Iterable[int]) -> None:
+    def delete_venue_ids_for_offers_from_queue(self, venue_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
     def count_offers_to_index_from_queue(self, from_error_queue: bool = False) -> int:

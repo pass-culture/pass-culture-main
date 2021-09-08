@@ -18,6 +18,7 @@ from . import base
 
 REDIS_OFFER_IDS_TO_INDEX = "search:appsearch:offer-ids-to-index"
 REDIS_OFFER_IDS_IN_ERROR_TO_INDEX = "search:appsearch:offer-ids-in-error-to-index"
+REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX = "search:appsearch:venue-ids-for-offers-to-index"
 REDIS_VENUE_IDS_TO_INDEX = "search:appsearch:venue-ids-to-index"
 
 ENGINE_NAME = "offers"
@@ -120,11 +121,11 @@ class AppSearchBackend(base.SearchBackend):
         except redis.exceptions.RedisError:
             logger.exception("Could not add offers to error queue", extra={"offers": offer_ids})
 
-    def enqueue_venue_ids(self, venue_ids: Iterable[int]):
+    def enqueue_venue_ids_for_offers(self, venue_ids: Iterable[int]):
         if not venue_ids:
             return
         try:
-            self.redis_client.sadd(REDIS_VENUE_IDS_TO_INDEX, *venue_ids)
+            self.redis_client.sadd(REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX, *venue_ids)
         except redis.exceptions.RedisError:
             logger.exception("Could not add venues to indexation queue", extra={"venues": venue_ids})
 
@@ -139,21 +140,21 @@ class AppSearchBackend(base.SearchBackend):
             return {int(offer_id) for offer_id in offer_ids}  # str -> int
         except redis.exceptions.RedisError:
             logger.exception("Could not pop offer ids to index from queue")
-            return []
-
-    def get_venue_ids_from_queue(self, count: int) -> set[int]:
-        try:
-            venue_ids = self.redis_client.srandmember(REDIS_VENUE_IDS_TO_INDEX, count)
-            return {int(venue_id) for venue_id in venue_ids}  # str -> int
-        except redis.exceptions.RedisError:
-            logger.exception("Could not get venue ids to index from queue")
             return set()
 
-    def delete_venue_ids_from_queue(self, venue_ids: Iterable[int]) -> None:
+    def get_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
+        try:
+            venue_ids = self.redis_client.srandmember(REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX, count)
+            return {int(venue_id) for venue_id in venue_ids}  # str -> int
+        except redis.exceptions.RedisError:
+            logger.exception("Could not get venue ids for offers to index from queue")
+            return set()
+
+    def delete_venue_ids_for_offers_from_queue(self, venue_ids: Iterable[int]) -> None:
         if not venue_ids:
             return
         try:
-            self.redis_client.srem(REDIS_VENUE_IDS_TO_INDEX, *venue_ids)
+            self.redis_client.srem(REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX, *venue_ids)
         except redis.exceptions.RedisError:
             logger.exception("Could not delete indexed venue ids from queue")
 

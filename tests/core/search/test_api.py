@@ -28,25 +28,26 @@ def test_async_index_offer_ids(app):
     assert set(app.redis_client.lrange("offer_ids", 0, 5)) == {b"1", b"2"}
 
 
-def test_async_index_venue_ids(app):
-    search.async_index_venue_ids({1, 2})
-    assert set(app.redis_client.lrange("venue_ids", 0, 5)) == {b"1", b"2"}
+def test_async_index_offers_of_venue_ids(app):
+    search.async_index_offers_of_venue_ids({1, 2})
+    assert set(app.redis_client.lrange("venue_ids_for_offers", 0, 5)) == {b"1", b"2"}
 
 
 @override_settings(REDIS_VENUE_IDS_CHUNK_SIZE=1)
-def test_index_venues_in_queue(app):
+def test_index_offers_of_venues_in_queue(app):
     bookable_offer = make_bookable_offer()
     venue1 = bookable_offer.venue
     unbookable_offer = make_unbookable_offer()
     venue2 = unbookable_offer.venue
-    app.redis_client.lpush("venue_ids", venue1.id, venue2.id)
+    app.redis_client.lpush("venue_ids_for_offers", venue1.id, venue2.id)
 
-    # `index_venues_in_queue` pops 1 venue from the queue (REDIS_VENUE_IDS_CHUNK_SIZE).
-    search.index_venues_in_queue()
-    assert app.redis_client.lrange("venue_ids", 0, 5) == [str(venue1.id).encode()]
+    # `index_offers_of_venues_in_queue` pops 1 venue from the queue
+    # (REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX).
+    search.index_offers_of_venues_in_queue()
+    assert app.redis_client.lrange("venue_ids_for_offers", 0, 5) == [str(venue1.id).encode()]
 
-    search.index_venues_in_queue()
-    assert app.redis_client.llen("venue_ids") == 0
+    search.index_offers_of_venues_in_queue()
+    assert app.redis_client.llen("venue_ids_for_offers") == 0
 
     assert bookable_offer.id in search_testing.search_store
     assert unbookable_offer.id not in search_testing.search_store

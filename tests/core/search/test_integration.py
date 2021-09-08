@@ -37,8 +37,8 @@ def test_offer_indexation_on_venue_cycle(app):
     venue = offer.venue
     assert search_testing.search_store == {}
 
-    search.async_index_venue_ids([venue.id])
+    search.async_index_offers_of_venue_ids([venue.id])
     assert search_testing.search_store == {}
 
-    search.index_venues_in_queue()
+    search.index_offers_of_venues_in_queue()
     assert offer.id in search_testing.search_store

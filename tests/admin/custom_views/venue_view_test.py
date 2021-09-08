@@ -18,8 +18,8 @@ from tests.conftest import clean_database
 class VenueViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.core.search.async_index_venue_ids")
-    def test_update_venue_siret(self, mocked_async_index_venue_ids, mocked_validate_csrf_token, app):
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def test_update_venue_siret(self, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
         venue = VenueFactory(siret="22222222222222")
         old_id_at_providers = "11111@22222222222222"
@@ -52,7 +52,7 @@ class VenueViewTest:
         assert stock_edited.idAtProviders == "11111@88888888888888"
         assert offer_edited.idAtProviders == "11111@88888888888888"
 
-        mocked_async_index_venue_ids.assert_not_called()
+        mocked_async_index_offers_of_venue_ids.assert_not_called()
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -112,8 +112,10 @@ class VenueViewTest:
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.core.search.async_index_venue_ids")
-    def test_reindex_venue_on_coordinates_change(self, mocked_async_index_venue_ids, mocked_validate_csrf_token, app):
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def test_reindex_venue_on_coordinates_change(
+        self, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app
+    ):
         AdminFactory(email="user@example.com")
         venue = VenueFactory()
 
@@ -134,7 +136,7 @@ class VenueViewTest:
 
         assert response.status_code == 302
 
-        mocked_async_index_venue_ids.assert_called_once_with([venue.id])
+        mocked_async_index_offers_of_venue_ids.assert_called_once_with([venue.id])
 
 
 class GetVenueProviderLinkTest:

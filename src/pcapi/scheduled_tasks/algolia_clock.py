@@ -23,7 +23,7 @@ def index_offers_in_algolia_by_offer(app):
 @log_cron
 @cron_context
 def index_offers_in_algolia_by_venue(app):
-    search.index_venues_in_queue()
+    search.index_offers_of_venues_in_queue()
 
 
 @log_cron

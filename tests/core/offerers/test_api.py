@@ -22,8 +22,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class EditVenueTest:
-    @patch("pcapi.core.search.async_index_venue_ids")
-    def when_changes_on_name_algolia_indexing_is_triggered(self, mocked_async_index_venue_ids):
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def when_changes_on_name_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids):
         # Given
         venue = offers_factories.VenueFactory(
             name="old names",
@@ -36,10 +36,10 @@ class EditVenueTest:
         offerers_api.update_venue(venue, **json_data)
 
         # Then
-        mocked_async_index_venue_ids.assert_called_once_with([venue.id])
+        mocked_async_index_offers_of_venue_ids.assert_called_once_with([venue.id])
 
-    @patch("pcapi.core.search.async_index_venue_ids")
-    def when_changes_on_public_name_algolia_indexing_is_triggered(self, mocked_async_index_venue_ids):
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def when_changes_on_public_name_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids):
         # Given
         venue = offers_factories.VenueFactory(
             name="old names",
@@ -52,10 +52,10 @@ class EditVenueTest:
         offerers_api.update_venue(venue, **json_data)
 
         # Then
-        mocked_async_index_venue_ids.called_once_with([venue.id])
+        mocked_async_index_offers_of_venue_ids.called_once_with([venue.id])
 
-    @patch("pcapi.core.search.async_index_venue_ids")
-    def when_changes_on_city_algolia_indexing_is_triggered(self, mocked_async_index_venue_ids):
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def when_changes_on_city_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids):
         # Given
         venue = offers_factories.VenueFactory(
             name="old names",
@@ -68,10 +68,12 @@ class EditVenueTest:
         offerers_api.update_venue(venue, **json_data)
 
         # Then
-        mocked_async_index_venue_ids.assert_called_once_with([venue.id])
+        mocked_async_index_offers_of_venue_ids.assert_called_once_with([venue.id])
 
-    @patch("pcapi.core.search.async_index_venue_ids")
-    def when_changes_are_not_on_algolia_fields_it_should_not_trigger_indexing(self, mocked_async_index_venue_ids):
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def when_changes_are_not_on_algolia_fields_it_should_not_trigger_indexing(
+        self, mocked_async_index_offers_of_venue_ids
+    ):
         # Given
         venue = offers_factories.VenueFactory(
             name="old names",
@@ -85,10 +87,12 @@ class EditVenueTest:
         offerers_api.update_venue(venue, **json_data)
 
         # Then
-        mocked_async_index_venue_ids.assert_not_called()
+        mocked_async_index_offers_of_venue_ids.assert_not_called()
 
-    @patch("pcapi.core.search.async_index_venue_ids")
-    def when_changes_in_payload_are_same_as_previous_it_should_not_trigger_indexing(self, mocked_async_index_venue_ids):
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def when_changes_in_payload_are_same_as_previous_it_should_not_trigger_indexing(
+        self, mocked_async_index_offers_of_venue_ids
+    ):
         # Given
         venue = offers_factories.VenueFactory(
             name="old names",
@@ -101,7 +105,7 @@ class EditVenueTest:
         offerers_api.update_venue(venue, **json_data)
 
         # Then
-        mocked_async_index_venue_ids.assert_not_called()
+        mocked_async_index_offers_of_venue_ids.assert_not_called()
 
     def test_empty_siret_is_editable(self, app) -> None:
         # Given
@@ -399,8 +403,8 @@ class ValidateOffererAttachmentTest:
 
 @freeze_time("2020-10-15 00:00:00")
 class ValidateOffererTest:
-    @patch("pcapi.core.search.async_index_venue_ids")
-    def test_offerer_is_validated(self, mocked_async_index_venue_ids):
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def test_offerer_is_validated(self, mocked_async_index_offers_of_venue_ids):
         # Given
         applicant = users_factories.UserFactory()
         user_offerer = offers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
@@ -412,8 +416,8 @@ class ValidateOffererTest:
         assert user_offerer.offerer.validationToken is None
         assert user_offerer.offerer.dateValidated == datetime.utcnow()
 
-    @patch("pcapi.core.search.async_index_venue_ids")
-    def test_pro_role_is_added_to_user(self, mocked_async_index_venue_ids):
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def test_pro_role_is_added_to_user(self, mocked_async_index_offers_of_venue_ids):
         # Given
         applicant = users_factories.UserFactory()
         user_offerer = offers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
@@ -430,8 +434,8 @@ class ValidateOffererTest:
         assert not another_applicant.has_pro_role
         assert another_user_on_same_offerer.validationToken is not None
 
-    @patch("pcapi.core.search.async_index_venue_ids")
-    def test_managed_venues_are_reindexed(self, mocked_async_index_venue_ids):
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def test_managed_venues_are_reindexed(self, mocked_async_index_offers_of_venue_ids):
         # Given
         applicant = users_factories.UserFactory()
         user_offerer = offers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
@@ -442,14 +446,14 @@ class ValidateOffererTest:
         offerers_api.validate_offerer(user_offerer.offerer.validationToken)
 
         # Then
-        mocked_async_index_venue_ids.assert_called_once()
-        called_args, _ = mocked_async_index_venue_ids.call_args
+        mocked_async_index_offers_of_venue_ids.assert_called_once()
+        called_args, _ = mocked_async_index_offers_of_venue_ids.call_args
         assert set(called_args[0]) == {venue_1.id, venue_2.id}
 
     @patch("pcapi.core.offerers.api.send_validation_confirmation_email_to_pro", return_value=True)
-    @patch("pcapi.core.search.async_index_venue_ids")
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_send_validation_confirmation_email(
-        self, mocked_async_index_venue_ids, mocked_send_validation_confirmation_email_to_pro
+        self, mocked_async_index_offers_of_venue_ids, mocked_send_validation_confirmation_email_to_pro
     ):
         # Given
         applicant = users_factories.UserFactory()
@@ -461,8 +465,8 @@ class ValidateOffererTest:
         # Then
         mocked_send_validation_confirmation_email_to_pro.assert_called_once_with(user_offerer.offerer)
 
-    @patch("pcapi.core.search.async_index_venue_ids")
-    def test_do_not_validate_attachment_if_token_does_not_exist(self, mocked_async_index_venue_ids):
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def test_do_not_validate_attachment_if_token_does_not_exist(self, mocked_async_index_offers_of_venue_ids):
         # Given
         applicant = users_factories.UserFactory()
         user_offerer = offers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")

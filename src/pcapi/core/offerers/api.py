@@ -70,7 +70,7 @@ def update_venue(venue: Venue, **attrs: typing.Any) -> Venue:
     indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)
 
     if indexing_modifications_fields:
-        search.async_index_venue_ids([venue.id])
+        search.async_index_offers_of_venue_ids([venue.id])
 
     return venue
 
@@ -218,7 +218,7 @@ def validate_offerer(token: str) -> None:
     managed_venues = offerer.managedVenues
 
     repository.save(offerer)
-    search.async_index_venue_ids([venue.id for venue in managed_venues])
+    search.async_index_offers_of_venue_ids([venue.id for venue in managed_venues])
 
     try:
         send_validation_confirmation_email_to_pro(offerer)

@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 REDIS_LIST_OFFER_IDS_NAME = "offer_ids"
 REDIS_LIST_OFFER_IDS_IN_ERROR_NAME = "offer_ids_in_error"
+REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME = "venue_ids_for_offers"
 REDIS_LIST_VENUE_IDS_NAME = "venue_ids"
 REDIS_HASHMAP_INDEXED_OFFERS_NAME = "indexed_offers"
 
@@ -52,11 +53,11 @@ class AlgoliaBackend(base.SearchBackend):
                 raise
             logger.exception("Could not add offers to error queue", extra={"offers": offer_ids})
 
-    def enqueue_venue_ids(self, venue_ids: Iterable[int]) -> None:
+    def enqueue_venue_ids_for_offers(self, venue_ids: Iterable[int]) -> None:
         if not venue_ids:
             return
         try:
-            self.redis_client.rpush(REDIS_LIST_VENUE_IDS_NAME, *venue_ids)
+            self.redis_client.rpush(REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME, *venue_ids)
         except redis.exceptions.RedisError:
             if settings.IS_RUNNING_TESTS:
                 raise
@@ -94,9 +95,9 @@ class AlgoliaBackend(base.SearchBackend):
             pipeline.reset()
         return offer_ids
 
-    def get_venue_ids_from_queue(self, count: int) -> set[int]:
+    def get_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
         try:
-            venue_ids = self.redis_client.lrange(REDIS_LIST_VENUE_IDS_NAME, 0, count - 1)
+            venue_ids = self.redis_client.lrange(REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME, 0, count - 1)
             return {int(venue_id) for venue_id in venue_ids}  # str -> int
         except redis.exceptions.RedisError:
             if settings.IS_RUNNING_TESTS:
@@ -104,13 +105,13 @@ class AlgoliaBackend(base.SearchBackend):
             logger.exception("Could not get venue ids to index from queue")
             return set()
 
-    def delete_venue_ids_from_queue(self, venue_ids: Iterable[int]) -> None:
+    def delete_venue_ids_for_offers_from_queue(self, venue_ids: Iterable[int]) -> None:
         if not venue_ids:
             return
         try:
             for venue_id in venue_ids:
                 # count=0 means "remove all occurrences of this value"
-                self.redis_client.lrem(REDIS_LIST_VENUE_IDS_NAME, count=0, value=venue_id)
+                self.redis_client.lrem(REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME, count=0, value=venue_id)
         except redis.exceptions.RedisError:
             if settings.IS_RUNNING_TESTS:
                 raise

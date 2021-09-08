@@ -2,6 +2,7 @@ import logging
 from typing import Iterable
 
 from pcapi import settings
+from pcapi.core.search.backends import base
 from pcapi.models import Offer
 from pcapi.repository import offer_queries
 from pcapi.utils.module_loading import import_string
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 # - simplify code by merging wrapper methods and private methods (that
 #   start with `_`);
 # - remove `backend` from "extra" log argument
-def _get_backends():
+def _get_backends() -> list[base.SearchBackend]:
     backend_classes = [import_string(path) for path in settings.SEARCH_BACKEND.split(",")]
     return [backend_class() for backend_class in backend_classes]
 
@@ -41,9 +42,9 @@ def async_index_offer_ids(offer_ids: Iterable[int]) -> None:
             )
 
 
-def async_index_venue_ids(venue_ids: Iterable[int]) -> None:
-    """Ask for an asynchronous reindexation of the given list of
-    ``Venue.id``.
+def async_index_offers_of_venue_ids(venue_ids: Iterable[int]) -> None:
+    """Ask for an asynchronous reindexation of the offers attached to venues
+    from the list of ``Venue.id``.
 
     This function returns quickly. The "real" reindexation will be
     done later through a cron job.
@@ -51,12 +52,13 @@ def async_index_venue_ids(venue_ids: Iterable[int]) -> None:
     backends = _get_backends()
     for backend in backends:
         try:
-            backend.enqueue_venue_ids(venue_ids)
+            backend.enqueue_venue_ids_for_offers(venue_ids)
         except Exception:  # pylint: disable=broad-except
             if settings.IS_RUNNING_TESTS:
                 raise
             logger.exception(
-                "Could not enqueue venue ids to index", extra={"venues": venue_ids, "backend": str(backend)}
+                "Could not enqueue venue ids to index their offers",
+                extra={"venues": venue_ids, "backend": str(backend)},
             )
 
 
@@ -90,7 +92,9 @@ def index_offers_in_queue(stop_only_when_empty: bool = False, from_error_queue: 
             logger.exception("Could not index offers from queue", extra={"backend": str(backend)})
 
 
-def _index_offers_in_queue(backend, stop_only_when_empty: bool = False, from_error_queue: bool = False) -> None:
+def _index_offers_in_queue(
+    backend: base.SearchBackend, stop_only_when_empty: bool = False, from_error_queue: bool = False
+) -> None:
     while True:
         # We must pop and not get-and-delete. Otherwise two concurrent
         # cron jobs could delete the wrong offers from the queue:
@@ -132,20 +136,20 @@ def _index_offers_in_queue(backend, stop_only_when_empty: bool = False, from_err
             break
 
 
-def index_venues_in_queue():
+def index_offers_of_venues_in_queue() -> None:
     """Pop venues from indexation queue and reindex their offers."""
     backends = _get_backends()
     for backend in backends:
         try:
-            _index_venues_in_queue(backend)
+            _index_offers_of_venues_in_queue(backend)
         except Exception:  # pylint: disable=broad-except
             if settings.IS_RUNNING_TESTS:
                 raise
-            logger.exception("Could not index venues from queue", extra={"backend": str(backend)})
+            logger.exception("Could not index offers of venues from queue", extra={"backend": str(backend)})
 
 
-def _index_venues_in_queue(backend):
-    venue_ids = backend.get_venue_ids_from_queue(count=settings.REDIS_VENUE_IDS_CHUNK_SIZE)
+def _index_offers_of_venues_in_queue(backend: base.SearchBackend) -> None:
+    venue_ids = backend.get_venue_ids_for_offers_from_queue(count=settings.REDIS_VENUE_IDS_CHUNK_SIZE)
     for venue_id in venue_ids:
         page = 0
         logger.info("Starting to index offers of venue", extra={"venue": venue_id, "backend": str(backend)})
@@ -159,10 +163,10 @@ def _index_venues_in_queue(backend):
             page += 1
         logger.info("Finished indexing offers of venue", extra={"venue": venue_id, "backend": str(backend)})
 
-    backend.delete_venue_ids_from_queue(venue_ids)
+    backend.delete_venue_ids_for_offers_from_queue(venue_ids)
 
 
-def reindex_offer_ids(offer_ids: Iterable[int]):
+def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
     """Given a list of `Offer.id`, reindex or unindex each offer
     (i.e. request the external indexation service an update or a
     removal).
@@ -181,7 +185,7 @@ def reindex_offer_ids(offer_ids: Iterable[int]):
             logger.exception("Could not reindex offers", extra={"offers": offer_ids, "backend": str(backend)})
 
 
-def _reindex_offer_ids(backend, offer_ids: Iterable[int]):
+def _reindex_offer_ids(backend: base.SearchBackend, offer_ids: Iterable[int]) -> None:
     to_add = []
     to_delete = []
     # FIXME (dbaty, 2021-07-05): join-load Stock, Venue, Offerer,
@@ -229,7 +233,7 @@ def _reindex_offer_ids(backend, offer_ids: Iterable[int]):
         backend.enqueue_offer_ids_in_error([offer.id for offer in to_delete])
 
 
-def unindex_offer_ids(offer_ids: Iterable[int]):
+def unindex_offer_ids(offer_ids: Iterable[int]) -> None:
     backends = _get_backends()
     for backend in backends:
         try:
@@ -240,7 +244,7 @@ def unindex_offer_ids(offer_ids: Iterable[int]):
             logger.exception("Could not unindex offers", extra={"offers": offer_ids, "backend": str(backend)})
 
 
-def unindex_all_offers():
+def unindex_all_offers() -> None:
     if settings.IS_PROD:
         raise ValueError("It is forbidden to unindex all offers on this environment")
     backends = _get_backends()
