@@ -3,6 +3,7 @@ import pytest
 from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.models import ApiKey
@@ -18,6 +19,7 @@ from pcapi.core.users.models import User
 from pcapi.models import AllocineVenueProvider
 from pcapi.models import AllocineVenueProviderPriceRule
 from pcapi.models import BankInformation
+from pcapi.models import BusinessUnit
 from pcapi.models import Criterion
 from pcapi.models import OfferCriterion
 from pcapi.models import Product
@@ -148,12 +150,29 @@ def test_delete_cascade_offerer_should_remove_offers_of_offerer():
 
 
 @pytest.mark.usefixtures("db_session")
+def test_delete_cascade_offerer_should_remove_business_unit_of_managed_venue():
+    # Given
+    venue = offers_factories.VenueFactory()
+    assert BusinessUnit.query.count() == 1
+    offerer_to_delete = venue.managingOfferer
+    finance_factories.BusinessUnitFactory()
+    assert BusinessUnit.query.count() == 2
+
+    # When
+    delete_cascade_offerer_by_id(offerer_to_delete.id)
+
+    # Then
+    assert Offerer.query.count() == 0
+    assert BusinessUnit.query.count() == 1
+
+
+@pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_bank_informations_of_managed_venue():
     # Given
     venue = offers_factories.VenueFactory()
     offerer_to_delete = venue.managingOfferer
-    offers_factories.BankInformationFactory(venue=venue)
     offers_factories.BankInformationFactory()
+    assert BankInformation.query.count() == 2
 
     # When
     delete_cascade_offerer_by_id(offerer_to_delete.id)

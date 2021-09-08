@@ -30,6 +30,7 @@ from pcapi.models import BankInformation
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import Booking
+from pcapi.models import BusinessUnit
 from pcapi.models import Criterion
 from pcapi.models import Favorite
 from pcapi.models import LocalProviderEvent
@@ -69,6 +70,9 @@ def clean_all_database(*args, **kwargs):
     Criterion.query.delete()
     Offer.query.delete()
     Product.query.delete()
+    # Handle relationship loop: Venue->BusinessUnit->BankInformation->Venue.
+    Venue.query.update({"businessUnitId": None}, synchronize_session=False)
+    BusinessUnit.query.delete()
     BankInformation.query.delete()
     Venue.query.delete()
     UserOfferer.query.delete()
