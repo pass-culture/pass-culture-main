@@ -157,6 +157,14 @@ class InternalReviewFraudData(pydantic.BaseModel):
     phone_number: typing.Optional[str]
 
 
+FRAUD_CHECK_MAPPING = {
+    FraudCheckType.DMS: DMSContent,
+    FraudCheckType.USER_PROFILING: UserProfilingFraudData,
+    FraudCheckType.JOUVE: JouveContent,
+    FraudCheckType.INTERNAL_REVIEW: InternalReviewFraudData,
+}
+
+
 class BeneficiaryFraudCheck(PcObject, Model):
     __tablename__ = "beneficiary_fraud_check"
 
@@ -173,6 +181,11 @@ class BeneficiaryFraudCheck(PcObject, Model):
     thirdPartyId = sqlalchemy.Column(sqlalchemy.TEXT, nullable=False)
 
     resultContent = sqlalchemy.Column(sqlalchemy.dialects.postgresql.JSONB)
+
+    def source_data(self) -> typing.Union[JouveContent, DMSContent, UserProfilingFraudData]:
+        if self.type not in FRAUD_CHECK_MAPPING:
+            raise NotImplementedError(f"Cannot unserialize type {self.type}")
+        return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)
 
 
 class BeneficiaryFraudResult(PcObject, Model):

@@ -67,17 +67,25 @@ def admin_update_identity_fraud_check_result(
     fraud_check = (
         models.BeneficiaryFraudCheck.query.filter(
             models.BeneficiaryFraudCheck.userId == user.id,
-            models.BeneficiaryFraudCheck.type == models.FraudCheckType.JOUVE,
+            models.BeneficiaryFraudCheck.type.in_(
+                [
+                    models.FraudCheckType.JOUVE,
+                    models.FraudCheckType.DMS,
+                ]
+            ),
         )
         .order_by(models.BeneficiaryFraudCheck.dateCreated.desc())
         .first()
     )
     if not fraud_check:
         return None
-    content = models.JouveContent(**fraud_check.resultContent)
-    content.bodyPieceNumber = id_piece_number
-    content.bodyPieceNumberCtrl = "OK"
-    content.bodyPieceNumberLevel = 100
+    content = fraud_check.source_data()
+    if fraud_check.type == models.FraudCheckType.JOUVE:
+        content.bodyPieceNumber = id_piece_number
+        content.bodyPieceNumberCtrl = "OK"
+        content.bodyPieceNumberLevel = 100
+    if fraud_check.type == models.FraudCheckType.DMS:
+        content.id_piece_number = id_piece_number
     fraud_check.resultContent = content.dict()
     repository.save(fraud_check)
     return fraud_check

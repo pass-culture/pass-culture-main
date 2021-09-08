@@ -236,12 +236,12 @@ class BeneficiaryValidationViewTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class JouveUpdateIDPieceNumberTest:
+class UpdateIDPieceNumberTest:
     def setup_method(self, method):
         self.jouve_admin = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
 
-    def test_update_beneficiary_id_piece_number(self, client):
-        user = users_factories.UserFactory(isAdmin=False, isBeneficiary=False)
+    def test_update_beneficiary_id_piece_number_from_jouve_data(self, client):
+        user = users_factories.UserFactory()
         content = fraud_factories.JouveContentFactory(
             birthLocationCtrl="OK",
             bodyBirthDateCtrl="OK",
@@ -260,18 +260,39 @@ class JouveUpdateIDPieceNumberTest:
             user=user, type=fraud_models.FraudCheckType.JOUVE, resultContent=content
         )
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.SUSPICIOUS)
-
+        id_piece_number = "123123123123"
         client.with_session_auth(self.jouve_admin.email)
+
         response = client.post(
             f"/pc/back-office/support_beneficiary/update/beneficiary/id_piece_number/{user.id}",
-            form={"id_piece_number": "123123123123"},
+            form={"id_piece_number": id_piece_number},
         )
 
         assert response.status_code == 302
 
         assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
         assert fraud_check.resultContent["bodyPieceNumberCtrl"] == "OK"
-        assert fraud_check.resultContent["bodyPieceNumber"] == "123123123123"
+        assert fraud_check.resultContent["bodyPieceNumber"] == id_piece_number
+        assert user.idPieceNumber == id_piece_number
+        assert user.isBeneficiary
+        assert len(user.beneficiaryImports) == 1
+        assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
+
+    def test_update_beneficiary_id_piece_number_from_dms_data(self, client):
+        user = users_factories.UserFactory()
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
+        fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.SUSPICIOUS)
+        client.with_session_auth(self.jouve_admin.email)
+        id_piece_number = "123123123123"
+        response = client.post(
+            f"/pc/back-office/support_beneficiary/update/beneficiary/id_piece_number/{user.id}",
+            form={"id_piece_number": id_piece_number},
+        )
+        assert response.status_code == 302
+
+        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
+        assert fraud_check.resultContent["id_piece_number"] == id_piece_number
+        assert user.idPieceNumber == id_piece_number
         assert user.isBeneficiary
         assert len(user.beneficiaryImports) == 1
         assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED

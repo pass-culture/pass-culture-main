@@ -14,6 +14,7 @@ from pcapi.admin import base_configuration
 from pcapi.connectors.beneficiaries import jouve_backend
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
 from pcapi.domain import user_emails
@@ -232,15 +233,18 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             return flask.redirect(flask.url_for(".details_view", id=user_id))
         fraud_check = fraud_api.admin_update_identity_fraud_check_result(user, form.data["id_piece_number"])
         if not fraud_check:
-            flask.flash("Aucune vérification Jouve disponible", "error")
+            flask.flash("Aucune vérification de fraude disponible", "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
         db.session.refresh(user)
         fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
         if fraud_result.status == fraud_models.FraudStatus.OK:
             # todo : cleanup to use fraud validation journey v2
-            pre_subscription = jouve_backend.get_subscription_from_content(
-                fraud_models.JouveContent(**fraud_check.resultContent)
-            )
+            if fraud_check.type == fraud_models.FraudCheckType.JOUVE:
+                pre_subscription = jouve_backend.get_subscription_from_content(fraud_check.source_data())
+            elif fraud_check.type == fraud_models.FraudCheckType.DMS:
+                pre_subscription = subscription_models.BeneficiaryPreSubscription.from_dms_source(
+                    fraud_check.source_data()
+                )
             beneficiary_repository.BeneficiarySQLRepository.save(pre_subscription, user)
 
         flask.flash(f"N° de pièce d'identitée modifiée sur le bénéficiaire {user.firstName} {user.lastName}")

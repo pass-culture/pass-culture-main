@@ -352,3 +352,15 @@ class DMSFraudCheckTest:
 
         fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(user=user).one_or_none()
         assert fraud_result.status == fraud_models.FraudStatus.OK
+
+    def test_admin_update_identity_fraud_check_result(self):
+        user = users_factories.UserFactory(isBeneficiary=False)
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.DMS,
+            user=user,
+        )
+
+        fraud_check = fraud_api.admin_update_identity_fraud_check_result(user, "id-piece-number")
+        content = fraud_models.DMSContent(**fraud_check.resultContent)
+        assert content.id_piece_number == "id-piece-number"
