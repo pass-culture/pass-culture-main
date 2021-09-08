@@ -2,6 +2,7 @@ from typing import Optional
 
 from flask.helpers import flash
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter
+from markupsafe import Markup
 from sqlalchemy import and_
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import joinedload
@@ -71,6 +72,18 @@ class FilterByDepositTypeNotEqual(BaseSQLAFilter):
         return [(deposit_type.name, deposit_type.name) for deposit_type in DepositType]
 
 
+def beneficiary_deposit_type_formatter(view, context, model, name) -> Markup:
+    deposit_type_mapping_class = {
+        DepositType.GRANT_15: "#C7CEEA",
+        DepositType.GRANT_16: "#B5EAD7",
+        DepositType.GRANT_17: "#FFDAC1",
+        DepositType.GRANT_18: "#FF9AA2",
+    }
+    return Markup(
+        f"""<span class="badge" style="background-color:{deposit_type_mapping_class[model.deposit_type]}">{model.deposit_type.name}</spanf>"""
+    )
+
+
 class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView):
     can_edit = True
 
@@ -119,6 +132,12 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         FilterByDepositTypeEqual(column=None, name="Type du portefeuille"),
         FilterByDepositTypeNotEqual(column=None, name="Type du portefeuille"),
     ]
+
+    @property
+    def column_formatters(self):
+        formatters = super().column_formatters
+        formatters["deposit_type"] = beneficiary_deposit_type_formatter
+        return formatters
 
     @property
     def form_columns(self):
