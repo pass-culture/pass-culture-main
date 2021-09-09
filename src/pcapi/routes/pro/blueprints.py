@@ -1,11 +1,12 @@
 from flask import Blueprint
+from flask_cors import CORS
 
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
 pro_api_v2 = Blueprint("pro_api_v2", __name__)
-
+CORS(pro_api_v2, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 API_KEY_AUTH = "ApiKeyAuth"
 
