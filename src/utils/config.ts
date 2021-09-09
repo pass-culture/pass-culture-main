@@ -3,8 +3,7 @@ const NODE_ENV = process.env.NODE_ENV || "development"
 export const IS_DEV = NODE_ENV === "development"
 export const IS_PROD = !IS_DEV
 
-export const API_URL =
-  process.env.REACT_APP_API_URL || "http://localhost/adage-iframe"
+export const API_URL = process.env.REACT_APP_API_URL || "http://localhost"
 
 export const {
   REACT_APP_APP_SEARCH_ENDPOINT: APP_SEARCH_ENDPOINT,
@@ -13,4 +12,5 @@ export const {
   REACT_APP_URL_FOR_MAINTENANCE: URL_FOR_MAINTENANCE,
   REACT_APP_SENTRY_SAMPLE_RATE: SENTRY_SAMPLE_RATE,
   REACT_APP_SENTRY_SERVER_URL: SENTRY_SERVER_URL,
+  REACT_APP_ASSETS_URL: ASSETS_URL,
 } = process.env
