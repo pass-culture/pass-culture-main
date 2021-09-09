@@ -1,0 +1,18 @@
+@import "sass-rem";
+
+.offer-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+
+  &:not(:first-child) {
+    margin-top: 20px;
+  }
+}
+
+.offer-image {
+  background-color: #c7c7cc;
+  border-radius: 6px;
+  height: 300px;
+  width: 200px;
+}
