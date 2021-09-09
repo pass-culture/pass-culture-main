@@ -92,7 +92,7 @@ def create_industrial_webapp_underage_beneficiaries():
 
         email = f"pctest.mineur{departement_code}.{tag}@example.com"
 
-        if tag == "has-15-years-old":
+        if tag == "15-years-old-underage-beneficiary":
             user = users_factories.BeneficiaryGrant15Factory(
                 culturalSurveyId=None,
                 departementCode=str(departement_code),
@@ -106,7 +106,7 @@ def create_industrial_webapp_underage_beneficiaries():
                 publicName=f"PC Test Mineur {departement_code} {short_tag}",
                 deposit__source="sandbox",
             )
-        elif tag == "has-16-years-old":
+        elif tag == "16-years-old-underage-beneficiary":
             user = users_factories.BeneficiaryGrant16Factory(
                 culturalSurveyId=None,
                 departementCode=str(departement_code),
