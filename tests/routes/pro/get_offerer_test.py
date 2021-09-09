@@ -61,6 +61,7 @@ class Returns200Test:
             "lastProviderId": offerer.lastProviderId,
             "managedVenues": [
                 {
+                    "audioDisabilityCompliant": None,
                     "bic": venue_bank_information.bic,
                     "iban": venue_bank_information.iban,
                     "demarchesSimplifieesApplicationId": str(venue.demarchesSimplifieesApplicationId),
@@ -79,6 +80,8 @@ class Returns200Test:
                     "latitude": float(offererVenue.latitude),
                     "longitude": float(offererVenue.longitude),
                     "managingOffererId": humanize(offererVenue.managingOffererId),
+                    "mentalDisabilityCompliant": None,
+                    "motorDisabilityCompliant": None,
                     "name": offererVenue.name,
                     "nOffers": offererVenue.nOffers,
                     "postalCode": offererVenue.postalCode,
@@ -87,6 +90,7 @@ class Returns200Test:
                     "stats": None,
                     "venueLabelId": humanize(offererVenue.venueLabelId),
                     "venueTypeId": humanize(offererVenue.venueTypeId),
+                    "visualDisabilityCompliant": None,
                     "withdrawalDetails": venue.withdrawalDetails,
                 }
                 for offererVenue in offerer.managedVenues
