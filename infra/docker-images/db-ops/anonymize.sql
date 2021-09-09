@@ -64,8 +64,7 @@ SET
     "lastName" = 'lastName' || "id",
     "dateOfBirth" = '01/01/2001',
     "phoneNumber" = '0606060606',
-    "validationToken" = NULL,
-    "resetPasswordToken" = NULL
+    "validationToken" = NULL
 ;
 
 UPDATE user_offerer SET "validationToken" = pg_temp.random_text(27) WHERE "validationToken" is not null;
