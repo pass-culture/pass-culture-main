@@ -277,10 +277,26 @@ const OfferForm = ({
   )
 
   useEffect(
-    function setWithdrawalDetails() {
+    function setVenueValues() {
+      let venueValues = {}
       if (venue?.withdrawalDetails) {
-        handleFormUpdate({ withdrawalDetails: venue?.withdrawalDetails })
+        venueValues.withdrawalDetails = venue?.withdrawalDetails
       }
+
+      const venueAccessibilities = [
+        venue?.audioDisabilityCompliant,
+        venue?.mentalDisabilityCompliant,
+        venue?.motorDisabilityCompliant,
+        venue?.visualDisabilityCompliant,
+      ].map((val) => val === undefined ? null : val)
+      if (!venueAccessibilities.includes(null)) {
+        venueValues.audioDisabilityCompliant = venue.audioDisabilityCompliant
+        venueValues.mentalDisabilityCompliant = venue.mentalDisabilityCompliant
+        venueValues.motorDisabilityCompliant = venue.motorDisabilityCompliant
+        venueValues.visualDisabilityCompliant = venue.visualDisabilityCompliant
+      }
+
+      handleFormUpdate(venueValues)
     },
     [venue, handleFormUpdate]
   )
