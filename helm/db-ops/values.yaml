@@ -1,14 +1,6 @@
 # Default values for passculture.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
-gcp:
-  # Project ID for the database where the data should be restored
-  destProjectId: passculture-metier-ehp
-  # Prefix of the secrets for the database where the data should be restored
-  stagingSecretsNamePrefix: pcapi-staging
-  perfSecretsNamePrefix: pcapi-perf
-
 image:
   repository: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-tools/db-ops
   tag: latest
@@ -30,33 +22,52 @@ resources:
     memory: 256Mi
 
 workflows:
-  dump_restore: true
-  post_process: false
+  dump_restore: false
+  post_process: true
 
 serviceAccount:
   create: true
   annotations:
     iam.gke.io/gcp-service-account: metier-production-sqldump@passculture-metier-prod.iam.gserviceaccount.com
 
-configmap:
+instances:
+  staging:
+    secretsNamePrefix: pcapi-staging
+    newUserPasswordSecretName: database_credentials_password
+    postProcess: true
+    envVars:
+      ENV: staging
+      SOURCE_INSTANCE: pcapi-production-9fb2eb30
+      SOURCE_PROJECT: passculture-metier-prod
+      SOURCE_USER: pcapi-production
+      DEST_INSTANCE: pcapi-ehp-0ef86e9a
+      DEST_PROJECT: passculture-metier-ehp
+      DEST_NEW_USER: pcapi-staging
+      DEST_INSTANCE_IP_ADDRESS_TYPE: public
+    secrets:
+      - STAGING_TEST_USER_PASSWORD
+  perf:
+    secretsNamePrefix: pcapi-perf
+    newUserPasswordSecretName: database_credentials_password
+    dependsOn: [staging]
+    envVars:
+      ENV: testing
+      SOURCE_INSTANCE: pcapi-ehp-0ef86e9a
+      SOURCE_PROJECT: passculture-metier-ehp
+      SOURCE_USER: pcapi-staging
+      DEST_INSTANCE: pcapi-perf-1ac56766
+      DEST_PROJECT: passculture-metier-ehp
+      DEST_NEW_USER: pcapi-perf
+      DEST_INSTANCE_IP_ADDRESS_TYPE: public
+
+commonEnvVars:
   NLTK_DATA: /root/nltk_data
-  PROJECT_DEST: passculture-metier-ehp
-  DUMP_BUCKET_NAME: passculture-metier-prod-europe-west1-sql-dump
-  DUMP_FILENAME: dump.gz
-  POSTGRES_INSTANCE_SRC: pcapi-production-9fb2eb30-replica-read0
-  POSTGRES_DATABASE_SRC: pcapi-production
-
-configmapStaging:
-  ENV: staging
-  POSTGRES_INSTANCE_DEST: pcapi-ehp-0ef86e9a
-  POSTGRES_DATABASE_DEST: pcapi-staging
-  POSTGRES_USER_DEST: pcapi-staging
-
-configmapPerf:
-  ENV: testing 
-  POSTGRES_INSTANCE_DEST: pcapi-perf-1ac56766
-  POSTGRES_DATABASE_DEST: pcapi-perf
-  POSTGRES_USER_DEST: pcapi-perf
+  ANONYMIZE_SQL_SCRIPT_PATH: /scripts/anonymize.sql
+  PCAPI_ROOT_PATH: /usr/src/app
+  IMPORT_USERS_SCRIPT_PATH: src/pcapi/scripts/beneficiary/import_users.py
+  USERS_CSV_PATH: /scripts/data_pass-culture-api-staging.csv
+  TABLES_TO_EMPTY : "activity user_session email"
+  DISABLE_VENUE_PROVIDERS: "true"
 
 destSecrets:
   - ADMINISTRATION_EMAIL_ADDRESS
@@ -92,7 +103,6 @@ destSecrets:
   - PAYMENTS_REPORT_RECIPIENTS
   - PC_GOOGLE_KEY
   - PROVIDER_FNAC_BASIC_AUTHENTICATION_TOKEN
-  - PUBLIC_DATABASE_URL
   - RECAPTCHA_SECRET
   - REDIS_URL
   - SENDINBLUE_API_KEY
