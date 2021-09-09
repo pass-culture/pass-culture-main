@@ -1,19 +1,32 @@
 import "./App.scss"
 import "@elastic/react-search-ui-views/lib/styles/styles.css"
-import { SearchProvider, Results, SearchBox } from "@elastic/react-search-ui"
-import { Layout } from "@elastic/react-search-ui-views"
+import {
+  SearchProvider,
+  SearchBox,
+  WithSearch,
+} from "@elastic/react-search-ui"
 import AppSearchAPIConnector from "@elastic/search-ui-app-search-connector"
 import * as React from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 
 import * as pcapi from "repository/pcapi/pcapi"
 import { APP_SEARCH_ENDPOINT, APP_SEARCH_KEY } from "utils/config"
+import { RESULT_FIELDS } from "utils/search"
+
+import Offers from "./components/Offers"
 
 const connector = new AppSearchAPIConnector({
   searchKey: APP_SEARCH_KEY,
   engineName: "offers",
   endpointBase: APP_SEARCH_ENDPOINT,
 })
+
+const configurationOptions = {
+  searchQuery: {
+    result_fields: RESULT_FIELDS,
+    filters: [{ field: "is_educational", values: [1] }],
+  },
+}
 
 const App = (): JSX.Element => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
@@ -24,6 +37,25 @@ const App = (): JSX.Element => {
       .then(() => setIsAuthenticated(true))
       .catch(() => setIsAuthenticated(false))
   }, [])
+
+  const mapContextToProps = useCallback(
+    ({
+      autocompletedResults,
+      autocompletedSuggestions,
+      trackAutocompleteClickThrough,
+      searchTerm,
+      setSearchTerm,
+      results,
+    }) => ({
+      autocompletedResults,
+      autocompletedSuggestions,
+      trackAutocompleteClickThrough,
+      searchTerm,
+      setSearchTerm,
+      results,
+    }),
+    []
+  )
 
   return (
     <>
@@ -59,19 +91,34 @@ const App = (): JSX.Element => {
         <SearchProvider
           config={{
             apiConnector: connector,
+            ...configurationOptions,
           }}
         >
-          <div className="App">
-            <Layout
-              bodyContent={(
-                <Results
-                  titleField="title"
-                  urlField="nps_link"
-                />
-              )}
-              header={<SearchBox />}
-            />
-          </div>
+          <WithSearch mapContextToProps={mapContextToProps}>
+            {({
+              autocompletedResults,
+              autocompletedSuggestions,
+              trackAutocompleteClickThrough,
+              searchTerm,
+              setSearchTerm,
+              results,
+            }) => {
+              return (
+                <>
+                  <SearchBox
+                    autocompletedResults={autocompletedResults}
+                    autocompletedSuggestions={autocompletedSuggestions}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    trackAutocompleteClickThrough={
+                      trackAutocompleteClickThrough
+                    }
+                  />
+                  <Offers results={results} />
+                </>
+              )
+            }}
+          </WithSearch>
         </SearchProvider>
       </main>
       <footer>
