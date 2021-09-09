@@ -31,6 +31,7 @@ export const Offer = ({ result }: { result: ResultType }): JSX.Element => {
           alt="Offer thumb"
           className="offer-image"
           height="300"
+          loading="lazy"
           src={`${ASSETS_URL}${result.thumb_url?.raw}`}
           width="200"
         />
@@ -40,6 +41,7 @@ export const Offer = ({ result }: { result: ResultType }): JSX.Element => {
           alt="placeholder"
           className="offer-image"
           height="300"
+          loading="lazy"
           src="/icons/placeholder.svg"
           width="200"
         />
