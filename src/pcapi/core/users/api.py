@@ -31,6 +31,7 @@ import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.payments.api as payment_api
+from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -50,7 +51,6 @@ from pcapi.core.users.utils import get_object
 from pcapi.core.users.utils import sanitize_email
 from pcapi.core.users.utils import store_object
 from pcapi.domain import user_emails
-from pcapi.domain.beneficiary_pre_subscription.model import BeneficiaryPreSubscription
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.user_activation import create_beneficiary_from_application

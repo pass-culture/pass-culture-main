@@ -2,12 +2,12 @@ from datetime import datetime
 import re
 from typing import Optional
 
+from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsNotEligible
 from pcapi.domain.beneficiary_pre_subscription.exceptions import IdPieceNumberDuplicate
 from pcapi.domain.beneficiary_pre_subscription.exceptions import SuspiciousFraudDetected
-from pcapi.domain.beneficiary_pre_subscription.model import BeneficiaryPreSubscription
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository.user_queries import find_beneficiary_by_civility
 from pcapi.repository.user_queries import find_user_by_email

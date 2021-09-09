@@ -9,7 +9,7 @@ import pytest
 from pcapi.connectors.beneficiaries.jouve_backend import ApiJouveException
 from pcapi.connectors.beneficiaries.jouve_backend import get_application_content
 from pcapi.connectors.beneficiaries.jouve_backend import get_subscription_from_content
-from pcapi.domain.beneficiary_pre_subscription.model import BeneficiaryPreSubscription
+from pcapi.core.subscription.models import BeneficiaryPreSubscription
 
 
 # Required by the feature flag...

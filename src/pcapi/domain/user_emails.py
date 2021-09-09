@@ -6,11 +6,11 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
-from pcapi.domain.beneficiary_pre_subscription.model import BeneficiaryPreSubscription
 from pcapi.emails import beneficiary_activation
 from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
 from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email

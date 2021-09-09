@@ -1,9 +1,9 @@
 from typing import Optional
 
+from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users import api as users_api
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
-from pcapi.domain.beneficiary_pre_subscription.model import BeneficiaryPreSubscription
 from pcapi.infrastructure.repository.beneficiary import beneficiary_pre_subscription_sql_converter
 from pcapi.repository import repository
 

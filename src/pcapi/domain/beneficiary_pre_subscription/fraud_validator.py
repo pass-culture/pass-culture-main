@@ -1,9 +1,9 @@
 import dataclasses
 import logging
 
+from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.domain.beneficiary_pre_subscription.exceptions import FraudDetected
 from pcapi.domain.beneficiary_pre_subscription.exceptions import SuspiciousFraudDetected
-from pcapi.domain.beneficiary_pre_subscription.model import BeneficiaryPreSubscription
 
 
 logger = logging.getLogger(__name__)

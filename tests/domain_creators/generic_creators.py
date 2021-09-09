@@ -3,45 +3,9 @@ from typing import Optional
 
 from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.offers.models import Mediation
-from pcapi.domain.beneficiary_pre_subscription.model import BeneficiaryPreSubscription
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.models import Offer
-
-
-def create_domain_beneficiary_pre_subcription(
-    date_of_birth: datetime = datetime(1995, 2, 5),
-    activity: str = "Apprenti",
-    address: str = "3 rue de Valois",
-    application_id: str = "12",
-    city: str = "Paris",
-    postal_code: str = "35123",
-    email: str = "rennes@example.org",
-    first_name: str = "Thomas",
-    civility: str = "Mme",
-    last_name: str = "DURAND",
-    phone_number: str = "0123456789",
-    source: str = "jouve",
-    source_id: str = None,
-    id_piece_number: str = "140767100016",
-) -> BeneficiaryPreSubscription:
-    return BeneficiaryPreSubscription(
-        address=address,
-        activity=activity,
-        application_id=application_id,
-        city=city,
-        date_of_birth=date_of_birth,
-        postal_code=postal_code,
-        email=email,
-        first_name=first_name,
-        civility=civility,
-        last_name=last_name,
-        phone_number=phone_number,
-        source=source,
-        source_id=source_id,
-        fraud_fields=[],
-        id_piece_number=id_piece_number,
-    )
 
 
 def create_domain_booking_recap(

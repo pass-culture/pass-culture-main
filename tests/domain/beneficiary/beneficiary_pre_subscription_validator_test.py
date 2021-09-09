@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytest
 
+from pcapi.core.subscription.factories import BeneficiaryPreSubscriptionFactory
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
@@ -9,13 +10,11 @@ from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsNo
 from pcapi.domain.beneficiary_pre_subscription.exceptions import CantRegisterBeneficiary
 from pcapi.domain.beneficiary_pre_subscription.validator import validate
 
-from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
-
 
 @pytest.mark.usefixtures("db_session")
 def test_should_not_raise_exception_for_valid_beneficiary(app):
     # Given
-    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription()
+    beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory()
 
     try:
         # When
@@ -31,7 +30,7 @@ def test_raises_if_email_already_taken_by_beneficiary(app):
     email = "email@example.org"
     existing_user = users_factories.BeneficiaryGrant18Factory(email=email)
 
-    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(email=email)
+    beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(email=email)
 
     # When
     with pytest.raises(BeneficiaryIsADuplicate) as error:
@@ -46,7 +45,7 @@ def test_validates_for_non_beneficiary_with_same_mail(app):
     email = "email@example.org"
     existing_user = users_factories.UserFactory(email=email, isBeneficiary=False, isEmailValidated=True)
 
-    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(email=email)
+    beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(email=email)
 
     # Should not raise an exception
     validate(beneficiary_pre_subcription, preexisting_account=existing_user)
@@ -57,7 +56,7 @@ def test_doesnt_raise_if_email_not_taken(app):
     # Given
     users_factories.UserFactory(email="email@example.org")
 
-    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(email="different.email@example.org")
+    beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(email="different.email@example.org")
 
     try:
         # When
@@ -77,7 +76,7 @@ def test_raises_if_duplicate(app):
         firstName=first_name, lastName=last_name, dateOfBirth=date_of_birth
     )
 
-    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(
+    beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(
         first_name=first_name, last_name=last_name, date_of_birth=date_of_birth
     )
 
@@ -103,7 +102,7 @@ def test_doesnt_raise_if_no_exact_duplicate(app):
         firstName=first_name, lastName=last_name, dateOfBirth=datetime(1992, 2, 2), email="e3@example.com"
     )
 
-    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(
+    beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(
         first_name=first_name, last_name=last_name, date_of_birth=date_of_birth
     )
 
@@ -120,7 +119,7 @@ def test_doesnt_raise_if_no_exact_duplicate(app):
 @pytest.mark.usefixtures("db_session")
 def test_raises_if_not_eligible_legacy_behaviour(postal_code):
     # Given
-    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(postal_code=postal_code)
+    beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(postal_code=postal_code)
 
     # When
     with pytest.raises(BeneficiaryIsNotEligible) as error:
@@ -135,7 +134,7 @@ def test_raises_if_not_eligible_legacy_behaviour(postal_code):
 @pytest.mark.usefixtures("db_session")
 def test_should_not_raise_if_eligible_legacy_behaviour(postal_code):
     # Given
-    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(postal_code=postal_code)
+    beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(postal_code=postal_code)
 
     try:
         # When
@@ -150,7 +149,7 @@ def test_should_not_raise_if_eligible_legacy_behaviour(postal_code):
 @pytest.mark.usefixtures("db_session")
 def test_raises_if_not_eligible(postal_code):
     # Given
-    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(postal_code=postal_code)
+    beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(postal_code=postal_code)
 
     # When
     with pytest.raises(BeneficiaryIsNotEligible) as error:
@@ -165,7 +164,7 @@ def test_raises_if_not_eligible(postal_code):
 @pytest.mark.usefixtures("db_session")
 def test_should_not_raise_if_eligible(postal_code):
     # Given
-    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(postal_code=postal_code)
+    beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(postal_code=postal_code)
 
     try:
         # When

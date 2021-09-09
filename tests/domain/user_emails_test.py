@@ -14,6 +14,7 @@ from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.subscription.factories import BeneficiaryPreSubscriptionFactory
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.user_emails import send_activation_email
@@ -41,8 +42,6 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.utils.human_ids import humanize
-
-from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
 
 
 # FIXME (dbaty, 2020-02-01): I am not sure what we are really testing
@@ -324,7 +323,7 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
     )
     def when_beneficiary_is_a_duplicate_sends_correct_template(self, mocked_make_data, app):
         # given
-        beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription()
+        beneficiary_pre_subscription = BeneficiaryPreSubscriptionFactory()
 
         # when
         send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, beneficiary_is_eligible=True)
@@ -339,7 +338,7 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
     )
     def when_beneficiary_is_not_eligible_sends_correct_template(self, mocked_make_data, app):
         # given
-        beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription()
+        beneficiary_pre_subscription = BeneficiaryPreSubscriptionFactory()
 
         # when
         send_rejection_email_to_beneficiary_pre_subscription(
