@@ -25,6 +25,8 @@ import { SubmitButton } from 'ui-kit'
 
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 
+import PriceErrorHTMLNotification from './PriceErrorHTMLNotification'
+
 const EMPTY_STRING_VALUE = ''
 
 const ThingStocks = ({
@@ -33,6 +35,7 @@ const ThingStocks = ({
   offer,
   showErrorNotification,
   showSuccessNotification,
+  showHtmlErrorNotification,
   reloadOffer,
   autoActivateDigitalBookings,
   areActivationCodesEnabled,
@@ -45,7 +48,6 @@ const ThingStocks = ({
   const editionOfferLink = `/offres/${offerId}/edition`
   const [stock, setStock] = useState(null)
   const displayExpirationDatetime = stock && stock.activationCodesExpirationDatetime !== null
-
   const loadStocks = useCallback(() => {
     return pcapi.loadStocks(offerId).then(receivedStocks => {
       if (!receivedStocks.stocks.length) {
@@ -68,9 +70,13 @@ const ThingStocks = ({
 
   useEffect(() => {
     if (Object.values(formErrors).length > 0) {
-      showErrorNotification()
+      if (formErrors.price300) {
+        showHtmlErrorNotification(PriceErrorHTMLNotification())
+      } else {
+        showErrorNotification()
+      }
     }
-  }, [formErrors, showErrorNotification])
+  }, [formErrors, showErrorNotification, showHtmlErrorNotification])
 
   const addNewStock = useCallback(() => {
     const newStock = {
@@ -320,6 +326,7 @@ ThingStocks.propTypes = {
   offer: PropTypes.shape().isRequired,
   reloadOffer: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
+  showHtmlErrorNotification: PropTypes.func.isRequired,
   showSuccessNotification: PropTypes.func.isRequired,
 }
 

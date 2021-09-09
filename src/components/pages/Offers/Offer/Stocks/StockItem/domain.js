@@ -98,6 +98,10 @@ export const validateCreatedStock = stock => {
     errors.price = 'Le prix doit être positif.'
   }
 
+  if (stock.price > 300 && !stock.beginningDate) {
+    errors.price300 = 'Le prix d’une offre ne peut excéder 300 euros.'
+  }
+
   if (stock.quantity < 0) {
     errors.quantity = 'La quantité doit être positive.'
   }

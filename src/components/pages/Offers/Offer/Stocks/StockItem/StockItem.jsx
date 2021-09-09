@@ -237,7 +237,7 @@ const StockItem = ({
         <input
           aria-label="Prix"
           className={`it-input ${price ? 'with-euro-icon' : ''} ${
-            'price' in errors ? 'error' : 'price-input'
+            'price' in errors || 'price300' in errors ? 'error' : 'price-input'
           }`}
           disabled={
             isOfferDisabled ||

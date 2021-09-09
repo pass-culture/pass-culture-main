@@ -33,6 +33,13 @@ const mapDispatchToProps = dispatch => ({
         text,
       })
     ),
+  showHtmlErrorNotification: text =>
+    dispatch(
+      showNotification({
+        type: 'error',
+        text,
+      })
+    ),
 })
 
 export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(Stocks)

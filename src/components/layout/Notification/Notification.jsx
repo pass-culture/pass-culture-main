@@ -61,7 +61,7 @@ const Notification = ({ hideNotification, notification }) => {
 Notification.propTypes = {
   hideNotification: PropTypes.func.isRequired,
   notification: PropTypes.shape({
-    text: PropTypes.string,
+    text: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]),
     type: PropTypes.oneOf(['error', 'success', 'pending', 'information']),
   }).isRequired,
 }

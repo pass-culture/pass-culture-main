@@ -715,6 +715,57 @@ describe('stocks page', () => {
     })
   })
 
+  describe('form errors',() => {
+    it('should display price error when the price is above 300 euros and offer is a thing', async () => {
+      // Given
+      pcapi.loadOffer.mockResolvedValue(defaultOffer)
+      pcapi.loadStocks.mockResolvedValue({ stocks: [defaultStock] })
+      await renderOffers(props, store)
+
+      fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '301' } })
+
+      // When
+      fireEvent.click(screen.getByText('Enregistrer'))
+
+      // Then
+      expect(queryByTextTrimHtml(
+        screen,
+        'Le prix d’une offre ne peut excéder 300 euros. Pour plus d’infos, merci de consulter nos Conditions Générales d’Utilisation'
+      )).toBeInTheDocument()
+    })
+
+    it('should not display price error when the price is above 300 euros and offer is event', async () => {
+      // Given
+      let eventOffer = {
+        ...defaultOffer,
+        isEvent: true,
+      }
+      pcapi.loadOffer.mockResolvedValue(eventOffer)
+      pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+      await renderOffers(props, store)
+
+      fireEvent.click(await screen.findByText('Ajouter une date'))
+      fireEvent.click(screen.getByLabelText('Date de l’événement'))
+      fireEvent.click(screen.getByText('26'))
+      fireEvent.click(screen.getByLabelText('Heure de l’événement'))
+      fireEvent.click(screen.getByText('20:00'))
+      fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '301' } })
+
+      // When
+      fireEvent.click(screen.getByText('Enregistrer'))
+
+      // Then
+      expect(queryByTextTrimHtml(
+        screen,
+        'Le prix d’une offre ne peut excéder 300 euros. Pour plus d’infos, merci de consulter nos Conditions Générales d’Utilisation'
+      )).not.toBeInTheDocument()
+
+      expect(screen.queryByText(
+        'Une ou plusieurs erreurs sont présentes dans le formulaire.'
+      )).not.toBeInTheDocument()
+    })
+  })
+
   describe('edit', () => {
     it('should update displayed offer status', async () => {
       // Given
