@@ -360,6 +360,43 @@ describe('components | AllocineProviderForm', () => {
       })
     })
 
+    it('should not send quantity when it value is removed', async () => {
+      // given
+      allocineProvider = {
+        ...allocineProvider,
+        price: 20,
+        quantity: 50,
+        isDuo: false
+      }
+      pcapi.loadVenueProviders.mockResolvedValue([allocineProvider])
+      const editedAllocineProvider = {
+        ...allocineProvider,
+        price: 20,
+        quantity: null,
+        isDuo: false
+      }
+
+      pcapi.editVenueProvider.mockResolvedValue(editedAllocineProvider)
+
+      await renderAllocineProviderForm()
+
+      const saveEditioProvider = screen.getByRole('button', { name: 'Modifier' })
+      const quantityField = screen.getByLabelText('Nombre de places/séance')
+
+      // when
+      fireEvent.change(quantityField, { target: { value: '' } })
+      fireEvent.click(saveEditioProvider)
+
+      // then
+      expect(pcapi.editVenueProvider).toHaveBeenCalledWith({
+        price: editedAllocineProvider.price,
+        quantity: editedAllocineProvider.quantity,
+        isDuo: editedAllocineProvider.isDuo,
+        providerId: provider.id,
+        venueId: props.venue.id,
+      })
+    })
+
     it('should display a success notification when venue provider was correctly updated', async () => {
       // given
       allocineProvider = {

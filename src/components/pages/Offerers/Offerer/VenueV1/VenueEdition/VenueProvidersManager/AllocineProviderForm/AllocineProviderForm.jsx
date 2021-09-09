@@ -25,7 +25,8 @@ const AllocineProviderForm = ({ saveVenueProvider, providerId, venueId, isCreate
 
   const handleSubmit = useCallback(
     formValues => {
-      const { quantity, isDuo = true, price } = formValues
+      const { isDuo = true, price } = formValues
+      const quantity = formValues.quantity !== '' ? formValues.quantity : null
 
       const payload = {
         quantity,
