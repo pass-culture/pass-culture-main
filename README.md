@@ -294,6 +294,9 @@ A la fin de l'opération, une fenêtre de votre navigateur s'ouvrira sur le work
 
 Après avoir livré en production, ne pas oublier de livrer ensuite sur les environnements d'integration.
 
+:warning: Il est important de surveiller Sentry ou du moins d'être attentif aux exceptions et alertes
+qui suivent un déploiement afin de pouvoir detecter au plus tôt d'éventuels incidents.
+
 ### Tagging des versions
 
 _Poser un tag_ consiste à sélectionner un ensemble de commits et de leur attribuer un numéro de version.
