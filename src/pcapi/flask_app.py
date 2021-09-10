@@ -28,6 +28,7 @@ from pcapi import settings
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.logging import install_logging
 from pcapi.models.db import db
+from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.json_encoder import EnumJSONEncoder
@@ -184,3 +185,7 @@ app.url_map.strict_slashes = False
 
 with app.app_context():
     app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)
+
+
+api = ExtendedSpecTree("flask", MODE="strict", before=before_handler, PATH="/", version=1)
+api.register(public_api)
