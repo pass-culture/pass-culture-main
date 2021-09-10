@@ -1,28 +1,20 @@
 @import "sass-rem";
 
 header {
-  background-image: linear-gradient(to right, #eb0055, #320096);
   grid-column-end: end-line;
   grid-column-start: col-start;
   grid-row-start: row-header;
-  text-align: center;
+  padding-left: rem(16px);
+  padding-top: rem(16px);
 
-  h1 {
-    color: white;
+  svg {
+    height: rem(60px);
   }
 }
 
 main.app-layout {
   grid-column-start: col-main;
   grid-row-start: row-main;
-  margin-top: rem(24px);
-}
-
-footer {
-  background-image: linear-gradient(to left, #eb0055, #320096);
-  grid-column-end: end-line;
-  grid-column-start: col-start;
-  grid-row-start: row-footer;
 }
 
 body {

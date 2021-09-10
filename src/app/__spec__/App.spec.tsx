@@ -25,8 +25,6 @@ describe("app", () => {
       render(<App />)
 
       // Then
-      const pageTitle = await screen.findByRole("heading", { level: 1 })
-      expect(pageTitle).toHaveTextContent("pass Culture")
       const contentTitle = await screen.findByText("Rechercher une offre", {
         selector: "h2",
       })

@@ -1,19 +1,18 @@
 import "./AppLayout.scss"
 import * as React from "react"
 
+import { ReactComponent as Logo } from "../assets/logo.svg"
+
 import { OffersSearch } from "./components/OffersSearch/OffersSearch"
 
 const App = (): JSX.Element => (
   <>
     <header>
-      <h1>
-        pass Culture
-      </h1>
+      <Logo />
     </header>
     <main className="app-layout">
       <OffersSearch />
     </main>
-    <footer />
   </>
 )
 
