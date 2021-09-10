@@ -1,6 +1,7 @@
 import * as React from "react"
 import { useEffect, useState } from "react"
 
+import "@fontsource/barlow"
 import { UnauthenticatedError } from "app/components/UnauthenticatedError/UnauthenticatedError"
 import * as pcapi from "repository/pcapi/pcapi"
 

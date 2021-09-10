@@ -1344,6 +1344,11 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@fontsource/barlow@^4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/barlow/-/barlow-4.5.0.tgz#379614975be4cbb2f1b4a3d3e30d081fbf00ab5f"
+  integrity sha512-GXDWy1hi40MgOH4j4AOZu1dWqVLTU67fkuwA10ZLXGsJoJNTT9dWpOYsmIkFDMiwuzfi6lR4O3tulnXuxkITtA==
+
 "@gar/promisify@^1.0.1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.2.tgz#30aa825f11d438671d585bd44e7fd564535fc210"
