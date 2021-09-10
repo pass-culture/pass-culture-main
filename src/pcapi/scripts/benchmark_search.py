@@ -148,6 +148,7 @@ class AlgoliaBackend:
                 result["objectID"] = human_ids.dehumanize(result["objectID"])
         return ResultSet(
             elapsed=elapsed,
+            query=filters,  # searched text is missing but we don't need it for Algolia
             results=[
                 Result(
                     id=int(result["objectID"]),
@@ -256,6 +257,7 @@ class AppSearchBackend:
             results = out["results"]
         return ResultSet(
             elapsed=response.elapsed.total_seconds() if response else 0,
+            query=query,
             results=[
                 Result(
                     id=int(result["id"]["raw"]),
@@ -283,7 +285,12 @@ class Result:
 @dataclasses.dataclass
 class ResultSet:
     elapsed: float
+    query: dict
     results: [Result]
+
+    @property
+    def pretty_printed_query(self):
+        return pprint.pformat(self.query)
 
 
 @dataclasses.dataclass
@@ -323,7 +330,10 @@ class BenchmarkJsonEncoder(json.JSONEncoder):
                 "value": {"id": obj.id, "score": obj.score, "name": obj.name, "full": obj.full},
             }
         if isinstance(obj, ResultSet):
-            return {"__type__": "ResultSet", "value": {"elapsed": obj.elapsed, "results": obj.results}}
+            return {
+                "__type__": "ResultSet",
+                "value": {"elapsed": obj.elapsed, "query": obj.query, "results": obj.results},
+            }
         if isinstance(obj, datetime.datetime):
             return {"__type__": "datetime.datetime", "value": obj.isoformat()}
         return json.JSONEncoder.default(self, obj)
@@ -489,6 +499,10 @@ HTML_TEMPLATE = jinja2.Template(
           <td>
             <div class="elapsed {% if result_set.elapsed > 1 %} slow-search{% endif %}">
               Temps de réponse : {{ "%.3f"|format(result_set.elapsed) }}s
+              <details>
+                <summary>Requête</summary>
+                <pre>{{ result_set.pretty_printed_query }}</pre>
+              </details>
             </div>
             <ol>
               {% for result in result_set.results %}
