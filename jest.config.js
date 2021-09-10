@@ -1,6 +1,8 @@
 module.exports = {
   moduleNameMapper: {
-    "\\.(css|less|scss|sass)$": "identity-obj-proxy",
+    "\\.(css|less|scss|sass)$": "<rootDir>/__mocks__/styleMock.ts",
+    "\\.(png|svg)": "<rootDir>/__mocks__/svgMock.ts",
+    "@fontsource/barlow": "<rootDir>/__mocks__/styleMock.ts",
   },
   modulePaths: ["node_modules", "src"],
   setupFiles: ["react-app-polyfill/jsdom"],
