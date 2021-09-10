@@ -14,7 +14,8 @@
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
     "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx}' --max-warnings=0",
     "lint:js:fix": "yarn lint:js --fix",
-    "eslint:fix:newconfig": "ESLINT=NEW_CONFIG eslint --fix --max-warnings=0",
+    "lint:js:strict": "ESLINT=STRICT_CONFIG eslint --max-warnings=0",
+    "lint:js:strict:fix": "yarn lint:js:strict --fix",
     "lint:scss": "stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",
     "qa:diff": "scripts/compare-screenshots.sh",
@@ -38,7 +39,7 @@
     "./src/**/*.svg": "svgo",
     "*.{js,jsx}": [
       "prettier --write",
-      "yarn eslint:fix:newconfig"
+      "yarn lint:js:strict:fix"
     ],
     "*.scss": "stylelint --syntax=scss --fix"
   },

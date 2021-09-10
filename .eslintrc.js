@@ -1,4 +1,4 @@
-const newStrictConfig = process.env.ESLINT === 'NEW_CONFIG'
+const useStrictConfig = process.env.ESLINT === 'STRICT_CONFIG'
 
 const comonConfig = {
   extends: [
@@ -50,6 +50,7 @@ const comonConfig = {
         unnamedComponents: 'arrow-function',
       },
     ],
+    'react/jsx-no-bind': 'off',
     'react/jsx-no-literals': 'off',
     'react/jsx-curly-brace-presence': [2, { props: 'never', children: 'never' }],
     'react/jsx-filename-extension': [1, { extensions: ['.jsx', '.tsx'] }],
@@ -101,7 +102,7 @@ const comonConfig = {
     {
       files: ['**/*.ts?(x)'],
       plugins: ['@typescript-eslint/eslint-plugin'],
-      extends: ["plugin:@typescript-eslint/recommended"],
+      extends: ['plugin:@typescript-eslint/recommended'],
       rules: {
         'react/prop-types': 'off',
       },
@@ -121,7 +122,7 @@ const comonConfig = {
   },
 }
 
-const newConfig = {
+const strictConfig = {
   ...comonConfig,
   extends: [...comonConfig.extends, 'plugin:testing-library/react'],
   rules: {
@@ -154,7 +155,7 @@ const newConfig = {
 }
 
 const config = () => {
-  return newStrictConfig ? newConfig : comonConfig
+  return useStrictConfig ? strictConfig : comonConfig
 }
 
 module.exports = config()

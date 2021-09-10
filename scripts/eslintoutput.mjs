@@ -1,4 +1,4 @@
-// generated using `ESLINT=NEW_CONFIG yarn eslint ./src/ -f json -o ./scripts/eslintOutput.json`
+// generated using `ESLINT=STRICT_CONFIG yarn eslint ./src/ -f json -o ./scripts/eslintOutput.json`
 const output = [
   {
     filePath: '/Users/gael.boyenval/dev/pass-culture-main/pro/src/Root.jsx',
