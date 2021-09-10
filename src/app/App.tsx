@@ -24,19 +24,7 @@ const App = (): JSX.Element => {
         </h1>
       </header>
       <main>
-        {isAuthenticated === true && (
-          <>
-            <h2>
-              Bienvenue
-            </h2>
-            <h3>
-              Vos offres
-            </h3>
-            <div>
-              Vous trouverez ici la liste des offres disponibles.
-            </div>
-          </>
-        )}
+        {isAuthenticated === true && <OffersSearch />}
         {isAuthenticated === false && (
           <h2>
             {"Vous n'êtes pas autorisé à accéder à cette page"}
@@ -47,7 +35,6 @@ const App = (): JSX.Element => {
             En cours de connexion...
           </h2>
         )}
-        <OffersSearch />
       </main>
       <footer />
     </>

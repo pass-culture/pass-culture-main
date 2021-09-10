@@ -20,21 +20,18 @@ describe("app", () => {
       pcapi.authenticate.mockResolvedValue()
     })
 
-    it("should have content placeholder", async () => {
+    it("should show search offers input", async () => {
       // When
       render(<App />)
 
       // Then
       const pageTitle = screen.getByRole("heading", { level: 1 })
       expect(pageTitle).toHaveTextContent("pass Culture")
-      const contentTitle = await screen.findByText("Bienvenue", {
+      const contentTitle = await screen.findByText("Rechercher une offre", {
         selector: "h2",
       })
       expect(contentTitle).toBeInTheDocument()
-      const contentPlaceHolder = screen.getByText(
-        "Vous trouverez ici la liste des offres disponibles."
-      )
-      expect(contentPlaceHolder).toBeInTheDocument()
+      expect(screen.getByRole("textbox")).toBeInTheDocument()
     })
   })
 
@@ -55,6 +52,7 @@ describe("app", () => {
         { selector: "h2" }
       )
       expect(contentTitle).toBeInTheDocument()
+      expect(screen.queryByRole("textbox")).not.toBeInTheDocument()
     })
   })
 })

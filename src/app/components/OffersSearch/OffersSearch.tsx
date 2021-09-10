@@ -46,35 +46,40 @@ export const OffersSearch = (): JSX.Element => {
   )
 
   return (
-    <SearchProvider
-      config={{
-        apiConnector: connector,
-        ...configurationOptions,
-      }}
-    >
-      <WithSearch mapContextToProps={mapContextToProps}>
-        {({
-          autocompletedResults,
-          autocompletedSuggestions,
-          trackAutocompleteClickThrough,
-          searchTerm,
-          setSearchTerm,
-          results,
-        }) => {
-          return (
-            <>
-              <SearchBox
-                autocompletedResults={autocompletedResults}
-                autocompletedSuggestions={autocompletedSuggestions}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                trackAutocompleteClickThrough={trackAutocompleteClickThrough}
-              />
-              <Offers results={results} />
-            </>
-          )
+    <>
+      <h2>
+        Rechercher une offre
+      </h2>
+      <SearchProvider
+        config={{
+          apiConnector: connector,
+          ...configurationOptions,
         }}
-      </WithSearch>
-    </SearchProvider>
+      >
+        <WithSearch mapContextToProps={mapContextToProps}>
+          {({
+            autocompletedResults,
+            autocompletedSuggestions,
+            trackAutocompleteClickThrough,
+            searchTerm,
+            setSearchTerm,
+            results,
+          }) => {
+            return (
+              <>
+                <SearchBox
+                  autocompletedResults={autocompletedResults}
+                  autocompletedSuggestions={autocompletedSuggestions}
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  trackAutocompleteClickThrough={trackAutocompleteClickThrough}
+                />
+                <Offers results={results} />
+              </>
+            )
+          }}
+        </WithSearch>
+      </SearchProvider>
+    </>
   )
 }
