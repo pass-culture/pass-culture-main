@@ -294,5 +294,25 @@ describe('bookingFormContent', () => {
         })
       ).toHaveLength(1)
     })
+
+    it('should display correct cancellation policy for a book offer', () => {
+      // given
+      props.isEvent = false
+      props.canExpire = true
+      props.isDigital = false
+      props.isLivrePapier = true
+      props.isNewAutoExpiryDelayBooksBookingEnabled = true
+
+      // when
+      const wrapper = shallow(<BookingFormContent {...props} />)
+
+      // then
+      expect(
+        wrapper.find({
+          children:
+            'Tu as 10 jours pour récupérer ton bien et faire valider ta contremarque. Passé ce délai, ta réservation sera automatiquement annulée.',
+        })
+      ).toHaveLength(1)
+    })
   })
 })

@@ -103,6 +103,8 @@ class BookingFormContent extends PureComponent {
       handleSubmit,
       isDigital,
       isEvent,
+      isLivrePapier,
+      isNewAutoExpiryDelayBooksBookingEnabled,
       isReadOnly,
       isStockDuo,
       hasActivationCode,
@@ -182,9 +184,9 @@ class BookingFormContent extends PureComponent {
 
         {!isEvent && canExpire && !isDigital && (
           <p className="bc-notification">
-            {
-              'Tu as 30 jours pour récupérer ton bien et faire valider ta contremarque. Passé ce délai, ta réservation sera automatiquement annulée.'
-            }
+            {isLivrePapier && isNewAutoExpiryDelayBooksBookingEnabled
+              ? 'Tu as 10 jours pour récupérer ton bien et faire valider ta contremarque. Passé ce délai, ta réservation sera automatiquement annulée.'
+              : 'Tu as 30 jours pour récupérer ton bien et faire valider ta contremarque. Passé ce délai, ta réservation sera automatiquement annulée.'}
           </p>
         )}
 
@@ -211,6 +213,8 @@ BookingFormContent.propTypes = {
   invalid: PropTypes.bool.isRequired,
   isDigital: PropTypes.bool.isRequired,
   isEvent: PropTypes.bool,
+  isLivrePapier: PropTypes.bool.isRequired,
+  isNewAutoExpiryDelayBooksBookingEnabled: PropTypes.bool.isRequired,
   isReadOnly: PropTypes.bool,
   isStockDuo: PropTypes.bool,
   offerId: PropTypes.string,
