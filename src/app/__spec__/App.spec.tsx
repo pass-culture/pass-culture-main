@@ -25,7 +25,7 @@ describe("app", () => {
       render(<App />)
 
       // Then
-      const pageTitle = screen.getByRole("heading", { level: 1 })
+      const pageTitle = await screen.findByRole("heading", { level: 1 })
       expect(pageTitle).toHaveTextContent("pass Culture")
       const contentTitle = await screen.findByText("Rechercher une offre", {
         selector: "h2",
@@ -40,16 +40,14 @@ describe("app", () => {
       pcapi.authenticate.mockRejectedValue()
     })
 
-    it("should tell user that he is not authorized to access this page", async () => {
+    it("should show error page", async () => {
       // When
       render(<App />)
 
       // Then
-      const pageTitle = screen.getByRole("heading", { level: 1 })
-      expect(pageTitle).toHaveTextContent("pass Culture")
       const contentTitle = await screen.findByText(
-        "Vous n'êtes pas autorisé à accéder à cette page",
-        { selector: "h2" }
+        "Une erreur s’est produite.",
+        { selector: "h1" }
       )
       expect(contentTitle).toBeInTheDocument()
       expect(screen.queryByRole("textbox")).not.toBeInTheDocument()

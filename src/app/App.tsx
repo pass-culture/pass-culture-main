@@ -1,10 +1,10 @@
-import "./App.scss"
 import * as React from "react"
 import { useEffect, useState } from "react"
 
+import { UnauthenticatedError } from "app/components/UnauthenticatedError/UnauthenticatedError"
 import * as pcapi from "repository/pcapi/pcapi"
 
-import { OffersSearch } from "./components/OffersSearch/OffersSearch"
+import AppLayout from "./AppLayout"
 
 const App = (): JSX.Element => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
@@ -18,25 +18,8 @@ const App = (): JSX.Element => {
 
   return (
     <>
-      <header>
-        <h1>
-          pass Culture
-        </h1>
-      </header>
-      <main>
-        {isAuthenticated === true && <OffersSearch />}
-        {isAuthenticated === false && (
-          <h2>
-            {"Vous n'êtes pas autorisé à accéder à cette page"}
-          </h2>
-        )}
-        {isAuthenticated === undefined && (
-          <h2>
-            En cours de connexion...
-          </h2>
-        )}
-      </main>
-      <footer />
+      {isAuthenticated === true && <AppLayout />}
+      {isAuthenticated === false && <UnauthenticatedError />}
     </>
   )
 }
