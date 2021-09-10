@@ -67,7 +67,7 @@ op.add_column('offer', sa.Column('fieldsUpdated', sa.ARRAY(sa.String(100)), null
 op.execute("COMMIT")
 ```
 
-Si on utilise la même transaction on risque d'avoir ce genre d'erreurs sur Scalingo :
+Si on utilise la même transaction on risque d'avoir ce genre d'erreurs :
 
 ```
 sqlalchemy.exc.OperationalError: (psycopg2.extensions.TransactionRollbackError) deadlock detected

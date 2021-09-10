@@ -13,12 +13,7 @@ tests/
 local_test_env_file
 pytest.ini
 
-# Scalingo related files
-bin/
-scalingo.json
-
-# Dockerfiles
-Dockerfile
+# Dockerfile
 Dockerfile.gcp
 
 # Docs
@@ -35,4 +30,3 @@ mypy.ini
 nltk.txt
 Procfile
 pyproject.toml
-runtime.txt

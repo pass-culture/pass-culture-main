@@ -6,7 +6,7 @@ Les modules de ce package contiennent des tâches à exécution régulières.
 Ces fonctions doivent être regroupées par domaine fonctionel : `booking`, `algolia`, etc.
 Chacune de ces fonctions seront appelées dans le fichier `clock` correspondant.
 Ces fichiers `clock` offrent un découpage technique pour ses crons. Chaque fichier `clock` possède son propre espace et contexte d'exécution.
-Cela nous permet d'avoir autant de containers que de fichier `clock` sur Scalingo.
+Cela nous permet d'avoir autant de containers que de fichier `clock` sur GCP.
 Cette configuration est effectuée à travers le fichier `Procfile` à la racine du projet.
 
 

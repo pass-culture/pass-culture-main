@@ -82,7 +82,6 @@ celerybeat-schedule
 # virtualenv
 venv/
 ENV/
-scalingo/import_titelive/*
 
 # Spyder project settings
 .spyderproject

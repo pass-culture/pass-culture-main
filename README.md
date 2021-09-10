@@ -75,7 +75,7 @@ modifié quand ces problèmes seront réglés côté pylint/astroid.
     
       docker run -d --name redis -p 6379:6379 \
           -v redis_local_data:/data \
-          scalingo/redis redis-server 
+          redis redis-server 
       ```
   - Jouer les migrations DB
     <br>Si la base de donnée n'a pas été initialisée (En d'autre terme si vous n'avez jamais fait par exemple de docker-compose -f ../docker-compose-app.yml up )
