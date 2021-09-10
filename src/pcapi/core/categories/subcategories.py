@@ -11,18 +11,18 @@ class OnlineOfflinePlatformChoices(Enum):
 
 
 class SearchGroups(Enum):
-    FILM = "Films, séries, podcasts"
+    FILM = "Films, séries"
     CINEMA = "Cinéma"
     CONFERENCE = "Conférences, rencontres"
     JEU = "Jeux"
-    LIVRE = "Livres"
-    VISITE = "Visites, expositions"
+    LIVRE = "Livre"
+    VISITE = "Visite, exposition"
     MUSIQUE = "Musique"
     COURS = "Cours, ateliers"
     PRESSE = "Presse, médias"
     SPECTACLE = "Spectacles"
     INSTRUMENT = "Instruments de musique"
-    MATERIEL = "Matériel arts créatifs"
+    MATERIEL = "Beaux-Arts"
     NONE = None
 
 
