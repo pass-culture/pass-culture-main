@@ -48,3 +48,15 @@ def email_rate_limiter(**kwargs) -> Callable:
     }
     base_kwargs.update(kwargs)
     return rate_limiter.shared_limit(settings.RATE_LIMIT_BY_EMAIL, **base_kwargs)
+
+
+def basic_auth_rate_limiter(**kwargs) -> Callable:
+    base_kwargs = {
+        "key_func": get_basic_auth_from_request,
+        "exempt_when": lambda: get_basic_auth_from_request() is None,
+        "deduct_when": lambda response: response.status_code == 401,
+        "scope": "rate_limiter",
+        "error_message": "rate limit by basic auth exceeded",
+    }
+    base_kwargs.update(kwargs)
+    return rate_limiter.shared_limit(settings.RATE_LIMIT_BY_EMAIL, **base_kwargs)
