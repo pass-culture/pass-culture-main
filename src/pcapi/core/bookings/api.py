@@ -433,7 +433,7 @@ def auto_mark_as_used_after_event() -> None:
     )
 
     logger.info(
-        "Automatically marked individual bookings as used after event",
+        "Automatically marked bookings as used after event",
         extra={
             "individualBookingsUpdatedCount": n_individual_updated,
             "educationalBookingsUpdatedCount": n_educational_updated,
