@@ -10,6 +10,17 @@ export interface VenueType {
 
 export interface OfferType {
   venue: VenueType;
+  stocks: StockType[];
+}
+
+export interface StockType {
+  id: number;
+  beginningDatetime: Date;
+  bookingLimitDatetime: Date;
+  isBookable: boolean;
+  isExpired: boolean;
+  isSoldOut: boolean;
+  price: number;
 }
 
 export interface ResultType {
