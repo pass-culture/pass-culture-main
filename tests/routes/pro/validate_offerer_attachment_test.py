@@ -3,21 +3,17 @@ import pytest
 import pcapi.core.offers.factories as offers_factories
 from pcapi.models import UserOfferer
 
-from tests.conftest import TestClient
-
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns202Test:
-    def expect_user_offerer_attachment_to_be_validated(self, app):
+    def expect_user_offerer_attachment_to_be_validated(self, client):
         # Given
         user_offerer = offers_factories.UserOffererFactory(validationToken="TOKEN")
 
         # When
-        response = TestClient(app.test_client()).get(
-            "/validate/user-offerer/" + user_offerer.validationToken, headers={"origin": "http://localhost:3000"}
-        )
+        response = client.get(f"/validate/user-offerer/{user_offerer.validationToken}")
 
         # Then
         assert response.status_code == 202
@@ -29,9 +25,9 @@ class Returns202Test:
 
 
 class Returns404Test:
-    def test_user_offerer_attachment_not_to_be_validated_with_unknown_token(self, app):
+    def test_user_offerer_attachment_not_to_be_validated_with_unknown_token(self, client):
         # When
-        response = TestClient(app.test_client()).get("/validate/user-offerer/123")
+        response = client.get("/validate/user-offerer/123")
 
         # Then
         assert response.status_code == 404

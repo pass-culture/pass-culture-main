@@ -21,9 +21,7 @@ class ValidateDistantImageTest:
         mock_check_image.return_value = None
 
         # When
-        response = auth_request.post(
-            "/offers/thumbnail-url-validation", json=body, headers={"origin": "http://localhost:3000"}
-        )
+        response = auth_request.post("/offers/thumbnail-url-validation", json=body)
 
         # Then
         assert response.status_code == 200
@@ -39,9 +37,7 @@ class ValidateDistantImageTest:
         mock_get_distant_image.side_effect = exceptions.FailureToRetrieve()
 
         # When
-        response = auth_request.post(
-            "/offers/thumbnail-url-validation", json=body, headers={"origin": "http://localhost:3000"}
-        )
+        response = auth_request.post("/offers/thumbnail-url-validation", json=body)
 
         # Then
         assert response.status_code == 200
@@ -63,9 +59,7 @@ class ValidateDistantImageTest:
         mock_get_distant_image.side_effect = exceptions.FileSizeExceeded(max_size=10_000_000)
 
         # When
-        response = auth_request.post(
-            "/offers/thumbnail-url-validation", json=body, headers={"origin": "http://localhost:3000"}
-        )
+        response = auth_request.post("/offers/thumbnail-url-validation", json=body)
 
         # Then
         assert response.status_code == 200
@@ -81,9 +75,7 @@ class ValidateDistantImageTest:
         mock_get_distant_image.side_effect = exceptions.ImageTooSmall(min_width=400, min_height=400)
 
         # When
-        response = auth_request.post(
-            "/offers/thumbnail-url-validation", json=body, headers={"origin": "http://localhost:3000"}
-        )
+        response = auth_request.post("/offers/thumbnail-url-validation", json=body)
 
         # Then
         assert response.status_code == 200
@@ -108,9 +100,7 @@ class ValidateDistantImageTest:
         )
 
         # When
-        response = auth_request.post(
-            "/offers/thumbnail-url-validation", json=body, headers={"origin": "http://localhost:3000"}
-        )
+        response = auth_request.post("/offers/thumbnail-url-validation", json=body)
 
         # Then
         assert response.status_code == 200

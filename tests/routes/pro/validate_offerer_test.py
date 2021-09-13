@@ -20,9 +20,7 @@ class Returns202Test:
 
             # When
             frozen_time.move_to("2021-06-23 11:00:00")
-            response = TestClient(app.test_client()).get(
-                f"/validate/offerer/{user_offerer.offerer.validationToken}", headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).get(f"/validate/offerer/{user_offerer.offerer.validationToken}")
 
         # Then
         assert response.status_code == 202

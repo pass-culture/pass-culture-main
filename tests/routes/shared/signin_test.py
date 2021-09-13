@@ -107,9 +107,7 @@ class Returns200Test:
         data = {"identifier": user.email, "password": user.clearTextPassword}
 
         # when
-        response = TestClient(app.test_client()).post(
-            "/users/signin", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/signin", json=data)
 
         # then
         assert response.status_code == 200

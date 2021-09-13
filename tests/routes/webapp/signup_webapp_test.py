@@ -74,9 +74,7 @@ class Returns201Test:
         get_authorized_emails_and_dept_codes.return_value = (["toto@example.com"], ["93"])
 
         # When
-        response = TestClient(app.test_client()).post(
-            "/users/signup/webapp", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/signup/webapp", json=data)
 
         # Then
         assert response.status_code == 201
@@ -105,9 +103,7 @@ class Returns201Test:
         get_authorized_emails_and_dept_codes.return_value = (["pctest.isAdmin.canBook@example.com"], ["93"])
 
         # When
-        response = TestClient(app.test_client()).post(
-            "/users/signup/webapp", json=user_json, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/signup/webapp", json=user_json)
 
         # Then
         assert response.status_code == 201
@@ -123,9 +119,7 @@ class Returns400Test:
         del data["email"]
 
         # When
-        response = TestClient(app.test_client()).post(
-            "/users/signup/webapp", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/signup/webapp", json=data)
 
         # Then
         assert response.status_code == 400
@@ -142,9 +136,7 @@ class Returns400Test:
         data["email"] = "toto"
 
         # When
-        response = TestClient(app.test_client()).post(
-            "/users/signup/webapp", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/signup/webapp", json=data)
 
         # Then
         assert response.status_code == 400
@@ -157,14 +149,10 @@ class Returns400Test:
         # Given
         get_authorized_emails_and_dept_codes.return_value = (["toto@example.com"], ["93"])
 
-        TestClient(app.test_client()).post(
-            "/users/signup/webapp", json=BASE_DATA, headers={"origin": "http://localhost:3000"}
-        )
+        TestClient(app.test_client()).post("/users/signup/webapp", json=BASE_DATA)
 
         # When
-        response = TestClient(app.test_client()).post(
-            "/users/signup/webapp", json=BASE_DATA, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/signup/webapp", json=BASE_DATA)
 
         # Then
         assert response.status_code == 400
@@ -180,9 +168,7 @@ class Returns400Test:
         del data["publicName"]
 
         # When
-        response = TestClient(app.test_client()).post(
-            "/users/signup/webapp", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/signup/webapp", json=data)
 
         # Then
         assert response.status_code == 400
@@ -198,9 +184,7 @@ class Returns400Test:
         data["publicName"] = "x" * 300
 
         # When
-        response = TestClient(app.test_client()).post(
-            "/users/signup/webapp", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/signup/webapp", json=data)
 
         # Then
         assert response.status_code == 400
@@ -214,9 +198,7 @@ class Returns400Test:
         del data["password"]
 
         # When
-        response = TestClient(app.test_client()).post(
-            "/users/signup/webapp", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/signup/webapp", json=data)
 
         # Then
         assert response.status_code == 400
@@ -230,9 +212,7 @@ class Returns400Test:
         data["password"] = "weakpassword"
 
         # When
-        response = TestClient(app.test_client()).post(
-            "/users/signup/webapp", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/signup/webapp", json=data)
 
         # Then
         assert response.status_code == 400
@@ -245,9 +225,7 @@ class Returns400Test:
         del data["contact_ok"]
 
         # When
-        response = TestClient(app.test_client()).post(
-            "/users/signup/webapp", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/signup/webapp", json=data)
 
         # Then
         assert response.status_code == 400
@@ -260,9 +238,7 @@ class Returns400Test:
         data["contact_ok"] = "t"
 
         # When
-        response = TestClient(app.test_client()).post(
-            "/users/signup/webapp", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/signup/webapp", json=data)
 
         # Then
         assert response.status_code == 400
@@ -278,9 +254,7 @@ class Returns400Test:
         data["email"] = "unknown@unknown.com"
 
         # When
-        response = TestClient(app.test_client()).post(
-            "/users/signup/webapp", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/signup/webapp", json=data)
 
         # Then
         assert response.status_code == 400
@@ -293,9 +267,7 @@ class Returns403Test:
     @override_features(WEBAPP_SIGNUP=False)
     def when_feature_is_not_active(self, app):
         # When
-        response = TestClient(app.test_client()).post(
-            "/users/signup/webapp", json=BASE_DATA, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/signup/webapp", json=BASE_DATA)
 
         # Then
         assert response.status_code == 403

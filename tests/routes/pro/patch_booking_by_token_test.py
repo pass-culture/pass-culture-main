@@ -75,7 +75,7 @@ class Returns204Test:
             quoted_email = urllib.parse.quote("user+plus@example.com")
             url = f"/bookings/token/{booking.token}?email={quoted_email}"
             client = TestClient(app.test_client()).with_session_auth("pro@example.com")
-            response = client.patch(url, headers={"origin": "http://random_header.fr"})
+            response = client.patch(url)
 
             assert response.status_code == 204
             booking = Booking.query.one()

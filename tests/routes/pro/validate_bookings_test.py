@@ -51,7 +51,7 @@ class Returns204Test:  # No Content
 
         url = f"/bookings/token/{booking.token}"
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
-        response = client.patch(url, headers={"origin": "http://random_header.fr"})
+        response = client.patch(url)
 
         assert response.status_code == 204
         booking = bookings_models.Booking.query.one()
@@ -70,7 +70,7 @@ class Returns204Test:  # No Content
         quoted_email = urllib.parse.quote("user+plus@example.com")
         url = f"/bookings/token/{booking.token}?email={quoted_email}"
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
-        response = client.patch(url, headers={"origin": "http://random_header.fr"})
+        response = client.patch(url)
 
         assert response.status_code == 204
         booking = bookings_models.Booking.query.one()
