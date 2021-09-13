@@ -13,11 +13,12 @@ jest.mock("utils/config", () => ({
 jest.mock("repository/pcapi/pcapi", () => ({
   authenticate: jest.fn(),
 }))
+const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
 describe("app", () => {
   describe("when is authenticated", () => {
     beforeEach(() => {
-      pcapi.authenticate.mockResolvedValue()
+      mockedPcapi.authenticate.mockResolvedValue()
     })
 
     it("should show search offers input", async () => {
@@ -35,7 +36,7 @@ describe("app", () => {
 
   describe("when is not authenticated", () => {
     beforeEach(() => {
-      pcapi.authenticate.mockRejectedValue()
+      mockedPcapi.authenticate.mockRejectedValue("Authentication failed")
     })
 
     it("should show error page", async () => {
