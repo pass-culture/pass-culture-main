@@ -123,10 +123,9 @@ class CorsConfigPrivateApiTest:
                 origins=get_cors_allowed_origins(test_data["env"], "CORS_ALLOWED_ORIGINS"),
                 supports_credentials=True,
             )
-            TestClient.LOCAL_ORIGIN_HEADERS["origin"] = origin
             client = TestClient(app.test_client())
-            response = client.get("/simple")
-            assert response.headers.get("Access-Control-Allow-Origin") == TestClient.LOCAL_ORIGIN_HEADERS["origin"]
+            response = client.get("/simple", headers={"origin": origin})
+            assert response.headers.get("Access-Control-Allow-Origin") == origin
 
     def test_not_allowed_origins(self, test_data):
         for _origin in test_data["allowed_origins"]:
@@ -137,9 +136,8 @@ class CorsConfigPrivateApiTest:
                 supports_credentials=True,
             )
             for permutation in build_permutations(test_data["allowed_origins"]):
-                TestClient.LOCAL_ORIGIN_HEADERS["origin"] = permutation
                 client = TestClient(app.test_client())
-                response = client.get("/simple")
+                response = client.get("/simple", headers={"origin": permutation})
                 assert not response.headers.get("Access-Control-Allow-Origin")
 
 
@@ -161,10 +159,9 @@ class CorsConfigNativeTest:
                 origins=get_cors_allowed_origins(test_data["env"], "CORS_ALLOWED_ORIGINS_NATIVE"),
                 supports_credentials=True,
             )
-            TestClient.LOCAL_ORIGIN_HEADERS["origin"] = origin
             client = TestClient(app.test_client())
-            response = client.get("/simple")
-            assert response.headers.get("Access-Control-Allow-Origin") == TestClient.LOCAL_ORIGIN_HEADERS["origin"]
+            response = client.get("/simple", headers={"Origin": origin})
+            assert response.headers.get("Access-Control-Allow-Origin") == origin
 
     def test_not_allowed_origins_native(self, test_data):
         for _origin in test_data["allowed_origins_native"]:
@@ -175,7 +172,6 @@ class CorsConfigNativeTest:
                 supports_credentials=True,
             )
             for permutation in build_permutations(test_data["allowed_origins_native"]):
-                TestClient.LOCAL_ORIGIN_HEADERS["origin"] = permutation
                 client = TestClient(app.test_client())
-                response = client.get("/simple")
+                response = client.get("/simple", headers={"Origin": permutation})
                 assert not response.headers.get("Access-Control-Allow-Origin")
