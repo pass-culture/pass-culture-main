@@ -53,10 +53,6 @@ class Provider(PcObject, Model, DeactivableMixin):
 
     enabledForPro = Column(Boolean, nullable=False, default=False, server_default=expression.false())
 
-    # FIXME (dbaty, 2021-06-04): remove this field once v139 has been
-    # deployed on prod.
-    requireProviderIdentifier = Column(Boolean, nullable=True, default=True, server_default=expression.true())
-
     pricesInCents = Column(Boolean, nullable=False, default=False, server_default=expression.false())
 
     @property
