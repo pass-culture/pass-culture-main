@@ -249,11 +249,11 @@ class NotifyOfferersOfExpiredBookingsTest:
 
         assert mocked_send_email_recap.call_count == 2
         assert mocked_send_email_recap.call_args_list[0][0] == (
-            expired_today_dvd_booking.stock.offer.venue.managingOfferer,
+            expired_today_dvd_booking.offerer,
             [expired_today_dvd_booking.individualBooking.booking],
         )
         assert mocked_send_email_recap.call_args_list[1][0] == (
-            expired_today_cd_booking.stock.offer.venue.managingOfferer,
+            expired_today_cd_booking.offerer,
             [expired_today_cd_booking.individualBooking.booking],
         )
 

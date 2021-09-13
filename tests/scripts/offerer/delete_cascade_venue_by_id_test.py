@@ -26,7 +26,7 @@ from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venu
 def test_delete_cascade_venue_should_abort_when_offerer_has_any_bookings():
     # Given
     booking = bookings_factories.BookingFactory()
-    venue_to_delete = booking.stock.offer.venue
+    venue_to_delete = booking.venue
 
     # When
     with pytest.raises(CannotDeleteVenueWithBookingsException) as exception:

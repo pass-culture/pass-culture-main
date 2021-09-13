@@ -34,8 +34,7 @@ class Returns204Test:  # No Content
     def when_user_has_rights(self, app):
         booking = bookings_factories.BookingFactory(token="ABCDEF")
         pro_user = users_factories.ProFactory(email="pro@example.com")
-        offerer = booking.stock.offer.venue.managingOfferer
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
         url = f"/bookings/token/{booking.token}"
         response = TestClient(app.test_client()).with_session_auth("pro@example.com").patch(url)
@@ -48,8 +47,7 @@ class Returns204Test:  # No Content
     def when_header_is_not_standard_but_request_is_valid(self, app):
         booking = bookings_factories.BookingFactory(token="ABCDEF")
         pro_user = users_factories.ProFactory(email="pro@example.com")
-        offerer = booking.stock.offer.venue.managingOfferer
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
         url = f"/bookings/token/{booking.token}"
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")
@@ -67,8 +65,7 @@ class Returns204Test:  # No Content
             user__email="user+plus@example.com",
         )
         pro_user = users_factories.ProFactory(email="pro@example.com")
-        offerer = booking.stock.offer.venue.managingOfferer
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
         quoted_email = urllib.parse.quote("user+plus@example.com")
         url = f"/bookings/token/{booking.token}?email={quoted_email}"
@@ -114,8 +111,7 @@ class Returns403Test:
         next_week = datetime.utcnow() + timedelta(weeks=1)
         booking = bookings_factories.BookingFactory(stock__beginningDatetime=next_week)
         pro_user = users_factories.ProFactory(email="pro@example.com")
-        offerer = booking.stock.offer.venue.managingOfferer
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
         url = "/bookings/token/{}".format(booking.token)
         mocked_check_is_usable.side_effect = api_errors.ForbiddenError(errors={"booking": ["Not confirmed"]})
 

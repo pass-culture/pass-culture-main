@@ -15,8 +15,7 @@ class Returns204Test:
     class WithApiKeyAuthTest:
         def test_when_api_key_provided_is_related_to_regular_offer_with_rights(self, client):
             booking = bookings_factories.UsedBookingFactory()
-            offerer = booking.stock.offer.venue.managingOfferer
-            ApiKeyFactory(offerer=offerer)
+            ApiKeyFactory(offerer=booking.offerer)
 
             url = f"/v2/bookings/keep/token/{booking.token}"
             response = client.patch(
@@ -116,8 +115,7 @@ class Returns403Test:
         def test_when_api_key_is_provided_and_booking_has_been_cancelled_already(self, client):
             # Given
             booking = bookings_factories.CancelledBookingFactory()
-            offerer = booking.stock.offer.venue.managingOfferer
-            ApiKeyFactory(offerer=offerer)
+            ApiKeyFactory(offerer=booking.offerer)
 
             # When
             url = f"/v2/bookings/keep/token/{booking.token}"

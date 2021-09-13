@@ -36,9 +36,9 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
                 "is_thing": 0,
                 "offer_name": booking.stock.offer.name,
                 "offer_price": "10.00",
-                "offerer_name": booking.stock.offer.venue.managingOfferer.name,
+                "offerer_name": booking.offerer.name,
                 "user_first_name": "Jeanne",
-                "venue_name": booking.stock.offer.venue.name,
+                "venue_name": booking.venue.name,
             },
         }
 
@@ -64,9 +64,9 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
                 "is_thing": 1,
                 "offer_name": booking.stock.offer.name,
                 "offer_price": "10.00",
-                "offerer_name": booking.stock.offer.venue.managingOfferer.name,
+                "offerer_name": booking.offerer.name,
                 "user_first_name": "Jeanne",
-                "venue_name": booking.stock.offer.venue.name,
+                "venue_name": booking.venue.name,
             },
         }
 
@@ -92,9 +92,9 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
                 "is_thing": 0,
                 "offer_name": booking.stock.offer.name,
                 "offer_price": "10.00",
-                "offerer_name": booking.stock.offer.venue.managingOfferer.name,
+                "offerer_name": booking.offerer.name,
                 "user_first_name": "Jeanne",
-                "venue_name": booking.stock.offer.venue.name,
+                "venue_name": booking.venue.name,
             },
         }
 

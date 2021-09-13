@@ -86,9 +86,7 @@ class Returns200Test:
             educationalBooking__status=EducationalBookingStatus.USED_BY_INSTITUTE,
         )
         pro_user = users_factories.ProFactory()
-        offers_factories.UserOffererFactory(
-            user=pro_user, offerer=validated_eac_booking.stock.offer.venue.managingOfferer
-        )
+        offers_factories.UserOffererFactory(user=pro_user, offerer=validated_eac_booking.offerer)
 
         # When
         client = client.with_basic_auth(pro_user.email)
@@ -114,9 +112,9 @@ class Returns200Test:
             "quantity": validated_eac_booking.quantity,
             "theater": {},
             "userName": f"{redactor.firstName} {redactor.lastName}",
-            "venueAddress": validated_eac_booking.stock.offer.venue.address,
-            "venueDepartementCode": validated_eac_booking.stock.offer.venue.departementCode,
-            "venueName": validated_eac_booking.stock.offer.venue.name,
+            "venueAddress": validated_eac_booking.venue.address,
+            "venueDepartementCode": validated_eac_booking.venue.departementCode,
+            "venueName": validated_eac_booking.venue.name,
         }
 
     def test_when_api_key_is_provided_and_rights_and_regular_offer(self, client):
@@ -240,9 +238,7 @@ class Returns403Test:
             educationalBooking__status=None,
         )
         pro_user = users_factories.ProFactory()
-        offers_factories.UserOffererFactory(
-            user=pro_user, offerer=not_validated_eac_booking.stock.offer.venue.managingOfferer
-        )
+        offers_factories.UserOffererFactory(user=pro_user, offerer=not_validated_eac_booking.offerer)
         url = f"/v2/bookings/token/{not_validated_eac_booking.token}"
 
         # When
@@ -269,9 +265,7 @@ class Returns403Test:
             educationalBooking__status=EducationalBookingStatus.REFUSED,
         )
         pro_user = users_factories.ProFactory()
-        offers_factories.UserOffererFactory(
-            user=pro_user, offerer=refused_eac_booking.stock.offer.venue.managingOfferer
-        )
+        offers_factories.UserOffererFactory(user=pro_user, offerer=refused_eac_booking.offerer)
         url = f"/v2/bookings/token/{refused_eac_booking.token}"
 
         # When

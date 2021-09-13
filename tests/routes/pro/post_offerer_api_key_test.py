@@ -11,7 +11,7 @@ from pcapi.utils.human_ids import humanize
 @pytest.mark.usefixtures("db_session")
 def test_api_key_journey(client):
     booking = BookingFactory()
-    user_offerer = UserOffererFactory(offerer=booking.stock.offer.venue.managingOfferer)
+    user_offerer = UserOffererFactory(offerer=booking.offerer)
     client.with_session_auth(user_offerer.user.email)
 
     response = client.post(f"/offerers/{humanize(user_offerer.offerer.id)}/api_keys")

@@ -136,7 +136,7 @@ def notify_offerers_of_expired_individual_bookings(expired_on: datetime.date = N
     )
     expired_individual_bookings_grouped_by_offerer = dict()
     for offerer, individual_bookings in groupby(
-        expired_individual_bookings_ordered_by_offerer, attrgetter("booking.stock.offer.venue.managingOfferer")
+        expired_individual_bookings_ordered_by_offerer, attrgetter("booking.offerer")
     ):
         expired_individual_bookings_grouped_by_offerer[offerer] = list(individual_bookings)
 

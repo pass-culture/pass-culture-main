@@ -38,7 +38,7 @@ class DoBanPaymentsTest:
         # given
         user = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(user=user)
-        offerer = booking.stock.offer.venue.managingOfferer
+        offerer = booking.offerer
 
         transaction1 = create_payment_message(name="XML1")
         transaction2 = create_payment_message(name="XML2")
@@ -71,7 +71,7 @@ class DoBanPaymentsTest:
         # given
         user = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(user=user)
-        offerer = booking.stock.offer.venue.managingOfferer
+        offerer = booking.offerer
 
         transaction1 = create_payment_message(name="XML1")
         transaction2 = create_payment_message(name="XML2")

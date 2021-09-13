@@ -102,8 +102,7 @@ class Returns200Test:
             user__phoneNumber="0100000000",
         )
         pro_user = users_factories.ProFactory(email="pro@example.com")
-        offerer = booking.stock.offer.venue.managingOfferer
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
         with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
@@ -145,12 +144,12 @@ class Returns200Test:
                     },
                 ],
                 "offerer": {
-                    "name": offerer.name,
+                    "name": booking.offerer.name,
                 },
                 "venue": {
                     "identifier": humanize(booking.venueId),
-                    "is_virtual": booking.stock.offer.venue.isVirtual,
-                    "name": booking.stock.offer.venue.name,
+                    "is_virtual": booking.venue.isVirtual,
+                    "name": booking.venue.name,
                 },
             }
         ]
@@ -188,8 +187,7 @@ class Returns200Test:
         booking = bookings_factories.BookingFactory(dateCreated=booking_date, token="AAAAAA")
         bookings_factories.BookingFactory(token="BBBBBB")
         pro_user = users_factories.ProFactory(email="pro@example.com")
-        offerer = booking.stock.offer.venue.managingOfferer
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
         with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
@@ -201,7 +199,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(response.json["bookings_recap"]) == 1
         assert response.json["bookings_recap"][0]["booking_date"] == datetime.isoformat(
-            utc_datetime_to_department_timezone(booking.dateCreated, booking.stock.offer.venue.departementCode)
+            utc_datetime_to_department_timezone(booking.dateCreated, booking.venue.departementCode)
         )
         assert response.json["page"] == 1
         assert response.json["pages"] == 1

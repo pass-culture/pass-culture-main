@@ -1078,7 +1078,7 @@ class FindByProUserIdTest:
         bookings_recap_paginated = find_by_pro_user_id(
             user_id=pro_user.id,
             booking_period=(one_year_before_booking, one_year_after_booking),
-            venue_id=booking_two.stock.offer.venue.id,
+            venue_id=booking_two.venue.id,
         )
 
         # Then
@@ -1086,7 +1086,7 @@ class FindByProUserIdTest:
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.offer_identifier == booking_two.stock.offer.id
         assert expected_booking_recap.offer_name == booking_two.stock.offer.name
-        assert expected_booking_recap.venue_identifier == booking_two.stock.offer.venue.id
+        assert expected_booking_recap.venue_identifier == booking_two.venue.id
         assert expected_booking_recap.booking_amount == booking_two.amount
 
     @pytest.mark.usefixtures("db_session")
@@ -1184,7 +1184,7 @@ class FindByProUserIdTest:
         assert len(bookings_recap_paginated.bookings_recap) == 1
         resulting_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert resulting_booking_recap.booking_date == utc_datetime_to_department_timezone(
-            expected_booking.dateCreated, expected_booking.stock.offer.venue.departementCode
+            expected_booking.dateCreated, expected_booking.venue.departementCode
         )
 
     @pytest.mark.usefixtures("db_session")
@@ -1369,7 +1369,7 @@ class GetLegacyActiveBookingsQuantityForVenueTest:
     def test_return_bookings_quantity_for_venue(self):
         # Given
         booking = bookings_factories.BookingFactory(quantity=2)
-        venue = booking.stock.offer.venue
+        venue = booking.venue
         bookings_factories.BookingFactory(stock__offer__venue=venue)
 
         # When
@@ -1393,7 +1393,7 @@ class GetLegacyActiveBookingsQuantityForVenueTest:
     def test_excludes_confirmed_used_or_cancelled_bookings(self):
         # Given
         booking = bookings_factories.BookingFactory()
-        venue = booking.stock.offer.venue
+        venue = booking.venue
         bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
         bookings_factories.CancelledBookingFactory(stock__offer__venue=venue)
         yesterday = datetime.utcnow() - timedelta(days=1)
@@ -1409,7 +1409,7 @@ class GetLegacyActiveBookingsQuantityForVenueTest:
     def test_excludes_other_venues_bookings(self):
         # Given
         booking = bookings_factories.BookingFactory()
-        venue = booking.stock.offer.venue
+        venue = booking.venue
         another_venue = offers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         bookings_factories.BookingFactory(stock__offer__venue=another_venue)
 
@@ -1457,7 +1457,7 @@ class GetLegacyValidatedBookingsQuantityForVenueTest:
     def test_return_used_bookings_quantity_for_venue(self):
         # Given
         booking = bookings_factories.UsedBookingFactory(quantity=2)
-        venue = booking.stock.offer.venue
+        venue = booking.venue
         bookings_factories.UsedBookingFactory(stock__offer__venue=venue)
 
         # When
@@ -1471,7 +1471,7 @@ class GetLegacyValidatedBookingsQuantityForVenueTest:
         # Given
         yesterday = datetime.utcnow() - timedelta(days=1)
         booking = bookings_factories.BookingFactory(cancellation_limit_date=yesterday, quantity=2)
-        venue = booking.stock.offer.venue
+        venue = booking.venue
 
         # When
         validated_bookings_quantity = booking_repository.get_legacy_validated_bookings_quantity_for_venue(venue.id)
@@ -1494,7 +1494,7 @@ class GetLegacyValidatedBookingsQuantityForVenueTest:
     def test_excludes_unused_or_cancelled_bookings(self):
         # Given
         booking = bookings_factories.UsedBookingFactory()
-        venue = booking.stock.offer.venue
+        venue = booking.venue
         bookings_factories.BookingFactory(stock__offer__venue=venue)
         bookings_factories.CancelledBookingFactory(stock__offer__venue=venue)
 
@@ -1508,7 +1508,7 @@ class GetLegacyValidatedBookingsQuantityForVenueTest:
     def test_excludes_other_venues_bookings(self):
         # Given
         booking = bookings_factories.UsedBookingFactory()
-        venue = booking.stock.offer.venue
+        venue = booking.venue
         another_venue = offers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         bookings_factories.UsedBookingFactory(stock__offer__venue=another_venue)
 

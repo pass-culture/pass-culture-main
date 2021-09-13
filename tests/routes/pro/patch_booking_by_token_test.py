@@ -42,8 +42,7 @@ class Returns204Test:
         def expect_booking_to_be_used(self, app):
             booking = bookings_factories.BookingFactory(token="ABCDEF")
             pro_user = users_factories.ProFactory(email="pro@example.com")
-            offerer = booking.stock.offer.venue.managingOfferer
-            offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+            offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
             url = f"/bookings/token/{booking.token}"
             response = TestClient(app.test_client()).with_session_auth("pro@example.com").patch(url)
@@ -56,8 +55,7 @@ class Returns204Test:
         def expect_booking_with_token_in_lower_case_to_be_used(self, app):
             booking = bookings_factories.BookingFactory(token="ABCDEF")
             pro_user = users_factories.ProFactory(email="pro@example.com")
-            offerer = booking.stock.offer.venue.managingOfferer
-            offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+            offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
             url = f"/bookings/token/{booking.token.lower()}"
             response = TestClient(app.test_client()).with_session_auth("pro@example.com").patch(url)
@@ -72,8 +70,7 @@ class Returns204Test:
         def expect_booking_to_be_used_with_special_char_in_url(self, app):
             booking = bookings_factories.BookingFactory(token="ABCDEF", user__email="user+plus@example.com")
             pro_user = users_factories.ProFactory(email="pro@example.com")
-            offerer = booking.stock.offer.venue.managingOfferer
-            offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+            offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
             quoted_email = urllib.parse.quote("user+plus@example.com")
             url = f"/bookings/token/{booking.token}?email={quoted_email}"

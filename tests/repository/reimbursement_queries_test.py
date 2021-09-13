@@ -27,7 +27,7 @@ class FindAllOffererPaymentsTest:
     def test_should_not_return_payment_info_with_error_status(self, app):
         # Given
         booking = bookings_factories.UsedBookingFactory()
-        offerer = booking.stock.offer.venue.managingOfferer
+        offerer = booking.offerer
         payment = payments_factories.PaymentFactory(
             booking=booking, transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019"
         )

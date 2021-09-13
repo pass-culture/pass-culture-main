@@ -81,9 +81,9 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         userName=f"{booking.educationalBooking.educationalRedactor.firstName} {booking.educationalBooking.educationalRedactor.lastName}"
         if is_educational_booking
         else booking.user.publicName,
-        venueAddress=booking.stock.offer.venue.address,
-        venueDepartementCode=booking.stock.offer.venue.departementCode,
-        venueName=booking.stock.offer.venue.name,
+        venueAddress=booking.venue.address,
+        venueDepartementCode=booking.venue.departementCode,
+        venueName=booking.venue.name,
     )
 
 

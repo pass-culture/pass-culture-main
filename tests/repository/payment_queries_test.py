@@ -23,7 +23,7 @@ class FindPaymentsByMessageTest:
         # given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(user=beneficiary)
-        offerer = booking.stock.offer.venue.managingOfferer
+        offerer = booking.offerer
         transaction1 = create_payment_message(name="XML1")
         transaction2 = create_payment_message(name="XML2")
         transaction3 = create_payment_message(name="XML3")
@@ -50,7 +50,7 @@ class FindPaymentsByMessageTest:
         # given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = create_booking(user=beneficiary)
-        offerer = booking.stock.offer.venue.managingOfferer
+        offerer = booking.offerer
         message1 = create_payment_message(name="XML1")
         message2 = create_payment_message(name="XML2")
         message3 = create_payment_message(name="XML3")

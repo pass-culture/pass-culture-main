@@ -61,9 +61,8 @@ class CreatePaymentForBookingTest:
 
     def test_use_iban_and_bic_from_venue(self):
         booking = bookings_factories.BookingFactory()
-        venue = booking.stock.offer.venue
-        offers_factories.BankInformationFactory(venue=venue, iban="iban1", bic="bic1")
-        offers_factories.BankInformationFactory(offerer=venue.managingOfferer, iban="iban2", bic="bic2")
+        offers_factories.BankInformationFactory(venue=booking.venue, iban="iban1", bic="bic1")
+        offers_factories.BankInformationFactory(offerer=booking.offerer, iban="iban2", bic="bic2")
         reimbursement = BookingReimbursement(booking, PhysicalOffersReimbursement(), Decimal(10))
         batch_date = datetime.utcnow()
 
@@ -74,8 +73,7 @@ class CreatePaymentForBookingTest:
 
     def test_use_iban_and_bic_from_offerer(self):
         booking = bookings_factories.BookingFactory()
-        offerer = booking.stock.offer.venue.managingOfferer
-        offers_factories.BankInformationFactory(offerer=offerer, iban="iban", bic="bic")
+        offers_factories.BankInformationFactory(offerer=booking.offerer, iban="iban", bic="bic")
         reimbursement = BookingReimbursement(booking, PhysicalOffersReimbursement(), Decimal(10))
         batch_date = datetime.utcnow()
 

@@ -39,11 +39,11 @@ class ReimbursementDetailsTest:
         # then
         assert raw_csv[0] == "2019"
         assert raw_csv[1] == "Juillet : remboursement 1ère quinzaine"
-        assert raw_csv[2] == payment.booking.stock.offer.venue.name
-        assert raw_csv[3] == payment.booking.stock.offer.venue.siret
-        assert raw_csv[4] == payment.booking.stock.offer.venue.address
+        assert raw_csv[2] == payment.booking.venue.name
+        assert raw_csv[3] == payment.booking.venue.siret
+        assert raw_csv[4] == payment.booking.venue.address
         assert raw_csv[5] == payment.iban
-        assert raw_csv[6] == payment.booking.stock.offer.venue.name
+        assert raw_csv[6] == payment.booking.venue.name
         assert raw_csv[7] == payment.booking.stock.offer.name
         assert raw_csv[8] == "Doux"
         assert raw_csv[9] == "Jeanne"
@@ -125,7 +125,7 @@ def test_generate_reimbursement_details_csv():
         transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
     )
     payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT)
-    offerer = payment.booking.stock.offer.venue.managingOfferer
+    offerer = payment.booking.offerer
     reimbursement_details = find_all_offerer_reimbursement_details(offerer.id, reimbursement_period)
 
     # when

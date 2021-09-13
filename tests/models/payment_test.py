@@ -102,9 +102,8 @@ class PaymentDateTest:
             beneficiary = users_factories.BeneficiaryGrant18Factory()
             booking = create_booking(user=beneficiary)
             today = datetime.utcnow()
-            offerer = booking.stock.offer.venue.managingOfferer
             payment_message = create_payment_message(name="mon message")
-            payment = create_payment(booking, offerer, 5, payment_message=payment_message)
+            payment = create_payment(booking, booking.offerer, 5, payment_message=payment_message)
             payment_status = create_payment_status(payment, status=TransactionStatus.SENT, date=today)
 
             repository.save(payment_status)
@@ -122,9 +121,8 @@ class PaymentDateTest:
             booking = create_booking(user=beneficiary)
             today = datetime.utcnow()
             yesterday = datetime.utcnow() - timedelta(days=1)
-            offerer = booking.stock.offer.venue.managingOfferer
             payment_message = create_payment_message(name="mon message")
-            payment = create_payment(booking, offerer, 5, payment_message=payment_message)
+            payment = create_payment(booking, booking.offerer, 5, payment_message=payment_message)
             payment_status = create_payment_status(payment, status=TransactionStatus.SENT, date=today)
             create_payment_status(payment, status=TransactionStatus.SENT, date=yesterday)
 
@@ -142,9 +140,8 @@ class PaymentDateTest:
             beneficiary = users_factories.BeneficiaryGrant18Factory()
             booking = create_booking(user=beneficiary)
             today = datetime.utcnow()
-            offerer = booking.stock.offer.venue.managingOfferer
             payment_message = create_payment_message(name="mon message")
-            payment = create_payment(booking, offerer, 5, payment_message=payment_message)
+            payment = create_payment(booking, booking.offerer, 5, payment_message=payment_message)
             payment_status = create_payment_status(payment, status=TransactionStatus.PENDING, date=today)
 
             repository.save(payment_status)

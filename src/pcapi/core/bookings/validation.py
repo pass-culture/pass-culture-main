@@ -152,7 +152,7 @@ def check_is_usable(booking: Booking) -> None:
     is_booking_for_event_and_not_confirmed = booking.stock.beginningDatetime and not booking.isConfirmed
     if is_booking_for_event_and_not_confirmed:
         forbidden = api_errors.ForbiddenError()
-        venue_departement_code = booking.stock.offer.venue.departementCode
+        venue_departement_code = booking.venue.departementCode
         booking_date = datetime.datetime.strftime(
             utc_datetime_to_department_timezone(booking.dateCreated, venue_departement_code), "%d/%m/%Y à %H:%M"
         )

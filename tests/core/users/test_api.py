@@ -292,8 +292,7 @@ class SuspendAccountTest:
 
     def test_suspend_pro(self):
         booking = bookings_factories.BookingFactory()
-        offerer = booking.stock.offer.venue.managingOfferer
-        pro = offers_factories.UserOffererFactory(offerer=offerer).user
+        pro = offers_factories.UserOffererFactory(offerer=booking.offerer).user
         actor = users_factories.AdminFactory()
 
         users_api.suspend_account(pro, users_constants.SuspensionReason.FRAUD, actor)
@@ -304,9 +303,8 @@ class SuspendAccountTest:
 
     def test_suspend_pro_with_other_offerer_users(self):
         booking = bookings_factories.BookingFactory()
-        offerer = booking.stock.offer.venue.managingOfferer
-        pro = offers_factories.UserOffererFactory(offerer=offerer).user
-        offers_factories.UserOffererFactory(offerer=offerer)
+        pro = offers_factories.UserOffererFactory(offerer=booking.offerer).user
+        offers_factories.UserOffererFactory(offerer=booking.offerer)
         actor = users_factories.AdminFactory()
 
         users_api.suspend_account(pro, users_constants.SuspensionReason.FRAUD, actor)

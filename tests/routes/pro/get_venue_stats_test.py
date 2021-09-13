@@ -14,7 +14,7 @@ class Returns200Test:
         # given
         booking = bookings_factories.BookingFactory()
         bookings_factories.UsedBookingFactory(stock=booking.stock)
-        venue = booking.stock.offer.venue
+        venue = booking.venue
         venue_owner = offers_factories.UserOffererFactory(offerer=venue.managingOfferer).user
 
         auth_request = TestClient(app.test_client()).with_session_auth(email=venue_owner.email)

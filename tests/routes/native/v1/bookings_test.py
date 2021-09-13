@@ -196,9 +196,9 @@ class GetBookingsTest:
                     "venue": {
                         "city": "Paris",
                         "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
-                        "id": used2.stock.offer.venue.id,
-                        "name": used2.stock.offer.venue.name,
-                        "publicName": used2.stock.offer.venue.publicName,
+                        "id": used2.venue.id,
+                        "name": used2.venue.name,
+                        "publicName": used2.venue.publicName,
                     },
                     "withdrawalDetails": None,
                 },

@@ -13,7 +13,7 @@ def get_booking_helper(booking):
         as_dict(booking),
         **{
             "eventOrThingName": booking.stock.offer.product.name,
-            "venueName": booking.stock.offer.venue.name,
+            "venueName": booking.venue.name,
         },
     )
 

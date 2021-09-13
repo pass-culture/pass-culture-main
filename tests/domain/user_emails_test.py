@@ -142,10 +142,10 @@ class SendWarningToBeneficiaryAfterProBookingCancellationTest:
                 "is_online": 0,
                 "offer_name": booking.stock.offer.name,
                 "offer_price": "10.00",
-                "offerer_name": booking.stock.offer.venue.managingOfferer.name,
+                "offerer_name": booking.offerer.name,
                 "user_first_name": "Jeanne",
                 "can_book_again": True,
-                "venue_name": booking.stock.offer.venue.name,
+                "venue_name": booking.venue.name,
                 "env": "-development",
             },
         }

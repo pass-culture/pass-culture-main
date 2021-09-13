@@ -261,19 +261,15 @@ def send_payments_report(batch_date: datetime, recipients: list[str]) -> None:
 def set_not_processable_payments_with_bank_information_to_retry(batch_date: datetime) -> None:
     payments_to_retry = payment_queries.find_not_processable_with_bank_information()
     for payment in payments_to_retry:
-        payment_bank_information_is_on_venue = (
-            payment.booking.stock.offer.venue.bic and payment.booking.stock.offer.venue.bic
-        )
-        payment_bank_information_is_on_offerer = (
-            payment.booking.stock.offer.venue.managingOfferer.bic
-            and payment.booking.stock.offer.venue.managingOfferer.bic
-        )
+        booking = payment.booking
+        payment_bank_information_is_on_venue = booking.venue.bic and booking.venue.bic
+        payment_bank_information_is_on_offerer = booking.offerer.bic and booking.offerer.bic
         if payment_bank_information_is_on_venue:
-            payment.bic = payment.booking.stock.offer.venue.bic
-            payment.iban = payment.booking.stock.offer.venue.iban
+            payment.bic = booking.venue.bic
+            payment.iban = booking.venue.iban
         elif payment_bank_information_is_on_offerer:
-            payment.bic = payment.booking.stock.offer.venue.managingOfferer.bic
-            payment.iban = payment.booking.stock.offer.venue.managingOfferer.iban
+            payment.bic = booking.offerer.bic
+            payment.iban = booking.offerer.iban
         payment.batchDate = batch_date
         payment.transactionLabel = make_transaction_label(datetime.utcnow())
         payment.setStatus(TransactionStatus.RETRY)
