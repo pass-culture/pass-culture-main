@@ -191,7 +191,7 @@ class Booking(PcObject, Model):
             return None
         if (
             self.stock.offer.subcategoryId == subcategories.LIVRE_PAPIER.id
-            and FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
+            and FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS.is_active()
             and self.dateCreated > BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE
         ):
             return self.dateCreated + BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
