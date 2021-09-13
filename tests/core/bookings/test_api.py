@@ -571,12 +571,14 @@ class MarkAsUsedTest:
         assert booking.status is BookingStatus.USED
         assert len(push_testing.requests) == 1
 
+    @freeze_time("2021-09-08")
     def test_mark_as_used_with_uncancel(self):
         booking = factories.CancelledBookingFactory()
         api.mark_as_used_with_uncancelling(booking)
         assert booking.isUsed
         assert not booking.isCancelled
         assert booking.status is BookingStatus.USED
+        assert booking.dateUsed == datetime.utcnow()
         assert not booking.cancellationReason
 
     def test_mark_as_used_when_stock_starts_soon(self):
