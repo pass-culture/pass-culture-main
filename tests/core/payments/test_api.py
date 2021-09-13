@@ -24,7 +24,9 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class CreateDepositTest:
     def test_deposit_created_with_given_deposit_source_and_version(self):
         # Given
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=2)
+        eighteen_years_in_the_past = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(
+            years=18, months=2
+        )
         beneficiary = users_factories.UserFactory(dateOfBirth=eighteen_years_in_the_past)
 
         # When
@@ -36,7 +38,9 @@ class CreateDepositTest:
 
     def test_deposit_created_with_a_grant_15_which_expire_on_next_birthday_when_beneficiary_is_15_years_old(self):
         # Given
-        fifteen_years_in_the_past = datetime.now() - relativedelta(years=15, months=2)
+        fifteen_years_in_the_past = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(
+            years=15, months=2
+        )
         beneficiary = users_factories.UserFactory(dateOfBirth=fifteen_years_in_the_past)
 
         # When
@@ -51,7 +55,9 @@ class CreateDepositTest:
 
     def test_deposit_created_with_a_grant_16_which_expire_on_next_birthday_when_beneficiary_is_16_years_old(self):
         # Given
-        sixteen_years_in_the_past = datetime.now() - relativedelta(years=16, months=2)
+        sixteen_years_in_the_past = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(
+            years=16, months=1
+        )
         beneficiary = users_factories.UserFactory(dateOfBirth=sixteen_years_in_the_past)
 
         # When
@@ -62,11 +68,13 @@ class CreateDepositTest:
         assert deposit.version == conf.get_current_deposit_version_for_type(DepositType.GRANT_16)
         assert deposit.amount == conf.get_current_limit_configuration_for_type(DepositType.GRANT_16).TOTAL_CAP
         assert deposit.user.id == beneficiary.id
-        assert deposit.expirationDate == datetime(2021, 12, 5, 0, 0, 0)
+        assert deposit.expirationDate == datetime(2022, 1, 5, 0, 0, 0)
 
     def test_deposit_created_with_a_grant_17_which_expire_on_next_birthday_when_beneficiary_is_17_years_old(self):
         # Given
-        seventeen_years_in_the_past = datetime.now() - relativedelta(years=17, months=2)
+        seventeen_years_in_the_past = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(
+            years=17, months=2
+        )
         beneficiary = users_factories.UserFactory(dateOfBirth=seventeen_years_in_the_past)
 
         # When
@@ -81,7 +89,9 @@ class CreateDepositTest:
 
     def test_deposit_created_with_a_grant_18_which_expire_in_two_years_when_beneficiary_is_18_years_old(self):
         # Given
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
+        eighteen_years_in_the_past = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(
+            years=18, months=4
+        )
         beneficiary = users_factories.UserFactory(dateOfBirth=eighteen_years_in_the_past)
 
         # When
@@ -96,7 +106,9 @@ class CreateDepositTest:
 
     def test_deposit_created_with_a_grant_18_which_expire_in_two_years_when_beneficiary_is_more_than_18_years_old(self):
         # Given
-        nineteen_years_in_the_past = datetime.now() - relativedelta(years=19, days=4)
+        nineteen_years_in_the_past = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(
+            years=19, days=4
+        )
         beneficiary = users_factories.UserFactory(dateOfBirth=nineteen_years_in_the_past)
 
         # When
@@ -126,7 +138,9 @@ class CreateDepositTest:
 
     def test_deposit_created_when_another_type_already_exist_for_user(self):
         # Given
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
+        eighteen_years_in_the_past = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(
+            years=18, months=4
+        )
         beneficiary = users_factories.UserFactory(dateOfBirth=eighteen_years_in_the_past)
         payments_factories.DepositGrant17Factory(user=beneficiary)
 
@@ -139,7 +153,9 @@ class CreateDepositTest:
 
     def test_cannot_create_twice_a_deposit_of_same_type(self):
         # Given
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=2)
+        eighteen_years_in_the_past = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(
+            years=18, months=2
+        )
         beneficiary = users_factories.BeneficiaryGrant18Factory(dateOfBirth=eighteen_years_in_the_past)
 
         # When

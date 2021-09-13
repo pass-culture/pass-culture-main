@@ -29,6 +29,14 @@ def _get_hours_from_timedelta(td: datetime.timedelta) -> float:
     return td.total_seconds() / 3600
 
 
+def _compute_next_birthday_date(birth_date: datetime.datetime) -> datetime.datetime:
+    if birth_date.replace(year=datetime.date.today().year) > datetime.datetime.now():
+        next_birthday = birth_date.replace(year=datetime.date.today().year)
+    else:
+        next_birthday = birth_date.replace(year=datetime.date.today().year + 1)
+    return next_birthday
+
+
 BOOKING_CONFIRMATION_ERROR_CLAUSES = {
     "after_creation_delay": f"plus de {_get_hours_from_timedelta(CONFIRM_BOOKING_AFTER_CREATION_DELAY):.0f}h"
     f" après l'avoir réservée et ",
@@ -72,15 +80,7 @@ class Grant15LimitConfiguration(BaseLimitConfiguration):
     PHYSICAL_CAP = None
 
     def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
-        return datetime.datetime(
-            year=datetime.date.today().year,
-            month=birth_date.month,
-            day=birth_date.day,
-            hour=0,
-            minute=0,
-            second=0,
-            microsecond=0,
-        )
+        return _compute_next_birthday_date(birth_date)
 
 
 class Grant16LimitConfiguration(BaseLimitConfiguration):
@@ -89,15 +89,7 @@ class Grant16LimitConfiguration(BaseLimitConfiguration):
     PHYSICAL_CAP = None
 
     def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
-        return datetime.datetime(
-            year=datetime.date.today().year,
-            month=birth_date.month,
-            day=birth_date.day,
-            hour=0,
-            minute=0,
-            second=0,
-            microsecond=0,
-        )
+        return _compute_next_birthday_date(birth_date)
 
 
 class Grant17LimitConfiguration(BaseLimitConfiguration):
@@ -106,15 +98,7 @@ class Grant17LimitConfiguration(BaseLimitConfiguration):
     PHYSICAL_CAP = None
 
     def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
-        return datetime.datetime(
-            year=datetime.date.today().year,
-            month=birth_date.month,
-            day=birth_date.day,
-            hour=0,
-            minute=0,
-            second=0,
-            microsecond=0,
-        )
+        return _compute_next_birthday_date(birth_date)
 
 
 class Grant18LimitConfigurationV1(BaseLimitConfiguration):
