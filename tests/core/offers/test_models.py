@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 
+import pcapi.core.bookings.conf as bookings_conf
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as providers_factories
@@ -11,6 +12,9 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
+from pcapi.models.api_errors import ApiErrors
+from pcapi.models.pc_object import DeletedRecordException
+from pcapi.repository import repository
 from pcapi.utils.date import DateTimes
 
 
@@ -417,3 +421,179 @@ class StockRemainingQuantityTest:
 
         assert stock.remainingQuantity == 5
         assert Offer.query.filter(Stock.remainingQuantity == 5).one() == offer
+
+
+class StockDateModifiedTest:
+    def test_update_dateModified_if_quantity_changes(self):
+        stock = factories.StockFactory(dateModified=datetime.datetime(2018, 2, 12), quantity=1)
+        stock.quantity = 10
+        repository.save(stock)
+        stock = Stock.query.one()
+        assert stock.dateModified.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
+
+    def test_do_not_update_dateModified_if_price_changes(self):
+        initial_dt = datetime.datetime(2018, 2, 12)
+        stock = factories.StockFactory(dateModified=initial_dt, price=1)
+        stock.price = 10
+        repository.save(stock)
+        stock = Stock.query.one()
+        assert stock.dateModified == initial_dt
+
+
+def test_queryNotSoftDeleted():
+    alive = factories.StockFactory()
+    deleted = factories.StockFactory(isSoftDeleted=True)
+    stocks = Stock.queryNotSoftDeleted().all()
+    assert len(stocks) == 1
+    assert alive in stocks
+    assert deleted not in stocks
+
+
+def test_cannot_populate_dict_if_soft_deleted():
+    stock = factories.StockFactory(isSoftDeleted=True)
+    with pytest.raises(DeletedRecordException):
+        stock.populate_from_dict({"quantity": 5})
+
+
+def test_stock_cannot_have_a_negative_price():
+    stock = factories.StockFactory()
+    with pytest.raises(ApiErrors) as e:
+        stock.price = -10
+        repository.save(stock)
+    assert e.value.errors["price"] is not None
+
+
+class StockQuantityTest:
+    def test_stock_cannot_have_a_negative_quantity_stock(self):
+        stock = factories.StockFactory()
+        with pytest.raises(ApiErrors) as e:
+            stock.quantity = -4
+            repository.save(stock)
+        assert e.value.errors["quantity"] == ["La quantité doit être positive."]
+
+    def test_stock_can_have_an_quantity_stock_equal_to_zero(self):
+        stock = factories.StockFactory(quantity=0)
+        assert stock.quantity == 0
+
+    def test_quantity_update_with_cancellations_exceed_quantity(self):
+        # Given
+        stock = factories.ThingStockFactory(quantity=2)
+        bookings_factories.CancelledBookingFactory(stock=stock)
+        bookings_factories.CancelledBookingFactory(stock=stock)
+        bookings_factories.BookingFactory(stock=stock)
+        bookings_factories.BookingFactory(stock=stock)
+
+        # When
+        stock.quantity = 3
+        repository.save(stock)
+
+        # Then
+        assert Stock.query.get(stock.id).quantity == 3
+
+    def test_quantity_update_with_more_than_sum_of_bookings(self):
+        # Given
+        stock = factories.StockFactory(quantity=2)
+        bookings_factories.BookingFactory(stock=stock)
+
+        # When
+        stock.quantity = 3
+        repository.save(stock)
+
+        # Then
+        assert Stock.query.get(stock.id).quantity == 3
+
+    def test_cannot_update_if_less_than_sum_of_bookings(self):
+        # Given
+        stock = factories.StockFactory(quantity=2)
+        bookings_factories.BookingFactory(stock=stock, quantity=2)
+
+        # When
+        stock.quantity = 1
+        with pytest.raises(ApiErrors) as e:
+            repository.save(stock)
+
+        # Then
+        assert e.value.errors["quantity"] == ["Le stock total ne peut être inférieur au nombre de réservations"]
+
+
+class StockIsBookableTest:
+    def test_not_bookable_if_booking_limit_datetime_has_passed(self):
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        stock = factories.StockFactory(bookingLimitDatetime=past)
+        assert not stock.isBookable
+
+    def test_not_bookable_if_offerer_is_not_validated(self):
+        stock = factories.StockFactory(offer__venue__managingOfferer__validationToken="token")
+        assert not stock.isBookable
+
+    def test_not_bookable_if_offerer_is_not_active(self):
+        stock = factories.StockFactory(offer__venue__managingOfferer__isActive=False)
+        assert not stock.isBookable
+
+    def test_not_bookable_if_venue_is_not_validated(self):
+        stock = factories.StockFactory(offer__venue__validationToken="token")
+        assert not stock.isBookable
+
+    def test_not_bookable_if_offer_is_not_active(self):
+        stock = factories.StockFactory(offer__isActive=False)
+        assert not stock.isBookable
+
+    def test_not_bookable_if_stock_is_soft_deleted(self):
+        stock = factories.StockFactory(isSoftDeleted=True)
+        assert not stock.isBookable
+
+    def test_not_bookable_if_offer_is_event_with_passed_begining_datetime(self):
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        stock = factories.EventStockFactory(beginningDatetime=past)
+        assert not stock.isBookable
+
+    def test_not_bookable_if_no_remaining_stock(self):
+        stock = factories.StockFactory(quantity=1)
+        bookings_factories.BookingFactory(stock=stock)
+        assert not stock.isBookable
+
+    def test_bookable_if_stock_is_unlimited(self):
+        stock = factories.ThingStockFactory(quantity=None)
+        bookings_factories.BookingFactory(stock=stock)
+        assert stock.isBookable
+
+    def test_bookable(self):
+        stock = factories.StockFactory()
+        assert stock.isBookable
+
+
+class StockIsEventExpiredTest:
+    def test_is_not_expired_when_stock_is_not_an_event(self):
+        stock = factories.ThingStockFactory()
+        assert not stock.isEventExpired
+
+    def test_is_not_expired_when_stock_is_an_event_in_the_future(self):
+        future = datetime.datetime.utcnow() + datetime.timedelta(hours=72)
+        stock = factories.EventStockFactory(beginningDatetime=future)
+        assert not stock.isEventExpired
+
+    def test_is_expired_when_stock_is_an_event_in_the_past(self):
+        past = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
+        stock = factories.EventStockFactory(beginningDatetime=past)
+        assert stock.isEventExpired
+
+
+class StockIsEventDeletableTest:
+    def test_is_deletable_when_stock_is_not_an_event(self):
+        stock = factories.ThingStockFactory()
+        assert stock.isEventDeletable
+
+    def test_is_deletable_when_stock_is_an_event_in_the_future(self):
+        future = datetime.datetime.utcnow() + datetime.timedelta(hours=72)
+        stock = factories.EventStockFactory(beginningDatetime=future)
+        assert stock.isEventDeletable
+
+    def test_is_deletable_when_stock_is_expired_since_less_than_event_automatic_refund_delay(self):
+        dt = datetime.datetime.utcnow() - bookings_conf.AUTO_USE_AFTER_EVENT_TIME_DELAY + datetime.timedelta(1)
+        stock = factories.EventStockFactory(beginningDatetime=dt)
+        assert stock.isEventDeletable
+
+    def test_is_not_deletable_when_stock_is_expired_since_more_than_event_automatic_refund_delay(self):
+        dt = datetime.datetime.utcnow() - bookings_conf.AUTO_USE_AFTER_EVENT_TIME_DELAY
+        stock = factories.EventStockFactory(beginningDatetime=dt)
+        assert not stock.isEventDeletable
