@@ -55,8 +55,7 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
         query = query.join(User).filter(func.lower(User.email) == sanitize_email(email))
 
     if offer_id:
-        query_offer = Booking.query.join(Stock).join(Offer).filter_by(id=offer_id)
-        query = query.intersect_all(query_offer)
+        query = query.join(Stock).join(Offer).filter(Offer.id == offer_id)
 
     booking = query.one_or_none()
 
