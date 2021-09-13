@@ -239,6 +239,31 @@ jobs:
             export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
 
+  tests-adage-front:
+    machine:
+      image: ubuntu-2004:202101-01
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run: ./install_lib_ci.sh
+      - run:
+          name: Run Unit Test Adage-front
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            cd adage-front
+            nvm install
+            yarn install
+            yarn test:unit
+      - run:
+          name: Notify PC Ops Bot
+          when: on_fail
+          command: |
+            export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
+            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
+
   tests-pro-unit-tests:
     machine:
       image: ubuntu-2004:202101-01
@@ -594,6 +619,13 @@ workflows:
                 - staging
                 - integration
       - tests-webapp:
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+      - tests-adage-front:
           filters:
             branches:
               ignore:
