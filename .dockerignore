@@ -13,7 +13,8 @@ tests/
 local_test_env_file
 pytest.ini
 
-# Dockerfile
+# Dockerfiles
+Dockerfile
 Dockerfile.gcp
 
 # Docs
