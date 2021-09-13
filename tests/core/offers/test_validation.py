@@ -52,6 +52,30 @@ class CheckOfferExistingStocksAreEditableTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class CheckPricesForStockTest:
+    def test_event_prices(self):
+        validation.check_stock_price(0, True)
+        validation.check_stock_price(1.5, True)
+        validation.check_stock_price(310.5, True)
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_stock_price(-1.5, True)
+        assert error.value.errors["price"] == ["Le prix doit être positif"]
+
+    def test_thing_prices(self):
+        validation.check_stock_price(0, False)
+        validation.check_stock_price(1.5, False)
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_stock_price(-1.5, False)
+        assert error.value.errors["price"] == ["Le prix doit être positif"]
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_stock_price(310.5, False)
+        assert error.value.errors["priceexceeds300"] == ["Le prix d’une offre ne peut excéder 300 euros."]
+
+
+@pytest.mark.usefixtures("db_session")
 class CheckRequiredDatesForStockTest:
     def test_thing_offer_must_not_have_beginning(self):
         offer = factories.ThingOfferFactory()

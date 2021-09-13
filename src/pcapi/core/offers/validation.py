@@ -109,7 +109,7 @@ def check_stock_price(price: float, offer_is_event: bool) -> None:
         api_errors = ApiErrors()
         api_errors.add_error("price", "Le prix doit être positif")
         raise api_errors
-    if price > 300 and offer_is_event == False:
+    if price > 300 and not offer_is_event:
         api_errors = ApiErrors()
         api_errors.add_error(
             "priceexceeds300",
