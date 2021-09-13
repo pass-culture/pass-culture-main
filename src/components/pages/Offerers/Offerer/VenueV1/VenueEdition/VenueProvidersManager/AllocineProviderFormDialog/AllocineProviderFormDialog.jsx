@@ -19,7 +19,7 @@ const AllocineProviderFormDialog = ({ onCancel, onConfirm, initialValues, provid
         </strong>
       </div>
       <div className="explanation">
-        Les modifications s’appliqueront uniquement aux nouvelles offres créées. La modification doit être faite manuellement pour les offres existantes
+        Les modifications s’appliqueront uniquement aux nouvelles offres créées. La modification doit être faite manuellement pour les offres existantes.
       </div>
       <AllocineProviderForm
         initialValues={initialValues}
