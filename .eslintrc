@@ -40,7 +40,6 @@
     "jsx-a11y/no-onchange": "off",
     "no-var": "warn",
     "react/forbid-component-props": "off",
-    "react/button-has-type" : "off",
     "react/function-component-definition":  [
       2,
       {
