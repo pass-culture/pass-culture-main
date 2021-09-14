@@ -262,12 +262,10 @@ def set_not_processable_payments_with_bank_information_to_retry(batch_date: date
     payments_to_retry = payment_queries.find_not_processable_with_bank_information()
     for payment in payments_to_retry:
         booking = payment.booking
-        payment_bank_information_is_on_venue = booking.venue.bic and booking.venue.bic
-        payment_bank_information_is_on_offerer = booking.offerer.bic and booking.offerer.bic
-        if payment_bank_information_is_on_venue:
+        if booking.venue.bic and booking.venue.iban:
             payment.bic = booking.venue.bic
             payment.iban = booking.venue.iban
-        elif payment_bank_information_is_on_offerer:
+        elif booking.offerer.bic and booking.offerer.iban:
             payment.bic = booking.offerer.bic
             payment.iban = booking.offerer.iban
         payment.batchDate = batch_date
