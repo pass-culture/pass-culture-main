@@ -173,29 +173,25 @@ def client_fixture(app: Flask):
 
 class TestClient:
     WITH_DOC = False
-    USER_TEST_ADMIN_EMAIL = "pctest.admin93.0@example.com"
 
     def __init__(self, client: FlaskClient):
         self.client = client
         self.auth_header = {}
 
-    def with_session_auth(self, email: str = None) -> "TestClient":
-        self.email = email or self.USER_TEST_ADMIN_EMAIL
-        response = self.post("/users/signin", {"identifier": self.email, "password": users_factories.DEFAULT_PASSWORD})
+    def with_session_auth(self, email: str) -> "TestClient":
+        response = self.post("/users/signin", {"identifier": email, "password": users_factories.DEFAULT_PASSWORD})
         assert response.status_code == 200
         return self
 
-    def with_basic_auth(self, email: str = None) -> "TestClient":
-        self.email = email or self.USER_TEST_ADMIN_EMAIL
+    def with_basic_auth(self, email: str) -> "TestClient":
         self.auth_header = {
             "Authorization": _basic_auth_str(email, users_factories.DEFAULT_PASSWORD),
         }
         return self
 
     def with_token(self, email: str) -> "TestClient":
-        self.email = email
         self.auth_header = {
-            "Authorization": f"Bearer {create_access_token(self.email)}",
+            "Authorization": f"Bearer {create_access_token(email)}",
         }
         return self
 
