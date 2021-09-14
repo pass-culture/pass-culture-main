@@ -20,6 +20,7 @@ from pcapi.core.users.models import User
 from pcapi.domain import user_emails
 from pcapi.domain.beneficiary_pre_subscription.validator import get_beneficiary_duplicates
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
+from pcapi.domain.demarches_simplifiees import get_existing_applications_id
 from pcapi.domain.user_activation import create_beneficiary_from_application
 from pcapi.models import ApiErrors
 from pcapi.models import ImportStatus
@@ -57,12 +58,15 @@ def run(procedure_id: int, use_graphql_api: bool = False) -> None:
         procedure_id,
     )
 
+    existing_applications_ids = get_existing_applications_id(procedure_id)
     if use_graphql_api:
         client = DMSGraphQLClient()
         for application_details in client.get_applications_with_details(
             procedure_id, GraphQLApplicationStates.accepted
         ):
             application_id = application_details["number"]
+            if application_id in existing_applications_ids:
+                continue
             process_application(
                 procedure_id,
                 application_id,

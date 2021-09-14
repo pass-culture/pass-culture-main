@@ -1178,3 +1178,29 @@ class GraphQLSourceProcessApplicationTest:
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3124925
+
+    @patch.object(DMSGraphQLClient, "get_applications_with_details")
+    def test_avoid_reimporting_already_imported_user(self, get_applications_with_details):
+        procedure_id = 42
+        user = users_factories.UserFactory()
+        already_imported_user = users_factories.BeneficiaryGrant18Factory()
+        users_factories.BeneficiaryImportFactory(
+            beneficiary=already_imported_user, applicationId=2, sourceId=procedure_id
+        )
+        get_applications_with_details.return_value = [
+            make_graphql_application(application_id=1, state="closed", email=user.email),
+            make_graphql_application(
+                application_id=2,
+                state="closed",
+                email=already_imported_user.email,
+            ),
+        ]
+
+        remote_import.run(procedure_id=procedure_id, use_graphql_api=True)
+
+        imports = BeneficiaryImport.query.all()
+        assert len(imports) == 2
+        assert len(mails_testing.outbox) == 1
+        sent_email = mails_testing.outbox[0]
+        assert sent_email.sent_data["To"] == user.email
+        assert sent_email.sent_data["Mj-campaign"] == "confirmation-credit"
