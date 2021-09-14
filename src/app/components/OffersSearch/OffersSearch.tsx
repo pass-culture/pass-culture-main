@@ -15,7 +15,7 @@ import { Offers } from "./Offers/Offers"
 
 const connector = new AppSearchAPIConnector({
   searchKey: APP_SEARCH_KEY,
-  engineName: "offers",
+  engineName: "offers-gautier",
   endpointBase: APP_SEARCH_ENDPOINT,
 })
 const configurationOptions = {
@@ -23,6 +23,7 @@ const configurationOptions = {
     result_fields: RESULT_FIELDS,
     filters: [{ field: "is_educational", values: [1] }],
   },
+  trackUrlState: false,
 }
 
 export const OffersSearch = (): JSX.Element => {
