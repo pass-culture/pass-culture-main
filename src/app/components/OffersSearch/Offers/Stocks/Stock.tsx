@@ -1,15 +1,15 @@
-import React from "react"
+import React, { useCallback } from "react"
 
-import { preBookStock } from "../../../../../repository/pcapi/pcapi"
+import { Button } from "app/components/Layout/Button/Button"
+import { preBookStock } from "repository/pcapi/pcapi"
 import {
   FORMAT_DD_MM_YYYY_HH_mm,
   toISOStringWithoutMilliseconds,
-} from "../../../../../utils/date"
-import { formatLocalTimeDateString } from "../../../../../utils/timezone"
-import { StockType } from "../../../../../utils/types"
-import { Button } from "../../../Layout/Button/Button"
+} from "utils/date"
+import { formatLocalTimeDateString } from "utils/timezone"
+import { StockType } from "utils/types"
 
-const printStockInformation = (
+const displayStockInformation = (
   stock: StockType,
   venueDepartmentCode: string
 ): string => {
@@ -37,11 +37,15 @@ export const Stock = ({
   stock: StockType;
   venuePostalCode: string;
 }): JSX.Element => {
+  const preBookCurrentStock = useCallback(
+    () => preBookStock(stock.id),
+    [stock.id]
+  )
   return (
     <li>
-      {printStockInformation(stock, venuePostalCode)}
+      {displayStockInformation(stock, venuePostalCode)}
       <Button
-        onClick={() => preBookStock(stock.id)}
+        onClick={preBookCurrentStock}
         text="Pré-réserver"
         type="button"
       />

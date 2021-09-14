@@ -6,6 +6,7 @@ export const HTTP_STATUS = {
 }
 const GET_HTTP_METHOD = "GET"
 const DELETE_HTTP_METHOD = "DELETE"
+const POST_HTTP_METHOD = "POST"
 
 const buildOptions = (method) => {
   const params = new URLSearchParams(window.location.search)
@@ -49,7 +50,7 @@ export const client = {
   },
   post: async (path: string, data: Record<string, unknown>): Promise<any> => {
     const options = {
-      ...buildOptions("POST"),
+      ...buildOptions(POST_HTTP_METHOD),
       body: JSON.stringify(data),
     }
     return await fetchWithErrorHandler(path, options)

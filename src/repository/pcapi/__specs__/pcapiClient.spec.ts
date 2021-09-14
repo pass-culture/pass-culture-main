@@ -109,8 +109,10 @@ describe("pcapiClient", () => {
 
       // Then
       expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: new Headers({
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        }),
         method: "POST",
         body: '{"key":"value"}',
       })
