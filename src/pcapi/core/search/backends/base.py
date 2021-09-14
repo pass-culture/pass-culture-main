@@ -1,7 +1,12 @@
+import typing
 from typing import Iterable
 
-import pcapi.core.offerers.models as offerers_models
-import pcapi.core.offers.models as offers_models
+
+# FIXME: condition imports, otherwise we get an import loop when this
+# module or pcapi.core.search is imported first.
+if typing.TYPE_CHECKING:
+    import pcapi.core.offerers.models as offerers_models
+    import pcapi.core.offers.models as offers_models
 
 
 class SearchBackend:
@@ -35,13 +40,13 @@ class SearchBackend:
     def count_offers_to_index_from_queue(self, from_error_queue: bool = False) -> int:
         raise NotImplementedError()
 
-    def check_offer_is_indexed(self, offer: offers_models.Offer) -> bool:
+    def check_offer_is_indexed(self, offer: "offers_models.Offer") -> bool:
         raise NotImplementedError()
 
-    def index_offers(self, offers: Iterable[offers_models.Offer]) -> None:
+    def index_offers(self, offers: "Iterable[offers_models.Offer]") -> None:
         raise NotImplementedError()
 
-    def index_venues(self, offers: Iterable[offerers_models.Venue]) -> None:
+    def index_venues(self, offers: "Iterable[offerers_models.Venue]") -> None:
         raise NotImplementedError()
 
     def unindex_offer_ids(self, offers: Iterable[int]) -> None:
@@ -60,9 +65,9 @@ class SearchBackend:
         raise NotImplementedError()
 
     @classmethod
-    def serialize_offer(cls, offer: offers_models.Offer) -> dict:
+    def serialize_offer(cls, offer: "offers_models.Offer") -> dict:
         raise NotImplementedError()
 
     @classmethod
-    def serialize_venue(cls, venue: offerers_models.Venue) -> dict:
+    def serialize_venue(cls, venue: "offerers_models.Venue") -> dict:
         raise NotImplementedError()
