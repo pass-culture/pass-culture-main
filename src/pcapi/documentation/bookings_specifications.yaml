@@ -1,0 +1,470 @@
+swagger: '2.0'
+info:
+  description: ''
+  version: 1.1.0
+  title: DOCUMENTATION API PASS CULTURE
+  termsOfService: 'https://docs.passculture.app/textes-normatifs'
+host: localhost
+basePath: /
+tags:
+  - description: <h1>CONTREMARQUE</h1></br> La validation d’une réservation a pour effet de prouver la réalisation du service proposé et engendre un remboursement selon les conditions prévues dans les CGU de la plateforme pass Culture.</li></ul>
+schemes:
+  - https
+paths:
+  '/bookings/token/{token}':
+    get:
+      tags:
+        - Version 1 (will be deprecated in 2020)
+      summary: Webservice permettant de consulter la validité d’une réservation.
+      description: Le code “contremarque” ou token est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.
+      operationId: get_booking_by_token
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: path
+          description: Code contremarque de la réservation
+          required: true
+          type: string
+        - name: email
+          in: query
+          description: E-mail de la personne ayant fait la réservation
+          required: true
+          type: string
+        - name: offer_id
+          in: query
+          description: Identifiant de l'offre correspondant à la réservation
+          required: true
+          type: string
+      responses:
+        '200':
+          description: La contremarque existe et n’est pas validée
+          schema:
+            type: object
+            properties:
+              bookingId:
+                type: string
+              date:
+                type: string
+              dateOfBirth:
+                type: string
+              email:
+                type: string
+              isUsed:
+                type: boolean
+              offerName:
+                type: string
+              phoneNumber:
+                type: string
+              userName:
+                type: string
+                description: le user name
+              venueDepartementCode:
+                type: string
+        '401':
+          description: Authentification nécessaire
+          schema:
+            type: string
+            example: API key or login required
+        '403':
+          description: Vous n'avez pas les droits nécessaires pour voir cette contremarque ou l'offre a lieu dans plus de 72 heures (voir CGU)
+        '404':
+          description: La contremarque n’existe pas
+        '410':
+          description: La contremarque n’est plus valide car elle a déjà été validée ou a été annulée
+      security:
+        - UrlAuthentication: []
+    patch:
+      tags:
+        - Version 1 (will be deprecated in 2020)
+      summary: Webservice permettant de valider une réservation.
+      description: Le code “contremarque” ou token est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.
+      operationId: patchBookingByToken
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: path
+          description: Code contremarque de la réservation
+          required: true
+          type: string
+        - name: email
+          in: query
+          description: E-mail de la personne ayant fait la réservation
+          required: true
+          type: string
+        - name: offer_id
+          in: query
+          description: Identifiant de l'offre correspondant à la réservation
+          required: true
+          type: string
+      responses:
+        '204':
+          description: La contremarque a bien été validée
+        '400':
+          description: La quantité disponible pour cette offre est atteinte
+        '401':
+          description: Authentification nécessaire
+        '403':
+          description: Vous n'avez pas les droits suffisants pour utiliser cette contremarque
+        '404':
+          description: La contremarque n’existe pas
+        '410':
+          description: La contremarque n’est plus valide car elle a déjà été validée ou a été annulée
+      security:
+        - UrlAuthentication: []
+  '/v2/bookings/token/{token}':
+    get:
+      tags:
+        - Version 2
+      summary: Webservice permettant de consulter la validité d’une réservation.
+      description: Le code “contremarque” ou token est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.
+      operationId: getBookingByTokenV2
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: path
+          description: Code contremarque de la réservation
+          required: true
+          type: string
+      responses:
+        '200':
+          description: La contremarque existe et n’est pas validée
+          schema:
+            type: object
+            properties:
+              bookingId:
+                type: string
+              dateOfBirth:
+                type: string
+              datetime:
+                type: string
+              ean13:
+                type: string
+              email:
+                type: string
+              formula:
+                type: string
+              isUsed:
+                type: boolean
+              offerId:
+                type: integer
+              offerName:
+                type: string
+              offerType:
+                type: string
+              phoneNumber:
+                type: string
+              price:
+                type: number
+              publicOfferId:
+                type: string
+              quantity:
+                type: integer
+              theater:
+                type: object
+                properties:
+                  allocine_movie_id:
+                    type: integer
+                  allocine_room_id:
+                    type: string
+              userName:
+                type: string
+                description: le user name
+              venueAddress:
+                type: string
+              venueDepartementCode:
+                type: string
+              venueName:
+                type: string
+        '401':
+          description: Authentification nécessaire
+          schema:
+            type: string
+            example: API key or login required
+        '403':
+          description: |-
+            Vous n'avez pas les droits nécessaires pour voir cette contremarque ou l'offre a lieu dans plus de 72 heures (voir CGU)
+            <span class='example'>Example Value</span>
+            ```
+            {
+              "user": [
+                "Vous n'avez pas les droits suffisants pour valider cette contremarque."
+              ]
+            }
+            ```
+            ou <br>
+            ```
+            {
+              "beginningDatetime": [
+                "Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l'évènement"
+              ]
+            }
+            ```
+        '404':
+          description: La contremarque n’existe pas
+          schema:
+            type: object
+            properties:
+              global:
+                type: array
+                items:
+                  type: string
+                example:
+                  - Cette contremarque n'a pas été trouvée
+        '410':
+          description: |-
+            La contremarque n’est plus valide car elle a déjà été validée ou a été annulée
+            <span class='example'>Example Value</span>
+            ```
+            {
+              "booking": [
+                "Cette réservation a déjà été validée"
+              ]
+            }
+            ```
+            ou <br>
+            ```
+            {
+              "booking": [
+                "Cette réservation a été annulée"
+              ]
+            }
+            ```
+      security:
+        - BearerAuthentication: []
+  '/v2/bookings/use/token/{token}':
+    patch:
+      tags:
+        - Version 2
+      summary: Webservice permettant de valider une réservation.
+      description: Le code “contremarque” ou token est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.
+      operationId: patchBookingUseByToken
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: path
+          description: Code contremarque de la réservation
+          required: true
+          type: string
+      responses:
+        '204':
+          description: La contremarque a bien été validée
+        '400':
+          description: La quantité disponible pour cette offre est atteinte
+          schema:
+            type: object
+            properties:
+              global:
+                type: array
+                items:
+                  type: string
+                example:
+                  - La quantité disponible pour cette offre est atteinte
+        '401':
+          description: Authentification nécessaire
+          schema:
+            type: object
+            example: API key or login required
+        '403':
+          description: Vous n'avez pas les droits suffisants pour utiliser cette contremarque
+          schema:
+            type: object
+            properties:
+              user:
+                type: array
+                items:
+                  type: string
+                example:
+                  - Vous n'avez pas les droits suffisants pour valider cette contremarque.
+        '404':
+          description: La contremarque n’existe pas
+          schema:
+            type: object
+            properties:
+              global:
+                type: array
+                items:
+                  type: string
+                example:
+                  - Cette contremarque n'a pas été trouvée
+        '410':
+          description: |-
+            La contremarque n’est plus valide car elle a déjà été validée ou a été annulée
+            <span class='example'>Example Value</span>
+            ```
+            {
+              "booking": [
+                "Cette réservation a déjà été validée"
+              ]
+            }
+            ```
+            <br> ou <br>
+          schema:
+            type: object
+            properties:
+              booking:
+                type: array
+                items:
+                  type: string
+                example:
+                  - Cette réservation a été annulée
+      security:
+        - BearerAuthentication: []
+  '/v2/bookings/keep/token/{token}':
+    patch:
+      tags:
+        - Version 2
+      summary: Webservice permettant d'annuler une validation de contremarque.
+      description: ''
+      operationId: patchBookingKeepByToken
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: path
+          description: Code contremarque de la réservation
+          required: true
+          type: string
+      responses:
+        '204':
+          description: L'annulation de la validation de la contremarque a bien été effectuée
+        '400':
+          description: La quantité disponible pour cette offre est atteinte
+          schema:
+            type: object
+            properties:
+              global:
+                type: array
+                items:
+                  type: string
+                example:
+                  - La quantité disponible pour cette offre est atteinte
+        '401':
+          description: Authentification nécessaire
+          schema:
+            type: string
+            example: API key or login required
+        '403':
+          description: Vous n'avez pas les droits suffisants pour éditer cette contremarque
+          schema:
+            type: object
+            properties:
+              user:
+                type: array
+                items:
+                  type: string
+                example:
+                  - Vous n'avez pas les droits suffisants pour valider cette contremarque.
+        '404':
+          description: La contremarque n’existe pas
+        '410':
+          description: |-
+            La contremarque n’est plus valide car elle a déjà été validée, annulée ou bien le remoursement a été initié <br>
+            <span class='example'>Example Value</span>
+            ```
+            {
+              "payment": [
+                "Le remboursement est en cours de traitement"
+              ]
+            }
+            ```
+            ou <br>
+            ```
+            {
+              "booking": [
+                "Cette réservation a été annulée"
+              ]
+            }
+            ```
+            ou <br>
+          schema:
+             type: object
+             properties:
+               booking:
+                 type: array
+                 items:
+                   type: string
+                 example:
+                   - Cette réservation a été validée
+      security:
+        - BearerAuthentication: []
+  '/v2/bookings/cancel/token/{token}':
+    patch:
+      tags:
+        - Version 2
+      summary: Webservice permettant d'annuler une réservation au moyen de la contremarque associée.
+      description: Le code “contremarque” ou token est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. <br/> Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion. <br>Bien que, dans le cas d’un événement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur dès lors que son code de contremarque n’a pas encore été validé.
+      operationId: patch_cancel_booking_by_token
+      produces:
+        - application/json
+      parameters:
+        - name: token
+          in: path
+          description: Code contremarque de la réservation
+          required: true
+          type: string
+      responses:
+        '204':
+          description: La réservation a été annulée avec succès
+        '401':
+          description: Authentification nécessaire
+          schema:
+            type: string
+            example: API key or login required
+        '403':
+          description: |-
+            Vous n'avez pas les droits nécessaires pour annuler cette contremarque ou la réservation a déjà été consommée
+            <span class='example'>Example Value</span>
+            ```
+            {
+              "global": [
+                "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
+              ]
+            }
+            ```
+            ou <br>
+            ```
+            {
+              "user": [
+                "Vous n'avez pas les droits suffisants pour annuler cette réservation."
+              ]
+            }
+            ```
+            ou <br>
+          schema:
+               type: object
+               properties:
+                 global:
+                   type: array
+                   items:
+                     type: string
+                   example:
+                     - Impossible d'annuler une réservation consommée
+        '404':
+          description: La réservation associée a cette contremarque n’existe pas
+        '410':
+          description: La contremarque a été annulée
+          schema:
+            type: object
+            properties:
+              global:
+                type: array
+                items:
+                  type: string
+                example:
+                  - Cette contremarque a déjà été annulée
+      security:
+        - BearerAuthentication: []
+securityDefinitions:
+  BearerAuthentication:
+    type: apiKey
+    in: header
+    name: Authorisation
+    description: L'authentification auprès de l'API se fait au moyen d'une entête "Authorization" avec pour valeur votre token d'API précédé de la valeur "Bearer" (RFC 6750)
+  UrlAuthentication:
+    type: apiKey
+    in: query
+    name: token

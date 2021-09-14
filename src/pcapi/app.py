@@ -4,6 +4,7 @@ from werkzeug.middleware.profiler import ProfilerMiddleware
 from pcapi import settings
 from pcapi.admin.install import install_admin_template_filters
 from pcapi.admin.install import install_admin_views
+from pcapi.documentation import install_documentation
 from pcapi.flask_app import admin
 from pcapi.flask_app import app
 from pcapi.flask_app import db
@@ -33,6 +34,7 @@ with app.app_context():
         install_local_providers()
 
     install_login_manager()
+    install_documentation()
     install_admin_views(admin, db.session)
     install_routes(app)
     install_handlers(app)
