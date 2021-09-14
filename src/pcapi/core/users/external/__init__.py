@@ -22,7 +22,7 @@ from .sendinblue import update_contact_attributes as update_sendinblue_user
 TRACKED_PRODUCT_IDS = {3084625: "brut_x"}
 
 
-def update_external_user(user: User, update_batch=True, update_sendinblue=True) -> None:
+def update_external_user(user: User, update_batch: bool = True, update_sendinblue: bool = True) -> None:
     user_attributes = get_user_attributes(user)
 
     if update_batch:
@@ -55,7 +55,7 @@ def get_user_attributes(user: User) -> UserAttributes:
         first_name=user.firstName,
         has_completed_id_check=user.hasCompletedIdCheck,
         user_id=user.id,
-        is_beneficiary=user.isBeneficiary,
+        is_beneficiary=user.has_beneficiary_role,
         is_eligible=user.is_eligible,
         is_email_validated=user.isEmailValidated,
         is_pro=is_pro_user,
