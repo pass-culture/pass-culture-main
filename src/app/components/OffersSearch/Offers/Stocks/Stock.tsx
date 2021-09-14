@@ -45,9 +45,9 @@ export const Stock = ({
     <li>
       {displayStockInformation(stock, venuePostalCode)}
       <Button
+        isSubmit={false}
         onClick={preBookCurrentStock}
         text="Pré-réserver"
-        type="button"
       />
     </li>
   )
