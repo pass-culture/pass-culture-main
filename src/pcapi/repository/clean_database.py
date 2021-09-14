@@ -16,6 +16,7 @@ from pcapi.core.offerers.models import VenueType
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import OfferValidationConfig
+from pcapi.core.payments.models import CustomReimbursementRule
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
@@ -58,6 +59,7 @@ def clean_all_database(*args, **kwargs):
     PaymentStatus.query.delete()
     Payment.query.delete()
     PaymentMessage.query.delete()
+    CustomReimbursementRule.query.delete()
     Booking.query.delete()
     IndividualBooking.query.delete()
     Stock.query.delete()
