@@ -27,6 +27,32 @@ class BeneficiaryListViewTest:
         response = client.get("/pc/back-office/support_beneficiary/")
         assert response.status_code == 200
 
+    def test_list_view_jouve_operator(self, client):
+        jouve_admin = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
+        client.with_session_auth(jouve_admin.email)
+
+        user = users_factories.UserFactory()
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
+        fraud_factories.BeneficiaryFraudResultFactory(user=user)
+
+        hidden_beneficiary_user = users_factories.BeneficiaryGrant18Factory()
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=hidden_beneficiary_user, type=fraud_models.FraudCheckType.JOUVE
+        )
+        fraud_factories.BeneficiaryFraudResultFactory(user=hidden_beneficiary_user)
+
+        hidden_dms_user = users_factories.BeneficiaryGrant18Factory()
+        fraud_factories.BeneficiaryFraudCheckFactory(user=hidden_dms_user, type=fraud_models.FraudCheckType.DMS)
+        fraud_factories.BeneficiaryFraudResultFactory(user=hidden_dms_user)
+
+        response = client.get("/pc/back-office/support_beneficiary/")
+
+        html_response = response.data.decode()
+        assert user.email in html_response
+        assert hidden_beneficiary_user.email not in html_response
+        assert hidden_dms_user.email not in html_response
+        assert response.status_code == 200
+
 
 @pytest.mark.usefixtures("db_session")
 class BeneficiaryDetailViewTest:

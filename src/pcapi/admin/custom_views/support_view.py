@@ -152,7 +152,9 @@ class BeneficiaryView(base_configuration.BaseAdminView):
     def get_query(self):
         filters = users_models.User.beneficiaryFraudChecks.any() | users_models.User.beneficiaryFraudResult.has()
         if flask_login.current_user.has_jouve_role:
-            filters = users_models.User.beneficiaryFraudChecks.any(type=fraud_models.FraudCheckType.JOUVE)
+            filters = users_models.User.has_beneficiary_role.is_(False) & users_models.User.beneficiaryFraudChecks.any(
+                type=fraud_models.FraudCheckType.JOUVE
+            )
 
         query = users_models.User.query.filter(filters).options(
             sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudChecks),
