@@ -35,7 +35,9 @@ class PostEducationalBookingTest:
         )
         educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
 
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=educational_redactor.email)
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(
+            email=educational_redactor.email, uai=educational_institution.institutionId
+        )
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -43,9 +45,7 @@ class PostEducationalBookingTest:
         response = test_client.post(
             "/adage-iframe/bookings",
             json={
-                "redactorEmail": educational_redactor.email,
                 "stockId": stock.id,
-                "UAICode": educational_institution.institutionId,
             },
         )
 
@@ -68,7 +68,9 @@ class PostEducationalBookingTest:
         )
         educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
 
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=educational_redactor.email)
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(
+            email=educational_redactor.email, uai="Unknown"
+        )
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -76,15 +78,13 @@ class PostEducationalBookingTest:
         response = test_client.post(
             "/adage-iframe/bookings",
             json={
-                "redactorEmail": educational_redactor.email,
                 "stockId": stock.id,
-                "UAICode": "Unknown educational institution",
             },
         )
 
         # Then
         assert response.status_code == 400
-        assert response.json == {"educationalInstitution": "L'établissement n'existe pas"}
+        assert response.json == {"educationalInstitution": "Cet établissement n'est pas éligible au pass Culture."}
 
     def test_should_not_allow_booking_when_stock_has_no_remaining_quantity(self, app):
         # Given
@@ -95,7 +95,9 @@ class PostEducationalBookingTest:
         )
         educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
 
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=educational_redactor.email)
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(
+            email=educational_redactor.email, uai=educational_institution.institutionId
+        )
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -103,44 +105,13 @@ class PostEducationalBookingTest:
         response = test_client.post(
             "/adage-iframe/bookings",
             json={
-                "redactorEmail": educational_redactor.email,
                 "stockId": stock.id,
-                "UAICode": educational_institution.institutionId,
             },
         )
 
         # Then
         assert response.status_code == 400
         assert response.json == {"stock": "Cette offre n'est pas disponible à la réservation"}
-
-    def test_should_not_allow_booking_when_redactor_email_is_different_from_email_in_adage_jwt(self, app):
-        # Given
-        stock = offer_factories.EducationalStockFactory(beginningDatetime=self.stock_date)
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        educational_factories.EducationalYearFactory(
-            beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
-        )
-        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
-
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email="fake@email.com")
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # When
-        response = test_client.post(
-            "/adage-iframe/bookings",
-            json={
-                "redactorEmail": educational_redactor.email,
-                "stockId": stock.id,
-                "UAICode": educational_institution.institutionId,
-            },
-        )
-
-        # Then
-        assert response.status_code == 403
-        assert response.json == {
-            "Authorization": "L'email d'authentification et l'email du rédacteur de projet ne correspondent pas"
-        }
 
     def test_should_not_allow_booking_when_offer_is_not_educational(self, app):
         # Given
@@ -151,7 +122,9 @@ class PostEducationalBookingTest:
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
         )
 
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=educational_redactor.email)
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(
+            email=educational_redactor.email, uai=educational_institution.institutionId
+        )
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -159,9 +132,7 @@ class PostEducationalBookingTest:
         response = test_client.post(
             "/adage-iframe/bookings",
             json={
-                "redactorEmail": educational_redactor.email,
                 "stockId": stock.id,
-                "UAICode": educational_institution.institutionId,
             },
         )
 
@@ -178,7 +149,9 @@ class PostEducationalBookingTest:
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
         )
 
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(email=educational_redactor.email)
+        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(
+            email=educational_redactor.email, uai=educational_institution.institutionId
+        )
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
@@ -186,9 +159,7 @@ class PostEducationalBookingTest:
         response = test_client.post(
             "/adage-iframe/bookings",
             json={
-                "redactorEmail": educational_redactor.email,
                 "stockId": stock.id,
-                "UAICode": educational_institution.institutionId,
             },
         )
 
@@ -199,7 +170,7 @@ class PostEducationalBookingTest:
     def test_should_not_allow_booking_when_uai_code_is_not_provided_through_jwt(self, app):
         # Given
         stock = offer_factories.EducationalStockFactory(beginningDatetime=self.stock_date)
-        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory(
             beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
         )
@@ -215,12 +186,12 @@ class PostEducationalBookingTest:
         response = test_client.post(
             "/adage-iframe/bookings",
             json={
-                "redactorEmail": educational_redactor.email,
                 "stockId": stock.id,
-                "UAICode": educational_institution.institutionId,
             },
         )
 
         # Then
         assert response.status_code == 400
-        assert response.json == {"jwt": "Le champ 'uai' du token est nécessaire pour effectuer une pré-réservation"}
+        assert response.json == {
+            "global": "Vous devez sélectionner un établissement scolaire pour pouvoir effectuer une pré-réservation"
+        }

@@ -2,8 +2,6 @@ from pydantic import BaseModel
 
 
 class BookEducationalOfferRequest(BaseModel):
-    redactorEmail: str
-    UAICode: str
     stockId: int
 
 
