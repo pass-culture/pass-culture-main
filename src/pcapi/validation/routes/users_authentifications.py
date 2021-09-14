@@ -34,7 +34,7 @@ def login_or_api_key_required(function):
         basic_authentication()
 
         if not g.current_api_key and not current_user.is_authenticated:
-            raise UnauthorizedError(errors={"auth": "API key or login required"})
+            return "API key or login required", 401
         return function(*args, **kwds)
 
     return wrapper
@@ -48,7 +48,7 @@ def api_key_required(route_function):
         _fill_current_api_key()
 
         if not g.current_api_key:
-            raise UnauthorizedError(errors={"auth": "API key required"})
+            return "API key required", 401
         return route_function(*args, **kwds)
 
     return wrapper

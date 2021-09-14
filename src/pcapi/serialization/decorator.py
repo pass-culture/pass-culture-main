@@ -8,12 +8,11 @@ from flask import Response
 from flask import make_response
 from flask import request
 from pydantic import BaseModel
+from spectree import Response as SpectreeResponse
 from spectree.spec import SpecTree
 
 from pcapi.flask_app import api as default_api
 from pcapi.models import ApiErrors
-
-from .spec_tree import ExtendedResponse as SpectreeResponse
 
 
 def _make_json_response(
@@ -61,7 +60,6 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
     on_error_statuses: list[int] = [],
     api: SpecTree = default_api,
     json_format: bool = True,
-    code_descriptions: dict = {},
 ) -> Callable[[Any], Any]:
     """A decorator that serialize/deserialize and validate input/output
 
@@ -77,7 +75,6 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
         on_error_statuses: list of possible error statuses. Defaults to [].
         api: [description]. Defaults to default_api.
         json_format: JSON format response if true, else text format response. Defaults to True.
-        code_descriptions (dict): specific descriptions shown in swagger (ex: { "HTTP_419": "I'm a coffee pot" })
 
     Returns:
         Callable[[Any], Any]: [description]
@@ -91,13 +88,10 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
         if 403 not in on_error_statuses:
             on_error_statuses.append(403)
 
-        response_codes = (
-            set([f"HTTP_{on_success_status}"])
-            | set(f"HTTP_{on_error_status}" for on_error_status in on_error_statuses)
-            | set(code_descriptions.keys())
-        )
+        spectree_response = SpectreeResponse(*[f"HTTP_{on_error_status}" for on_error_status in on_error_statuses])
 
-        spectree_response = SpectreeResponse(*response_codes, code_descriptions=code_descriptions)
+        if on_success_status == 204:
+            spectree_response.codes.append(f"HTTP_{on_success_status}")
 
         if response_model:
             spectree_response.code_models[f"HTTP_{on_success_status}"] = response_model
