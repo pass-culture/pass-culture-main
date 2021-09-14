@@ -3,7 +3,7 @@ import React from "react"
 
 import * as pcapi from "repository/pcapi/pcapi"
 
-import App from "../App"
+import { App } from "../App"
 
 jest.mock("utils/config", () => ({
   APP_SEARCH_ENDPOINT: "app-search-endpoint",
