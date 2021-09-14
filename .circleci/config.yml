@@ -1,7 +1,12 @@
 version: 2.1
 orbs:
   slack: circleci/slack@4.2
-
+  
+parameters:
+  venv_cache_key:
+    type: string
+    default: 'deps1-{{ checksum "/home/circleci/.pyenv/version" }}-{{ .Branch }}-{{ checksum "requirements.txt" }}'
+      
 slack-fail-post-step: &slack-fail-post-step
   post-steps:
     - slack/notify:
@@ -206,7 +211,7 @@ jobs:
             equal: [ "master", << pipeline.git.branch >> ]
           steps:
             - restore_cache:
-                key: deps1-{{ checksum "/home/circleci/.pyenv/version" }}-{{ .Branch }}-{{ checksum "requirements.txt" }}
+                key: << pipeline.parameters.venv_cache_key >>
       - run:
           name: Install requirements
           command: |
@@ -218,7 +223,7 @@ jobs:
             equal: [ "master", << pipeline.git.branch >> ]
           steps:
             - save_cache:
-                key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+                key: << pipeline.parameters.venv_cache_key >>
                 paths:
                   - "venv"
       - run:
@@ -278,7 +283,7 @@ jobs:
             equal: [ "master", << pipeline.git.branch >> ]
           steps:
             - restore_cache:
-                key: deps1-{{ checksum "/home/circleci/.pyenv/version" }}-{{ .Branch }}-{{ checksum "requirements.txt" }}
+                key: << pipeline.parameters.venv_cache_key >>
       - run:
           name: Install requirements
           command: |
@@ -290,7 +295,7 @@ jobs:
             equal: [ "master", << pipeline.git.branch >> ]
           steps:
             - save_cache:
-                key: deps1-{{ checksum "/home/circleci/.pyenv/version" }}-{{ .Branch }}-{{ checksum "requirements.txt" }}
+                key: << pipeline.parameters.venv_cache_key >>
                 paths:
                   - "venv"
       - run:
