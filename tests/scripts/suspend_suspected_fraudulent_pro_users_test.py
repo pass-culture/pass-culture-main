@@ -55,7 +55,9 @@ def test_only_suspend_pro_users_in_given_emails_providers_list():
 
     # Then
     assert not pro_fraudulent_user_with_uppercase_domain.isActive
-    assert not pro_fraudulent_user_with_subdomain.isActive
+
+    # Do not handle sub-domains
+    assert pro_fraudulent_user_with_subdomain.isActive
     assert beneficiary_fraudulent_user.isActive
 
 

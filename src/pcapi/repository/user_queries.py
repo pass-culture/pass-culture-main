@@ -32,7 +32,7 @@ def find_user_by_email(email: str) -> User:
 
 
 def find_beneficiary_users_by_email_provider(email_provider: str) -> list[User]:
-    formatted_email_provider = f"%@%{email_provider}"
+    formatted_email_provider = f"%@{email_provider}"
     return (
         User.query.filter_by(isBeneficiary=True, isActive=True)
         .filter(func.lower(User.email).like(func.lower(formatted_email_provider)))
@@ -41,7 +41,7 @@ def find_beneficiary_users_by_email_provider(email_provider: str) -> list[User]:
 
 
 def find_pro_users_by_email_provider(email_provider: str) -> list[User]:
-    formatted_email_provider = f"%@%{email_provider}"
+    formatted_email_provider = f"%@{email_provider}"
     return (
         User.query.filter_by(isBeneficiary=False, isActive=True)
         .join(UserOfferer)

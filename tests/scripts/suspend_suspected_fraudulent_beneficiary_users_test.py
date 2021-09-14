@@ -87,7 +87,10 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
         # Then
         assert not beneficiary_fraudulent_user.isActive
         assert not beneficiary_fraudulent_user_with_uppercase_domain.isActive
-        assert not beneficiary_fraudulent_user_with_subdomain.isActive
+
+        # Do not handle sub-domains
+        assert beneficiary_fraudulent_user_with_subdomain.isActive
+
         assert non_beneficiary_fraudulent_user.isActive
 
     @pytest.mark.usefixtures("db_session")
