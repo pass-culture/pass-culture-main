@@ -1,7 +1,9 @@
 @import "sass-rem";
 
 .offer {
-  display: flex;
+  display: grid;
+  grid-column-gap: rem(20px);
+  grid-template-columns: rem(200px) 1fr;
   width: 100%;
 
   img,
@@ -24,8 +26,6 @@
   }
 
   .info {
-    margin-left: rem(20px);
-
     h2 {
       margin: 0;
     }
@@ -39,6 +39,16 @@
       font-size: rem(18px);
       font-weight: bold;
       margin-top: rem(8px);
+    }
+  }
+
+  ul.stocks {
+    display: grid;
+    grid-row-gap: rem(6px);
+
+    li {
+      display: grid;
+      grid-template-columns: rem(200px) rem(150px) 1fr;
     }
   }
 }

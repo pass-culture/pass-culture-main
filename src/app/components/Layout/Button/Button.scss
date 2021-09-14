@@ -1,24 +1,21 @@
 @import "sass-rem";
 
 @mixin button() {
-  font-size: rem(16px);
   font-weight: 600;
 }
 
 @mixin primary-focus {
-  background-color: #c10046;
-  border: 3px solid #c10046;
+  background-color: #6a006a;
+  border: 3px solid #6a006a;
 }
 
 @mixin primary {
   @include button();
 
-  background-color: #eb0055;
-  border: 3px solid #eb0055;
+  background-color: #870087;
+  border: 3px solid #870087;
   border-radius: rem(24px);
   color: #fff;
-  height: rem(40px);
-  line-height: rem(34px);
   padding: 0 rem(16px);
 
   &:active,
@@ -34,31 +31,9 @@
   @include primary();
 
   &:disabled {
-    background-color: #ff99be;
-    border: 3px solid #ff99be;
+    background-color: #870087;
+    border: 3px solid #870087;
     cursor: not-allowed;
-    opacity: 1;
-  }
-
-  &.with-icon {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-
-    img,
-    svg {
-      height: rem(24px);
-      margin-right: rem(4px);
-    }
-  }
-}
-
-.primary-link {
-  @include primary();
-
-  display: inline-block;
-
-  &:active {
-    color: #fff;
+    opacity: 0.5;
   }
 }

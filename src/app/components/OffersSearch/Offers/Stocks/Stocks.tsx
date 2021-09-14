@@ -12,7 +12,7 @@ export const Stocks = ({
   venuePostalCode: string;
 }): JSX.Element => {
   return (
-    <ul>
+    <ul className="stocks">
       {stocks.map((stock: StockType) => (
         <Stock
           key={stock.id}
