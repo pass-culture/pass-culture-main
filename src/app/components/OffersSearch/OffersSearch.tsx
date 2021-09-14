@@ -15,7 +15,7 @@ import { Offers } from "./Offers/Offers"
 
 const connector = new AppSearchAPIConnector({
   searchKey: APP_SEARCH_KEY,
-  engineName: "offers-gautier",
+  engineName: "offers",
   endpointBase: APP_SEARCH_ENDPOINT,
 })
 const configurationOptions = {
