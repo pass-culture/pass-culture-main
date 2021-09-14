@@ -59,6 +59,7 @@ def book_educational_offer(redactor_email: str, uai_code: str, stock_id: int) ->
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalRedactor=redactor,
+            confirmationLimitDate=stock.bookingLimitDatetime,
         )
 
         booking = bookings_models.Booking(

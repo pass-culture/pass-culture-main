@@ -188,6 +188,7 @@ class BookEducationalOfferTest:
         assert saved_educational_booking.booking.id == returned_booking.id
         assert saved_educational_booking.booking.stock.id == stock.id
         assert saved_educational_booking.booking.stock.dnBookedQuantity == 1
+        assert saved_educational_booking.confirmationLimitDate == stock.bookingLimitDatetime
         assert saved_educational_booking.educationalInstitution.institutionId == educational_institution.institutionId
         assert saved_educational_booking.educationalYear.adageId == educational_year.adageId
         assert saved_educational_booking.booking.status == BookingStatus.PENDING
