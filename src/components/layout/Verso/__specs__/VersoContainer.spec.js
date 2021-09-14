@@ -23,7 +23,7 @@ describe('src | components | layout | Verso | VersoContainer', () => {
       // then
       expect(result).toStrictEqual({
         offerName: 'super offre',
-        subcategory: { id: 'cinema', appLabel: 'applabel cinéma' },
+        subcategory: { id: 'cinema', appLabel: 'applabel cinéma', searchGroup: 'CINEMA' },
         offerVenueNameOrPublicName: 'THEATRE DE L ODEON',
       })
     })

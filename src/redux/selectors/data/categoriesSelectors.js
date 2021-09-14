@@ -16,11 +16,11 @@ export const selectSearchGroup = createSelector(
   selectSubcategoriesAndSearchGroups,
   (state, offer) => offer.subcategoryId,
   (categories, subcategoryId) => {
-    console.log('categories', categories)
+    if (!subcategoryId) return {}
     const { subcategories, searchGroups } = categories[0]
     const subcategory = subcategories.find(subcategory => subcategory.id === subcategoryId)
     const searchGroup = searchGroups.find(
-      searchGroup => searchGroup.name === subcategory.searchGroup
+      searchGroup => searchGroup.value === subcategory.searchGroup
     )
     return searchGroup
   }

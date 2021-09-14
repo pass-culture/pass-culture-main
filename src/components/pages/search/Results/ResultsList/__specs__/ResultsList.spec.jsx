@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import Result from '../Result/Result'
 import { ResultsList } from '../ResultsList'
+import Result from '../Result/Result'
 
 describe('component | ResultsList', () => {
   let props
@@ -30,6 +30,7 @@ describe('component | ResultsList', () => {
             priceMin: 8,
             priceMax: 12,
             prices: [8, 12],
+            subcategoryId: 'Livre',
             thumbUrl: '/lien-vers-mon-image',
           },
           objectID: '1',
@@ -49,6 +50,7 @@ describe('component | ResultsList', () => {
             priceMin: 8,
             priceMax: 12,
             prices: [8, 12],
+            subcategoryId: 'Livre',
             thumbUrl: '/lien-vers-mon-image',
           },
           objectID: '9',
@@ -63,7 +65,6 @@ describe('component | ResultsList', () => {
   it('should display Result component for each result', () => {
     // When
     const wrapper = shallow(<ResultsList {...props} />)
-
     // Then
     const resultsComponent = wrapper.find(Result)
     expect(resultsComponent).toHaveLength(2)
@@ -87,6 +88,7 @@ describe('component | ResultsList', () => {
         priceMin: 8,
         priceMax: 12,
         prices: [8, 12],
+        subcategoryId: 'Livre',
         thumbUrl: '/lien-vers-mon-image',
       },
       objectID: '1',
@@ -112,6 +114,7 @@ describe('component | ResultsList', () => {
         priceMin: 8,
         priceMax: 12,
         prices: [8, 12],
+        subcategoryId: 'Livre',
         thumbUrl: '/lien-vers-mon-image',
       },
       objectID: '9',

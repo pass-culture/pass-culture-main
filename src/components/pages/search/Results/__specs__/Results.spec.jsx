@@ -1057,7 +1057,7 @@ describe('components | Results', () => {
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
-              hits: [{ objectID: '4', offer: { dates: [1586248757] } }],
+              hits: [{ objectID: '4', offer: { dates: [1586248757], subcategoryId: 'cinema' } }],
               nbHits: 1,
               nbPages: 1,
               page: 0,

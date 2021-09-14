@@ -274,7 +274,11 @@ const state = {
     categories: [
       {
         categories: [],
-        subcategories: [{ id: 'cinema', appLabel: 'applabel cinéma' }],
+        subcategories: [{ id: 'cinema', appLabel: 'applabel cinéma', searchGroup: 'CINEMA' }],
+        searchGroups: [
+          { name: 'LIVRE', value: 'Livre' },
+          { name: 'CINEMA', value: 'Cinéma' },
+        ],
       },
     ],
     types: offerTypes,
