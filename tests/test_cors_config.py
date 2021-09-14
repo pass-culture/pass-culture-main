@@ -118,11 +118,6 @@ class CorsConfigPrivateApiTest:
     def test_allowed_origins(self, test_data):
         app = create_app(test_data, "CORS_ALLOWED_ORIGINS")
         for origin in test_data["allowed_origins"]:
-            CORS(
-                app,
-                origins=get_cors_allowed_origins(test_data["env"], "CORS_ALLOWED_ORIGINS"),
-                supports_credentials=True,
-            )
             client = TestClient(app.test_client())
             response = client.get("/simple", headers={"origin": origin})
             assert response.headers.get("Access-Control-Allow-Origin") == origin
@@ -130,11 +125,6 @@ class CorsConfigPrivateApiTest:
     def test_not_allowed_origins(self, test_data):
         for _origin in test_data["allowed_origins"]:
             app = create_app(test_data, "CORS_ALLOWED_ORIGINS")
-            CORS(
-                app,
-                origins=get_cors_allowed_origins(test_data["env"], "CORS_ALLOWED_ORIGINS"),
-                supports_credentials=True,
-            )
             for permutation in build_permutations(test_data["allowed_origins"]):
                 client = TestClient(app.test_client())
                 response = client.get("/simple", headers={"origin": permutation})
@@ -154,11 +144,6 @@ class CorsConfigNativeTest:
     def test_allowed_origins_native(self, test_data):
         app = create_app(test_data, "CORS_ALLOWED_ORIGINS_NATIVE")
         for origin in test_data["allowed_origins_native"]:
-            CORS(
-                app,
-                origins=get_cors_allowed_origins(test_data["env"], "CORS_ALLOWED_ORIGINS_NATIVE"),
-                supports_credentials=True,
-            )
             client = TestClient(app.test_client())
             response = client.get("/simple", headers={"Origin": origin})
             assert response.headers.get("Access-Control-Allow-Origin") == origin
@@ -166,11 +151,6 @@ class CorsConfigNativeTest:
     def test_not_allowed_origins_native(self, test_data):
         for _origin in test_data["allowed_origins_native"]:
             app = create_app(test_data, "CORS_ALLOWED_ORIGINS_NATIVE")
-            CORS(
-                app,
-                origins=get_cors_allowed_origins(test_data["env"], "CORS_ALLOWED_ORIGINS_NATIVE"),
-                supports_credentials=True,
-            )
             for permutation in build_permutations(test_data["allowed_origins_native"]):
                 client = TestClient(app.test_client())
                 response = client.get("/simple", headers={"Origin": permutation})
