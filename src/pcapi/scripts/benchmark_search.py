@@ -233,7 +233,6 @@ class AppSearchBackend:
         query = {
             "query": criteria.get("text", ""),
             "result_fields": self.result_fields,
-            "filters": {"all": [{key: value} for key, value in filters.items()]},
             "page": {
                 "current": 1,
                 "size": 20,
@@ -241,6 +240,8 @@ class AppSearchBackend:
             "group": {"field": "group"},
             "sort": self.sort,
         }
+        if filters:
+            query["filters"] = {"all": [{key: value} for key, value in filters.items()]}
         try:
             response = requests.get(self.url, headers=self.headers, json=query, timeout=30)
             out = response.json()
