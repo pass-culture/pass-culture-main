@@ -11,7 +11,7 @@ import { useCallback } from "react"
 import { APP_SEARCH_ENDPOINT, APP_SEARCH_KEY } from "utils/config"
 import { RESULT_FIELDS } from "utils/search"
 
-import Offers from "./Offers/Offers"
+import { Offers } from "./Offers/Offers"
 
 const connector = new AppSearchAPIConnector({
   searchKey: APP_SEARCH_KEY,

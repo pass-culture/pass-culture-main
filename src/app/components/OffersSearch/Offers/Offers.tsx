@@ -3,7 +3,7 @@ import React from "react"
 
 import { ResultType } from "utils/types"
 
-import Offer from "./Offer"
+import { Offer } from "./Offer"
 
 export const Offers = ({ results }: { results: ResultType[] }): JSX.Element => (
   <ul className="offers">
@@ -15,5 +15,3 @@ export const Offers = ({ results }: { results: ResultType[] }): JSX.Element => (
     ))}
   </ul>
 )
-
-export default Offers

@@ -5,7 +5,7 @@ import { ReactComponent as Logo } from "../assets/logo.svg"
 
 import { OffersSearch } from "./components/OffersSearch/OffersSearch"
 
-const App = (): JSX.Element => (
+export const AppLayout = (): JSX.Element => (
   <>
     <header>
       <Logo />
@@ -15,5 +15,3 @@ const App = (): JSX.Element => (
     </main>
   </>
 )
-
-export default App

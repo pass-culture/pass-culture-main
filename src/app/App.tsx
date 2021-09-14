@@ -5,9 +5,9 @@ import "@fontsource/barlow"
 import { UnauthenticatedError } from "app/components/UnauthenticatedError/UnauthenticatedError"
 import * as pcapi from "repository/pcapi/pcapi"
 
-import AppLayout from "./AppLayout"
+import { AppLayout } from "./AppLayout"
 
-const App = (): JSX.Element => {
+export const App = (): JSX.Element => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
 
   useEffect(() => {
@@ -24,5 +24,3 @@ const App = (): JSX.Element => {
     </>
   )
 }
-
-export default App

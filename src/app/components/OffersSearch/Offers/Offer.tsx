@@ -6,7 +6,7 @@ import * as pcapi from "repository/pcapi/pcapi"
 import { ASSETS_URL } from "utils/config"
 import { OfferType, ResultType } from "utils/types"
 
-import Stocks from "./Stocks/Stocks"
+import { Stocks } from "./Stocks/Stocks"
 
 export const formatToReadableString = (input: string | null): string | null => {
   if (input == null) {
@@ -101,5 +101,3 @@ export const Offer = ({ result }: { result: ResultType }): JSX.Element => {
     </li>
   )
 }
-
-export default Offer

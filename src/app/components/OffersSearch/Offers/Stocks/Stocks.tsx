@@ -45,5 +45,3 @@ export const Stocks = ({
     </ul>
   )
 }
-
-export default Stocks

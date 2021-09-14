@@ -12,7 +12,7 @@ import {
 
 import { version } from "../package.json"
 
-import App from "./app/App"
+import { App } from "./app/App"
 
 // Initialize sentry
 if (SENTRY_SERVER_URL) {
