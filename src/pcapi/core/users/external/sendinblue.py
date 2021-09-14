@@ -168,9 +168,14 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
         return False
 
 
-def send_import_contacts_request(api_instance: ContactsApi, file_body: str, list_ids: List[int]) -> None:
+def send_import_contacts_request(
+    api_instance: ContactsApi, file_body: str, list_ids: List[int], email_blacklist: bool = False
+) -> None:
     request_contact_import = sib_api_v3_sdk.RequestContactImport(
-        email_blacklist=False, sms_blacklist=False, update_existing_contacts=True, empty_contacts_attributes=False
+        email_blacklist=email_blacklist,
+        sms_blacklist=False,
+        update_existing_contacts=True,
+        empty_contacts_attributes=False,
     )
     request_contact_import.file_body = file_body
     request_contact_import.list_ids = list_ids
@@ -210,7 +215,9 @@ def build_file_body(users_data: List[SendinblueUserUpdateData]) -> str:
     return file_body
 
 
-def import_contacts_in_sendinblue(sendinblue_users_data: List[SendinblueUserUpdateData]) -> None:
+def import_contacts_in_sendinblue(
+    sendinblue_users_data: List[SendinblueUserUpdateData], email_blacklist: bool = False
+) -> None:
     configuration = sib_api_v3_sdk.Configuration()
     configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
     api_instance = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
@@ -227,11 +234,17 @@ def import_contacts_in_sendinblue(sendinblue_users_data: List[SendinblueUserUpda
     if pro_users:
         pro_users_file_body = build_file_body(pro_users)
         send_import_contacts_request(
-            api_instance, file_body=pro_users_file_body, list_ids=[settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
+            api_instance,
+            file_body=pro_users_file_body,
+            list_ids=[settings.SENDINBLUE_PRO_CONTACT_LIST_ID],
+            email_blacklist=email_blacklist,
         )
     # send young users request
     if young_users:
         young_users_file_body = build_file_body(young_users)
         send_import_contacts_request(
-            api_instance, file_body=young_users_file_body, list_ids=[settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
+            api_instance,
+            file_body=young_users_file_body,
+            list_ids=[settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID],
+            email_blacklist=email_blacklist,
         )

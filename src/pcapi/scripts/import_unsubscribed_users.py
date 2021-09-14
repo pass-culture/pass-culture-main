@@ -43,4 +43,4 @@ def synchronize_unsubscribed_users() -> None:
     print("Updated %s users out of %s" % (users_found_in_db, total_users))
 
     sendinblue_users_data = format_sendinblue_users(users_to_update.all())
-    import_contacts_in_sendinblue(sendinblue_users_data)
+    import_contacts_in_sendinblue(sendinblue_users_data, email_blacklist=True)
