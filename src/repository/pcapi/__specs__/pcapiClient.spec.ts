@@ -95,4 +95,25 @@ describe("pcapiClient", () => {
       expect(setHrefSpy).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
     })
   })
+
+  describe("post", () => {
+    it("should call API with given path and body and JSON Mime type and correct method", async () => {
+      // Given
+      const path = "/bookings/pro"
+      const body = {
+        key: "value",
+      }
+
+      // When
+      await client.post(path, body)
+
+      // Then
+      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+        body: '{"key":"value"}',
+      })
+    })
+  })
 })

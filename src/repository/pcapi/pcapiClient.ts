@@ -47,4 +47,11 @@ export const client = {
   get: async (path: string): Promise<any> => {
     return await fetchWithErrorHandler(path, buildOptions(GET_HTTP_METHOD))
   },
+  post: async (path: string, data: Record<string, unknown>): Promise<any> => {
+    const options = {
+      ...buildOptions("POST"),
+      body: JSON.stringify(data),
+    }
+    return await fetchWithErrorHandler(path, options)
+  },
 }
