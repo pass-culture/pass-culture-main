@@ -1,18 +1,44 @@
 @import "sass-rem";
 
-.offer-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.offer {
+  display: flex;
   width: 100%;
 
-  &:not(:first-child) {
-    margin-top: 20px;
+  img,
+  .image-placeholder {
+    border-radius: 6px;
+    height: rem(300px);
+    width: rem(200px);
   }
-}
 
-.offer-image {
-  background-color: #c7c7cc;
-  border-radius: 6px;
-  height: 300px;
-  width: 200px;
+  .image-placeholder {
+    align-items: center;
+    background-color: whitesmoke;
+    display: flex;
+    justify-content: center;
+
+    svg {
+      height: rem(50px);
+      opacity: 1;
+    }
+  }
+
+  .info {
+    margin-left: rem(20px);
+
+    h2 {
+      margin: 0;
+    }
+
+    h3 {
+      font-size: rem(16px);
+      margin-bottom: 0;
+    }
+
+    .venue-name {
+      font-size: rem(18px);
+      font-weight: bold;
+      margin-top: rem(8px);
+    }
+  }
 }

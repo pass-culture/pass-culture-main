@@ -1,0 +1,6 @@
+@import "sass-rem";
+
+ul.offers {
+  display: grid;
+  grid-gap: rem(20px);
+}

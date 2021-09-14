@@ -15,4 +15,8 @@ header {
 main.app-layout {
   grid-column-start: col-main;
   grid-row-start: row-main;
+
+  h1 {
+    font-size: rem(24px);
+  }
 }

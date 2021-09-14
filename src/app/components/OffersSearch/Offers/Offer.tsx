@@ -1,6 +1,7 @@
 import "./Offer.scss"
 import React, { Fragment, useEffect, useState } from "react"
 
+import { ReactComponent as Logo } from "assets/logo.svg"
 import * as pcapi from "repository/pcapi/pcapi"
 import { ASSETS_URL } from "utils/config"
 import { OfferType, ResultType } from "utils/types"
@@ -25,67 +26,53 @@ export const Offer = ({ result }: { result: ResultType }): JSX.Element => {
   }, [result.id])
 
   return (
-    <div className="offer-container">
+    <li className="offer">
       {hasThumb && (
         <img
-          alt="Offer thumb"
-          className="offer-image"
-          height="300"
+          alt="Illustration de l'offre"
           loading="lazy"
           src={`${ASSETS_URL}${result.thumb_url?.raw}`}
-          width="200"
         />
       )}
       {!hasThumb && (
-        <img
-          alt="placeholder"
-          className="offer-image"
-          height="300"
-          loading="lazy"
-          src="/icons/placeholder.svg"
-          width="200"
-        />
+        <div className="image-placeholder">
+          <Logo />
+        </div>
       )}
       {offer && (
-        <div>
-          <div>
-            <p>
-              {result.name.raw}
-            </p>
-            <p>
-              {result.venue_public_name?.raw ||
-                formatToReadableString(result.venue_name?.raw)}
-            </p>
-          </div>
-          <span>
-            <p>
+        <div className="info">
+          <h2>
+            {result.name.raw}
+          </h2>
+          <p className="venue-name">
+            {result.venue_public_name?.raw ||
+              formatToReadableString(result.venue_name?.raw)}
+          </p>
+          <section>
+            <h3>
               Quoi ?
-            </p>
-            <p>
-              Théâtre
-            </p>
-          </span>
-          <div>
-            <p>
+            </h3>
+            Théâtre
+          </section>
+          <section>
+            <h3>
               Et en détails ? :
-            </p>
-            <p>
-              Le soleil me rencontre....
-            </p>
-          </div>
-          <div>
-            <p>
+            </h3>
+            Le soleil me rencontre....
+          </section>
+          <section>
+            <h3>
               Quand ?
-            </p>
+            </h3>
             <Stocks
               stocks={offer.stocks}
               venuePostalCode={offer.venue.postalCode}
             />
-          </div>
-          <div>
-            <p>
+          </section>
+          <section>
+            <h3>
               Où ?
-            </p>
+            </h3>
             <address>
               {offer.venue.publicName || name}
               <br />
@@ -108,10 +95,10 @@ export const Offer = ({ result }: { result: ResultType }): JSX.Element => {
                 </Fragment>
               )}
             </address>
-          </div>
+          </section>
         </div>
       )}
-    </div>
+    </li>
   )
 }
 
