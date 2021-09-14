@@ -11,7 +11,40 @@ from pcapi.repository.user_queries import find_user_by_email
 from pcapi.serialization.decorator import spectree_serialize
 
 
-SENDINBLUE_IP_RANGE = ipaddress.IPv4Network("185.107.232.0/24")
+# Defined from https://developers.sendinblue.com/docs/how-to-use-webhooks#securing-your-webhooks
+# and https://developers.sendinblue.com/docs/additional-ips-to-be-whitelisted
+SENDINBLUE_IP_RANGE = [
+    *ipaddress.IPv4Network("185.107.232.0/24"),
+    ipaddress.IPv4Address("195.154.30.169"),
+    ipaddress.IPv4Address("195.154.31.153"),
+    ipaddress.IPv4Address("195.154.31.142"),
+    ipaddress.IPv4Address("195.154.31.171"),
+    ipaddress.IPv4Address("195.154.31.129"),
+    ipaddress.IPv4Address("195.154.79.186"),
+    ipaddress.IPv4Address("163.172.23.50"),
+    ipaddress.IPv4Address("163.172.75.202"),
+    ipaddress.IPv4Address("163.172.75.222"),
+    ipaddress.IPv4Address("163.172.76.108"),
+    ipaddress.IPv4Address("163.172.77.49"),
+    ipaddress.IPv4Address("163.172.77.62"),
+    ipaddress.IPv4Address("163.172.77.137"),
+    ipaddress.IPv4Address("163.172.99.26"),
+    ipaddress.IPv4Address("163.172.99.58"),
+    ipaddress.IPv4Address("163.172.109.19"),
+    ipaddress.IPv4Address("163.172.109.49"),
+    ipaddress.IPv4Address("163.172.109.105"),
+    ipaddress.IPv4Address("163.172.109.130"),
+    ipaddress.IPv4Address("51.159.71.10"),
+    ipaddress.IPv4Address("51.159.71.12"),
+    ipaddress.IPv4Address("51.159.71.13"),
+    ipaddress.IPv4Address("51.159.71.15"),
+    ipaddress.IPv4Address("51.159.71.17"),
+    ipaddress.IPv4Address("51.159.71.41"),
+    ipaddress.IPv4Address("51.159.58.33"),
+    ipaddress.IPv4Address("51.159.58.37"),
+    ipaddress.IPv4Address("51.159.58.36"),
+    ipaddress.IPv4Address("51.159.58.214"),
+]
 
 
 @public_api.route("/webhooks/sendinblue/unsubscribe", methods=["POST"])
