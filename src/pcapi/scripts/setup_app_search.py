@@ -3,6 +3,8 @@ import os
 import sys
 
 from pcapi.core.search.backends import appsearch
+from pcapi.core.search.backends.appsearch import OFFERS_ENGINE_NAME
+from pcapi.core.search.backends.appsearch import VENUES_ENGINE_NAME
 from pcapi.flask_app import app
 
 
@@ -18,43 +20,69 @@ def _check_errors(response):
     return True
 
 
-def setup_offers_engine():
-    offers_engine = appsearch.AppSearchBackend().offers_engine
-    response = offers_engine.create_engine()
+def setup_engine(engine):
+    response = engine.create_engine()
     if not _check_errors(response):
         return
-    print("Offer engine has been created.")
+    print(f"{engine.engine_name}: Engine has been created.")
 
-    response = offers_engine.update_schema()
+    response = engine.update_schema()
     if not _check_errors(response):
         return
-    print("Offer schema has been initialized.")
+    print(f"{engine.engine_name}: Schema has been initialized.")
 
-    for response in offers_engine.update_synonyms():
+    for response in engine.update_synonyms():
         if not _check_errors(response):
             return
-    print("Offer synonyms have been set.")
+    print(f"{engine.engine_name}: Synonyms have been set.")
+
+
+def setup_offers_engine():
+    backend = appsearch.AppSearchBackend()
+    setup_engine(backend.offers_engine)
+
+
+def setup_venues_engine():
+    backend = appsearch.AppSearchBackend()
+    setup_engine(backend.venues_engine)
 
 
 def index_offers():
     # FIXME (dbaty, 2021-07-01): late import to avoid import loop of models.
     import pcapi.core.offers.models as offers_models
 
-    backend = appsearch.AppSearchBackend()
-
-    offers = offers_models.Offer.query.all()
-    documents = []
-    for offer in offers:
+    bookable_offers = []
+    for offer in offers_models.Offer.query.all():
         if offer.isBookable:
             print(f"Found {offer} to add to index ({offer.name[:20]}...)")
-            documents.append(backend.serialize_offer(offer))
+            bookable_offers.append(offer)
 
-    if not documents:
+    if not bookable_offers:
         print("ERR: Could not find any bookable offers to index")
         return
 
-    backend.offers_engine.create_or_update_documents(documents)
-    print(f"Successfully created or updated {len(documents)} offers")
+    backend = appsearch.AppSearchBackend()
+    backend.index_offers(bookable_offers)
+    print(f"Successfully created or updated {len(bookable_offers)} offers")
+
+
+def index_venues():
+    # FIXME (antoinewg, 2021-09-15): late import to avoid import loop of models.
+    import pcapi.core.offerers.models as offerers_models
+
+    permanent_venues = []
+    for venue in offerers_models.Venue.query.all():
+        if venue.isPermanent:
+            print(f"Found {venue} to add to index ({venue.name[:20]}...)")
+            permanent_venues.append(venue)
+
+    if not permanent_venues:
+        print("ERR: Could not find any permanent venues to index")
+        return
+
+    backend = appsearch.AppSearchBackend()
+    backend.index_venues(permanent_venues)
+    print(f"Successfully created or updated {len(permanent_venues)} venues")
 
 
 def get_parser():
@@ -62,17 +90,21 @@ def get_parser():
 
     main_subparsers = parser.add_subparsers()
 
-    # engine (setup)
-    engine = main_subparsers.add_parser("engine", help="Commands related to engines.")
-    engine_subparsers = engine.add_subparsers()
-    engine_setup = engine_subparsers.add_parser("setup", help="Setup a new engine.")
-    engine_setup.set_defaults(callback=setup_offers_engine)
-
-    # offers (index)
-    offers = main_subparsers.add_parser("offers", help="Commands related to offers.")
-    offers_subparsers = offers.add_subparsers()
+    # offers
+    offers_parser = main_subparsers.add_parser(OFFERS_ENGINE_NAME, help="Commands related to offers.")
+    offers_subparsers = offers_parser.add_subparsers()
+    offers_setup = offers_subparsers.add_parser("setup", help="Setup a new engine for offers.")
+    offers_setup.set_defaults(callback=setup_offers_engine)
     offers_index = offers_subparsers.add_parser("index", help="Index offers.")
     offers_index.set_defaults(callback=index_offers)
+
+    # venues
+    venues_parser = main_subparsers.add_parser(VENUES_ENGINE_NAME, help="Commands related to venues.")
+    venues_subparsers = venues_parser.add_subparsers()
+    venues_setup = venues_subparsers.add_parser("setup", help="Setup a new engine for venues.")
+    venues_setup.set_defaults(callback=setup_venues_engine)
+    venues_index = venues_subparsers.add_parser("index", help="Index venues.")
+    venues_index.set_defaults(callback=index_venues)
 
     return parser
 
