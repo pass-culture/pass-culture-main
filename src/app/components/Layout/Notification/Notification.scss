@@ -1,0 +1,76 @@
+@import "sass-rem";
+
+.notification {
+  align-items: center;
+  border-radius: rem(80px);
+  bottom: 0;
+  display: flex;
+  left: 50%;
+  padding: rem(8px) rem(24px);
+  position: fixed;
+  text-align: center;
+  transform: translateX(-50%);
+  visibility: hidden;
+  white-space: pre-line;
+  z-index: 1000;
+
+  &.show {
+    animation-duration: 0.8s;
+    animation-name: animatetop;
+    transform: translateX(-50%) translateY(- rem(30px));
+    transition: all 400ms ease-out;
+    visibility: visible;
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    &.show {
+      animation: none;
+      opacity: 1;
+      transform: translateX(-50%) translateY(- rem(30px));
+      transition: none;
+      visibility: visible;
+    }
+  }
+
+  @keyframes animatetop {
+    from {
+      bottom: -300px;
+      opacity: 0;
+    }
+
+    to {
+      bottom: 0;
+      opacity: 1;
+    }
+  }
+
+  &.hide {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100%);
+    transition: all 400ms ease-in;
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    &.hide {
+      opacity: 0;
+      transform: translateX(-50%) translateY(100%);
+      transition: none;
+    }
+  }
+
+  &.is-success {
+    background-color: #15884f;
+    color: #fff;
+  }
+
+  &.is-error {
+    background-color: #e60039;
+    color: #fff;
+  }
+
+  svg {
+    flex: 0 0 rem(40px);
+    padding-right: rem(8px);
+    width: rem(40px);
+  }
+}

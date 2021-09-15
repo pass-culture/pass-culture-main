@@ -8,10 +8,10 @@ import AppSearchAPIConnector from "@elastic/search-ui-app-search-connector"
 import * as React from "react"
 import { useCallback } from "react"
 
+import { Notification } from "app/components/Layout/Notification/Notification"
 import { APP_SEARCH_ENDPOINT, APP_SEARCH_KEY } from "utils/config"
 import { RESULT_FIELDS } from "utils/search"
-
-import { Role } from "../../../utils/types"
+import { Role } from "utils/types"
 
 import { Offers } from "./Offers/Offers"
 
@@ -28,7 +28,13 @@ const configurationOptions = {
   trackUrlState: false,
 }
 
-export const OffersSearch = ({ userRole }: { userRole: Role }): JSX.Element => {
+export const OffersSearch = ({
+  notify,
+  userRole,
+}: {
+  notify: (notification: Notification) => void;
+  userRole: Role;
+}): JSX.Element => {
   const mapContextToProps = useCallback(
     ({
       autocompletedResults,
@@ -101,6 +107,7 @@ export const OffersSearch = ({ userRole }: { userRole: Role }): JSX.Element => {
                   trackAutocompleteClickThrough={trackAutocompleteClickThrough}
                 />
                 <Offers
+                  notify={notify}
                   results={results}
                   userRole={userRole}
                 />

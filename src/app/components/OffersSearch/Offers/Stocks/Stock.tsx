@@ -1,6 +1,10 @@
 import React, { useCallback } from "react"
 
 import { Button } from "app/components/Layout/Button/Button"
+import {
+  Notification,
+  NotificationType,
+} from "app/components/Layout/Notification/Notification"
 import { preBookStock } from "repository/pcapi/pcapi"
 import {
   FORMAT_DD_MM_YYYY_HH_mm,
@@ -42,16 +46,35 @@ const extractDepartmentCode = (venuePostalCode: string): string => {
 
 export const Stock = ({
   canPrebookOffers,
+  notify,
   stock,
   venuePostalCode,
 }: {
   canPrebookOffers: boolean;
+  notify: (notification: Notification) => void;
   stock: StockType;
   venuePostalCode: string;
 }): JSX.Element => {
   const preBookCurrentStock = useCallback(
-    () => preBookStock(stock.id),
-    [stock.id]
+    () =>
+      preBookStock(stock.id)
+        .then(() =>
+          notify(
+            new Notification(
+              NotificationType.success,
+              "Votre pré-réservation a été effectuée avec succès."
+            )
+          )
+        )
+        .catch(() =>
+          notify(
+            new Notification(
+              NotificationType.error,
+              "Impossible de pré-réserver cette offre.\nVeuillez contacter le support"
+            )
+          )
+        ),
+    [notify, stock.id]
   )
   return (
     <li>
