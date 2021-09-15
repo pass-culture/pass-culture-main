@@ -145,6 +145,7 @@ class JouveFraudCheckTest:
         [
             "321070751234",
             "090435303687",
+            "00000000 0 ZU4",  # portugal format
         ],
     )
     def test_jouve_id_piece_number_valid_format(self, id_piece_number):

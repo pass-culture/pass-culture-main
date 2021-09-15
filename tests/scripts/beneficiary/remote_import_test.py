@@ -525,6 +525,19 @@ class ParseBeneficiaryInformationTest:
             assert information.application_id == 123
             assert information.procedure_id == 201201
 
+        @pytest.mark.parametrize("possible_value", ["0123456789", " 0123456789", "0123456789 ", " 0123456789 "])
+        def test_beneficiary_information_id_piece_number_with_spaces(self, possible_value):
+            application_detail = make_new_beneficiary_application_details(1, "closed", id_piece_number=possible_value)
+            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=123123)
+            assert information.id_piece_number == "0123456789"
+
+        @pytest.mark.parametrize("possible_value", ["0123456789", " 0123456789", "0123456789 ", " 0123456789 "])
+        def test_beneficiary_information_id_piece_number_with_spaces_graphql(self, possible_value):
+            application_detail = make_graphql_application(1, "closed", id_piece_number=possible_value)
+            information = remote_import.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
+
+            assert information.id_piece_number == "0123456789"
+
     class ParsingErrorsTest:
         def test_beneficiary_information_postalcode_error(self):
             application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="Strasbourg")
@@ -540,19 +553,6 @@ class ParseBeneficiaryInformationTest:
                 remote_import.parse_beneficiary_information(application_detail, procedure_id=123123)
 
             assert exc_info.value.errors["id_piece_number"] == possible_value
-
-        @pytest.mark.parametrize("possible_value", ["0123456789", " 0123456789", "0123456789 ", " 0123456789 "])
-        def test_beneficiary_information_id_piece_number_with_spaces(self, possible_value):
-            application_detail = make_new_beneficiary_application_details(1, "closed", id_piece_number=possible_value)
-            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=123123)
-            assert information.id_piece_number == "0123456789"
-
-        @pytest.mark.parametrize("possible_value", ["0123456789", " 0123456789", "0123456789 ", " 0123456789 "])
-        def test_beneficiary_information_id_piece_number_with_spaces_graphql(self, possible_value):
-            application_detail = make_graphql_application(1, "closed", id_piece_number=possible_value)
-            information = remote_import.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
-
-            assert information.id_piece_number == "0123456789"
 
 
 @pytest.mark.usefixtures("db_session")
