@@ -541,6 +541,19 @@ class ParseBeneficiaryInformationTest:
 
             assert exc_info.value.errors["id_piece_number"] == possible_value
 
+        @pytest.mark.parametrize("possible_value", ["0123456789", " 0123456789", "0123456789 ", " 0123456789 "])
+        def test_beneficiary_information_id_piece_number_with_spaces(self, possible_value):
+            application_detail = make_new_beneficiary_application_details(1, "closed", id_piece_number=possible_value)
+            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=123123)
+            assert information.id_piece_number == "0123456789"
+
+        @pytest.mark.parametrize("possible_value", ["0123456789", " 0123456789", "0123456789 ", " 0123456789 "])
+        def test_beneficiary_information_id_piece_number_with_spaces_graphql(self, possible_value):
+            application_detail = make_graphql_application(1, "closed", id_piece_number=possible_value)
+            information = remote_import.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
+
+            assert information.id_piece_number == "0123456789"
+
 
 @pytest.mark.usefixtures("db_session")
 class RunIntegrationTest:
