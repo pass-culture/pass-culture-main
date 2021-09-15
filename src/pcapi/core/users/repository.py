@@ -21,6 +21,7 @@ from pcapi.models import UserOfferer
 from pcapi.models import Venue
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
+from pcapi.utils import crypto
 
 from . import constants
 from . import exceptions
@@ -31,12 +32,20 @@ from .models import User
 logger = logging.getLogger(__name__)
 
 
+HASHED_PLACEHOLDER = crypto.hash_password("placeholder")
+
+
 def check_user_and_credentials(user: User, password: str) -> None:
     # Order is important to prevent end-user to guess user emails
     # We need to check email and password before checking email validation
-    if not user or not user.isActive or not user.checkPassword(password):
-        if user:
-            logging.info("Failed authentication attempt", extra={"user": user.id, "avoid_current_user": True})
+    if not user:
+        # Hash the given password, just like we would do if the user
+        # existed. This avoids user enumeration by comparing server
+        # response time.
+        crypto.check_password(password, HASHED_PLACEHOLDER)
+        raise exceptions.InvalidIdentifier()
+    if not user.checkPassword(password) or not user.isActive:
+        logging.info("Failed authentication attempt", extra={"user": user.id, "avoid_current_user": True})
         raise exceptions.InvalidIdentifier()
     if not user.isValidated or not user.isEmailValidated:
         raise exceptions.UnvalidatedAccount()
