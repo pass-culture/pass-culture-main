@@ -78,10 +78,3 @@ def book_educational_offer(
         raise ApiErrors({"educationalYear": "Aucune année scolaire ne correspond à cet évènement"})
 
     return BookEducationalOfferResponse(bookingId=booking.id)
-
-
-@blueprint.adage_iframe.route("/authenticate", methods=["GET"])
-@spectree_serialize(api=blueprint.api, on_success_status=204)
-@adage_jwt_required
-def authenticate(authenticated_information: AuthenticatedInformation) -> None:
-    pass

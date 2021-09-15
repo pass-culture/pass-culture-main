@@ -16,18 +16,18 @@ class Returns204Test:
         "uai": "EAU123",
     }
 
-    def _create_adage_valid_token(self) -> ByteString:
+    def _create_adage_valid_token(self, uai_code: Optional[str]) -> ByteString:
         return create_adage_jwt_fake_valid_token(
             civility=self.valid_user.get("civilite"),
             lastname=self.valid_user.get("nom"),
             firstname=self.valid_user.get("prenom"),
             email=self.valid_user.get("mail"),
-            uai=self.valid_user.get("uai"),
+            uai=uai_code,
         )
 
-    def test_should_return_success_response_when_jwt_valid(self, app):
+    def test_should_return_redactor_role_when_token_has_an_uai_code(self, app):
         # Given
-        valid_encoded_token = self._create_adage_valid_token()
+        valid_encoded_token = self._create_adage_valid_token(uai_code=self.valid_user.get("uai"))
 
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {valid_encoded_token}"}
@@ -36,8 +36,22 @@ class Returns204Test:
         response = test_client.get("/adage-iframe/authenticate")
 
         # Then
-        assert response.status_code == 204
-        assert response.json is None
+        assert response.status_code == 200
+        assert response.json == {"role": "redactor"}
+
+    def test_should_return_readonly_role_when_token_has_no_uai_code(self, app):
+        # Given
+        valid_encoded_token = self._create_adage_valid_token(uai_code=None)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {valid_encoded_token}"}
+
+        # When
+        response = test_client.get("/adage-iframe/authenticate")
+
+        # Then
+        assert response.status_code == 200
+        assert response.json == {"role": "readonly"}
 
 
 class ReturnsErrorTest:
