@@ -12,8 +12,7 @@ COPY ./requirements.txt /scripts/requirements.txt
 WORKDIR /scripts
 RUN pip3 install -r requirements.txt
 
-COPY ./anonymize.sql /scripts/anonymize.sql
-COPY ./restoreBackup.py /scripts/restoreBackup.py
+COPY . /scripts
 
 WORKDIR /usr/src/app
 
