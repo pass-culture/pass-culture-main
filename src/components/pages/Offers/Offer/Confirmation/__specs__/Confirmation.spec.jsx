@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import '@testing-library/jest-dom'
 import { screen } from '@testing-library/react'
@@ -11,7 +11,8 @@ import { loadFakeApiOffer } from 'utils/fakeApi'
 
 jest.mock('utils/config', () => {
   return {
-    WEBAPP_URL: 'http://localhost',
+    WEBAPP_URL_OLD: 'http://localhost',
+    WEBAPP_URL_NEW: 'http://localhost',
   }
 })
 

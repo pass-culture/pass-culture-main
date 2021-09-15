@@ -1,20 +1,26 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
-import { WEBAPP_URL } from 'utils/config'
+import { WEBAPP_URL_NEW, WEBAPP_URL_OLD } from 'utils/config'
 
-const getOfferPreviewUrl = (offerId, mediationId) => {
-  const webappOfferUrl = `${WEBAPP_URL}/offre/details/${offerId}`
+import useActiveFeature from '../../../../hooks/useActiveFeature'
+
+const getOfferPreviewUrl = (offerId, mediationId, isWebappV2Enabled) => {
+  const baseUrl = isWebappV2Enabled ? WEBAPP_URL_NEW : WEBAPP_URL_OLD
+  const webappOfferUrl = isWebappV2Enabled
+    ? `${baseUrl}/offre/${offerId}`
+    : `${baseUrl}/offre/details/${offerId}`
 
   return mediationId ? `${webappOfferUrl}/${mediationId}` : webappOfferUrl
 }
 
 const OfferPreviewLink = ({ offerId, mediationId }) => {
-  const offerPreviewUrl = getOfferPreviewUrl(offerId, mediationId)
+  const isWebappV2Enabled = useActiveFeature('WEBAPP_V2_ENABLED')
+  const offerPreviewUrl = getOfferPreviewUrl(offerId, mediationId, isWebappV2Enabled)
 
   const openWindow = useCallback(
     event => {

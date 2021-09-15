@@ -11,10 +11,13 @@ import { withTracking } from 'components/hocs'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser, selectIsUserAdmin } from 'store/selectors/data/usersSelectors'
 
+import { isFeatureActive } from "../../../../../store/features/selectors"
+
 import OfferDetails from './OfferDetails'
 
 const mapStateToProps = state => ({
   isUserAdmin: selectIsUserAdmin(state),
+  isWebAppV2Enabled: isFeatureActive(state, 'WEBAPP_V2_ENABLED'),
   userEmail: selectCurrentUser(state).email,
 })
 

@@ -17,11 +17,6 @@ if (typeof window !== 'undefined') {
 }
 export const API_URL = apiUrlBasedOnDomain || 'http://localhost'
 
-// FIXME : Remove when transition to new domain is done
-export const WEBAPP_URL = global.window?.location.hostname.includes('beta.gouv')
-  ? process.env.WEBAPP_URL_OLD
-  : process.env.WEBAPP_URL_NEW
-
 export const {
   ENVIRONMENT_NAME,
   ENV_WORDING,
@@ -32,6 +27,8 @@ export const {
   DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL,
   ASSETS_URL,
   RECAPTCHA_SITE_KEY,
+  WEBAPP_URL_NEW,
+  WEBAPP_URL_OLD,
 } = process.env
 
 let CALC_ROOT_PATH = ''
