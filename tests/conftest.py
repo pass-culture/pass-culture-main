@@ -39,6 +39,8 @@ from pcapi.tasks import install_handlers
 from pcapi.tasks.decorator import cloud_task_api
 from pcapi.utils.json_encoder import EnumJSONEncoder
 
+from tests.serialization.serialization_decorator_test import test_blueprint
+
 
 def run_migrations():
     alembic_cfg = Config("alembic.ini")
@@ -90,6 +92,7 @@ def app_fixture():
     app.register_blueprint(native_v1, url_prefix="/native/v1")
     app.register_blueprint(pro_api_v2, url_prefix="/v2")
     app.register_blueprint(adage_iframe, url_prefix="/adage-iframe")
+    app.register_blueprint(test_blueprint, url_prefix="/test-blueprint")
     app.register_blueprint(cloud_task_api)
 
     JWTManager(app)

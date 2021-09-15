@@ -1,4 +1,5 @@
 from functools import wraps
+import logging
 from typing import Any
 from typing import Callable
 from typing import Optional
@@ -9,11 +10,15 @@ from flask import make_response
 from flask import request
 from pydantic import BaseModel
 from spectree.spec import SpecTree
+from werkzeug.exceptions import BadRequest
 
 from pcapi.flask_app import api as default_api
 from pcapi.models import ApiErrors
 
 from .spec_tree import ExtendedResponse as SpectreeResponse
+
+
+logger = logging.getLogger(__name__)
 
 
 def _make_json_response(
@@ -114,7 +119,15 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
             json=body_in_kwargs,
         )
         def sync_validate(*args: dict, **kwargs: dict) -> Response:
-            body_params = request.get_json()
+            try:
+                body_params = request.get_json()
+            except BadRequest as error:
+                logger.info(
+                    "Error when decoding request body: %s",
+                    error,
+                    extra={"contentTypeHeader": request.headers.get("Content-Type"), "path": request.path},
+                )
+                body_params = None
             query_params = request.args
             form = request.form
             if body_in_kwargs:

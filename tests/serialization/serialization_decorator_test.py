@@ -1,6 +1,8 @@
 from typing import Optional
+from unittest.mock import Mock
 from unittest.mock import patch
 
+from flask.blueprints import Blueprint
 from pydantic import BaseModel
 
 from pcapi.flask_app import api
@@ -20,6 +22,16 @@ class TestQueryModel(BaseModel):
 class TestResponseModel(BaseModel):
     compulsory_int_response: int
     optional_string_response: Optional[str]
+
+
+endpoint_method = Mock()
+test_blueprint = Blueprint("test_blueprint", __name__)
+
+
+@test_blueprint.route("/test", methods=["GET"])
+@spectree_serialize(on_success_status=204)
+def spectree_test_endpoint():
+    endpoint_method()
 
 
 class SerializationDecoratorTest:
@@ -86,3 +98,7 @@ class SerializationDecoratorTest:
         assert kwargs["json"] == TestBodyModel
         assert kwargs["query"] == TestQueryModel
         assert kwargs["resp"].code_models["HTTP_206"] == TestResponseModel
+
+    def test_with_content_type_but_without_body(self, client):
+        response = client.get("/test-blueprint/test", headers={"Content-Type": "application/json"})
+        assert response.status_code == 204
