@@ -1,7 +1,9 @@
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
+from unittest.mock import patch
 
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings import factories
@@ -9,6 +11,7 @@ from pcapi.core.bookings import models
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import MediationFactory
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import ApiErrors
 from pcapi.models import db
@@ -183,3 +186,89 @@ class BookingIsConfirmedSqlQueryTest:
         query_result = Booking.query.filter(Booking.isConfirmed.is_(False)).all()
 
         assert len(query_result) == 1
+
+
+@pytest.mark.usefixtures("db_session")
+class BookingExpirationDateLegacyRulesTest:
+    @patch("pcapi.core.bookings.models.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE", datetime(2021, 8, 3))
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    def test_booking_expiration_date_before_start_new_rules_start_date(self):
+        with freeze_time("2021-08-01 15:00:00"):
+            book_booking = factories.BookingFactory(
+                dateCreated=datetime.utcnow(), stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id
+            )
+            dvd_booking = factories.BookingFactory(
+                dateCreated=datetime.utcnow(),
+                stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            )
+            digital_book_booking = factories.BookingFactory(
+                dateCreated=datetime.utcnow(),
+                stock__offer__product__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+            )
+
+            assert book_booking.expirationDate == datetime(2021, 8, 31, 15, 0, 0)
+            assert dvd_booking.expirationDate == datetime(2021, 8, 31, 15, 0, 0)
+            assert not digital_book_booking.expirationDate
+
+    @patch("pcapi.core.bookings.models.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE", datetime(2021, 8, 3))
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    def test_booking_expiration_date_after_new_rules_start_date(self):
+        with freeze_time("2021-08-05 15:00:00"):
+            book_booking = factories.BookingFactory(
+                dateCreated=datetime.utcnow(), stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id
+            )
+            dvd_booking = factories.BookingFactory(
+                dateCreated=datetime.utcnow(),
+                stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            )
+            digital_book_booking = factories.BookingFactory(
+                dateCreated=datetime.utcnow(),
+                stock__offer__product__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+            )
+
+            assert book_booking.expirationDate == datetime(2021, 9, 4, 15, 0, 0)
+            assert dvd_booking.expirationDate == datetime(2021, 9, 4, 15, 0, 0)
+            assert not digital_book_booking.expirationDate
+
+
+@pytest.mark.usefixtures("db_session")
+class BookingExpirationDateNewRulesTest:
+    @patch("pcapi.core.bookings.models.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE", datetime(2021, 8, 3))
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    def test_booking_expiration_date_before_start_new_rules_start_date(self):
+        with freeze_time("2021-08-01 15:00:00"):
+            book_booking = factories.BookingFactory(
+                dateCreated=datetime.utcnow(), stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id
+            )
+            dvd_booking = factories.BookingFactory(
+                dateCreated=datetime.utcnow(),
+                stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            )
+            digital_book_booking = factories.BookingFactory(
+                dateCreated=datetime.utcnow(),
+                stock__offer__product__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+            )
+
+            assert book_booking.expirationDate == datetime(2021, 8, 31, 15, 0, 0)
+            assert dvd_booking.expirationDate == datetime(2021, 8, 31, 15, 0, 0)
+            assert not digital_book_booking.expirationDate
+
+    @patch("pcapi.core.bookings.models.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE", datetime(2021, 8, 3))
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    def test_booking_expiration_date_after_new_rules_start_date(self):
+        with freeze_time("2021-08-05 15:00:00"):
+            book_booking = factories.BookingFactory(
+                dateCreated=datetime.utcnow(), stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id
+            )
+            dvd_booking = factories.BookingFactory(
+                dateCreated=datetime.utcnow(),
+                stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            )
+            digital_book_booking = factories.BookingFactory(
+                dateCreated=datetime.utcnow(),
+                stock__offer__product__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+            )
+
+            assert book_booking.expirationDate == datetime(2021, 8, 15, 15, 0, 0)
+            assert dvd_booking.expirationDate == datetime(2021, 9, 4, 15, 0, 0)
+            assert not digital_book_booking.expirationDate
