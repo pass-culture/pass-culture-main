@@ -15,6 +15,19 @@ def convert_to_cent(amount: Optional[Decimal]) -> Optional[int]:
     return int(amount * 100)
 
 
+def is_client_older(version: str) -> bool:
+    version = semver.VersionInfo.parse(version)
+    client_version_header = flask.request.headers.get("app-version", None)
+    if not client_version_header:
+        return False
+    try:
+        client_version = semver.VersionInfo.parse(client_version_header)
+    except ValueError:
+        return True
+
+    return client_version < version
+
+
 def check_client_version() -> None:
     client_version_header = flask.request.headers.get("app-version", None)
     sentry_sdk.set_tag("client.version", client_version_header)

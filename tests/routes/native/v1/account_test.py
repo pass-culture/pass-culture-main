@@ -38,6 +38,7 @@ from pcapi.models import db
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.sms import testing as sms_testing
+from pcapi.repository import repository
 from pcapi.routes.native.v1.serialization import account as account_serializers
 
 import tests
@@ -297,29 +298,45 @@ class AccountTest:
         me_response = test_client.get("/native/v1/me")
         assert me_response.json["hasCompletedIdCheck"]
 
+    @pytest.mark.parametrize(
+        "client_version,extra_step", [("1.154.9", "id-check"), ("1.155.0", "beneficiary-information")]
+    )
     @freeze_time("2021-06-01")
-    def test_next_beneficiary_validation_step(self, app):
+    def test_next_beneficiary_validation_step(self, client_version, extra_step, app):
         user = users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2003, 1, 1))
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        headers = {"app-version": client_version}
 
-        response = test_client.get("/native/v1/me")
+        response = test_client.get("/native/v1/me", headers=headers)
 
         assert response.json["nextBeneficiaryValidationStep"] == "phone-validation"
         assert response.status_code == 200
 
+        # Perform phone validation
         user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
 
-        response = test_client.get("/native/v1/me")
+        response = test_client.get("/native/v1/me", headers=headers)
 
         assert response.status_code == 200
         assert response.json["nextBeneficiaryValidationStep"] == "id-check"
 
+        # Perform ID card upload
+        user.extraData["is_identity_document_uploaded"] = True
+        repository.save(user)
+
+        response = test_client.get("/native/v1/me", headers=headers)
+
+        assert response.status_code == 200
+        assert response.json["nextBeneficiaryValidationStep"] == extra_step
+        print(headers, extra_step)
+
+        # Perform final step
         user.add_beneficiary_role()
 
-        response = test_client.get("/native/v1/me")
+        response = test_client.get("/native/v1/me", headers=headers)
 
         assert response.status_code == 200
         assert not response.json["nextBeneficiaryValidationStep"]
