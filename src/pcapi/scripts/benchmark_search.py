@@ -29,6 +29,7 @@ import pathlib
 import pprint
 import re
 import time
+import urllib.parse
 
 import algoliasearch.search_client
 import jinja2
@@ -50,6 +51,8 @@ APPSEARCH_ENGINE_NAME = "offers"
 
 OFFER_URL = "https://app.passculture.beta.gouv.fr/accueil/details/{human_id}"
 TZ = pytz.timezone("Europe/Paris")
+
+SLOW_QUERY_THRESHOLD = 1
 
 
 def time_to_seconds(time_as_str):
@@ -293,6 +296,10 @@ class ResultSet:
     def pretty_printed_query(self):
         return pprint.pformat(self.query)
 
+    @property
+    def is_slow(self):
+        return self.elapsed > SLOW_QUERY_THRESHOLD
+
 
 @dataclasses.dataclass
 class Case:
@@ -301,8 +308,16 @@ class Case:
     results_per_backend: [ResultSet]
 
     @property
+    def html_anchor(self):
+        return urllib.parse.quote_plus(self.description)
+
+    @property
     def pretty_printed_criteria(self):
         return pprint.pformat(self.criteria)
+
+    @property
+    def is_slow(self):
+        return any(result_set.is_slow for result_set in self.results_per_backend)
 
 
 @dataclasses.dataclass
@@ -474,7 +489,8 @@ HTML_TEMPLATE = jinja2.Template(
   <ol class="toc">
     {% for case in benchmark.cases %}
       <li>
-        <a href="#{{ case.description }}">{{ case.description }}</a>
+        <a href="#{{ case.html_anchor }}"
+           class="elapsed {% if case.is_slow %} slow-search{% endif %}">{{ case.description }}</a>
       </li>
     {% endfor %}
   </ol>
@@ -490,7 +506,7 @@ HTML_TEMPLATE = jinja2.Template(
   </thead>
   <tbody>
     {% for case in benchmark.cases %}
-      <tr class="case-header" id="{{ case.description }}">
+      <tr class="case-header" id="{{ case.html_anchor }}">
         <th colspan="{{ backends_len }}" title="{{ case.pretty_printed_criteria }}">
           {{ case.description }}
         </th>
@@ -498,7 +514,7 @@ HTML_TEMPLATE = jinja2.Template(
       <tr class="case-results">
         {% for result_set in case.results_per_backend %}
           <td>
-            <div class="elapsed {% if result_set.elapsed > 1 %} slow-search{% endif %}">
+            <div class="elapsed {% if result_set.is_slow %} slow-search{% endif %}">
               Temps de réponse : {{ "%.3f"|format(result_set.elapsed) }}s
               <details>
                 <summary>Requête</summary>
