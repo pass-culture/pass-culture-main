@@ -61,6 +61,16 @@ class CategoryResponseModel(BaseModel):
         orm_mode = True
 
 
+class SearchGroupResponseModel(BaseModel):
+    name: str
+    value: str
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
+
+
 class PostOfferBodyModel(BaseModel):
     venue_id: str
     product_id: Optional[str]
@@ -542,3 +552,8 @@ class ImageResponseModel(BaseModel):
 class CategoriesResponseModel(BaseModel):
     categories: list[CategoryResponseModel]
     subcategories: list[SubcategoryResponseModel]
+
+
+class SubcategoriesForWebappResponseModel(BaseModel):
+    subcategories: list[SubcategoryResponseModel]
+    searchGroups: list[SearchGroupResponseModel]

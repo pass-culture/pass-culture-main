@@ -10,3 +10,4 @@ def install_routes(app: Flask) -> None:
     from . import music_types
     from . import show_types
     from . import signup
+    from . import subcategories
