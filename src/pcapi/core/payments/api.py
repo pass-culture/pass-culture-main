@@ -28,7 +28,7 @@ def create_deposit(beneficiary: User, deposit_source: str, version: int = None) 
 
     The ``version`` argument MUST NOT be used outside (very specific) tests.
     """
-    deposit_type = _get_grant_by_age(beneficiary.age)
+    deposit_type = DepositType.GRANT_18
     existing_deposits = repository.does_deposit_exists_for_beneficiary_and_type(beneficiary, deposit_type)
     if existing_deposits:
         raise exceptions.DepositTypeAlreadyGrantedException(deposit_type)

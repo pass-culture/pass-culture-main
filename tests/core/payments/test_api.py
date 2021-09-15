@@ -47,11 +47,11 @@ class CreateDepositTest:
         deposit = api.create_deposit(beneficiary, "created by test")
 
         # Then
-        assert deposit.type == DepositType.GRANT_15
-        assert deposit.version == conf.get_current_deposit_version_for_type(DepositType.GRANT_15)
-        assert deposit.amount == conf.get_current_limit_configuration_for_type(DepositType.GRANT_15).TOTAL_CAP
+        assert deposit.type == DepositType.GRANT_18
+        assert deposit.version == conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
+        assert deposit.amount == conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
         assert deposit.user.id == beneficiary.id
-        assert deposit.expirationDate == datetime(2021, 12, 5, 0, 0, 0)
+        assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
 
     def test_deposit_created_with_a_grant_16_which_expire_on_next_birthday_when_beneficiary_is_16_years_old(self):
         # Given
@@ -64,11 +64,11 @@ class CreateDepositTest:
         deposit = api.create_deposit(beneficiary, "created by test")
 
         # Then
-        assert deposit.type == DepositType.GRANT_16
-        assert deposit.version == conf.get_current_deposit_version_for_type(DepositType.GRANT_16)
-        assert deposit.amount == conf.get_current_limit_configuration_for_type(DepositType.GRANT_16).TOTAL_CAP
+        assert deposit.type == DepositType.GRANT_18
+        assert deposit.version == conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
+        assert deposit.amount == conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
         assert deposit.user.id == beneficiary.id
-        assert deposit.expirationDate == datetime(2022, 1, 5, 0, 0, 0)
+        assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
 
     def test_deposit_created_with_a_grant_17_which_expire_on_next_birthday_when_beneficiary_is_17_years_old(self):
         # Given
@@ -81,11 +81,11 @@ class CreateDepositTest:
         deposit = api.create_deposit(beneficiary, "created by test")
 
         # Then
-        assert deposit.type == DepositType.GRANT_17
-        assert deposit.version == conf.get_current_deposit_version_for_type(DepositType.GRANT_17)
-        assert deposit.amount == conf.get_current_limit_configuration_for_type(DepositType.GRANT_17).TOTAL_CAP
+        assert deposit.type == DepositType.GRANT_18
+        assert deposit.version == conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
+        assert deposit.amount == conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
         assert deposit.user.id == beneficiary.id
-        assert deposit.expirationDate == datetime(2021, 12, 5, 0, 0, 0)
+        assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
 
     def test_deposit_created_with_a_grant_18_which_expire_in_two_years_when_beneficiary_is_18_years_old(self):
         # Given
