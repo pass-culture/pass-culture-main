@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Union
 
@@ -106,8 +107,11 @@ def ratelimit_handler(error: Exception) -> tuple[dict, int]:
     from pcapi.utils.login_manager import get_request_authorization
 
     identifier = None
-    if request.json and "identifier" in request.json:
-        identifier = request.json["identifier"]
+    try:
+        if request.is_json and "identifier" in request.json:
+            identifier = request.json["identifier"]
+    except json.JSONDecodeError:
+        pass
     auth = get_request_authorization()
     if auth and auth.username:
         identifier = auth.username
