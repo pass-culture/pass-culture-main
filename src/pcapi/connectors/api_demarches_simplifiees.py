@@ -62,7 +62,7 @@ def get_application_details(application_id: int, procedure_id: int, token: str) 
 
 
 class DMSGraphQLClient:
-    def __init__(self):
+    def __init__(self) -> None:
         transport = RequestsHTTPTransport(
             url="https://www.demarches-simplifiees.fr/api/v2/graphql",
             headers={"Authorization": f"Bearer {settings.DMS_TOKEN}"},

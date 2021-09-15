@@ -1,18 +1,4 @@
-# query getDemarche($demarcheNumber: Int!, $after: String) {
-#   demarche(number: $demarcheNumber) {
-#     dossiers(first: 100, after: $after) {
-#       pageInfo {
-#         endCursor
-#         hasNextPage
-#       }
-#       nodes {
-#         id
-#         number
-#       }
-#     }
-#   }
-# }
-query getApplication($demarcheNumber: Int!, $after: String, $state: DossierState) {
+query getApplication($demarcheNumber: Int!, $after: String $state: DossierState) {
     demarche(number: $demarcheNumber) {
         id
         number

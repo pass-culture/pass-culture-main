@@ -273,7 +273,10 @@ def parse_beneficiary_information_graphql(application_detail: dict, procedure_id
             information["birth_date"] = date_parser.parse(value, FrenchParserInfo())
         if label == "Quel est votre numéro de téléphone":
             information["phone"] = value.replace(" ", "")
-        if label == "Quel est le code postal de votre commune de résidence ?":
+        if label in (
+            "Quel est le code postal de votre commune de résidence ?",
+            "Quel est le code postal de votre commune de résidence ? (ex : 25370)",
+        ):
             space_free = str(value).strip().replace(" ", "")
             try:
                 information["postal_code"] = re.search("^[0-9]{5}", space_free).group(0)

@@ -25,7 +25,9 @@ from pcapi.scripts.beneficiary import remote_import
 
 from tests.scripts.beneficiary.fixture import APPLICATION_DETAIL_STANDARD_RESPONSE
 from tests.scripts.beneficiary.fixture import make_graphql_application
+from tests.scripts.beneficiary.fixture import make_new_application
 from tests.scripts.beneficiary.fixture import make_new_beneficiary_application_details
+from tests.scripts.beneficiary.fixture import make_new_stranger_application
 from tests.scripts.beneficiary.fixture_dms_with_selfie import APPLICATION_DETAIL_STANDARD_RESPONSE_AFTER_GENERALISATION
 
 
@@ -531,6 +533,42 @@ class ParseBeneficiaryInformationTest:
             information = remote_import.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
 
             assert information.id_piece_number == "0123456789"
+
+        @patch.object(DMSGraphQLClient, "get_applications_with_details")
+        def test_new_procedure(self, get_applications_with_details):
+            raw_data = make_new_application()
+            content = remote_import.parse_beneficiary_information_graphql(raw_data, 32)
+            assert content.last_name == "VALGEAN"
+            assert content.first_name == "Jean"
+            assert content.civility == "M"
+            assert content.email == "jean.valgean@example.com"
+            assert content.application_id == 5718303
+            assert content.procedure_id == 32
+            assert content.department == None
+            assert content.birth_date == date(1984, 12, 19)
+            assert content.phone == "0601010101"
+            assert content.postal_code == "92700"
+            assert content.activity == "Employé"
+            assert content.address == "32 rue des sapins gris 21350 l'îsle à dent"
+            assert content.id_piece_number == "F9GFAL123"
+
+        @patch.object(DMSGraphQLClient, "get_applications_with_details")
+        def test_new_procedure_for_stranger_residents(self, get_applications_with_details):
+            raw_data = make_new_stranger_application()
+            content = remote_import.parse_beneficiary_information_graphql(raw_data, 32)
+            assert content.last_name == "VALGEAN"
+            assert content.first_name == "Jean"
+            assert content.civility == "M"
+            assert content.email == "jean.valgean@example.com"
+            assert content.application_id == 5742994
+            assert content.procedure_id == 32
+            assert content.department == None
+            assert content.birth_date == date(2000, 12, 18)
+            assert content.phone == "0601010101"
+            assert content.postal_code == "92700"
+            assert content.activity == "Employé"
+            assert content.address == "32 rue des sapins gris 21350 l'îsle à dent"
+            assert content.id_piece_number == "K682T8YLO"
 
     class ParsingErrorsTest:
         def test_beneficiary_information_postalcode_error(self):
