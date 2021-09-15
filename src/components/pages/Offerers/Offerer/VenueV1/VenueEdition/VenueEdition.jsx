@@ -186,9 +186,27 @@ class VenueEdition extends PureComponent {
     )
   }
 
+  getInitialValues(venue) {
+    let initialValues = { ...venue }
+    const accessibilityFieldNames = [
+      'audioDisabilityCompliant',
+      'mentalDisabilityCompliant',
+      'motorDisabilityCompliant',
+      'visualDisabilityCompliant',
+    ]
+    accessibilityFieldNames.forEach(fieldName => {
+      if (initialValues[fieldName] === null) {
+        delete initialValues[fieldName]
+      }
+    })
+
+    return initialValues
+  }
+
   renderForm() {
     const { venue } = this.props
     const { isVirtual: initialIsVirtual } = venue || {}
+    const initialValues = this.getInitialValues(venue)
     const decorators = [
       autoFillNoDisabilityCompliantDecorator,
       bindGetSuggestionsToLatitude,
@@ -199,7 +217,7 @@ class VenueEdition extends PureComponent {
       !initialIsVirtual && (
         <Form
           decorators={decorators}
-          initialValues={venue}
+          initialValues={initialValues}
           name="venue"
           onSubmit={this.handleOnFormSubmit}
           render={this.onHandleRender}

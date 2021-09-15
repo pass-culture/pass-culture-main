@@ -21,34 +21,34 @@ const checkNoDisabilityCompliant = (_value, allValues) => {
   return false
 }
 
+const initializeEmptyValue = fieldName => (_value, allValues) => {
+  return allValues[fieldName] === undefined ? false : allValues[fieldName]
+}
+
+const setNoDisabilityCompliance = fieldName => (value, allValues) => {
+  if (value) return false
+  return allValues[fieldName]
+}
+
 export const autoFillNoDisabilityCompliantDecorator = createDecorator(
   {
     field: 'noDisabilityCompliant',
     updates: {
       noDisabilityCompliant: checkNoDisabilityCompliant,
-      audioDisabilityCompliant: (value, allValues) => {
-        if (value) return false
-        return allValues.audioDisabilityCompliant
-      },
-      mentalDisabilityCompliant: (value, allValues) => {
-        if (value) return false
-        return allValues.mentalDisabilityCompliant
-      },
-      motorDisabilityCompliant: (value, allValues) => {
-        if (value) return false
-        return allValues.motorDisabilityCompliant
-      },
-      visualDisabilityCompliant: (value, allValues) => {
-        if (value) return false
-        return allValues.visualDisabilityCompliant
-      },
+      audioDisabilityCompliant: setNoDisabilityCompliance('audioDisabilityCompliant'),
+      mentalDisabilityCompliant: setNoDisabilityCompliance('mentalDisabilityCompliant'),
+      motorDisabilityCompliant: setNoDisabilityCompliance('motorDisabilityCompliant'),
+      visualDisabilityCompliant: setNoDisabilityCompliance('visualDisabilityCompliant'),
     },
   },
-
   {
     field: /(audio|mental|motor|visual)DisabilityCompliant/,
     updates: {
       noDisabilityCompliant: checkNoDisabilityCompliant,
+      audioDisabilityCompliant: initializeEmptyValue('audioDisabilityCompliant'),
+      mentalDisabilityCompliant: initializeEmptyValue('mentalDisabilityCompliant'),
+      motorDisabilityCompliant: initializeEmptyValue('motorDisabilityCompliant'),
+      visualDisabilityCompliant: initializeEmptyValue('visualDisabilityCompliant'),
     },
   }
 )
@@ -80,6 +80,7 @@ const AccessibilityFields = ({ readOnly }) => {
         id="visualDisabilityCompliant"
         label="Visuel"
         name="visualDisabilityCompliant"
+        required
       />
       <CheckboxField
         SvgElement={MentalDisabilitySvg}
@@ -88,6 +89,7 @@ const AccessibilityFields = ({ readOnly }) => {
         id="mentalDisabilityCompliant"
         label="Psychique ou cognitif"
         name="mentalDisabilityCompliant"
+        required
       />
       <CheckboxField
         SvgElement={MotorDisabilitySvg}
@@ -96,6 +98,7 @@ const AccessibilityFields = ({ readOnly }) => {
         id="motorDisabilityCompliant"
         label="Moteur"
         name="motorDisabilityCompliant"
+        required
       />
       <CheckboxField
         SvgElement={AudioDisabilitySvg}
@@ -104,6 +107,7 @@ const AccessibilityFields = ({ readOnly }) => {
         id="audioDisabilityCompliant"
         label="Auditif"
         name="audioDisabilityCompliant"
+        required
       />
       <CheckboxField
         className="field field-checkbox"

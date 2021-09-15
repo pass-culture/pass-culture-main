@@ -16,6 +16,7 @@ const longitudeInput = Selector('input[name="longitude"]')
 const nameInput = Selector('input[name="name"]')
 const postalCodeInput = Selector('input[name="postalCode"]')
 const siretInput = Selector('input[name="siret"]')
+const audioDisabilityCompliant = Selector('input[name="audioDisabilityCompliant"]')
 
 fixture('En étant sur la page de création d’un lieu,')
 
@@ -53,6 +54,7 @@ test('je peux créer un lieu avec un SIRET valide', async t => {
     .click(venueTypeOption.withText('Offre numérique'))
     .typeText(siretInput, siret)
     .typeText(descriptionInput, description)
+    .click(audioDisabilityCompliant)
     .expect(nameInput.value)
     .eql(venueName)
     .expect(addressInput.value)
@@ -85,6 +87,7 @@ test('je peux créer un lieu sans SIRET avec une description', async t => {
     .click(venueTypeOption.withText('Offre numérique'))
     .typeText(addressInput, '1 place du trocadéro Paris')
     .click(addressSuggestion)
+    .click(audioDisabilityCompliant)
     .expect(postalCodeInput.value)
     .eql('75016')
     .expect(cityInput.value)
