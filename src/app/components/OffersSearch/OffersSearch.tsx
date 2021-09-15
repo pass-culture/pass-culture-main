@@ -46,6 +46,28 @@ export const OffersSearch = (): JSX.Element => {
     []
   )
 
+  const inputView = useCallback(
+    ({ getAutocomplete, getInputProps, getButtonProps }) => (
+      <>
+        <div className="sui-search-box__wrapper">
+          <input
+            {...getInputProps({
+              placeholder:
+                "Nom de l'offre, du lieu ou de la catégorie (cinéma, théâtre, ...)",
+            })}
+          />
+          {getAutocomplete()}
+        </div>
+        <input
+          {...getButtonProps({
+            value: "Rechercher",
+          })}
+        />
+      </>
+    ),
+    []
+  )
+
   return (
     <>
       <h2>
@@ -71,6 +93,7 @@ export const OffersSearch = (): JSX.Element => {
                 <SearchBox
                   autocompletedResults={autocompletedResults}
                   autocompletedSuggestions={autocompletedSuggestions}
+                  inputView={inputView}
                   searchTerm={searchTerm}
                   setSearchTerm={setSearchTerm}
                   trackAutocompleteClickThrough={trackAutocompleteClickThrough}
