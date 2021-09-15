@@ -25,6 +25,7 @@ export const autoFillNoDisabilityCompliantDecorator = createDecorator(
   {
     field: 'noDisabilityCompliant',
     updates: {
+      noDisabilityCompliant: checkNoDisabilityCompliant,
       audioDisabilityCompliant: (value, allValues) => {
         if (value) return false
         return allValues.audioDisabilityCompliant
@@ -57,7 +58,7 @@ const AccessibilityFields = ({ readOnly }) => {
     <div className="section bank-information vp-content-section">
       <div className="main-list-title title-actions-container">
         <h2 className="main-list-title-text">
-          Accessiblités
+          Accessibilités
         </h2>
       </div>
       <p className="bi-subtitle">
@@ -66,7 +67,10 @@ const AccessibilityFields = ({ readOnly }) => {
       </p>
 
       <p className="bi-subtitle">
-        Cette offre est-elle accessible aux publics en situation de handicaps :
+        Ce lieu est accessible aux publics en situation de handicaps :
+        <span className="field-asterisk">
+          *
+        </span>
       </p>
 
       <CheckboxField
