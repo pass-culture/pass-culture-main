@@ -13,69 +13,69 @@ fullnameOverride: ""
 schedule:  "0 3 * * 4" # Thursday at 3am
 timezone: "Europe/Paris"
 
-resources:
-  limits:
-    cpu: 200m
-    memory: 512Mi
-  requests:
-    cpu: 100m
-    memory: 256Mi
-
-workflows:
-  dump_restore: false
-  post_process: true
+roleBinding:
+  create: true
 
 serviceAccount:
   create: true
   annotations:
     iam.gke.io/gcp-service-account: metier-production-sqldump@passculture-metier-prod.iam.gserviceaccount.com
 
-instances:
+workflows:
   staging:
-    secretsNamePrefix: pcapi-staging
+    secretsPrefix: pcapi-staging
+    secretsProject: passculture-metier-ehp
     newUserPasswordSecretName: database_credentials_password
-    postProcess: true
+    script: "/scripts/staging.py"
     envVars:
       ENV: staging
       SOURCE_INSTANCE: pcapi-production-9fb2eb30
+      SOURCE_INSTANCE_REGION: europe-west1
       SOURCE_PROJECT: passculture-metier-prod
       SOURCE_USER: pcapi-production
       DEST_INSTANCE: pcapi-ehp-0ef86e9a
+      DEST_INSTANCE_REGION: europe-west1
       DEST_PROJECT: passculture-metier-ehp
       DEST_NEW_USER: pcapi-staging
       DEST_INSTANCE_IP_ADDRESS_TYPE: public
+      DUMP_BUCKET: passculture-metier-ehp-dump-sql
+      TABLES_TO_EMPTY : "activity user_session email"
+    additionnalEnvVars:
+      pcapiSecrets: true
+      postProcessingEnvVars: true
     secrets:
       - STAGING_TEST_USER_PASSWORD
+
   perf:
-    secretsNamePrefix: pcapi-perf
+    secretsPrefix: pcapi-perf
+    secretsProject: passculture-metier-ehp
     newUserPasswordSecretName: database_credentials_password
     dependsOn: [staging]
+    script: "/scripts/perf.py"
     envVars:
       ENV: testing
       SOURCE_INSTANCE: pcapi-ehp-0ef86e9a
+      SOURCE_INSTANCE_REGION: europe-west1
       SOURCE_PROJECT: passculture-metier-ehp
       SOURCE_USER: pcapi-staging
       DEST_INSTANCE: pcapi-perf-1ac56766
+      DEST_INSTANCE_REGION: europe-west1
       DEST_PROJECT: passculture-metier-ehp
       DEST_NEW_USER: pcapi-perf
       DEST_INSTANCE_IP_ADDRESS_TYPE: public
 
-commonEnvVars:
-  NLTK_DATA: /root/nltk_data
+postProcessingEnvVars:
   ANONYMIZE_SQL_SCRIPT_PATH: /scripts/anonymize.sql
   PCAPI_ROOT_PATH: /usr/src/app
   IMPORT_USERS_SCRIPT_PATH: src/pcapi/scripts/beneficiary/import_users.py
   USERS_CSV_PATH: /scripts/data_pass-culture-api-staging.csv
-  TABLES_TO_EMPTY : "activity user_session email"
-  DISABLE_VENUE_PROVIDERS: "true"
 
-destSecrets:
+pcapiSecrets:
   - ADMINISTRATION_EMAIL_ADDRESS
   - ALGOLIA_API_KEY
   - ALGOLIA_APPLICATION_ID
   - ALLOCINE_API_KEY
   - CLOUD_TASK_BEARER_TOKEN
-  - DATABASE_ANONYMIZED_PASSWORD
   - DEMARCHES_SIMPLIFIEES_TOKEN
   - DEMARCHES_SIMPLIFIEES_WEBHOOK_TOKEN
   - DEV_EMAIL_ADDRESS
