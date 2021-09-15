@@ -2,6 +2,10 @@ import logging
 import typing
 
 from pcapi.core import mails
+from pcapi.core.bookings.conf import BOOKINGS_AUTO_EXPIRY_DELAY
+from pcapi.core.bookings.conf import BOOKINGS_EXPIRY_NOTIFICATION_DELAY
+from pcapi.core.bookings.conf import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
+from pcapi.core.bookings.conf import BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offerers.models import Offerer
@@ -27,6 +31,7 @@ from pcapi.emails.beneficiary_pre_subscription_rejected import make_fraud_suspic
 from pcapi.emails.beneficiary_soon_to_be_expired_bookings import (
     build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary,
 )
+from pcapi.emails.beneficiary_soon_to_be_expired_bookings import filter_books_bookings
 from pcapi.emails.beneficiary_warning_after_pro_booking_cancellation import (
     retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation,
 )
@@ -50,6 +55,7 @@ from pcapi.emails.user_notification_after_stock_update import (
 from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_native_app_email
 from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_user_email
 from pcapi.models import Offer
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository.offerer_queries import find_new_offerer_user_email
 from pcapi.utils.mailing import make_admin_user_validation_email
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
@@ -164,8 +170,34 @@ def send_admin_user_validation_email(user: User, token: Token) -> None:
 def send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
     beneficiary: User, bookings: list[Booking]
 ) -> None:
-    data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(beneficiary, bookings)
-    mails.send(recipients=[beneficiary.email], data=data)
+    if FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS.is_active():
+        books_bookings, other_bookings = filter_books_bookings(bookings)
+        if books_bookings:
+            books_bookings_data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
+                beneficiary=beneficiary,
+                bookings=books_bookings,
+                days_before_cancel=BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
+                days_from_booking=BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days - BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
+            )
+            mails.send(recipients=[beneficiary.email], data=books_bookings_data)
+
+        if other_bookings:
+            other_bookings_data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
+                beneficiary=beneficiary,
+                bookings=other_bookings,
+                days_before_cancel=BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
+                days_from_booking=BOOKINGS_AUTO_EXPIRY_DELAY.days - BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
+            )
+            mails.send(recipients=[beneficiary.email], data=other_bookings_data)
+
+    else:
+        data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
+            beneficiary=beneficiary,
+            bookings=bookings,
+            days_before_cancel=BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
+            days_from_booking=BOOKINGS_AUTO_EXPIRY_DELAY.days - BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
+        )
+        mails.send(recipients=[beneficiary.email], data=data)
 
 
 def send_activation_email(

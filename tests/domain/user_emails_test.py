@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from unittest.mock import call
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
@@ -76,6 +77,7 @@ class SendBeneficiaryBookingCancellationEmailTest:
 
         # then
         mocked_make_beneficiary_booking_cancellation_email_data.assert_called_once_with(booking)
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1091464
 
 
@@ -101,6 +103,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
 
         # Then
         make_offerer_driven_cancellation_email_for_offerer.assert_called_once_with(booking)
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["To"] == "offer@example.com"
 
 
@@ -114,6 +117,7 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         send_user_driven_cancellation_email_to_offerer(booking)
 
         # Then
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["To"] == "booking@example.com"
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 780015
 
@@ -167,6 +171,7 @@ class SendBookingConfirmationEmailToBeneficiaryTest:
 
         # Then
         mocked_retrieve_data_for_beneficiary_booking_confirmation_email.assert_called_once_with(booking)
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 2942751
 
 
@@ -179,6 +184,7 @@ class SendBookingConfirmationEmailToOffererTest:
 
         send_booking_confirmation_email_to_offerer(booking)
 
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["To"] == "booking.email@example.com"
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 2843165
 
@@ -200,6 +206,7 @@ class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
 
         # Then
         retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation.assert_called_once_with([booking])
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1116333
 
 
@@ -214,6 +221,7 @@ class SendProUserValidationEmailTest:
         send_pro_user_validation_email(user)
 
         # Then
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["To"] == user.email
 
 
@@ -228,6 +236,7 @@ class SendAdminUserValidationEmailTest:
         send_admin_user_validation_email(user, token)
 
         # Then
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["To"] == user.email
 
 
@@ -245,6 +254,7 @@ class SendActivationEmailTest:
 
         # then
         mocked_get_activation_email_data.assert_called_once_with(user=beneficiary, token=token)
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["Html-part"] == ""
 
     def test_send_activation_email_for_native(self):
@@ -256,6 +266,7 @@ class SendActivationEmailTest:
         send_activation_email(beneficiary, native_version=True, token=token)
 
         # then
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         native_app_link = mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
         assert token.value in native_app_link
 
@@ -276,6 +287,7 @@ class SendResetPasswordProEmailTest:
 
         # then
         mock_retrieve_data_for_reset_password_pro_email.assert_called_once_with(user, user.tokens[0])
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 779295
 
 
@@ -295,6 +307,7 @@ class SendResetPasswordUserEmailTest:
 
         # then
         mock_retrieve_data_for_reset_password_user_email.assert_called_once_with(user, user.tokens[0])
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 912168
 
     @patch(
@@ -312,6 +325,7 @@ class SendResetPasswordUserEmailTest:
 
         # then
         retrieve_data_for_reset_password_native_app_email.assert_called_once_with(user, user.tokens[0])
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 12345
 
 
@@ -330,6 +344,7 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
 
         # then
         mocked_make_data.assert_called_once()
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1530996
 
     @patch(
@@ -347,6 +362,7 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
 
         # then
         mocked_make_data.assert_called_once()
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1619528
 
 
@@ -364,7 +380,7 @@ class SendExpiredBookingsRecapEmailToBeneficiaryTest:
         send_expired_bookings_recap_email_to_beneficiary(
             amnesiac_user, [expired_today_cd_booking, expired_today_dvd_booking]
         )
-
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1951103
 
 
@@ -379,7 +395,7 @@ class SendExpiredBookingsRecapEmailToOffererTest:
         send_expired_individual_bookings_recap_email_to_offerer(
             offerer, [expired_today_cd_booking, expired_today_dvd_booking]
         )
-
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1952508
 
 
@@ -422,9 +438,116 @@ class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
 
         # then
         build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary.assert_called_once_with(
-            user, [soon_to_be_expired_cd_booking, soon_to_be_expired_dvd_booking]
+            beneficiary=user,
+            bookings=[soon_to_be_expired_cd_booking, soon_to_be_expired_dvd_booking],
+            days_before_cancel=7,
+            days_from_booking=23,
         )
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 12345
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @patch(
+        "pcapi.domain.user_emails.build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary",
+        return_value={"Vars": {"days_before_cancel": 7, "days_from_booking": 23}},
+    )
+    def test_should_send_one_email_to_beneficiary_when_they_have_soon_to_be_expired_bookings_and_FF_disabled(
+        self, build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary
+    ):
+        # given
+        now = datetime.utcnow()
+        user = users_factories.BeneficiaryGrant18Factory(email="isasimov@example.com")
+        created_5_days_ago = now - timedelta(days=5)
+        created_23_days_ago = now - timedelta(days=23)
+
+        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        soon_to_be_expired_book_booking = BookingFactory(
+            stock__offer__product=book,
+            stock__offer__name="Fondation",
+            stock__offer__venue__name="Première Fondation",
+            dateCreated=created_5_days_ago,
+            user=user,
+        )
+
+        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
+        soon_to_be_expired_cd_booking = BookingFactory(
+            stock__offer__product=cd,
+            stock__offer__name="Fondation et Empire",
+            stock__offer__venue__name="Seconde Fondation",
+            dateCreated=created_23_days_ago,
+            user=user,
+        )
+
+        # when
+        send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
+            user, [soon_to_be_expired_book_booking, soon_to_be_expired_cd_booking]
+        )
+
+        # then
+        build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary.assert_called_once_with(
+            beneficiary=user,
+            bookings=[soon_to_be_expired_book_booking, soon_to_be_expired_cd_booking],
+            days_before_cancel=7,
+            days_from_booking=23,
+        )
+
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
+
+        assert mails_testing.outbox[0].sent_data["Vars"]["days_before_cancel"] == 7
+        assert mails_testing.outbox[0].sent_data["Vars"]["days_from_booking"] == 23
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @patch(
+        "pcapi.domain.user_emails.build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary",
+        return_value={"MJ-TemplateID": 12345},
+    )
+    def test_should_send_two_emails_to_beneficiary_when_they_have_soon_to_be_expired_bookings_and_FF_enabled(
+        self, build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary
+    ):
+        # given
+        now = datetime.utcnow()
+        user = users_factories.BeneficiaryGrant18Factory(email="isasimov@example.com")
+        created_5_days_ago = now - timedelta(days=5)
+        created_23_days_ago = now - timedelta(days=23)
+
+        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        soon_to_be_expired_book_booking = BookingFactory(
+            stock__offer__product=book,
+            stock__offer__name="Fondation",
+            stock__offer__venue__name="Première Fondation",
+            dateCreated=created_5_days_ago,
+            user=user,
+        )
+
+        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
+        soon_to_be_expired_cd_booking = BookingFactory(
+            stock__offer__product=cd,
+            stock__offer__name="Fondation et Empire",
+            stock__offer__venue__name="Seconde Fondation",
+            dateCreated=created_23_days_ago,
+            user=user,
+        )
+
+        # when
+        send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
+            user, [soon_to_be_expired_book_booking, soon_to_be_expired_cd_booking]
+        )
+
+        # then
+        call1 = call(
+            beneficiary=user, bookings=[soon_to_be_expired_book_booking], days_before_cancel=5, days_from_booking=5
+        )
+        call2 = call(
+            beneficiary=user, bookings=[soon_to_be_expired_cd_booking], days_before_cancel=7, days_from_booking=23
+        )
+        calls = [call1, call2]
+
+        build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary.assert_has_calls(calls, any_order=False)
+
+        assert build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary.call_count == 2
+        assert len(mails_testing.outbox) == 2  # test number of emails sent
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 12345
+        assert mails_testing.outbox[1].sent_data["MJ-TemplateID"] == 12345
 
 
 @pytest.mark.usefixtures("db_session")
@@ -440,6 +563,7 @@ class SendNewlyEligibleUserEmailTest:
         send_newly_eligible_user_email(user)
 
         # then
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2030056
         assert (
             mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"][:111]
@@ -459,6 +583,7 @@ class SendNewlyEligibleUserEmailTest:
         send_newly_eligible_user_email(user)
 
         # then
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2030056
         assert (
             mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"][:111]
@@ -481,6 +606,7 @@ class SendOfferValidationTest:
         send_offer_validation_status_update_email(offer, OfferValidationStatus.APPROVED, ["jules.verne@example.com"])
 
         # Then
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 2613721
         assert mails_testing.outbox[0].sent_data["Vars"]["offer_name"] == "Michel Strogoff"
         assert mails_testing.outbox[0].sent_data["Vars"]["venue_name"] == "Sibérie orientale"
@@ -498,6 +624,7 @@ class SendOfferValidationTest:
         send_offer_validation_status_update_email(offer, OfferValidationStatus.REJECTED, ["jules.verne@example.com"])
 
         # Then
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 2613942
         assert mails_testing.outbox[0].sent_data["Vars"]["offer_name"] == "Michel Strogoff"
         assert mails_testing.outbox[0].sent_data["Vars"]["venue_name"] == "Sibérie orientale"
@@ -522,4 +649,5 @@ class SendWithdrawalTermsToNewlyValidatedOffererTest:
 
         # Then
         mock_retrieve_data_for_new_offerer_validated_withdrawal_terms_email.assert_called_once()
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 11330916
