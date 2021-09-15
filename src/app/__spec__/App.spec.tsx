@@ -18,7 +18,7 @@ const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 describe("app", () => {
   describe("when is authenticated", () => {
     beforeEach(() => {
-      mockedPcapi.authenticate.mockResolvedValue()
+      mockedPcapi.authenticate.mockResolvedValue("redactor")
     })
 
     it("should show search offers input", async () => {

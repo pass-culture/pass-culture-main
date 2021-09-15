@@ -1,8 +1,10 @@
 import { client } from "repository/pcapi/pcapiClient"
-import { OfferType } from "utils/types"
+import { OfferType, Role } from "utils/types"
 
-export const authenticate = async (): Promise<void> => {
-  return client.get("/adage-iframe/authenticate")
+export const authenticate = async (): Promise<Role> => {
+  return client
+    .get("/adage-iframe/authenticate")
+    .then(({ role }: { role: string }) => Role[role])
 }
 
 export const getOffer = async (

@@ -31,3 +31,9 @@ export interface ResultType {
   venue_name: { raw: string | null };
   venue_public_name: { raw: string | null };
 }
+
+export enum Role {
+  redactor = "redactor",
+  readonly = "readonly",
+  unauthenticated = "unauthenticated",
+}

@@ -16,7 +16,13 @@ export const formatToReadableString = (input: string | null): string | null => {
   return lowerCasedInput.charAt(0).toUpperCase() + lowerCasedInput.slice(1)
 }
 
-export const Offer = ({ result }: { result: ResultType }): JSX.Element => {
+export const Offer = ({
+  canPrebookOffers,
+  result,
+}: {
+  canPrebookOffers: boolean;
+  result: ResultType;
+}): JSX.Element => {
   const [offer, setOffer] = useState<OfferType | null>(null)
 
   const hasThumb = result.thumb_url?.raw != null
@@ -65,6 +71,7 @@ export const Offer = ({ result }: { result: ResultType }): JSX.Element => {
               Quand ?
             </h3>
             <Stocks
+              canPrebookOffers={canPrebookOffers}
               stocks={offer.stocks}
               venuePostalCode={offer.venue.postalCode}
             />

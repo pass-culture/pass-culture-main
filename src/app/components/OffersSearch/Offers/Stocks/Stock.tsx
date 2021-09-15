@@ -31,9 +31,11 @@ const displayStockInformation = (
 }
 
 export const Stock = ({
+  canPrebookOffers,
   stock,
   venuePostalCode,
 }: {
+  canPrebookOffers: boolean;
   stock: StockType;
   venuePostalCode: string;
 }): JSX.Element => {
@@ -44,11 +46,14 @@ export const Stock = ({
   return (
     <li>
       {displayStockInformation(stock, venuePostalCode)}
-      <Button
-        isSubmit={false}
-        onClick={preBookCurrentStock}
-        text="Pré-réserver"
-      />
+
+      {canPrebookOffers && (
+        <Button
+          isSubmit={false}
+          onClick={preBookCurrentStock}
+          text="Pré-réserver"
+        />
+      )}
     </li>
   )
 }

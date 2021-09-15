@@ -5,9 +5,11 @@ import { StockType } from "utils/types"
 import { Stock } from "./Stock"
 
 export const Stocks = ({
+  canPrebookOffers,
   stocks,
   venuePostalCode,
 }: {
+  canPrebookOffers: boolean;
   stocks: StockType[];
   venuePostalCode: string;
 }): JSX.Element => {
@@ -15,6 +17,7 @@ export const Stocks = ({
     <ul className="stocks">
       {stocks.map((stock: StockType) => (
         <Stock
+          canPrebookOffers={canPrebookOffers}
           key={stock.id}
           stock={stock}
           venuePostalCode={venuePostalCode}

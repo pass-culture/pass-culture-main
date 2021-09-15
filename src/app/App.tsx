@@ -4,23 +4,24 @@ import { useEffect, useState } from "react"
 import "@fontsource/barlow"
 import { UnauthenticatedError } from "app/components/UnauthenticatedError/UnauthenticatedError"
 import * as pcapi from "repository/pcapi/pcapi"
+import { Role } from "utils/types"
 
 import { AppLayout } from "./AppLayout"
 
 export const App = (): JSX.Element => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
+  const [userRole, setUserRole] = useState<Role>(Role.unauthenticated)
 
   useEffect(() => {
     pcapi
       .authenticate()
-      .then(() => setIsAuthenticated(true))
-      .catch(() => setIsAuthenticated(false))
+      .then((userRole) => setUserRole(userRole))
+      .catch(() => setUserRole(Role.unauthenticated))
   }, [])
 
   return (
     <>
-      {isAuthenticated === true && <AppLayout />}
-      {isAuthenticated === false && <UnauthenticatedError />}
+      {userRole !== Role.unauthenticated && <AppLayout userRole={userRole} />}
+      {userRole === Role.unauthenticated && <UnauthenticatedError />}
     </>
   )
 }
