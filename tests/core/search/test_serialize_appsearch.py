@@ -54,7 +54,7 @@ def test_serialize_offer():
         "id": offer.id,
         "prices": [1000],
         "ranking_weight": 2,
-        "search_group": subcategories.SearchGroupChoices.LIVRE.value,
+        "search_group_name": subcategories.SearchGroups.LIVRE.name,
         "stocks_date_created": [stock.dateCreated],
         "offerer_name": "Les Librairies Associées",
         "venue_id": 127,

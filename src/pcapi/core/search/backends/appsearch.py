@@ -52,7 +52,7 @@ OFFERS_SCHEMA = {
     # "id": "number",  must not be provided when creating the schema.
     "prices": "number",
     "ranking_weight": "number",
-    "search_group": "text",
+    "search_group_name": "text",
     "stocks_date_created": "date",
     "tags": "text",
     "times": "number",
@@ -68,7 +68,7 @@ OFFERS_SCHEMA = {
 OFFERS_FIELD_WEIGHTS = {
     "category": 0,
     "label": 0,
-    "search_group": 0,
+    "search_group_name": 0,
     "subcategory_label": 0,
     "tags": 0,
     "thumb_url": 0,
@@ -384,7 +384,7 @@ class AppSearchBackend(base.SearchBackend):
                 "id": offer.id,
                 "prices": [int(stock.price * 100) for stock in stocks],
                 "ranking_weight": offer.rankingWeight or 0,
-                "search_group": offer.subcategory.search_group,
+                "search_group_name": offer.subcategory.search_group_name,
                 "stocks_date_created": [stock.dateCreated for stock in stocks],
                 "tags": [criterion.name for criterion in offer.criteria],
                 "times": times,

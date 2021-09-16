@@ -16,7 +16,7 @@ def get_subcategories() -> offers_serialize.SubcategoriesForWebappResponseModel:
             for subcategory in subcategories.ALL_SUBCATEGORIES
         ],
         searchGroups=[
-            offers_serialize.SearchGroupResponseModel.from_orm(search_group)
-            for search_group in [s for s in subcategories.SearchGroupChoices if s.value]
+            offers_serialize.SearchGroupResponseModel.from_orm(search_group_name)
+            for search_group_name in subcategories.SearchGroups
         ],
     )

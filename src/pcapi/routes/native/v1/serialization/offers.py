@@ -283,7 +283,7 @@ class UserReportedOffersResponse(BaseModel):
 class SubcategoryResponseModel(BaseModel):
     id: SubcategoryIdEnum
     app_label: str
-    search_group: Optional[subcategories.SearchGroupChoicesEnum]
+    search_group_name: Optional[subcategories.SearchGroupNameEnum]
     is_event: bool
     can_expire: bool
     can_be_duo: bool

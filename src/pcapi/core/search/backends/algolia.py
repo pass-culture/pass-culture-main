@@ -258,7 +258,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "prices": prices_sorted,
                 "priceMin": price_min,
                 "priceMax": price_max,
-                "searchGroup": offer.subcategory.search_group,
+                "searchGroupName": offer.subcategory.search_group_name,
                 "showSubType": show_sub_type,
                 "showType": show_type,
                 "speaker": speaker,

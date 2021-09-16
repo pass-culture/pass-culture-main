@@ -33,7 +33,7 @@ class SubcategoryResponseModel(BaseModel):
     matching_type: str
     pro_label: str
     app_label: str
-    search_group: Optional[str]
+    search_group_name: Optional[str]
     is_event: bool
     conditional_fields: list[str]
     can_expire: bool
@@ -63,7 +63,7 @@ class CategoryResponseModel(BaseModel):
 
 class SearchGroupResponseModel(BaseModel):
     name: str
-    value: str
+    value: Optional[str]
 
     class Config:
         alias_generator = to_camel

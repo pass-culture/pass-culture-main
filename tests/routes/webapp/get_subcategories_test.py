@@ -15,7 +15,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert list(response.json.keys()) == ["subcategories", "searchGroups"]
-        assert len(response.json["searchGroups"]) == len(subcategories.SearchGroupChoicesEnum)
+        assert len(response.json["searchGroups"]) == len(subcategories.SearchGroups)
         assert len(response.json["subcategories"]) == len(subcategories.ALL_SUBCATEGORIES)
         assert all(
             list(subcategory_dict.keys())
@@ -25,7 +25,7 @@ class Returns200Test:
                 "matchingType",
                 "proLabel",
                 "appLabel",
-                "searchGroup",
+                "searchGroupName",
                 "isEvent",
                 "conditionalFields",
                 "canExpire",

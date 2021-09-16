@@ -30,7 +30,7 @@ class Returns200Test:
                 "matchingType",
                 "proLabel",
                 "appLabel",
-                "searchGroup",
+                "searchGroupName",
                 "isEvent",
                 "conditionalFields",
                 "canExpire",
