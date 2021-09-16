@@ -19,6 +19,7 @@ REDIS_LIST_OFFER_IDS_NAME = "offer_ids"
 REDIS_LIST_OFFER_IDS_IN_ERROR_NAME = "offer_ids_in_error"
 REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME = "venue_ids_for_offers"
 REDIS_LIST_VENUE_IDS_NAME = "venue_ids_new"
+REDIS_LIST_VENUE_IDS_IN_ERROR_NAME = "venue_ids_in_error"
 REDIS_HASHMAP_INDEXED_OFFERS_NAME = "indexed_offers"
 
 DEFAULT_LONGITUDE_FOR_NUMERIC_OFFER = 2.409289
@@ -54,8 +55,13 @@ class AlgoliaBackend(base.SearchBackend):
                 raise
             logger.exception("Could not add offers to error queue", extra={"offers": offer_ids})
 
+    def enqueue_venue_ids_in_error(self, venue_ids: Iterable[int]) -> None:
+        # Algolia won't be used for venues
+        pass
+
     def enqueue_venue_ids(self, venue_ids: Iterable[int]) -> None:
-        return self._enqueue_venue_ids(venue_ids, REDIS_LIST_VENUE_IDS_NAME)
+        # Algolia won't be used for venues
+        pass
 
     def enqueue_venue_ids_for_offers(self, venue_ids: Iterable[int]) -> None:
         return self._enqueue_venue_ids(venue_ids, REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME)
@@ -109,6 +115,9 @@ class AlgoliaBackend(base.SearchBackend):
 
     def get_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
         return self._get_venue_ids_from_queue(count, REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME)
+
+    def get_venue_ids_from_error_queue(self, count: int) -> set[int]:
+        return self._get_venue_ids_from_queue(count, REDIS_LIST_VENUE_IDS_IN_ERROR_NAME)
 
     def _get_venue_ids_from_queue(self, count: int, queue_name: str) -> set[int]:
         try:

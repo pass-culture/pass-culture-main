@@ -19,6 +19,9 @@ class SearchBackend:
     def enqueue_offer_ids_in_error(self, offer_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
+    def enqueue_venue_ids_in_error(self, venue_ids: Iterable[int]) -> None:
+        raise NotImplementedError()
+
     def enqueue_venue_ids(self, venue_ids: Iterable[int]) -> None:
         raise NotImplementedError()
 
@@ -59,6 +62,9 @@ class SearchBackend:
         raise NotImplementedError()
 
     def unindex_all_venues(self) -> None:
+        raise NotImplementedError()
+
+    def get_venue_ids_from_error_queue(self, count: int) -> set[int]:
         raise NotImplementedError()
 
     def get_venue_ids_from_queue(self, count: int) -> set[int]:

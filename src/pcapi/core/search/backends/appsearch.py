@@ -22,6 +22,7 @@ from . import base
 REDIS_OFFER_IDS_TO_INDEX = "search:appsearch:offer-ids-to-index"
 REDIS_OFFER_IDS_IN_ERROR_TO_INDEX = "search:appsearch:offer-ids-in-error-to-index"
 REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX = "search:appsearch:venue-ids-for-offers-to-index"
+REDIS_VENUE_IDS_IN_ERROR_TO_INDEX = "search:appsearch:venue-ids-in-error-to-index"
 REDIS_VENUE_IDS_TO_INDEX = "search:appsearch:venue-ids-new-to-index"
 
 ENGINE_LANGUAGE = "fr"
@@ -214,7 +215,7 @@ class AppSearchBackend(base.SearchBackend):
 
         self.redis_client = current_app.redis_client
 
-    def enqueue_offer_ids(self, offer_ids: Iterable[int]):
+    def enqueue_offer_ids(self, offer_ids: Iterable[int]) -> None:
         if not offer_ids:
             return
         try:
@@ -222,7 +223,7 @@ class AppSearchBackend(base.SearchBackend):
         except redis.exceptions.RedisError:
             logger.exception("Could not add offers to indexation queue", extra={"offers": offer_ids})
 
-    def enqueue_offer_ids_in_error(self, offer_ids: Iterable[int]):
+    def enqueue_offer_ids_in_error(self, offer_ids: Iterable[int]) -> None:
         if not offer_ids:
             return
         try:
@@ -230,10 +231,13 @@ class AppSearchBackend(base.SearchBackend):
         except redis.exceptions.RedisError:
             logger.exception("Could not add offers to error queue", extra={"offers": offer_ids})
 
-    def enqueue_venue_ids(self, venue_ids: Iterable[int]):
+    def enqueue_venue_ids_in_error(self, venue_ids: Iterable[int]) -> None:
+        return self._enqueue_venue_ids(venue_ids, REDIS_VENUE_IDS_IN_ERROR_TO_INDEX)
+
+    def enqueue_venue_ids(self, venue_ids: Iterable[int]) -> None:
         return self._enqueue_venue_ids(venue_ids, REDIS_VENUE_IDS_TO_INDEX)
 
-    def enqueue_venue_ids_for_offers(self, venue_ids: Iterable[int]):
+    def enqueue_venue_ids_for_offers(self, venue_ids: Iterable[int]) -> None:
         return self._enqueue_venue_ids(venue_ids, REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX)
 
     def _enqueue_venue_ids(self, venue_ids: Iterable[int], queue_name: str) -> None:
@@ -258,6 +262,9 @@ class AppSearchBackend(base.SearchBackend):
         except redis.exceptions.RedisError:
             logger.exception("Could not pop offer ids to index from queue")
             return set()
+
+    def get_venue_ids_from_error_queue(self, count: int) -> set[int]:
+        return self._get_venue_ids_from_queue(count, REDIS_VENUE_IDS_IN_ERROR_TO_INDEX)
 
     def get_venue_ids_from_queue(self, count: int) -> set[int]:
         return self._get_venue_ids_from_queue(count, REDIS_VENUE_IDS_TO_INDEX)
@@ -493,11 +500,11 @@ class AppSearchApiClient:
 
     # Documents API: https://www.elastic.co/guide/en/app-search/current/documents.html
     @property
-    def documents_url(self):
+    def documents_url(self) -> str:
         path = f"/api/as/v1/engines/{self.engine_name}/documents"
         return f"{self.host}{path}"
 
-    def create_or_update_documents(self, documents: Iterable[dict]):
+    def create_or_update_documents(self, documents: Iterable[dict]) -> None:
         # Error handling is done by the caller.
         for batch in get_batches(documents, size=DOCUMENTS_PER_REQUEST_LIMIT):
             data = json.dumps(batch, cls=AppSearchJsonEncoder)
@@ -512,14 +519,14 @@ class AppSearchApiClient:
             if errors:
                 logger.error("Some documents could not be indexed, possible typing bug", extra={"errors": errors})
 
-    def delete_documents(self, document_ids: Iterable[int]):
+    def delete_documents(self, document_ids: Iterable[int]) -> None:
         # Error handling is done by the caller.
         for batch in get_batches(document_ids, size=DOCUMENTS_PER_REQUEST_LIMIT):
             data = json.dumps(batch)
             response = requests.delete(self.documents_url, headers=self.headers, data=data)
             response.raise_for_status()
 
-    def delete_all_documents(self):
+    def delete_all_documents(self) -> None:
         if settings.IS_PROD:
             raise ValueError("You cannot delete all documents on production.")
         # As of 2021-07-16, there is no endpoint to delete all

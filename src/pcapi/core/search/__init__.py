@@ -175,12 +175,20 @@ def _index_venues_in_queue(backend: base.SearchBackend) -> None:
         return
 
     logger.info("Starting to index venues", extra={"count": len(venue_ids), "backend": str(backend)})
-
     venues = Venue.query.filter(Venue.id.in_(venue_ids))
-    backend.index_venues(venues)
 
-    logger.info("Finished indexing venues", extra={"count": len(venue_ids), "backend": str(backend)})
-    backend.delete_venue_ids_from_queue(venue_ids)
+    try:
+        backend.index_venues(venues)
+    except Exception as exc:  # pylint: disable=broad-except
+        backend.enqueue_venue_ids_in_error(venue_ids)
+        logger.warning(
+            "Could not reindex venues, will automatically retry",
+            extra={"exc": str(exc), "venues": [venue.id for venue in venues], "backend": str(backend)},
+            exc_info=True,
+        )
+    else:
+        backend.delete_venue_ids_from_queue(venue_ids)
+        logger.info("Finished indexing venues", extra={"count": len(venue_ids), "backend": str(backend)})
 
 
 def index_offers_of_venues_in_queue() -> None:
