@@ -73,7 +73,7 @@ def update_venue(venue: Venue, contact_data: venues_serialize.VenueContactModel 
     indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)
 
     if indexing_modifications_fields or contact_data:
-        search.async_index_venue_ids([venue.id])
+        search.async_index_venues([venue])
         search.async_index_offers_of_venue_ids([venue.id])
 
     return venue
@@ -107,7 +107,7 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
 
     repository.save(venue)
 
-    search.async_index_venue_ids([venue.id])
+    search.async_index_venues([venue])
     return venue
 
 

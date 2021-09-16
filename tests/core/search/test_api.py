@@ -33,6 +33,17 @@ def test_async_index_offers_of_venue_ids(app):
     assert app.redis_client.smembers("search:appsearch:venue-ids-for-offers-to-index") == {b"1", b"2"}
 
 
+def test_async_index_venues(app):
+    permanent_venue = offers_factories.VenueFactory(isPermanent=True)
+    other_venue = offers_factories.VenueFactory(isPermanent=False)
+
+    search.async_index_venues([permanent_venue, other_venue])
+
+    enqueued_ids = app.redis_client.smembers("search:appsearch:venue-ids-new-to-index")
+    enqueued_ids = {int(venue_id) for venue_id in enqueued_ids}
+    assert enqueued_ids == {permanent_venue.id}
+
+
 @override_settings(REDIS_VENUE_IDS_CHUNK_SIZE=1)
 def test_index_offers_of_venues_in_queue(app):
     bookable_offer = make_bookable_offer()
