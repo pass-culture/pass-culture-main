@@ -424,6 +424,8 @@ configmapCloudTaskIdcheck:
   GUNICORN_THREADS: 10
 
 secrets:
+  - name: ADAGE_API_KEY
+    version: 1
   - name: ADMINISTRATION_EMAIL_ADDRESS
     version: 2
   - name: ALGOLIA_API_KEY

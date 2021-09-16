@@ -382,7 +382,7 @@ configmapCloudTaskIdcheck:
 
 secrets:
   - name: ADAGE_API_KEY
-    version: 1
+    version: 2
   - name: ADMINISTRATION_EMAIL_ADDRESS
     version: 3
   - name: ALGOLIA_API_KEY
