@@ -3,6 +3,7 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi import settings
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as booking_repository
@@ -17,6 +18,7 @@ from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResp
 from pcapi.routes.serialization.bookings_recap_serialize import _serialize_booking_recap
 from pcapi.routes.serialization.bookings_serialize import GetBookingResponse
 from pcapi.routes.serialization.bookings_serialize import get_booking_response
+from pcapi.routes.serialization.bookings_serialize import serialize_booking
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
@@ -111,124 +113,204 @@ def get_all_bookings(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     )
 
 
-@pro_api_v2.route("/bookings/token/<token>", methods=["GET"])
-@ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
-@email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
-@spectree_serialize(
-    api=api,
-    response_model=GetBookingResponse,
-    tags=["API Contremarque"],
-    code_descriptions=BASE_CODE_DESCRIPTIONS | {"HTTP_200": "La contremarque existe et n’est pas validée"},
-)
-@login_or_api_key_required
-def get_booking_by_token_v2(token: str) -> GetBookingResponse:
-    # in French, to be used by Swagger for the API documentation
-    """Consultation d'une réservation.
+if settings.ENABLE_SPECTREE_ON_CONTREMARQUE_API:
 
-    Le code “contremarque” ou "token" est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation.
-    Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.
-    """
-    booking = booking_repository.find_by(token=token)
+    @pro_api_v2.route("/bookings/token/<token>", methods=["GET"])
+    @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
+    @email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
+    @spectree_serialize(
+        api=api,
+        response_model=GetBookingResponse,
+        tags=["API Contremarque"],
+        code_descriptions=BASE_CODE_DESCRIPTIONS | {"HTTP_200": "La contremarque existe et n’est pas validée"},
+    )
+    @login_or_api_key_required
+    def get_booking_by_token_v2(token: str) -> GetBookingResponse:
+        # in French, to be used by Swagger for the API documentation
+        """Consultation d'une réservation.
 
-    if current_user.is_authenticated:
-        # warning : current user is not none when user is not logged in
-        check_user_can_validate_bookings_v2(current_user, booking.offererId)
+        Le code “contremarque” ou "token" est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation.
+        Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.
+        """
+        booking = booking_repository.find_by(token=token)
 
-    if current_api_key:
-        check_api_key_allows_to_validate_booking(current_api_key, booking.offererId)
+        if current_user.is_authenticated:
+            # warning : current user is not none when user is not logged in
+            check_user_can_validate_bookings_v2(current_user, booking.offererId)
 
-    bookings_validation.check_is_usable(booking)
+        if current_api_key:
+            check_api_key_allows_to_validate_booking(current_api_key, booking.offererId)
 
-    return get_booking_response(booking)
+        bookings_validation.check_is_usable(booking)
+
+        return get_booking_response(booking)
+
+    @pro_api_v2.route("/bookings/use/token/<token>", methods=["PATCH"])
+    @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
+    @email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
+    @spectree_serialize(
+        api=api,
+        tags=["API Contremarque"],
+        on_success_status=204,
+        code_descriptions=BASE_CODE_DESCRIPTIONS | {"HTTP_204": "La contremarque a bien été validée"},
+    )
+    @login_or_api_key_required
+    def patch_booking_use_by_token(token: str):
+        # in French, to be used by Swagger for the API documentation
+        """Validation d'une réservation.
+
+        Pour confirmer que la réservation a bien été utilisée par le jeune.
+        """
+        booking = booking_repository.find_by(token=token)
+
+        if current_user.is_authenticated:
+            check_user_can_validate_bookings_v2(current_user, booking.offererId)
+
+        if current_api_key:
+            check_api_key_allows_to_validate_booking(current_api_key, booking.offererId)
+
+        bookings_api.mark_as_used(booking)
+
+    @pro_api_v2.route("/bookings/cancel/token/<token>", methods=["PATCH"])
+    @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
+    @email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
+    @login_or_api_key_required
+    @spectree_serialize(
+        api=api,
+        tags=["API Contremarque"],
+        on_success_status=204,
+        code_descriptions=BASE_CODE_DESCRIPTIONS
+        | {
+            "HTTP_204": "La contremarque a été annulée avec succès",
+            "HTTP_403": "Vous n'avez pas les droits nécessaires pour annuler cette contremarque ou la réservation a déjà été validée",
+            "HTTP_410": "La contremarque a déjà été annulée",
+        },
+    )
+    def patch_cancel_booking_by_token(token: str):
+        # in French, to be used by Swagger for the API documentation
+        """Annulation d'une réservation.
+
+        Bien que, dans le cas d’un événement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier,
+        cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.
+        """
+        token = token.upper()
+        booking = booking_repository.find_by(token=token)
+
+        if current_user.is_authenticated:
+            check_user_has_access_to_offerer(current_user, booking.offererId)
+
+        if current_api_key:
+            check_api_key_allows_to_cancel_booking(current_api_key, booking.offererId)
+
+        bookings_api.cancel_booking_by_offerer(booking)
+
+    @pro_api_v2.route("/bookings/keep/token/<token>", methods=["PATCH"])
+    @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
+    @email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
+    @login_or_api_key_required
+    @spectree_serialize(
+        api=api,
+        tags=["API Contremarque"],
+        on_success_status=204,
+        code_descriptions=BASE_CODE_DESCRIPTIONS
+        | {
+            "HTTP_204": "L'annulation de la validation de la contremarque a bien été effectuée",
+            "HTTP_410": "La contremarque n’est plus valide car elle a déjà été validée, annulée ou bien le remboursement a été initié",
+        },
+    )
+    def patch_booking_keep_by_token(token: str):
+        # in French, to be used by Swagger for the API documentation
+        """Annulation de la validation d'une réservation."""
+        booking = booking_repository.find_by(token=token)
+
+        if current_user.is_authenticated:
+            check_user_can_validate_bookings_v2(current_user, booking.offererId)
+
+        if current_api_key:
+            check_api_key_allows_to_validate_booking(current_api_key, booking.offererId)
+
+        bookings_api.mark_as_unused(booking)
 
 
-@pro_api_v2.route("/bookings/use/token/<token>", methods=["PATCH"])
-@ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
-@email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
-@spectree_serialize(
-    api=api,
-    tags=["API Contremarque"],
-    on_success_status=204,
-    code_descriptions=BASE_CODE_DESCRIPTIONS | {"HTTP_204": "La contremarque a bien été validée"},
-)
-@login_or_api_key_required
-def patch_booking_use_by_token(token: str):
-    # in French, to be used by Swagger for the API documentation
-    """Validation d'une réservation.
+else:
+    # @debt api-migration
+    @public_api.route("/v2/bookings/token/<token>", methods=["GET"])
+    @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
+    @email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
+    @login_or_api_key_required
+    def get_booking_by_token_v2(token: str):
+        booking = booking_repository.find_by(token=token)
 
-    Pour confirmer que la réservation a bien été utilisée par le jeune.
-    """
-    booking = booking_repository.find_by(token=token)
+        if current_user.is_authenticated:
+            # warning : current user is not none when user is not logged in
+            check_user_can_validate_bookings_v2(current_user, booking.offererId)
 
-    if current_user.is_authenticated:
-        check_user_can_validate_bookings_v2(current_user, booking.offererId)
+        if current_api_key:
+            check_api_key_allows_to_validate_booking(current_api_key, booking.offererId)
 
-    if current_api_key:
-        check_api_key_allows_to_validate_booking(current_api_key, booking.offererId)
+        bookings_validation.check_is_usable(booking)
 
-    bookings_api.mark_as_used(booking)
+        response = serialize_booking(booking)
 
+        return jsonify(response), 200
 
-@pro_api_v2.route("/bookings/cancel/token/<token>", methods=["PATCH"])
-@ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
-@email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
-@login_or_api_key_required
-@spectree_serialize(
-    api=api,
-    tags=["API Contremarque"],
-    on_success_status=204,
-    code_descriptions=BASE_CODE_DESCRIPTIONS
-    | {
-        "HTTP_204": "La contremarque a été annulée avec succès",
-        "HTTP_403": "Vous n'avez pas les droits nécessaires pour annuler cette contremarque ou la réservation a déjà été validée",
-        "HTTP_410": "La contremarque a déjà été annulée",
-    },
-)
-def patch_cancel_booking_by_token(token: str):
-    # in French, to be used by Swagger for the API documentation
-    """Annulation d'une réservation.
+    # @debt api-migration
+    @public_api.route("/v2/bookings/use/token/<token>", methods=["PATCH"])
+    @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
+    @email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
+    @login_or_api_key_required
+    def patch_booking_use_by_token(token: str):
+        """Let a pro user mark a booking as used."""
+        booking = booking_repository.find_by(token=token)
 
-    Bien que, dans le cas d’un événement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier,
-    cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.
-    """
-    token = token.upper()
-    booking = booking_repository.find_by(token=token)
+        if current_user.is_authenticated:
+            check_user_can_validate_bookings_v2(current_user, booking.offererId)
 
-    if current_user.is_authenticated:
-        check_user_has_access_to_offerer(current_user, booking.offererId)
+        if current_api_key:
+            check_api_key_allows_to_validate_booking(current_api_key, booking.offererId)
 
-    if current_api_key:
-        check_api_key_allows_to_cancel_booking(current_api_key, booking.offererId)
+        bookings_api.mark_as_used(booking)
 
-    bookings_api.cancel_booking_by_offerer(booking)
+        return "", 204
 
+    # @debt api-migration
+    @private_api.route("/v2/bookings/cancel/token/<token>", methods=["PATCH"])
+    @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
+    @email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
+    @login_or_api_key_required
+    def patch_cancel_booking_by_token(token: str):
+        """Let a pro user cancel a booking."""
+        token = token.upper()
+        booking = booking_repository.find_by(token=token)
 
-@pro_api_v2.route("/bookings/keep/token/<token>", methods=["PATCH"])
-@ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
-@email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
-@login_or_api_key_required
-@spectree_serialize(
-    api=api,
-    tags=["API Contremarque"],
-    on_success_status=204,
-    code_descriptions=BASE_CODE_DESCRIPTIONS
-    | {
-        "HTTP_204": "L'annulation de la validation de la contremarque a bien été effectuée",
-        "HTTP_410": "La contremarque n’est plus valide car elle a déjà été validée, annulée ou bien le remboursement a été initié",
-    },
-)
-def patch_booking_keep_by_token(token: str):
-    # in French, to be used by Swagger for the API documentation
-    """Annulation de la validation d'une réservation."""
-    booking = booking_repository.find_by(token=token)
+        if current_user.is_authenticated:
+            check_user_has_access_to_offerer(current_user, booking.offererId)
 
-    if current_user.is_authenticated:
-        check_user_can_validate_bookings_v2(current_user, booking.offererId)
+        if current_api_key:
+            check_api_key_allows_to_cancel_booking(current_api_key, booking.offererId)
 
-    if current_api_key:
-        check_api_key_allows_to_validate_booking(current_api_key, booking.offererId)
+        bookings_api.cancel_booking_by_offerer(booking)
 
-    bookings_api.mark_as_unused(booking)
+        return "", 204
+
+    # @debt api-migration
+    @public_api.route("/v2/bookings/keep/token/<token>", methods=["PATCH"])
+    @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
+    @email_rate_limiter(key_func=get_basic_auth_from_request, deduct_when=lambda response: response.status_code == 401)
+    @login_or_api_key_required
+    def patch_booking_keep_by_token(token: str):
+        """Let a pro user mark a booking as _not_ used."""
+        booking = booking_repository.find_by(token=token)
+
+        if current_user.is_authenticated:
+            check_user_can_validate_bookings_v2(current_user, booking.offererId)
+
+        if current_api_key:
+            check_api_key_allows_to_validate_booking(current_api_key, booking.offererId)
+
+        bookings_api.mark_as_unused(booking)
+
+        return "", 204
 
 
 def _create_response_to_get_booking_by_token(booking: Booking) -> dict:

@@ -89,7 +89,9 @@ FLASK_SECRET = os.environ.get("FLASK_SECRET", "+%+3Q23!zbc+!Dd@")
 CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS").split(",")
 CORS_ALLOWED_ORIGINS_NATIVE = os.environ.get("CORS_ALLOWED_ORIGINS_NATIVE").split(",")
 CORS_ALLOWED_ORIGINS_ADAGE_IFRAME = os.environ.get("CORS_ALLOWED_ORIGINS_ADAGE_IFRAME").split(",")
-
+ENABLE_SPECTREE_ON_CONTREMARQUE_API = bool(
+    int(os.environ.get("ENABLE_SPECTREE_ON_CONTREMARQUE_API", "1"))
+)  # TODO: remove this setting when we are sure spectree introduces no regression in contremarque API in prod
 
 # NATIVE APP SPECIFIC SETTINGS
 NATIVE_APP_MINIMAL_CLIENT_VERSION = semver.VersionInfo.parse(
