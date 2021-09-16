@@ -43,7 +43,7 @@ class IdentifierFields extends PureComponent {
     if (readOnly) {
       return null
     }
-    
+
     return fieldReadOnlyBecauseFrozenFormSiret ? (
       <span
         className="button"
@@ -86,11 +86,11 @@ class IdentifierFields extends PureComponent {
     if (formatedSiret && formatedSiret.length === 14) {
       return ''
     }
-    
+
     if (comment === undefined || comment === '') {
       return 'Ce champ est obligatoire'
     }
-    
+
     return ''
   }
 
@@ -127,7 +127,7 @@ class IdentifierFields extends PureComponent {
           Informations lieu
           {!readOnly && (
             <span className="required-fields-hint">
-              Les champs marqués d’un 
+              Les champs marqués d’un
               {' '}
               <span className="required-legend">
                 *
@@ -249,7 +249,7 @@ class IdentifierFields extends PureComponent {
           >
             <div className="field-label">
               <label htmlFor="venue-label">
-                Label du lieu :
+                Label du Ministère de la Culture ou du CNC
               </label>
             </div>
 
@@ -268,7 +268,7 @@ class IdentifierFields extends PureComponent {
                       name="venueLabelId"
                     >
                       <option value="">
-                        Choisissez un label dans la liste
+                        Si votre lieu est labellisé précisez-le en le sélectionnant dans la liste
                       </option>
                       {venueLabels.map(venueLabel => (
                         <option

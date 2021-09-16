@@ -505,7 +505,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           expect(selectField.prop('component')).toBe('select')
 
           const venueLabelOptions = selectField.find('option')
-          expect(venueLabelOptions.at(0).text()).toBe('Choisissez un label dans la liste')
+          expect(venueLabelOptions.at(0).text()).toBe('Si votre lieu est labellisé précisez-le en le sélectionnant dans la liste')
           expect(venueLabelOptions.at(1).text()).toBe(
             "CAC - Centre d'art contemporain d'intérêt national"
           )
