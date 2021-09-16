@@ -22,6 +22,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
 
@@ -224,10 +225,14 @@ def _build_prebooking_mail_data(booking: bookings_models.Booking) -> dict:
     stock: Stock = booking.stock
     offer: Offer = stock.offer
     educational_booking: EducationalBooking = booking.educationalBooking
+    offer_link = build_pc_pro_offer_link(offer)
+
     return {
         "MJ-TemplateID": 3174424,
         "MJ-TemplateLanguage": True,
         "Vars": {
+            "departement": offer.venue.departementCode,
+            "lien_offre_pcpro": offer_link,
             "nom_offre": offer.name,
             "nom_lieu": offer.venue.name,
             "date": format_booking_date_for_email(booking),
@@ -237,5 +242,6 @@ def _build_prebooking_mail_data(booking: bookings_models.Booking) -> dict:
             "user_firstName": educational_booking.educationalRedactor.firstName,
             "user_lastName": educational_booking.educationalRedactor.lastName,
             "user_email": educational_booking.educationalRedactor.email,
+            "is_event": int(offer.isEvent),
         },
     }

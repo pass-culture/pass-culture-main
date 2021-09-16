@@ -23,6 +23,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_settings
+from pcapi.utils.human_ids import humanize
 
 from tests.conftest import clean_database
 
@@ -232,6 +233,8 @@ class BookEducationalOfferTest:
             "MJ-TemplateLanguage": True,
             "To": "test@email.com",
             "Vars": {
+                "departement": "75",
+                "lien_offre_pcpro": f"http://localhost:3001/offres/{humanize(offer.id)}/edition",
                 "nom_offre": offer.name,
                 "nom_lieu": offer.venue.name,
                 "date": "15-May-2021",
@@ -242,6 +245,7 @@ class BookEducationalOfferTest:
                 "user_firstName": "Georges",
                 "user_lastName": "Moustaki",
                 "user_email": "professeur@example.com",
+                "is_event": 1,
             },
         }
 
