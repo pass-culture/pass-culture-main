@@ -141,7 +141,7 @@ describe('reimbursementsWithFilters', () => {
 
   beforeEach(() => {
     store = configureTestStore(initialStore)
-    props = {}
+    props = { currentUser: { isAdmin: false } }
     venues = BASE_VENUES
     pcapi.getVenuesForOfferer.mockResolvedValue(venues)
   })
@@ -168,8 +168,8 @@ describe('reimbursementsWithFilters', () => {
     expect(buttons.download).toBeInTheDocument()
     expect(buttons.display).toBeInTheDocument()
 
-    expect(buttons.download).not.toBeDisabled()
-    expect(buttons.display).not.toBeDisabled()
+    expect(buttons.download).toBeEnabled()
+    expect(buttons.display).toBeEnabled()
   })
 
   it('should disable buttons if one or both of the period dates are not filled', async () => {
@@ -198,8 +198,27 @@ describe('reimbursementsWithFilters', () => {
 
     // then
     await expectFilters.toHaveValues('allVenues', '12/11/2020', '12/12/2020')
-    expect(buttons.download).not.toBeDisabled()
-    expect(buttons.display).not.toBeDisabled()
+    expect(buttons.download).toBeEnabled()
+    expect(buttons.display).toBeEnabled()
+  })
+
+  it('should disable buttons if user is admin and no venue filter is selected', async () => {
+    // given
+    props = { currentUser: { isAdmin: true } }
+    const { getElementsOnLoadingComplete } = renderReimbursements(store, props)
+    const { buttons, filters } = await getElementsOnLoadingComplete()
+
+    // then
+    expect(buttons.download).toBeDisabled()
+    expect(buttons.display).toBeDisabled()
+
+    // when
+    const options = await within(filters.venue).findAllByRole('option')
+    userEvent.selectOptions(filters.venue, [options[1].value])
+
+    // then
+    expect(buttons.download).toBeEnabled()
+    expect(buttons.display).toBeEnabled()
   })
 
   // eslint-disable-next-line jest/expect-expect

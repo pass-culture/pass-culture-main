@@ -2,6 +2,7 @@
 * @debt directory "Gaël: this file should be migrated within the new directory structure"
 */
 import isEqual from 'lodash.isequal'
+import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import AppLayout from 'app/AppLayout'
@@ -66,7 +67,7 @@ const buildAndSortVenueFilterOptions = venues =>
     }))
     .sort(sortByKeyAlphabeticalOrder('displayName'))
 
-const Reimbursements = () => {
+const Reimbursements = ({ currentUser }) => {
   const [venuesOptions, setVenuesOptions] = useState([])
   const [filters, setFilters] = useState(INITIAL_FILTERS)
   const [csvUrl, setCsvUrl] = useState(INITIAL_CSV_URL)
@@ -114,6 +115,10 @@ const Reimbursements = () => {
   useEffect(() => {
     setCsvUrl(buildCsvUrlWithParameters(filters))
   }, [filters])
+
+  const isPeriodFilterSelected = filters.periodStart && filters.periodEnd
+  const requireVenueFilterForAdmin = currentUser.isAdmin && filters.venue === 'allVenues'
+  const shouldDisableButtons = !isPeriodFilterSelected || requireVenueFilterForAdmin
 
   return (
     <AppLayout
@@ -194,14 +199,14 @@ const Reimbursements = () => {
               <DownloadButtonContainer
                 filename="remboursements_pass_culture"
                 href={csvUrl}
-                isDisabled={!filters.periodStart || !filters.periodEnd}
+                isDisabled={shouldDisableButtons}
                 mimeType="text/csv"
               >
                 Télécharger
               </DownloadButtonContainer>
               <CsvTableButtonContainer
                 href={csvUrl}
-                isDisabled={!filters.periodStart || !filters.periodEnd}
+                isDisabled={shouldDisableButtons}
               >
                 Afficher
               </CsvTableButtonContainer>
@@ -218,5 +223,13 @@ const Reimbursements = () => {
     </AppLayout>
   )
 }
+
+
+Reimbursements.propTypes = {
+  currentUser: PropTypes.shape({
+    isAdmin: PropTypes.bool.isRequired
+  }).isRequired,
+}
+
 
 export default Reimbursements
