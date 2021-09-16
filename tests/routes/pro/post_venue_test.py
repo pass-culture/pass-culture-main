@@ -4,31 +4,28 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users.factories import ProFactory
 from pcapi.models import Venue
-from pcapi.repository import repository
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
 
-@pytest.mark.usefixtures("db_session")
-def test_should_register_new_venue(app):
-    # given
-    offerer = offers_factories.OffererFactory(siren="302559178")
-    user = ProFactory()
-    user_offerer = offers_factories.UserOffererFactory(user=user, offerer=offerer)
+def create_valid_venue_data(user=None):
+    user_offerer_data = {"offerer__siren": "302559178"}
+    if user:
+        user_offerer_data["user"] = user
+    user_offerer = offers_factories.UserOffererFactory(**user_offerer_data)
     venue_type = offerers_factories.VenueTypeFactory(label="Musée")
     venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
-    repository.save(user_offerer, venue_type, venue_label)
-    auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
-    venue_data = {
+
+    return {
         "name": "Ma venue",
-        "siret": "30255917810045",
+        "siret": f"{user_offerer.offerer.siren}10045",
         "address": "75 Rue Charles Fourier, 75013 Paris",
         "postalCode": "75200",
         "bookingEmail": "toto@example.com",
         "city": "Paris",
-        "managingOffererId": humanize(offerer.id),
+        "managingOffererId": humanize(user_offerer.offerer.id),
         "latitude": 48.82387,
         "longitude": 2.35284,
         "publicName": "Ma venue publique",
@@ -36,8 +33,19 @@ def test_should_register_new_venue(app):
         "venueLabelId": humanize(venue_label.id),
         "description": "Some description",
         "audioDisabilityCompliant": True,
+        "mentalDisabilityCompliant": False,
+        "motorDisabilityCompliant": False,
+        "visualDisabilityCompliant": False,
         "contact": {"email": "some@email.com"},
     }
+
+
+@pytest.mark.usefixtures("db_session")
+def test_should_register_new_venue(app):
+    # given
+    user = ProFactory()
+    auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+    venue_data = create_valid_venue_data(user)
 
     # when
     response = auth_request.post("/venues", json=venue_data)
@@ -47,68 +55,33 @@ def test_should_register_new_venue(app):
     idx = response.json["id"]
 
     venue = Venue.query.filter_by(id=dehumanize(idx)).one()
-    assert venue.name == "Ma venue"
-    assert venue.publicName == "Ma venue publique"
-    assert venue.siret == "30255917810045"
+
+    assert venue.name == venue_data["name"]
+    assert venue.publicName == venue_data["publicName"]
+    assert venue.siret == venue_data["siret"]
+    assert venue.venueTypeId == dehumanize(venue_data["venueTypeId"])
+    assert venue.venueLabelId == dehumanize(venue_data["venueLabelId"])
+    assert venue.description == venue_data["description"]
+    assert venue.audioDisabilityCompliant == venue_data["audioDisabilityCompliant"]
+    assert venue.mentalDisabilityCompliant == venue_data["mentalDisabilityCompliant"]
+    assert venue.motorDisabilityCompliant == venue_data["motorDisabilityCompliant"]
+    assert venue.visualDisabilityCompliant == venue_data["visualDisabilityCompliant"]
+    assert venue.contact.email == venue_data["contact"]["email"]
+
+    assert venue.isPermanent == True
     assert venue.isValidated
-    assert venue.venueTypeId == venue_type.id
-    assert venue.venueLabelId == venue_label.id
-    assert venue.description == "Some description"
-    assert venue.audioDisabilityCompliant
-    assert venue.contact.email == "some@email.com"
     assert not venue.contact.phone_number
     assert not venue.contact.social_medias
 
 
 @pytest.mark.usefixtures("db_session")
-def test_should_consider_the_venue_to_be_permanent(app):
-    # given
-    offerer = offers_factories.OffererFactory(siren="302559178")
-    user = ProFactory()
-    user_offerer = offers_factories.UserOffererFactory(user=user, offerer=offerer)
-    venue_type = offerers_factories.VenueTypeFactory(label="Musée")
-    venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
-    repository.save(user_offerer, venue_type, venue_label)
-    auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
-    venue_data = {
-        "name": "Ma venue",
-        "siret": "30255917810045",
-        "address": "75 Rue Charles Fourier, 75013 Paris",
-        "postalCode": "75200",
-        "bookingEmail": "toto@example.com",
-        "city": "Paris",
-        "managingOffererId": humanize(offerer.id),
-        "latitude": 48.82387,
-        "longitude": 2.35284,
-        "publicName": "Ma venue publique",
-        "venueTypeId": humanize(venue_type.id),
-        "venueLabelId": humanize(venue_label.id),
-    }
-
-    # when
-    auth_request.post("/venues", json=venue_data)
-
-    # then
-    venue = Venue.query.one()
-    assert venue.isPermanent == True
-
-
-@pytest.mark.usefixtures("db_session")
 def test_should_return_401_when_latitude_out_of_range_and_longitude_wrong_format(app):
     # given
-    offerer = offers_factories.OffererFactory(siren="302559178")
     user = ProFactory()
-    user_offerer = offers_factories.UserOffererFactory(user=user, offerer=offerer)
-    repository.save(user_offerer)
+    venue_data = create_valid_venue_data(user)
 
-    data = {
-        "name": "Ma venue",
-        "siret": "30255917810045",
-        "address": "75 Rue Charles Fourier, 75013 Paris",
-        "postalCode": "75200",
-        "bookingEmail": "toto@example.com",
-        "city": "Paris",
-        "managingOffererId": humanize(offerer.id),
+    venue_data = {
+        **venue_data,
         "latitude": -98.82387,
         "longitude": "112°3534",
     }
@@ -116,7 +89,7 @@ def test_should_return_401_when_latitude_out_of_range_and_longitude_wrong_format
     auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
 
     # when
-    response = auth_request.post("/venues", json=data)
+    response = auth_request.post("/venues", json=venue_data)
 
     # then
     assert response.status_code == 400
@@ -127,19 +100,11 @@ def test_should_return_401_when_latitude_out_of_range_and_longitude_wrong_format
 @pytest.mark.usefixtures("db_session")
 def test_should_return_401_when_longitude_out_of_range_and_latitude_wrong_format(app):
     # given
-    offerer = offers_factories.OffererFactory(siren="302559178")
     user = ProFactory()
-    user_offerer = offers_factories.UserOffererFactory(user=user, offerer=offerer)
-    repository.save(user_offerer)
 
-    data = {
-        "name": "Ma venue",
-        "siret": "30255917810045",
-        "address": "75 Rue Charles Fourier, 75013 Paris",
-        "postalCode": "75200",
-        "bookingEmail": "toto@example.com",
-        "city": "Paris",
-        "managingOffererId": humanize(offerer.id),
+    venue_data = create_valid_venue_data(user)
+    venue_data = {
+        **venue_data,
         "latitude": "76°8237",
         "longitude": 210.43251,
     }
@@ -147,7 +112,7 @@ def test_should_return_401_when_longitude_out_of_range_and_latitude_wrong_format
     auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
 
     # when
-    response = auth_request.post("/venues", json=data)
+    response = auth_request.post("/venues", json=venue_data)
 
     # then
     assert response.status_code == 400
@@ -156,23 +121,30 @@ def test_should_return_401_when_longitude_out_of_range_and_latitude_wrong_format
 
 
 @pytest.mark.usefixtures("db_session")
-def test_should_return_403_when_user_is_not_managing_offerer_create_venue(app):
-    offerer = offers_factories.OffererFactory(siren="302559178")
+def test_mandatory_accessibility_fields(app):
+    # given
     user = ProFactory()
-    venue_type = offerers_factories.VenueTypeFactory(label="Musée")
-    venue_data = {
-        "name": "Ma venue",
-        "siret": "30255917810045",
-        "address": "75 Rue Charles Fourier, 75013 Paris",
-        "postalCode": "75200",
-        "bookingEmail": "toto@example.com",
-        "city": "Paris",
-        "managingOffererId": humanize(offerer.id),
-        "latitude": 48.82387,
-        "longitude": 2.35284,
-        "publicName": "Ma venue publique",
-        "venueTypeId": humanize(venue_type.id),
-    }
+
+    venue_data = create_valid_venue_data(user)
+    venue_data.pop("audioDisabilityCompliant")
+    venue_data.pop("mentalDisabilityCompliant")
+    venue_data.pop("motorDisabilityCompliant")
+    venue_data.pop("visualDisabilityCompliant")
+
+    auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+
+    # when
+    response = auth_request.post("/venues", json=venue_data)
+
+    # then
+    assert response.status_code == 400
+    assert response.json["global"] == ["L'accessibilité du lieu doit être définie."]
+
+
+@pytest.mark.usefixtures("db_session")
+def test_should_return_403_when_user_is_not_managing_offerer_create_venue(app):
+    user = ProFactory()
+    venue_data = create_valid_venue_data()
     auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
 
     response = auth_request.post("/venues", json=venue_data)

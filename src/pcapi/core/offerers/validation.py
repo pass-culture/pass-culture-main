@@ -30,9 +30,35 @@ def validate_coordinates(raw_latitude, raw_longitude):
         raise api_errors
 
 
+def check_venue_creation(data):
+    if None in [
+        data.get("audioDisabilityCompliant"),
+        data.get("mentalDisabilityCompliant"),
+        data.get("motorDisabilityCompliant"),
+        data.get("visualDisabilityCompliant"),
+    ]:
+        errors = ApiErrors()
+        errors.add_error("global", "L'accessibilité du lieu doit être définie.")
+        raise errors
+
+
 def check_venue_edition(modifications, venue):
     managing_offerer_id = modifications.get("managingOffererId")
     siret = modifications.get("siret")
+
+    venue_disability_compliance = [
+        venue.audioDisabilityCompliant,
+        venue.mentalDisabilityCompliant,
+        venue.motorDisabilityCompliant,
+        venue.visualDisabilityCompliant,
+    ]
+    modifications_disability_compliance = [
+        modifications.get("audioDisabilityCompliant"),
+        modifications.get("mentalDisabilityCompliant"),
+        modifications.get("motorDisabilityCompliant"),
+        modifications.get("visualDisabilityCompliant"),
+    ]
+
     if managing_offerer_id:
         errors = ApiErrors()
         errors.add_error("managingOffererId", "Vous ne pouvez pas changer la structure d'un lieu")
@@ -46,6 +72,11 @@ def check_venue_edition(modifications, venue):
         if venue_with_same_siret:
             errors = ApiErrors()
             errors.add_error("siret", "Un lieu avec le même siret existe déjà")
+            raise errors
+    if None in venue_disability_compliance and None in modifications_disability_compliance:
+        errors = ApiErrors()
+        errors.add_error("global", "L'accessibilité du lieu doit etre définie.")
+        raise errors
 
 
 def _validate_longitude(api_errors, raw_longitude):

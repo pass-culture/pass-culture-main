@@ -102,6 +102,7 @@ def upsert_venue_contact(venue: Venue, contact_data: venues_serialize.VenueConta
 
 def create_venue(venue_data: PostVenueBodyModel) -> Venue:
     data = venue_data.dict(by_alias=True)
+    validation.check_venue_creation(data)
     venue = Venue()
     venue.populate_from_dict(data)
 

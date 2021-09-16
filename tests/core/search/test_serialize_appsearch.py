@@ -250,6 +250,10 @@ def test_serialize_venue():
         "description": venue.description,
         "email": "some@email.com",
         "twitter": "https://twitter.com/my.venue",
+        "audio_disability": 0,
+        "mental_disability": 0,
+        "motor_disability": 0,
+        "visual_disability": 0,
     }
 
 
