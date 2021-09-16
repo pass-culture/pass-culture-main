@@ -238,7 +238,7 @@ class BookEducationalOfferTest:
                 "env": "-development",
                 "heure": "2h",
                 "quantity": 1,
-                "prix": 10.00,
+                "prix": "10.00",
                 "user_firstName": "Georges",
                 "user_lastName": "Moustaki",
                 "user_email": "professeur@example.com",

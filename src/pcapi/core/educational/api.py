@@ -233,7 +233,7 @@ def _build_prebooking_mail_data(booking: bookings_models.Booking) -> dict:
             "date": format_booking_date_for_email(booking),
             "heure": format_booking_hours_for_email(booking),
             "quantity": booking.quantity,
-            "prix": booking.total_amount,
+            "prix": str(booking.total_amount) if booking.total_amount > 0 else "Gratuit",
             "user_firstName": educational_booking.educationalRedactor.firstName,
             "user_lastName": educational_booking.educationalRedactor.lastName,
             "user_email": educational_booking.educationalRedactor.email,
