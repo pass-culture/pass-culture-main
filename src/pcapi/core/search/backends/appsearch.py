@@ -263,21 +263,21 @@ class AppSearchBackend(base.SearchBackend):
             logger.exception("Could not pop offer ids to index from queue")
             return set()
 
-    def get_venue_ids_from_error_queue(self, count: int) -> set[int]:
-        return self._get_venue_ids_from_queue(count, REDIS_VENUE_IDS_IN_ERROR_TO_INDEX)
+    def pop_venue_ids_from_error_queue(self, count: int) -> set[int]:
+        return self._pop_venue_ids_from_queue(count, REDIS_VENUE_IDS_IN_ERROR_TO_INDEX)
 
-    def get_venue_ids_from_queue(self, count: int) -> set[int]:
-        return self._get_venue_ids_from_queue(count, REDIS_VENUE_IDS_TO_INDEX)
+    def pop_venue_ids_from_queue(self, count: int) -> set[int]:
+        return self._pop_venue_ids_from_queue(count, REDIS_VENUE_IDS_TO_INDEX)
 
-    def get_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
-        return self._get_venue_ids_from_queue(count, REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX)
+    def pop_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
+        return self._pop_venue_ids_from_queue(count, REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX)
 
-    def _get_venue_ids_from_queue(self, count: int, queue_name: str) -> set[int]:
+    def _pop_venue_ids_from_queue(self, count: int, queue_name: str) -> set[int]:
         try:
-            venue_ids = self.redis_client.srandmember(queue_name, count)
+            venue_ids = self.redis_client.spop(queue_name, count)
             return {int(venue_id) for venue_id in venue_ids}  # str -> int
         except redis.exceptions.RedisError:
-            logger.exception("Could not get venue ids for offers to index from queue", extra={"queue": queue_name})
+            logger.exception("Could not pop venue ids for offers to index from queue", extra={"queue": queue_name})
             return set()
 
     def delete_venue_ids_from_queue(self, venue_ids: Iterable[int]) -> None:

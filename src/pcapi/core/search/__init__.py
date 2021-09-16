@@ -172,9 +172,9 @@ def index_venues_in_queue(from_error_queue: bool = False) -> None:
 def _index_venues_in_queue(backend: base.SearchBackend, from_error_queue: bool = False) -> None:
     chunk_size = settings.REDIS_VENUE_IDS_CHUNK_SIZE
     if from_error_queue:
-        venue_ids = backend.get_venue_ids_from_error_queue(count=chunk_size)
+        venue_ids = backend.pop_venue_ids_from_error_queue(count=chunk_size)
     else:
-        venue_ids = backend.get_venue_ids_from_queue(count=chunk_size)
+        venue_ids = backend.pop_venue_ids_from_queue(count=chunk_size)
 
     if not venue_ids:
         return
@@ -192,7 +192,6 @@ def _index_venues_in_queue(backend: base.SearchBackend, from_error_queue: bool =
             exc_info=True,
         )
     else:
-        backend.delete_venue_ids_from_queue(venue_ids)
         logger.info("Finished indexing venues", extra={"count": len(venue_ids), "backend": str(backend)})
 
 
@@ -209,7 +208,7 @@ def index_offers_of_venues_in_queue() -> None:
 
 
 def _index_offers_of_venues_in_queue(backend: base.SearchBackend) -> None:
-    venue_ids = backend.get_venue_ids_for_offers_from_queue(count=settings.REDIS_VENUE_IDS_CHUNK_SIZE)
+    venue_ids = backend.pop_venue_ids_for_offers_from_queue(count=settings.REDIS_VENUE_IDS_CHUNK_SIZE)
     for venue_id in venue_ids:
         page = 0
         logger.info("Starting to index offers of venue", extra={"venue": venue_id, "backend": str(backend)})
@@ -222,8 +221,6 @@ def _index_offers_of_venues_in_queue(backend: base.SearchBackend) -> None:
             _reindex_offer_ids(backend, offer_ids)
             page += 1
         logger.info("Finished indexing offers of venue", extra={"venue": venue_id, "backend": str(backend)})
-
-    backend.delete_venue_ids_for_offers_from_queue(venue_ids)
 
 
 def reindex_offer_ids(offer_ids: Iterable[int]) -> None:

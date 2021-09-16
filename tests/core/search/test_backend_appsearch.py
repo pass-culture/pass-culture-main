@@ -92,13 +92,14 @@ def test_get_venue_ids_for_offers_from_queue(app):
     backend = get_backend()
     app.redis_client.sadd("search:appsearch:venue-ids-for-offers-to-index", 1, 2, 3)
 
-    venue_ids = backend.get_venue_ids_for_offers_from_queue(count=2)
+    venue_ids = backend.pop_venue_ids_for_offers_from_queue(count=2)
     assert len(venue_ids) == 2
-    assert venue_ids.issubset({1, 2, 3})
+    assert venue_ids <= {1, 2, 3}
 
     # Make sure we did not pop values off the list.
     in_queue = app.redis_client.smembers("search:appsearch:venue-ids-for-offers-to-index")
-    assert in_queue == {b"1", b"2", b"3"}
+    assert len(in_queue) == 1
+    assert in_queue <= {b"1", b"2", b"3"}
 
 
 def test_delete_venue_ids_for_offers_from_queue(app):

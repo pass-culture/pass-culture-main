@@ -79,55 +79,21 @@ class AlgoliaBackend(base.SearchBackend):
             )
 
     def pop_offer_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
-        # Here we should use `LPOP` but its `count` argument has been
-        # added in Redis 6.2. GCP currently has an earlier version of
-        # Redis (5.0), where we can pop only one item at once. As a
-        # work around, we get and delete items within a pipeline,
-        # which should be atomic.
-        #
-        # The error handling is minimal:
-        # - if the get fails, the function returns an empty list. It's
-        #   fine, the next run may have more chance and may work;
-        # - if the delete fails, we'll process the same batch
-        #   twice. It's not optimal, but it's ok.
         if from_error_queue:
             redis_list_name = REDIS_LIST_OFFER_IDS_IN_ERROR_NAME
         else:
             redis_list_name = REDIS_LIST_OFFER_IDS_NAME
 
-        offer_ids = set()
-        try:
-            pipeline = self.redis_client.pipeline(transaction=True)
-            pipeline.lrange(redis_list_name, 0, count - 1)
-            pipeline.ltrim(redis_list_name, count, -1)
-            results = pipeline.execute()
-            offer_ids = {int(offer_id) for offer_id in results[0]}  # str -> int
-        except redis.exceptions.RedisError:
-            if settings.IS_RUNNING_TESTS:
-                raise
-            logger.exception("Could not pop offer ids to index from queue")
-        finally:
-            pipeline.reset()
-        return offer_ids
+        return self.redis_lpop(redis_list_name, count)
 
-    def get_venue_ids_from_queue(self, count: int) -> set[int]:
-        return self._get_venue_ids_from_queue(count, REDIS_LIST_VENUE_IDS_NAME)
+    def pop_venue_ids_from_error_queue(self, count: int) -> set[int]:
+        return self.redis_lpop(REDIS_LIST_VENUE_IDS_IN_ERROR_NAME, count)
 
-    def get_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
-        return self._get_venue_ids_from_queue(count, REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME)
+    def pop_venue_ids_from_queue(self, count: int) -> set[int]:
+        return self.redis_lpop(REDIS_LIST_VENUE_IDS_NAME, count)
 
-    def get_venue_ids_from_error_queue(self, count: int) -> set[int]:
-        return self._get_venue_ids_from_queue(count, REDIS_LIST_VENUE_IDS_IN_ERROR_NAME)
-
-    def _get_venue_ids_from_queue(self, count: int, queue_name: str) -> set[int]:
-        try:
-            venue_ids = self.redis_client.lrange(queue_name, 0, count - 1)
-            return {int(venue_id) for venue_id in venue_ids}  # str -> int
-        except redis.exceptions.RedisError:
-            if settings.IS_RUNNING_TESTS:
-                raise
-            logger.exception("Could not get venue ids to index from queue")
-            return set()
+    def pop_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
+        return self.redis_lpop(REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME, count)
 
     def delete_venue_ids_from_queue(self, venue_ids: Iterable[int]) -> None:
         return self._delete_venue_ids_from_queue(venue_ids, REDIS_LIST_VENUE_IDS_NAME)
@@ -333,3 +299,36 @@ class AlgoliaBackend(base.SearchBackend):
         # No need to implement venue indexing now since the Algolia backend
         # will be removed soon.
         return {}
+
+    def redis_lpop(self, queue_name: str, count: int) -> set[int]:
+        """
+        Here we can't use `LPOP` because its `count` argument has been
+        added in Redis 6.2. GCP currently has an earlier version of
+        Redis (5.0), where we can pop only one item at once. As a
+        work around, we get and delete items within a pipeline,
+        which should be atomic.
+
+        The error handling is minimal:
+        - if the get fails, the function returns an empty list. It's
+          fine, the next run may have more chance and may work;
+        - if the delete fails, we'll process the same batch
+          twice. It's not optimal, but it's ok.
+        """
+        obj_ids = set()
+
+        try:
+            pipeline = self.redis_client.pipeline(transaction=True)
+
+            pipeline.lrange(queue_name, 0, count - 1)
+            pipeline.ltrim(queue_name, count, -1)
+
+            results = pipeline.execute()
+            obj_ids = {int(obj_id) for obj_id in results[0]}
+        except redis.exceptions.RedisError:
+            if settings.IS_RUNNING_TESTS:
+                raise
+            logger.exception("Could not pop obj ids to index from queue")
+        finally:
+            pipeline.reset()
+
+        return obj_ids

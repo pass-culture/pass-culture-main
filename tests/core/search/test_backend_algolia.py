@@ -82,14 +82,14 @@ def test_get_venue_ids_for_offers_from_queue(app):
     # we'll get `[3, 2, 1]` in that order.
     app.redis_client.lpush("venue_ids_for_offers", 1, 2, 3)
 
-    venue_ids = backend.get_venue_ids_for_offers_from_queue(count=2)
+    venue_ids = backend.pop_venue_ids_for_offers_from_queue(count=2)
     assert venue_ids == {3, 2}
 
-    venue_ids = backend.get_venue_ids_for_offers_from_queue(count=1)
-    assert venue_ids == {3}
+    venue_ids = backend.pop_venue_ids_for_offers_from_queue(count=1)
+    assert venue_ids == {1}
 
-    # Make sure we did not pop values off the list.
-    assert set(app.redis_client.lrange("venue_ids_for_offers", 0, 5)) == {b"1", b"2", b"3"}
+    # Make sure we did pop values off the list.
+    assert not set(app.redis_client.lrange("venue_ids_for_offers", 0, 5))
 
 
 def test_delete_venue_ids_for_offers_from_queue(app):
