@@ -1,5 +1,7 @@
+from dataclasses import dataclass
 import json
 import logging
+from typing import Optional
 
 from google.api_core import retry
 from google.api_core.exceptions import AlreadyExists
@@ -22,21 +24,19 @@ def get_client():
     return get_client.client
 
 
-def enqueue_task(queue, url, payload):
+@dataclass
+class CloudTaskHttpRequest:
+    http_method: tasks_v2.HttpMethod
+    url: str
+    headers: Optional[dict] = None
+    body: Optional[bytes] = None
 
+
+def enqueue_task(queue: str, http_request: CloudTaskHttpRequest):
     client = get_client()
     parent = client.queue_path(settings.GCP_PROJECT, settings.GCP_REGION_CLOUD_TASK, queue)
 
-    body = json.dumps(payload).encode()
-
-    task_request = {
-        "http_request": {
-            "http_method": tasks_v2.HttpMethod.POST,
-            "url": url,
-            "headers": {"Content-type": "application/json", AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
-            "body": body,
-        },
-    }
+    task_request = {"http_request": http_request}
 
     try:
         response = client.create_task(
@@ -49,6 +49,19 @@ def enqueue_task(queue, url, payload):
             ),
         )
     except AlreadyExists:
-        logger.info("Task on queue %s url %s already retried", queue, url)
+        logger.info("Task on queue %s url %s already retried", queue, http_request.url)
+        return None
+
     task_id = response.name.split("/")[-1]
     return task_id
+
+
+def enqueue_internal_task(queue, url, payload):
+    http_request = CloudTaskHttpRequest(
+        http_method=tasks_v2.HttpMethod.POST,
+        url=url,
+        headers={"Content-type": "application/json", AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
+        body=json.dumps(payload).encode(),
+    )
+
+    return enqueue_task(queue, http_request)

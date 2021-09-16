@@ -77,7 +77,7 @@ def _enqueue_task(queue, path, payload):
         _call_task_handler(queue, url, payload)
         return None
 
-    return cloud_task.enqueue_task(queue, url, payload)
+    return cloud_task.enqueue_internal_task(queue, url, payload)
 
 
 def _call_task_handler(queue, url, payload):
