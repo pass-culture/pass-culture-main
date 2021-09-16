@@ -31,8 +31,7 @@ def book_educational_offer(
 
     try:
         booking = educational_api.book_educational_offer(
-            redactor_email=authenticated_information.email,
-            uai_code=authenticated_information.uai,
+            redactor_informations=authenticated_information,
             stock_id=body.stockId,
         )
     except AdageException as exception:

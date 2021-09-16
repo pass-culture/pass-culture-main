@@ -2,7 +2,6 @@ from datetime import datetime
 import decimal
 import logging
 
-from pcapi.connectors.api_adage import get_institutional_project_redactor_by_email
 from pcapi.core import mails
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
@@ -22,6 +21,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
@@ -32,24 +32,23 @@ logger = logging.getLogger(__name__)
 EAC_DEFAULT_BOOKED_QUANTITY = 1
 
 
-def create_redactor_from_email(redactor_email: str) -> EducationalRedactor:
-    educational_redactor_information = get_institutional_project_redactor_by_email(redactor_email)
+def _create_redactor(redactor_informations: AuthenticatedInformation) -> EducationalRedactor:
     redactor = EducationalRedactor(
-        email=educational_redactor_information.email,
-        firstName=educational_redactor_information.first_name,
-        lastName=educational_redactor_information.last_name,
-        civility=educational_redactor_information.civility,
+        email=redactor_informations.email,
+        firstName=redactor_informations.firstname,
+        lastName=redactor_informations.lastname,
+        civility=redactor_informations.civility,
     )
     repository.save(redactor)
     return redactor
 
 
-def book_educational_offer(redactor_email: str, uai_code: str, stock_id: int) -> EducationalBooking:
-    redactor = educational_repository.find_redactor_by_email(redactor_email)
+def book_educational_offer(redactor_informations: AuthenticatedInformation, stock_id: int) -> EducationalBooking:
+    redactor = educational_repository.find_redactor_by_email(redactor_informations.email)
     if not redactor:
-        redactor = create_redactor_from_email(redactor_email)
+        redactor = _create_redactor(redactor_informations)
 
-    educational_institution = educational_repository.find_educational_institution_by_uai_code(uai_code)
+    educational_institution = educational_repository.find_educational_institution_by_uai_code(redactor_informations.uai)
     validation.check_institution_exists(educational_institution)
 
     # The call to transaction here ensures we free the FOR UPDATE lock
@@ -87,7 +86,7 @@ def book_educational_offer(redactor_email: str, uai_code: str, stock_id: int) ->
     logger.info(
         "Redactor booked an educational offer",
         extra={
-            "redactor": redactor_email,
+            "redactor": redactor_informations.email,
             "offerId": stock.offerId,
             "stockId": stock.id,
             "bookingId": booking.id,
