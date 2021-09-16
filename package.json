@@ -91,7 +91,8 @@
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
     "sass-resources-loader": "^2.2.3",
-    "smoothscroll-polyfill": "^0.4.4"
+    "smoothscroll-polyfill": "^0.4.4",
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@babel/core": "^7.13.16",

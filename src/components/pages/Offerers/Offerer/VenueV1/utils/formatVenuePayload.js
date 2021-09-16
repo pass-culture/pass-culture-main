@@ -24,6 +24,7 @@ const creation_authorized_input_field = [
   'mentalDisabilityCompliant',
   'motorDisabilityCompliant',
   'visualDisabilityCompliant',
+  'contact',
 ]
 
 const edition_authorized_input_field = [
@@ -48,9 +49,11 @@ const edition_authorized_input_field = [
   'mentalDisabilityCompliant',
   'motorDisabilityCompliant',
   'visualDisabilityCompliant',
+  'contact',
 ]
 
 export const formatVenuePayload = (payload, isCreatedEntity) => {
+
   const requestPayload = {}
 
   const authorizedFields = isCreatedEntity

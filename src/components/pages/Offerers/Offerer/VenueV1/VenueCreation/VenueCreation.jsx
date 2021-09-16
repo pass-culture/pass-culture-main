@@ -21,9 +21,8 @@ import AccessibilityFields, {
   autoFillNoDisabilityCompliantDecorator,
 } from '../fields/AccessibilityFields'
 import BankInformation from '../fields/BankInformationFields'
-import IdentifierFields, {
-  bindGetSiretInformationToSiret,
-} from '../fields/IdentifierFields'
+import ContactInfosFields from '../fields/ContactInfosFields'
+import IdentifierFields, { bindGetSiretInformationToSiret } from '../fields/IdentifierFields'
 import LocationFields, {
   bindGetSuggestionsToLatitude,
   bindGetSuggestionsToLongitude,
@@ -33,7 +32,6 @@ import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields'
 import { formatSiret } from '../siret/formatSiret'
 import VenueLabel from '../ValueObjects/VenueLabel'
 import VenueType from '../ValueObjects/VenueType'
-
 
 class VenueCreation extends PureComponent {
   constructor() {
@@ -147,6 +145,7 @@ class VenueCreation extends PureComponent {
           readOnly={readOnly}
         />
         <AccessibilityFields />
+        <ContactInfosFields />
         <hr />
         <div
           className="field is-grouped is-grouped-centered"
