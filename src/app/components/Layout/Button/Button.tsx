@@ -4,11 +4,13 @@ import React, { useCallback, useState } from "react"
 import { Spinner } from "../Spinner/Spinner"
 
 export const Button = ({
+  disabled,
   onClick,
   loadingMessage,
   text,
   isSubmit,
 }: {
+  disabled: boolean;
   onClick: () => Promise<any>;
   loadingMessage: string;
   text: string;
@@ -24,7 +26,7 @@ export const Button = ({
   return (
     <button
       className={`primary-button ${isLoading ? "loading" : ""}`}
-      disabled={isLoading}
+      disabled={disabled || isLoading}
       onClick={onClickWrapper}
       type={isSubmit ? "submit" : "button"}
     >

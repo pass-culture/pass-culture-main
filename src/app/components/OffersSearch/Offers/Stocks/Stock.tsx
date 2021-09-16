@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useState } from "react"
 
 import { Button } from "app/components/Layout/Button/Button"
 import {
@@ -55,33 +55,34 @@ export const Stock = ({
   stock: StockType;
   venuePostalCode: string;
 }): JSX.Element => {
-  const preBookCurrentStock = useCallback(
-    () =>
-      preBookStock(stock.id)
-        .then(() =>
-          notify(
-            new Notification(
-              NotificationType.success,
-              "Votre préréservation a été effectuée avec succès."
-            )
+  const [disableButton, setDisableButton] = useState(false)
+  const preBookCurrentStock = useCallback(() => {
+    setDisableButton(true)
+    return preBookStock(stock.id)
+      .then(() =>
+        notify(
+          new Notification(
+            NotificationType.success,
+            "Votre préréservation a été effectuée avec succès."
           )
         )
-        .catch(() =>
-          notify(
-            new Notification(
-              NotificationType.error,
-              "Impossible de préréserver cette offre.\nVeuillez contacter le support"
-            )
+      )
+      .catch(() =>
+        notify(
+          new Notification(
+            NotificationType.error,
+            "Impossible de préréserver cette offre.\nVeuillez contacter le support"
           )
-        ),
-    [notify, stock.id]
-  )
+        )
+      )
+  }, [notify, stock.id])
   return (
     <li>
       {displayStockInformation(stock, venuePostalCode)}
 
       {canPrebookOffers && (
         <Button
+          disabled={disableButton}
           isSubmit={false}
           loadingMessage="Préreservation"
           onClick={preBookCurrentStock}
