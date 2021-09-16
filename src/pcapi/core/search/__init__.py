@@ -157,20 +157,25 @@ def _index_offers_in_queue(
             break
 
 
-def index_venues_in_queue() -> None:
+def index_venues_in_queue(from_error_queue: bool = False) -> None:
     """Pop venues from indexation queue and reindex them."""
     backends = _get_backends()
     for backend in backends:
         try:
-            _index_venues_in_queue(backend)
+            _index_venues_in_queue(backend, from_error_queue)
         except Exception as exc:  # pylint: disable=broad-except
             if settings.IS_RUNNING_TESTS:
                 raise
             logger.exception("Could not index venues from queue", extra={"backend": str(backend), "exc": str(exc)})
 
 
-def _index_venues_in_queue(backend: base.SearchBackend) -> None:
-    venue_ids = backend.get_venue_ids_from_queue(count=settings.REDIS_VENUE_IDS_CHUNK_SIZE)
+def _index_venues_in_queue(backend: base.SearchBackend, from_error_queue: bool = False) -> None:
+    chunk_size = settings.REDIS_VENUE_IDS_CHUNK_SIZE
+    if from_error_queue:
+        venue_ids = backend.get_venue_ids_from_error_queue(count=chunk_size)
+    else:
+        venue_ids = backend.get_venue_ids_from_queue(count=chunk_size)
+
     if not venue_ids:
         return
 

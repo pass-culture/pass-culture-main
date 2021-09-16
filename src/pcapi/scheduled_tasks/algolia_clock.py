@@ -39,6 +39,18 @@ def index_offers_in_error_in_algolia_by_offer(app):
     search.index_offers_in_queue(from_error_queue=True)
 
 
+@log_cron
+@cron_context
+def index_venues(app):
+    search.index_venues_in_queue()
+
+
+@log_cron
+@cron_context
+def index_venues_in_error(app):
+    search.index_venues_in_queue(from_error_queue=True)
+
+
 def main():
     from pcapi.flask_app import app
 
@@ -46,6 +58,8 @@ def main():
     scheduler = BlockingScheduler()
 
     utils.activate_sentry(scheduler)
+
+    # ---- Offers ----- #
 
     scheduler.add_job(
         index_offers_in_algolia_by_offer,
@@ -69,6 +83,22 @@ def main():
         "cron",
         [app],
         minute=settings.ALGOLIA_CRON_INDEXING_OFFERS_IN_ERROR_BY_OFFER_FREQUENCY,
+    )
+
+    # ---- Venues ----- #
+
+    scheduler.add_job(
+        index_venues,
+        "cron",
+        [app],
+        minute=settings.CRON_INDEXING_VENUES_FREQUENCY,
+    )
+
+    scheduler.add_job(
+        index_venues_in_error,
+        "cron",
+        [app],
+        minute=settings.CRON_INDEXING_VENUES_IN_ERROR_FREQUENCY,
     )
 
     scheduler.start()
