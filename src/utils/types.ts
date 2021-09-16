@@ -1,30 +1,37 @@
 export interface VenueType {
   address: string;
   city: string;
-  latitude: string;
-  longitude: string;
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  };
   name: string;
   postalCode: string;
   publicName: string;
 }
 
 export interface OfferType {
+  id: number;
+  name: string;
+  category: {
+    label: string;
+  };
+  description: string;
   venue: VenueType;
   stocks: StockType[];
+  isSoldOut: boolean;
+  isExpired: boolean;
 }
 
 export interface StockType {
   id: number;
   beginningDatetime: Date;
-  bookingLimitDatetime: Date;
   isBookable: boolean;
-  isExpired: boolean;
-  isSoldOut: boolean;
   price: number;
 }
 
 export interface ResultType {
-  dates: { raw: string | null };
+  dates: { raw: string[] | null };
   id: { raw: string };
   name: { raw: string };
   thumb_url: { raw: string | null };

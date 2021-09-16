@@ -11,23 +11,33 @@ import { StockType } from "utils/types"
 
 const displayStockInformation = (
   stock: StockType,
-  venueDepartmentCode: string
+  venuePostalCode: string
 ): string => {
+  const departmentCode = extractDepartmentCode(venuePostalCode)
   const stockBeginningDate = new Date(stock.beginningDatetime)
   const stockBeginningDateISOString =
     toISOStringWithoutMilliseconds(stockBeginningDate)
   const stockLocalBeginningDate = formatLocalTimeDateString(
     stockBeginningDateISOString,
-    venueDepartmentCode,
+    departmentCode,
     FORMAT_DD_MM_YYYY_HH_mm
   )
 
   const stockPrice: string = new Intl.NumberFormat("fr-FR", {
-    style: "decimal",
+    style: "currency",
     currency: "EUR",
-  }).format(stock.price)
+  }).format(stock.price / 100)
 
-  return `${stockLocalBeginningDate}, ${stockPrice} €`
+  return `${stockLocalBeginningDate}, ${stockPrice}`
+}
+
+const extractDepartmentCode = (venuePostalCode: string): string => {
+  const departmentNumberBase: number = parseInt(venuePostalCode.slice(0, 2))
+  if (departmentNumberBase > 95) {
+    return venuePostalCode.slice(0, 3)
+  } else {
+    return venuePostalCode.slice(0, 2)
+  }
 }
 
 export const Stock = ({

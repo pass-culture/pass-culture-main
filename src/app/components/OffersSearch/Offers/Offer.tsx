@@ -22,49 +22,55 @@ export const Offer = ({
 }: {
   canPrebookOffers: boolean;
   result: ResultType;
-}): JSX.Element => {
+}): JSX.Element | null => {
   const [offer, setOffer] = useState<OfferType | null>(null)
 
   const hasThumb = result.thumb_url?.raw != null
+  const offerIsBookable = (offer: OfferType): boolean =>
+    !offer.isSoldOut && !offer.isExpired
 
   useEffect(() => {
-    pcapi.getOffer(result.id.raw).then((offer) => setOffer(offer))
+    pcapi.getOffer(result.id.raw).then((offer) => {
+      if (offerIsBookable(offer)) {
+        setOffer(offer)
+      }
+    })
   }, [result.id])
 
   return (
-    <li className="offer">
-      {hasThumb && (
-        <img
-          alt="Illustration de l'offre"
-          loading="lazy"
-          src={`${ASSETS_URL}${result.thumb_url?.raw}`}
-        />
-      )}
-      {!hasThumb && (
-        <div className="image-placeholder">
-          <Logo />
-        </div>
-      )}
-      {offer && (
+    offer && (
+      <li className="offer">
+        {hasThumb && (
+          <img
+            alt="Illustration de l'offre"
+            loading="lazy"
+            src={`${ASSETS_URL}${result.thumb_url?.raw}`}
+          />
+        )}
+        {!hasThumb && (
+          <div className="image-placeholder">
+            <Logo />
+          </div>
+        )}
         <div className="info">
           <h2>
-            {result.name.raw}
+            {offer.name}
           </h2>
           <p className="venue-name">
-            {result.venue_public_name?.raw ||
-              formatToReadableString(result.venue_name?.raw)}
+            {offer.venue.publicName ||
+              formatToReadableString(offer.venue.name)}
           </p>
           <section>
             <h3>
               Quoi ?
             </h3>
-            Théâtre
+            {offer.category.label}
           </section>
           <section>
             <h3>
               Et en détails ? :
             </h3>
-            Le soleil me rencontre....
+            {offer.description}
           </section>
           <section>
             <h3>
@@ -104,7 +110,7 @@ export const Offer = ({
             </address>
           </section>
         </div>
-      )}
-    </li>
+      </li>
+    )
   )
 }

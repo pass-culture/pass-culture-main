@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react"
 import React from "react"
 
 import * as pcapi from "repository/pcapi/pcapi"
+import { Role } from "utils/types"
 
 import { App } from "../App"
 
@@ -18,7 +19,7 @@ const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 describe("app", () => {
   describe("when is authenticated", () => {
     beforeEach(() => {
-      mockedPcapi.authenticate.mockResolvedValue("redactor")
+      mockedPcapi.authenticate.mockResolvedValue(Role.redactor)
     })
 
     it("should show search offers input", async () => {

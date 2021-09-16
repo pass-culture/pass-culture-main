@@ -15,14 +15,17 @@ export const Stocks = ({
 }): JSX.Element => {
   return (
     <ul className="stocks">
-      {stocks.map((stock: StockType) => (
-        <Stock
-          canPrebookOffers={canPrebookOffers}
-          key={stock.id}
-          stock={stock}
-          venuePostalCode={venuePostalCode}
-        />
-      ))}
+      {stocks.map(
+        (stock: StockType) =>
+          stock.isBookable && (
+            <Stock
+              canPrebookOffers={canPrebookOffers}
+              key={stock.id}
+              stock={stock}
+              venuePostalCode={venuePostalCode}
+            />
+          )
+      )}
     </ul>
   )
 }
