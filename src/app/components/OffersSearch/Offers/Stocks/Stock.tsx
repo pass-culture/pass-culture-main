@@ -62,7 +62,7 @@ export const Stock = ({
           notify(
             new Notification(
               NotificationType.success,
-              "Votre pré-réservation a été effectuée avec succès."
+              "Votre préréservation a été effectuée avec succès."
             )
           )
         )
@@ -70,7 +70,7 @@ export const Stock = ({
           notify(
             new Notification(
               NotificationType.error,
-              "Impossible de pré-réserver cette offre.\nVeuillez contacter le support"
+              "Impossible de préréserver cette offre.\nVeuillez contacter le support"
             )
           )
         ),
@@ -85,7 +85,7 @@ export const Stock = ({
           isSubmit={false}
           loadingMessage="Préreservation"
           onClick={preBookCurrentStock}
-          text="Pré-réserver"
+          text="Préréserver"
         />
       )}
     </li>
