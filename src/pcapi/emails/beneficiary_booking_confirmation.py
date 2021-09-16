@@ -1,4 +1,6 @@
 from pcapi.core.bookings.models import Booking
+from pcapi.core.categories import subcategories
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_type import ProductType
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
@@ -20,6 +22,16 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
         can_expire = 0
     else:
         can_expire = int(offer.offerType.get("canExpire", False))
+
+    expiration_delay: str = ""
+    if can_expire:
+        if (
+            FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS.is_active()
+            and offer.subcategoryId == subcategories.LIVRE_PAPIER.id
+        ):
+            expiration_delay = "10"
+        else:
+            expiration_delay = "30"
 
     department_code = venue.departementCode if not is_digital_offer else beneficiary.departementCode
     booking_date_in_tz = utc_datetime_to_department_timezone(booking.dateCreated, department_code)
@@ -62,7 +74,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     booking_token = booking.activationCode.code if booking.activationCode else booking.token
     has_offer_url = 1 if is_digital_offer else 0
     return {
-        "MJ-TemplateID": 2996790,
+        "MJ-TemplateID": 3094927,
         "MJ-TemplateLanguage": True,
         "Vars": {
             "user_first_name": beneficiary_first_name,
@@ -88,6 +100,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
             "offer_id": offer_id,
             "mediation_id": mediation_id,
             "can_expire": can_expire,
+            "expiration_delay": expiration_delay,
             "has_offer_url": has_offer_url,
             "digital_offer_url": booking.completedUrl or "",
             "offer_withdrawal_details": offer.withdrawalDetails or "",
