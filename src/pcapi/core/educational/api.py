@@ -3,6 +3,7 @@ import decimal
 import logging
 
 from pcapi.connectors.api_adage import get_institutional_project_redactor_by_email
+from pcapi.core import mails
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
@@ -16,9 +17,13 @@ from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.utils.mailing import format_booking_date_for_email
+from pcapi.utils.mailing import format_booking_hours_for_email
 
 
 logger = logging.getLogger(__name__)
@@ -87,6 +92,8 @@ def book_educational_offer(redactor_email: str, uai_code: str, stock_id: int) ->
             "bookingId": booking.id,
         },
     )
+    if stock.offer.bookingEmail:
+        mails.send(recipients=[stock.offer.bookingEmail], data=_build_prebooking_mail_data(booking))
 
     search.async_index_offer_ids([stock.offerId])
 
@@ -211,3 +218,24 @@ def create_educational_deposit(
     repository.save(educational_deposit)
 
     return educational_deposit
+
+
+def _build_prebooking_mail_data(booking: bookings_models.Booking) -> dict:
+    stock: Stock = booking.stock
+    offer: Offer = stock.offer
+    educational_booking: EducationalBooking = booking.educationalBooking
+    return {
+        "MJ-TemplateID": 3174424,
+        "MJ-TemplateLanguage": True,
+        "Vars": {
+            "nom_offre": offer.name,
+            "nom_lieu": offer.venue.name,
+            "date": format_booking_date_for_email(booking),
+            "heure": format_booking_hours_for_email(booking),
+            "quantity": booking.quantity,
+            "prix": booking.total_amount,
+            "user_firstName": educational_booking.educationalRedactor.firstName,
+            "user_lastName": educational_booking.educationalRedactor.lastName,
+            "user_email": educational_booking.educationalRedactor.email,
+        },
+    }

@@ -19,6 +19,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalRedactor
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_settings
@@ -194,6 +195,55 @@ class BookEducationalOfferTest:
         assert saved_educational_booking.booking.status == BookingStatus.PENDING
         # Assert we do not create an extra educational redactor when exist
         assert EducationalRedactor.query.count() == 1
+
+    def test_should_send_email_on_educational_booking_creation(self):
+        # Given
+        stock = offers_factories.EducationalStockFactory(
+            beginningDatetime=datetime.datetime(2021, 5, 15),
+            offer__bookingEmail="test@email.com",
+        )
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_factories.EducationalYearFactory(
+            beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
+        )
+        educational_factories.EducationalYearFactory(
+            beginningDate=datetime.datetime(2021, 9, 1), expirationDate=datetime.datetime(2022, 8, 31)
+        )
+        educational_redactor = educational_factories.EducationalRedactorFactory(
+            email="professeur@example.com",
+            firstName="Georges",
+            lastName="Moustaki",
+        )
+
+        # When
+        educational_api.book_educational_offer(
+            redactor_email=educational_redactor.email,
+            uai_code=educational_institution.institutionId,
+            stock_id=stock.id,
+        )
+
+        # Then
+        assert len(mails_testing.outbox) == 1
+        sent_data = mails_testing.outbox[0].sent_data
+        offer = stock.offer
+        assert sent_data == {
+            "FromEmail": "support@example.com",
+            "MJ-TemplateID": 3174424,
+            "MJ-TemplateLanguage": True,
+            "To": "test@email.com",
+            "Vars": {
+                "nom_offre": offer.name,
+                "nom_lieu": offer.venue.name,
+                "date": "15-May-2021",
+                "env": "-development",
+                "heure": "2h",
+                "quantity": 1,
+                "prix": 10.00,
+                "user_firstName": "Georges",
+                "user_lastName": "Moustaki",
+                "user_email": "professeur@example.com",
+            },
+        }
 
     @override_settings(ADAGE_API_URL="https://adage-api-url")
     @override_settings(ADAGE_API_KEY="adage-api-key")
