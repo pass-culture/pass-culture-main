@@ -1,8 +1,8 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
@@ -14,15 +14,15 @@ import { composeValidators } from 'react-final-form-utils'
 import FieldErrors from '../FieldErrors'
 import getRequiredValidate from '../utils/getRequiredValidate'
 
-function formatInputValueWhenTooLong(value, maxLength) {
+function formatInputValue(value, maxLength) {
+  if (!value) {
+    return ''
+  }
   const valueLength = value.length
   const valueIsTooLong = valueLength > maxLength - 1
   return valueIsTooLong ? value.slice(0, maxLength - 1) : value
 }
 
-/**
- * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"
- */
 class TextareaField extends PureComponent {
   renderField = ({ input, meta }) => {
     const {
@@ -39,7 +39,7 @@ class TextareaField extends PureComponent {
       ...ReactAutosizeProps
     } = this.props
 
-    const value = formatInputValueWhenTooLong(input.value, maxLength)
+    const value = formatInputValue(input.value, maxLength)
 
     return (
       <div

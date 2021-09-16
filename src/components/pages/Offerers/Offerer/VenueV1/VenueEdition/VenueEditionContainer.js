@@ -78,7 +78,7 @@ export const mapDispatchToProps = (
       dispatch(
         requestData({
           apiPath: `/venues/${venueId}`,
-          body: body,
+          body,
           handleFail,
           handleSuccess,
           method: 'PATCH',
@@ -107,7 +107,7 @@ export const mapDispatchToProps = (
         : 'Vos modifications ont bien été prises en compte'
       dispatch(
         showNotification({
-          text: text,
+          text,
           type: hasDelayedUpdates ? 'pending' : 'success',
         })
       )

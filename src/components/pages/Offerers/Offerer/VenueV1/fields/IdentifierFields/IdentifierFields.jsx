@@ -294,6 +294,7 @@ class IdentifierFields extends PureComponent {
             </div>
           </div>
           <TextareaField
+            disabled={readOnly}
             label="Description : "
             name="description"
             rows={10}
