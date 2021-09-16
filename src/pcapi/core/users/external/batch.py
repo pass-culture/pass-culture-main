@@ -3,8 +3,7 @@ import logging
 from typing import Optional
 
 from pcapi.core.users.external.models import UserAttributes
-from pcapi.tasks.batch_tasks import UpdateBatchAttributesRequest
-from pcapi.tasks.batch_tasks import update_user_attributes_task
+from pcapi.notifications import push as batch_push
 
 
 logger = logging.getLogger(__name__)
@@ -18,7 +17,7 @@ def update_user_attributes(user_id: int, user_attributes: UserAttributes):
         return
 
     formatted_attributes = format_user_attributes(user_attributes)
-    update_user_attributes_task.delay(UpdateBatchAttributesRequest(user_id=user_id, attributes=formatted_attributes))
+    batch_push.update_user_attributes(user_id=user_id, attribute_values=formatted_attributes)
 
 
 def format_user_attributes(user_attributes: UserAttributes) -> dict:

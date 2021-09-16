@@ -72,15 +72,18 @@ class CloudTaskDecoratorTest:
     @patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
     @override_settings(IS_RUNNING_TESTS=False)
     @override_settings(IS_DEV=False)
-    @patch("pcapi.tasks.cloud_task.tasks_v2.CloudTasksClient")
+    @patch("pcapi.tasks.cloud_task.get_client")
     def test_calling_google_cloud_task_client(self, mock_tasks_client):
         inner_task = MagicMock()
         test_task = generate_task(inner_task)
         payload = {"chouquette_price": 12}
 
+        client_mock = MagicMock()
+        mock_tasks_client.return_value = client_mock
+
         test_task.delay(payload)
 
-        mock_tasks_client().create_task.assert_called_once()
+        client_mock.create_task.assert_called_once()
 
         _, call_args = mock_tasks_client().create_task.call_args
 

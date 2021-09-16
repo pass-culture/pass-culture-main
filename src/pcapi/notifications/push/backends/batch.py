@@ -2,12 +2,18 @@ from dataclasses import dataclass
 from enum import Enum
 import logging
 
+from google.cloud import tasks_v2
+
 from pcapi import settings
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
+from pcapi.tasks.cloud_task import CloudTaskHttpRequest
+from pcapi.tasks.cloud_task import enqueue_task
 from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
+
+BATCH_CUSTOM_DATA_QUEUE_NAME = settings.GCP_BATCH_CUSTOM_DATA_QUEUE_NAME
 
 
 @dataclass
@@ -27,7 +33,27 @@ class BatchBackend:
         self.headers = {"Content-Type": "application/json", "X-Authorization": settings.BATCH_SECRET_API_KEY}
 
     def update_user_attributes(self, user_id: int, attribute_values: dict) -> None:
-        def make_post_request(api: BatchAPI) -> None:
+        for api in (BatchAPI.ANDROID, BatchAPI.IOS):
+            url = f"{settings.BATCH_API_URL}/1.0/{api.value}/data/users/{user_id}"
+            try:
+                http_request = CloudTaskHttpRequest(
+                    http_method=tasks_v2.HttpMethod.POST,
+                    headers=self.headers,
+                    url=url,
+                    json={"overwrite": False, "values": attribute_values},
+                )
+                enqueue_task(BATCH_CUSTOM_DATA_QUEUE_NAME, http_request)
+
+            except Exception as exc:  # pylint: disable=broad-except
+                logger.exception(
+                    "Unable to enqueue Cloud Task to update batch custom attributes: %s",
+                    exc,
+                    extra={"user_id": user_id, "api": str(api)},
+                    url=url,
+                )
+
+    def update_user_attributes_with_legacy_internal_task(self, user_id: int, attribute_values: dict) -> None:
+        for api in (BatchAPI.ANDROID, BatchAPI.IOS):
             try:
                 response = requests.post(
                     f"{settings.BATCH_API_URL}/1.0/{api.value}/data/users/{user_id}",
@@ -44,9 +70,6 @@ class BatchBackend:
                 logger.error(
                     "Got %d status code from Batch Custom Data API: content=%s", response.status_code, response.content
                 )
-
-        make_post_request(BatchAPI.ANDROID)
-        make_post_request(BatchAPI.IOS)
 
     def update_users_attributes(self, users_data: list[UserUpdateData]) -> None:
         def payload_template(user: UserUpdateData) -> dict:
