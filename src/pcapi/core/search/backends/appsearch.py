@@ -1,3 +1,4 @@
+import collections
 import datetime
 import decimal
 import enum
@@ -34,8 +35,15 @@ ENGINE_LANGUAGE = "fr"
 # (https://www.elastic.co/guide/en/app-search/current/documents.html#documents-create).
 DOCUMENTS_PER_REQUEST_LIMIT = 100
 
+# We set up an "offers-meta" meta-engine with 6 engines named
+# "offers-0", "offers-1", ... "offers-5". Each offer is indexed on one
+# of these engines, depending on the offer id.
+def get_engine_names():
+    return [f"offers-{i}" for i in range(6)]
 
-OFFERS_ENGINE_NAME = "offers"
+
+OFFERS_ENGINE_NAMES = get_engine_names()
+OFFERS_META_ENGINE_NAME = "offers-meta"
 
 OFFERS_SCHEMA = {
     "artist": "text",
@@ -203,9 +211,27 @@ def remove_stopwords(s: str) -> str:
     return " ".join(words)
 
 
-def get_batches(iterable, size=1):
-    for i in range(0, len(iterable), size):
-        yield iterable[i : i + size]
+def get_batches(iterable, engine_selector: typing.Callable, size: int):
+    batches_by_engine = collections.defaultdict(list)
+    for document_or_id in iterable:
+        engine = engine_selector(document_or_id)
+        batches_by_engine[engine].append(document_or_id)
+        if len(batches_by_engine[engine]) == size:
+            yield engine, batches_by_engine[engine]
+            batches_by_engine[engine] = []
+    for engine, batch in batches_by_engine.items():
+        if batch:
+            yield engine, batch
+
+
+def get_offer_engine(document_or_offer_id: typing.Union[dict, int]) -> str:
+    """Return the name of the engine to be used for the given offer."""
+    if isinstance(document_or_offer_id, int):
+        offer_id = document_or_offer_id
+    else:
+        offer_id = document_or_offer_id["id"]
+    n = offer_id % len(OFFERS_ENGINE_NAMES)
+    return f"offers-{n}"
 
 
 class AppSearchBackend(base.SearchBackend):
@@ -214,7 +240,8 @@ class AppSearchBackend(base.SearchBackend):
         self.offers_engine = AppSearchApiClient(
             host=settings.APPSEARCH_HOST,
             api_key=settings.APPSEARCH_API_KEY,
-            engine_name=OFFERS_ENGINE_NAME,
+            meta_engine_name=OFFERS_META_ENGINE_NAME,
+            engine_selector=get_offer_engine,
             synonyms=OFFERS_SYNONYM_SET,
             field_weights=OFFERS_FIELD_WEIGHTS,
             field_boosts=OFFERS_FIELD_BOOSTS,
@@ -224,7 +251,8 @@ class AppSearchBackend(base.SearchBackend):
         self.venues_engine = AppSearchApiClient(
             host=settings.APPSEARCH_HOST,
             api_key=settings.APPSEARCH_API_KEY,
-            engine_name=VENUES_ENGINE_NAME,
+            meta_engine_name=VENUES_ENGINE_NAME,
+            engine_selector=lambda *args, **kwargs: VENUES_ENGINE_NAME,
             synonyms=VENUES_SYNONYM_SET,
             field_weights=None,
             field_boosts=None,
@@ -447,7 +475,8 @@ class AppSearchApiClient:
         self,
         host: str,
         api_key: str,
-        engine_name: str,
+        meta_engine_name: str,
+        engine_selector: typing.Callable[[int], str],
         synonyms: Iterable[set[str]],
         field_weights: typing.Optional[dict],
         field_boosts: typing.Optional[dict],
@@ -455,7 +484,8 @@ class AppSearchApiClient:
     ):
         self.host = host.rstrip("/")
         self.api_key = api_key
-        self.engine_name = engine_name
+        self.meta_engine_name = meta_engine_name
+        self.engine_selector = engine_selector
         self.synonyms = synonyms
         self.field_weights = field_weights or {}
         self.field_boosts = field_boosts or {}
@@ -466,45 +496,47 @@ class AppSearchApiClient:
         return {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
 
     # Engines API: https://www.elastic.co/guide/en/app-search/current/engines.html
+    #              https://www.elastic.co/guide/en/app-search/current/meta-engines.html
     @property
     def engines_url(self):
         path = "/api/as/v1/engines"
         return f"{self.host}{path}"
 
-    def create_engine(self):
-        data = {"name": self.engine_name, "language": ENGINE_LANGUAGE}
+    def create_engine(self, engine_name: str, source_engines=None):
+        if source_engines:
+            data = {"name": engine_name, "type": "meta", "source_engines": source_engines}
+        else:
+            data = {"name": engine_name, "language": ENGINE_LANGUAGE}
         response = requests.post(self.engines_url, headers=self.headers, json=data)
         return response
 
     # Schema API: https://www.elastic.co/guide/en/app-search/current/schema.html
-    @property
-    def schema_url(self):
-        path = f"/api/as/v1/engines/{self.engine_name}/schema"
+    def get_schema_url(self, engine_name: str):
+        path = f"/api/as/v1/engines/{engine_name}/schema"
         return f"{self.host}{path}"
 
-    def update_schema(self):
-        response = requests.post(self.schema_url, headers=self.headers, json=self.schema)
+    def update_schema(self, engine_name: str):
+        response = requests.post(self.get_schema_url(engine_name), headers=self.headers, json=self.schema)
         return response
 
     # Synonyms API: https://www.elastic.co/guide/en/app-search/current/synonyms.html
-    @property
-    def synonyms_url(self):
-        path = f"/api/as/v1/engines/{self.engine_name}/synonyms"
+    def get_synonyms_url(self, engine_name: str):
+        path = f"/api/as/v1/engines/{engine_name}/synonyms"
         return f"{self.host}{path}"
 
-    def update_synonyms(self):
+    def update_synonyms(self, engine_name: str):
+        url = self.get_synonyms_url(engine_name)
         for synonym_set in self.synonyms:
             data = {"synonyms": list(synonym_set)}
-            response = requests.post(self.synonyms_url, headers=self.headers, json=data)
+            response = requests.post(url, headers=self.headers, json=data)
             yield response
 
     # Search settings API: https://www.elastic.co/guide/en/app-search/current/search-settings.html
-    @property
-    def search_settings_url(self):
-        path = f"/api/as/v1/engines/{self.engine_name}/search_settings"
+    def get_search_settings_url(self, engine_name: str):
+        path = f"/api/as/v1/engines/{engine_name}/search_settings"
         return f"{self.host}{path}"
 
-    def set_search_settings(self):
+    def set_search_settings(self, engine_name: str):
         search_settings = {}
         if self.field_weights:
             search_settings["search_fields"] = {
@@ -514,19 +546,19 @@ class AppSearchApiClient:
             search_settings["boosts"] = self.field_boosts
         if not search_settings:
             return True
-        return requests.put(self.search_settings_url, headers=self.headers, json=search_settings)
+        url = self.get_search_settings_url(engine_name)
+        return requests.put(url, headers=self.headers, json=search_settings)
 
     # Documents API: https://www.elastic.co/guide/en/app-search/current/documents.html
-    @property
-    def documents_url(self) -> str:
-        path = f"/api/as/v1/engines/{self.engine_name}/documents"
+    def get_documents_url(self, engine_name) -> str:
+        path = f"/api/as/v1/engines/{engine_name}/documents"
         return f"{self.host}{path}"
 
     def create_or_update_documents(self, documents: Iterable[dict]) -> None:
         # Error handling is done by the caller.
-        for batch in get_batches(documents, size=DOCUMENTS_PER_REQUEST_LIMIT):
+        for engine_name, batch in get_batches(documents, self.engine_selector, size=DOCUMENTS_PER_REQUEST_LIMIT):
             data = json.dumps(batch, cls=AppSearchJsonEncoder)
-            response = requests.post(self.documents_url, headers=self.headers, data=data)
+            response = requests.post(self.get_documents_url(engine_name), headers=self.headers, data=data)
             response.raise_for_status()
             # Except here when App Search returns a 200 OK response
             # even if *some* documents cannot be processed. In that
@@ -539,9 +571,9 @@ class AppSearchApiClient:
 
     def delete_documents(self, document_ids: Iterable[int]) -> None:
         # Error handling is done by the caller.
-        for batch in get_batches(document_ids, size=DOCUMENTS_PER_REQUEST_LIMIT):
+        for engine_name, batch in get_batches(document_ids, self.engine_selector, size=DOCUMENTS_PER_REQUEST_LIMIT):
             data = json.dumps(batch)
-            response = requests.delete(self.documents_url, headers=self.headers, data=data)
+            response = requests.delete(self.get_documents_url(engine_name), headers=self.headers, data=data)
             response.raise_for_status()
 
     def delete_all_documents(self) -> None:
@@ -550,7 +582,7 @@ class AppSearchApiClient:
         # As of 2021-07-16, there is no endpoint to delete all
         # documents. We need to fetch all documents.
         # Error handling is done by the caller.
-        list_url = f"{self.documents_url}/list"
+        list_url = self.get_documents_url(self.meta_engine_name) + "/list"
         page = 1
         while True:
             page_data = {"page": {"page": page, "size": DOCUMENTS_PER_REQUEST_LIMIT}}

@@ -3,8 +3,6 @@ import os
 import sys
 
 from pcapi.core.search.backends import appsearch
-from pcapi.core.search.backends.appsearch import OFFERS_ENGINE_NAME
-from pcapi.core.search.backends.appsearch import VENUES_ENGINE_NAME
 from pcapi.flask_app import app
 
 
@@ -20,36 +18,47 @@ def _check_errors(response):
     return True
 
 
-def setup_engine(engine):
-    response = engine.create_engine()
-    if not _check_errors(response):
-        return
-    print(f"{engine.engine_name}: Engine has been created.")
-
-    response = engine.update_schema()
-    if not _check_errors(response):
-        return
-    print(f"{engine.engine_name}: Schema has been initialized.")
-
-    for response in engine.update_synonyms():
+def setup_engine(engine, engine_names, meta_name=None):
+    for engine_name in engine_names:
+        response = engine.create_engine(engine_name)
         if not _check_errors(response):
             return
-    print(f"{engine.engine_name}: Synonyms have been set.")
+        print(f"{engine_name}: Engine has been created.")
 
-    response = engine.set_search_settings()
-    if hasattr(response, "ok") and not _check_errors(response):
-        return
-    print(f"{engine.engine_name}: Search settings have been set.")
+    if meta_name:
+        response = engine.create_engine(meta_name, engine_names)
+        if not _check_errors(response):
+            return
+        print(f"{meta_name}: Meta-engine has been created.")
+
+    for engine_name in engine_names + ([meta_name] if meta_name else []):
+        if engine_name != meta_name:
+            response = engine.update_schema(engine_name)
+            if not _check_errors(response):
+                return
+            print(f"{engine_name}: Schema has been initialized.")
+
+        for response in engine.update_synonyms(engine_name):
+            if not _check_errors(response):
+                return
+        print(f"{engine_name}: Synonyms have been set.")
+
+        response = engine.set_search_settings(engine_name)
+        if hasattr(response, "ok") and not _check_errors(response):
+            return
+        print(f"{engine_name}: Search settings have been set.")
 
 
-def setup_offers_engine():
+def setup_offers_engines():
     backend = appsearch.AppSearchBackend()
-    setup_engine(backend.offers_engine)
+    setup_engine(
+        backend.offers_engine, engine_names=appsearch.OFFERS_ENGINE_NAMES, meta_name=appsearch.OFFERS_META_ENGINE_NAME
+    )
 
 
 def setup_venues_engine():
     backend = appsearch.AppSearchBackend()
-    setup_engine(backend.venues_engine)
+    setup_engine(backend.venues_engine, engine_names=[appsearch.VENUES_ENGINE_NAME])
 
 
 def index_offers():
@@ -96,15 +105,15 @@ def get_parser():
     main_subparsers = parser.add_subparsers()
 
     # offers
-    offers_parser = main_subparsers.add_parser(OFFERS_ENGINE_NAME, help="Commands related to offers.")
+    offers_parser = main_subparsers.add_parser("offers", help="Commands related to offers.")
     offers_subparsers = offers_parser.add_subparsers()
     offers_setup = offers_subparsers.add_parser("setup", help="Setup a new engine for offers.")
-    offers_setup.set_defaults(callback=setup_offers_engine)
+    offers_setup.set_defaults(callback=setup_offers_engines)
     offers_index = offers_subparsers.add_parser("index", help="Index offers.")
     offers_index.set_defaults(callback=index_offers)
 
     # venues
-    venues_parser = main_subparsers.add_parser(VENUES_ENGINE_NAME, help="Commands related to venues.")
+    venues_parser = main_subparsers.add_parser("venues", help="Commands related to venues.")
     venues_subparsers = venues_parser.add_subparsers()
     venues_setup = venues_subparsers.add_parser("setup", help="Setup a new engine for venues.")
     venues_setup.set_defaults(callback=setup_venues_engine)

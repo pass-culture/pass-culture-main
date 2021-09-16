@@ -47,7 +47,7 @@ ALGOLIA_APPLICATION_ID = os.environ["ALGOLIA_APPLICATION_ID"]
 ALGOLIA_INDEX_NAME = os.environ["ALGOLIA_INDEX_NAME"]
 APPSEARCH_API_KEY = os.environ["APPSEARCH_API_KEY"]
 APPSEARCH_HOST = os.environ["APPSEARCH_HOST"].rstrip("/")
-APPSEARCH_ENGINE_NAME = "offers"
+APPSEARCH_ENGINE_NAME = "offers-meta"
 
 OFFER_URL = "https://app.passculture.beta.gouv.fr/accueil/details/{human_id}"
 TZ = pytz.timezone("Europe/Paris")
@@ -272,7 +272,7 @@ class AppSearchBackend:
             query=query,
             results=[
                 Result(
-                    id=int(result["id"]["raw"]),
+                    id=int(result["id"]["raw"].split("|")[-1]),
                     score=result["_meta"]["score"],
                     name=result["name"]["raw"],
                     full={key: value["raw"] for key, value in result.items() if not key.startswith("_")},

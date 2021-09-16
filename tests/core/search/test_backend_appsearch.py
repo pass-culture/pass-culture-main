@@ -130,25 +130,49 @@ def test_check_offer_is_indexed(app):
     assert backend.check_offer_is_indexed("whatever")
 
 
+def test_get_batches():
+    documents = list(range(1, 24))
+    engine_selector = lambda document_id: f"engine-{document_id % 6}"
+    batches = list(appsearch.get_batches(documents, engine_selector, size=2))
+    assert batches == [
+        ("engine-1", [1, 7]),
+        ("engine-2", [2, 8]),
+        ("engine-3", [3, 9]),
+        ("engine-4", [4, 10]),
+        ("engine-5", [5, 11]),
+        ("engine-0", [6, 12]),
+        ("engine-1", [13, 19]),
+        ("engine-2", [14, 20]),
+        ("engine-3", [15, 21]),
+        ("engine-4", [16, 22]),
+        ("engine-5", [17, 23]),
+        ("engine-0", [18]),
+    ]
+
+
 @pytest.mark.usefixtures("db_session")
 def test_index_offers(app):
     backend = get_backend()
-    offer = offers_factories.StockFactory().offer
+    offers = [stock.offer for stock in offers_factories.StockFactory.create_batch(18)]
     with requests_mock.Mocker() as mock:
-        posted = mock.post(
-            "https://appsearch.example.com/api/as/v1/engines/offers/documents", json=[{"item": offer.id, "errors": []}]
-        )
-        backend.index_offers([offer])
-        posted_json = posted.last_request.json()
-        assert posted_json[0]["id"] == offer.id
-        assert posted_json[0]["name"] == offer.name
+        posted_by_engine = {
+            i: mock.post(f"https://appsearch.example.com/api/as/v1/engines/offers-{i}/documents", json=[{"errors": []}])
+            for i in range(len(appsearch.OFFERS_ENGINE_NAMES))
+        }
+        backend.index_offers(offers)
+        for i in range(6):
+            assert posted_by_engine[i].call_count == 1
+            posted_json = posted_by_engine[i].last_request.json()
+            assert len(posted_json) == 3
+            for item in posted_json:
+                assert item["id"] % 6 == i
 
 
 def test_unindex_offer_ids(app):
     backend = get_backend()
     app.redis_client.sadd("search:appsearch:indexed-offer-ids", "1")
     with requests_mock.Mocker() as mock:
-        deleted = mock.delete("https://appsearch.example.com/api/as/v1/engines/offers/documents")
+        deleted = mock.delete("https://appsearch.example.com/api/as/v1/engines/offers-1/documents")
         backend.unindex_offer_ids([1])
         deleted_json = deleted.last_request.json()
         assert deleted_json == [1]
