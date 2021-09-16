@@ -73,7 +73,9 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
     )
 
     db.session.commit()
+
     search.unindex_offer_ids(offer_ids_to_delete)
+    search.unindex_venue_ids([venue_id])
 
     recap_data = {
         "offer_ids_to_unindex": offer_ids_to_delete,

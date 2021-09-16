@@ -315,3 +315,14 @@ def unindex_all_offers() -> None:
             if settings.IS_RUNNING_TESTS:
                 raise
             logger.exception("Could not unindex all offers", extra={"backend": str(backend)})
+
+
+def unindex_venue_ids(venue_ids: Iterable[int]) -> None:
+    backends = _get_backends()
+    for backend in backends:
+        try:
+            backend.unindex_venue_ids(venue_ids)
+        except Exception:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
+            logger.exception("Could not unindex venues", extra={"venues": venue_ids, "backend": str(backend)})
