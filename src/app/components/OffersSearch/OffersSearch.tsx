@@ -26,6 +26,7 @@ const configurationOptions = {
     filters: [{ field: "is_educational", values: [1] }],
   },
   trackUrlState: false,
+  alwaysSearchOnInitialLoad: true,
 }
 
 export const OffersSearch = ({
