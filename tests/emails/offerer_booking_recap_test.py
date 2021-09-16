@@ -9,6 +9,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.testing import override_features
 from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils.human_ids import humanize
 
 
@@ -34,10 +35,10 @@ def make_booking(**kwargs):
     return bookings_factories.BookingFactory(**attributes)
 
 
-def get_expected_base_email_data(booking, **overrides):
+def get_expected_base_email_data(booking, mailjet_template_id, **overrides):
     offer_id = humanize(booking.stock.offer.id)
     email_data = {
-        "MJ-TemplateID": 2843165,
+        "MJ-TemplateID": mailjet_template_id,
         "MJ-TemplateLanguage": True,
         "Headers": {
             "Reply-To": "john@example.com",
@@ -54,7 +55,10 @@ def get_expected_base_email_data(booking, **overrides):
             "user_email": "john@example.com",
             "user_phoneNumber": "",
             "is_event": 1,
-            "can_expire_after_30_days": 0,
+            "can_expire"
+            if FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS.is_active()
+            else "can_expire_after_30_days": 0,
+            "expiration_delay": 30,
             "is_booking_autovalidated": 0,
             "contremarque": "ABC123",
             "ISBN": "",
@@ -68,304 +72,616 @@ def get_expected_base_email_data(booking, **overrides):
     return email_data
 
 
-@pytest.mark.usefixtures("db_session")
-def test_with_event():
-    booking = make_booking()
+# TODO(yacine) this test class will be removed after removing FF ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
+class OffererBookingRecapLegacyBooksBookingRulesTest:
+    MAILJET_TEMPLATE_ID = 2843165
 
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_with_event(self):
+        booking = make_booking()
 
-    expected = get_expected_base_email_data(booking)
-    assert email_data == expected
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+        expected = get_expected_base_email_data(booking, self.MAILJET_TEMPLATE_ID)
+        assert email_data == expected
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_with_book(self):
+        booking = make_booking(
+            stock__offer__name="Le récit de voyage",
+            stock__offer__product__extraData={"isbn": "123456789"},
+            stock__offer__product__name="Le récit de voyage",
+            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+        expected = get_expected_base_email_data(
+            booking,
+            self.MAILJET_TEMPLATE_ID,
+            date="",
+            departement="75",
+            heure="",
+            is_event=0,
+            nom_offre="Le récit de voyage",
+            offer_type="book",
+            can_expire_after_30_days=1,
+        )
+        assert email_data == expected
+
+    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True, ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_non_digital_bookings_can_expire_after_30_days(self):
+        booking = make_booking(
+            stock__offer__name="Le récit de voyage",
+            stock__offer__product__extraData={"isbn": "123456789"},
+            stock__offer__product__name="Le récit de voyage",
+            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__venue__address=None,
+            stock__offer__venue__city=None,
+            stock__offer__venue__departementCode=None,
+            stock__offer__venue__isVirtual=True,
+            stock__offer__venue__postalCode=None,
+            stock__offer__venue__siret=None,
+        )
+
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+        expected = get_expected_base_email_data(
+            booking,
+            self.MAILJET_TEMPLATE_ID,
+            date="",
+            departement="numérique",
+            heure="",
+            is_event=0,
+            nom_offre="Le récit de voyage",
+            offer_type="book",
+            can_expire_after_30_days=1,
+        )
+        assert email_data == expected
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_with_book_with_missing_isbn(self):
+        booking = make_booking(
+            stock__offer__name="Le récit de voyage",
+            stock__offer__product__extraData={},  # no ISBN
+            stock__offer__product__name="Le récit de voyage",
+            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__venue__address=None,
+            stock__offer__venue__city=None,
+            stock__offer__venue__departementCode=None,
+            stock__offer__venue__isVirtual=True,
+            stock__offer__venue__postalCode=None,
+            stock__offer__venue__siret=None,
+        )
+
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+        expected = get_expected_base_email_data(
+            booking,
+            self.MAILJET_TEMPLATE_ID,
+            date="",
+            departement="numérique",
+            heure="",
+            is_event=0,
+            nom_offre="Le récit de voyage",
+            offer_type="book",
+            ISBN="",
+            can_expire_after_30_days=1,
+        )
+        assert email_data == expected
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_a_digital_booking_expires_after_30_days(self):
+        # Given
+        booking = make_booking(
+            quantity=10,
+            stock__price=0,
+            stock__offer__product__subcategoryId=subcategories.VOD.id,
+            stock__offer__product__url="http://example.com",
+            stock__offer__name="Super offre numérique",
+        )
+
+        # When
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+        # Then
+        expected = get_expected_base_email_data(
+            booking,
+            self.MAILJET_TEMPLATE_ID,
+            date="",
+            heure="",
+            is_event=0,
+            prix="Gratuit",
+            nom_offre="Super offre numérique",
+            offer_type="ThingType.AUDIOVISUEL",
+            quantity=10,
+            can_expire_after_30_days=1,
+            must_use_token_for_payment=0,
+        )
+        assert email_data == expected
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_when_use_token_for_payment(self):
+        # Given
+        booking = make_booking(
+            stock__price=10,
+        )
+
+        # When
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+        # Then
+        expected = get_expected_base_email_data(booking, self.MAILJET_TEMPLATE_ID, must_use_token_for_payment=1)
+        assert email_data == expected
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_no_need_when_price_is_free(self):
+        # Given
+        booking = make_booking(
+            stock__price=0,
+        )
+
+        # When
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+        # Then
+        expected = get_expected_base_email_data(
+            booking, self.MAILJET_TEMPLATE_ID, prix="Gratuit", must_use_token_for_payment=0
+        )
+        assert email_data == expected
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_no_need_when_using_activation_code(self):
+        # Given
+        booking = make_booking()
+        ActivationCodeFactory(stock=booking.stock, booking=booking, code="code_toto")
+
+        # When
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+        # Then
+        expected = get_expected_base_email_data(booking, self.MAILJET_TEMPLATE_ID, must_use_token_for_payment=0)
+        assert email_data == expected
+
+    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True, ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_no_need_when_booking_is_autovalidated(self):
+        # Given
+        offer = offers_factories.OfferFactory(
+            venue__name="Lieu de l'offreur",
+            venue__managingOfferer__name="Théâtre du coin",
+            product=offers_factories.DigitalProductFactory(name="Super événement", url="http://example.com"),
+        )
+        digital_stock = offers_factories.StockWithActivationCodesFactory()
+        first_activation_code = digital_stock.activationCodes[0]
+        booking = bookings_factories.UsedBookingFactory(
+            user__email="john@example.com",
+            user__firstName="John",
+            user__lastName="Doe",
+            stock__offer=offer,
+            activationCode=first_activation_code,
+            dateCreated=datetime(2018, 1, 1),
+        )
+
+        # When
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+        # Then
+        expected = get_expected_base_email_data(
+            booking,
+            self.MAILJET_TEMPLATE_ID,
+            date="",
+            heure="",
+            is_event=0,
+            is_booking_autovalidated=1,
+            must_use_token_for_payment=0,
+            offer_type="ThingType.AUDIOVISUEL",
+            contremarque=booking.token,
+        )
+        assert email_data == expected
+
+    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True, ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_a_digital_booking_with_activation_code_is_automatically_used(self):
+        # Given
+        offer = offers_factories.OfferFactory(
+            venue__name="Lieu de l'offreur",
+            venue__managingOfferer__name="Théâtre du coin",
+            product=offers_factories.DigitalProductFactory(name="Super offre numérique", url="http://example.com"),
+        )
+        digital_stock = offers_factories.StockWithActivationCodesFactory()
+        first_activation_code = digital_stock.activationCodes[0]
+        booking = bookings_factories.UsedBookingFactory(
+            user__email="john@example.com",
+            user__firstName="John",
+            user__lastName="Doe",
+            stock__offer=offer,
+            activationCode=first_activation_code,
+            dateCreated=datetime(2018, 1, 1),
+        )
+
+        # When
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+        # Then
+        expected = get_expected_base_email_data(
+            booking,
+            self.MAILJET_TEMPLATE_ID,
+            date="",
+            heure="",
+            prix="10.00 €",
+            is_event=0,
+            nom_offre="Super offre numérique",
+            offer_type="ThingType.AUDIOVISUEL",
+            quantity=1,
+            can_expire_after_30_days=0,
+            is_booking_autovalidated=1,
+            must_use_token_for_payment=0,
+            contremarque=booking.token,
+        )
+        assert email_data == expected
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_should_not_truncate_price(self):
+        booking = make_booking(stock__price=5.86)
+
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+        expected = get_expected_base_email_data(booking, self.MAILJET_TEMPLATE_ID, prix="5.86 €")
+        assert email_data == expected
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_should_use_venue_public_name_when_available(self):
+        booking = make_booking(
+            stock__offer__venue__name="Legal name",
+            stock__offer__venue__publicName="Public name",
+        )
+
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+        expected = get_expected_base_email_data(booking, self.MAILJET_TEMPLATE_ID, nom_lieu="Public name")
+        assert email_data == expected
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_should_add_user_phone_number_to_vars(self):
+        # given
+        booking = make_booking(user__phoneNumber="0123456789")
+
+        # when
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+        # then
+        template_vars = email_data["Vars"]
+        assert template_vars["user_phoneNumber"] == "0123456789"
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_should_add_reply_to_header_with_beneficiary_email(self):
+        # given
+        booking = make_booking(user__email="beneficiary@example.com")
+
+        # when
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+        # then
+        template_headers = email_data["Headers"]
+        assert template_headers["Reply-To"] == "beneficiary@example.com"
 
 
-@pytest.mark.usefixtures("db_session")
-def test_with_book():
-    booking = make_booking(
-        stock__offer__name="Le récit de voyage",
-        stock__offer__product__extraData={"isbn": "123456789"},
-        stock__offer__product__name="Le récit de voyage",
-        stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
-        stock__offer__venue__address=None,
-        stock__offer__venue__city=None,
-        stock__offer__venue__departementCode=None,
-        stock__offer__venue__isVirtual=True,
-        stock__offer__venue__postalCode=None,
-        stock__offer__venue__siret=None,
-    )
+class OffererBookingRecapNewBooksBookingRulesTest:
+    MAILJET_TEMPLATE_ID = 3095147
 
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_with_event(self):
+        booking = make_booking()
 
-    expected = get_expected_base_email_data(
-        booking,
-        date="",
-        departement="numérique",
-        heure="",
-        is_event=0,
-        nom_offre="Le récit de voyage",
-        offer_type="book",
-        can_expire_after_30_days=1,
-    )
-    assert email_data == expected
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
+        expected = get_expected_base_email_data(booking, self.MAILJET_TEMPLATE_ID)
+        assert email_data == expected
 
-@override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
-@pytest.mark.usefixtures("db_session")
-def test_non_digital_bookings_can_expire_after_30_days():
-    booking = make_booking(
-        stock__offer__name="Le récit de voyage",
-        stock__offer__product__extraData={"isbn": "123456789"},
-        stock__offer__product__name="Le récit de voyage",
-        stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
-        stock__offer__venue__address=None,
-        stock__offer__venue__city=None,
-        stock__offer__venue__departementCode=None,
-        stock__offer__venue__isVirtual=True,
-        stock__offer__venue__postalCode=None,
-        stock__offer__venue__siret=None,
-    )
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_with_book(self):
+        booking = make_booking(
+            stock__offer__name="Le récit de voyage",
+            stock__offer__product__extraData={"isbn": "123456789"},
+            stock__offer__product__name="Le récit de voyage",
+            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
 
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
-    expected = get_expected_base_email_data(
-        booking,
-        date="",
-        departement="numérique",
-        heure="",
-        is_event=0,
-        nom_offre="Le récit de voyage",
-        offer_type="book",
-        can_expire_after_30_days=1,
-    )
-    assert email_data == expected
+        expected = get_expected_base_email_data(
+            booking,
+            self.MAILJET_TEMPLATE_ID,
+            date="",
+            departement="75",
+            heure="",
+            is_event=0,
+            nom_offre="Le récit de voyage",
+            offer_type="book",
+            can_expire=1,
+            expiration_delay=10,
+        )
+        assert email_data == expected
 
+    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True, ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_non_digital_bookings_can_expire_after_30_days(self):
+        booking = make_booking(
+            stock__offer__name="Le récit de voyage",
+            stock__offer__product__extraData={"isbn": "123456789"},
+            stock__offer__product__name="Le récit de voyage",
+            stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            stock__offer__venue__address=None,
+            stock__offer__venue__city=None,
+            stock__offer__venue__departementCode=None,
+            stock__offer__venue__isVirtual=True,
+            stock__offer__venue__postalCode=None,
+            stock__offer__venue__siret=None,
+        )
 
-@pytest.mark.usefixtures("db_session")
-def test_with_book_with_missing_isbn():
-    booking = make_booking(
-        stock__offer__name="Le récit de voyage",
-        stock__offer__product__extraData={},  # no ISBN
-        stock__offer__product__name="Le récit de voyage",
-        stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
-        stock__offer__venue__address=None,
-        stock__offer__venue__city=None,
-        stock__offer__venue__departementCode=None,
-        stock__offer__venue__isVirtual=True,
-        stock__offer__venue__postalCode=None,
-        stock__offer__venue__siret=None,
-    )
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+        expected = get_expected_base_email_data(
+            booking,
+            self.MAILJET_TEMPLATE_ID,
+            date="",
+            departement="numérique",
+            heure="",
+            is_event=0,
+            nom_offre="Le récit de voyage",
+            offer_type="ThingType.AUDIOVISUEL",
+            can_expire=1,
+        )
+        assert email_data == expected
 
-    expected = get_expected_base_email_data(
-        booking,
-        date="",
-        departement="numérique",
-        heure="",
-        is_event=0,
-        nom_offre="Le récit de voyage",
-        offer_type="book",
-        ISBN="",
-        can_expire_after_30_days=1,
-    )
-    assert email_data == expected
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_with_book_with_missing_isbn(self):
+        booking = make_booking(
+            stock__offer__name="Le récit de voyage",
+            stock__offer__product__extraData={},  # no ISBN
+            stock__offer__product__name="Le récit de voyage",
+            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__venue__address=None,
+            stock__offer__venue__city=None,
+            stock__offer__venue__departementCode=None,
+            stock__offer__venue__isVirtual=True,
+            stock__offer__venue__postalCode=None,
+            stock__offer__venue__siret=None,
+        )
 
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
-@pytest.mark.usefixtures("db_session")
-def test_a_digital_booking_expires_after_30_days():
-    # Given
-    booking = make_booking(
-        quantity=10,
-        stock__price=0,
-        stock__offer__product__subcategoryId=subcategories.VOD.id,
-        stock__offer__product__url="http://example.com",
-        stock__offer__name="Super offre numérique",
-    )
+        expected = get_expected_base_email_data(
+            booking,
+            self.MAILJET_TEMPLATE_ID,
+            date="",
+            departement="numérique",
+            heure="",
+            is_event=0,
+            nom_offre="Le récit de voyage",
+            offer_type="book",
+            ISBN="",
+            can_expire=1,
+            expiration_delay=10,
+        )
+        assert email_data == expected
 
-    # When
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_a_digital_booking_expires_after_30_days(self):
+        # Given
+        booking = make_booking(
+            quantity=10,
+            stock__price=0,
+            stock__offer__product__subcategoryId=subcategories.VOD.id,
+            stock__offer__product__url="http://example.com",
+            stock__offer__name="Super offre numérique",
+        )
 
-    # Then
-    expected = get_expected_base_email_data(
-        booking,
-        date="",
-        heure="",
-        is_event=0,
-        prix="Gratuit",
-        nom_offre="Super offre numérique",
-        offer_type="ThingType.AUDIOVISUEL",
-        quantity=10,
-        can_expire_after_30_days=1,
-        must_use_token_for_payment=0,
-    )
-    assert email_data == expected
+        # When
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
+        # Then
+        expected = get_expected_base_email_data(
+            booking,
+            self.MAILJET_TEMPLATE_ID,
+            date="",
+            heure="",
+            is_event=0,
+            prix="Gratuit",
+            nom_offre="Super offre numérique",
+            offer_type="ThingType.AUDIOVISUEL",
+            quantity=10,
+            can_expire=1,
+            must_use_token_for_payment=0,
+        )
+        assert email_data == expected
 
-@pytest.mark.usefixtures("db_session")
-def test_when_use_token_for_payment():
-    # Given
-    booking = make_booking(
-        stock__price=10,
-    )
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_when_use_token_for_payment(self):
+        # Given
+        booking = make_booking(
+            stock__price=10,
+        )
 
-    # When
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+        # When
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
-    # Then
-    expected = get_expected_base_email_data(booking, must_use_token_for_payment=1)
-    assert email_data == expected
+        # Then
+        expected = get_expected_base_email_data(booking, self.MAILJET_TEMPLATE_ID, must_use_token_for_payment=1)
+        assert email_data == expected
 
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_no_need_when_price_is_free(self):
+        # Given
+        booking = make_booking(
+            stock__price=0,
+        )
 
-@pytest.mark.usefixtures("db_session")
-def test_no_need_when_price_is_free():
-    # Given
-    booking = make_booking(
-        stock__price=0,
-    )
+        # When
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
-    # When
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+        # Then
+        expected = get_expected_base_email_data(
+            booking, self.MAILJET_TEMPLATE_ID, prix="Gratuit", must_use_token_for_payment=0
+        )
+        assert email_data == expected
 
-    # Then
-    expected = get_expected_base_email_data(booking, prix="Gratuit", must_use_token_for_payment=0)
-    assert email_data == expected
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_no_need_when_using_activation_code(self):
+        # Given
+        booking = make_booking()
+        ActivationCodeFactory(stock=booking.stock, booking=booking, code="code_toto")
 
+        # When
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
-@pytest.mark.usefixtures("db_session")
-def test_no_need_when_using_activation_code():
-    # Given
-    booking = make_booking()
-    ActivationCodeFactory(stock=booking.stock, booking=booking, code="code_toto")
+        # Then
+        expected = get_expected_base_email_data(booking, self.MAILJET_TEMPLATE_ID, must_use_token_for_payment=0)
+        assert email_data == expected
 
-    # When
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True, ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_no_need_when_booking_is_autovalidated(self):
+        # Given
+        offer = offers_factories.OfferFactory(
+            venue__name="Lieu de l'offreur",
+            venue__managingOfferer__name="Théâtre du coin",
+            product=offers_factories.DigitalProductFactory(name="Super événement", url="http://example.com"),
+        )
+        digital_stock = offers_factories.StockWithActivationCodesFactory()
+        first_activation_code = digital_stock.activationCodes[0]
+        booking = bookings_factories.UsedBookingFactory(
+            user__email="john@example.com",
+            user__firstName="John",
+            user__lastName="Doe",
+            stock__offer=offer,
+            activationCode=first_activation_code,
+            dateCreated=datetime(2018, 1, 1),
+        )
 
-    # Then
-    expected = get_expected_base_email_data(booking, must_use_token_for_payment=0)
-    assert email_data == expected
+        # When
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
+        # Then
+        expected = get_expected_base_email_data(
+            booking,
+            self.MAILJET_TEMPLATE_ID,
+            date="",
+            heure="",
+            is_event=0,
+            is_booking_autovalidated=1,
+            must_use_token_for_payment=0,
+            offer_type="ThingType.AUDIOVISUEL",
+            contremarque=booking.token,
+        )
+        assert email_data == expected
 
-@override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
-@pytest.mark.usefixtures("db_session")
-def test_no_need_when_booking_is_autovalidated():
-    # Given
-    offer = offers_factories.OfferFactory(
-        venue__name="Lieu de l'offreur",
-        venue__managingOfferer__name="Théâtre du coin",
-        product=offers_factories.DigitalProductFactory(name="Super événement", url="http://example.com"),
-    )
-    digital_stock = offers_factories.StockWithActivationCodesFactory()
-    first_activation_code = digital_stock.activationCodes[0]
-    booking = bookings_factories.UsedBookingFactory(
-        user__email="john@example.com",
-        user__firstName="John",
-        user__lastName="Doe",
-        stock__offer=offer,
-        activationCode=first_activation_code,
-        dateCreated=datetime(2018, 1, 1),
-    )
+    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True, ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_a_digital_booking_with_activation_code_is_automatically_used(self):
+        # Given
+        offer = offers_factories.OfferFactory(
+            venue__name="Lieu de l'offreur",
+            venue__managingOfferer__name="Théâtre du coin",
+            product=offers_factories.DigitalProductFactory(name="Super offre numérique", url="http://example.com"),
+        )
+        digital_stock = offers_factories.StockWithActivationCodesFactory()
+        first_activation_code = digital_stock.activationCodes[0]
+        booking = bookings_factories.UsedBookingFactory(
+            user__email="john@example.com",
+            user__firstName="John",
+            user__lastName="Doe",
+            stock__offer=offer,
+            activationCode=first_activation_code,
+            dateCreated=datetime(2018, 1, 1),
+        )
 
-    # When
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+        # When
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
-    # Then
-    expected = get_expected_base_email_data(
-        booking,
-        date="",
-        heure="",
-        is_event=0,
-        is_booking_autovalidated=1,
-        must_use_token_for_payment=0,
-        offer_type="ThingType.AUDIOVISUEL",
-        contremarque=booking.token,
-    )
-    assert email_data == expected
+        # Then
+        expected = get_expected_base_email_data(
+            booking,
+            self.MAILJET_TEMPLATE_ID,
+            date="",
+            heure="",
+            prix="10.00 €",
+            is_event=0,
+            nom_offre="Super offre numérique",
+            offer_type="ThingType.AUDIOVISUEL",
+            quantity=1,
+            can_expire=0,
+            is_booking_autovalidated=1,
+            must_use_token_for_payment=0,
+            contremarque=booking.token,
+        )
+        assert email_data == expected
 
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_should_not_truncate_price(self):
+        booking = make_booking(stock__price=5.86)
 
-@override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
-@pytest.mark.usefixtures("db_session")
-def test_a_digital_booking_with_activation_code_is_automatically_used():
-    # Given
-    offer = offers_factories.OfferFactory(
-        venue__name="Lieu de l'offreur",
-        venue__managingOfferer__name="Théâtre du coin",
-        product=offers_factories.DigitalProductFactory(name="Super offre numérique", url="http://example.com"),
-    )
-    digital_stock = offers_factories.StockWithActivationCodesFactory()
-    first_activation_code = digital_stock.activationCodes[0]
-    booking = bookings_factories.UsedBookingFactory(
-        user__email="john@example.com",
-        user__firstName="John",
-        user__lastName="Doe",
-        stock__offer=offer,
-        activationCode=first_activation_code,
-        dateCreated=datetime(2018, 1, 1),
-    )
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
-    # When
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+        expected = get_expected_base_email_data(booking, self.MAILJET_TEMPLATE_ID, prix="5.86 €")
+        assert email_data == expected
 
-    # Then
-    expected = get_expected_base_email_data(
-        booking,
-        date="",
-        heure="",
-        prix="10.00 €",
-        is_event=0,
-        nom_offre="Super offre numérique",
-        offer_type="ThingType.AUDIOVISUEL",
-        quantity=1,
-        can_expire_after_30_days=0,
-        is_booking_autovalidated=1,
-        must_use_token_for_payment=0,
-        contremarque=booking.token,
-    )
-    assert email_data == expected
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_should_use_venue_public_name_when_available(self):
+        booking = make_booking(
+            stock__offer__venue__name="Legal name",
+            stock__offer__venue__publicName="Public name",
+        )
 
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
-@pytest.mark.usefixtures("db_session")
-def test_should_not_truncate_price():
-    booking = make_booking(stock__price=5.86)
+        expected = get_expected_base_email_data(booking, self.MAILJET_TEMPLATE_ID, nom_lieu="Public name")
+        assert email_data == expected
 
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_should_add_user_phone_number_to_vars(self):
+        # given
+        booking = make_booking(user__phoneNumber="0123456789")
 
-    expected = get_expected_base_email_data(booking, prix="5.86 €")
-    assert email_data == expected
+        # when
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
+        # then
+        template_vars = email_data["Vars"]
+        assert template_vars["user_phoneNumber"] == "0123456789"
 
-@pytest.mark.usefixtures("db_session")
-def test_should_use_venue_public_name_when_available():
-    booking = make_booking(
-        stock__offer__venue__name="Legal name",
-        stock__offer__venue__publicName="Public name",
-    )
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_should_add_reply_to_header_with_beneficiary_email(self):
+        # given
+        booking = make_booking(user__email="beneficiary@example.com")
 
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+        # when
+        email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
-    expected = get_expected_base_email_data(booking, nom_lieu="Public name")
-    assert email_data == expected
-
-
-@pytest.mark.usefixtures("db_session")
-def test_should_add_user_phone_number_to_vars():
-    # given
-    booking = make_booking(user__phoneNumber="0123456789")
-
-    # when
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
-
-    # then
-    template_vars = email_data["Vars"]
-    assert template_vars["user_phoneNumber"] == "0123456789"
-
-
-@pytest.mark.usefixtures("db_session")
-def test_should_add_reply_to_header_with_beneficiary_email():
-    # given
-    booking = make_booking(user__email="beneficiary@example.com")
-
-    # when
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
-
-    # then
-    template_headers = email_data["Headers"]
-    assert template_headers["Reply-To"] == "beneficiary@example.com"
+        # then
+        template_headers = email_data["Headers"]
+        assert template_headers["Reply-To"] == "beneficiary@example.com"

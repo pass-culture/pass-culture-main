@@ -1,4 +1,7 @@
+from pcapi.core.bookings.conf import BOOKINGS_AUTO_EXPIRY_DELAY
+from pcapi.core.bookings.conf import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.models import Booking
+from pcapi.core.categories import subcategories
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_type import ProductType
 from pcapi.utils.mailing import build_pc_pro_offer_link
@@ -6,7 +9,17 @@ from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
 
 
+# TODO(yacine) old template should be removed after enabling FF ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
+OLD_MAILJET_TEMPLATE_ID = 2843165
+NEW_MAILJET_TEMPLATE_ID = 3095147
+
+
 def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
+    mailjet_template_id = (
+        NEW_MAILJET_TEMPLATE_ID
+        if FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS.is_active()
+        else OLD_MAILJET_TEMPLATE_ID
+    )
     offer = booking.stock.offer
     venue = offer.venue
     venue_name = venue.publicName if venue.publicName else venue.name
@@ -26,11 +39,18 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
         and booking.activationCode
         and FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS.is_active()
     ):
-        can_expire_after_30_days = 0
+        can_expire = 0
         is_booking_autovalidated = 1
     else:
-        can_expire_after_30_days = int(offer.offerType.get("canExpire", False))
+        can_expire = int(offer.offerType.get("canExpire", False))
         is_booking_autovalidated = 0
+
+    expiration_delay = BOOKINGS_AUTO_EXPIRY_DELAY.days
+    if (
+        FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS.is_active()
+        and offer.subcategoryId == subcategories.LIVRE_PAPIER.id
+    ):
+        expiration_delay = BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
 
     offer_link = build_pc_pro_offer_link(offer)
 
@@ -40,7 +60,7 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
         must_use_token_for_payment = 1
 
     mailjet_json = {
-        "MJ-TemplateID": 2843165,
+        "MJ-TemplateID": mailjet_template_id,
         "MJ-TemplateLanguage": True,
         "Headers": {
             "Reply-To": user_email,
@@ -62,7 +82,10 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
             "user_email": user_email,
             "lien_offre_pcpro": offer_link,
             "departement": departement_code,
-            "can_expire_after_30_days": can_expire_after_30_days,
+            "can_expire"
+            if FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS.is_active()
+            else "can_expire_after_30_days": can_expire,
+            "expiration_delay": expiration_delay,
             "is_booking_autovalidated": is_booking_autovalidated,
             "must_use_token_for_payment": must_use_token_for_payment,
         },
