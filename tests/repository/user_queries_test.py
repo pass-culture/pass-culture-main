@@ -11,6 +11,7 @@ from pcapi.model_creators.generic_creators import create_beneficiary_import
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import ImportStatus
 from pcapi.repository import repository
+from pcapi.repository.user_queries import beneficiary_by_civility_query
 from pcapi.repository.user_queries import find_beneficiary_by_civility
 from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
 from pcapi.repository.user_queries import find_pro_users_by_email_provider
@@ -195,6 +196,27 @@ class FindByCivilityTest:
         # then
         assert len(users) == 1
         assert users[0].email == "john@example.com"
+
+
+@pytest.mark.usefixtures("db_session")
+class BeneficiaryByCivilityQueryTest:
+    def test_exclude_oneself(self, app):
+        # given
+        email = "john@example.com"
+        users_factories.BeneficiaryGrant18Factory(
+            dateOfBirth=datetime(2000, 5, 1), email=email, firstName="john", lastName="doe"
+        )
+
+        # when
+        user_found = beneficiary_by_civility_query("john", "doe", datetime(2000, 5, 1)).all()
+        user_not_found = beneficiary_by_civility_query(
+            "john", "doe", datetime(2000, 5, 1), exclude_email=email
+        ).one_or_none()
+
+        # then
+        assert len(user_found) == 1
+        assert user_found[0].email == email
+        assert user_not_found is None
 
 
 class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:

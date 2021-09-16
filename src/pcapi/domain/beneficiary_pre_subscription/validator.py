@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Optional
 
 from pcapi.core.fraud import api as fraud_api
@@ -9,7 +8,7 @@ from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsNo
 from pcapi.domain.beneficiary_pre_subscription.exceptions import IdPieceNumberDuplicate
 from pcapi.domain.beneficiary_pre_subscription.exceptions import SuspiciousFraudDetected
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository.user_queries import find_beneficiary_by_civility
+from pcapi.repository.user_queries import beneficiary_by_civility_query
 from pcapi.repository.user_queries import find_user_by_email
 
 
@@ -58,10 +57,6 @@ def _is_postal_code_eligible(code: Optional[str]) -> bool:
     return True
 
 
-def get_beneficiary_duplicates(first_name: str, last_name: str, date_of_birth: datetime) -> list[User]:
-    return find_beneficiary_by_civility(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth)
-
-
 def _check_email_is_not_taken(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
     email = beneficiary_pre_subscription.email
 
@@ -77,11 +72,12 @@ def _check_department_is_eligible(beneficiary_pre_subscription: BeneficiaryPreSu
 
 
 def _check_not_a_duplicate(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
-    duplicates = get_beneficiary_duplicates(
+    duplicates = beneficiary_by_civility_query(
         first_name=beneficiary_pre_subscription.first_name,
         last_name=beneficiary_pre_subscription.last_name,
         date_of_birth=beneficiary_pre_subscription.date_of_birth,
-    )
+        exclude_email=beneficiary_pre_subscription.email,
+    ).all()
 
     if duplicates:
         raise BeneficiaryIsADuplicate(f"User with id {duplicates[0].id} is a duplicate.")

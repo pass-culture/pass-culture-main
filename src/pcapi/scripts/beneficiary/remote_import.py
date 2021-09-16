@@ -18,7 +18,6 @@ from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.domain import user_emails
-from pcapi.domain.beneficiary_pre_subscription.validator import get_beneficiary_duplicates
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from pcapi.domain.demarches_simplifiees import get_existing_applications_id
 from pcapi.domain.user_activation import create_beneficiary_from_application
@@ -29,6 +28,7 @@ from pcapi.repository import repository
 from pcapi.repository.beneficiary_import_queries import find_applications_ids_to_retry
 from pcapi.repository.beneficiary_import_queries import is_already_imported
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
+from pcapi.repository.user_queries import beneficiary_by_civility_query
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.utils.date import FrenchParserInfo
 from pcapi.utils.mailing import MailServiceException
@@ -185,11 +185,12 @@ def process_application(
             return
 
     if not is_already_imported(information.application_id):
-        duplicate_users = get_beneficiary_duplicates(
+        duplicate_users = beneficiary_by_civility_query(
             first_name=information.first_name,
             last_name=information.last_name,
             date_of_birth=information.birth_date,
-        )
+            exclude_email=information.email,
+        ).all()
 
         if duplicate_users and information.application_id not in retry_ids:
             _process_duplication(duplicate_users, information, procedure_id)
