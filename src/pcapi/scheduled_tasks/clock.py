@@ -7,6 +7,7 @@ import logging
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
+from sentry_sdk import set_tag
 
 # FIXME (xordoquy, 2021-03-01): this is to prevent circular imports when importing pcapi.core.users.api
 import pcapi.models  # pylint: disable=unused-import
@@ -165,6 +166,7 @@ def pc_send_withdrawal_terms_to_offerers_validated_yesterday(app: Flask) -> None
 def main() -> None:
     from pcapi.flask_app import app
 
+    set_tag("pcapi.app_type", "clock")
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from sentry_sdk import set_tag
 from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from pcapi import settings
@@ -58,4 +59,5 @@ if __name__ == "__main__":
             debugpy.wait_for_client()
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 
+    set_tag("pcapi.app_type", "app")
     app.run(host="0.0.0.0", port=port, debug=True, use_reloader=True)

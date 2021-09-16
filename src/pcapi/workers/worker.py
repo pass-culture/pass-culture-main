@@ -70,6 +70,7 @@ def log_database_connection_status() -> None:
 
 
 if __name__ == "__main__":
+    sentry_sdk.set_tag("pcapi.app_type", "worker")
     listen = sys.argv[1:] or ["default"]
     logger.info("Worker: listening to queues %s", listen)
 

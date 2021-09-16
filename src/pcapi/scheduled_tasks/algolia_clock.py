@@ -1,4 +1,5 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
+from sentry_sdk import set_tag
 
 from pcapi import settings
 from pcapi.core import search
@@ -41,6 +42,7 @@ def index_offers_in_error_in_algolia_by_offer(app):
 def main():
     from pcapi.flask_app import app
 
+    set_tag("pcapi.app_type", "algolia_clock")
     scheduler = BlockingScheduler()
 
     utils.activate_sentry(scheduler)

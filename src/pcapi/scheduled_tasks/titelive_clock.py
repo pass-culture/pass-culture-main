@@ -2,6 +2,7 @@
     isort:skip_file
 """
 from apscheduler.schedulers.blocking import BlockingScheduler
+from sentry_sdk import set_tag
 
 # FIXME (asaunier, 2021-04-20): this is to prevent circular imports
 import pcapi.models  # pylint: disable=unused-import
@@ -41,6 +42,7 @@ def synchronize_titelive_thing_thumbs(app):
 def main():
     from pcapi.flask_app import app
 
+    set_tag("pcapi.app_type", "titelive_clock")
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)
 
