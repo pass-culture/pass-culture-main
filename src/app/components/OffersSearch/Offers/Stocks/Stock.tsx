@@ -83,6 +83,7 @@ export const Stock = ({
       {canPrebookOffers && (
         <Button
           isSubmit={false}
+          loadingMessage="Préreservation"
           onClick={preBookCurrentStock}
           text="Pré-réserver"
         />

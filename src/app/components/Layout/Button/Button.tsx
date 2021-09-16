@@ -1,20 +1,34 @@
 import "./Button.scss"
-import React from "react"
+import React, { useCallback, useState } from "react"
+
+import { Spinner } from "../Spinner/Spinner"
 
 export const Button = ({
   onClick,
+  loadingMessage,
   text,
   isSubmit,
 }: {
-  onClick: () => void;
+  onClick: () => Promise<any>;
+  loadingMessage: string;
   text: string;
   isSubmit: boolean;
-}): JSX.Element => (
-  <button
-    className="primary-button"
-    onClick={onClick}
-    type={isSubmit ? "submit" : "button"}
-  >
-    {text}
-  </button>
-)
+}): JSX.Element => {
+  const [isLoading, setIsLoading] = useState(false)
+
+  const onClickWrapper = useCallback(() => {
+    setIsLoading(true)
+    onClick().then(() => setIsLoading(false))
+  }, [onClick])
+
+  return (
+    <button
+      className={`primary-button ${isLoading ? "loading" : ""}`}
+      disabled={isLoading}
+      onClick={onClickWrapper}
+      type={isSubmit ? "submit" : "button"}
+    >
+      {!isLoading ? text : <Spinner message={loadingMessage} />}
+    </button>
+  )
+}
