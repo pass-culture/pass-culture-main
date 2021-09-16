@@ -1,0 +1,24 @@
+@import "sass-rem";
+
+main.loader-page {
+  align-items: center;
+  display: flex;
+  grid-column-start: col-main;
+  grid-row-start: row-main;
+  justify-content: center;
+
+  .loading-spinner {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+
+    svg {
+      height: rem(56px);
+      width: rem(56px);
+
+      .logo {
+        fill: #870087;
+      }
+    }
+  }
+}

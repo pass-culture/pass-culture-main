@@ -7,9 +7,10 @@ import * as pcapi from "repository/pcapi/pcapi"
 import { Role } from "utils/types"
 
 import { AppLayout } from "./AppLayout"
+import { LoaderPage } from "./components/LoaderPage/LoaderPage"
 
 export const App = (): JSX.Element => {
-  const [userRole, setUserRole] = useState<Role>(Role.unauthenticated)
+  const [userRole, setUserRole] = useState<Role>(Role.authenticating)
 
   useEffect(() => {
     pcapi
@@ -20,8 +21,11 @@ export const App = (): JSX.Element => {
 
   return (
     <>
-      {userRole !== Role.unauthenticated && <AppLayout userRole={userRole} />}
+      {[Role.readonly, Role.redactor].includes(userRole) && (
+        <AppLayout userRole={userRole} />
+      )}
       {userRole === Role.unauthenticated && <UnauthenticatedError />}
+      {userRole === Role.authenticating && <LoaderPage />}
     </>
   )
 }

@@ -43,4 +43,5 @@ export enum Role {
   redactor = "redactor",
   readonly = "readonly",
   unauthenticated = "unauthenticated",
+  authenticating = "authenticating",
 }
