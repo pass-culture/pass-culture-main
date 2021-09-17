@@ -32,10 +32,12 @@ class TextareaField extends PureComponent {
       placeholder,
       readOnly,
       required,
-      // see https://github.com/buildo/react-autosize-textarea
-      ...ReactAutosizeProps
+      rows,
     } = this.props
 
+    // for a deeper usage of react-autosize-textarea
+    // see https://github.com/buildo/react-autosize-textarea
+    const autosizeTextareaProps = { rows }
     const value = formatInputValueIfTooLong(input.value, maxLength)
 
     return (
@@ -83,7 +85,7 @@ class TextareaField extends PureComponent {
                 readOnly={readOnly}
                 required={!!required}
                 value={value}
-                {...ReactAutosizeProps}
+                {...autosizeTextareaProps}
               />
             </span>
           </div>
@@ -115,8 +117,8 @@ TextareaField.defaultProps = {
   placeholder: '',
   readOnly: false,
   required: false,
+  rows: null,
   validate: null,
-  validating: false,
 }
 
 TextareaField.propTypes = {
@@ -129,8 +131,8 @@ TextareaField.propTypes = {
   placeholder: PropTypes.string,
   readOnly: PropTypes.bool,
   required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
+  rows: PropTypes.number,
   validate: PropTypes.func,
-  validating: PropTypes.bool,
 }
 
 export default TextareaField
