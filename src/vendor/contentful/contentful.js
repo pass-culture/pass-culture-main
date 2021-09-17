@@ -11,19 +11,11 @@ import Offers from '../../components/pages/home/MainView/domain/ValueObjects/Off
 import BusinessPane from '../../components/pages/home/MainView/domain/ValueObjects/BusinessPane'
 import ExclusivityPane from '../../components/pages/home/MainView/domain/ValueObjects/ExclusivityPane'
 import RecommendationPane from '../../components/pages/home/MainView/domain/ValueObjects/RecommendationPane'
+import { selectPlaylist } from './selectPlaylist'
 
 const DEPTH_LEVEL = 2
 
-const matchesContentType = (module, contentType) => {
-  const {
-    sys: {
-      contentType: {
-        sys: { id },
-      },
-    },
-  } = module
-  return id === contentType
-}
+const matchesContentType = (module, contentType) => module.sys.contentType.sys.id === contentType
 
 const initClient = ({ entryId = null }) => {
   const params = {
@@ -41,39 +33,17 @@ const initClient = ({ entryId = null }) => {
 
 export const fetchHomepage = ({ entryId = null } = {}) => {
   const client = initClient({ entryId })
-  return entryId ? _fetchByEntry({ client, entryId }) : _fetchLastEntry({ client })
-}
 
-const _fetchByEntry = ({ client, entryId }) => {
-  return client
-    .getEntry(entryId, { include: DEPTH_LEVEL })
-    .then(entry => {
-      return _process(entry)
-    })
-    .catch(() => {
-      throw new Error('Something went wrong with the service')
-    })
-}
-
-const _fetchLastEntry = ({ client }) => {
   return client
     .getEntries({ content_type: CONTENT_TYPES.HOMEPAGE, include: DEPTH_LEVEL })
-    .then(data => {
-      const { items } = data
-      const lastPublishedHomepage = items[0]
-      return _process(lastPublishedHomepage)
-    })
+    .then(data => _process(selectPlaylist(data.items, entryId)))
     .catch(() => {
       throw new Error('Something went wrong with the service')
     })
 }
 
 const _process = homepage => {
-  const {
-    fields: { modules },
-  } = homepage
-
-  return modules
+  return homepage.fields.modules
     .map(module => {
       const { fields = {} } = module
 
@@ -143,6 +113,4 @@ const buildImageUrl = fields => {
   return null
 }
 
-const hasAtLeastOneField = object => {
-  return Object.keys(object).length > 0
-}
+const hasAtLeastOneField = object => Object.keys(object).length > 0
