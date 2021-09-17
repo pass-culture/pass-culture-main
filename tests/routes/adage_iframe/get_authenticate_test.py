@@ -7,7 +7,7 @@ from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_f
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
 
 
-class Returns204Test:
+class Returns200Test:
     valid_user = {
         "civilite": "Mme.",
         "nom": "LAPROF",

@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 from typing import ByteString
+from typing import Optional
 
 import jwt
 
@@ -15,7 +16,7 @@ def create_adage_jwt_fake_valid_token(
     lastname: str,
     firstname: str,
     email: str,
-    uai: str,
+    uai: Optional[str],
     expiration_date: datetime = datetime.utcnow() + timedelta(days=1),
 ) -> ByteString:
     with open(VALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
