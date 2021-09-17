@@ -180,7 +180,7 @@ describe('components | Search', () => {
         expect(resultatsRoute.prop('path')).toBe('/recherche/resultats')
         const searchResultsComponent = resultatsRoute.find(Results)
         expect(searchResultsComponent.prop('criteria')).toStrictEqual({
-          categories: ['Cinéma'],
+          categories: ['CINEMA'],
           searchAround: { everywhere: true, place: false, user: false },
         })
       })

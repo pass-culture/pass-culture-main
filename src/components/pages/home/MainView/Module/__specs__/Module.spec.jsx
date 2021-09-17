@@ -215,7 +215,7 @@ describe('src | components | Module', () => {
           longitude: 2,
         },
         hitsPerPage: 3,
-        offerCategories: ['Cinéma', 'Cours, ateliers', 'Livres'],
+        offerCategories: ['CINEMA', 'COURS', 'LIVRE'],
         offerIsDuo: true,
         offerIsFree: false,
         offerIsNew: true,

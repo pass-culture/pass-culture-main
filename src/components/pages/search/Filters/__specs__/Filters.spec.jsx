@@ -352,7 +352,7 @@ describe('components | Filters', () => {
           </Provider>
         )
         const resultsButton = wrapper.find('.sf-button')
-        const showCategory = wrapper.find('input[name="Spectacles"]')
+        const showCategory = wrapper.find('input[name="SPECTACLE"]')
         const digitalOffers = wrapper.find('input[name="isDigital"]')
 
         const showCategoryEvent = { target: { name: 'SPECTACLE', checked: true } }
@@ -1480,9 +1480,9 @@ describe('components | Filters', () => {
           const cinemaFilterCheckbox = wrapper.find('Checkbox[label="Cinéma"]')
           expect(cinemaFilterCheckbox.prop('checked')).toBe(false)
           expect(cinemaFilterCheckbox.prop('className')).toBe('fc-label')
-          expect(cinemaFilterCheckbox.prop('id')).toBe('Cinéma')
+          expect(cinemaFilterCheckbox.prop('id')).toBe('CINEMA')
           expect(cinemaFilterCheckbox.prop('label')).toBe('Cinéma')
-          expect(cinemaFilterCheckbox.prop('name')).toBe('Cinéma')
+          expect(cinemaFilterCheckbox.prop('name')).toBe('CINEMA')
           expect(cinemaFilterCheckbox.prop('onChange')).toStrictEqual(expect.any(Function))
           expect(wrapper.find('Checkbox[label="Visites, expositions"]').prop('checked')).toBe(false)
           expect(wrapper.find('Checkbox[label="Musique"]').prop('checked')).toBe(false)
@@ -1520,7 +1520,7 @@ describe('components | Filters', () => {
         it('should render a Checkbox component checked when category is selected', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
-          props.initialFilters.offerCategories = ['Cinéma', 'Livres']
+          props.initialFilters.offerCategories = ['CINEMA', 'LIVRE']
 
           // when
           const wrapper = shallow(<Filters {...props} />)
