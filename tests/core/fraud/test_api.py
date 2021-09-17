@@ -137,7 +137,7 @@ class JouveFraudCheckTest:
         ],
     )
     def test_jouve_id_piece_number_wrong_format(self, id_piece_number):
-        item = fraud_api._validate_id_piece_number_format_fraud_item(id_piece_number)
+        item = fraud_api.validate_id_piece_number_format_fraud_item(id_piece_number)
         assert item.status == fraud_models.FraudStatus.SUSPICIOUS
 
     @pytest.mark.parametrize(
@@ -146,10 +146,11 @@ class JouveFraudCheckTest:
             "321070751234",
             "090435303687",
             "00000000 0 ZU4",  # portugal format
+            "03146310",  # andora CNI format
         ],
     )
     def test_jouve_id_piece_number_valid_format(self, id_piece_number):
-        item = fraud_api._validate_id_piece_number_format_fraud_item(id_piece_number)
+        item = fraud_api.validate_id_piece_number_format_fraud_item(id_piece_number)
         assert item.status == fraud_models.FraudStatus.OK
 
     def test_on_identity_fraud_check_result_retry(self):

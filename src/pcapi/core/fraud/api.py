@@ -103,7 +103,7 @@ def jouve_fraud_checks(beneficiary_fraud_check: models.BeneficiaryFraudCheck) ->
         )
     )
 
-    fraud_items.append(_validate_id_piece_number_format_fraud_item(jouve_content.bodyPieceNumber))
+    fraud_items.append(validate_id_piece_number_format_fraud_item(jouve_content.bodyPieceNumber))
     fraud_items.append(_duplicate_id_piece_number_fraud_item(jouve_content.bodyPieceNumber))
     fraud_items.extend(_id_check_fraud_items(jouve_content))
     return fraud_items
@@ -144,7 +144,7 @@ def on_identity_fraud_check_result(
     return fraud_result
 
 
-def _validate_id_piece_number_format_fraud_item(id_piece_number):
+def validate_id_piece_number_format_fraud_item(id_piece_number):
     if not id_piece_number or not id_piece_number.strip():
         return models.FraudItem(
             status=models.FraudStatus.SUSPICIOUS, detail="Le numéro de la pièce d'identité est vide"

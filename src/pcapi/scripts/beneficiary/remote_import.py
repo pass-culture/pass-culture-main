@@ -239,7 +239,7 @@ def parse_beneficiary_information(application_detail: dict, procedure_id: int) -
             information["address"] = value
         if label == "Quel est le numéro de la pièce que vous venez de saisir ?":
             value = value.strip()
-            if not fraud_api._validate_id_piece_number_format_fraud_item(value):
+            if not fraud_api.validate_id_piece_number_format_fraud_item(value):
                 parsing_errors["id_piece_number"] = value
             else:
                 information["id_piece_number"] = value
@@ -285,7 +285,7 @@ def parse_beneficiary_information_graphql(application_detail: dict, procedure_id
             information["address"] = value
         if label == "Quel est le numéro de la pièce que vous venez de saisir ?":
             value = value.strip()
-            if not fraud_api._validate_id_piece_number_format_fraud_item(value):
+            if not fraud_api.validate_id_piece_number_format_fraud_item(value):
                 parsing_errors["id_piece_number"] = value
             else:
                 information["id_piece_number"] = value

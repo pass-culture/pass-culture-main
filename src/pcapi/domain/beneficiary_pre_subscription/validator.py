@@ -1,7 +1,7 @@
 from datetime import datetime
-import re
 from typing import Optional
 
+from pcapi.core.fraud import api as fraud_api
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
@@ -88,7 +88,7 @@ def _check_not_a_duplicate(beneficiary_pre_subscription: BeneficiaryPreSubscript
 
 
 def _check_id_piece_number_format(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
-    if not re.match(r"^\w{9,10}|\w{12}$", beneficiary_pre_subscription.id_piece_number):
+    if not fraud_api.validate_id_piece_number_format_fraud_item(beneficiary_pre_subscription.id_piece_number):
         raise SuspiciousFraudDetected(f"id piece number n°{beneficiary_pre_subscription.id_piece_number} is invalid")
 
 
