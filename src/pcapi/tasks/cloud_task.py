@@ -1,8 +1,14 @@
 import json
+import logging
 
+from google.api_core import retry
+from google.api_core.exceptions import AlreadyExists
 from google.cloud import tasks_v2
 
 from pcapi import settings
+
+
+logger = logging.getLogger(__name__)
 
 
 AUTHORIZATION_HEADER_KEY = "AUTHORIZATION"
@@ -32,7 +38,17 @@ def enqueue_task(queue, url, payload):
         },
     }
 
-    response = client.create_task(request={"parent": parent, "task": task_request})
-
+    try:
+        response = client.create_task(
+            request={"parent": parent, "task": task_request},
+            retry=retry.Retry(
+                initial=settings.CLOUD_TASK_RETRY_INITIAL_DELAY,
+                maximum=settings.CLOUD_TASK_RETRY_MAXIMUM_DELAY,
+                multiplier=settings.CLOUD_TASK_RETRY_MULTIPLIER,
+                deadline=settings.CLOUD_TASK_RETRY_DEADLINE,
+            ),
+        )
+    except AlreadyExists:
+        logger.info("Task on queue %s url %s already retried", queue, url)
     task_id = response.name.split("/")[-1]
     return task_id
