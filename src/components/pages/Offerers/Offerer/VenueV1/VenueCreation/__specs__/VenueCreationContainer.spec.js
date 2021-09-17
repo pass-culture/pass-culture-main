@@ -206,6 +206,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
       // given
       const formValues = {
         comment: 'Commentaire',
+        description: 'description',
         address: '3 Place Saint-Michel',
       }
 
@@ -225,6 +226,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           apiPath: '/venues/',
           body: {
             comment: 'Commentaire',
+            description: 'description',
             address: '3 Place Saint-Michel',
             venueTypeId: null,
             venueLabelId: null,

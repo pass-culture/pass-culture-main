@@ -42,6 +42,7 @@ describe('formatPatch', () => {
         bookingEmail: 'R6465373fake674654673sub@example.com',
         city: 'Aulnay-sous-Bois',
         comment: '',
+        description: '',
         iban: 'FR7630001007941234567890185',
         latitude: 48.92071,
         longitude: 2.48371,
@@ -67,6 +68,7 @@ describe('formatPatch', () => {
         bookingEmail: 'R6465373fake674654673sub@example.com',
         city: 'Aulnay-sous-Bois',
         comment: 'comment',
+        description: 'description',
         dateModifiedAtLastProvider: '2019-02-05T09:37:37.776590Z',
         departementCode: '93',
         iban: 'FR7630001007941234567890185',
@@ -94,6 +96,7 @@ describe('formatPatch', () => {
         address: 'RUE DIDEROT',
         bookingEmail: 'R6465373fake674654673sub@example.com',
         comment: 'comment',
+        description: 'description',
         city: 'Aulnay-sous-Bois',
         latitude: 48.92071,
         longitude: 2.48371,
@@ -120,6 +123,7 @@ describe('formatPatch', () => {
       expect(result).toStrictEqual({
         venueTypeId: '',
         venueLabelId: '',
+        description: '',
       })
     })
   })

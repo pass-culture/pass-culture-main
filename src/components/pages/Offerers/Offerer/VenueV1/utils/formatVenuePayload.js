@@ -1,7 +1,6 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 const creation_authorized_input_field = [
   'address',
@@ -51,7 +50,6 @@ const edition_authorized_input_field = [
 ]
 
 export const formatVenuePayload = (payload, isCreatedEntity) => {
-
   const requestPayload = {}
 
   const authorizedFields = isCreatedEntity
@@ -59,6 +57,11 @@ export const formatVenuePayload = (payload, isCreatedEntity) => {
     : edition_authorized_input_field
 
   authorizedFields.forEach(inputName => {
+    /* @debt implementation "Gaël : this is a required hack to be able to save empty descriptions because react-final-form treat empty strings as undefined "*/
+    if (inputName === 'description' && payload[inputName] === undefined) {
+      payload[inputName] = ''
+    }
+
     if (payload[inputName] !== undefined) {
       requestPayload[inputName] = payload[inputName]
     } else if (inputName === 'venueTypeId' || inputName === 'venueLabelId') {

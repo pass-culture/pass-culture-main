@@ -244,6 +244,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           apiPath: '/venues/TR',
           body: {
             comment: 'Commentaire',
+            description: '',
             address: '3 Place Saint-Michel',
             venueTypeId: null,
             venueLabelId: null,
@@ -312,6 +313,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           bookingEmail: 'contact@example.net',
           city: 'Paris',
           comment: 'Commentaire',
+          description: '',
           latitude: '0.0',
           longitude: '0.0',
           name: 'Théatre Saint-Michel',
@@ -382,6 +384,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           bookingEmail: 'contact@example.net',
           city: 'Paris',
           comment: '',
+          description: '',
           latitude: '0.0',
           longitude: '0.0',
           name: 'Théatre Saint-Michel',

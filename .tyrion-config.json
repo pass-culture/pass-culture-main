@@ -9,7 +9,8 @@
     "testWarning": 5,
     "testInitialize": 5,
     "rtl": 5,
-    "deprecated": 5
+    "deprecated": 5,
+    "implementation": 5
   },
   "standard": 100,
   "ignorePath": [

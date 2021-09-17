@@ -14,10 +14,7 @@ import { composeValidators } from 'react-final-form-utils'
 import FieldErrors from '../FieldErrors'
 import getRequiredValidate from '../utils/getRequiredValidate'
 
-function formatInputValue(value, maxLength) {
-  if (!value) {
-    return ''
-  }
+function formatInputValueIfTooLong(value, maxLength) {
   const valueLength = value.length
   const valueIsTooLong = valueLength > maxLength - 1
   return valueIsTooLong ? value.slice(0, maxLength - 1) : value
@@ -39,7 +36,7 @@ class TextareaField extends PureComponent {
       ...ReactAutosizeProps
     } = this.props
 
-    const value = formatInputValue(input.value, maxLength)
+    const value = formatInputValueIfTooLong(input.value, maxLength)
 
     return (
       <div
