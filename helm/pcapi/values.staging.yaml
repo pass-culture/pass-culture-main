@@ -132,6 +132,7 @@ highLatencyApi:
           - path: /offers$
           - path: /offers/all-active-status$
           - path: /offerers$
+          - path: /offerers/(.*)$
           - path: /venues$
           - path: /venues/(.*)/stats$
           - path: /venueProviders$
@@ -141,6 +142,7 @@ highLatencyApi:
           - path: /offers$
           - path: /offers/all-active-status$
           - path: /offerers$
+          - path: /offerers/(.*)$
           - path: /venues$
           - path: /venues/(.*)/stats$
           - path: /venueProviders$
