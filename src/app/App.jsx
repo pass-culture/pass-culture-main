@@ -77,7 +77,7 @@ export const App = props => {
 App.propTypes = {
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.shape()), PropTypes.shape()])
     .isRequired,
-  featuresInitialized: PropTypes.bool.isRequired,
+  featuresAreInitialized: PropTypes.bool.isRequired,
   getCurrentUser: PropTypes.func.isRequired,
   isMaintenanceActivated: PropTypes.bool.isRequired,
   loadFeatures: PropTypes.func.isRequired,
