@@ -49,7 +49,7 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
         ],
         categories: [
           {
-            subcategories: [{ id: 'cinema', searchGroup: 'Cinéma' }],
+            subcategories: [{ id: 'cinema', searchGroupName: 'CINEMA' }],
             searchGroups: [
               { name: 'LIVRE', value: 'Livre' },
               { name: 'CINEMA', value: 'Cinéma' },
