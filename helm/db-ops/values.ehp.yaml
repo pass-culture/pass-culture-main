@@ -1,0 +1,31 @@
+# Default values for passculture.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+image:
+  repository: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-tools/db-ops
+  tag: latest
+  pullPolicy: Always
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+schedule:  "0 3 * * 4" # Thursday at 3am
+timezone: "Europe/Paris"
+
+roleBinding:
+  create: true
+
+serviceAccount:
+  create: true
+  annotations:
+    iam.gke.io/gcp-service-account: metier-ehp-sqldump-processor@passculture-metier-ehp.iam.gserviceaccount.com
+
+workflows:
+  dummy:
+    secretsPrefix: pcapi-testing
+    secretsProject: passculture-metier-ehp
+    newUserPasswordSecretName: database_credentials_password
+    script: "-cprint('Dummy workflow that does nothing, bye !')"
+    envVars:
+      DUMMY: dummy
