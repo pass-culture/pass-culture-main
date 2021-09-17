@@ -18,7 +18,9 @@ import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
-import AccessibilityFields, { autoFillNoDisabilityCompliantDecorator } from '../fields/AccessibilityFields'
+import AccessibilityFields, {
+  autoFillNoDisabilityCompliantDecorator,
+} from '../fields/AccessibilityFields'
 import BankInformation from '../fields/BankInformationFields/BankInformationFields'
 import IdentifierFields from '../fields/IdentifierFields/IdentifierFields'
 import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
@@ -30,7 +32,6 @@ import VenueLabel from '../ValueObjects/VenueLabel'
 import VenueType from '../ValueObjects/VenueType'
 
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
-
 
 /**
  * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel -> à faire lors de la V2 ?"
@@ -201,7 +202,11 @@ class VenueEdition extends PureComponent {
 
     const { id: initialId, isVirtual: initialIsVirtual, name: initialName } = venue || {}
 
-    const decorators = [autoFillNoDisabilityCompliantDecorator, bindGetSuggestionsToLatitude, bindGetSuggestionsToLongitude]
+    const decorators = [
+      autoFillNoDisabilityCompliantDecorator,
+      bindGetSuggestionsToLatitude,
+      bindGetSuggestionsToLongitude,
+    ]
 
     const showForm = !initialIsVirtual && typeof offerer !== 'undefined'
 
@@ -230,7 +235,7 @@ class VenueEdition extends PureComponent {
         </NavLink>
         <PageTitle title={pageTitle} />
         <Titles
-          action={actionLink}
+          action={actionLink || undefined}
           subtitle={initialName}
           title="Lieu"
         />
