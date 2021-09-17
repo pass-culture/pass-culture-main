@@ -8,7 +8,7 @@ from pcapi.core.offerers.api import create_digital_venue
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueType
-from pcapi.core.offerers.repository import find_by_siren
+from pcapi.core.offerers.repository import find_offerer_by_siren
 from pcapi.core.users.api import create_pro_user
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.domain.password import random_password
@@ -101,7 +101,7 @@ def import_new_offerer_from_csv(row: dict) -> None:
         pro.validationToken = None
         create_reset_password_token(pro, token_life_time=timedelta(days=90))
 
-    existing_offerer = find_by_siren(row["SIREN"])
+    existing_offerer = find_offerer_by_siren(row["SIREN"])
     if existing_offerer:
         offerer = existing_offerer
     else:

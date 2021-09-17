@@ -5,7 +5,8 @@ from typing import Callable
 
 from pcapi.core.offerers.api import create_digital_venue
 from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.repository import find_by_siren
+from pcapi.core.offerers.repository import find_offerer_by_siren
+from pcapi.core.offerers.repository import find_venue_by_managing_offerer_id
 from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
@@ -13,7 +14,6 @@ from pcapi.models import UserOfferer
 from pcapi.repository import repository
 from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id_and_offerer_id
 from pcapi.repository.user_queries import find_user_by_email
-from pcapi.repository.venue_queries import find_by_managing_offerer_id
 
 
 logger = logging.getLogger(__name__)
@@ -53,7 +53,7 @@ def iterate_rows_for_user_offerers(csv_rows: list[list[str]]) -> list:
 def create_activated_user_offerer(
     csv_row: list[str],
     find_user: Callable = find_user_by_email,
-    find_offerer: Callable = find_by_siren,
+    find_offerer: Callable = find_offerer_by_siren,
     find_user_offerer: Callable = find_one_or_none_by_user_id_and_offerer_id,
 ) -> UserOfferer:
     user = find_user(csv_row[USER_EMAIL_COLUMN_INDEX])
@@ -69,7 +69,7 @@ def create_activated_user_offerer(
     filled_offerer = fill_offerer_from(csv_row, offerer)
     repository.save(filled_offerer)
 
-    virtual_venue = find_by_managing_offerer_id(filled_offerer.id)
+    virtual_venue = find_venue_by_managing_offerer_id(filled_offerer.id)
     if not virtual_venue:
         filled_virtual_venue = create_digital_venue(offerer)
         repository.save(filled_virtual_venue)

@@ -1,10 +1,10 @@
+from pcapi.core.offerers.repository import find_venue_by_id
 from pcapi.models import ApiErrors
 from pcapi.models import Offer
-from pcapi.repository import venue_queries
 
 
 def validate(offer: Offer, api_errors: ApiErrors) -> ApiErrors:
-    venue = offer.venue if offer.venue else venue_queries.find_by_id(offer.venueId)
+    venue = offer.venue if offer.venue else find_venue_by_id(offer.venueId)
 
     if offer.isDigital:
         if not venue.isVirtual:

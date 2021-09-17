@@ -1,7 +1,7 @@
+from pcapi.core.offerers.repository import find_virtual_venue_by_offerer_id
 from pcapi.models import ApiErrors
 from pcapi.models import Venue
 from pcapi.repository import offerer_queries
-from pcapi.repository import venue_queries
 
 
 def validate(venue: Venue, api_errors: ApiErrors) -> ApiErrors:
@@ -34,7 +34,7 @@ def validate(venue: Venue, api_errors: ApiErrors) -> ApiErrors:
         if offerer_id is None:
             offerer_id = venue.managingOfferer.id
 
-        already_existing_virtual_venue = venue_queries.find_by_offerer_id_and_is_virtual(offerer_id)
+        already_existing_virtual_venue = find_virtual_venue_by_offerer_id(offerer_id)
         if already_existing_virtual_venue is not None and already_existing_virtual_venue.id != venue.id:
             api_errors.add_error("isVirtual", "Un lieu pour les offres numériques existe déjà pour cette structure")
 

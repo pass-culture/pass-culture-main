@@ -82,13 +82,29 @@ def get_api_key_prefixes(offerer_id: int) -> list[str]:
     ]
 
 
-def find_by_siren(siren: str) -> Offerer:
+def find_offerer_by_siren(siren: str) -> Optional[Offerer]:
     return Offerer.query.filter_by(siren=siren).one_or_none()
 
 
-def find_user_offerer_by_validation_token(token: str) -> UserOfferer:
+def find_user_offerer_by_validation_token(token: str) -> Optional[UserOfferer]:
     return UserOfferer.query.filter_by(validationToken=token).one_or_none()
 
 
-def find_offerer_by_validation_token(token: str) -> UserOfferer:
+def find_offerer_by_validation_token(token: str) -> Optional[UserOfferer]:
     return Offerer.query.filter_by(validationToken=token).one_or_none()
+
+
+def find_venue_by_id(venue_id: int) -> Optional[Venue]:
+    return Venue.query.filter_by(id=venue_id).one_or_none()
+
+
+def find_venue_by_siret(siret: str) -> Optional[Venue]:
+    return Venue.query.filter_by(siret=siret).one_or_none()
+
+
+def find_venue_by_managing_offerer_id(offerer_id: int) -> Optional[Venue]:
+    return Venue.query.filter_by(managingOffererId=offerer_id).first()
+
+
+def find_virtual_venue_by_offerer_id(offerer_id: int) -> Optional[Venue]:
+    return Venue.query.filter_by(managingOffererId=offerer_id, isVirtual=True).first()

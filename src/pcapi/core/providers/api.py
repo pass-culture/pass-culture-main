@@ -6,6 +6,7 @@ from typing import Union
 
 from pcapi.core import search
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.repository import find_venue_by_id
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import get_offers_map_by_id_at_providers
@@ -25,7 +26,6 @@ from pcapi.domain.price_rule import PriceRule
 from pcapi.models import Product
 from pcapi.models.db import db
 from pcapi.repository import repository
-from pcapi.repository.venue_queries import find_by_id
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
 from pcapi.validation.models.entity_validator import validate
@@ -41,7 +41,7 @@ def create_venue_provider(
     if not provider:
         raise ProviderNotFound()
 
-    venue = find_by_id(venue_id)
+    venue = find_venue_by_id(venue_id)
 
     if not venue:
         raise VenueNotFound()

@@ -7,8 +7,8 @@ from sqlalchemy.sql.sqltypes import DateTime
 from pcapi.core.bookings.api import _cancel_booking
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.offerers.repository import find_venue_by_id
 from pcapi.repository import repository
-from pcapi.repository.venue_queries import find_by_id
 from pcapi.utils.human_ids import dehumanize
 
 
@@ -20,7 +20,7 @@ def cancel_old_unused_bookings_for_venue(humanized_venue_id: str, reason: Bookin
     if venue_id is None:
         return
 
-    venue = find_by_id(venue_id)
+    venue = find_venue_by_id(venue_id)
 
     if venue is None:
         raise Exception(f"There is no venue with id {humanized_venue_id}")

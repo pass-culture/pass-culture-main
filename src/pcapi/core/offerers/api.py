@@ -13,7 +13,7 @@ from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueContact
 from pcapi.core.offerers.models import VenueType
-from pcapi.core.offerers.repository import find_by_siren
+from pcapi.core.offerers.repository import find_offerer_by_siren
 from pcapi.core.offerers.repository import find_offerer_by_validation_token
 from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
 from pcapi.core.users.models import User
@@ -166,7 +166,7 @@ def delete_api_key_by_user(user: User, api_key_prefix: str) -> None:
 
 
 def create_offerer(user: User, offerer_informations: CreateOffererQueryModel):
-    offerer = find_by_siren(offerer_informations.siren)
+    offerer = find_offerer_by_siren(offerer_informations.siren)
 
     if offerer is not None:
         user_offerer = offerer.grant_access(user)
