@@ -300,7 +300,7 @@ _Poser un tag_ consiste à sélectionner un ensemble de commits et de leur attri
 
 1. Checkout master sur tous les submodules
 
-- `git submodule foreach git checkout master && git pull`
+- `git submodule foreach git checkout master && git submodule foreach git pull`
 
 
 La seule branche devant être taguée de cette façon est master. Pour les hotfixes, [voir plus bas](#hot-fixes).
@@ -353,8 +353,11 @@ Faire un hotfix consiste à créer un nouveau tag à partir du tag précédents 
 1. Les commits sont poussés sur `master`, déployés sur testing et validés par les POs
 2. Se placer en local sur le dernier tag
 
-- `git submodule foreach git checkout v{numero_de_version}`
-
+- repo main : `git checkout v{numero_de_version}`
+- repo api : `git checkout v{numero_de_version}`
+- repo pro : `git checkout v{numero_de_version}`
+- repo webapp : `git checkout v{numero_de_version}`
+- repo adage-front : `git checkout v{numero_de_version}`
 
 3. Cherry-pick les commits voulus
 
