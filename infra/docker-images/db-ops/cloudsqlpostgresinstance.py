@@ -256,6 +256,37 @@ class CloudSQLPostgresInstance:
             body={"name": username, "password": password}
         ).execute()
 
+    def import_dump(self, target_database: str, dump_uri: str, import_user: str):
+        return self.sqladmin_instances_service.import_(
+            project=self.project,
+            instance=self.name,
+            body={
+                "importContext": {
+                    "database": target_database,
+                    "fileType": "SQL",
+                    "importUser": import_user,
+                    "uri": dump_uri
+                }
+            }
+        ).execute()
+
+    def export_dump(self, database_name: str, dump_uri: str):
+        print("Exporting database %s to %s" % (database_name, dump_uri))
+        operation = self.sqladmin_instances_service.export(
+            project=self.project,
+            instance=self.name,
+            body={
+                "exportContext": {
+                    "databases": [database_name],
+                    "fileType": "SQL",
+                    "uri": dump_uri
+                }
+            }
+        ).execute()
+
+        self.wait_for_operation(operation=operation, check_interval=10)
+        print("Ended: Exporting database %s to %s" % (database_name, dump_uri))
+
     def wait_for_operation(self, operation, check_interval: int):
         while self.sqladmin_operations_service.get(project=self.project, operation=operation['name']).execute()[
             "status"] != "DONE":
