@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -38,17 +38,18 @@ const FeaturedRoute = props => {
 
   return (
     <Route {...routeProps}>
-      {children || null}
+      {children}
     </Route>
   )
 }
 
 FeaturedRoute.defaultProps = {
+  children: null,
   featureName: null,
 }
 
 FeaturedRoute.propTypes = {
-  children: PropTypes.shape().isRequired,
+  children: PropTypes.shape(),
   featureName: PropTypes.string,
 }
 
