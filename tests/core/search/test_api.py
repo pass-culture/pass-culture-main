@@ -109,31 +109,14 @@ class ReindexOfferIdsTest:
         assert backend.pop_offer_ids_from_queue(5, from_error_queue=True) == {offer.id}
 
 
-# FIXME (dbaty, 2021-06-25): the lack of Redis in tests makes these
-# tests painful to write and read.
 @override_settings(REDIS_OFFER_IDS_CHUNK_SIZE=3)
 @mock.patch("pcapi.core.search._reindex_offer_ids")
 class IndexOffersInQueueTest:
-    def test_cron_behaviour(self, mocked_reindex_offer_ids):
-        queue = list(range(1, 9))  # 8 items: 1..8
+    def test_cron_behaviour(self, mocked_reindex_offer_ids, app):
+        # Put 8 items in the queue, in that order: 1..8
+        app.redis_client.lpush("offer_ids", *reversed(range(1, 9)))
 
-        def fake_pop(self, count, from_error_queue):
-            assert count == 3  # overriden REDIS_OFFER_IDS_CHUNK_SIZE
-            assert not from_error_queue
-            popped = set()
-            for _i in range(count):
-                try:
-                    popped.add(queue.pop(0))
-                except IndexError:  # queue is empty
-                    break
-            return popped
-
-        def fake_len(self, queue_name):
-            return len(queue)
-
-        with mock.patch("pcapi.core.search.backends.testing.TestingBackend.pop_offer_ids_from_queue", fake_pop):
-            with mock.patch("redis.Redis.llen", fake_len):
-                search.index_offers_in_queue()
+        search.index_offers_in_queue()
 
         # First run pops and indexes 1, 2, 3. Second run pops and
         # indexes 4, 5, 6. And stops because there are less than
@@ -144,28 +127,13 @@ class IndexOffersInQueueTest:
             mock.call(mock.ANY, {4, 5, 6})
         ]
         # fmt: on
-        assert queue == [7, 8]
+        assert app.redis_client.lrange("offer_ids", 0, 5) == [b"7", b"8"]
 
-    def test_command_behaviour(self, mocked_reindex_offer_ids):
-        queue = list(range(1, 9))  # 8 items: 1..8
+    def test_command_behaviour(self, mocked_reindex_offer_ids, app):
+        # Put 8 items in the queue, in that order: 1..8
+        app.redis_client.lpush("offer_ids", *reversed(range(1, 9)))
 
-        def fake_pop(self, count, from_error_queue):
-            assert count == 3  # overriden REDIS_OFFER_IDS_CHUNK_SIZE
-            assert not from_error_queue
-            popped = set()
-            for _i in range(count):
-                try:
-                    popped.add(queue.pop(0))
-                except IndexError:  # queue is empty
-                    break
-            return popped
-
-        def fake_len(self, queue_name):
-            return len(queue)
-
-        with mock.patch("pcapi.core.search.backends.testing.TestingBackend.pop_offer_ids_from_queue", fake_pop):
-            with mock.patch("redis.Redis.llen", fake_len):
-                search.index_offers_in_queue(stop_only_when_empty=True)
+        search.index_offers_in_queue(stop_only_when_empty=True)
 
         # First run pops and indexes 1, 2, 3. Second run pops and
         # indexes 4, 5, 6. Third run pops 7, 8 and stops because the
@@ -175,7 +143,7 @@ class IndexOffersInQueueTest:
             mock.call(mock.ANY, {4, 5, 6}),
             mock.call(mock.ANY, {7, 8}),
         ]
-        assert queue == []
+        assert app.redis_client.llen("offer_ids") == 0
 
 
 def test_unindex_offer_ids(app):
