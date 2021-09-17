@@ -62,7 +62,7 @@ export const OffersSearch = ({
           <input
             {...getInputProps({
               placeholder:
-                "Nom de l'offre, du lieu ou de la catégorie (Films, Visites, Conférences, Spectacles, Cours, Musique)",
+                "Nom de l'offre, du lieu ou de la catégorie (films, visites, conférences, spectacles, cours, musique)",
             })}
           />
           {getAutocomplete()}
