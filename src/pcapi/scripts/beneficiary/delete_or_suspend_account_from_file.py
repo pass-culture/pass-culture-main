@@ -1,6 +1,7 @@
 import logging
 from typing import Iterable
 
+import pcapi.core.fraud.models as fraud_models
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.users import constants
 from pcapi.core.users.api import suspend_account
@@ -30,6 +31,9 @@ def _delete_users_and_favorites(user_ids: set) -> None:
             BeneficiaryImport.beneficiaryId == user_id,
         ).delete(synchronize_session=False)
         BeneficiaryImport.query.filter(BeneficiaryImport.beneficiaryId == user_id).delete(synchronize_session=False)
+        fraud_models.BeneficiaryFraudResult.query.filter_by(userId=user_id).delete(synchronize_session=False)
+        fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user_id).delete(synchronize_session=False)
+        fraud_models.BeneficiaryFraudReview.query.filter_by(userId=user_id).delete(synchronize_session=False)
         user_offerers: list[UserOfferer] = UserOfferer.query.filter(UserOfferer.userId == user_id).all()
         for user_offerer in user_offerers:
             if user_offerer.isValidated and user_offerer.offerer.isValidated:
