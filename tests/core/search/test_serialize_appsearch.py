@@ -42,7 +42,6 @@ def test_serialize_offer():
         "artist": "Author Performer Speaker Stage Director",
         "category": "LIVRE",
         "date_created": offer.dateCreated,
-        "dates": [],
         "description": "Un livre qu'il est bien pour le lire",
         "group": "2221001648",
         "is_digital": 0,
@@ -57,9 +56,6 @@ def test_serialize_offer():
         "ranking_weight": 2,
         "search_group": subcategories.SearchGroupChoices.LIVRE.value,
         "stocks_date_created": [stock.dateCreated],
-        "tags": [],
-        "times": [],
-        "thumb_url": None,
         "offerer_name": "Les Librairies Associées",
         "venue_id": 127,
         "venue_department_code": "75",
@@ -78,7 +74,7 @@ def test_serialize_offer_artist_strip():
 def test_serialize_offer_artist_empty():
     offer = offers_factories.OfferFactory(extraData={})
     serialized = appsearch.AppSearchBackend().serialize_offer(offer)
-    assert serialized["artist"] is None
+    assert "artist" not in serialized
 
 
 def test_serialize_offer_dates_and_times():
@@ -147,11 +143,35 @@ def test_check_number_of_sql_queries():
         appsearch.AppSearchBackend().serialize_offer(offer)
 
 
+def full_offer_factory():
+    stock = offers_factories.EventStockFactory(
+        offer__product__thumbCount=1,
+        offer__extraData={"author": "Jane Doe"},
+    )
+    offers_factories.OfferCriterionFactory(offer=stock.offer)
+    return stock.offer
+
+
+def full_venue_factory():
+    return offers_factories.VenueFactory(
+        audioDisabilityCompliant=True,
+        mentalDisabilityCompliant=True,
+        motorDisabilityCompliant=True,
+        visualDisabilityCompliant=True,
+        contact__social_medias={
+            "facebook": "https://example.com/facebook",
+            "instagram": "https://example.com/instagram",
+            "snapchat": "https://example.com/snapchat",
+            "twitter": "https://twitter.com/my.venue",
+        },
+    )
+
+
 @pytest.mark.parametrize(
     "factory,serializer,schema",
     [
-        (offers_factories.OfferFactory, appsearch.AppSearchBackend.serialize_offer, appsearch.OFFERS_SCHEMA),
-        (offers_factories.VenueFactory, appsearch.AppSearchBackend.serialize_venue, appsearch.VENUES_SCHEMA),
+        (full_offer_factory, appsearch.AppSearchBackend.serialize_offer, appsearch.OFFERS_SCHEMA),
+        (full_venue_factory, appsearch.AppSearchBackend.serialize_venue, appsearch.VENUES_SCHEMA),
     ],
 )
 def test_schemas(factory, serializer, schema):
@@ -229,17 +249,8 @@ def test_serialize_venue():
         "venue_type": venue.venueTypeCode.name,
         "position": f"{venue.latitude},{venue.longitude}",
         "description": venue.description,
-        "audio_disability": venue.audioDisabilityCompliant,
-        "mental_disability": venue.mentalDisabilityCompliant,
-        "motor_disability": venue.motorDisabilityCompliant,
-        "visual_disability": venue.visualDisabilityCompliant,
         "email": "some@email.com",
-        "phone_number": None,
-        "website": None,
-        "facebook": None,
         "twitter": "https://twitter.com/my.venue",
-        "instagram": None,
-        "snapchat": None,
     }
 
 
@@ -253,5 +264,5 @@ def test_serialize_disability_related_fields():
     serialized = appsearch.AppSearchBackend().serialize_venue(venue)
     assert serialized["audio_disability"] == 1
     assert serialized["mental_disability"] == 0
-    assert serialized["motor_disability"] is None
     assert serialized["visual_disability"] == 1
+    assert "motor_disability" not in serialized

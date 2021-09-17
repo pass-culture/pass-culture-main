@@ -132,6 +132,15 @@ def to_app_search_bool(value: typing.Optional[int]):
     return int(value)
 
 
+def omit_empty_values(data: dict):
+    """Return ``data`` without its empty values.
+
+    We do not want to index fields with empty values, as it takes
+    more space and could affect performance.
+    """
+    return {field: value for field, value in data.items() if value not in (None, [], "")}
+
+
 def get_batches(iterable, size=1):
     for i in range(0, len(iterable), size):
         yield iterable[i : i + size]
@@ -302,59 +311,63 @@ class AppSearchBackend(base.SearchBackend):
         artist = " ".join(extra_data.get(key, "") for key in ("author", "performer", "speaker", "stageDirector"))
 
         venue = offer.venue
-        return {
-            "subcategory_label": offer.subcategory.app_label,
-            "artist": artist.strip() or None,
-            "category": offer.offer_category_name_for_app,
-            "date_created": offer.dateCreated,  # used only to rank results
-            "dates": dates,
-            "description": offer.description,
-            "group": group,
-            "is_digital": to_app_search_bool(offer.isDigital),
-            "is_duo": to_app_search_bool(offer.isDuo),
-            "is_educational": to_app_search_bool(offer.isEducational),
-            "is_event": to_app_search_bool(offer.isEvent),
-            "is_thing": to_app_search_bool(offer.isThing),
-            "label": offer.offerType["appLabel"],
-            "name": offer.name,
-            "id": offer.id,
-            "prices": [int(stock.price * 100) for stock in stocks],
-            "ranking_weight": offer.rankingWeight or 0,
-            "search_group": offer.subcategory.search_group,
-            "stocks_date_created": [stock.dateCreated for stock in stocks],
-            "tags": [criterion.name for criterion in offer.criteria],
-            "times": times,
-            "thumb_url": url_path(offer.thumbUrl),
-            "offerer_name": venue.managingOfferer.name,
-            "venue_department_code": venue.departementCode,
-            "venue_id": venue.id,
-            "venue_name": venue.name,
-            "venue_position": position(venue),
-            "venue_public_name": venue.publicName,
-        }
+        return omit_empty_values(
+            {
+                "subcategory_label": offer.subcategory.app_label,
+                "artist": artist.strip() or None,
+                "category": offer.offer_category_name_for_app,
+                "date_created": offer.dateCreated,  # used only to rank results
+                "dates": dates,
+                "description": offer.description,
+                "group": group,
+                "is_digital": to_app_search_bool(offer.isDigital),
+                "is_duo": to_app_search_bool(offer.isDuo),
+                "is_educational": to_app_search_bool(offer.isEducational),
+                "is_event": to_app_search_bool(offer.isEvent),
+                "is_thing": to_app_search_bool(offer.isThing),
+                "label": offer.offerType["appLabel"],
+                "name": offer.name,
+                "id": offer.id,
+                "prices": [int(stock.price * 100) for stock in stocks],
+                "ranking_weight": offer.rankingWeight or 0,
+                "search_group": offer.subcategory.search_group,
+                "stocks_date_created": [stock.dateCreated for stock in stocks],
+                "tags": [criterion.name for criterion in offer.criteria],
+                "times": times,
+                "thumb_url": url_path(offer.thumbUrl),
+                "offerer_name": venue.managingOfferer.name,
+                "venue_department_code": venue.departementCode,
+                "venue_id": venue.id,
+                "venue_name": venue.name,
+                "venue_position": position(venue),
+                "venue_public_name": venue.publicName,
+            }
+        )
 
     @classmethod
     def serialize_venue(cls, venue: offerers_models.Venue) -> dict:
         social_medias = getattr(venue.contact, "social_medias", {})
-        return {
-            "id": venue.id,
-            "name": venue.publicName or venue.name,
-            "offerer_name": venue.managingOfferer.name,
-            "venue_type": venue.venueTypeCode.name,
-            "position": position(venue),
-            "description": venue.description,
-            "audio_disability": to_app_search_bool(venue.audioDisabilityCompliant),
-            "mental_disability": to_app_search_bool(venue.mentalDisabilityCompliant),
-            "motor_disability": to_app_search_bool(venue.motorDisabilityCompliant),
-            "visual_disability": to_app_search_bool(venue.visualDisabilityCompliant),
-            "email": getattr(venue.contact, "email", None),
-            "phone_number": getattr(venue.contact, "phone_number", None),
-            "website": getattr(venue.contact, "website", None),
-            "facebook": social_medias.get("facebook"),
-            "twitter": social_medias.get("twitter"),
-            "instagram": social_medias.get("instagram"),
-            "snapchat": social_medias.get("snapchat"),
-        }
+        return omit_empty_values(
+            {
+                "id": venue.id,
+                "name": venue.publicName or venue.name,
+                "offerer_name": venue.managingOfferer.name,
+                "venue_type": venue.venueTypeCode.name,
+                "position": position(venue),
+                "description": venue.description,
+                "audio_disability": to_app_search_bool(venue.audioDisabilityCompliant),
+                "mental_disability": to_app_search_bool(venue.mentalDisabilityCompliant),
+                "motor_disability": to_app_search_bool(venue.motorDisabilityCompliant),
+                "visual_disability": to_app_search_bool(venue.visualDisabilityCompliant),
+                "email": getattr(venue.contact, "email", None),
+                "phone_number": getattr(venue.contact, "phone_number", None),
+                "website": getattr(venue.contact, "website", None),
+                "facebook": social_medias.get("facebook"),
+                "twitter": social_medias.get("twitter"),
+                "instagram": social_medias.get("instagram"),
+                "snapchat": social_medias.get("snapchat"),
+            }
+        )
 
 
 class AppSearchApiClient:
