@@ -11,7 +11,7 @@ describe('src | components | layout | Verso | VersoHeader', () => {
     props = {
       subtitle: 'Offer subtitle',
       title: 'Offer title',
-      subcategory: { searchGroup: 'Spectacles' },
+      subcategory: { searchGroupName: 'SPECTACLE' },
     }
   })
 

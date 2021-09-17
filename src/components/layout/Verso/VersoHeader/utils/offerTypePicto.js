@@ -1,16 +1,16 @@
 const OFFER_TYPE_PICTO = {
-  'Films, séries, podcasts': 'visite',
-  Cinéma: 'visite',
-  'Conférences, rencontres': 'conference',
-  Jeux: 'jeu',
-  Livres: 'livre',
-  'Visites, expositions': 'visite',
-  Musique: 'musique',
-  'Cours, ateliers': 'atelier',
-  Presse: 'conference',
-  Spectacles: 'spectacle',
-  'Instruments de musique': 'musique',
-  'Matériel arts créatifs': 'visite',
+  FILM: 'visite',
+  CINEMA: 'visite',
+  CONFERENCE: 'conference',
+  JEU: 'jeu',
+  LIVRE: 'livre',
+  VISITE: 'visite',
+  MUSIQUE: 'musique',
+  COURS: 'atelier',
+  PRESSE: 'conference',
+  SPECTACLE: 'spectacle',
+  INSTRUMENT: 'musique',
+  MATERIEL: 'visite',
 }
 
 export default OFFER_TYPE_PICTO

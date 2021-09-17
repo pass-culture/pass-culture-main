@@ -8,7 +8,7 @@ jest.mock('../../../../../../utils/config', () => ({
 describe('src | components | layout | Verso | VersoHeader | utils | findOfferPictoPathByOfferType', () => {
   it('should return an url to the matching icon when offer type is provided', () => {
     // given
-    const subcategory = { searchGroup: 'Spectacles' }
+    const subcategory = { searchGroupName: 'SPECTACLE' }
 
     // when
     const result = findOfferPictoPathByOfferType(subcategory)
@@ -19,7 +19,7 @@ describe('src | components | layout | Verso | VersoHeader | utils | findOfferPic
 
   it('should return an url to the eye icon when offer type is cinema card', () => {
     // given
-    const subcategory = { searchGroup: 'Cinéma' }
+    const subcategory = { searchGroupName: 'CINEMA' }
 
     // when
     const result = findOfferPictoPathByOfferType(subcategory)

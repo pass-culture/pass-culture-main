@@ -6,8 +6,8 @@ const findOfferPictoPathByOfferType = subcategory => {
     return null
   }
 
-  const searchGroup = subcategory.searchGroup
-  const picto = OFFER_TYPE_PICTO[searchGroup]
+  const searchGroupName = subcategory.searchGroupName
+  const picto = OFFER_TYPE_PICTO[searchGroupName]
 
   return `${ICONS_URL}/picto-${picto}.svg`
 }
