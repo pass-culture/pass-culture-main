@@ -469,8 +469,8 @@ class SendExpiredBookingsRecapEmailToBeneficiaryNewExpiryBookingsRuleTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class SendExpiredBookingsRecapEmailToOffererTest:
-    @pytest.mark.usefixtures("db_session")
+class SendExpiredBookingsRecapEmailToOffererLegacyExpiryBookingsRuleTest:
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
     def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app):
         offerer = OffererFactory()
         expired_today_dvd_booking = BookingFactory(stock__offer__bookingEmail="offerer.booking@example.com")
@@ -481,6 +481,92 @@ class SendExpiredBookingsRecapEmailToOffererTest:
         )
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1952508
+
+
+@pytest.mark.usefixtures("db_session")
+class SendExpiredBookingsRecapEmailToOffererNewExpiryBookingsRuleTest:
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app):
+        offerer = OffererFactory()
+        expired_today_dvd_booking = BookingFactory(stock__offer__bookingEmail="offerer.booking@example.com")
+        expired_today_cd_booking = BookingFactory(stock__offer__bookingEmail="offerer.booking@example.com")
+
+        send_expired_individual_bookings_recap_email_to_offerer(
+            offerer, [expired_today_cd_booking, expired_today_dvd_booking]
+        )
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3095184
+        assert mails_testing.outbox[0].sent_data["Vars"]
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    def test_should_send_two_emails_to_offerer_when_expired_books_bookings_and_other_bookings_cancelled(self):
+        offerer = OffererFactory()
+        expired_today_dvd_booking = BookingFactory(
+            stock__offer__name="Intouchables",
+            stock__offer__bookingEmail="offerer.booking@example.com",
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        )
+        expired_today_book_booking = BookingFactory(
+            stock__offer__name="Les misérables",
+            stock__offer__bookingEmail="offerer.booking@example.com",
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+
+        send_expired_individual_bookings_recap_email_to_offerer(
+            offerer, [expired_today_dvd_booking, expired_today_book_booking]
+        )
+
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3095184
+        assert mails_testing.outbox[0].sent_data["Vars"]["withdrawal_period"] == 10
+        assert mails_testing.outbox[0].sent_data["Vars"]["bookings"][0]["offer_name"] == "Les misérables"
+        assert mails_testing.outbox[1].sent_data["Mj-TemplateID"] == 3095184
+        assert mails_testing.outbox[1].sent_data["Vars"]["withdrawal_period"] == 30
+        assert mails_testing.outbox[1].sent_data["Vars"]["bookings"][0]["offer_name"] == "Intouchables"
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @patch(
+        "pcapi.emails.beneficiary_soon_to_be_expired_bookings.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE",
+        datetime(2021, 8, 3),
+    )
+    def test_should_send_email_to_offerer_with_withdrawal_30_when_expired_books_bookings_created_before_start_new_delay(
+        self,
+    ):
+        offerer = OffererFactory()
+        expired_today_book_booking = BookingFactory(
+            dateCreated=datetime(2021, 8, 1),
+            stock__offer__name="Les misérables",
+            stock__offer__bookingEmail="offerer.booking@example.com",
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+
+        send_expired_individual_bookings_recap_email_to_offerer(offerer, [expired_today_book_booking])
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3095184
+        assert mails_testing.outbox[0].sent_data["Vars"]["withdrawal_period"] == 30
+        assert mails_testing.outbox[0].sent_data["Vars"]["bookings"][0]["offer_name"] == "Les misérables"
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @patch(
+        "pcapi.emails.beneficiary_soon_to_be_expired_bookings.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE",
+        datetime(2021, 8, 3),
+    )
+    def test_should_send_email_to_offerer_with_withdrawal_10_when_expired_books_bookings_created_after_start_new_delay(
+        self,
+    ):
+        offerer = OffererFactory()
+        expired_today_book_booking = BookingFactory(
+            dateCreated=datetime(2021, 8, 4),
+            stock__offer__name="Les misérables",
+            stock__offer__bookingEmail="offerer.booking@example.com",
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+
+        send_expired_individual_bookings_recap_email_to_offerer(offerer, [expired_today_book_booking])
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3095184
+        assert mails_testing.outbox[0].sent_data["Vars"]["withdrawal_period"] == 10
+        assert mails_testing.outbox[0].sent_data["Vars"]["bookings"][0]["offer_name"] == "Les misérables"
 
 
 @pytest.mark.usefixtures("db_session")

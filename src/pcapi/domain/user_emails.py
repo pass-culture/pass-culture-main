@@ -172,11 +172,33 @@ def send_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings
             mails.send(recipients=[beneficiary.email], data=other_bookings_data)
 
 
-def send_expired_individual_bookings_recap_email_to_offerer(offerer: Offerer, bookings: list[Booking]) -> None:
+# TODO(yacine) this function will be removed after removing FF ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
+def legacy_send_expired_individual_bookings_recap_email_to_offerer(offerer: Offerer, bookings: list[Booking]) -> None:
     offerer_booking_email = bookings[0].stock.offer.bookingEmail
     if offerer_booking_email:
-        data = build_expired_bookings_recap_email_data_for_offerer(offerer, bookings)
+        data = build_expired_bookings_recap_email_data_for_offerer(offerer, bookings, BOOKINGS_AUTO_EXPIRY_DELAY.days)
         mails.send(recipients=[offerer_booking_email], data=data)
+
+
+def send_expired_individual_bookings_recap_email_to_offerer(offerer: Offerer, bookings: list[Booking]) -> None:
+    if not FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS.is_active():
+        legacy_send_expired_individual_bookings_recap_email_to_offerer(offerer, bookings)
+    else:
+        offerer_booking_email = bookings[0].stock.offer.bookingEmail
+        if offerer_booking_email:
+            books_bookings, other_bookings = filter_books_bookings(bookings)
+
+            if books_bookings:
+                books_bookings_data = build_expired_bookings_recap_email_data_for_offerer(
+                    offerer, books_bookings, BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
+                )
+                mails.send(recipients=[offerer_booking_email], data=books_bookings_data)
+
+            if other_bookings:
+                other_bookings_data = build_expired_bookings_recap_email_data_for_offerer(
+                    offerer, other_bookings, BOOKINGS_AUTO_EXPIRY_DELAY.days
+                )
+                mails.send(recipients=[offerer_booking_email], data=other_bookings_data)
 
 
 def send_pro_user_validation_email(user: User) -> None:
