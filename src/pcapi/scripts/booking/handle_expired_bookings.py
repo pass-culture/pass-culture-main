@@ -139,7 +139,10 @@ def notify_offerers_of_expired_individual_bookings(expired_on: datetime.date = N
     notified_offerers = []
 
     for offerer, individual_bookings in expired_individual_bookings_grouped_by_offerer.items():
-        send_expired_individual_bookings_recap_email_to_offerer(offerer, individual_bookings)
+        send_expired_individual_bookings_recap_email_to_offerer(
+            offerer,
+            [individual_booking.booking for individual_booking in individual_bookings],
+        )
         notified_offerers.append(offerer)
 
     logger.info(
