@@ -1,8 +1,7 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
-import PropTypes from 'prop-types'
 import React from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
@@ -37,12 +36,6 @@ const OfferersLayout = () => {
       </Route>
     </Switch>
   )
-}
-
-OfferersLayout.propTypes = {
-  match: PropTypes.shape({
-    path: PropTypes.string.isRequired,
-  }).isRequired,
 }
 
 export default OfferersLayout
