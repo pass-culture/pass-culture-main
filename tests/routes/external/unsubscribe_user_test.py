@@ -12,7 +12,7 @@ class UnsubscribeUserTest:
     def test_unsubscribe_user(self, app):
         # Given
         existing_user = UserFactory(email="lucy.ellingson@kennet.ca")
-        headers = {"origin": "http://localhost:3000", "X-Forwarded-For": "185.107.232.1"}
+        headers = {"X-Forwarded-For": "185.107.232.1"}
         data = {"email": "lucy.ellingson@kennet.ca"}
         assert existing_user.notificationSubscriptions["marketing_email"]
 
@@ -29,7 +29,7 @@ class UnsubscribeUserTest:
         existing_user = UserFactory(email="lucy.ellingson@kennet.ca")
         assert existing_user.notificationSubscriptions["marketing_email"]
 
-        headers = {"origin": "http://localhost:3000", "X-Forwarded-For": "127.0.0.1"}
+        headers = {"X-Forwarded-For": "127.0.0.1"}
         data = {"email": "lucy.ellingson@kennet.ca"}
 
         # When
@@ -48,7 +48,7 @@ class UnsubscribeUserTest:
         existing_user = UserFactory(email="lucy.ellingson@kennet.ca")
         assert existing_user.notificationSubscriptions["marketing_email"]
 
-        headers = {"origin": "http://localhost:3000", "X-Forwarded-For": "185.107.232.1"}
+        headers = {"X-Forwarded-For": "185.107.232.1"}
         data = {}
 
         # When
@@ -61,7 +61,7 @@ class UnsubscribeUserTest:
 
     def test_unsubscribe_user_does_not_exist(self, app):
         # Given
-        headers = {"origin": "http://localhost:3000", "X-Forwarded-For": "185.107.232.1"}
+        headers = {"X-Forwarded-For": "185.107.232.1"}
         data = {"email": "lucy.ellingson@kennet.ca"}
 
         # When
