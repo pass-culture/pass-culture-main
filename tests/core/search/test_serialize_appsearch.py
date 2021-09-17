@@ -17,7 +17,7 @@ from pcapi.utils.human_ids import humanize
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def test_serialize():
+def test_serialize_offer():
     offer = offers_factories.OfferFactory(
         name="Titre formidable",
         description="Un livre qu'il est bien pour le lire",
@@ -69,19 +69,19 @@ def test_serialize():
     }
 
 
-def test_serialize_artist_strip():
+def test_serialize_offer_artist_strip():
     offer = offers_factories.OfferFactory(extraData={"author": "Author"})
     serialized = appsearch.AppSearchBackend().serialize_offer(offer)
     assert serialized["artist"] == "Author"
 
 
-def test_serialize_artist_empty():
+def test_serialize_offer_artist_empty():
     offer = offers_factories.OfferFactory(extraData={})
     serialized = appsearch.AppSearchBackend().serialize_offer(offer)
     assert serialized["artist"] is None
 
 
-def test_serialize_dates_and_times():
+def test_serialize_offer_dates_and_times():
     offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
     dt = datetime.datetime(2032, 1, 1, 12, 15)
     offers_factories.EventStockFactory(offer=offer, beginningDatetime=dt)
@@ -91,7 +91,7 @@ def test_serialize_dates_and_times():
     assert serialized["times"] == [12 * 60 * 60 + 15 * 60]
 
 
-def test_serialize_group():
+def test_serialize_offer_group():
     offer = offers_factories.OfferFactory(extraData={})
     serialized = appsearch.AppSearchBackend().serialize_offer(offer)
     assert serialized["group"] == str(offer.id)
@@ -104,13 +104,13 @@ def test_serialize_group():
     assert serialized["group"] == "123456789"
 
 
-def test_serialize_tags():
+def test_serialize_offer_tags():
     tag = offers_factories.OfferCriterionFactory(criterion__name="formidable")
     serialized = appsearch.AppSearchBackend().serialize_offer(tag.offer)
     assert serialized["tags"] == ["formidable"]
 
 
-def test_serialize_thumb_url():
+def test_serialize_offer_thumb_url():
     offer = offers_factories.OfferFactory(product__thumbCount=1)
     serialized = appsearch.AppSearchBackend().serialize_offer(offer)
     assert serialized["thumb_url"] == f"/storage/thumbs/products/{humanize(offer.productId)}"
@@ -241,3 +241,17 @@ def test_serialize_venue():
         "instagram": None,
         "snapchat": None,
     }
+
+
+def test_serialize_disability_related_fields():
+    venue = offers_factories.VenueFactory(
+        audioDisabilityCompliant=True,
+        mentalDisabilityCompliant=False,
+        motorDisabilityCompliant=None,
+        visualDisabilityCompliant=True,
+    )
+    serialized = appsearch.AppSearchBackend().serialize_venue(venue)
+    assert serialized["audio_disability"] == 1
+    assert serialized["mental_disability"] == 0
+    assert serialized["motor_disability"] is None
+    assert serialized["visual_disability"] == 1

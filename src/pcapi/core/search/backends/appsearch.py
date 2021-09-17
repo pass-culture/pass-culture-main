@@ -83,10 +83,10 @@ VENUES_SCHEMA = {
     "venue_type": "text",
     "position": "geolocation",
     "description": "text",
-    "audio_disability": "text",
-    "mental_disability": "text",
-    "motor_disability": "text",
-    "visual_disability": "text",
+    "audio_disability": "number",
+    "mental_disability": "number",
+    "motor_disability": "number",
+    "visual_disability": "number",
     "email": "text",
     "phone_number": "text",
     "website": "text",
@@ -119,6 +119,17 @@ def url_path(url):
     if parts.fragment:
         path += f"#{parts.fragment}"
     return path
+
+
+def to_app_search_bool(value: typing.Optional[int]):
+    """Return 0, 1 or ``None`` for boolean values.
+
+    App Search does not have a boolean type. We index boolean values
+    as integers instead.
+    """
+    if value is None:
+        return None
+    return int(value)
 
 
 def get_batches(iterable, size=1):
@@ -299,11 +310,11 @@ class AppSearchBackend(base.SearchBackend):
             "dates": dates,
             "description": offer.description,
             "group": group,
-            "is_digital": int(offer.isDigital),
-            "is_duo": int(offer.isDuo),
-            "is_educational": int(offer.isEducational),
-            "is_event": int(offer.isEvent),
-            "is_thing": int(offer.isThing),
+            "is_digital": to_app_search_bool(offer.isDigital),
+            "is_duo": to_app_search_bool(offer.isDuo),
+            "is_educational": to_app_search_bool(offer.isEducational),
+            "is_event": to_app_search_bool(offer.isEvent),
+            "is_thing": to_app_search_bool(offer.isThing),
             "label": offer.offerType["appLabel"],
             "name": offer.name,
             "id": offer.id,
@@ -332,10 +343,10 @@ class AppSearchBackend(base.SearchBackend):
             "venue_type": venue.venueTypeCode.name,
             "position": position(venue),
             "description": venue.description,
-            "audio_disability": venue.audioDisabilityCompliant,
-            "mental_disability": venue.mentalDisabilityCompliant,
-            "motor_disability": venue.motorDisabilityCompliant,
-            "visual_disability": venue.visualDisabilityCompliant,
+            "audio_disability": to_app_search_bool(venue.audioDisabilityCompliant),
+            "mental_disability": to_app_search_bool(venue.mentalDisabilityCompliant),
+            "motor_disability": to_app_search_bool(venue.motorDisabilityCompliant),
+            "visual_disability": to_app_search_bool(venue.visualDisabilityCompliant),
             "email": getattr(venue.contact, "email", None),
             "phone_number": getattr(venue.contact, "phone_number", None),
             "website": getattr(venue.contact, "website", None),
