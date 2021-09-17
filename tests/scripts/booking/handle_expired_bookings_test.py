@@ -189,11 +189,11 @@ class NotifyUsersOfExpiredBookingsTest:
         assert mocked_send_email_recap.call_count == 2
         assert mocked_send_email_recap.call_args_list[0][0] == (
             expired_today_dvd_booking.individualBooking.user,
-            [expired_today_dvd_booking.individualBooking],
+            [expired_today_dvd_booking.individualBooking.booking],
         )
         assert mocked_send_email_recap.call_args_list[1][0] == (
             expired_today_cd_booking.individualBooking.user,
-            [expired_today_cd_booking.individualBooking],
+            [expired_today_cd_booking.individualBooking.booking],
         )
 
     @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_expired_bookings_recap_email_to_beneficiary")

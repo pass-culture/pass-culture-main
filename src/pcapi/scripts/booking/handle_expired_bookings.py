@@ -102,16 +102,20 @@ def notify_users_of_expired_individual_bookings(expired_on: datetime.date = None
     expired_on = expired_on or datetime.date.today()
 
     logger.info("[notify_users_of_expired_bookings] Start")
-    expired_bookings_ordered_by_user = bookings_repository.find_expired_individual_bookings_ordered_by_user(expired_on)
+    expired_individual_bookings_ordered_by_user = bookings_repository.find_expired_individual_bookings_ordered_by_user(
+        expired_on
+    )
 
     expired_bookings_grouped_by_user = dict()
-    for user, booking in groupby(expired_bookings_ordered_by_user, attrgetter("user")):
-        expired_bookings_grouped_by_user[user] = list(booking)
+    for user, individual_bookings in groupby(expired_individual_bookings_ordered_by_user, attrgetter("user")):
+        expired_bookings_grouped_by_user[user] = list(individual_bookings)
 
     notified_users = []
 
-    for user, bookings in expired_bookings_grouped_by_user.items():
-        send_expired_bookings_recap_email_to_beneficiary(user, bookings)
+    for user, individual_bookings in expired_bookings_grouped_by_user.items():
+        send_expired_bookings_recap_email_to_beneficiary(
+            user, [individual_booking.booking for individual_booking in individual_bookings]
+        )
         notified_users.append(user)
 
     logger.info(

@@ -285,7 +285,7 @@ def generate_booking_token():
     raise ValueError("Could not generate new booking token")
 
 
-def find_expired_individual_bookings_ordered_by_user(expired_on: date = None) -> Query:
+def find_expired_individual_bookings_ordered_by_user(expired_on: date = None) -> list[IndividualBooking]:
     expired_on = expired_on or date.today()
     return (
         IndividualBooking.query.join(Booking)
@@ -297,7 +297,7 @@ def find_expired_individual_bookings_ordered_by_user(expired_on: date = None) ->
     )
 
 
-def find_expired_individual_bookings_ordered_by_offerer(expired_on: date = None) -> Query:
+def find_expired_individual_bookings_ordered_by_offerer(expired_on: date = None) -> list[IndividualBooking]:
     expired_on = expired_on or date.today()
     return (
         IndividualBooking.query.join(Booking)
