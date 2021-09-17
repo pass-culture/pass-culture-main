@@ -186,6 +186,28 @@ class VenueEdition extends PureComponent {
     )
   }
 
+  renderForm() {
+    const { venue } = this.props
+    const { isVirtual: initialIsVirtual } = venue || {}
+    const decorators = [
+      autoFillNoDisabilityCompliantDecorator,
+      bindGetSuggestionsToLatitude,
+      bindGetSuggestionsToLongitude,
+    ]
+
+    return (
+      !initialIsVirtual && (
+        <Form
+          decorators={decorators}
+          initialValues={venue}
+          name="venue"
+          onSubmit={this.handleOnFormSubmit}
+          render={this.onHandleRender}
+        />
+      )
+    )
+  }
+
   render() {
     const {
       venue,
@@ -200,18 +222,9 @@ class VenueEdition extends PureComponent {
       id: venueId,
     })
 
-    const { id: initialId, isVirtual: initialIsVirtual, name: initialName } = venue || {}
-
-    const decorators = [
-      autoFillNoDisabilityCompliantDecorator,
-      bindGetSuggestionsToLatitude,
-      bindGetSuggestionsToLongitude,
-    ]
-
-    const showForm = !initialIsVirtual && typeof offerer !== 'undefined'
+    const { id: initialId, name: initialName } = venue || {}
 
     const pageTitle = readOnly ? 'Détails de votre lieu' : 'Modifier votre lieu'
-
     const actionLink = !!initialId && (
       <Link
         className="primary-button with-icon"
@@ -241,19 +254,15 @@ class VenueEdition extends PureComponent {
         />
 
         {venue && <VenueProvidersManagerContainer venue={venue} />}
-
-        {showForm && (
-          <Form
-            decorators={decorators}
-            initialValues={venue}
-            name="venue"
-            onSubmit={this.handleOnFormSubmit}
-            render={this.onHandleRender}
-          />
-        )}
+        {venue && offerer && this.renderForm()}
       </div>
     )
   }
+}
+
+VenueEdition.defaultProps = {
+  offerer: null,
+  venue: null,
 }
 
 VenueEdition.propTypes = {
@@ -263,10 +272,10 @@ VenueEdition.propTypes = {
   handleSubmitRequestSuccess: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
-  offerer: PropTypes.shape().isRequired,
+  offerer: PropTypes.shape(),
   query: PropTypes.shape().isRequired,
   trackModifyVenue: PropTypes.func.isRequired,
-  venue: PropTypes.shape().isRequired,
+  venue: PropTypes.shape(),
   venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,
   venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,
   withdrawalDetailActive: PropTypes.bool.isRequired,
