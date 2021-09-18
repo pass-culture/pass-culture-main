@@ -195,8 +195,7 @@ def test_schemas(factory, serializer, schema):
             expected_types = (datetime.datetime,)
 
         value = serialized[key]
-        if value in (None, []):  # valid for all field types
-            continue
+        assert value not in (None, [], "")  # empty values should not be indexed
 
         if isinstance(value, list):
             value = value[0]  # check the first item only
