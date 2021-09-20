@@ -1,6 +1,3 @@
-from unittest.mock import MagicMock
-from unittest.mock import patch
-
 from google.cloud import tasks_v2
 import requests_mock
 
@@ -12,15 +9,12 @@ from pcapi.notifications.push.transactional_notifications import TransactionalNo
 
 class BatchPushNotificationClientTest:
     @override_settings(BATCH_SECRET_API_KEY="coucou-la-cle")
-    @patch("pcapi.tasks.cloud_task.get_client")
-    def test_update_user_attributes(self, mock_get_client):
-        client_mock = MagicMock()
-        mock_get_client.return_value = client_mock
+    def test_update_user_attributes(self, cloud_task_client):
         BatchBackend().update_user_attributes(1, {"attri": "but"})
 
-        assert client_mock.create_task.call_count == 2
+        assert cloud_task_client.create_task.call_count == 2
 
-        ((_, ios_call_args), (_, android_call_args)) = client_mock.create_task.call_args_list
+        ((_, ios_call_args), (_, android_call_args)) = cloud_task_client.create_task.call_args_list
 
         assert ios_call_args["request"]["task"]["http_request"] == {
             "body": b'{"overwrite": false, "values": {"attri": "but"}}',

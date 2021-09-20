@@ -1,6 +1,8 @@
 from functools import wraps
 from pathlib import Path
 from pprint import pprint
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
 from alembic import command
 from alembic.config import Config
@@ -169,6 +171,17 @@ def assert_num_queries():
 @pytest.fixture(name="client")
 def client_fixture(app: Flask):
     return TestClient(app.test_client())
+
+
+@pytest.fixture(name="cloud_task_client")
+def cloud_task_client_fixture():
+    """
+    Mock for google.cloud.tasks_v2.CloudTasksClient
+    """
+    with patch("pcapi.tasks.cloud_task.get_client") as mock_get_client:
+        cloud_task_client_mock = MagicMock()
+        mock_get_client.return_value = cloud_task_client_mock
+        yield cloud_task_client_mock
 
 
 class TestClient:
