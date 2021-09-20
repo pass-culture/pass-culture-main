@@ -7,8 +7,8 @@ from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-from pcapi.flask_app import db
 from pcapi.models import Booking
+from pcapi.models import db
 
 
 fake_db_session = [Mock()]

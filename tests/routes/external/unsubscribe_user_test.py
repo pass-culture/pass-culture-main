@@ -2,7 +2,7 @@ import pytest
 
 from pcapi.core.testing import override_settings
 from pcapi.core.users.factories import UserFactory
-from pcapi.flask_app import db
+from pcapi.models import db
 
 from tests.conftest import TestClient
 

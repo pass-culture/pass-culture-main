@@ -8,8 +8,8 @@ from pcapi.admin.install import install_admin_views
 from pcapi.connectors.educonnect_service_provider import EduconnectServiceProvider
 from pcapi.flask_app import admin
 from pcapi.flask_app import app
-from pcapi.flask_app import db
 from pcapi.local_providers.install import install_local_providers
+from pcapi.models import db
 from pcapi.routes import install_routes
 from pcapi.routes.adage.v1.blueprint import adage_v1
 from pcapi.routes.adage_iframe.blueprint import adage_iframe

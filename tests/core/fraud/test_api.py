@@ -10,7 +10,7 @@ import pcapi.core.fraud.models as fraud_models
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
-from pcapi.flask_app import db
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
