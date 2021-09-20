@@ -1,7 +1,6 @@
 import "./Offer.scss"
 import React, { Fragment, useEffect, useState } from "react"
 
-import { Notification } from "app/components/Layout/Notification/Notification"
 import { ReactComponent as Logo } from "assets/logo-with-text.svg"
 import * as pcapi from "repository/pcapi/pcapi"
 import { ASSETS_URL } from "utils/config"
@@ -19,11 +18,9 @@ export const formatToReadableString = (input: string | null): string | null => {
 
 export const Offer = ({
   canPrebookOffers,
-  notify,
   result,
 }: {
   canPrebookOffers: boolean;
-  notify: (notification: Notification) => void;
   result: ResultType;
 }): JSX.Element | null => {
   const [offer, setOffer] = useState<OfferType | null>(null)
@@ -60,8 +57,7 @@ export const Offer = ({
             {offer.name}
           </h2>
           <p className="venue-name">
-            {offer.venue.publicName ||
-              formatToReadableString(offer.venue.name)}
+            {offer.venue.publicName || formatToReadableString(offer.venue.name)}
           </p>
           <section>
             <h3>
@@ -81,7 +77,6 @@ export const Offer = ({
             </h3>
             <Stocks
               canPrebookOffers={canPrebookOffers}
-              notify={notify}
               stocks={offer.stocks}
               venuePostalCode={offer.venue.postalCode}
             />

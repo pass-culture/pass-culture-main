@@ -9,7 +9,6 @@ import AppSearchAPIConnector from "@elastic/search-ui-app-search-connector"
 import * as React from "react"
 import { useCallback, useEffect, useState } from "react"
 
-import { Notification } from "app/components/Layout/Notification/Notification"
 import { VenueFilterStatus } from "app/components/OffersSearch/VenueFilterStatus/VenueFilterStatus"
 import { APP_SEARCH_ENDPOINT, APP_SEARCH_KEY } from "utils/config"
 import { RESULT_FIELDS } from "utils/search"
@@ -29,12 +28,10 @@ const configurationOptions = {
 }
 
 export const OffersSearch = ({
-  notify,
   userRole,
   removeVenueFilter,
   venueFilter,
 }: {
-  notify: (notification: Notification) => void;
   userRole: Role;
   removeVenueFilter: () => void;
   venueFilter: VenueFilterType | null;
@@ -145,7 +142,6 @@ export const OffersSearch = ({
                     />
                   )}
                   <Offers
-                    notify={notify}
                     results={results}
                     userRole={userRole}
                   />

@@ -3,7 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react"
 import React from "react"
 
 import { NotificationType, Notification } from "../Notification"
-import { NotificationComponent } from "../NotificationComponent"
+import { NotificationComponent } from "../Notification"
 
 jest.mock("../_constants", () => ({
   NOTIFICATION_SHOW_DURATION: 10,
@@ -12,12 +12,7 @@ jest.mock("../_constants", () => ({
 
 describe("src | components | Layout | Notification", () => {
   const renderNotification = (notification: Notification) => {
-    render(
-      <NotificationComponent
-        notification={notification}
-        setNotification={jest.fn()}
-      />
-    )
+    render(<NotificationComponent notification={notification} />)
   }
 
   it("should display given text with icon", () => {

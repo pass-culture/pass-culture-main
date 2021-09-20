@@ -3,6 +3,7 @@ import React, { useCallback, useState } from "react"
 import { Button } from "app/components/Layout/Button/Button"
 import {
   Notification,
+  NotificationComponent,
   NotificationType,
 } from "app/components/Layout/Notification/Notification"
 import { preBookStock } from "repository/pcapi/pcapi"
@@ -46,21 +47,20 @@ const extractDepartmentCode = (venuePostalCode: string): string => {
 
 export const Stock = ({
   canPrebookOffers,
-  notify,
   stock,
   venuePostalCode,
 }: {
   canPrebookOffers: boolean;
-  notify: (notification: Notification) => void;
   stock: StockType;
   venuePostalCode: string;
 }): JSX.Element => {
   const [disableButton, setDisableButton] = useState(false)
+  const [notification, setNotification] = useState<Notification | null>(null)
   const preBookCurrentStock = useCallback(() => {
     setDisableButton(true)
     return preBookStock(stock.id)
       .then(() =>
-        notify(
+        setNotification(
           new Notification(
             NotificationType.success,
             "Votre préréservation a été effectuée avec succès."
@@ -68,27 +68,30 @@ export const Stock = ({
         )
       )
       .catch(() =>
-        notify(
+        setNotification(
           new Notification(
             NotificationType.error,
             "Impossible de préréserver cette offre.\nVeuillez contacter le support"
           )
         )
       )
-  }, [notify, stock.id])
+  }, [stock.id])
   return (
-    <li>
-      {displayStockInformation(stock, venuePostalCode)}
+    <>
+      <li>
+        {displayStockInformation(stock, venuePostalCode)}
 
-      {canPrebookOffers && (
-        <Button
-          disabled={disableButton}
-          isSubmit={false}
-          loadingMessage="Préreservation"
-          onClick={preBookCurrentStock}
-          text="Préréserver"
-        />
-      )}
-    </li>
+        {canPrebookOffers && (
+          <Button
+            disabled={disableButton}
+            isSubmit={false}
+            loadingMessage="Préreservation"
+            onClick={preBookCurrentStock}
+            text="Préréserver"
+          />
+        )}
+      </li>
+      {notification && <NotificationComponent notification={notification} />}
+    </>
   )
 }
