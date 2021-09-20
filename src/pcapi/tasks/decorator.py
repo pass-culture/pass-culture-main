@@ -5,7 +5,6 @@ import logging
 from flask.blueprints import Blueprint
 from flask.globals import request
 import pydantic
-import requests
 
 from pcapi import settings
 from pcapi.models.api_errors import ApiErrors
@@ -37,7 +36,7 @@ def task(queue: str, path: str):
             if isinstance(payload, pydantic.BaseModel):
                 payload = json.loads(payload.json())
 
-            task_id = _enqueue_task(queue, path, payload)
+            task_id = cloud_task.enqueue_internal_task(queue, path, payload)
             logger.info("Enqueued cloud task %s", path, extra={"queue": queue, "handler": path, "task": task_id})
 
         f.delay = delay
@@ -68,24 +67,3 @@ def _define_handler(f, path, payload_type):
             )
         else:
             logger.info("Successfully executed cloud task %s", path, extra=job_details)
-
-
-def _enqueue_task(queue, path, payload):
-    url = settings.API_URL + CLOUD_TASK_SUBPATH + path
-
-    if settings.IS_DEV:
-        _call_task_handler(queue, url, payload)
-        return None
-
-    return cloud_task.enqueue_internal_task(queue, url, payload)
-
-
-def _call_task_handler(queue, url, payload):
-    requests.post(
-        url,
-        headers={
-            "HTTP_X_CLOUDTASKS_QUEUENAME": queue,
-            cloud_task.AUTHORIZATION_HEADER_KEY: cloud_task.AUTHORIZATION_HEADER_VALUE,
-        },
-        json=payload,
-    )

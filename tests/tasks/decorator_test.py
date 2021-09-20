@@ -51,7 +51,7 @@ class CloudTaskDecoratorTest:
 
     @patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
     @override_settings(IS_RUNNING_TESTS=False)
-    @patch("pcapi.tasks.decorator.requests.post")
+    @patch("pcapi.tasks.cloud_task.requests.post")
     def test_calling_task_in_dev(self, requests_post):
         inner_task = MagicMock()
         test_task = generate_task(inner_task)
