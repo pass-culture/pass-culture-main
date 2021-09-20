@@ -105,10 +105,13 @@ describe("offer", () => {
       mockedPcapi.getOffer.mockResolvedValue(offerInParis)
 
       // When
-      render(<Offer
-        canPrebookOffers
-        result={appSearchFakeFirstResult}
-             />)
+      render(
+        <Offer
+          canPrebookOffers
+          notify={jest.fn()}
+          result={appSearchFakeFirstResult}
+        />
+      )
 
       // Then
       const offerName = await screen.findByText(offerInParis.name)
@@ -125,10 +128,13 @@ describe("offer", () => {
       mockedPcapi.getOffer.mockResolvedValue(offerInCayenne)
 
       // When
-      render(<Offer
-        canPrebookOffers
-        result={appSearchFakeFirstResult}
-             />)
+      render(
+        <Offer
+          canPrebookOffers
+          notify={jest.fn()}
+          result={appSearchFakeFirstResult}
+        />
+      )
 
       // Then
       const stockInformation = await screen.findByText(
@@ -147,16 +153,19 @@ describe("offer", () => {
         price: 60000,
       })
     })
-    
+
     it("should show offer informations, including two line corresponding to both stocks correctly formatted", async () => {
       // Given
       mockedPcapi.getOffer.mockResolvedValue(offerInParis)
 
       // When
-      render(<Offer
-        canPrebookOffers
-        result={appSearchFakeFirstResult}
-             />)
+      render(
+        <Offer
+          canPrebookOffers
+          notify={jest.fn()}
+          result={appSearchFakeFirstResult}
+        />
+      )
 
       // Then
       const listItemsInOffer = await screen.findAllByRole("listitem")
@@ -178,10 +187,13 @@ describe("offer", () => {
       mockedPcapi.getOffer.mockResolvedValue(offerInParis)
 
       // When
-      render(<Offer
-        canPrebookOffers
-        result={appSearchFakeFirstResult}
-             />)
+      render(
+        <Offer
+          canPrebookOffers
+          notify={jest.fn()}
+          result={appSearchFakeFirstResult}
+        />
+      )
 
       // Then
       const listItemsInOffer = await screen.findAllByRole("listitem")

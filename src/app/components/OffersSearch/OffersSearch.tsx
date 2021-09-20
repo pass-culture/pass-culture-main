@@ -11,7 +11,7 @@ import { useCallback } from "react"
 import { Notification } from "app/components/Layout/Notification/Notification"
 import { APP_SEARCH_ENDPOINT, APP_SEARCH_KEY } from "utils/config"
 import { RESULT_FIELDS } from "utils/search"
-import { Role } from "utils/types"
+import { Role, VenueFilterType } from "utils/types"
 
 import { Offers } from "./Offers/Offers"
 
@@ -32,9 +32,11 @@ const configurationOptions = {
 export const OffersSearch = ({
   notify,
   userRole,
+  venueFilter,
 }: {
   notify: (notification: Notification) => void;
   userRole: Role;
+  venueFilter: VenueFilterType | null;
 }): JSX.Element => {
   const mapContextToProps = useCallback(
     ({
@@ -54,6 +56,13 @@ export const OffersSearch = ({
     }),
     []
   )
+
+  if (venueFilter) {
+    configurationOptions.searchQuery.filters.push({
+      field: "venue_id",
+      values: [venueFilter.id],
+    })
+  }
 
   const inputView = useCallback(
     ({ getAutocomplete, getInputProps, getButtonProps }) => (

@@ -1,5 +1,5 @@
 import { client } from "repository/pcapi/pcapiClient"
-import { OfferType, Role } from "utils/types"
+import { OfferType, Role, VenueFilterType } from "utils/types"
 
 export const authenticate = async (): Promise<Role> => {
   return client
@@ -11,6 +11,12 @@ export const getOffer = async (
   offerId: number | string
 ): Promise<OfferType> => {
   return client.get(`/native/v1/offer/${offerId}`)
+}
+
+export const getVenueBySiret = async (
+  siret: string
+): Promise<VenueFilterType> => {
+  return client.get(`/adage-iframe/venues/${siret}`)
 }
 
 export const preBookStock = async (stockId: number): Promise<number> => {

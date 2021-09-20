@@ -127,10 +127,13 @@ describe("offers", () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(<Offers
-      results={appSearchFakeResults}
-      userRole={Role.redactor}
-           />)
+    render(
+      <Offers
+        notify={jest.fn()}
+        results={appSearchFakeResults}
+        userRole={Role.redactor}
+      />
+    )
     // Then
     const listItemsInOffer = await screen.findAllByRole("listitem")
     expect(listItemsInOffer).toHaveLength(4)
@@ -145,10 +148,13 @@ describe("offers", () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(<Offers
-      results={appSearchFakeResults}
-      userRole={Role.redactor}
-           />)
+    render(
+      <Offers
+        notify={jest.fn()}
+        results={appSearchFakeResults}
+        userRole={Role.redactor}
+      />
+    )
 
     // Then
     const listItemsInOffer = await screen.findAllByRole("listitem")
@@ -163,10 +169,13 @@ describe("offers", () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(<Offers
-      results={appSearchFakeResults}
-      userRole={Role.redactor}
-           />)
+    render(
+      <Offers
+        notify={jest.fn()}
+        results={appSearchFakeResults}
+        userRole={Role.redactor}
+      />
+    )
 
     // Then
     const listItemsInOffer = await screen.findAllByRole("listitem")

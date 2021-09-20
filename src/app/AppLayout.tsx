@@ -3,7 +3,7 @@ import * as React from "react"
 import { useCallback, useRef } from "react"
 
 import { ReactComponent as Logo } from "assets/logo-with-text.svg"
-import { Role } from "utils/types"
+import { Role, VenueFilterType } from "utils/types"
 
 import {
   Notification,
@@ -12,7 +12,13 @@ import {
 } from "./components/Layout/Notification/Notification"
 import { OffersSearch } from "./components/OffersSearch/OffersSearch"
 
-export const AppLayout = ({ userRole }: { userRole: Role }): JSX.Element => {
+export const AppLayout = ({
+  userRole,
+  venueFilter,
+}: {
+  userRole: Role;
+  venueFilter: VenueFilterType | null;
+}): JSX.Element => {
   const notificationRef = useRef<NotificationRef>()
 
   const notify = useCallback((notification: Notification) => {
@@ -29,6 +35,7 @@ export const AppLayout = ({ userRole }: { userRole: Role }): JSX.Element => {
           <OffersSearch
             notify={notify}
             userRole={userRole}
+            venueFilter={venueFilter}
           />
         )}
       </main>

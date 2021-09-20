@@ -23,6 +23,12 @@ export interface OfferType {
   isExpired: boolean;
 }
 
+export interface VenueFilterType {
+  id: number;
+  name: string;
+  publicName: string;
+}
+
 export interface StockType {
   id: number;
   beginningDatetime: Date;
@@ -43,5 +49,4 @@ export enum Role {
   redactor = "redactor",
   readonly = "readonly",
   unauthenticated = "unauthenticated",
-  authenticating = "authenticating",
 }
