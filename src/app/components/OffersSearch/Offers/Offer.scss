@@ -48,6 +48,7 @@
 
     li {
       display: grid;
+      grid-column-gap: rem(8px);
       grid-template-columns: rem(200px) rem(150px) 1fr;
     }
   }
