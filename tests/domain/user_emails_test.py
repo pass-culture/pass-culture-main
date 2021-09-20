@@ -367,7 +367,20 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class SendExpiredBookingsRecapEmailToBeneficiaryTest:
+class SendExpiredBookingsRecapEmailToBeneficiaryLegacyExpiryBookingsRuleTest:
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_should_send_email_to_beneficiary_when_expired_book_booking_cancelled(self, app):
+        amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
+        expired_today_book_booking = BookingFactory(
+            user=amnesiac_user, stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id
+        )
+        send_expired_bookings_recap_email_to_beneficiary(amnesiac_user, [expired_today_book_booking])
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1951103
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
     @pytest.mark.usefixtures("db_session")
     def test_should_send_email_to_beneficiary_when_expired_bookings_cancelled(self, app):
         amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
@@ -382,6 +395,77 @@ class SendExpiredBookingsRecapEmailToBeneficiaryTest:
         )
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1951103
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
+    @pytest.mark.usefixtures("db_session")
+    def test_should_send_two_emails_to_beneficiary_when_expired_books_and_other_bookings_cancelled(self, app):
+        amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
+        expired_today_book_booking = BookingFactory(
+            user=amnesiac_user, stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id
+        )
+        expired_today_cd_booking = BookingFactory(
+            user=amnesiac_user, stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id
+        )
+        send_expired_bookings_recap_email_to_beneficiary(
+            amnesiac_user, [expired_today_cd_booking, expired_today_book_booking]
+        )
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1951103
+
+
+@pytest.mark.usefixtures("db_session")
+class SendExpiredBookingsRecapEmailToBeneficiaryNewExpiryBookingsRuleTest:
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_should_send_email_to_beneficiary_when_expired_book_booking_cancelled(self, app):
+        amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
+        expired_today_book_booking = BookingFactory(
+            user=amnesiac_user, stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id
+        )
+        send_expired_bookings_recap_email_to_beneficiary(amnesiac_user, [expired_today_book_booking])
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3095107
+        assert mails_testing.outbox[0].sent_data["Vars"]["withdrawal_period"] == 10
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_should_send_email_to_beneficiary_when_expired_none_books_bookings_cancelled(self, app):
+        amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
+        expired_today_dvd_booking = BookingFactory(
+            user=amnesiac_user, stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id
+        )
+        expired_today_cd_booking = BookingFactory(
+            user=amnesiac_user, stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id
+        )
+        send_expired_bookings_recap_email_to_beneficiary(
+            amnesiac_user, [expired_today_cd_booking, expired_today_dvd_booking]
+        )
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3095107
+        assert mails_testing.outbox[0].sent_data["Vars"]["withdrawal_period"] == 30
+
+    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_should_send_two_emails_to_beneficiary_when_expired_books_and_other_bookings_cancelled(self, app):
+        amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")
+        expired_today_book_booking = BookingFactory(
+            user=amnesiac_user, stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id
+        )
+        expired_today_cd_booking = BookingFactory(
+            user=amnesiac_user, stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id
+        )
+        send_expired_bookings_recap_email_to_beneficiary(
+            amnesiac_user, [expired_today_cd_booking, expired_today_book_booking]
+        )
+
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3095107
+        assert mails_testing.outbox[0].sent_data["Vars"]["withdrawal_period"] == 10
+        assert mails_testing.outbox[1].sent_data["Mj-TemplateID"] == 3095107
+        assert mails_testing.outbox[1].sent_data["Vars"]["withdrawal_period"] == 30
 
 
 @pytest.mark.usefixtures("db_session")
