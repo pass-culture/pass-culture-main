@@ -7,7 +7,7 @@ import {
 } from "@elastic/react-search-ui"
 import AppSearchAPIConnector from "@elastic/search-ui-app-search-connector"
 import * as React from "react"
-import { useCallback } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import { Notification } from "app/components/Layout/Notification/Notification"
 import { VenueFilterStatus } from "app/components/OffersSearch/VenueFilterStatus/VenueFilterStatus"
@@ -22,11 +22,8 @@ const connector = new AppSearchAPIConnector({
   engineName: "offers",
   endpointBase: APP_SEARCH_ENDPOINT,
 })
+
 const configurationOptions = {
-  searchQuery: {
-    result_fields: RESULT_FIELDS,
-    filters: [{ field: "is_educational", values: [1] }],
-  },
   trackUrlState: false,
   alwaysSearchOnInitialLoad: true,
 }
@@ -34,12 +31,40 @@ const configurationOptions = {
 export const OffersSearch = ({
   notify,
   userRole,
+  removeVenueFilter,
   venueFilter,
 }: {
   notify: (notification: Notification) => void;
   userRole: Role;
+  removeVenueFilter: () => void;
   venueFilter: VenueFilterType | null;
 }): JSX.Element => {
+  const baseSearchQuery = {
+    result_fields: RESULT_FIELDS,
+    filters: [{ field: "is_educational", values: [1] }],
+  }
+  if (venueFilter) {
+    baseSearchQuery.filters.push({
+      field: "venue_id",
+      values: [venueFilter.id],
+    })
+  }
+  const [searchQuery, setSearchQuery] = useState({ ...baseSearchQuery })
+
+  useEffect(() => {
+    if (
+      !venueFilter &&
+      searchQuery.filters.find((filter) => filter.field === "venue_id")
+    ) {
+      setSearchQuery((currentSearchQuery) => ({
+        ...currentSearchQuery,
+        filters: currentSearchQuery.filters.filter(
+          (filter) => filter.field !== "venue_id"
+        ),
+      }))
+    }
+  }, [searchQuery.filters, venueFilter])
+
   const mapContextToProps = useCallback(
     ({
       autocompletedResults,
@@ -58,13 +83,6 @@ export const OffersSearch = ({
     }),
     []
   )
-
-  if (venueFilter) {
-    configurationOptions.searchQuery.filters.push({
-      field: "venue_id",
-      values: [venueFilter.id],
-    })
-  }
 
   const inputView = useCallback(
     ({ getAutocomplete, getInputProps, getButtonProps }) => (
@@ -96,6 +114,7 @@ export const OffersSearch = ({
       <SearchProvider
         config={{
           apiConnector: connector,
+          searchQuery,
           ...configurationOptions,
         }}
       >
@@ -120,7 +139,10 @@ export const OffersSearch = ({
                 />
                 <div className="search-results">
                   {venueFilter && (
-                    <VenueFilterStatus venueFilter={venueFilter} />
+                    <VenueFilterStatus
+                      removeFilter={removeVenueFilter}
+                      venueFilter={venueFilter}
+                    />
                   )}
                   <Offers
                     notify={notify}

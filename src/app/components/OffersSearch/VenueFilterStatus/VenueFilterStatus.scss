@@ -12,13 +12,30 @@
   .venue-label {
     background-color: #c91074;
     border-radius: rem(12px);
-    color: #fff;
+    display: flex;
     margin-top: rem(4px);
-    max-width: rem(600px);
-    overflow: hidden;
     padding: rem(4px) rem(8px);
-    text-overflow: ellipsis;
-    white-space: nowrap;
     width: fit-content;
+
+    .venue-label-text {
+      color: #fff;
+      max-width: rem(600px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    svg {
+      height: rem(20px);
+      margin-left: rem(4px);
+      width: rem(20px);
+    }
+
+    button {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
   }
 }

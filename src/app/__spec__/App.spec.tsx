@@ -1,5 +1,5 @@
 import { SearchProvider } from "@elastic/react-search-ui"
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, within } from "@testing-library/react"
 import React from "react"
 
 import * as pcapi from "repository/pcapi/pcapi"
@@ -88,6 +88,37 @@ describe("app", () => {
       expect(screen.getByText("Lieu filtré :")).toBeInTheDocument()
       expect(screen.getByText(venue.name)).toBeInTheDocument()
       expect(mockedPcapi.getVenueBySiret).toHaveBeenCalledWith(siret)
+    })
+
+    it("should remove venue filter on click", async () => {
+      // Given
+      const siret = "123456789"
+      Reflect.deleteProperty(global.window, "location")
+      window.location = new URL(`https://www.example.com?siret=${siret}`)
+      render(<App />)
+
+      const venueFilter = await screen.findByText("Lieu filtré :")
+      const removeFilterButton = within(venueFilter.closest("div")).getByRole(
+        "button"
+      )
+
+      // When
+      fireEvent.click(removeFilterButton)
+
+      // Then
+      const searchConfigurationFirstCall = SearchProvider.mock.calls[0][0]
+      expect(
+        searchConfigurationFirstCall.config.searchQuery.filters
+      ).toStrictEqual([
+        { field: "is_educational", values: [1] },
+        { field: "venue_id", values: [venue.id] },
+      ])
+      const searchConfigurationLastCall = SearchProvider.mock.calls[2][0]
+      expect(
+        searchConfigurationLastCall.config.searchQuery.filters
+      ).toStrictEqual([{ field: "is_educational", values: [1] }])
+      expect(screen.queryByText("Lieu filtré :")).not.toBeInTheDocument()
+      expect(screen.queryByText(venue.name)).not.toBeInTheDocument()
     })
   })
 

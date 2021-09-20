@@ -14,9 +14,11 @@ import { OffersSearch } from "./components/OffersSearch/OffersSearch"
 
 export const AppLayout = ({
   userRole,
+  removeVenueFilter,
   venueFilter,
 }: {
   userRole: Role;
+  removeVenueFilter: () => void;
   venueFilter: VenueFilterType | null;
 }): JSX.Element => {
   const notificationRef = useRef<NotificationRef>()
@@ -34,6 +36,7 @@ export const AppLayout = ({
         {notify && (
           <OffersSearch
             notify={notify}
+            removeVenueFilter={removeVenueFilter}
             userRole={userRole}
             venueFilter={venueFilter}
           />

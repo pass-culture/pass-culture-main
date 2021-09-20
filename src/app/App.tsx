@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import "@fontsource/barlow"
 import { UnauthenticatedError } from "app/components/UnauthenticatedError/UnauthenticatedError"
@@ -32,6 +32,8 @@ export const App = (): JSX.Element => {
       .finally(() => setIsLoading(false))
   }, [])
 
+  const removeVenueFilter = useCallback(() => setVenueFilter(null), [])
+
   if (isLoading) {
     return <LoaderPage />
   }
@@ -40,6 +42,7 @@ export const App = (): JSX.Element => {
     <>
       {[Role.readonly, Role.redactor].includes(userRole) && (
         <AppLayout
+          removeVenueFilter={removeVenueFilter}
           userRole={userRole}
           venueFilter={venueFilter}
         />

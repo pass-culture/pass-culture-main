@@ -3,7 +3,6 @@
 @mixin button() {
   cursor: pointer;
   font-weight: 600;
-  outline: none;
 }
 
 @mixin primary-focus {
