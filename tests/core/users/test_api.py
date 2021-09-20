@@ -55,6 +55,7 @@ from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
+from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.user_session import UserSession
 from pcapi.notifications.push import testing as batch_testing
@@ -1104,3 +1105,49 @@ class BeneficairyInformationUpdateTest:
         users_api.update_user_information_from_external_source(user, jouve_data)
 
         assert user.phoneNumber == "+33611111111"
+
+
+class UpdateUserLastConnectionDateTest:
+    @freeze_time("2021-9-20 11:11:11")
+    def test_first_update(self):
+        user = UserFactory()
+
+        users_api.update_last_connection_date(user)
+
+        db.session.refresh(user)
+
+        assert user.lastConnectionDate == datetime(2021, 9, 20, 11, 11, 11)
+        assert len(sendinblue_testing.sendinblue_requests) == 1
+
+    @freeze_time("2021-9-20 01:11:11")
+    def test_update_day_after(self):
+        user = UserFactory(lastConnectionDate=datetime(2021, 9, 19, 23, 00, 11))
+
+        users_api.update_last_connection_date(user)
+
+        db.session.refresh(user)
+
+        assert user.lastConnectionDate == datetime(2021, 9, 20, 1, 11, 11)
+        assert len(sendinblue_testing.sendinblue_requests) == 1
+
+    @freeze_time("2021-9-20 11:11:11")
+    def test_update_same_day(self):
+        user = UserFactory(lastConnectionDate=datetime(2021, 9, 20, 9, 0))
+
+        users_api.update_last_connection_date(user)
+
+        db.session.refresh(user)
+
+        assert user.lastConnectionDate == datetime(2021, 9, 20, 11, 11, 11)
+        assert len(sendinblue_testing.sendinblue_requests) == 0
+
+    @freeze_time("2021-9-20 11:11:11")
+    def test_no_update(self):
+        user = UserFactory(lastConnectionDate=datetime(2021, 9, 20, 11, 00, 11))
+
+        users_api.update_last_connection_date(user)
+
+        db.session.refresh(user)
+
+        assert user.lastConnectionDate == datetime(2021, 9, 20, 11, 00, 11)
+        assert len(sendinblue_testing.sendinblue_requests) == 0

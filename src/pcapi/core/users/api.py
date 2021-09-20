@@ -891,10 +891,18 @@ def fraud_manager(user: User, phone_number: str) -> typing.Generator:
         raise
 
 
-def update_user_last_connection_date(user):
-    user.lastConnectionDate = datetime.now()
-    repository.save(user)
-    update_external_user(user, update_batch=False)
+def update_last_connection_date(user):
+    previous_connection_date = user.lastConnectionDate
+    last_connection_date = datetime.utcnow()
+
+    if not previous_connection_date or last_connection_date - previous_connection_date > timedelta(minutes=15):
+        user.lastConnectionDate = last_connection_date
+        repository.save(user)
+
+        if not previous_connection_date or (
+            last_connection_date.date() - previous_connection_date.date() >= timedelta(days=1)
+        ):
+            update_external_user(user, update_batch=False)
 
 
 def create_user_access_token(user: User) -> str:

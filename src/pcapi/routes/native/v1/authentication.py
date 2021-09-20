@@ -45,7 +45,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     except users_exceptions.CredentialsException as exc:
         raise ApiErrors({"general": ["Identifiant ou Mot de passe incorrect"]}) from exc
 
-    users_api.update_user_last_connection_date(user)
+    users_api.update_last_connection_date(user)
     return authentication.SigninResponse(
         access_token=users_api.create_user_access_token(user),
         refresh_token=create_refresh_token(identity=user.email),
@@ -60,7 +60,7 @@ def refresh() -> authentication.RefreshResponse:
     user = find_user_by_email(email)
     if not user:
         raise ApiErrors({"email": "unknown"}, status_code=401)
-    users_api.update_user_last_connection_date(user)
+    users_api.update_last_connection_date(user)
     return authentication.RefreshResponse(access_token=users_api.create_user_access_token(user))
 
 

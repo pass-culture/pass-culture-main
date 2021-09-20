@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from flask_jwt_extended import decode_token
 from flask_jwt_extended.utils import create_access_token
+from flask_jwt_extended.utils import create_refresh_token
 from freezegun import freeze_time
 import pytest
 
@@ -360,15 +361,10 @@ def test_refresh_token_route_updates_user_last_connection_date(client):
         email=data["identifier"], password=data["password"], lastConnectionDate=datetime(1990, 1, 1)
     )
 
-    # Get the refresh token
-    response = client.post("/native/v1/signin", json=data)
-    assert response.status_code == 200
-    assert response.json["refreshToken"]
-    refresh_token = response.json["refreshToken"]
-    sendinblue_testing.reset_sendinblue_requests()
+    refresh_token = create_refresh_token(identity=user.email)
 
     client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
-    refresh_response = client.post("/native/v1/refresh_access_token", json={})
+    refresh_response = client.post("/native/v1/refresh_access_token")
     assert refresh_response.status_code == 200
 
     assert user.lastConnectionDate == datetime(2020, 3, 15)
