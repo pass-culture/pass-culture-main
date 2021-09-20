@@ -57,7 +57,7 @@ export const formatVenuePayload = (payload, isCreatedEntity) => {
     : edition_authorized_input_field
 
   authorizedFields.forEach(inputName => {
-    /* @debt implementation "Gaël : this is a required hack to be able to save empty descriptions because react-final-form treat empty strings as undefined "*/
+    /* @debt implementation "Gaël : this is a hack to submit empty strings. react-final-form treat them as undefined and do not submit undefined values. see https://github.com/final-form/react-final-form/issues/130 "*/
     if (inputName === 'description' && payload[inputName] === undefined) {
       payload[inputName] = ''
     }
