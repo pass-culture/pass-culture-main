@@ -1,4 +1,5 @@
 import logging
+import sys
 import time
 import typing
 
@@ -213,3 +214,33 @@ with app.app_context():
 
 api = ExtendedSpecTree("flask", MODE="strict", before=before_handler, PATH="/", version=1)
 api.register(public_api)
+
+
+@app.shell_context_processor
+def get_shell_extra_context():
+    # We abuse `shell_context_processor` to call custom code when
+    # `flask shell` is run.
+    _set_python_prompt()
+    return {}
+
+
+def _non_printable(seq):
+    return f"\001{seq}\002"
+
+
+def _set_python_prompt():
+    env = settings.ENV
+    if env in ("production", "development"):
+        color = "\x1b[1;49;31m"  # red
+    elif env == "staging":
+        color = "\x1b[1;49;35m"  # purple
+    elif env == "testing":
+        color = "\x1b[1;49;36m"  # cyan
+    else:
+        color = None
+
+    if color:
+        color = _non_printable(color)
+        reset = _non_printable("\x1b[0m")
+
+        sys.ps1 = f"{color}{env} >>> {reset}"
