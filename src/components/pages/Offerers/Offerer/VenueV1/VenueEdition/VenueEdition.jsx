@@ -31,7 +31,7 @@ import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields/Withdrawa
 import VenueLabel from '../ValueObjects/VenueLabel'
 import VenueType from '../ValueObjects/VenueType'
 
-import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
+import VenueProvidersManager from './VenueProvidersManager'
 
 /**
  * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel -> à faire lors de la V2 ?"
@@ -271,7 +271,7 @@ class VenueEdition extends PureComponent {
           title="Lieu"
         />
 
-        {venue && <VenueProvidersManagerContainer venue={venue} />}
+        {venue && <VenueProvidersManager venue={venue} />}
         {venue && offerer && this.renderForm()}
       </div>
     )

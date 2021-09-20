@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -9,7 +9,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
-import VenueProvidersManagerContainer from '../../VenueProvidersManagerContainer'
+import VenueProvidersManager from '../../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   createVenueProvider: jest.fn(),
@@ -17,21 +17,19 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadVenueProviders: jest.fn(),
 }))
 
-const renderVenueProvidersManager = async props => {
-  await act(async () => {
-    await render(
-      <Provider store={configureTestStore()}>
-        <MemoryRouter>
-          <VenueProvidersManagerContainer {...props} />
-          <NotificationContainer />
-        </MemoryRouter>
-      </Provider>
-    )
-  })
-}
+const renderVenueProvidersManager = props =>
+  render(
+    <Provider store={configureTestStore()}>
+      <MemoryRouter>
+        <VenueProvidersManager {...props} />
+        <NotificationContainer />
+      </MemoryRouter>
+    </Provider>
+  )
 
 describe('src | components | pages | Venue | VenueProvidersManager | AllocineProviderItem', () => {
   let props
+  let allocineProvider
   let allocineVenueProvider
 
   beforeEach(async () => {
@@ -42,6 +40,10 @@ describe('src | components | pages | Venue | VenueProvidersManager | AllocinePro
       siret: '12345678901234',
       departementCode: '75',
     }
+    allocineProvider = {
+      id: 'CE',
+      name: 'Allociné',
+    }
     allocineVenueProvider = {
       id: 'venueProviderId',
       isActive: true,
@@ -49,9 +51,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | AllocinePro
       lastSyncDate: '2018-01-01T00:00:00Z',
       nOffers: 35,
       price: 10.1,
-      provider: {
-        name: 'Allociné',
-      },
+      providerId: allocineProvider.id,
+      provider: allocineProvider,
       quantity: 30,
       venueId: venue.id,
       venueIdAtOfferProvider: 'venueIdAtOfferProvider',
@@ -62,7 +63,11 @@ describe('src | components | pages | Venue | VenueProvidersManager | AllocinePro
     }
 
     pcapi.loadVenueProviders.mockResolvedValue([allocineVenueProvider])
-    pcapi.loadProviders.mockResolvedValue([])
+    pcapi.loadProviders.mockResolvedValue([allocineProvider])
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
   })
 
   it('should show synchronization modalities when venue provider is allocine', async () => {
@@ -70,7 +75,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | AllocinePro
     pcapi.loadVenueProviders.mockResolvedValue([allocineVenueProvider])
 
     // when
-    await renderVenueProvidersManager(props)
+    renderVenueProvidersManager(props)
+    await screen.findByText(allocineProvider.name)
 
     // then
     const price = queryByTextTrimHtml(screen, `Prix de vente/place : 10,10`)
@@ -92,7 +98,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | AllocinePro
     pcapi.loadVenueProviders.mockResolvedValue([allocineVenueProvider])
 
     // when
-    await renderVenueProvidersManager(props)
+    renderVenueProvidersManager(props)
+    await screen.findByText(allocineProvider.name)
     const lastSyncDate = screen.getByTestId('last-sync-date')
 
     // then
@@ -105,7 +112,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | AllocinePro
     pcapi.loadProviders.mockResolvedValue([allocineVenueProvider])
 
     // when
-    await renderVenueProvidersManager(props)
+    renderVenueProvidersManager(props)
+    await screen.findByText(allocineProvider.name)
 
     // then
     const editAllocineProviderButton = screen.getByText('Modifier les paramètres')

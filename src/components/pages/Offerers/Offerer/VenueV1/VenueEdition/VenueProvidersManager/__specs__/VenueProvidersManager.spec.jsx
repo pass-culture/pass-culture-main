@@ -14,7 +14,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'
-import VenueProvidersManagerContainer from '../VenueProvidersManagerContainer'
+import VenueProvidersManager from '../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
@@ -26,7 +26,7 @@ const renderVenueProvidersManager = async props => {
     await render(
       <Provider store={configureTestStore()}>
         <MemoryRouter>
-          <VenueProvidersManagerContainer {...props} />
+          <VenueProvidersManager {...props} />
         </MemoryRouter>
       </Provider>
     )
@@ -96,6 +96,7 @@ describe('src | VenueProvidersManager', () => {
       venueProviders = [
         {
           id: 'AD',
+          nOffers: 1,
           provider: { id: 'providerId', name: 'TiteLive' },
           venueId: props.venue.id,
           lastSyncDate: '2018-01-01T10:00:00',

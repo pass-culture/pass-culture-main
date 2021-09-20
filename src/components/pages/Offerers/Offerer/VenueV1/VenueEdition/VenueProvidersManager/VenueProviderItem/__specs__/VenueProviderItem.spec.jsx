@@ -4,17 +4,18 @@
  */
 
 import '@testing-library/jest-dom'
-import { act, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
-import VenueProvidersManagerContainer from '../../VenueProvidersManagerContainer'
+import VenueProvidersManager from '../../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   createVenueProvider: jest.fn(),
@@ -22,21 +23,20 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadVenueProviders: jest.fn(),
 }))
 
-const renderVenueProvidersManager = async props => {
-  await act(async () => {
-    await render(
-      <Provider store={configureTestStore()}>
-        <MemoryRouter>
-          <VenueProvidersManagerContainer {...props} />
-          <NotificationContainer />
-        </MemoryRouter>
-      </Provider>
-    )
-  })
-}
+const renderVenueProvidersManager = props =>
+  render(
+    <Provider store={configureTestStore()}>
+      <MemoryRouter>
+        <VenueProvidersManager {...props} />
+        <NotificationContainer />
+      </MemoryRouter>
+    </Provider>
+  )
 
 describe('src | components | pages | Venue | VenueProvidersManager | VenueProviderItem', () => {
   let props
+  let titeliveProvider
+  let titeliveProviderDisplayName
   let titeliveVenueProvider
 
   beforeEach(async () => {
@@ -47,32 +47,41 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       siret: '12345678901234',
       departementCode: '75',
     }
+    titeliveProvider = {
+      id: 'AA',
+      name: 'TiteLive',
+    }
     titeliveVenueProvider = {
       id: 'venueProviderId',
       isActive: true,
       lastSyncDate: '2018-01-01T00:00:00Z',
       nOffers: 42,
-      provider: {
-        name: 'TiteLive',
-      },
+      providerId: titeliveProvider.id,
+      provider: titeliveProvider,
       venueId: venue.id,
       venueIdAtOfferProvider: 'venueIdAtOfferProvider',
     }
+    titeliveProviderDisplayName = getProviderInfo(titeliveProvider.name).name
 
     props = {
       venue,
     }
 
     pcapi.loadVenueProviders.mockResolvedValue([titeliveVenueProvider])
-    pcapi.loadProviders.mockResolvedValue([])
+    pcapi.loadProviders.mockResolvedValue([titeliveProvider])
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
   })
 
   it('should render provider name and logo', async () => {
     // when
-    await renderVenueProvidersManager(props)
+    renderVenueProvidersManager(props)
+    const venueProviderItemTitle = await screen.findByText(titeliveProviderDisplayName)
 
     // then
-    expect(screen.getByText('Tite Live')).toBeInTheDocument()
+    expect(venueProviderItemTitle).toBeInTheDocument()
     const providerLogo = screen.getAllByRole('img')[0]
     expect(providerLogo).toHaveAttribute('src', expect.stringContaining('logo-titeLive.svg'))
   })
@@ -82,7 +91,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
     titeliveVenueProvider.lastSyncDate = null
 
     // when
-    await renderVenueProvidersManager(props)
+    renderVenueProvidersManager(props)
+    await screen.findByText(titeliveProviderDisplayName)
 
     // then
     const importMessage = screen.getByText(
@@ -95,7 +105,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
 
   it('should show venue id at offer provider when provided', async () => {
     // when
-    await renderVenueProvidersManager(props)
+    renderVenueProvidersManager(props)
+    await screen.findByText(titeliveProviderDisplayName)
 
     // then
     const venueIdAtOfferProvider = queryByTextTrimHtml(
@@ -107,7 +118,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
 
   it('should show the number of offers when data of provider were already synced and offers are provided', async () => {
     // when
-    await renderVenueProvidersManager(props)
+    renderVenueProvidersManager(props)
+    await screen.findByText(titeliveProviderDisplayName)
 
     // then
     const numberOfOffersLabel = screen.getByText(`${titeliveVenueProvider.nOffers} offres`)
@@ -119,7 +131,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
     titeliveVenueProvider.nOffers = 0
 
     // when
-    await renderVenueProvidersManager(props)
+    renderVenueProvidersManager(props)
+    await screen.findByText(titeliveProviderDisplayName)
 
     // then
     const numberOfOffersLabel = screen.getByText(`0 offre`)
@@ -131,7 +144,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
     pcapi.loadVenueProviders.mockResolvedValue([titeliveVenueProvider])
 
     // when
-    await renderVenueProvidersManager(props)
+    renderVenueProvidersManager(props)
+    await screen.findByText(titeliveProviderDisplayName)
     const lastSyncDate = screen.getByTestId('last-sync-date')
 
     // then

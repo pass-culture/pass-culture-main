@@ -1,11 +1,42 @@
 import PropTypes from "prop-types"
 import React, { useCallback, useState } from 'react'
+import { useDispatch } from 'react-redux'
+
+import * as pcapi from 'repository/pcapi/pcapi'
+import { showNotification } from 'store/reducers/notificationReducer'
 
 import AllocineProviderFormDialog from "../AllocineProviderFormDialog/AllocineProviderFormDialog"
+import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
 import VenueProviderItem from "../VenueProviderItem/VenueProviderItem"
 
-const AllocineProviderItem = ({ venueProvider, venueDepartmentCode, editVenueProvider }) => {
+const AllocineProviderItem = ({ afterVenueProviderEdit, venueProvider, venueDepartmentCode }) => {
   const [isOpenedFormDialog, setIsOpenedFormDialog] = useState(false)
+  const dispatch = useDispatch()
+
+  const editVenueProvider = useCallback(
+    payload => {
+      pcapi
+        .editVenueProvider(payload)
+        .then(editedVenueProvider => {
+          afterVenueProviderEdit({ editedVenueProvider })
+          dispatch(
+            showNotification({
+              text: "Les modifications ont bien été importées et s’appliqueront aux nouvelles séances créées.",
+              type: 'success',
+            })
+          )
+        })
+        .catch(error => {
+          dispatch(
+            showNotification({
+              text: getRequestErrorStringFromErrors(error.errors),
+              type: 'error',
+            })
+          )
+        })
+    },
+    [afterVenueProviderEdit, dispatch]
+  )
 
   const openFormDialog = useCallback(() => {
     setIsOpenedFormDialog(true)
@@ -81,7 +112,7 @@ const AllocineProviderItem = ({ venueProvider, venueDepartmentCode, editVenuePro
 }
 
 AllocineProviderItem.propTypes = {
-  editVenueProvider: PropTypes.func.isRequired,
+  afterVenueProviderEdit: PropTypes.func.isRequired,
   venueDepartmentCode: PropTypes.string.isRequired,
   venueProvider: PropTypes.shape({
     provider: PropTypes.shape({
