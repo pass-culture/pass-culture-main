@@ -49,7 +49,7 @@ FeaturedRoute.defaultProps = {
 }
 
 FeaturedRoute.propTypes = {
-  children: PropTypes.shape(),
+  children: PropTypes.node,
   featureName: PropTypes.string,
 }
 

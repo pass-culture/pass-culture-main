@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
@@ -26,7 +26,7 @@ ActionsBarPortal.defaultProps = {
 }
 
 ActionsBarPortal.propTypes = {
-  children: PropTypes.shape().isRequired,
+  children: PropTypes.node.isRequired,
   isVisible: PropTypes.bool,
 }
 
