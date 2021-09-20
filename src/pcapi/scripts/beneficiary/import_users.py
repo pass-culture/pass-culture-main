@@ -83,7 +83,7 @@ def _read_file(csv_file):
 
 
 if __name__ == "__main__":
-    from pcapi.app import app
+    from pcapi.flask_app import app
 
     if len(sys.argv) != 2:
         raise ValueError("This script requires one argument: the path to the CSV file with users to import")

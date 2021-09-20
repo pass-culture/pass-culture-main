@@ -5,7 +5,7 @@ import csv
 
 import sqlalchemy.exc
 
-from pcapi.app import app
+from pcapi.flask_app import app
 from pcapi.models import AllocinePivot
 from pcapi.models.db import db
 
