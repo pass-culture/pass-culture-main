@@ -12,10 +12,14 @@ jest.mock("utils/config", () => ({
   APP_SEARCH_KEY: "app-search-key",
 }))
 
-jest.mock("@elastic/react-search-ui", () => ({
-  ...jest.requireActual("@elastic/react-search-ui"),
-  SearchProvider: jest.fn().mockReturnValue(null),
-}))
+jest.mock("@elastic/react-search-ui", () => {
+  return {
+    ...jest.requireActual("@elastic/react-search-ui"),
+    SearchProvider: jest.fn(({ children }) => children),
+    WithSearch: jest.fn(({ children }) => children({ results: [] })),
+    SearchBox: jest.fn().mockReturnValue(null),
+  }
+})
 
 jest.mock("repository/pcapi/pcapi", () => ({
   authenticate: jest.fn(),
@@ -58,6 +62,7 @@ describe("app", () => {
       expect(searchConfiguration.config.searchQuery.filters).toStrictEqual([
         { field: "is_educational", values: [1] },
       ])
+      expect(screen.queryByText("Lieu filtré :")).not.toBeInTheDocument()
       expect(mockedPcapi.getVenueBySiret).not.toHaveBeenCalled()
     })
 
@@ -80,6 +85,8 @@ describe("app", () => {
         { field: "is_educational", values: [1] },
         { field: "venue_id", values: [venue.id] },
       ])
+      expect(screen.getByText("Lieu filtré :")).toBeInTheDocument()
+      expect(screen.getByText(venue.name)).toBeInTheDocument()
       expect(mockedPcapi.getVenueBySiret).toHaveBeenCalledWith(siret)
     })
   })

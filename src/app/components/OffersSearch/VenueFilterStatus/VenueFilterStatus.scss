@@ -1,0 +1,24 @@
+@import "sass-rem";
+
+.venue-filter {
+  display: flex;
+  flex-direction: column;
+  margin-top: rem(16px);
+
+  .filter-label {
+    font-weight: bold;
+  }
+
+  .venue-label {
+    background-color: #c91074;
+    border-radius: rem(12px);
+    color: #fff;
+    margin-top: rem(4px);
+    max-width: rem(600px);
+    overflow: hidden;
+    padding: rem(4px) rem(8px);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: fit-content;
+  }
+}

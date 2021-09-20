@@ -13,6 +13,8 @@ header {
 }
 
 main.app-layout {
+  display: flex;
+  flex-direction: column;
   grid-column-start: col-main;
   grid-row-start: row-main;
 

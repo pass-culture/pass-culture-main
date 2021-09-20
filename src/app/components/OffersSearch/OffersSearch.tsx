@@ -1,3 +1,4 @@
+import "./OffersSearch.scss"
 import "@elastic/react-search-ui-views/lib/styles/styles.css"
 import {
   SearchBox,
@@ -9,6 +10,7 @@ import * as React from "react"
 import { useCallback } from "react"
 
 import { Notification } from "app/components/Layout/Notification/Notification"
+import { VenueFilterStatus } from "app/components/OffersSearch/VenueFilterStatus/VenueFilterStatus"
 import { APP_SEARCH_ENDPOINT, APP_SEARCH_KEY } from "utils/config"
 import { RESULT_FIELDS } from "utils/search"
 import { Role, VenueFilterType } from "utils/types"
@@ -116,11 +118,16 @@ export const OffersSearch = ({
                   setSearchTerm={setSearchTerm}
                   trackAutocompleteClickThrough={trackAutocompleteClickThrough}
                 />
-                <Offers
-                  notify={notify}
-                  results={results}
-                  userRole={userRole}
-                />
+                <div className="search-results">
+                  {venueFilter && (
+                    <VenueFilterStatus venueFilter={venueFilter} />
+                  )}
+                  <Offers
+                    notify={notify}
+                    results={results}
+                    userRole={userRole}
+                  />
+                </div>
               </>
             )
           }}
