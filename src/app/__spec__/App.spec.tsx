@@ -62,6 +62,7 @@ describe("app", () => {
       expect(searchConfiguration.config.searchQuery.filters).toStrictEqual([
         { field: "is_educational", values: [1] },
       ])
+      expect(SearchProvider).toHaveBeenCalledTimes(1)
       expect(screen.queryByText("Lieu filtré :")).not.toBeInTheDocument()
       expect(mockedPcapi.getVenueBySiret).not.toHaveBeenCalled()
     })
@@ -85,9 +86,36 @@ describe("app", () => {
         { field: "is_educational", values: [1] },
         { field: "venue_id", values: [venue.id] },
       ])
+      expect(SearchProvider).toHaveBeenCalledTimes(1)
       expect(screen.getByText("Lieu filtré :")).toBeInTheDocument()
       expect(screen.getByText(venue.name)).toBeInTheDocument()
       expect(mockedPcapi.getVenueBySiret).toHaveBeenCalledWith(siret)
+    })
+
+    it("should show search offers input with no filter when venue isn't recognized", async () => {
+      // Given
+      const siret = "123456789"
+      Reflect.deleteProperty(global.window, "location")
+      window.location = new URL(`https://www.example.com?siret=${siret}`)
+      mockedPcapi.getVenueBySiret.mockRejectedValue("Unrecognized SIRET")
+
+      // When
+      render(<App />)
+
+      // Then
+      const contentTitle = await screen.findByText("Rechercher une offre", {
+        selector: "h2",
+      })
+      expect(contentTitle).toBeInTheDocument()
+      const searchConfiguration = SearchProvider.mock.calls[0][0]
+      expect(searchConfiguration.config.searchQuery.filters).toStrictEqual([
+        { field: "is_educational", values: [1] },
+      ])
+      expect(SearchProvider).toHaveBeenCalledTimes(1)
+      expect(screen.queryByText("Lieu filtré :")).not.toBeInTheDocument()
+      expect(
+        screen.getByText("Lieu inconnu. Tous les résultats sont affichés.")
+      ).toBeInTheDocument()
     })
 
     it("should remove venue filter on click", async () => {
@@ -117,6 +145,7 @@ describe("app", () => {
       expect(
         searchConfigurationLastCall.config.searchQuery.filters
       ).toStrictEqual([{ field: "is_educational", values: [1] }])
+      expect(SearchProvider).toHaveBeenCalledTimes(3)
       expect(screen.queryByText("Lieu filtré :")).not.toBeInTheDocument()
       expect(screen.queryByText(venue.name)).not.toBeInTheDocument()
     })

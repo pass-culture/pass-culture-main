@@ -7,12 +7,18 @@ import * as pcapi from "repository/pcapi/pcapi"
 import { Role, VenueFilterType } from "utils/types"
 
 import { AppLayout } from "./AppLayout"
+import {
+  Notification,
+  NotificationComponent,
+  NotificationType,
+} from "./components/Layout/Notification/Notification"
 import { LoaderPage } from "./components/LoaderPage/LoaderPage"
 
 export const App = (): JSX.Element => {
   const [userRole, setUserRole] = useState<Role>(Role.unauthenticated)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [venueFilter, setVenueFilter] = useState<VenueFilterType | null>(null)
+  const [notification, setNotification] = useState<Notification | null>(null)
 
   useEffect(() => {
     pcapi
@@ -25,7 +31,14 @@ export const App = (): JSX.Element => {
           return pcapi
             .getVenueBySiret(siret)
             .then((venueFilter) => setVenueFilter(venueFilter))
-            .catch()
+            .catch(() =>
+              setNotification(
+                new Notification(
+                  NotificationType.error,
+                  "Lieu inconnu. Tous les résultats sont affichés."
+                )
+              )
+            )
         }
       })
       .catch(() => setUserRole(Role.unauthenticated))
@@ -40,6 +53,7 @@ export const App = (): JSX.Element => {
 
   return (
     <>
+      {notification && <NotificationComponent notification={notification} />}
       {[Role.readonly, Role.redactor].includes(userRole) && (
         <AppLayout
           removeVenueFilter={removeVenueFilter}
