@@ -14,6 +14,7 @@ from typing import Tuple
 from typing import Union
 
 from flask import current_app as app
+from flask_jwt_extended import create_access_token
 from google.cloud.storage.blob import Blob
 from jwt import DecodeError
 from jwt import ExpiredSignatureError
@@ -888,3 +889,13 @@ def fraud_manager(user: User, phone_number: str) -> typing.Generator:
     except exceptions.PhoneValidationAttemptsLimitReached as error:
         fraud_api.handle_phone_validation_attempts_limit_reached(user, error.attempts)
         raise
+
+
+def update_user_last_connection_date(user):
+    user.lastConnectionDate = datetime.now()
+    repository.save(user)
+    update_external_user(user, update_batch=False)
+
+
+def create_user_access_token(user: User) -> str:
+    return create_access_token(identity=user.email, additional_claims={"user_claims": {"user_id": user.id}})

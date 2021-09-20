@@ -1,6 +1,3 @@
-from datetime import datetime
-
-from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
@@ -32,16 +29,6 @@ from . import blueprint
 from .serialization import authentication
 
 
-def _update_user_last_connection_date(user):
-    user.lastConnectionDate = datetime.now()
-    repository.save(user)
-    update_external_user(user, update_batch=False)
-
-
-def create_user_access_token(user: User) -> str:
-    return create_access_token(identity=user.email, additional_claims={"user_claims": {"user_id": user.id}})
-
-
 @blueprint.native_v1.route("/signin", methods=["POST"])
 @spectree_serialize(
     response_model=authentication.SigninResponse,
@@ -58,9 +45,9 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     except users_exceptions.CredentialsException as exc:
         raise ApiErrors({"general": ["Identifiant ou Mot de passe incorrect"]}) from exc
 
-    _update_user_last_connection_date(user)
+    users_api.update_user_last_connection_date(user)
     return authentication.SigninResponse(
-        access_token=create_user_access_token(user),
+        access_token=users_api.create_user_access_token(user),
         refresh_token=create_refresh_token(identity=user.email),
     )
 
@@ -73,8 +60,8 @@ def refresh() -> authentication.RefreshResponse:
     user = find_user_by_email(email)
     if not user:
         raise ApiErrors({"email": "unknown"}, status_code=401)
-    _update_user_last_connection_date(user)
-    return authentication.RefreshResponse(access_token=create_user_access_token(user))
+    users_api.update_user_last_connection_date(user)
+    return authentication.RefreshResponse(access_token=users_api.create_user_access_token(user))
 
 
 @blueprint.native_v1.route("/request_password_reset", methods=["POST"])
@@ -145,7 +132,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     update_external_user(user)
 
     response = ValidateEmailResponse(
-        access_token=create_user_access_token(user),
+        access_token=users_api.create_user_access_token(user),
         refresh_token=create_refresh_token(identity=user.email),
     )
 
