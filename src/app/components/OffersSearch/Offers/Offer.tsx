@@ -67,7 +67,7 @@ export const Offer = ({
           </section>
           <section>
             <h3>
-              Et en détails ? :
+              Et en détails ?
             </h3>
             {offer.description}
           </section>
