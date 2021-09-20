@@ -253,7 +253,7 @@ jobs:
                   RUN_ENV=tests venv/bin/pytest tests --durations=10  --cov --cov-report html
                   --junitxml=test-results/junit.xml
 
-                  #venv/bin/coveralls
+                  venv/bin/coveralls
 
       - unless:
           condition: << parameters.is_nightly_build >>
