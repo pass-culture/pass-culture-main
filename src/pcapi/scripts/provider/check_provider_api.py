@@ -1,15 +1,20 @@
 from datetime import datetime
 import time
 
-from flask import current_app as app
+import click
+from flask import Blueprint
 
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
 from pcapi.local_providers.provider_api import synchronize_provider_api
 
 
-@app.manager.option("-u", "--url", help="Endpoint url")
-@app.manager.option("-s", "--siret", help="A working siret")
-@app.manager.option("-t", "--token", help="(Optionnal) Basic authentication token")
+blueprint = Blueprint(__name__, __name__)
+
+
+@blueprint.cli.command("check_provider_api")
+@click.option("--url", required=True, help="Endpoint url")
+@click.option("--siret", required=True, help="A working siret")
+@click.option("--token", required=True, help="(Optionnal) Basic authentication token")
 def check_provider_api(url, siret, token):
     provider_api = ProviderAPI(
         api_url=url,

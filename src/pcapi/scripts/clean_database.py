@@ -1,13 +1,15 @@
-# -*- coding: utf-8 -*-
 from pprint import pprint
 import traceback
 
-from flask import current_app as app
+from flask import Blueprint
 
 from pcapi.repository.clean_database import clean_all_database
 
 
-@app.manager.command
+blueprint = Blueprint(__name__, __name__)
+
+
+@blueprint.cli.command
 def clean():
     try:
         clean_all_database()

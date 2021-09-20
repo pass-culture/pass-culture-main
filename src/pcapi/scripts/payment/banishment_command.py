@@ -1,26 +1,26 @@
 import logging
 
-from flask import current_app as app
+import click
+from flask import Blueprint
 
 from pcapi.scripts.payment.banishment import do_ban_payments
-from pcapi.scripts.payment.banishment import parse_raw_payments_ids
 
 
+blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
 
-@app.manager.option("-m", "--message", dest="message_id", required=True, help="Identifiant du message (XML) ciblé")
-@app.manager.option(
-    "-p",
-    "--payments",
-    dest="raw_payment_ids_to_ban",
+@blueprint.cli.command("ban_payments")
+@click.option("--message-id", required=True, help="Identifiant du message (XML) ciblé")
+@click.option(
+    "--payment-ids",
     required=True,
     help="Identifiants des paiements à bannir séparés par des virgules",
 )
-def ban_payments(message_id: str, raw_payment_ids_to_ban: str):
+def ban_payments(message_id: str, payment_ids: str):
     try:
-        payment_ids_to_ban = parse_raw_payments_ids(raw_payment_ids_to_ban)
+        payment_ids = [int(payment_id) for payment_id in payment_ids]
     except ValueError:
         logger.exception('Les identifiants de paiement doivent être au format "111,222,333"')
     else:
-        do_ban_payments(message_id, payment_ids_to_ban)
+        do_ban_payments(message_id, payment_ids)

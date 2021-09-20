@@ -18,7 +18,6 @@ Flask-JWT-Extended==4.0.0
 Flask-Limiter==1.4
 Flask-Login==0.5.0
 flask-saml2==0.3.0
-Flask-Script==2.0.6
 Flask-SQLAlchemy==2.4.4
 freezegun==0.3.12
 google-auth==1.23.0

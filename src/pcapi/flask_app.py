@@ -31,6 +31,7 @@ from pcapi import settings
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.logging import install_logging
 from pcapi.models.db import db
+from pcapi.scripts.install import install_commands
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 from pcapi.utils.health_checker import read_version_from_file
@@ -195,6 +196,8 @@ admin.init_app(app)
 db.init_app(app)
 orm.configure_mappers()
 login_manager.init_app(app)
+install_commands(app)
+
 
 public_api = Blueprint("Public API", __name__)
 CORS(public_api, resources={r"/*": {"origins": "*"}}, supports_credentials=True)

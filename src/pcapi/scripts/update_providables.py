@@ -1,7 +1,8 @@
 import logging
 from time import time
 
-from flask import current_app as app
+import click
+from flask import Blueprint
 
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
@@ -9,14 +10,20 @@ from pcapi.local_providers.provider_manager import synchronize_venue_providers_f
 from pcapi.repository.venue_provider_queries import get_venue_provider_by_id
 
 
+blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
 
-@app.manager.option("-p", "--provider-name", help="Limit update to this provider name")
-@app.manager.option(
-    "-l", "--limit", help="Limit update to n items per providerName/venueId" + " (for test purposes)", type=int
+@blueprint.cli.command("update_providables")
+@click.option("-p", "--provider-name", help="Limit update to this provider name")
+@click.option(
+    "-l",
+    "--limit",
+    help="Limit update to n items per providerName/venueId" + " (for test purposes)",
+    type=int,
+    default=None,
 )
-@app.manager.option("-w", "--venue-provider-id", help="Limit update to this venue provider id")
+@click.option("-w", "--venue-provider-id", help="Limit update to this venue provider id")
 def update_providables(provider_name: str, venue_provider_id: str, limit: int):
     start = time()
     logger.info(
@@ -41,9 +48,10 @@ def update_providables(provider_name: str, venue_provider_id: str, limit: int):
     )
 
 
-@app.manager.option("-p", "--provider-id", help="Update providables for this provider")
-@app.manager.option(
-    "-l", "--limit", help="Limit update to n items per venue provider" + " (for test purposes)", type=int
+@blueprint.cli.command("update_providables_by_provider_id")
+@click.option("-p", "--provider-id", required=True, help="Update providables for this provider", type=int)
+@click.option(
+    "-l", "--limit", help="Limit update to n items per venue provider" + " (for test purposes)", type=int, default=None
 )
-def update_providables_by_provider_id(provider_id: str, limit: int):
-    synchronize_venue_providers_for_provider(int(provider_id), limit)
+def update_providables_by_provider_id(provider_id: int, limit: int):
+    synchronize_venue_providers_for_provider(provider_id, limit)

@@ -9,27 +9,6 @@ from pcapi.model_creators.generic_creators import create_payment_message
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 from pcapi.scripts.payment.banishment import do_ban_payments
-from pcapi.scripts.payment.banishment import parse_raw_payments_ids
-
-
-class ParseRawPaymentIdsTest:
-    def test_returns_a_list_of_integers(self):
-        # given
-        raw_ids = "111,222,333"
-
-        # when
-        ids = parse_raw_payments_ids(raw_ids)
-
-        # then
-        assert ids == [111, 222, 333]
-
-    def test_raises_an_exception_if_integers_are_not_separated_by_commas(self):
-        # given
-        raw_ids = "111-222-333"
-
-        # when
-        with pytest.raises(ValueError):
-            parse_raw_payments_ids(raw_ids)
 
 
 class DoBanPaymentsTest:

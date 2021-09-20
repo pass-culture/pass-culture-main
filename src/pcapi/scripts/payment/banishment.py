@@ -9,10 +9,6 @@ from pcapi.repository.payment_queries import find_payments_by_message
 logger = logging.getLogger(__name__)
 
 
-def parse_raw_payments_ids(raw_ids: str) -> list[int]:
-    return [int(id_) for id_ in raw_ids.split(",")]
-
-
 def do_ban_payments(message_id: str, payment_ids_to_ban: list[int]):
     matching_payments = find_payments_by_message(message_id)
 

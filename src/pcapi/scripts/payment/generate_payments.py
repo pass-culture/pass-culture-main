@@ -1,14 +1,16 @@
-from flask import current_app as app
+import click
+from flask import Blueprint
 
 import pcapi.core.payments.utils as payments_utils
 from pcapi.scripts.payment.batch import generate_and_send_payments
 
 
-@app.manager.option(
-    "--last-day", dest="last_day", required=True, help="Dernier jour de réservations utilisées à prendre en compte"
-)
-def generate_payments(last_day: str = None):
+blueprint = Blueprint(__name__, __name__)
 
+
+@blueprint.cli.command("generate_payments")
+@click.option("--last-day", required=True, help="Dernier jour de réservations utilisées à prendre en compte")
+def generate_payments(last_day: str = None):
     """Generate payments up to and including `last_day`, as an
     ISO-formatted date.
 

@@ -287,9 +287,8 @@ crons:
       enabled: true
       schedule: "0 23 * * 1"
       command:
-        - python
+        - flask
       args:
-        - src/pcapi/scripts/pc.py
         - sandbox
         - --name=industrial
 
