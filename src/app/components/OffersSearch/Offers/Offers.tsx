@@ -1,8 +1,10 @@
 import "./Offers.scss"
-import React from "react"
+import React, { useEffect, useMemo, useState } from "react"
 
-import { ResultType, Role } from "utils/types"
+import * as pcapi from "repository/pcapi/pcapi"
+import { OfferType, ResultType, Role } from "utils/types"
 
+import { NoResultsPage } from "./NoResultsPage/NoResultsPage"
 import { Offer } from "./Offer"
 
 export const Offers = ({
@@ -11,14 +13,50 @@ export const Offers = ({
 }: {
   userRole: Role;
   results: ResultType[];
-}): JSX.Element => (
-  <ul className="offers">
-    {results.map((result) => (
-      <Offer
-        canPrebookOffers={userRole == Role.redactor}
-        key={result.id.raw}
-        result={result}
-      />
-    ))}
-  </ul>
-)
+}): JSX.Element => {
+  const offersThumbById = useMemo(() => {
+    const offersThumbById = {}
+    results.forEach(
+      (result) =>
+        (offersThumbById[parseInt(result.id.raw)] = result.thumb_url?.raw)
+    )
+    return offersThumbById
+  }, [results])
+
+  const [offers, setOffers] = useState<OfferType[]>([])
+
+  const offerIsBookable = (offer: OfferType): boolean =>
+    !offer.isSoldOut && !offer.isExpired
+
+  useEffect(() => {
+    results.forEach((result) => {
+      pcapi
+        .getOffer(result.id.raw)
+        .then((offer) => {
+          if (offerIsBookable(offer)) {
+            setOffers((currentOffers) => [...currentOffers, offer])
+          }
+        })
+        .catch(() => {
+          // Swallow exception
+        })
+    })
+  }, [results])
+
+  if (results.length === 0 || offers.length === 0) {
+    return <NoResultsPage />
+  }
+
+  return (
+    <ul className="offers">
+      {offers.map((offer) => (
+        <Offer
+          canPrebookOffers={userRole == Role.redactor}
+          key={offer.id}
+          offer={offer}
+          thumbUrl={offersThumbById[offer.id]}
+        />
+      ))}
+    </ul>
+  )
+}

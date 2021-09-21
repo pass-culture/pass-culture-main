@@ -2,9 +2,9 @@ import { render, screen, within } from "@testing-library/react"
 import React from "react"
 
 import * as pcapi from "repository/pcapi/pcapi"
-import { OfferType } from "utils/types"
+import { OfferType, ResultType, Role } from "utils/types"
 
-import { Offer } from "../Offer"
+import { Offers } from "../Offers"
 
 jest.mock("repository/pcapi/pcapi", () => ({
   getOffer: jest.fn(),
@@ -12,7 +12,7 @@ jest.mock("repository/pcapi/pcapi", () => ({
 
 const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
-const appSearchFakeFirstResult = {
+const appSearchFakeResult: ResultType = {
   venue_name: {
     raw: "Le Petit Rintintin 25",
   },
@@ -106,10 +106,9 @@ describe("offer", () => {
 
       // When
       render(
-        <Offer
-          canPrebookOffers
-          notify={jest.fn()}
-          result={appSearchFakeFirstResult}
+        <Offers
+          results={[appSearchFakeResult]}
+          userRole={Role.redactor}
         />
       )
 
@@ -129,10 +128,9 @@ describe("offer", () => {
 
       // When
       render(
-        <Offer
-          canPrebookOffers
-          notify={jest.fn()}
-          result={appSearchFakeFirstResult}
+        <Offers
+          results={[appSearchFakeResult]}
+          userRole={Role.redactor}
         />
       )
 
@@ -160,10 +158,9 @@ describe("offer", () => {
 
       // When
       render(
-        <Offer
-          canPrebookOffers
-          notify={jest.fn()}
-          result={appSearchFakeFirstResult}
+        <Offers
+          results={[appSearchFakeResult]}
+          userRole={Role.redactor}
         />
       )
 
@@ -188,10 +185,9 @@ describe("offer", () => {
 
       // When
       render(
-        <Offer
-          canPrebookOffers
-          notify={jest.fn()}
-          result={appSearchFakeFirstResult}
+        <Offers
+          results={[appSearchFakeResult]}
+          userRole={Role.redactor}
         />
       )
 
@@ -203,4 +199,64 @@ describe("offer", () => {
       expect(stockInformation).toBeInTheDocument()
     })
   })
+
+  it("should show offer thumb when it exists", async () => {
+    // Given
+    mockedPcapi.getOffer.mockResolvedValue(offerInParis)
+
+    // When
+    render(<Offers
+      results={[appSearchFakeResult]}
+      userRole={Role.redactor}
+           />)
+
+    // Then
+    const offerThumb = await screen.findByRole("img")
+    expect(offerThumb).toHaveAttribute(
+      "src",
+      expect.stringContaining(appSearchFakeResult.thumb_url.raw as string)
+    )
+  })
+
+  it.each`
+    name                 | thumbObject
+    ${"does not exist"}  | ${{}}
+    ${"is null"}         | ${{ thumb_url: { raw: null } }}
+    ${"is empty string"} | ${{ thumb_url: { raw: "" } }}
+    ${"is undefined"}    | ${{ thumb_url: { raw: undefined } }}
+  `(
+    "should show thumb placeholder when thumb $name",
+    async ({ thumbObject }) => {
+      // Given
+      mockedPcapi.getOffer.mockResolvedValue(offerInParis)
+      const appSearchResult = {
+        venue_name: {
+          raw: "Le Petit Rintintin 25",
+        },
+        name: {
+          raw: "Une chouette à la mer",
+        },
+        venue_public_name: {
+          raw: "Le Petit Rintintin 25",
+        },
+        dates: {
+          raw: ["2021-09-29T13:54:30+00:00"],
+        },
+        id: {
+          raw: "479",
+        },
+        ...thumbObject,
+      }
+
+      // When
+      render(<Offers
+        results={[appSearchResult]}
+        userRole={Role.redactor}
+             />)
+
+      // Then
+      const thumbPlaceholder = await screen.findByTestId("thumb-placeholder")
+      expect(thumbPlaceholder).toBeInTheDocument()
+    }
+  )
 })

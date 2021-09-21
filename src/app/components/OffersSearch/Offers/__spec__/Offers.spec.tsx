@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react"
 import React from "react"
 
 import * as pcapi from "repository/pcapi/pcapi"
-import { OfferType, Role } from "utils/types"
+import { OfferType, ResultType, Role } from "utils/types"
 
 import { Offers } from "../Offers"
 
@@ -12,7 +12,7 @@ jest.mock("repository/pcapi/pcapi", () => ({
 
 const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
-const appSearchFakeResults = [
+const appSearchFakeResults: ResultType[] = [
   {
     venue_name: {
       raw: "Le Petit Rintintin 25",
@@ -91,7 +91,7 @@ describe("offers", () => {
     }
 
     offerInCayenne = {
-      id: 479,
+      id: 480,
       description: "Une offre vraiment coco",
       name: "Coco channel",
       category: {
@@ -127,13 +127,10 @@ describe("offers", () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(
-      <Offers
-        notify={jest.fn()}
-        results={appSearchFakeResults}
-        userRole={Role.redactor}
-      />
-    )
+    render(<Offers
+      results={appSearchFakeResults}
+      userRole={Role.redactor}
+           />)
     // Then
     const listItemsInOffer = await screen.findAllByRole("listitem")
     expect(listItemsInOffer).toHaveLength(4)
@@ -148,13 +145,10 @@ describe("offers", () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(
-      <Offers
-        notify={jest.fn()}
-        results={appSearchFakeResults}
-        userRole={Role.redactor}
-      />
-    )
+    render(<Offers
+      results={appSearchFakeResults}
+      userRole={Role.redactor}
+           />)
 
     // Then
     const listItemsInOffer = await screen.findAllByRole("listitem")
@@ -169,17 +163,72 @@ describe("offers", () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(
-      <Offers
-        notify={jest.fn()}
-        results={appSearchFakeResults}
-        userRole={Role.redactor}
-      />
-    )
+    render(<Offers
+      results={appSearchFakeResults}
+      userRole={Role.redactor}
+           />)
 
     // Then
     const listItemsInOffer = await screen.findAllByRole("listitem")
     expect(listItemsInOffer).toHaveLength(2)
     expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
+  })
+
+  describe("should display no results page", () => {
+    it("when there are no results", async () => {
+      // When
+      render(<Offers
+        results={[]}
+        userRole={Role.redactor}
+             />)
+
+      // Then
+      const errorMessage = await screen.findByText("Aucun résultats.")
+      expect(errorMessage).toBeInTheDocument()
+      const listItemsInOffer = screen.queryAllByRole("listitem")
+      expect(listItemsInOffer).toHaveLength(0)
+    })
+
+    it("when all offers are not bookable", async () => {
+      // Given
+      offerInParis.isExpired = true
+      offerInCayenne.isSoldOut = true
+      mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis)
+      mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+
+      // When
+      render(
+        <Offers
+          results={appSearchFakeResults}
+          userRole={Role.redactor}
+        />
+      )
+
+      // Then
+      const errorMessage = await screen.findByText("Aucun résultats.")
+      expect(errorMessage).toBeInTheDocument()
+      const listItemsInOffer = screen.queryAllByRole("listitem")
+      expect(listItemsInOffer).toHaveLength(0)
+    })
+
+    it("when offers are not found", async () => {
+      // Given
+      mockedPcapi.getOffer.mockRejectedValue("Offre inconnue")
+      mockedPcapi.getOffer.mockRejectedValue("Offre inconnue")
+
+      // When
+      render(
+        <Offers
+          results={appSearchFakeResults}
+          userRole={Role.redactor}
+        />
+      )
+
+      // Then
+      const errorMessage = await screen.findByText("Aucun résultats.")
+      expect(errorMessage).toBeInTheDocument()
+      const listItemsInOffer = screen.queryAllByRole("listitem")
+      expect(listItemsInOffer).toHaveLength(0)
+    })
   })
 })
