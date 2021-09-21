@@ -387,7 +387,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           const selectField = wrapper
             .find(Field)
             .findWhere(node => node.prop('id') === 'venue-type')
-          expect(selectField.prop('disabled')).toBe(false)
+          expect(selectField.prop('disabled')).toBeUndefined()
         })
 
         it('should have a list of options with venue types', () => {
@@ -482,7 +482,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           const selectField = wrapper
             .find(Field)
             .findWhere(node => node.prop('id') === 'venue-label')
-          expect(selectField.prop('disabled')).toBe(false)
+          expect(selectField.prop('disabled')).toBeUndefined()
         })
 
         it('should have a list of options with venue labels', () => {

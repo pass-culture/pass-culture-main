@@ -201,16 +201,22 @@ class IdentifierFields extends PureComponent {
             </div>
 
             <div className="field-control">
-              {!readOnly ? (
+              {readOnly ? (
+                <div
+                  className="venue-type-label"
+                  id="venue-type"
+                >
+                  <span>
+                    {venueTypeLabel}
+                  </span>
+                </div>
+              ) : (
                 <div className="control control-select">
                   <div
-                    className={classnames('select', {
-                      readonly: readOnly,
-                    })}
+                    className="select"
                   >
                     <Field
                       component="select"
-                      disabled={readOnly}
                       id="venue-type"
                       name="venueTypeId"
                       required
@@ -230,15 +236,6 @@ class IdentifierFields extends PureComponent {
                     </Field>
                   </div>
                 </div>
-              ) : (
-                <div
-                  className="venue-type-label"
-                  id="venue-type"
-                >
-                  <span>
-                    {venueTypeLabel}
-                  </span>
-                </div>
               )}
             </div>
           </div>
@@ -254,16 +251,22 @@ class IdentifierFields extends PureComponent {
             </div>
 
             <div className="field-control">
-              {!readOnly ? (
+              {readOnly ? (
+                <div
+                  className="venue-label-label"
+                  id="venue-label"
+                >
+                  <span>
+                    {venueLabelText}
+                  </span>
+                </div>
+              ) : (
                 <div className="control control-select">
                   <div
-                    className={classnames('select', {
-                      readonly: readOnly,
-                    })}
+                    className="select"
                   >
                     <Field
                       component="select"
-                      disabled={readOnly}
                       id="venue-label"
                       name="venueLabelId"
                     >
@@ -280,15 +283,6 @@ class IdentifierFields extends PureComponent {
                       ))}
                     </Field>
                   </div>
-                </div>
-              ) : (
-                <div
-                  className="venue-label-label"
-                  id="venue-label"
-                >
-                  <span>
-                    {venueLabelText}
-                  </span>
                 </div>
               )}
             </div>
