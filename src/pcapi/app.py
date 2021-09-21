@@ -5,6 +5,7 @@ from werkzeug.middleware.profiler import ProfilerMiddleware
 from pcapi import settings
 from pcapi.admin.install import install_admin_template_filters
 from pcapi.admin.install import install_admin_views
+from pcapi.connectors.educonnect_service_provider import EduconnectServiceProvider
 from pcapi.flask_app import admin
 from pcapi.flask_app import app
 from pcapi.flask_app import db
@@ -45,6 +46,9 @@ with app.app_context():
     app.register_blueprint(pro_api_v2, url_prefix="/v2")
     app.register_blueprint(adage_iframe, url_prefix="/adage-iframe")
     app.register_blueprint(cloud_task_api)
+
+    educonnectSP = EduconnectServiceProvider()
+    app.register_blueprint(educonnectSP.create_blueprint(), url_prefix="/saml/")
 
 if __name__ == "__main__":
     port = settings.FLASK_PORT
