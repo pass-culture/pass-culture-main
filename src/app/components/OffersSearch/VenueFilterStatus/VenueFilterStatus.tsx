@@ -19,7 +19,7 @@ export const VenueFilterStatus = ({
     </span>
     <div className="venue-label">
       <span className="venue-label-text">
-        {venueFilter.name}
+        {venueFilter.publicName || venueFilter.name}
       </span>
       <button
         onClick={removeFilter}

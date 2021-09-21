@@ -38,7 +38,7 @@ describe("app", () => {
       venue = {
         id: 1436,
         name: "Librairie de Paris",
-        publicName: "Librairie de Paris",
+        publicName: "Lib de Par's",
       }
 
       mockedPcapi.authenticate.mockResolvedValue(Role.redactor)
@@ -67,7 +67,7 @@ describe("app", () => {
       expect(mockedPcapi.getVenueBySiret).not.toHaveBeenCalled()
     })
 
-    it("should show search offers input with filter on venue when siret is provided", async () => {
+    it("should show search offers input with filter on venue public name when siret is provided and public name exists", async () => {
       // Given
       const siret = "123456789"
       Reflect.deleteProperty(global.window, "location")
@@ -88,8 +88,23 @@ describe("app", () => {
       ])
       expect(SearchProvider).toHaveBeenCalledTimes(1)
       expect(screen.getByText("Lieu filtré :")).toBeInTheDocument()
-      expect(screen.getByText(venue.name)).toBeInTheDocument()
+      expect(screen.getByText(venue.publicName)).toBeInTheDocument()
       expect(mockedPcapi.getVenueBySiret).toHaveBeenCalledWith(siret)
+    })
+
+    it("should show venue filter on venue name when siret is provided and public name does not exist", async () => {
+      // Given
+      const siret = "123456789"
+      venue.publicName = null
+      Reflect.deleteProperty(global.window, "location")
+      window.location = new URL(`https://www.example.com?siret=${siret}`)
+
+      // When
+      render(<App />)
+
+      // Then
+      const venueFilter = await screen.findByText(venue.name)
+      expect(venueFilter).toBeInTheDocument()
     })
 
     it("should show search offers input with no filter when venue isn't recognized", async () => {

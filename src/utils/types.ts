@@ -7,7 +7,7 @@ export interface VenueType {
   };
   name: string;
   postalCode: string;
-  publicName: string;
+  publicName?: string;
 }
 
 export interface OfferType {
@@ -26,7 +26,7 @@ export interface OfferType {
 export interface VenueFilterType {
   id: number;
   name: string;
-  publicName: string;
+  publicName?: string;
 }
 
 export interface StockType {
