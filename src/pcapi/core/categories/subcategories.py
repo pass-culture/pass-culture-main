@@ -1326,8 +1326,8 @@ SearchGroupNameEnum = Enum(
     "SearchGroupNameEnum",
     {search_group_name: search_group_name for search_group_name in [c.name for c in SearchGroups]},
 )
-HomepageLabelEnum = Enum(
-    "(HomepageLabelEnum",
+HomepageLabelNameEnum = Enum(
+    "(HomepageLabelNameEnum",
     {homepage_label_name: homepage_label_name for homepage_label_name in [h.name for h in HomepageLabels]},
 )
 OnlineOfflinePlatformChoicesEnum = Enum(

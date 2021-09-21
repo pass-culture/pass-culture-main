@@ -9,6 +9,7 @@ from pydantic.fields import Field
 
 from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.categories import subcategories
+from pcapi.core.categories.categories import CategoryIdEnum
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.api import get_expense_domains
@@ -282,6 +283,7 @@ class UserReportedOffersResponse(BaseModel):
 
 class SubcategoryResponseModel(BaseModel):
     id: SubcategoryIdEnum
+    category_id: CategoryIdEnum
     app_label: str
     search_group_name: Optional[subcategories.SearchGroupNameEnum]
     is_event: bool
@@ -297,5 +299,27 @@ class SubcategoryResponseModel(BaseModel):
         orm_mode = True
 
 
+class SearchGroupResponseModel(BaseModel):
+    name: str
+    value: Optional[str]
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
+
+
+class HomepageLabelResponseModel(BaseModel):
+    name: str
+    value: Optional[str]
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
+
+
 class SubcategoriesResponseModel(BaseModel):
     subcategories: list[SubcategoryResponseModel]
+    searchGroups: list[SearchGroupResponseModel]
+    homepageLabels: list[HomepageLabelResponseModel]

@@ -94,4 +94,12 @@ def get_subcategories() -> serializers.SubcategoriesResponseModel:
             serializers.SubcategoryResponseModel.from_orm(subcategory)
             for subcategory in subcategories.ALL_SUBCATEGORIES
         ],
+        searchGroups=[
+            serializers.SearchGroupResponseModel.from_orm(search_group_name)
+            for search_group_name in subcategories.SearchGroups
+        ],
+        homepageLabels=[
+            serializers.HomepageLabelResponseModel.from_orm(homepage_label_name)
+            for homepage_label_name in subcategories.HomepageLabels
+        ],
     )

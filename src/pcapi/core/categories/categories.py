@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 
 
 @dataclass(frozen=True)
@@ -86,5 +87,6 @@ ALL_CATEGORIES = (
     TECHNIQUE,
 )
 ALL_CATEGORIES_DICT = {category.id: category for category in ALL_CATEGORIES}
+CategoryIdEnum = Enum("CategoryIdEnum", {category.id: category.id for category in ALL_CATEGORIES})
 
 assert set(ALL_CATEGORIES) == set(category for category in locals().values() if isinstance(category, Category))

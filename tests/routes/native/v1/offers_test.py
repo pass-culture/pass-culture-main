@@ -518,12 +518,15 @@ class SubcategoriesTest:
             response = TestClient(app.test_client()).get("/native/v1/subcategories")
 
         assert response.status_code == 200
-        assert list(response.json.keys()) == ["subcategories"]
+        assert list(response.json.keys()) == ["subcategories", "searchGroups", "homepageLabels"]
         assert len(response.json["subcategories"]) == len(subcategories.ALL_SUBCATEGORIES)
+        assert len(response.json["searchGroups"]) == len(subcategories.SearchGroups)
+        assert len(response.json["homepageLabels"]) == len(subcategories.HomepageLabels)
         assert all(
             list(subcategory_dict.keys())
             == [
                 "id",
+                "categoryId",
                 "appLabel",
                 "searchGroupName",
                 "isEvent",
@@ -534,4 +537,20 @@ class SubcategoriesTest:
                 "isPhysicalDeposit",
             ]
             for subcategory_dict in response.json["subcategories"]
+        )
+        assert all(
+            list(search_group_dict.keys())
+            == [
+                "name",
+                "value",
+            ]
+            for search_group_dict in response.json["searchGroups"]
+        )
+        assert all(
+            list(homepage_label_dict.keys())
+            == [
+                "name",
+                "value",
+            ]
+            for homepage_label_dict in response.json["homepageLabels"]
         )
