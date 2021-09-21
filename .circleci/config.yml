@@ -87,7 +87,7 @@ jobs:
             nvm install
             yarn install
             yarn test:unit --coverage
-            yarn coveralls
+            yarn coveralls || echo "Encountered an error while running coveralls"
       - run:
           name: Install dockerize
           command: |
