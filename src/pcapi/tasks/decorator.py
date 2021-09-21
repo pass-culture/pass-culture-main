@@ -36,8 +36,7 @@ def task(queue: str, path: str):
             if isinstance(payload, pydantic.BaseModel):
                 payload = json.loads(payload.json())
 
-            task_id = cloud_task.enqueue_internal_task(queue, path, payload)
-            logger.info("Enqueued cloud task %s", path, extra={"queue": queue, "handler": path, "task": task_id})
+            cloud_task.enqueue_internal_task(queue, path, payload)
 
         f.delay = delay
         return f

@@ -70,6 +70,8 @@ def enqueue_task(queue: str, http_request: CloudTaskHttpRequest) -> Optional[str
         return None
 
     task_id = response.name.split("/")[-1]
+    logger.info("Enqueued cloud task targetting %s", http_request.url, extra={"queue": queue, "task": task_id})
+
     return task_id
 
 
