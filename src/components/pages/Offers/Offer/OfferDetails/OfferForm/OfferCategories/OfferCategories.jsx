@@ -58,6 +58,16 @@ const OfferCategories = ({
     [categoriesFormValues.subcategoryId, categories.subCategories]
   )
 
+  const getDefaultSubCategory = useCallback(
+    categoryId => {
+      const categorySubCategories = categories.subCategories.filter(
+        subCategory => subCategory.categoryId === categoryId && subCategory.isSelectable
+      )
+      return categorySubCategories.length === 1 ? categorySubCategories[0].id : DEFAULT_FORM_VALUES.categoryId
+    },
+    [categories.subCategories]
+  )
+
   const handleChange = useCallback(
     event => {
       const fieldName = event.target.name
@@ -73,7 +83,7 @@ const OfferCategories = ({
         case 'categoryId':
           newCategoriesFormValues = {
             categoryId: fieldValue,
-            subcategoryId: DEFAULT_FORM_VALUES.subcategoryId,
+            subcategoryId: getDefaultSubCategory(fieldValue),
             musicType: DEFAULT_FORM_VALUES.musicType,
             musicSubType: DEFAULT_FORM_VALUES.musicSubType,
             showType: DEFAULT_FORM_VALUES.showType,
@@ -117,7 +127,7 @@ const OfferCategories = ({
 
       updateCategoriesFormValues(newCategoriesFormValues)
     },
-    [categoriesFormValues, updateCategoriesFormValues]
+    [categoriesFormValues, updateCategoriesFormValues, getDefaultSubCategory]
   )
 
   return (

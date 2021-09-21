@@ -1849,6 +1849,18 @@ describe('offerDetails - Creation - pro user', () => {
       expect(screen.getByText('Informations artistiques')).toBeInTheDocument()
     })
 
+    it('should automatically select the subcategory when selected category has only one subcategory', async () => {
+      // Given
+      await renderOffers(props, store)
+
+      // When
+      setOfferValues({ categoryId: 'BEAUX_ARTS' })
+
+      // Then
+      expect(screen.getByDisplayValue('Matériel arts créatifs')).toBeInTheDocument()
+    })
+
+
     it('should display musicType and musicSubType dropdown when I select right category', async () => {
       // Given
       await renderOffers(props, store)
