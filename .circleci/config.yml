@@ -151,8 +151,8 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm install
             yarn test:unit --coverage --silent
-            yarn coveralls
-            bash <(curl -s https://codecov.io/bash)
+            yarn coveralls || echo "Encountered an error while running coveralls"
+            bash <(curl -s https://codecov.io/bash) || echo "Encountered an error while uploading to codecov"
 
   e2e-tests:
     machine:
