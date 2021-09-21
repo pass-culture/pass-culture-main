@@ -1,9 +1,11 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
 class VenueResponse(BaseModel):
     id: int
-    publicName: str
+    publicName: Optional[str]
     name: str
 
     class Config:
