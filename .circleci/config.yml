@@ -12,37 +12,7 @@ slack-fail-post-step: &slack-fail-post-step
     - slack/notify:
         event: fail
         channel: shérif
-        custom: |
-          {
-            "blocks": [
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "Oups, `nightly` a eu un soucis cette nuit :pleurs:"
-                },
-                "accessory": {
-                  "type": "image",
-                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Airport-firefighters-drill.jpg",
-                  "alt_text": "Nightly down"
-                }
-              },
-              {
-                "type": "actions",
-                "elements": [
-                  {
-                    "type": "button",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "View job",
-                      "emoji": true
-                    },
-                    "url": "$CIRCLE_BUILD_URL"
-                  }
-                ]
-              }
-            ]
-          }
+        template: basic_fail_1
 
 slack-send-deployment-notification: &slack-send-deployment-notification
   - slack/notify:
