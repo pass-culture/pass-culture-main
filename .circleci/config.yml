@@ -299,22 +299,15 @@ jobs:
             # By using only cache prefix, we load the most recent checksum
             - pass-culture-api-requirements-checksum-
       - run:
-          name: Check if the requirements have changed
-          command: md5sum --status -c requirements.md5;
-      - run:
-          name: Build docker image when requirements have changed
-          command: docker build -t passcultureapp/api-flask:latest .
-          when: on_fail
-      - run:
-          name: Push docker image
+          name: Build and push docker image if the requirements have changed
           command: |
+            md5sum --status -c requirements.md5 ||
+            docker build -t passcultureapp/api-flask:latest .
             docker login -u passcultureapp -p $DOCKERHUB_PASSWORD
             docker push passcultureapp/api-flask:latest
-          when: on_fail
       - run:
           name: Generate requirements print
           command: md5sum ./requirements.txt > requirements.md5
-          when: on_fail
       - save_cache:
           key: pass-culture-api-requirements-checksum-{{ .Revision }}
           paths:
