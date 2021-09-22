@@ -54,7 +54,7 @@ export const formatPhoneNumber = phoneNumber => {
   return phoneNumber
 }
 
-const Profile = ({ setUserInformations, showSuccessNotification, user }) => {
+const Profile = ({ setUserInformations, user }) => {
   const [isEditingProfile, setIsEditingProfile] = useState(false)
 
   const showProfileInfoModal = useCallback(() => setIsEditingProfile(true), [])
@@ -133,7 +133,6 @@ const Profile = ({ setUserInformations, showSuccessNotification, user }) => {
         <ProfileInformationsModal
           hideProfileInfoModal={hideProfileInfoModal}
           setUserInformations={setUserInformations}
-          showSuccessNotification={showSuccessNotification}
           user={user}
         />
       )}
@@ -143,7 +142,6 @@ const Profile = ({ setUserInformations, showSuccessNotification, user }) => {
 
 Profile.propTypes = {
   setUserInformations: PropTypes.func.isRequired,
-  showSuccessNotification: PropTypes.func.isRequired,
   user: PropTypes.shape().isRequired,
 }
 

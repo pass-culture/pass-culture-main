@@ -1,25 +1,23 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
+import useNotification from 'components/hooks/useNotification'
 import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-const ProfileInformationsModal = ({
-  hideProfileInfoModal,
-  setUserInformations,
-  showSuccessNotification,
-  user,
-}) => {
+const ProfileInformationsModal = ({ hideProfileInfoModal, setUserInformations, user }) => {
   const [lastName, setLastName] = useState(user.lastName || '')
   const [firstName, setFirstName] = useState(user.firstName || '')
   const [email, setEmail] = useState(user.email || '')
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber || '')
   const [formErrors, setFormErrors] = useState({})
+
+  const notification = useNotification()
 
   const submitProfileInformations = useCallback(
     event => {
@@ -35,7 +33,7 @@ const ProfileInformationsModal = ({
         .updateUserInformations(body)
         .then(() => {
           setUserInformations(user, body)
-          showSuccessNotification()
+          notification.success('Les informations ont bien été enregistrées.')
           hideProfileInfoModal()
         })
         .catch(error => {
@@ -47,9 +45,9 @@ const ProfileInformationsModal = ({
       lastName,
       email,
       hideProfileInfoModal,
+      notification,
       phoneNumber,
       setUserInformations,
-      showSuccessNotification,
       user,
     ]
   )
@@ -124,7 +122,6 @@ const ProfileInformationsModal = ({
 ProfileInformationsModal.propTypes = {
   hideProfileInfoModal: PropTypes.func.isRequired,
   setUserInformations: PropTypes.func.isRequired,
-  showSuccessNotification: PropTypes.func.isRequired,
   user: PropTypes.shape({
     firstName: PropTypes.string,
     lastName: PropTypes.string,
