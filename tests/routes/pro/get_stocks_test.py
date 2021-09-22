@@ -229,3 +229,16 @@ class Returns403Test:
         assert response.json == {
             "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
         }
+
+
+@pytest.mark.usefixtures("db_session")
+class Returns404Test:
+    def test_no_offerer_found_for_offer_id(self, app):
+        pro = users_factories.ProFactory()
+        offers_factories.OfferFactory(id=1)
+
+        client = TestClient(app.test_client()).with_session_auth(email=pro.email)
+        response = client.get(f"/offers/{humanize(2)}/stocks")
+
+        assert response.status_code == 404
+        assert response.json == {"offerer": ["Aucune structure trouvée à partir de cette offre"]}

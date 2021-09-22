@@ -3,10 +3,12 @@ from typing import List
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Offerer
 import pcapi.core.offerers.repository
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.repository import get_stocks_for_offer
+from pcapi.models import ApiErrors
 from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.models import Venue
@@ -33,9 +35,11 @@ from .blueprints import pro_api_v2
 @login_required
 @spectree_serialize(response_model=StocksResponseModel)
 def get_stocks(offer_id: str) -> StocksResponseModel:
-    offerer = pcapi.core.offerers.repository.get_by_offer_id(dehumanize(offer_id))
+    try:
+        offerer = pcapi.core.offerers.repository.get_by_offer_id(dehumanize(offer_id))
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
-
     stocks = get_stocks_for_offer(dehumanize(offer_id))
     return StocksResponseModel(
         stocks=[StockResponseModel.from_orm(stock) for stock in stocks],
@@ -46,7 +50,10 @@ def get_stocks(offer_id: str) -> StocksResponseModel:
 @login_required
 @spectree_serialize(on_success_status=201, response_model=StockIdsResponseModel)
 def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
-    offerer = pcapi.core.offerers.repository.get_by_offer_id(body.offer_id)
+    try:
+        offerer = pcapi.core.offerers.repository.get_by_offer_id(body.offer_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     stocks = offers_api.upsert_stocks(body.offer_id, body.stocks, current_user)
