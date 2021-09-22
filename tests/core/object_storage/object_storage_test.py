@@ -5,7 +5,6 @@ import pytest
 from pcapi.core.object_storage import BACKENDS_MAPPING
 from pcapi.core.object_storage import _check_backend_setting
 from pcapi.core.object_storage import _check_backends_module_paths
-from pcapi.core.object_storage import build_thumb_path
 from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offers.models import Mediation
@@ -96,37 +95,15 @@ class DeletePublicObjectTest:
         mock_gcp_delete_public_object.assert_called_once_with("bucket", "object_id")
 
 
-class BuildThumbPathTest:
-    def test_returns_path_without_sql_entity_when_given_model_is_mediation(self):
-        # given
-        mediation_object = Mediation()
-        mediation_object.id = 123
-        mediation_object.offerId = 567
+class GetThumbStorageIdTest:
+    def test_with_mediation(self):
+        obj = Mediation(id=123)
+        assert obj.get_thumb_storage_id(0) == "mediations/PM"
 
-        # when
-        thumb_path = build_thumb_path(mediation_object, 0)
+    def test_with_product(self):
+        obj = Product(id=123)
+        assert obj.get_thumb_storage_id(0) == "products/PM"
 
-        # then
-        assert thumb_path == "mediations/PM"
-
-    def test_returns_classic_path_when_given_model_is_product(self):
-        # given
-        product_object = Product()
-        product_object.id = 123
-
-        # when
-        thumb_path = build_thumb_path(product_object, 0)
-
-        # then
-        assert thumb_path == "products/PM"
-
-    def test_returns_path_with_index_if_above_0(self):
-        # given
-        product_object = Product()
-        product_object.id = 123
-
-        # when
-        thumb_path = build_thumb_path(product_object, 3)
-
-        # then
-        assert thumb_path == "products/PM_3"
+    def test_with_index_above_0(self):
+        obj = Product(id=123)
+        assert obj.get_thumb_storage_id(3) == "products/PM_3"

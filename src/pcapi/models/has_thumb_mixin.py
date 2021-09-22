@@ -2,7 +2,6 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 
 from pcapi import settings
-from pcapi.core.object_storage import build_thumb_path
 from pcapi.utils.human_ids import humanize
 
 
@@ -23,7 +22,8 @@ class HasThumbMixin:
     def get_thumb_storage_id(self, index: int) -> str:
         if self.id is None:
             raise ValueError("Trying to get thumb_storage_id for an unsaved object")
-        return build_thumb_path(self, index)
+        suffix = f"_{index}" if index > 0 else ""
+        return f"{self.thumb_path_component}/{humanize(self.id)}{suffix}"
 
     @property
     def thumbUrl(self):

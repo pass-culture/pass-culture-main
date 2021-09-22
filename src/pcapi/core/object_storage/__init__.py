@@ -61,8 +61,3 @@ def delete_public_object(bucket: str, object_id: str) -> None:
     for backend_path in _get_backends():
         backend = import_string(backend_path)
         backend().delete_public_object(bucket, object_id)
-
-
-def build_thumb_path(pc_object: Model, index: int) -> str:
-    suffix = f"_{index}" if index > 0 else ""
-    return f"{pc_object.thumb_path_component}/{humanize(pc_object.id)}{suffix}"
