@@ -41,6 +41,11 @@ class VenuesTest:
             },
         }
 
+    def test_get_non_permanent_venue(self, client):
+        venue = offerer_factories.VenueFactory(isPermanent=False)
+        response = client.get(f"/native/v1/venue/{venue.id}")
+        assert response.status_code == 404
+
     def test_get_non_existing_venue(self, client):
         response = client.get("/native/v1/venue/123456789")
         assert response.status_code == 404
