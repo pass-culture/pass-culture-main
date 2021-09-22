@@ -219,10 +219,9 @@ class User(PcObject, Model, NeedsValidationMixin):
     def get_id(self):
         return str(self.id)
 
-    def has_access(self, offerer_id):
+    def has_access(self, offerer_id: int) -> bool:
         if self.isAdmin:
             return True
-
         return db.session.query(
             UserOfferer.query.filter(
                 (UserOfferer.offererId == offerer_id)
