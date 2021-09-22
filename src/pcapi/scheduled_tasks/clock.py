@@ -94,13 +94,30 @@ def pc_remote_import_beneficiaries_from_old_dms(app: Flask) -> None:
 
 @log_cron
 @cron_context
-def pc_import_beneficiaries_from_dms(app: Flask) -> None:
+def pc_import_beneficiaries_from_dms_v3(app: Flask) -> None:
     procedure_id = settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
         BeneficiaryImportSources.demarches_simplifiees, procedure_id
     )
     remote_import.run(procedure_id, use_graphql_api=FeatureToggle.ENABLE_DMS_GRAPHQL_API.is_active())
     remote_tag_has_completed.run(import_from_date, procedure_id)
+
+
+@log_cron
+@cron_context
+def pc_import_beneficiaries_from_dms_v4(app: Flask) -> None:
+    for procedure_name, procedure_id in (
+        ("v4_FR", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR),
+        ("v4_ET", settings.settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET),
+    ):
+        if not procedure_id:
+            logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
+            continue
+        import_from_date = find_most_recent_beneficiary_creation_date_for_source(
+            BeneficiaryImportSources.demarches_simplifiees, procedure_id
+        )
+        remote_import.run(procedure_id, use_graphql_api=FeatureToggle.ENABLE_DMS_GRAPHQL_API.is_active())
+        remote_tag_has_completed.run(import_from_date, procedure_id)
 
 
 @log_cron
@@ -174,11 +191,13 @@ def main() -> None:
 
     scheduler.add_job(synchronize_provider_api, "cron", [app], day="*", hour="1")
 
-    scheduler.add_job(pc_remote_import_beneficiaries, "cron", [app], hour="*")
+    scheduler.add_job(pc_remote_import_beneficiaries, "cron", [app], day="*", hour="21", minute="50")
 
-    scheduler.add_job(pc_remote_import_beneficiaries_from_old_dms, "cron", [app], day="*", hour="20")
+    scheduler.add_job(pc_remote_import_beneficiaries_from_old_dms, "cron", [app], day="*", hour="20", minute="50")
 
-    scheduler.add_job(pc_import_beneficiaries_from_dms, "cron", [app], hour="*")
+    scheduler.add_job(pc_import_beneficiaries_from_dms_v3, "cron", [app], hour="*")
+
+    scheduler.add_job(pc_import_beneficiaries_from_dms_v4, "cron", [app], hour="*", minute="20")
 
     scheduler.add_job(update_booking_used, "cron", [app], day="*", hour="0")
 
