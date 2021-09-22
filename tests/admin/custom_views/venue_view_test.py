@@ -113,8 +113,9 @@ class VenueViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    @patch("pcapi.core.search.async_index_venues")
     def test_reindex_venue_on_coordinates_change(
-        self, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app
+        self, mocked_async_index_venues, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app
     ):
         AdminFactory(email="user@example.com")
         venue = VenueFactory()
@@ -136,6 +137,7 @@ class VenueViewTest:
 
         assert response.status_code == 302
 
+        mocked_async_index_venues.assert_called_once_with([venue])
         mocked_async_index_offers_of_venue_ids.assert_called_once_with([venue.id])
 
 
