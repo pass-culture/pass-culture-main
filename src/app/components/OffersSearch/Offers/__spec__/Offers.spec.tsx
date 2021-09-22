@@ -183,7 +183,9 @@ describe("offers", () => {
              />)
 
       // Then
-      const errorMessage = await screen.findByText("Aucun résultats.")
+      const errorMessage = await screen.findByText(
+        "Aucun résultat trouvé pour cette recherche."
+      )
       expect(errorMessage).toBeInTheDocument()
       const listItemsInOffer = screen.queryAllByRole("listitem")
       expect(listItemsInOffer).toHaveLength(0)
@@ -205,7 +207,9 @@ describe("offers", () => {
       )
 
       // Then
-      const errorMessage = await screen.findByText("Aucun résultats.")
+      const errorMessage = await screen.findByText(
+        "Aucun résultat trouvé pour cette recherche."
+      )
       expect(errorMessage).toBeInTheDocument()
       const listItemsInOffer = screen.queryAllByRole("listitem")
       expect(listItemsInOffer).toHaveLength(0)
@@ -225,7 +229,9 @@ describe("offers", () => {
       )
 
       // Then
-      const errorMessage = await screen.findByText("Aucun résultats.")
+      const errorMessage = await screen.findByText(
+        "Aucun résultat trouvé pour cette recherche."
+      )
       expect(errorMessage).toBeInTheDocument()
       const listItemsInOffer = screen.queryAllByRole("listitem")
       expect(listItemsInOffer).toHaveLength(0)
