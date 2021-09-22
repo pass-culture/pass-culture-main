@@ -38,7 +38,6 @@ describe('components | Result', () => {
           priceMin: 8,
           priceMax: 12,
           thumbUrl: '/thumbs/lien-vers-mon-image',
-          searchGroup: 'Livres',
         },
         venue: {
           departementCode: '54',
@@ -46,6 +45,7 @@ describe('components | Result', () => {
         objectID: '1',
       },
       search: '?mots-cles=librairie&page=1',
+      searchGroupLabel: 'Livres',
     }
   })
 

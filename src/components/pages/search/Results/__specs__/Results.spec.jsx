@@ -51,6 +51,7 @@ describe('components | Results', () => {
   let parse
   let replace
   let push
+  let store
 
   beforeEach(() => {
     fakeTracking = {
@@ -61,6 +62,9 @@ describe('components | Results', () => {
     push = jest.fn()
     parse = jest.fn().mockReturnValue({})
     replace = jest.fn()
+    store = getStubStore({
+      data: (state = {}) => state,
+    })
 
     props = {
       criteria: {
@@ -314,12 +318,17 @@ describe('components | Results', () => {
         props.history.push(
           '/recherche/resultats?mots-cles=une%20librairie&autour-de=non&categories=INSTRUMENT'
         )
+        const store = getStubStore({
+          data: (state = {}) => state,
+        })
 
         // when
         const wrapper = await mount(
-          <Router history={props.history}>
-            <Results {...props} />
-          </Router>
+          <Provider store={store}>
+            <Router history={props.history}>
+              <Results {...props} />
+            </Router>
+          </Provider>
         )
 
         wrapper.update()
@@ -376,14 +385,18 @@ describe('components | Results', () => {
           'autour-de': 'oui',
           'mots-cles': 'une librairie',
         })
+        const store = getStubStore({
+          data: (state = {}) => state,
+        })
 
         // when
         const wrapper = await mount(
-          <Router history={props.history}>
-            <Results {...props} />
-          </Router>
+          <Provider store={store}>
+            <Router history={props.history}>
+              <Results {...props} />
+            </Router>
+          </Provider>
         )
-
         wrapper.update()
 
         // then
@@ -1073,11 +1086,17 @@ describe('components | Results', () => {
           '/recherche/resultats?mots-cles=une%20librairie&autour-de=non&categories=INSTRUMENT'
         )
 
+        const store = getStubStore({
+          data: (state = {}) => state,
+        })
+
         // when
         const wrapper = await mount(
-          <Router history={props.history}>
-            <Results {...props} />
-          </Router>
+          <Provider store={store}>
+            <Router history={props.history}>
+              <Results {...props} />
+            </Router>
+          </Provider>
         )
 
         wrapper.update()
@@ -1135,11 +1154,17 @@ describe('components | Results', () => {
           'mots-cles': 'une librairie',
         })
 
+        const store = getStubStore({
+          data: (state = {}) => state,
+        })
+
         // when
         const wrapper = await mount(
-          <Router history={props.history}>
-            <Results {...props} />
-          </Router>
+          <Provider store={store}>
+            <Router history={props.history}>
+              <Results {...props} />
+            </Router>
+          </Provider>
         )
 
         wrapper.update()
@@ -1629,12 +1654,15 @@ describe('components | Results', () => {
       })
 
       const wrapper = await mount(
-        <Router history={props.history}>
-          <Results {...props} />
-        </Router>
+        <Provider store={store}>
+          <Router history={props.history}>
+            <Results {...props} />
+          </Router>
+        </Provider>
       )
 
-      stubRef(wrapper)
+      const resultsWrapper = wrapper.find(Results)
+      stubRef(resultsWrapper)
       const form = wrapper.find('form')
 
       // when
@@ -1692,14 +1720,17 @@ describe('components | Results', () => {
       })
 
       const wrapper = await mount(
-        <Router history={props.history}>
-          <Results {...props} />
-        </Router>
+        <Provider store={store}>
+          <Router history={props.history}>
+            <Results {...props} />
+          </Router>
+        </Provider>
       )
 
       wrapper.update()
 
-      stubRef(wrapper)
+      const resultsWrapper = wrapper.find(Results)
+      stubRef(resultsWrapper)
       const form = wrapper.find('form')
 
       fetchAlgolia.mockReturnValueOnce(
@@ -1833,12 +1864,14 @@ describe('components | Results', () => {
       })
 
       const wrapper = await mount(
-        <Router history={props.history}>
-          <Results {...props} />
-        </Router>
+        <Provider store={store}>
+          <Router history={props.history}>
+            <Results {...props} />
+          </Router>
+        </Provider>
       )
-
-      stubRef(wrapper)
+      const resultsWrapper = wrapper.find(Results)
+      stubRef(resultsWrapper)
       const form = wrapper.find('form')
 
       // when
@@ -2452,9 +2485,7 @@ describe('components | Results', () => {
       const history = createBrowserHistory()
       history.push('/recherche/resultats?mots-cles=librairie')
       props.history = history
-      const store = getStubStore({
-        data: (state = {}) => state,
-      })
+
       const wrapper = mount(
         <Provider store={store}>
           <Router history={history}>
@@ -2464,7 +2495,7 @@ describe('components | Results', () => {
       )
       const filterButton = wrapper.find({ children: 'Filtrer' })
 
-      // when
+      // whensrc/components/pages/search/Results/__specs__/Results.spec.jsx
       filterButton.simulate('click')
 
       // then

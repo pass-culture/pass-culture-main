@@ -8,11 +8,10 @@ import { getHumanizeRelativeDistance } from '../../../../../../utils/geolocation
 import getThumbUrl from '../../../../../../utils/getThumbUrl'
 import { formatResultPrice } from '../../../../../../utils/price'
 import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
-import { SearchHit } from '../ResultsList'
 
-const Result = ({ result, geolocation, search }) => {
+const Result = ({ result, geolocation, search, searchGroupLabel }) => {
   const { _geoloc = {}, objectID, offer, venue } = result
-  const { dates, isDigital, isDuo, name, priceMin, priceMax, thumbUrl, searchGroup } = offer
+  const { dates, isDigital, isDuo, name, priceMin, priceMax, thumbUrl } = offer
   const { latitude: userLatitude, longitude: userLongitude } = geolocation
   const { lat: venueLatitude, lng: venueLongitude } = _geoloc
   const { departementCode } = venue || {}
@@ -53,7 +52,7 @@ const Result = ({ result, geolocation, search }) => {
             )}
           </div>
           <p className="result-type">
-            {searchGroup}
+            {searchGroupLabel}
           </p>
           {formattedDate && (
             <p
@@ -78,6 +77,7 @@ Result.defaultProps = {
   geolocation: {},
   result: {},
   search: '',
+  searchGroupLabel: '',
 }
 
 Result.propTypes = {
@@ -85,8 +85,31 @@ Result.propTypes = {
     latitude: PropTypes.number,
     longitude: PropTypes.number,
   }),
-  result: PropTypes.shape(SearchHit),
+  result: PropTypes.shape({
+    offer: PropTypes.shape({
+      dates: PropTypes.arrayOf(PropTypes.number),
+      isDigital: PropTypes.bool,
+      isDuo: PropTypes.bool,
+      isEvent: PropTypes.bool,
+      label: PropTypes.string,
+      name: PropTypes.string,
+      priceMin: PropTypes.number,
+      priceMax: PropTypes.number,
+      thumbUrl: PropTypes.string,
+    }),
+    _geoloc: PropTypes.shape({
+      lat: PropTypes.number,
+      lng: PropTypes.number,
+    }),
+    venue: PropTypes.shape({
+      departmentCode: PropTypes.string,
+      name: PropTypes.string,
+      publicName: PropTypes.string,
+    }),
+    objectID: PropTypes.string.isRequired,
+  }),
   search: PropTypes.string,
+  searchGroupLabel: PropTypes.string,
 }
 
 export default Result

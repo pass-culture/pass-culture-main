@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 import { ResultsList } from '../ResultsList'
-import Result from '../Result/Result'
+import ResultContainer from '../Result/ResultContainer'
 
 describe('component | ResultsList', () => {
   let props
@@ -66,7 +66,7 @@ describe('component | ResultsList', () => {
     // When
     const wrapper = shallow(<ResultsList {...props} />)
     // Then
-    const resultsComponent = wrapper.find(Result)
+    const resultsComponent = wrapper.find(ResultContainer)
     expect(resultsComponent).toHaveLength(2)
     expect(resultsComponent.at(0).prop('geolocation')).toStrictEqual({
       longitude: null,

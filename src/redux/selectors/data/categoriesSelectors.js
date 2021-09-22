@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 
-const selectSubcategoriesAndSearchGroups = state => state.data.categories
+export const selectSubcategoriesAndSearchGroups = state => state.data.categories
 
 export const selectSubcategory = createSelector(
   selectSubcategoriesAndSearchGroups,
@@ -23,5 +23,15 @@ export const selectSearchGroup = createSelector(
       searchGroup => searchGroup.name === subcategory.searchGroupName
     )
     return searchGroup
+  }
+)
+
+export const selectSearchGroupBySearchResult = createSelector(
+  selectSubcategoriesAndSearchGroups,
+  (state, offerFromResult) => offerFromResult.searchGroupName,
+  (categories, searchGroupName) => {
+    if (!searchGroupName) return {}
+    const { searchGroups } = categories[0]
+    return searchGroups.find(searchGroup => searchGroup.name === searchGroupName)
   }
 )

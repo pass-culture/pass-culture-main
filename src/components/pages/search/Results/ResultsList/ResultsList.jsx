@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 import { LOCALE_FRANCE } from '../../../../../utils/date/date'
-import Result from './Result/Result'
+import ResultContainer from './Result/ResultContainer'
 
 const getNumberOfResultsToDisplay = resultsCount => {
   const pluralizedResultatWord = resultsCount > 1 ? 'résultats' : 'résultat'
@@ -34,7 +34,7 @@ export const ResultsList = ({
         useWindow={false}
       >
         {results.map(result => (
-          <Result
+          <ResultContainer
             geolocation={geolocation}
             key={result.objectID}
             result={result}
