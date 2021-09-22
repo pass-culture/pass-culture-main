@@ -1,4 +1,5 @@
 import "./Offers.scss"
+import { captureException } from "@sentry/react"
 import React, { useEffect, useState } from "react"
 
 import { Spinner } from "app/components/Layout/Spinner/Spinner"
@@ -42,8 +43,8 @@ export const Offers = ({
             return offer
           }
         })
-        .catch(() => {
-          // Swallow exception
+        .catch((e) => {
+          captureException(e)
         })
     })
 

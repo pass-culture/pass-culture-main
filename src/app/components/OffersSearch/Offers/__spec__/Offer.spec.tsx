@@ -107,8 +107,10 @@ describe("offer", () => {
       // When
       render(
         <Offers
+          isAppSearchLoading={false}
           results={[appSearchFakeResult]}
           userRole={Role.redactor}
+          wasFirstSearchLaunched
         />
       )
 
@@ -129,8 +131,10 @@ describe("offer", () => {
       // When
       render(
         <Offers
+          isAppSearchLoading={false}
           results={[appSearchFakeResult]}
           userRole={Role.redactor}
+          wasFirstSearchLaunched
         />
       )
 
@@ -159,8 +163,10 @@ describe("offer", () => {
       // When
       render(
         <Offers
+          isAppSearchLoading={false}
           results={[appSearchFakeResult]}
           userRole={Role.redactor}
+          wasFirstSearchLaunched
         />
       )
 
@@ -186,8 +192,10 @@ describe("offer", () => {
       // When
       render(
         <Offers
+          isAppSearchLoading={false}
           results={[appSearchFakeResult]}
           userRole={Role.redactor}
+          wasFirstSearchLaunched
         />
       )
 
@@ -205,10 +213,14 @@ describe("offer", () => {
     mockedPcapi.getOffer.mockResolvedValue(offerInParis)
 
     // When
-    render(<Offers
-      results={[appSearchFakeResult]}
-      userRole={Role.redactor}
-           />)
+    render(
+      <Offers
+        isAppSearchLoading={false}
+        results={[appSearchFakeResult]}
+        userRole={Role.redactor}
+        wasFirstSearchLaunched
+      />
+    )
 
     // Then
     const offerThumb = await screen.findByRole("img")
@@ -249,10 +261,14 @@ describe("offer", () => {
       }
 
       // When
-      render(<Offers
-        results={[appSearchResult]}
-        userRole={Role.redactor}
-             />)
+      render(
+        <Offers
+          isAppSearchLoading={false}
+          results={[appSearchResult]}
+          userRole={Role.redactor}
+          wasFirstSearchLaunched
+        />
+      )
 
       // Then
       const thumbPlaceholder = await screen.findByTestId("thumb-placeholder")
