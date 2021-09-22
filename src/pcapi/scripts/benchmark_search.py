@@ -319,6 +319,10 @@ class Case:
     def is_slow(self):
         return any(result_set.is_slow for result_set in self.results_per_backend)
 
+    @property
+    def max_elapsed(self):
+        return max(result_set.elapsed for result_set in self.results_per_backend)
+
 
 @dataclasses.dataclass
 class Benchmark:
@@ -491,6 +495,7 @@ HTML_TEMPLATE = jinja2.Template(
       <li>
         <a href="#{{ case.html_anchor }}"
            class="elapsed {% if case.is_slow %} slow-search{% endif %}">{{ case.description }}</a>
+        ({{ "%.3f"|format(case.max_elapsed) }}s)
       </li>
     {% endfor %}
   </ol>
