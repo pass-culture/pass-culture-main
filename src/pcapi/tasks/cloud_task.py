@@ -41,7 +41,7 @@ class CloudTaskHttpRequest:
             self.body = json.dumps(json_param).encode()
 
 
-def enqueue_task(queue: str, http_request: CloudTaskHttpRequest):
+def enqueue_task(queue: str, http_request: CloudTaskHttpRequest) -> Optional[str]:
 
     client = get_client()
     parent = client.queue_path(settings.GCP_PROJECT, settings.GCP_REGION_CLOUD_TASK, queue)
@@ -60,6 +60,13 @@ def enqueue_task(queue: str, http_request: CloudTaskHttpRequest):
         )
     except AlreadyExists:
         logger.info("Task on queue %s url %s already retried", queue, http_request.url)
+        return None
+    except Exception as exc:  # pylint: disable=broad-except
+        logger.exception(
+            "Failed to enqueue a task: %s",
+            exc,
+            extra={"queue": queue, "task_url": http_request.url, "body": http_request.body},
+        )
         return None
 
     task_id = response.name.split("/")[-1]
