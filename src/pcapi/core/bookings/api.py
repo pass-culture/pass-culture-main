@@ -83,9 +83,7 @@ def book_offer(
         # where exceptions are caught. Since we are using flask-sqlalchemy,
         # I don't think that we should use autoflush, nor should we use
         # the `pcapi.repository.repository` module.
-        individual_booking = IndividualBooking(userId=beneficiary.id)
         booking = Booking(
-            individualBooking=individual_booking,
             userId=beneficiary.id,
             stockId=stock.id,
             amount=stock.price,
@@ -104,9 +102,10 @@ def book_offer(
             if FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS.is_active():
                 booking.mark_as_used()
 
+        individual_booking = IndividualBooking(userId=beneficiary.id, booking=booking)
         stock.dnBookedQuantity += booking.quantity
 
-        repository.save(booking, stock)
+        repository.save(individual_booking, stock)
 
     logger.info(
         "Beneficiary booked an offer",
@@ -120,11 +119,11 @@ def book_offer(
     )
 
     try:
-        user_emails.send_booking_confirmation_email_to_offerer(booking)
+        user_emails.send_booking_confirmation_email_to_offerer(individual_booking.booking)
     except MailServiceException as error:
         logger.exception("Could not send booking=%s confirmation email to offerer: %s", booking.id, error)
     try:
-        user_emails.send_booking_confirmation_email_to_beneficiary(booking)
+        user_emails.send_booking_confirmation_email_to_beneficiary(individual_booking.booking)
     except MailServiceException as error:
         logger.exception("Could not send booking=%s confirmation email to beneficiary: %s", booking.id, error)
 
