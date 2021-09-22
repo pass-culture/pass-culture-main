@@ -151,8 +151,10 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
             db.session.add(favorite)
             db.session.flush()
         update_external_user(user)
-    except exc.IntegrityError:
+    except exc.IntegrityError as exception:
         favorite = Favorite.query.filter_by(offerId=body.offerId, userId=user.id).one_or_none()
+        if not favorite:
+            raise exception
 
     return serializers.FavoriteResponse.from_orm(favorite)
 
