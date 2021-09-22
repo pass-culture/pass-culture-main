@@ -805,7 +805,7 @@ def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryVali
     if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
         return BeneficiaryValidationStep.PHONE_VALIDATION
     if not user.hasCompletedIdCheck:
-        if is_client_older("1.155.0") or not user.extraData.get("is_identity_document_uploaded"):
+        if is_client_older("1.160.0") or not user.extraData.get("is_identity_document_uploaded"):
             return BeneficiaryValidationStep.ID_CHECK
         return BeneficiaryValidationStep.BENEFICIARY_INFORMATION
 

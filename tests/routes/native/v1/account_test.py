@@ -299,7 +299,7 @@ class AccountTest:
         assert me_response.json["hasCompletedIdCheck"]
 
     @pytest.mark.parametrize(
-        "client_version,extra_step", [("1.154.9", "id-check"), ("1.155.0", "beneficiary-information")]
+        "client_version,extra_step", [("1.154.9", "id-check"), ("1.160.0", "beneficiary-information")]
     )
     @freeze_time("2021-06-01")
     def test_next_beneficiary_validation_step(self, client_version, extra_step, app):
