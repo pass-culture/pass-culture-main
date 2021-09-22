@@ -918,14 +918,20 @@ def update_last_connection_date(user):
     previous_connection_date = user.lastConnectionDate
     last_connection_date = datetime.utcnow()
 
-    if not previous_connection_date or last_connection_date - previous_connection_date > timedelta(minutes=15):
+    should_save_last_connection_date = (
+        not previous_connection_date or last_connection_date - previous_connection_date > timedelta(minutes=15)
+    )
+    should_update_sendinblue_last_connection_date = should_save_last_connection_date and (
+        not previous_connection_date
+        or last_connection_date.date() - previous_connection_date.date() >= timedelta(days=1)
+    )
+
+    if should_save_last_connection_date:
         user.lastConnectionDate = last_connection_date
         repository.save(user)
 
-        if not previous_connection_date or (
-            last_connection_date.date() - previous_connection_date.date() >= timedelta(days=1)
-        ):
-            update_external_user(user, update_batch=False)
+    if should_update_sendinblue_last_connection_date:
+        update_external_user(user, update_batch=False)
 
 
 def create_user_access_token(user: User) -> str:
