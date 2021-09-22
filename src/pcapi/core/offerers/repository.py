@@ -1,6 +1,7 @@
 import datetime
 from typing import Optional
 
+from sqlalchemy import or_
 import sqlalchemy.orm as sqla_orm
 from sqlalchemy.orm import Query
 
@@ -9,6 +10,8 @@ from pcapi.core.users.models import User
 from pcapi.domain.ts_vector import create_filter_matching_all_keywords_in_any_model
 from pcapi.domain.ts_vector import create_get_filter_matching_ts_query_in_any_model
 from pcapi.models import db
+from pcapi.models.bank_information import BankInformation
+from pcapi.models.bank_information import BankInformationStatus
 
 from . import exceptions
 from . import models
@@ -52,9 +55,9 @@ def get_filtered_venues(
     offerer_id: Optional[int] = None,
     validated_offerer: Optional[bool] = None,
     validated_offerer_for_user: Optional[bool] = None,
-) -> list[Venue]:
+) -> list[models.Venue]:
     query = (
-        Venue.query.join(models.Offerer, models.Offerer.id == models.Venue.managingOffererId)
+        models.Venue.query.join(models.Offerer, models.Offerer.id == models.Venue.managingOffererId)
         .join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id)
         .options(sqla_orm.joinedload(models.Venue.managingOfferer))
     )
@@ -117,6 +120,30 @@ def find_venue_by_managing_offerer_id(offerer_id: int) -> Optional[models.Venue]
 
 def find_virtual_venue_by_offerer_id(offerer_id: int) -> Optional[models.Venue]:
     return models.Venue.query.filter_by(managingOffererId=offerer_id, isVirtual=True).first()
+
+
+def has_physical_venue_without_draft_or_accepted_bank_information(offerer_id: int) -> bool:
+    return db.session.query(
+        models.Venue.query.outerjoin(BankInformation)
+        .filter(models.Venue.managingOffererId == offerer_id)
+        .filter(models.Venue.isVirtual.is_(False))
+        .filter(
+            or_(
+                BankInformation.status.notin_((BankInformationStatus.DRAFT, BankInformationStatus.ACCEPTED)),
+                models.Venue.bankInformation == None,
+            )
+        )
+        .exists()
+    ).scalar()
+
+
+def has_digital_venue_with_at_least_one_offer(offerer_id: int) -> bool:
+    return db.session.query(
+        models.Venue.query.join(Offer, models.Venue.id == Offer.venueId)
+        .filter(models.Venue.managingOffererId == offerer_id)
+        .filter(models.Venue.isVirtual.is_(True))
+        .exists()
+    ).scalar()
 
 
 get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_in_any_model(

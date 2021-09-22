@@ -1,10 +1,9 @@
 import pytest
 
+from pcapi.core import testing
 from pcapi.core.offerers.factories import ApiKeyFactory
-import pcapi.core.offerers.models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
@@ -34,76 +33,62 @@ class Returns200Test:
         venue_2 = offers_factories.VenueFactory(
             managingOfferer=offerer, withdrawalDetails="Other venue withdrawal details"
         )
-        venue_3 = offers_factories.VenueFactory(
-            managingOfferer=offerer, withdrawalDetails="More venue withdrawal details"
-        )
+        offers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="More venue withdrawal details")
         ApiKeyFactory(offerer=offerer, prefix="testenv_prefix")
         ApiKeyFactory(offerer=offerer, prefix="testenv_prefix2")
-        offerer_bank_information = create_bank_information(offerer=offerer)
-        create_bank_information(venue=venue_1, application_id=2)
-        create_bank_information(venue=venue_2, application_id=3)
-        create_bank_information(venue=venue_3, application_id=4)
-        offerer = pcapi.core.offerers.models.Offerer.query.filter_by(id=offerer.id).one()
+        offers_factories.BankInformationFactory(venue=venue_1, applicationId=2, status="REJECTED")
+        offers_factories.BankInformationFactory(venue=venue_1, applicationId=3)
+        offers_factories.BankInformationFactory(venue=venue_2, applicationId=4)
 
-        # when
-        response = TestClient(app.test_client()).with_session_auth(pro.email).get(f"/offerers/{humanize(offerer.id)}")
+        client = TestClient(app.test_client()).with_session_auth(pro.email)
+        n_queries = (
+            testing.AUTHENTICATION_QUERIES
+            + 1  # check_user_has_access_to_offerer
+            + 1  # Offerer api_key prefix
+            + 1  # Offerer hasDigitalVenueAtLeastOneOffer
+            + 1  # Offerer BankInformation
+            + 1  # Offerer hasMissingBankInformation
+        )
+        with testing.assert_num_queries(n_queries):
+            response = client.get(f"/offerers/{humanize(offerer.id)}")
 
         expected_serialized_offerer = {
             "address": offerer.address,
             "apiKey": {"maxAllowed": 5, "prefixes": ["testenv_prefix", "testenv_prefix2"]},
-            "bic": offerer_bank_information.bic,
-            "iban": offerer_bank_information.iban,
+            "bic": None,
+            "iban": None,
             "city": offerer.city,
             "dateCreated": format_into_utc_date(offerer.dateCreated),
             "dateModifiedAtLastProvider": format_into_utc_date(offerer.dateModifiedAtLastProvider),
-            "demarchesSimplifieesApplicationId": str(offerer.demarchesSimplifieesApplicationId),
+            "demarchesSimplifieesApplicationId": None,
+            "hasDigitalVenueAtLeastOneOffer": False,
             "fieldsUpdated": offerer.fieldsUpdated,
+            "hasMissingBankInformation": True,
             "id": humanize(offerer.id),
             "idAtProviders": offerer.idAtProviders,
             "isValidated": offerer.isValidated,
             "lastProviderId": offerer.lastProviderId,
             "managedVenues": [
                 {
-                    "audioDisabilityCompliant": False,
-                    "bic": venue_bank_information.bic,
-                    "iban": venue_bank_information.iban,
-                    "demarchesSimplifieesApplicationId": str(venue.demarchesSimplifieesApplicationId),
                     "address": offererVenue.address,
-                    "bookingEmail": offererVenue.bookingEmail,
                     "city": offererVenue.city,
                     "comment": offererVenue.comment,
-                    "dateCreated": format_into_utc_date(offererVenue.dateCreated),
-                    "dateModifiedAtLastProvider": format_into_utc_date(offererVenue.dateModifiedAtLastProvider),
                     "departementCode": offererVenue.departementCode,
                     "id": humanize(offererVenue.id),
-                    "idAtProviders": offererVenue.idAtProviders,
                     "isValidated": offererVenue.isValidated,
                     "isVirtual": offererVenue.isVirtual,
-                    "lastProviderId": offererVenue.lastProviderId,
-                    "latitude": float(offererVenue.latitude),
-                    "longitude": float(offererVenue.longitude),
                     "managingOffererId": humanize(offererVenue.managingOffererId),
-                    "mentalDisabilityCompliant": False,
-                    "motorDisabilityCompliant": False,
                     "name": offererVenue.name,
-                    "nOffers": offererVenue.nOffers,
                     "postalCode": offererVenue.postalCode,
                     "publicName": offererVenue.publicName,
-                    "siret": offererVenue.siret,
-                    "stats": None,
                     "venueLabelId": humanize(offererVenue.venueLabelId),
                     "venueTypeId": humanize(offererVenue.venueTypeId),
-                    "visualDisabilityCompliant": False,
-                    "withdrawalDetails": venue.withdrawalDetails,
                 }
                 for offererVenue in offerer.managedVenues
             ],
             "name": offerer.name,
-            "nOffers": offerer.nOffers,
             "postalCode": offerer.postalCode,
             "siren": offerer.siren,
         }
-
-        # then
         assert response.status_code == 200
         assert response.json == expected_serialized_offerer

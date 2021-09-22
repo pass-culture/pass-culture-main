@@ -7,6 +7,8 @@ from pydantic import BaseModel
 from pcapi import settings
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import get_api_key_prefixes
+from pcapi.core.offerers.repository import has_digital_venue_with_at_least_one_offer
+from pcapi.core.offerers.repository import has_physical_venue_without_draft_or_accepted_bank_information
 from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel
 from pcapi.serialization.utils import humanize_field
 from pcapi.utils.date import format_into_utc_date
@@ -14,37 +16,18 @@ from pcapi.utils.date import format_into_utc_date
 
 class GetOffererVenueResponseModel(BaseModel):
     address: Optional[str]
-    bic: Optional[str]
-    bookingEmail: Optional[str]
     city: Optional[str]
     comment: Optional[str]
-    dateCreated: datetime
-    dateModifiedAtLastProvider: Optional[datetime]
-    demarchesSimplifieesApplicationId: Optional[str]
     departementCode: Optional[str]
-    iban: Optional[str]
     id: str
-    idAtProviders: Optional[str]
     isValidated: bool
     isVirtual: bool
-    lastProviderId: Optional[str]
-    latitude: Optional[float]
-    longitude: Optional[float]
     managingOffererId: str
     name: str
-    nOffers: int
     postalCode: Optional[str]
     publicName: Optional[str]
-    siret: Optional[str]
     venueLabelId: Optional[str]
     venueTypeId: Optional[str]
-    stats: Optional[VenueStatsResponseModel]
-    withdrawalDetails: Optional[str]
-    audioDisabilityCompliant: Optional[bool]
-    mentalDisabilityCompliant: Optional[bool]
-    motorDisabilityCompliant: Optional[bool]
-    visualDisabilityCompliant: Optional[bool]
-
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
     _humanize_venue_label_id = humanize_field("venueLabelId")
@@ -69,6 +52,8 @@ class GetOffererResponseModel(BaseModel):
     dateModifiedAtLastProvider: Optional[datetime]
     demarchesSimplifieesApplicationId: Optional[str]
     fieldsUpdated: list[str]
+    hasDigitalVenueAtLeastOneOffer: bool
+    hasMissingBankInformation: bool
     iban: Optional[str]
     id: str
     idAtProviders: Optional[str]
@@ -76,7 +61,6 @@ class GetOffererResponseModel(BaseModel):
     lastProviderId: Optional[str]
     managedVenues: list[GetOffererVenueResponseModel]
     name: str
-    nOffers: int
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
     siren: Optional[str]
@@ -92,6 +76,12 @@ class GetOffererResponseModel(BaseModel):
         if venue_stats_by_ids:
             for managedVenue in offerer.managedVenues:
                 managedVenue.stats = venue_stats_by_ids[managedVenue.id]
+
+        offerer.hasDigitalVenueAtLeastOneOffer = has_digital_venue_with_at_least_one_offer(offerer.id)
+        offerer.hasMissingBankInformation = not offerer.demarchesSimplifieesApplicationId and (
+            has_physical_venue_without_draft_or_accepted_bank_information(offerer.id)
+            or offerer.hasDigitalVenueAtLeastOneOffer
+        )
         return super().from_orm(offerer)
 
     class Config:

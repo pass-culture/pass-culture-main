@@ -15,10 +15,11 @@ from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.core.offerers.repository import get_all_venue_labels
 from pcapi.core.offerers.repository import get_all_venue_types
 from pcapi.core.offerers.repository import get_offerers_by_date_validated
-from pcapi.core.offerers.repository import has_venue_missing_bank_information
-from pcapi.core.offerers.repository import is_digital_venue_having_offers
+from pcapi.core.offerers.repository import has_digital_venue_with_at_least_one_offer
+from pcapi.core.offerers.repository import has_physical_venue_without_draft_or_accepted_bank_information
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
+from pcapi.models.bank_information import BankInformationStatus
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -284,7 +285,7 @@ class FindOffererByValidationTokenTest:
 
 
 class FindNewOffererUserEmailTest:
-    def test_find_existing_email(self, app):
+    def test_find_existing_email(self):
         offerer = offerers_factories.OffererFactory()
         pro_user = users_factories.ProFactory()
         offers_factories.UserOffererFactory(offerer=offerer, user=pro_user)
@@ -299,7 +300,7 @@ class FindNewOffererUserEmailTest:
 
 
 class FilterOfferersWithKeywordsStringTest:
-    def test_find_filtered_offerers_with_keywords(self, app):
+    def test_find_filtered_offerers_with_keywords(self):
         offerer_with_only_virtual_venue_with_offer = offerers_factories.OffererFactory(siren="123456785")
         offerer_with_both_venues_offer_on_both = offerers_factories.OffererFactory(siren="123456782")
         offerer_with_both_venues_offer_on_virtual = offerers_factories.OffererFactory(siren="123456783")
@@ -384,3 +385,60 @@ class GetOfferersByDateValidatedTest:
         assert get_offerers_by_date_validated(date(2021, 6, 8)) == [offerer3]
         assert get_offerers_by_date_validated(date(2021, 6, 6)) == [offerer4]
 
+
+class HasVenueWithoutDraftOrAcceptedBankInformationTest:
+    def test_venue_with_accepted_bank_information(self):
+        offerer = offerers_factories.OffererFactory()
+        offers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offers_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
+
+        assert not has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
+
+    def test_venue_with_draft_bank_information(self):
+        offerer = offerers_factories.OffererFactory()
+        offers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offers_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.DRAFT)
+
+        assert not has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
+
+    def test_venues_with_rejected_and_accepted_bank_information(self):
+        offerer = offerers_factories.OffererFactory()
+        offers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        venue_with_rejected_bank_information = offers_factories.VenueFactory(managingOfferer=offerer)
+        offers_factories.BankInformationFactory(
+            venue=venue_with_rejected_bank_information, status=BankInformationStatus.REJECTED
+        )
+        venue_with_rejected_bank_information = offers_factories.VenueFactory(managingOfferer=offerer)
+        offers_factories.BankInformationFactory(
+            venue=venue_with_rejected_bank_information, status=BankInformationStatus.ACCEPTED
+        )
+
+        assert has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
+
+    def test_venues_with_missing_and_accepted_bank_information(self):
+        offerer = offerers_factories.OffererFactory()
+        offers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        offers_factories.VenueFactory(managingOfferer=offerer)
+        venue_with_rejected_bank_information = offers_factories.VenueFactory(managingOfferer=offerer)
+        offers_factories.BankInformationFactory(
+            venue=venue_with_rejected_bank_information, status=BankInformationStatus.ACCEPTED
+        )
+
+        assert has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
+
+
+class HasDigitalVenueWithAtLeastOneOfferTest:
+    def test_digital_venue_with_offer(self):
+        offerer = offerers_factories.OffererFactory()
+        digital_venue = offers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        offers_factories.DigitalOfferFactory(venue=digital_venue)
+
+        assert has_digital_venue_with_at_least_one_offer(offerer.id)
+
+    def test_digital_venue_without_offer(self):
+        offerer = offerers_factories.OffererFactory()
+        offers_factories.VirtualVenueFactory(managingOfferer=offerer)
+
+        assert not has_digital_venue_with_at_least_one_offer(offerer.id)
