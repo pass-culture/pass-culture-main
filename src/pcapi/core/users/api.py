@@ -34,13 +34,13 @@ from pcapi.core.mails.transactional import users as user_emails
 from pcapi.core.mails.transactional.users.email_address_change import send_confirmation_email_change_email
 from pcapi.core.mails.transactional.users.email_address_change import send_information_email_change_email
 from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
-from pcapi.core.offers import models as offers_models
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
 import pcapi.core.subscription.repository as subscription_repository
 from pcapi.core.users import exceptions
+from pcapi.core.users import models as users_models
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -69,6 +69,7 @@ from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
+from pcapi.notifications import push as push_notifications
 from pcapi.notifications.sms import send_transactional_sms
 from pcapi.notifications.sms.sending_limit import is_SMS_sending_allowed
 from pcapi.notifications.sms.sending_limit import update_sent_SMS_counter
@@ -957,8 +958,25 @@ def update_last_connection_date(user):
         repository.save(user)
 
     if should_update_sendinblue_last_connection_date:
-        update_external_user(user, update_batch=False)
+        update_external_user(user, skip_batch=True)
 
 
 def create_user_access_token(user: User) -> str:
     return create_access_token(identity=user.email, additional_claims={"user_claims": {"user_id": user.id}})
+
+
+def update_notification_subscription(
+    user: User, subscriptions: typing.Optional[users_models.NotificationSubscriptions]
+) -> None:
+    if subscriptions is None:
+        return
+
+    user.notificationSubscriptions = {
+        "marketing_push": subscriptions.marketing_push,
+        "marketing_email": subscriptions.marketing_email,
+    }
+
+    repository.save(user)
+
+    if not subscriptions.marketing_push:
+        push_notifications.delete_user_attributes(user.id)

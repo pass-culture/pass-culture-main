@@ -30,3 +30,9 @@ class LoggerBackend:
             notification_data.message.title,
             notification_data.message.body,
         )
+
+    def delete_user_attributes(self, user_id: int) -> None:
+        logger.info(
+            "A request to delete user attributes would be sent for user with id=%d",
+            user_id,
+        )

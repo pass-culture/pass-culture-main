@@ -23,3 +23,7 @@ class TestingBackend(LoggerBackend):
                 **notification_data.extra,
             }
         )
+
+    def delete_user_attributes(self, user_id: int) -> None:
+        super().delete_user_attributes(user_id)
+        testing.requests.append({"user_id": user_id})

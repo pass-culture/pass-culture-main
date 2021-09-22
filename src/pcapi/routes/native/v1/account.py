@@ -1,4 +1,3 @@
-from dataclasses import asdict
 from datetime import datetime
 import logging
 
@@ -14,7 +13,6 @@ from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users.external import update_external_user
-from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import User
 from pcapi.models import ApiErrors
 from pcapi.models.feature import FeatureToggle
@@ -50,13 +48,7 @@ def get_user_profile(user: User) -> serializers.UserProfileResponse:
 )  # type: ignore
 @authenticated_user_required
 def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) -> serializers.UserProfileResponse:
-    if body.subscriptions is not None:
-        user.notificationSubscriptions = asdict(
-            NotificationSubscriptions(
-                marketing_email=body.subscriptions.marketing_email, marketing_push=body.subscriptions.marketing_push
-            )
-        )
-    repository.save(user)
+    api.update_notification_subscription(user, body.subscriptions)
     update_external_user(user)
 
     return serializers.UserProfileResponse.from_orm(user)

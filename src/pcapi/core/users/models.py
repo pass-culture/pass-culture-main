@@ -478,6 +478,10 @@ class User(PcObject, Model, NeedsValidationMixin):
     def get_notification_subscriptions(self) -> NotificationSubscriptions:
         return NotificationSubscriptions(**self.notificationSubscriptions or {})
 
+    def has_enabled_push_notifications(self) -> bool:
+        subscriptions = self.get_notification_subscriptions()
+        return subscriptions.marketing_push
+
 
 class ExpenseDomain(enum.Enum):
     ALL = "all"

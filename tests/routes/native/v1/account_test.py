@@ -484,6 +484,28 @@ class UserProfileUpdateTest:
 
         assert len(push_testing.requests) == 1
 
+    def test_unsubscribe_push_notifications(self, app):
+        user = users_factories.UserFactory(email=self.identifier)
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post(
+            "/native/v1/profile", json={"subscriptions": {"marketingPush": False, "marketingEmail": False}}
+        )
+
+        assert response.status_code == 200
+
+        user = User.query.filter_by(email=self.identifier).first()
+        assert not user.get_notification_subscriptions().marketing_push
+        assert not user.get_notification_subscriptions().marketing_email
+
+        assert len(push_testing.requests) == 1
+
+        push_request = push_testing.requests[0]
+        assert push_request == {"user_id": user.id}
+
 
 class CulturalSurveyTest:
     identifier = "email@example.com"

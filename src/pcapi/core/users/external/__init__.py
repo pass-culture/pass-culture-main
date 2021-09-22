@@ -21,12 +21,14 @@ from .sendinblue import update_contact_attributes as update_sendinblue_user
 TRACKED_PRODUCT_IDS = {3084625: "brut_x"}
 
 
-def update_external_user(user: User, update_batch: bool = True, update_sendinblue: bool = True) -> None:
+def update_external_user(user: User, skip_batch: bool = False, skip_sendinblue: bool = False) -> None:
     user_attributes = get_user_attributes(user)
 
-    if update_batch:
+    update_batch = user.has_enabled_push_notifications()
+    if not skip_batch and update_batch:
         update_batch_user(user.id, user_attributes)
-    if update_sendinblue:
+
+    if not skip_sendinblue:
         update_sendinblue_user(user.email, user_attributes)
 
 

@@ -26,3 +26,8 @@ def update_users_attributes(users_data: list[UserUpdateData]) -> None:
 def send_transactional_notification(notification_data: TransactionalNotificationData) -> None:
     backend = import_string(settings.PUSH_NOTIFICATION_BACKEND)
     backend().send_transactional_notification(notification_data)
+
+
+def delete_user_attributes(user_id: int) -> None:
+    backend = import_string(settings.PUSH_NOTIFICATION_BACKEND)
+    backend().delete_user_attributes(user_id)
