@@ -70,6 +70,8 @@ export const OffersSearch = ({
       searchTerm,
       setSearchTerm,
       results,
+      isLoading,
+      wasSearched,
     }) => ({
       autocompletedResults,
       autocompletedSuggestions,
@@ -77,6 +79,8 @@ export const OffersSearch = ({
       searchTerm,
       setSearchTerm,
       results,
+      isLoading,
+      wasSearched,
     }),
     []
   )
@@ -124,6 +128,8 @@ export const OffersSearch = ({
             searchTerm,
             setSearchTerm,
             results,
+            isLoading,
+            wasSearched,
           }) => {
             return (
               <>
@@ -143,8 +149,10 @@ export const OffersSearch = ({
                     />
                   )}
                   <Offers
+                    isAppSearchLoading={isLoading}
                     results={results}
                     userRole={userRole}
+                    wasFirstSearchLaunched={wasSearched}
                   />
                 </div>
               </>

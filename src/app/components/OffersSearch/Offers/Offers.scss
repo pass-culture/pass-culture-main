@@ -1,7 +1,30 @@
 @import "sass-rem";
 
-ul.offers {
-  display: grid;
-  grid-gap: rem(20px);
-  padding: 0;
+.search-results {
+  ul.offers {
+    display: grid;
+    grid-gap: rem(20px);
+    padding: 0;
+  }
+
+  .offers-loader {
+    height: 100%;
+
+    .loading-spinner {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: center;
+
+      svg {
+        height: rem(56px);
+        width: rem(56px);
+
+        .logo {
+          fill: #870087;
+        }
+      }
+    }
+  }
 }

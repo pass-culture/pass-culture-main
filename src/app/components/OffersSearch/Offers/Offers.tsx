@@ -1,6 +1,7 @@
 import "./Offers.scss"
 import React, { useEffect, useState } from "react"
 
+import { Spinner } from "app/components/Layout/Spinner/Spinner"
 import * as pcapi from "repository/pcapi/pcapi"
 import { OfferType, ResultType, Role } from "utils/types"
 
@@ -10,9 +11,13 @@ import { Offer } from "./Offer"
 export const Offers = ({
   userRole,
   results,
+  isAppSearchLoading,
+  wasFirstSearchLaunched,
 }: {
   userRole: Role;
   results: ResultType[];
+  isAppSearchLoading: boolean;
+  wasFirstSearchLaunched: boolean;
 }): JSX.Element => {
   const offersThumbById = {}
   results.forEach(
@@ -21,11 +26,13 @@ export const Offers = ({
   )
 
   const [offers, setOffers] = useState<OfferType[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const offerIsBookable = (offer: OfferType): boolean =>
     !offer.isSoldOut && !offer.isExpired
 
   useEffect(() => {
+    setIsLoading(true)
     let isSubscribed = true
     const offersFetchPromises = results.map((result) => {
       return pcapi
@@ -43,13 +50,24 @@ export const Offers = ({
     Promise.all(offersFetchPromises)
       .then((maybeOffers) => maybeOffers.filter((offer) => offer !== undefined))
       .then((offers: OfferType[]) => {
-        if (isSubscribed) setOffers(offers)
+        if (isSubscribed) {
+          setOffers(offers)
+          setIsLoading(false)
+        }
       })
 
     return () => {
       isSubscribed = false
     }
   }, [results])
+
+  if (isLoading || isAppSearchLoading || !wasFirstSearchLaunched) {
+    return (
+      <div className="offers-loader">
+        <Spinner message="Recherche en cours" />
+      </div>
+    )
+  }
 
   if (results.length === 0 || offers.length === 0) {
     return <NoResultsPage />
