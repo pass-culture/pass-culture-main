@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import React from "react"
 
 import * as pcapi from "repository/pcapi/pcapi"
@@ -58,6 +58,7 @@ const appSearchFakeResults: ResultType[] = [
 describe("offers", () => {
   let offerInParis: OfferType
   let offerInCayenne: OfferType
+  let otherOffer: OfferType
 
   beforeEach(() => {
     offerInParis = {
@@ -99,7 +100,7 @@ describe("offers", () => {
       },
       stocks: [
         {
-          id: 825,
+          id: 826,
           beginningDatetime: new Date("2021-09-25T22:00:00Z"),
           isBookable: true,
           price: 80000,
@@ -109,6 +110,36 @@ describe("offers", () => {
         address: "1 boulevard Poissonnière",
         city: "Paris",
         name: "Le Petit Rintintin 33",
+        postalCode: "97300",
+        publicName: "Le Petit Rintintin 33",
+        coordinates: {
+          latitude: 48.87004,
+          longitude: 2.3785,
+        },
+      },
+      isSoldOut: false,
+      isExpired: false,
+    }
+
+    otherOffer = {
+      id: 481,
+      description: "Une autre offre",
+      name: "Un autre titre",
+      category: {
+        label: "Cinéma",
+      },
+      stocks: [
+        {
+          id: 827,
+          beginningDatetime: new Date("2021-09-25T22:00:00Z"),
+          isBookable: true,
+          price: 3000,
+        },
+      ],
+      venue: {
+        address: "1 boulevard Poissonnière",
+        city: "Paris",
+        name: "Un autre lieu",
         postalCode: "97300",
         publicName: "Le Petit Rintintin 33",
         coordinates: {
@@ -136,6 +167,108 @@ describe("offers", () => {
     expect(listItemsInOffer).toHaveLength(4)
     expect(screen.getByText(offerInParis.name)).toBeInTheDocument()
     expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
+  })
+
+  it("should remove previous rendered offers on results update", async () => {
+    // Given
+    mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis)
+    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+    const { rerender } = render(
+      <Offers
+        results={appSearchFakeResults}
+        userRole={Role.redactor}
+      />
+    )
+    mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
+    const otherAppSearchResult: ResultType = {
+      venue_name: {
+        raw: "Un autre lieu",
+      },
+      thumb_url: {
+        raw: "",
+      },
+      name: {
+        raw: "Un autre titre",
+      },
+      venue_public_name: {
+        raw: "Un autre lieu public",
+      },
+      dates: {
+        raw: ["2021-09-29T13:54:30+00:00"],
+      },
+      id: {
+        raw: "481",
+      },
+    }
+
+    // When
+    rerender(
+      <Offers
+        results={[otherAppSearchResult]}
+        userRole={Role.redactor}
+      />
+    )
+
+    // Then
+    const otherOfferName = await screen.findByText(otherOffer.name)
+    expect(otherOfferName).toBeInTheDocument()
+    expect(screen.getAllByRole("listitem")).toHaveLength(2)
+    expect(screen.queryByText(offerInParis.name)).not.toBeInTheDocument()
+    expect(screen.queryByText(offerInCayenne.name)).not.toBeInTheDocument()
+  })
+
+  it("should show most recent results and cancel previous request", async () => {
+    // Given
+    mockedPcapi.getOffer.mockReturnValueOnce(
+      new Promise((resolve) => setTimeout(() => resolve(offerInParis), 500))
+    )
+    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+    const { rerender } = render(
+      <Offers
+        results={appSearchFakeResults}
+        userRole={Role.redactor}
+      />
+    )
+    mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
+    const otherAppSearchResult: ResultType = {
+      venue_name: {
+        raw: "Un autre lieu",
+      },
+      thumb_url: {
+        raw: "",
+      },
+      name: {
+        raw: "Un autre titre",
+      },
+      venue_public_name: {
+        raw: "Un autre lieu public",
+      },
+      dates: {
+        raw: ["2021-09-29T13:54:30+00:00"],
+      },
+      id: {
+        raw: "481",
+      },
+    }
+
+    // When
+    rerender(
+      <Offers
+        results={[otherAppSearchResult]}
+        userRole={Role.redactor}
+      />
+    )
+
+    // Then
+    const otherOfferName = await screen.findByText(otherOffer.name)
+    expect(otherOfferName).toBeInTheDocument()
+    expect(screen.getAllByRole("listitem")).toHaveLength(2)
+
+    await expect(async () => {
+      await waitFor(() =>
+        expect(screen.getByText(offerInParis.name)).toBeInTheDocument()
+      )
+    }).rejects.toStrictEqual(expect.anything())
   })
 
   it("should display only non sold-out offers", async () => {

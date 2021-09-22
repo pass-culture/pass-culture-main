@@ -1,5 +1,5 @@
 import "./Offers.scss"
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useState } from "react"
 
 import * as pcapi from "repository/pcapi/pcapi"
 import { OfferType, ResultType, Role } from "utils/types"
@@ -14,14 +14,11 @@ export const Offers = ({
   userRole: Role;
   results: ResultType[];
 }): JSX.Element => {
-  const offersThumbById = useMemo(() => {
-    const offersThumbById = {}
-    results.forEach(
-      (result) =>
-        (offersThumbById[parseInt(result.id.raw)] = result.thumb_url?.raw)
-    )
-    return offersThumbById
-  }, [results])
+  const offersThumbById = {}
+  results.forEach(
+    (result) =>
+      (offersThumbById[parseInt(result.id.raw)] = result.thumb_url?.raw)
+  )
 
   const [offers, setOffers] = useState<OfferType[]>([])
 
@@ -29,18 +26,29 @@ export const Offers = ({
     !offer.isSoldOut && !offer.isExpired
 
   useEffect(() => {
-    results.forEach((result) => {
-      pcapi
+    let isSubscribed = true
+    const offersFetchPromises = results.map((result) => {
+      return pcapi
         .getOffer(result.id.raw)
         .then((offer) => {
           if (offerIsBookable(offer)) {
-            setOffers((currentOffers) => [...currentOffers, offer])
+            return offer
           }
         })
         .catch(() => {
           // Swallow exception
         })
     })
+
+    Promise.all(offersFetchPromises)
+      .then((maybeOffers) => maybeOffers.filter((offer) => offer !== undefined))
+      .then((offers: OfferType[]) => {
+        if (isSubscribed) setOffers(offers)
+      })
+
+    return () => {
+      isSubscribed = false
+    }
   }, [results])
 
   if (results.length === 0 || offers.length === 0) {
