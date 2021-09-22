@@ -8,15 +8,15 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 
-def parse_email_addresses(addresses: Optional[str]) -> list[str]:
-    if not addresses:
+def parse_str_to_list(content: Optional[str]) -> list[str]:
+    if not content:
         return []
-    if "," in addresses:
-        result = [a.strip() for a in addresses.split(",")]
-    elif ";" in addresses:
-        result = [a.strip() for a in addresses.split(";")]
+    if "," in content:
+        result = [a.strip() for a in content.split(",")]
+    elif ";" in content:
+        result = [a.strip() for a in content.split(";")]
     else:
-        result = [addresses]
+        result = [content]
 
     return [a for a in result if a]
 
