@@ -178,6 +178,8 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     contact = relationship("VenueContact", back_populates="venue", uselist=False)
 
+    thumb_path_component = "venues"
+
     def store_departement_code(self) -> None:
         self.departementCode = PostalCode(self.postalCode).get_departement_code()
 
@@ -342,6 +344,8 @@ class Offerer(
     )  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
 
     dateValidated = Column(DateTime, nullable=True, default=None)
+
+    thumb_path_component = "offerers"
 
     def grant_access(self, user):
         if not user:

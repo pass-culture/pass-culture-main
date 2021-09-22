@@ -61,6 +61,8 @@ class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
 
     subcategoryId = Column(Text, nullable=True, index=True)
 
+    thumb_path_component = "products"
+
     @property
     def offerType(self):
         all_types = list(ThingType) + list(EventType)

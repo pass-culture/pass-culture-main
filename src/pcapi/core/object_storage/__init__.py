@@ -1,7 +1,6 @@
 from pcapi import settings
 from pcapi.models.db import Model
 from pcapi.utils.human_ids import humanize
-from pcapi.utils.inflect_engine import inflect_engine
 from pcapi.utils.module_loading import import_string
 
 
@@ -65,9 +64,5 @@ def delete_public_object(bucket: str, object_id: str) -> None:
 
 
 def build_thumb_path(pc_object: Model, index: int) -> str:
-    return (
-        inflect_engine.plural(pc_object.__class__.__tablename__.lower())
-        + "/"
-        + humanize(pc_object.id)
-        + (("_" + str(index)) if index > 0 else "")
-    )
+    suffix = f"_{index}" if index > 0 else ""
+    return f"{pc_object.thumb_path_component}/{humanize(pc_object.id)}{suffix}"

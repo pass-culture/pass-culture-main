@@ -74,6 +74,8 @@ class Mediation(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixi
 
     offer = relationship("Offer", foreign_keys=[offerId], backref="mediations")
 
+    thumb_path_component = "mediations"
+
 
 class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
     __tablename__ = "stock"

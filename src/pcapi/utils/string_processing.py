@@ -1,11 +1,5 @@
 import re
 
-from pcapi.utils.inflect_engine import inflect_engine
-
-
-def get_model_plural_name(obj):
-    return inflect_engine.plural(obj.__tablename__.lower())
-
 
 def trim_with_elipsis(string, length):
     length_wo_elipsis = length - 1
