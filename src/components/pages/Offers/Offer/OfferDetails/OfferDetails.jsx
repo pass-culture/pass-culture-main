@@ -7,6 +7,7 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
+import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import OfferCreation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/OfferCreation'
@@ -26,8 +27,6 @@ const OfferDetails = ({
   location,
   offer,
   reloadOffer,
-  showEditionSuccessNotification,
-  showErrorNotification,
   trackCreateOffer,
   trackEditOffer,
   userEmail,
@@ -52,6 +51,11 @@ const OfferDetails = ({
   const [thumbnailInfo, setThumbnailInfo] = useState({})
   const [thumbnailError, setThumbnailError] = useState(false)
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
+
+  const notification = useNotification()
+  const showErrorNotification = useCallback(
+    () => notification.error('Une ou plusieurs erreurs sont présentes dans le formulaire')
+    , [notification])
 
   useEffect(() => {
     offer?.id && reloadOffer()
@@ -92,7 +96,7 @@ const OfferDetails = ({
         if (offer) {
           await pcapi.updateOffer(offer.id, offerValues)
           trackEditOffer(offer.id)
-          showEditionSuccessNotification()
+          notification.success('Votre offre a bien été modifiée')
           reloadOffer()
           setFormErrors({})
         } else {
@@ -139,7 +143,7 @@ const OfferDetails = ({
       offer,
       postThumbnail,
       reloadOffer,
-      showEditionSuccessNotification,
+      notification,
       showErrorNotification,
       thumbnailInfo,
       trackEditOffer,
@@ -235,8 +239,6 @@ OfferDetails.propTypes = {
   location: PropTypes.shape().isRequired,
   offer: PropTypes.shape(),
   reloadOffer: PropTypes.func,
-  showEditionSuccessNotification: PropTypes.func.isRequired,
-  showErrorNotification: PropTypes.func.isRequired,
   trackCreateOffer: PropTypes.func.isRequired,
   trackEditOffer: PropTypes.func.isRequired,
   userEmail: PropTypes.string.isRequired,

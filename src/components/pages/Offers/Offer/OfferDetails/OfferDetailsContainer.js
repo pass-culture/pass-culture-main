@@ -8,7 +8,6 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import { withTracking } from 'components/hocs'
-import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser, selectIsUserAdmin } from 'store/selectors/data/usersSelectors'
 
 import { isFeatureActive } from "../../../../../store/features/selectors"
@@ -19,23 +18,6 @@ const mapStateToProps = state => ({
   isUserAdmin: selectIsUserAdmin(state),
   isWebAppV2Enabled: isFeatureActive(state, 'WEBAPP_V2_ENABLED'),
   userEmail: selectCurrentUser(state).email,
-})
-
-const mapDispatchToProps = dispatch => ({
-  showErrorNotification: () =>
-    dispatch(
-      showNotification({
-        type: 'error',
-        text: 'Une ou plusieurs erreurs sont présentes dans le formulaire',
-      })
-    ),
-  showEditionSuccessNotification: () =>
-    dispatch(
-      showNotification({
-        type: 'success',
-        text: 'Votre offre a bien été modifiée',
-      })
-    ),
 })
 
 export const mergeProps = (stateProps, dispatchProps, ownProps) => {
@@ -55,5 +37,5 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 export default compose(
   withTracking('Offer'),
   withRouter,
-  connect(mapStateToProps, mapDispatchToProps, mergeProps)
+  connect(mapStateToProps, null, mergeProps)
 )(OfferDetails)
