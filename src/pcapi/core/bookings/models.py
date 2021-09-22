@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 import enum
 from typing import Optional
 
@@ -199,7 +200,7 @@ class Booking(PcObject, Model):
         return self.dateCreated + BOOKINGS_AUTO_EXPIRY_DELAY
 
     @property
-    def total_amount(self) -> float:
+    def total_amount(self) -> Decimal:
         return self.amount * self.quantity
 
     # FIXME: many functions here are only used when serializing
