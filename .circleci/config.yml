@@ -606,3 +606,22 @@ workflows:
       - quality:
           context: Slack
           <<: *slack-fail-post-step
+
+  e2e:
+    jobs:
+      - functional-tests-webapp:
+          name: "Run webapp e2e tests after commit to master"
+          filters:
+            branches:
+              only:
+                - master
+          context: Slack
+          <<: *slack-fail-post-step
+      - functional-tests-pro:
+          name: "Run pro e2e tests after commit to master"
+          filters:
+            branches:
+              only:
+                - master
+          context: Slack
+          <<: *slack-fail-post-step
