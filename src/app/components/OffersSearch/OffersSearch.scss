@@ -1,5 +1,9 @@
 @import "sass-rem";
 
+input.search-button {
+  background: #c91074;
+}
+
 .search-results {
   display: flex;
   flex-direction: column;

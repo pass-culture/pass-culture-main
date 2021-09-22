@@ -96,6 +96,7 @@ export const OffersSearch = ({
         <input
           {...getButtonProps({
             value: "Rechercher",
+            className: "search-button",
           })}
         />
       </>
