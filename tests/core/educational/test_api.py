@@ -88,6 +88,58 @@ class ConfirmEducationalBookingTest:
 
         assert booking.status == BookingStatus.CONFIRMED
 
+    def test_confirm_educational_booking_sends_email(self, db_session):
+        # Given
+        educational_redactor = educational_factories.EducationalRedactorFactory(
+            email="professeur@example.com", firstName="Georges", lastName="Moustaki"
+        )
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_year = educational_factories.EducationalYearFactory(adageId="1")
+        educational_factories.EducationalDepositFactory(
+            educationalInstitution=educational_institution,
+            educationalYear=educational_year,
+            amount=Decimal(1400.00),
+            isFinal=True,
+        )
+        booking = bookings_factories.EducationalBookingFactory(
+            amount=Decimal(20.00),
+            quantity=20,
+            educationalBooking__educationalInstitution=educational_institution,
+            educationalBooking__educationalYear=educational_year,
+            educationalBooking__educationalRedactor=educational_redactor,
+            status=BookingStatus.PENDING,
+            stock__offer__bookingEmail="test@email.com",
+            stock__beginningDatetime=datetime.datetime(2021, 5, 15),
+        )
+
+        # When
+        educational_api.confirm_educational_booking(booking.educationalBookingId)
+
+        # Then
+        assert len(mails_testing.outbox) == 1
+        sent_data = mails_testing.outbox[0].sent_data
+        offer = booking.stock.offer
+        assert sent_data == {
+            "FromEmail": "support@example.com",
+            "MJ-TemplateID": 3174413,
+            "MJ-TemplateLanguage": True,
+            "To": "test@email.com",
+            "Vars": {
+                "lien_offre_pcpro": f"http://localhost:3001/offres/{humanize(offer.id)}/edition",
+                "nom_offre": offer.name,
+                "nom_lieu": offer.venue.name,
+                "date": "15-May-2021",
+                "env": "-development",
+                "heure": "2h",
+                "quantity": 20,
+                "prix": "20.00",
+                "user_firstName": "Georges",
+                "user_lastName": "Moustaki",
+                "user_email": "professeur@example.com",
+                "is_event": 1,
+            },
+        }
+
     def test_raises_if_no_educational_booking(self):
         with pytest.raises(exceptions.EducationalBookingNotFound):
             educational_api.confirm_educational_booking(100)

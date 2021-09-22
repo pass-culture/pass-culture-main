@@ -126,6 +126,16 @@ def confirm_educational_booking(educational_booking_id: int) -> EducationalBooki
         booking.mark_as_confirmed()
         repository.save(booking)
 
+    logger.info(
+        "Head of institution confirmed an educational offer",
+        extra={
+            "bookingId": booking.id,
+        },
+    )
+
+    if booking.stock.offer.bookingEmail:
+        mails.send(recipients=[booking.stock.offer.bookingEmail], data=_build_booking_confirmation_mail_data(booking))
+
     return educational_booking
 
 
@@ -231,6 +241,31 @@ def _build_prebooking_mail_data(booking: bookings_models.Booking) -> dict:
         "MJ-TemplateLanguage": True,
         "Vars": {
             "departement": offer.venue.departementCode,
+            "lien_offre_pcpro": offer_link,
+            "nom_offre": offer.name,
+            "nom_lieu": offer.venue.name,
+            "date": format_booking_date_for_email(booking),
+            "heure": format_booking_hours_for_email(booking),
+            "quantity": booking.quantity,
+            "prix": str(booking.amount) if booking.amount > 0 else "Gratuit",
+            "user_firstName": educational_booking.educationalRedactor.firstName,
+            "user_lastName": educational_booking.educationalRedactor.lastName,
+            "user_email": educational_booking.educationalRedactor.email,
+            "is_event": int(offer.isEvent),
+        },
+    }
+
+
+def _build_booking_confirmation_mail_data(booking: bookings_models.Booking) -> dict:
+    stock: Stock = booking.stock
+    offer: Offer = stock.offer
+    educational_booking: EducationalBooking = booking.educationalBooking
+    offer_link = build_pc_pro_offer_link(offer)
+
+    return {
+        "MJ-TemplateID": 3174413,
+        "MJ-TemplateLanguage": True,
+        "Vars": {
             "lien_offre_pcpro": offer_link,
             "nom_offre": offer.name,
             "nom_lieu": offer.venue.name,
