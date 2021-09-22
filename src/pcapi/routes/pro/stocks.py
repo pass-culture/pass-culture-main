@@ -4,12 +4,12 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.offerers.models import Offerer
+import pcapi.core.offerers.repository
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.repository import get_stocks_for_offer
 from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.models import Venue
-from pcapi.repository import offerer_queries
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
 from pcapi.routes.serialization.stock_serialize import StockIdsResponseModel
@@ -33,7 +33,7 @@ from .blueprints import pro_api_v2
 @login_required
 @spectree_serialize(response_model=StocksResponseModel)
 def get_stocks(offer_id: str) -> StocksResponseModel:
-    offerer = offerer_queries.get_by_offer_id(dehumanize(offer_id))
+    offerer = pcapi.core.offerers.repository.get_by_offer_id(dehumanize(offer_id))
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     stocks = get_stocks_for_offer(dehumanize(offer_id))
@@ -46,7 +46,7 @@ def get_stocks(offer_id: str) -> StocksResponseModel:
 @login_required
 @spectree_serialize(on_success_status=201, response_model=StockIdsResponseModel)
 def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
-    offerer = offerer_queries.get_by_offer_id(body.offer_id)
+    offerer = pcapi.core.offerers.repository.get_by_offer_id(body.offer_id)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     stocks = offers_api.upsert_stocks(body.offer_id, body.stocks, current_user)
@@ -100,7 +100,7 @@ def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:
     synchronize_stocks_job.delay(stock_details, venue.id)
 
 
-def _build_stock_details_from_body(raw_stocks: List[UpdateVenueStockBodyModel], venue_id: int):
+def _build_stock_details_from_body(raw_stocks: List[UpdateVenueStockBodyModel], venue_id: int) -> list:
     stock_details = {}
     for stock in raw_stocks:
         stock_details[stock.ref] = {

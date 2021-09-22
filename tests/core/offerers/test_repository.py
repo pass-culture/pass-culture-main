@@ -1,11 +1,22 @@
+from datetime import date
+from datetime import datetime
+
 import pytest
 
+from pcapi.core.offerers.exceptions import CannotFindOffererUserEmail
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.repository import filter_offerers_with_keywords_string
+from pcapi.core.offerers.repository import find_new_offerer_user_email
 from pcapi.core.offerers.repository import find_offerer_by_validation_token
 from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
 from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.core.offerers.repository import get_all_venue_labels
 from pcapi.core.offerers.repository import get_all_venue_types
+from pcapi.core.offerers.repository import get_offerers_by_date_validated
+from pcapi.core.offerers.repository import has_venue_missing_bank_information
+from pcapi.core.offerers.repository import is_digital_venue_having_offers
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
 
@@ -270,3 +281,106 @@ class FindOffererByValidationTokenTest:
 
         # Then
         assert offerer_received is None
+
+
+class FindNewOffererUserEmailTest:
+    def test_find_existing_email(self, app):
+        offerer = offerers_factories.OffererFactory()
+        pro_user = users_factories.ProFactory()
+        offers_factories.UserOffererFactory(offerer=offerer, user=pro_user)
+
+        result = find_new_offerer_user_email(offerer.id)
+
+        assert result == pro_user.email
+
+    def test_find_unknown_email(self):
+        with pytest.raises(CannotFindOffererUserEmail):
+            find_new_offerer_user_email(offerer_id=1)
+
+
+class FilterOfferersWithKeywordsStringTest:
+    def test_find_filtered_offerers_with_keywords(self, app):
+        offerer_with_only_virtual_venue_with_offer = offerers_factories.OffererFactory(siren="123456785")
+        offerer_with_both_venues_offer_on_both = offerers_factories.OffererFactory(siren="123456782")
+        offerer_with_both_venues_offer_on_virtual = offerers_factories.OffererFactory(siren="123456783")
+        offerer_with_both_venues_offer_on_not_virtual = offerers_factories.OffererFactory(siren="123456784")
+
+        virtual_venue_with_offer_1 = offers_factories.VenueFactory(
+            managingOfferer=offerer_with_only_virtual_venue_with_offer, isVirtual=True, siret=None
+        )
+        virtual_venue_with_offer_3 = offers_factories.VenueFactory(
+            managingOfferer=offerer_with_both_venues_offer_on_both,
+            isVirtual=True,
+            siret=None,
+            publicName="Librairie des mots perdus",
+        )
+        venue_with_offer_3 = offers_factories.VenueFactory(
+            managingOfferer=offerer_with_both_venues_offer_on_both,
+            siret="12345678212345",
+            publicName="Librairie des mots perdus",
+        )
+        virtual_venue_with_offer_4 = offers_factories.VenueFactory(
+            managingOfferer=offerer_with_both_venues_offer_on_virtual,
+            isVirtual=True,
+            siret=None,
+            publicName="Librairie des mots perdus",
+        )
+        venue_with_offer_5 = offers_factories.VenueFactory(
+            managingOfferer=offerer_with_both_venues_offer_on_not_virtual,
+            siret="12345678412345",
+            publicName="Librairie des mots perdus",
+        )
+        offers_factories.VenueFactory(publicName="something else")
+
+        offers_factories.ThingOfferFactory(venue=virtual_venue_with_offer_1, url="http://url.com")
+        offers_factories.ThingOfferFactory(venue=virtual_venue_with_offer_3, url="http://url.com")
+        offers_factories.ThingOfferFactory(venue=virtual_venue_with_offer_4, url="http://url.com")
+        offers_factories.EventOfferFactory(venue=venue_with_offer_3)
+        offers_factories.EventOfferFactory(venue=venue_with_offer_5)
+
+        one_keyword_search = filter_offerers_with_keywords_string(Offerer.query.join(Venue), "perdus")
+        partial_keyword_search = filter_offerers_with_keywords_string(Offerer.query.join(Venue), "Libr")
+        two_keywords_search = filter_offerers_with_keywords_string(Offerer.query.join(Venue), "Librairie perd")
+        two_partial_keywords_search = filter_offerers_with_keywords_string(Offerer.query.join(Venue), "Lib perd")
+
+        assert {
+            offerer_with_both_venues_offer_on_both,
+            offerer_with_both_venues_offer_on_virtual,
+            offerer_with_both_venues_offer_on_not_virtual,
+        } == set(one_keyword_search)
+        assert {
+            offerer_with_both_venues_offer_on_both,
+            offerer_with_both_venues_offer_on_virtual,
+            offerer_with_both_venues_offer_on_not_virtual,
+        } == set(partial_keyword_search)
+        assert {
+            offerer_with_both_venues_offer_on_both,
+            offerer_with_both_venues_offer_on_virtual,
+            offerer_with_both_venues_offer_on_not_virtual,
+        } == set(two_keywords_search)
+        assert {
+            offerer_with_both_venues_offer_on_both,
+            offerer_with_both_venues_offer_on_virtual,
+            offerer_with_both_venues_offer_on_not_virtual,
+        } == set(two_partial_keywords_search)
+
+
+class GetOfferersByDateValidatedTest:
+    def test_get_offerers_by_date_validated(self):
+        offerer1 = offerers_factories.OffererFactory(
+            siren="123456789", validationToken=None, dateValidated=datetime(2021, 6, 7, 15, 49)
+        )
+        offerer2 = offerers_factories.OffererFactory(
+            siren="123456788", validationToken=None, dateValidated=datetime(2021, 6, 7, 23, 59, 59)
+        )
+        offerer3 = offerers_factories.OffererFactory(
+            siren="123456787", validationToken=None, dateValidated=datetime(2021, 6, 8, 00, 00, 00)
+        )
+        offerer4 = offerers_factories.OffererFactory(
+            siren="123456786", validationToken=None, dateValidated=datetime(2021, 6, 6, 11, 49)
+        )
+
+        assert set(get_offerers_by_date_validated(date(2021, 6, 7))) == {offerer1, offerer2}
+        assert get_offerers_by_date_validated(date(2021, 6, 8)) == [offerer3]
+        assert get_offerers_by_date_validated(date(2021, 6, 6)) == [offerer4]
+

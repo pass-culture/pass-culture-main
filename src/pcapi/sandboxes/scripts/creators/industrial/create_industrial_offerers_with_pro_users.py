@@ -1,11 +1,11 @@
 import logging
 
+from pcapi.core.offerers.repository import check_if_siren_already_exists
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.repository import repository
-from pcapi.repository.offerer_queries import check_if_siren_already_exists
 from pcapi.sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
 from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_DOMAINS
 from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES

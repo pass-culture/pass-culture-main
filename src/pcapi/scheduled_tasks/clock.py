@@ -8,6 +8,7 @@ from sentry_sdk import set_tag
 
 from pcapi import settings
 import pcapi.core.bookings.api as bookings_api
+from pcapi.core.offerers.repository import get_offerers_by_date_validated
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
@@ -21,7 +22,6 @@ from pcapi.local_providers.provider_manager import synchronize_venue_providers_f
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository.offerer_queries import get_offerers_by_date_validated
 from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
 from pcapi.scheduled_tasks import utils
 from pcapi.scheduled_tasks.decorators import cron_context

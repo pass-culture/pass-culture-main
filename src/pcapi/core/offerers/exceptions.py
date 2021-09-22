@@ -12,3 +12,11 @@ class ApiKeyDeletionDenied(Exception):
 
 class ValidationTokenNotFoundError(Exception):
     pass
+
+
+class CannotFindOffererForOfferId(Exception):
+    pass
+
+
+class CannotFindOffererUserEmail(Exception):
+    pass

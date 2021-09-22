@@ -14,14 +14,11 @@ from tests.conftest import TestClient
 class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_offerer_does_not_exist(self, app):
-        # Given
         pro = users_factories.ProFactory()
         invalid_id = 12
 
-        # When
         response = TestClient(app.test_client()).with_session_auth(pro.email).get("/offerers/%s" % invalid_id)
 
-        # then
         assert response.status_code == 404
         assert response.json["global"] == ["La page que vous recherchez n'existe pas"]
 
@@ -29,18 +26,24 @@ class Returns404Test:
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_has_rights_on_offerer(self, app):
-        # given
-
         pro = users_factories.ProFactory()
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="Venue withdrawal details")
+        venue_1 = offers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="Venue withdrawal details")
+        offers_factories.OfferFactory(venue=venue_1)
+        venue_2 = offers_factories.VenueFactory(
+            managingOfferer=offerer, withdrawalDetails="Other venue withdrawal details"
+        )
+        venue_3 = offers_factories.VenueFactory(
+            managingOfferer=offerer, withdrawalDetails="More venue withdrawal details"
+        )
         ApiKeyFactory(offerer=offerer, prefix="testenv_prefix")
         ApiKeyFactory(offerer=offerer, prefix="testenv_prefix2")
-
         offerer_bank_information = create_bank_information(offerer=offerer)
-        venue_bank_information = create_bank_information(venue=venue, application_id=2)
-        offerer = pcapi.core.offerers.models.Offerer.query.filter_by(id=offerer.id).first()
+        create_bank_information(venue=venue_1, application_id=2)
+        create_bank_information(venue=venue_2, application_id=3)
+        create_bank_information(venue=venue_3, application_id=4)
+        offerer = pcapi.core.offerers.models.Offerer.query.filter_by(id=offerer.id).one()
 
         # when
         response = TestClient(app.test_client()).with_session_auth(pro.email).get(f"/offerers/{humanize(offerer.id)}")
