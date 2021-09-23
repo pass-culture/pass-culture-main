@@ -241,10 +241,11 @@ jobs:
       - run:
           name: Build and push docker image if the requirements have changed
           command: |
-            md5sum --status -c requirements.md5 ||
-            docker build -t passcultureapp/api-flask:latest .
-            docker login -u passcultureapp -p $DOCKERHUB_PASSWORD
+            md5sum --status -c requirements.md5 || (
+            docker build -t passcultureapp/api-flask:latest .;
+            docker login -u passcultureapp -p $DOCKERHUB_PASSWORD;
             docker push passcultureapp/api-flask:latest
+            )
       - run:
           name: Generate requirements print
           command: md5sum ./requirements.txt > requirements.md5
