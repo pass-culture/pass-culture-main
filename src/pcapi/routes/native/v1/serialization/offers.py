@@ -10,6 +10,7 @@ from pydantic.fields import Field
 from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.categories import CategoryIdEnum
+from pcapi.core.categories.subcategories import HomepageLabelNameEnum
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.api import get_expense_domains
@@ -286,6 +287,7 @@ class SubcategoryResponseModel(BaseModel):
     category_id: CategoryIdEnum
     app_label: str
     search_group_name: Optional[subcategories.SearchGroupNameEnum]
+    homepage_label_name: HomepageLabelNameEnum
     is_event: bool
     can_expire: bool
     can_be_duo: bool

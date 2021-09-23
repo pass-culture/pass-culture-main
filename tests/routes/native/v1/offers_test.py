@@ -529,6 +529,7 @@ class SubcategoriesTest:
                 "categoryId",
                 "appLabel",
                 "searchGroupName",
+                "homepageLabelName",
                 "isEvent",
                 "canExpire",
                 "canBeDuo",
