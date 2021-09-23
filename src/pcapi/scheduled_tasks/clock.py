@@ -108,7 +108,7 @@ def pc_import_beneficiaries_from_dms_v3(app: Flask) -> None:
 def pc_import_beneficiaries_from_dms_v4(app: Flask) -> None:
     for procedure_name, procedure_id in (
         ("v4_FR", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR),
-        ("v4_ET", settings.settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET),
+        ("v4_ET", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET),
     ):
         if not procedure_id:
             logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
