@@ -312,7 +312,6 @@ jobs:
           key: pass-culture-api-requirements-checksum-{{ .Revision }}
           paths:
             - requirements.md5
-          when: on_fail
 
   build-and-push-image:
     executor: gcp-sdk
