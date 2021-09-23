@@ -34,7 +34,6 @@ DOCUMENTS_PER_REQUEST_LIMIT = 100
 OFFERS_ENGINE_NAME = "offers"
 
 OFFERS_SCHEMA = {
-    "subcategory_label": "text",
     "artist": "text",
     "category": "text",
     "date_created": "date",
@@ -54,6 +53,7 @@ OFFERS_SCHEMA = {
     "ranking_weight": "number",
     "search_group_name": "text",
     "stocks_date_created": "date",
+    "subcategory_id": "text",
     "tags": "text",
     "times": "number",
     "thumb_url": "text",
@@ -69,7 +69,7 @@ OFFERS_FIELD_WEIGHTS = {
     "category": 0,
     "label": 0,
     "search_group_name": 0,
-    "subcategory_label": 0,
+    "subcategory_id": 0,
     "tags": 0,
     "thumb_url": 0,
     "venue_department_code": 0,
@@ -367,7 +367,6 @@ class AppSearchBackend(base.SearchBackend):
         venue = offer.venue
         return omit_empty_values(
             {
-                "subcategory_label": offer.subcategory.app_label,
                 "artist": artist.strip() or None,
                 "category": offer.offer_category_name_for_app,
                 "date_created": offer.dateCreated,  # used only to rank results
@@ -386,6 +385,7 @@ class AppSearchBackend(base.SearchBackend):
                 "ranking_weight": offer.rankingWeight or 0,
                 "search_group_name": offer.subcategory.search_group_name,
                 "stocks_date_created": [stock.dateCreated for stock in stocks],
+                "subcategory_id": offer.subcategory.id,
                 "tags": [criterion.name for criterion in offer.criteria],
                 "times": times,
                 "thumb_url": url_path(offer.thumbUrl),

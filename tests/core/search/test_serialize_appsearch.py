@@ -38,7 +38,6 @@ def test_serialize_offer():
     stock = offers_factories.StockFactory(offer=offer, price=10)
     serialized = appsearch.AppSearchBackend().serialize_offer(offer)
     assert serialized == {
-        "subcategory_label": "Livre",
         "artist": "Author Performer Speaker Stage Director",
         "category": "LIVRE",
         "date_created": offer.dateCreated,
@@ -56,6 +55,7 @@ def test_serialize_offer():
         "ranking_weight": 2,
         "search_group_name": subcategories.SearchGroups.LIVRE.name,
         "stocks_date_created": [stock.dateCreated],
+        "subcategory_id": subcategories.LIVRE_PAPIER.id,
         "offerer_name": "Les Librairies Associées",
         "venue_id": 127,
         "venue_department_code": "75",

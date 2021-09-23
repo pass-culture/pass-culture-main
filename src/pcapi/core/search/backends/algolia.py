@@ -234,7 +234,6 @@ class AlgoliaBackend(base.SearchBackend):
         object_to_index = {
             "objectID": offer.id,
             "offer": {
-                "subcategoryLabel": offer.subcategory.app_label,
                 "author": author,
                 "category": offer.offer_category_name_for_app,
                 "rankingWeight": offer.rankingWeight,
@@ -264,6 +263,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "speaker": speaker,
                 "stageDirector": stage_director,
                 "stocksDateCreated": sorted(stocks_date_created),
+                "subcategoryId": offer.subcategory.id,
                 # PC-8526: Warning: we should not store the full url of the image but only the path.
                 # Currrently we store `OBJECT_STORAGE_URL/path`, but we should store `path` and build the
                 # full url in the frontend.

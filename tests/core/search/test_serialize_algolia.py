@@ -95,7 +95,6 @@ class BuildObjectTest:
         assert result == {
             "objectID": 3,
             "offer": {
-                "subcategoryLabel": "Autre type d'événement musical",
                 "author": None,
                 "category": "MUSIQUE",
                 "dateCreated": 1577872800.0,
@@ -125,6 +124,7 @@ class BuildObjectTest:
                 "speaker": None,
                 "stageDirector": None,
                 "stocksDateCreated": [1606820400.0, 1607166000.0, 1607673600.0],
+                "subcategoryId": subcategories.EVENEMENT_MUSIQUE.id,
                 "thumbUrl": f"http://localhost/storage/thumbs/products/{humanized_product_id}",
                 "tags": [],
                 "times": [32400],
@@ -461,7 +461,6 @@ class BuildObjectTest:
         assert result == {
             "objectID": 3,
             "offer": {
-                "subcategoryLabel": "Autre type d'événement musical",
                 "author": None,
                 "category": "MUSIQUE",
                 "dateCreated": 1577872800.0,
@@ -491,6 +490,7 @@ class BuildObjectTest:
                 "speaker": None,
                 "stageDirector": None,
                 "stocksDateCreated": [1607166000.0],
+                "subcategoryId": subcategories.EVENEMENT_MUSIQUE.id,
                 "thumbUrl": f"http://localhost/storage/thumbs/products/{humanized_product_id}",
                 "tags": ["Mon tag associé"],
                 "times": [32400],
@@ -556,7 +556,6 @@ class BuildObjectTest:
         assert result == {
             "objectID": 3,
             "offer": {
-                "subcategoryLabel": "Autre type d'événement musical",
                 "author": None,
                 "category": "MUSIQUE",
                 "dateCreated": 1577872800.0,
@@ -586,6 +585,7 @@ class BuildObjectTest:
                 "speaker": None,
                 "stageDirector": None,
                 "stocksDateCreated": [1607166000.0],
+                "subcategoryId": subcategories.EVENEMENT_MUSIQUE.id,
                 "thumbUrl": f"http://localhost/storage/thumbs/products/{humanized_product_id}",
                 "tags": {"Mon tag associé", "Iron Man mon super héros"},
                 "times": [32400],
