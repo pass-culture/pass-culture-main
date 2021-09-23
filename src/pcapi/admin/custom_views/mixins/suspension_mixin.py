@@ -3,6 +3,7 @@ from flask import redirect
 from flask import request
 from flask import url_for
 from flask_admin import expose
+from flask_admin.actions import action
 from flask_admin.form import SecureForm
 from flask_login import current_user
 from markupsafe import Markup
@@ -65,6 +66,15 @@ class SuspensionMixin:
     @property
     def user_list_url(self):
         return url_for(".index_view")
+
+    @action("unsuspend_selection", "Réactiver la sélection")
+    def action_bulk_edit(self, ids):
+        if not _allow_suspension_and_unsuspension(current_user):
+            return Forbidden()
+
+        users_api.bulk_unsuspend_account(ids, current_user)
+        flash("Les comptes utilisateurs ont été réactivés. Leur mot de passe a été réinitialisé.")
+        return redirect(self.user_list_url)
 
     @expose("suspend", methods=["GET", "POST"])
     def suspend_user_view(self):

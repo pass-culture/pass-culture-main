@@ -131,6 +131,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         "isEmailValidated",
         FilterByDepositTypeEqual(column=None, name="Type du portefeuille"),
         FilterByDepositTypeNotEqual(column=None, name="Type du portefeuille"),
+        "isActive",
     ]
 
     @property

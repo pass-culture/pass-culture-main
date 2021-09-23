@@ -484,6 +484,21 @@ def unsuspend_account(user: User, actor: User) -> None:
     )
 
 
+def bulk_unsuspend_account(user_ids: list[int], actor: User) -> None:
+    User.query.filter(User.id.in_(user_ids)).update(
+        values={"isActive": True, "suspensionReason": ""}, synchronize_session=False
+    )
+    db.session.commit()
+
+    logger.info(
+        "Some accounts have been reactivated",
+        extra={
+            "actor": actor.id,
+            "users": user_ids,
+        },
+    )
+
+
 def send_user_emails_for_email_change(user: User, new_email: str) -> None:
     user_with_new_email = find_user_by_email(new_email)
     if user_with_new_email:

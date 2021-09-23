@@ -317,13 +317,25 @@ class SuspendAccountTest:
 
 class UnsuspendAccountTest:
     def test_unsuspend_account(self):
-        user = users_factories.UserFactory(isActive=False)
+        user = users_factories.UserFactory(isActive=False, suspensionReason="User not cool")
         actor = users_factories.AdminFactory()
 
         users_api.unsuspend_account(user, actor)
 
         assert not user.suspensionReason
         assert user.isActive
+
+    def test_bulk_unsuspend_account(self):
+        user1 = users_factories.UserFactory(isActive=False, suspensionReason="User not cool")
+        user2 = users_factories.UserFactory(isActive=False, suspensionReason="User not cool")
+        user3 = users_factories.UserFactory(isActive=False, suspensionReason="User not cool")
+        actor = users_factories.AdminFactory()
+
+        users_api.bulk_unsuspend_account([user1.id, user2.id, user3.id], actor)
+
+        for user in [user1, user2, user3]:
+            assert not user.suspensionReason
+            assert user.isActive
 
 
 @pytest.mark.usefixtures("db_session")
