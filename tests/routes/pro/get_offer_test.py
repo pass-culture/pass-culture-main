@@ -33,6 +33,7 @@ class Returns200Test:
         assert "bic" not in response_json["venue"]["managingOfferer"]
         assert "validationToken" not in response_json["venue"]["managingOfferer"]
         assert "thumbUrl" in response_json
+        assert response_json["nonHumanizedId"] == offer.id
 
     def test_access_even_if_offerer_has_no_siren(self, app):
         # Given
@@ -141,6 +142,7 @@ class Returns200Test:
             "mediaUrls": [],
             "mediations": [],
             "name": "Derrick",
+            "nonHumanizedId": stock.offer.id,
             "offerType": {
                 "appLabel": "Cinéma",
                 "canExpire": None,
