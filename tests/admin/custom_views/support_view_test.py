@@ -323,6 +323,33 @@ class UpdateIDPieceNumberTest:
         assert len(user.beneficiaryImports) == 1
         assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
 
+    def test_update_beneficiary_id_piece_number_from_dms_data_with_existing_beneficiary_import(self, client):
+        user = users_factories.UserFactory()
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
+        fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.SUSPICIOUS)
+        dms_data = fraud_check.source_data()
+        beneficiary_import = users_factories.BeneficiaryImportFactory(
+            beneficiary=user,
+            applicationId=dms_data.application_id,
+            sourceId=dms_data.procedure_id,
+            source=pcapi.models.BeneficiaryImportSources.demarches_simplifiees.value,
+        )
+        users_factories.BeneficiaryImportStatusFactory(beneficiaryImport=beneficiary_import)
+        client.with_session_auth(self.jouve_admin.email)
+        id_piece_number = "123123123123"
+        response = client.post(
+            f"/pc/back-office/support_beneficiary/update/beneficiary/id_piece_number/{user.id}",
+            form={"id_piece_number": id_piece_number},
+        )
+        assert response.status_code == 302
+
+        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
+        assert fraud_check.resultContent["id_piece_number"] == id_piece_number
+        assert user.idPieceNumber == id_piece_number
+        assert user.isBeneficiary
+        assert len(user.beneficiaryImports) == 1
+        assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
+
     def test_jouve_specific_query_filter(self, client):
         client.with_session_auth(self.jouve_admin.email)
 

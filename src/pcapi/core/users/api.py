@@ -369,11 +369,19 @@ def attach_beneficiary_import_details(
     beneficiary_pre_subscription: BeneficiaryPreSubscription,
     status: ImportStatus = ImportStatus.CREATED,
 ) -> None:
-    beneficiary_import = BeneficiaryImport()
+    beneficiary_import = BeneficiaryImport.query.filter_by(
+        applicationId=beneficiary_pre_subscription.application_id,
+        sourceId=beneficiary_pre_subscription.source_id,
+        source=beneficiary_pre_subscription.source,
+        beneficiary=beneficiary,
+    ).one_or_none()
+    if not beneficiary_import:
+        beneficiary_import = BeneficiaryImport()
 
-    beneficiary_import.applicationId = beneficiary_pre_subscription.application_id
-    beneficiary_import.sourceId = beneficiary_pre_subscription.source_id
-    beneficiary_import.source = beneficiary_pre_subscription.source
+        beneficiary_import.applicationId = beneficiary_pre_subscription.application_id
+        beneficiary_import.sourceId = beneficiary_pre_subscription.source_id
+        beneficiary_import.source = beneficiary_pre_subscription.source
+        beneficiary_import.beneficiary = beneficiary
 
     beneficiary_import.setStatus(status=status)
     beneficiary_import.beneficiary = beneficiary
