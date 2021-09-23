@@ -48,7 +48,7 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     confirmationLimitDate: datetime = Field(description="Limit date to confirm the prebooking")
     coordinates: Coordinates
     creationDate: datetime
-    description: str = Field(description="Offer description")
+    description: Optional[str] = Field(description="Offer description")
     durationMinutes: Optional[int] = Field(description="Offer's duration in minutes")
     expirationDate: Optional[datetime] = Field(description="Expiration date after which booking is cancelled")
     id: int = Field(description="pass Culture's prebooking id")

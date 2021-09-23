@@ -26,9 +26,10 @@ class Returns200Test:
             educationalBooking__educationalYear=educationalYear,
             educationalBooking__educationalInstitution=educationalInstitution,
             educationalBooking__educationalRedactor=redactor,
+            stock__offer__description=None,
         )
-        other_educational_year = EducationalYearFactory(adageId="toto")
-        other_educational_institution = EducationalInstitutionFactory(institutionId="tata")
+        other_educational_year = EducationalYearFactory(adageId="adageId")
+        other_educational_institution = EducationalInstitutionFactory(institutionId="institutionId")
         EducationalBookingFactory(educationalBooking__educationalYear=other_educational_year)
         EducationalBookingFactory(educationalBooking__educationalInstitution=other_educational_institution)
 
