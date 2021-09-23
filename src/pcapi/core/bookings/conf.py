@@ -18,7 +18,7 @@ BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY = datetime.timedelta(days=10)
 BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE = (
     datetime.datetime.today() - datetime.timedelta(days=11)
     if (settings.IS_TESTING or settings.IS_DEV)
-    else datetime.datetime(2021, 9, 22)
+    else datetime.datetime(2021, 10, 1)
 )
 BOOKINGS_EXPIRY_NOTIFICATION_DELAY = datetime.timedelta(days=7)
 BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY = datetime.timedelta(days=5)
