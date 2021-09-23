@@ -240,21 +240,17 @@ jobs:
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
 
   tests-adage-front:
-    machine:
-      image: ubuntu-2004:202101-01
+    docker:
+      - image: cimg/node:14.17
     working_directory: ~/pass-culture
     steps:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init
-      - run: ./install_lib_ci.sh
       - run:
           name: Run Unit Test Adage-front
           command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd adage-front
-            nvm install
             yarn install
             yarn test:unit
       - run:
