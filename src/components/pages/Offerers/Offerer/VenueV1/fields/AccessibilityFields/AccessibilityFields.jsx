@@ -6,7 +6,7 @@ import { ReactComponent as AudioDisabilitySvg } from 'icons/audio-disability.svg
 import { ReactComponent as MentalDisabilitySvg } from 'icons/mental-disability.svg'
 import { ReactComponent as MotorDisabilitySvg } from 'icons/motor-disability.svg'
 import { ReactComponent as VisualDisabilitySvg } from 'icons/visual-disability.svg'
-import { CheckboxField } from 'ui-kit'
+import { CheckboxField, Divider } from 'ui-kit'
 
 const checkNoDisabilityCompliant = (_value, allValues) => {
   const hasAccessibility = [
@@ -53,7 +53,18 @@ export const autoFillNoDisabilityCompliantDecorator = createDecorator(
   }
 )
 
-const AccessibilityFields = ({ readOnly }) => {
+const AccessibilityFields = ({ formValues, readOnly, venue }) => {
+  const accessibilityFieldNames = [
+    'audioDisabilityCompliant',
+    'mentalDisabilityCompliant',
+    'motorDisabilityCompliant',
+    'visualDisabilityCompliant',
+  ]
+  const haveChange =
+    accessibilityFieldNames.find(field => {
+      return formValues && formValues[field] != venue[field]
+    }) !== undefined
+
   return (
     <div className="section bank-information vp-content-section">
       <div className="main-list-title title-actions-container">
@@ -72,50 +83,64 @@ const AccessibilityFields = ({ readOnly }) => {
           *
         </span>
       </p>
+      <div>
+        <CheckboxField
+          SvgElement={VisualDisabilitySvg}
+          className="field field-checkbox"
+          disabled={readOnly}
+          id="visualDisabilityCompliant"
+          label="Visuel"
+          name="visualDisabilityCompliant"
+          required
+        />
+        <CheckboxField
+          SvgElement={MentalDisabilitySvg}
+          className="field field-checkbox"
+          disabled={readOnly}
+          id="mentalDisabilityCompliant"
+          label="Psychique ou cognitif"
+          name="mentalDisabilityCompliant"
+          required
+        />
+        <CheckboxField
+          SvgElement={MotorDisabilitySvg}
+          className="field field-checkbox"
+          disabled={readOnly}
+          id="motorDisabilityCompliant"
+          label="Moteur"
+          name="motorDisabilityCompliant"
+          required
+        />
+        <CheckboxField
+          SvgElement={AudioDisabilitySvg}
+          className="field field-checkbox"
+          disabled={readOnly}
+          id="audioDisabilityCompliant"
+          label="Auditif"
+          name="audioDisabilityCompliant"
+          required
+        />
+        <CheckboxField
+          className="field field-checkbox"
+          disabled={readOnly}
+          id="noDisabilityCompliant"
+          label="Non accessible"
+          name="noDisabilityCompliant"
+        />
+      </div>
+      {haveChange && (
+        <>
+          <Divider size="medium" />
 
-      <CheckboxField
-        SvgElement={VisualDisabilitySvg}
-        className="field field-checkbox"
-        disabled={readOnly}
-        id="visualDisabilityCompliant"
-        label="Visuel"
-        name="visualDisabilityCompliant"
-        required
-      />
-      <CheckboxField
-        SvgElement={MentalDisabilitySvg}
-        className="field field-checkbox"
-        disabled={readOnly}
-        id="mentalDisabilityCompliant"
-        label="Psychique ou cognitif"
-        name="mentalDisabilityCompliant"
-        required
-      />
-      <CheckboxField
-        SvgElement={MotorDisabilitySvg}
-        className="field field-checkbox"
-        disabled={readOnly}
-        id="motorDisabilityCompliant"
-        label="Moteur"
-        name="motorDisabilityCompliant"
-        required
-      />
-      <CheckboxField
-        SvgElement={AudioDisabilitySvg}
-        className="field field-checkbox"
-        disabled={readOnly}
-        id="audioDisabilityCompliant"
-        label="Auditif"
-        name="audioDisabilityCompliant"
-        required
-      />
-      <CheckboxField
-        className="field field-checkbox"
-        disabled={readOnly}
-        id="noDisabilityCompliant"
-        label="Non accessible"
-        name="noDisabilityCompliant"
-      />
+          <CheckboxField
+            className="field field-checkbox"
+            disabled={readOnly}
+            id="isAccessibilityAppliedOnAllOffers"
+            label="Appliquer le changement à toutes les offres existantes"
+            name="isAccessibilityAppliedOnAllOffers"
+          />
+        </>
+      )}
     </div>
   )
 }
@@ -125,7 +150,9 @@ AccessibilityFields.defaultProps = {
 }
 
 AccessibilityFields.propTypes = {
+  formValues: PropTypes.shape().isRequired,
   readOnly: PropTypes.bool,
+  venue: PropTypes.shape().isRequired,
 }
 
 export default AccessibilityFields

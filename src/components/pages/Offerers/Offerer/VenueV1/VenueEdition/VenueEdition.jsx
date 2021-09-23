@@ -75,6 +75,7 @@ class VenueEdition extends PureComponent {
 
     this.setState({ isRequestPending: true })
     const hasDelayedUpdates = [
+      formValues.isAccessibilityAppliedOnAllOffers,
       formValues.isWithdrawalAppliedOnAllOffers,
       formValues.isEmailAppliedOnAllOffers,
     ].includes(true)
@@ -162,6 +163,7 @@ class VenueEdition extends PureComponent {
         <AccessibilityFields
           formValues={values}
           readOnly={readOnly}
+          venue={venue}
         />
         <hr />
         <div

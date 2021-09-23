@@ -32,6 +32,7 @@ const edition_authorized_input_field = [
   'city',
   'comment',
   'description',
+  'isAccessibilityAppliedOnAllOffers',
   'isEmailAppliedOnAllOffers',
   'isWithdrawalAppliedOnAllOffers',
   'latitude',
