@@ -8,8 +8,8 @@ from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.core.bookings.validation as bookings_validation
 from pcapi.core.categories import subcategories
-from pcapi.flask_app import private_api
-from pcapi.flask_app import public_api
+from pcapi.routes.apis import private_api
+from pcapi.routes.apis import public_api
 from pcapi.routes.serialization import serialize
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResponseModel
@@ -233,7 +233,7 @@ def _create_response_to_get_booking_by_token(booking: Booking) -> dict:
     offer_name = booking.stock.offer.product.name
     date = None
     offer = booking.stock.offer
-    is_event = offer.subcategory.is_event
+    is_event = offer.isEvent
     if is_event:
         date = serialize(booking.stock.beginningDatetime)
     venue_departement_code = offer.venue.departementCode
@@ -247,7 +247,7 @@ def _create_response_to_get_booking_by_token(booking: Booking) -> dict:
         "venueDepartementCode": venue_departement_code,
     }
 
-    if offer.subcategoryId in (subcategories.ACTIVATION_EVENT.id, subcategories.ACTIVATION_THING.id):
+    if offer.subcategoryId in subcategories.ACTIVATION_SUBCATEGORIES:
         response.update({"phoneNumber": booking.user.phoneNumber, "dateOfBirth": serialize(booking.user.dateOfBirth)})
 
     return response

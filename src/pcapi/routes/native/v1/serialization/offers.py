@@ -166,9 +166,18 @@ class OfferImageResponse(BaseModel):
         orm_mode = True
 
 
+def get_serialized_offer_category(offer: Offer) -> dict:
+    return {
+        "name": offer.subcategory.category_id,
+        "label": offer.subcategory.app_label,
+        "categoryType": offer.category_type,
+    }
+
+
 class OfferResponse(BaseModel):
     @classmethod
     def from_orm(cls: Any, offer: Offer):  # type: ignore
+        offer.category = get_serialized_offer_category(offer)
         offer.accessibility = {
             "audioDisability": offer.audioDisabilityCompliant,
             "mentalDisability": offer.mentalDisabilityCompliant,
@@ -201,7 +210,7 @@ class OfferResponse(BaseModel):
     isEducational: bool
     name: str
     stocks: list[OfferStockResponse]
-    subcategoryId: str
+    subcategoryId: subcategories.SubcategoryIdEnum
     image: Optional[OfferImageResponse]
     venue: OfferVenueResponse
     withdrawalDetails: Optional[str]

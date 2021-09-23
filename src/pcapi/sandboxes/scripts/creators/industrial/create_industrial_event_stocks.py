@@ -38,10 +38,7 @@ def create_industrial_event_stocks(event_occurrences_by_name):
             price = price + price_counter
         short_names_to_increase_price.append(short_name)
 
-        if (
-            event_occurrence_with_stocks["offer"].product.subcategoryId == subcategories.ACTIVATION_EVENT.id
-            or subcategories.ACTIVATION_THING.id
-        ):
+        if event_occurrence_with_stocks["offer"].product.subcategoryId in subcategories.ACTIVATION_SUBCATEGORIES:
             price = 0
 
         name = event_occurrence_with_stocks_name + " / " + str(available) + " / " + str(price)

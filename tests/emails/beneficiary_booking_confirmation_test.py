@@ -184,7 +184,7 @@ class DigitalOffersTest:
             can_expire=0,
             has_offer_url=1,
             digital_offer_url="http://example.com",
-            expiration_delay="30",
+            expiration_delay="",
         )
         assert email_data == expected
 

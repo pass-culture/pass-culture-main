@@ -141,7 +141,6 @@ def _get_bookings_information(beneficiary_id: int) -> list[Booking]:
             Offer.description,
             Offer.mediaUrls,
             Offer.isNational,
-            Offer.subcategoryId,
             Product.id.label("productId"),
             Product.thumbCount,
             User.email,

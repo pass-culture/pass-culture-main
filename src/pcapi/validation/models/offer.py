@@ -13,7 +13,9 @@ def validate(offer: Offer, api_errors: ApiErrors) -> ApiErrors:
             )
 
         if offer.is_offline_only:
-            api_errors.add_error("url", f"Une offre de sous-catégorie {offer.subcategoryId} ne peut pas être numérique")
+            api_errors.add_error(
+                "url", f"Une offre de sous-catégorie {offer.subcategory.pro_label} ne peut pas être numérique"
+            )
     else:
         if venue.isVirtual:
             api_errors.add_error("venue", 'Une offre physique ne peut être associée au lieu "Offre numérique"')

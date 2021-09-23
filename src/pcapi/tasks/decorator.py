@@ -65,7 +65,7 @@ def _define_handler(f, path, payload_type):
                 "The task %s has not been executed successfully", path, extra={**job_details, "error": str(e)}
             )
             raise
-        except Exception as e:  # pylint: disable=broad-except
+        except Exception as e:
             logger.exception(
                 "Exception caught when executing cloud task %s", path, extra={**job_details, "error": str(e)}
             )

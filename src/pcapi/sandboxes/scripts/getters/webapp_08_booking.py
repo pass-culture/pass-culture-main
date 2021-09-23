@@ -26,9 +26,7 @@ def get_query_join_on_thing(query):
 
 def get_non_free_offers_query_by_type():
     filter_not_free_price = Stock.price > 0
-    filter_not_an_activation_offer = (Offer.subcategoryId != subcategories.ACTIVATION_EVENT.id) | (
-        Offer.subcategoryId != subcategories.ACTIVATION_THING.id
-    )
+    filter_not_an_activation_offer = Offer.subcategoryId.notin_(subcategories.ACTIVATION_SUBCATEGORIES)
 
     query = Offer.query
     query = get_query_join_on_thing(query)

@@ -130,7 +130,7 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
 
 def _is_able_to_create_book_offer_from_isbn(subcategory: subcategories.Subcategory) -> bool:
     return FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active() and can_create_from_isbn(
-        subcategory_id=subcategory.id if subcategory else None, offer_type=subcategory.matching_type
+        subcategory_id=subcategory.id
     )
 
 

@@ -61,11 +61,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         dateOfBirth=(
             format_into_utc_date(booking.user.dateOfBirth)
             if not is_educational_booking
-            and booking.stock.offer.product.subcategoryId
-            in (
-                subcategories.ACTIVATION_EVENT.id,
-                subcategories.ACTIVATION_THING.id,
-            )
+            and booking.stock.offer.subcategoryId in subcategories.ACTIVATION_SUBCATEGORIES
             else ""
         ),
         datetime=(format_into_utc_date(booking.stock.beginningDatetime) if booking.stock.beginningDatetime else ""),
@@ -79,11 +75,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         offerType=BookingOfferType.EVENEMENT if booking.stock.offer.isEvent else BookingOfferType.EVENEMENT,
         phoneNumber=(
             booking.user.phoneNumber
-            if booking.stock.offer.product.subcategoryId
-            in (
-                subcategories.ACTIVATION_EVENT.id,
-                subcategories.ACTIVATION_THING.id,
-            )
+            if booking.stock.offer.subcategoryId in subcategories.ACTIVATION_SUBCATEGORIES
             else ""
         ),
         price=booking.amount,

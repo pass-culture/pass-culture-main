@@ -198,9 +198,9 @@ class OffererBookingRecapLegacyBooksBookingRulesTest:
             is_event=0,
             prix="Gratuit",
             nom_offre="Super offre numérique",
-            offer_type="ThingType.AUDIOVISUEL",
+            offer_type="VOD",
             quantity=10,
-            can_expire_after_30_days=1,
+            can_expire_after_30_days=0,
             must_use_token_for_payment=0,
         )
         assert email_data == expected
@@ -283,7 +283,7 @@ class OffererBookingRecapLegacyBooksBookingRulesTest:
             is_event=0,
             is_booking_autovalidated=1,
             must_use_token_for_payment=0,
-            offer_type="ThingType.AUDIOVISUEL",
+            offer_type="VOD",
             contremarque=booking.token,
         )
         assert email_data == expected
@@ -320,7 +320,7 @@ class OffererBookingRecapLegacyBooksBookingRulesTest:
             prix="10.00 €",
             is_event=0,
             nom_offre="Super offre numérique",
-            offer_type="ThingType.AUDIOVISUEL",
+            offer_type="VOD",
             quantity=1,
             can_expire_after_30_days=0,
             is_booking_autovalidated=1,
@@ -444,7 +444,7 @@ class OffererBookingRecapNewBooksBookingRulesTest:
             heure="",
             is_event=0,
             nom_offre="Le récit de voyage",
-            offer_type="ThingType.AUDIOVISUEL",
+            offer_type="SUPPORT_PHYSIQUE_FILM",
             can_expire=1,
         )
         assert email_data == expected
@@ -506,9 +506,9 @@ class OffererBookingRecapNewBooksBookingRulesTest:
             is_event=0,
             prix="Gratuit",
             nom_offre="Super offre numérique",
-            offer_type="ThingType.AUDIOVISUEL",
+            offer_type="VOD",
             quantity=10,
-            can_expire=1,
+            can_expire=0,
             must_use_token_for_payment=0,
         )
         assert email_data == expected
@@ -591,7 +591,7 @@ class OffererBookingRecapNewBooksBookingRulesTest:
             is_event=0,
             is_booking_autovalidated=1,
             must_use_token_for_payment=0,
-            offer_type="ThingType.AUDIOVISUEL",
+            offer_type="VOD",
             contremarque=booking.token,
         )
         assert email_data == expected
@@ -628,7 +628,7 @@ class OffererBookingRecapNewBooksBookingRulesTest:
             prix="10.00 €",
             is_event=0,
             nom_offre="Super offre numérique",
-            offer_type="ThingType.AUDIOVISUEL",
+            offer_type="VOD",
             quantity=1,
             can_expire=0,
             is_booking_autovalidated=1,

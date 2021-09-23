@@ -57,7 +57,7 @@ class BookingOfferResponse(BaseModel):
     image: Optional[OfferImageResponse]
     isDigital: bool
     isPermanent: bool
-    subcategoryId: str
+    subcategoryId: SubcategoryIdEnum
     url: Optional[str]
     venue: BookingVenueResponse
     withdrawalDetails: Optional[str]

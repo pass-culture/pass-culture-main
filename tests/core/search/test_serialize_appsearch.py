@@ -47,7 +47,6 @@ def test_serialize_offer():
         "is_educational": 0,
         "is_event": 0,
         "is_thing": 1,
-        "label": "Livre",
         "name": "Titre formidable",
         "id": offer.id,
         "prices": [1000],

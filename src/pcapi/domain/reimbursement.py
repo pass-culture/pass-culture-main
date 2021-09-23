@@ -46,7 +46,7 @@ class PhysicalOffersReimbursement(payments_models.ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue="ignored") -> bool:
-        return is_relevant_for_gradual_decreasing(booking.stock.offer)
+        return is_relevant_for_standard_reimbursement_rule(booking.stock.offer)
 
 
 class MaxReimbursementByOfferer(payments_models.ReimbursementRule):
@@ -57,7 +57,7 @@ class MaxReimbursementByOfferer(payments_models.ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if not is_relevant_for_gradual_decreasing(booking.stock.offer):
+        if not is_relevant_for_standard_reimbursement_rule(booking.stock.offer):
             return False
         return cumulative_revenue > 20000
 
@@ -69,7 +69,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(payment
     valid_until = SEPTEMBER_2021
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if not is_relevant_for_gradual_decreasing(booking.stock.offer):
+        if not is_relevant_for_standard_reimbursement_rule(booking.stock.offer):
             return False
         return 20000 < cumulative_revenue <= 40000
 
@@ -81,7 +81,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(paymen
     valid_until = SEPTEMBER_2021
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if not is_relevant_for_gradual_decreasing(booking.stock.offer):
+        if not is_relevant_for_standard_reimbursement_rule(booking.stock.offer):
             return False
         return 40000 < cumulative_revenue <= 150000
 
@@ -93,7 +93,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000(payments_models.
     valid_until = SEPTEMBER_2021
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if not is_relevant_for_gradual_decreasing(booking.stock.offer):
+        if not is_relevant_for_standard_reimbursement_rule(booking.stock.offer):
             return False
         return cumulative_revenue > 150000
 
@@ -105,7 +105,7 @@ class ReimbursementRateByVenueBetween20000And40000(payments_models.Reimbursement
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if not is_relevant_for_gradual_decreasing(booking.stock.offer):
+        if not is_relevant_for_standard_reimbursement_rule(booking.stock.offer):
             return False
         return 20000 < cumulative_revenue <= 40000
 
@@ -117,7 +117,7 @@ class ReimbursementRateByVenueBetween40000And150000(payments_models.Reimbursemen
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if not is_relevant_for_gradual_decreasing(booking.stock.offer):
+        if not is_relevant_for_standard_reimbursement_rule(booking.stock.offer):
             return False
         return 40000 < cumulative_revenue <= 150000
 
@@ -129,9 +129,23 @@ class ReimbursementRateByVenueAbove150000(payments_models.ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if not is_relevant_for_gradual_decreasing(booking.stock.offer):
+        if not is_relevant_for_standard_reimbursement_rule(booking.stock.offer):
             return False
         return cumulative_revenue > 150000
+
+
+class ReimbursementRateForBookBelow20000(payments_models.ReimbursementRule):
+    rate = Decimal(1)
+    description = "Remboursement à 100% jusqu'à 20 000 € pour les livres"
+    valid_from = None
+    valid_until = None
+
+    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+        if booking.stock.offer.subcategory.reimbursement_rule != subcategories.ReimbursementRuleChoices.BOOK.value:
+            return False
+        if booking.stock.offer.isEducational:
+            return False
+        return cumulative_revenue <= 20000
 
 
 class ReimbursementRateForBookAbove20000(payments_models.ReimbursementRule):
@@ -158,6 +172,7 @@ REGULAR_RULES = [
     ReimbursementRateByVenueBetween20000And40000(),
     ReimbursementRateByVenueBetween40000And150000(),
     ReimbursementRateByVenueAbove150000(),
+    ReimbursementRateForBookBelow20000(),
     ReimbursementRateForBookAbove20000(),
 ]
 
@@ -200,9 +215,11 @@ def find_all_booking_reimbursements(
     for booking in bookings:
         year = booking.dateUsed.year
 
-        if is_relevant_for_gradual_decreasing(booking.stock.offer):
+        if (
+            is_relevant_for_standard_reimbursement_rule(booking.stock.offer)
+            or booking.stock.offer.subcategory.reimbursement_rule == subcategories.ReimbursementRuleChoices.BOOK.value
+        ):
             total_per_year[year] += booking.total_amount
-
         rule = get_reimbursement_rule(booking, custom_rule_finder, total_per_year[year])
         reimbursements.append(BookingReimbursement(booking, rule, reimbursed_amount=rule.apply(booking)))
 
@@ -227,7 +244,7 @@ def get_reimbursement_rule(
     return min(candidates, key=lambda r: r.apply(booking))
 
 
-def is_relevant_for_gradual_decreasing(offer: Offer) -> bool:
+def is_relevant_for_standard_reimbursement_rule(offer: Offer) -> bool:
     return (
         not offer.isEducational
         and offer.subcategory.reimbursement_rule == subcategories.ReimbursementRuleChoices.STANDARD.value

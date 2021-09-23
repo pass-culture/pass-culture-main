@@ -160,7 +160,7 @@ class GeneratePaymentDetailsCsvTest:
             f'"{humanize(venue2.id)}"',
             f'"{p3.booking.stock.offerId}"',
             '"Une histoire plutôt bien"',
-            '"Cinéma - projections et autres évènements"',
+            '"SEANCE_CINE"',
             '"2020-01-01 00:00:00"',
             '"12.00"',
             '"EACC"',

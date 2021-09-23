@@ -32,7 +32,9 @@ def test_should_return_error_message_when_offer_is_digital_and_its_type_is_offli
     api_error = validate(thing_offer, api_errors)
 
     # Then
-    assert api_error.errors["url"] == ["Une offre de sous-catégorie CARTE_CINE_MULTISEANCES ne peut pas être numérique"]
+    assert api_error.errors["url"] == [
+        "Une offre de sous-catégorie Carte cinéma multi-séances ne peut pas être numérique"
+    ]
 
 
 def test_should_return_error_message_when_offer_is_not_digital_and_his_venue_is_virtual():
@@ -61,7 +63,7 @@ def test_should_return_error_messages_when_offer_is_digital_and_offline_and_venu
 
     # Then
     assert api_error.errors == {
-        "url": ["Une offre de sous-catégorie CARTE_CINE_MULTISEANCES ne peut pas être numérique"],
+        "url": ["Une offre de sous-catégorie Carte cinéma multi-séances ne peut pas être numérique"],
         "venue": ['Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"'],
     }
 

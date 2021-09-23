@@ -86,9 +86,9 @@ def _get_products_compatible_status(products: list[Product]) -> dict[str, str]:
 
 
 def _get_product_type(product: Product) -> str:
-    if product.subcategory.category_id == categories.FILM:
+    if product.subcategory.category_id == categories.FILM.id:
         return "cinema"
-    if product.subcategory.category_id == categories.LIVRE:
+    if product.subcategory.category_id == categories.LIVRE.id:
         return "book"
 
     return "unknown"

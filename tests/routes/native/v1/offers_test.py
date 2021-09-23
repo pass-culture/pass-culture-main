@@ -155,7 +155,6 @@ class OffersTest:
                 "isPermanent": False,
             },
             "withdrawalDetails": "modalité de retrait",
-            "subcategoryId": "SEANCE_CINE",
         }
 
     def test_get_thing_offer(self, app):

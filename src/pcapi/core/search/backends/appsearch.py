@@ -56,8 +56,6 @@ OFFERS_SCHEMA = {
     "is_educational": "number",
     "is_event": "number",
     "is_thing": "number",
-    # FIXME remove once subcategory logic is fully implemented
-    "label": "text",
     "name": "text",
     # "id": "number",  must not be provided when creating the schema.
     "prices": "number",
@@ -415,7 +413,6 @@ class AppSearchBackend(base.SearchBackend):
         return omit_empty_values(
             {
                 "artist": artist.strip() or None,
-                "category": offer.offer_category_name_for_app,
                 "date_created": offer.dateCreated,  # used only to rank results
                 "dates": dates,
                 "description": remove_stopwords(offer.description or ""),

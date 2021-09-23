@@ -78,7 +78,7 @@ class PaymentDetails:
         self.venue_humanized_id = humanize(venue.id)
         self.offer_id = offer.id
         self.offer_name = offer.product.name
-        self.offer_subcategoryId = offer.product.subcategoryId
+        self.offer_subcategory_id = offer.product.subcategoryId
         self.booking_date = payment.booking.dateCreated
         self.booking_amount = payment.booking.total_amount
         self.booking_used_date = payment.booking.dateUsed
@@ -103,7 +103,7 @@ class PaymentDetails:
             self.venue_humanized_id,
             str(self.offer_id),
             self.offer_name,
-            self.offer_subcategoryId,
+            self.offer_subcategory_id,
             str(self.booking_date),
             str(self.booking_amount),
             str(self.bookingType),

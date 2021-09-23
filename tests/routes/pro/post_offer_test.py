@@ -274,7 +274,7 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json["url"] == ["Une offre de sous-catégorie ACHAT_INSTRUMENT ne peut pas être numérique"]
+        assert response.json["url"] == ["Une offre de sous-catégorie Achat instrument ne peut pas être numérique"]
 
     def should_fail_when_url_has_no_scheme(self, app):
         # Given

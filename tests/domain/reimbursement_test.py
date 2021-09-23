@@ -125,7 +125,7 @@ class PhysicalOffersReimbursementTest:
         assert rule.is_relevant(create_event_booking())
         assert not rule.is_relevant(create_digital_booking())
         digital_book_booking = create_digital_booking(product_subcategory_id=subcategories.LIVRE_NUMERIQUE.id)
-        assert rule.is_relevant(digital_book_booking)
+        assert not rule.is_relevant(digital_book_booking)
         cinema_card_booking = create_digital_booking(product_subcategory_id=subcategories.CINE_VENTE_DISTANCE.id)
         assert rule.is_relevant(cinema_card_booking)
         assert not rule.is_relevant(bookings_factories.EducationalBookingFactory())
@@ -280,6 +280,41 @@ class ReimbursementRateByVenueAbove150000Test:
 
 
 @pytest.mark.usefixtures("db_session")
+class ReimbursementRateForBookBelow20000Test:
+    rule = reimbursement.ReimbursementRateForBookBelow20000()
+
+    @property
+    def book_booking(self):
+        return create_non_digital_thing_booking(
+            product_subcategory_id=subcategories.LIVRE_PAPIER.id, price=40, quantity=2
+        )
+
+    def test_apply(self):
+        assert self.rule.apply(self.book_booking) == Decimal(1) * 40 * 2
+
+    def test_relevancy_depending_on_revenue(self):
+        assert self.rule.is_relevant(self.book_booking, 20000)
+        assert not self.rule.is_relevant(self.book_booking, 20001)
+        assert not self.rule.is_relevant(
+            bookings_factories.EducationalBookingFactory(
+                stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id
+            ),
+            30,
+        )
+
+    def test_relevancy_depending_on_offer_type(self):
+        revenue = 20000
+        assert self.rule.is_relevant(self.book_booking, revenue)
+        assert not self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
+        assert not self.rule.is_relevant(create_event_booking(), revenue)
+        assert not self.rule.is_relevant(create_digital_booking(), revenue)
+        assert self.rule.is_relevant(
+            create_digital_booking(product_subcategory_id=subcategories.LIVRE_NUMERIQUE.id), revenue
+        )
+        assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
+
+
+@pytest.mark.usefixtures("db_session")
 class ReimbursementRateForBookAbove20000Test:
     rule = reimbursement.ReimbursementRateForBookAbove20000()
 
@@ -308,6 +343,9 @@ class ReimbursementRateForBookAbove20000Test:
         assert not self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert not self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
+        assert self.rule.is_relevant(
+            create_digital_booking(product_subcategory_id=subcategories.LIVRE_NUMERIQUE.id), revenue
+        )
         assert not self.rule.is_relevant(bookings_factories.EducationalBookingFactory(), revenue)
 
 
@@ -390,7 +428,7 @@ class FindAllBookingsReimbursementsTest:
         assert_total_reimbursement(reimbursements[0], reimbursement.PhysicalOffersReimbursement, event)
         assert_total_reimbursement(reimbursements[1], reimbursement.PhysicalOffersReimbursement, thing)
         assert_no_reimbursement_for_digital(reimbursements[2], digital)
-        assert_total_reimbursement(reimbursements[3], reimbursement.PhysicalOffersReimbursement, book)
+        assert_total_reimbursement(reimbursements[3], reimbursement.ReimbursementRateForBookBelow20000, book)
         assert_total_reimbursement(reimbursements[4], reimbursement.EducationalOffersReimbursement, educational)
 
     @freeze_time("2021-08-31 00:00:00")
@@ -492,7 +530,7 @@ class FindAllBookingsReimbursementsTest:
         assert_total_reimbursement(reimbursements[0], reimbursement.PhysicalOffersReimbursement, event)
         assert_total_reimbursement(reimbursements[1], reimbursement.PhysicalOffersReimbursement, thing)
         assert_no_reimbursement_for_digital(reimbursements[2], digital)
-        assert_total_reimbursement(reimbursements[3], reimbursement.PhysicalOffersReimbursement, book)
+        assert_total_reimbursement(reimbursements[3], reimbursement.ReimbursementRateForBookBelow20000, book)
         assert_total_reimbursement(reimbursements[4], reimbursement.EducationalOffersReimbursement, educational)
 
     @freeze_time("2021-09-01 00:00:00")

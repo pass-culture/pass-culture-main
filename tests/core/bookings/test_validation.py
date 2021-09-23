@@ -134,14 +134,13 @@ class CheckExpenseLimitsDepositVersion1Test:
             "Le plafond de 200 € pour les biens culturels ne vous permet pas de réserver cette offre."
         ]
 
-    #
-    # def test_physical_limit_on_uncapped_type(self):
-    #     beneficiary = self._get_beneficiary()
-    #     offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.CARTE_CINE_ILLIMITE.id)
-    #     factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
-    #
-    #     # should not raise because CINEMA_ABO is not capped
-    #     validation.check_expenses_limits(beneficiary, 11, offer)
+    def test_physical_limit_on_uncapped_type(self):
+        beneficiary = self._get_beneficiary()
+        offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.SEANCE_CINE.id)
+        factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
+
+        # should not raise because SEANCE_CINE is not capped
+        validation.check_expenses_limits(beneficiary, 11, offer)
 
     def test_digital_limit(self):
         beneficiary = self._get_beneficiary()
@@ -161,14 +160,14 @@ class CheckExpenseLimitsDepositVersion1Test:
             "Le plafond de 200 € pour les offres numériques ne vous permet pas de réserver cette offre."
         ]
 
-    # def test_digital_limit_on_uncapped_type(self):
-    #     beneficiary = self._get_beneficiary()
-    #     product = offers_factories.DigitalProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
-    #     offer = offers_factories.OfferFactory(product=product)
-    #     factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
-    #
-    #     # should not raise because OEUVRE_ART is not capped
-    #     validation.check_expenses_limits(beneficiary, 11, offer)
+    def test_digital_limit_on_uncapped_type(self):
+        beneficiary = self._get_beneficiary()
+        product = offers_factories.DigitalProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
+        offer = offers_factories.OfferFactory(product=product)
+        factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
+
+        # should not raise because OEUVRE_ART is not capped
+        validation.check_expenses_limits(beneficiary, 11, offer)
 
     def test_global_limit(self):
         beneficiary = self._get_beneficiary()

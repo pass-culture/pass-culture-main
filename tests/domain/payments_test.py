@@ -295,7 +295,7 @@ class CreatePaymentDetailsTest:
 
         # then
         assert details.offer_name == "Test Book"
-        assert details.offer_subcategoryId == "VOD"
+        assert details.offer_subcategory_id == "VOD"
 
 
 @pytest.mark.usefixtures("db_session")

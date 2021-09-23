@@ -14,8 +14,8 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     beneficiary = booking.user
 
     is_digital_offer = offer.isDigital
-    is_physical_offer = not offer.subcategory.is_event and not is_digital_offer
-    is_event = offer.subcategory.is_event
+    is_physical_offer = not offer.isEvent and not is_digital_offer
+    is_event = offer.isEvent
 
     if is_digital_offer and booking.activationCode:
         can_expire = 0
