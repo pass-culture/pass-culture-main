@@ -9,18 +9,13 @@ import { WEBAPP_URL_NEW, WEBAPP_URL_OLD } from 'utils/config'
 
 import useActiveFeature from '../../../../hooks/useActiveFeature'
 
-const getOfferPreviewUrl = (offerId, mediationId, isWebappV2Enabled) => {
-  const baseUrl = isWebappV2Enabled ? WEBAPP_URL_NEW : WEBAPP_URL_OLD
-  const webappOfferUrl = isWebappV2Enabled
-    ? `${baseUrl}/offre/${offerId}`
-    : `${baseUrl}/offre/details/${offerId}`
-
-  return mediationId ? `${webappOfferUrl}/${mediationId}` : webappOfferUrl
-}
-
-const OfferPreviewLink = ({ offerId, mediationId }) => {
+const OfferPreviewLink = ({ offerId, nonHumanizedOfferId, mediationId }) => {
   const isWebappV2Enabled = useActiveFeature('WEBAPP_V2_ENABLED')
-  const offerPreviewUrl = getOfferPreviewUrl(offerId, mediationId, isWebappV2Enabled)
+  const webappOfferUrl = isWebappV2Enabled
+    ? `${WEBAPP_URL_NEW}/offre/${nonHumanizedOfferId}`
+    : `${WEBAPP_URL_OLD}/offre/details/${offerId}`
+
+  const offerPreviewUrl = mediationId ? `${webappOfferUrl}/${mediationId}` : webappOfferUrl
 
   const openWindow = useCallback(
     event => {
@@ -50,6 +45,7 @@ OfferPreviewLink.defaultProps = {
 
 OfferPreviewLink.propTypes = {
   mediationId: PropTypes.string,
+  nonHumanizedOfferId: PropTypes.number.isRequired,
   offerId: PropTypes.string.isRequired,
 }
 
