@@ -14,66 +14,6 @@ slack-fail-post-step: &slack-fail-post-step
         channel: shérif
         template: basic_fail_1
 
-slack-send-deployment-notification: &slack-send-deployment-notification
-  - slack/notify:
-      event: pass
-      channel: alertes-deploiement
-      custom: |
-        {
-          "blocks": [
-            {
-              "type": "section",
-              "text": {
-                "type": "mrkdwn",
-                "text": "${CIRCLE_SHA1} has been successfully deployed to testing :muscle:"
-              }
-            },
-            {
-              "type": "actions",
-              "elements": [
-                {
-                  "type": "button",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "View job",
-                    "emoji": true
-                  },
-                  "url": "$CIRCLE_BUILD_URL"
-                }
-              ]
-            }
-          ]
-        }
-  - slack/notify:
-      event: fail
-      channel: alertes-deploiement
-      custom: |
-        {
-          "blocks": [
-            {
-              "type": "section",
-              "text": {
-                "type": "mrkdwn",
-                "text": "${CIRCLE_SHA1} this deployment has failed :pleurs:"
-              }
-            },
-            {
-              "type": "actions",
-              "elements": [
-                {
-                  "type": "button",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "View job",
-                    "emoji": true
-                  },
-                  "url": "$CIRCLE_BUILD_URL"
-                }
-              ]
-            }
-          ]
-        }
-
 ###################
 #  EXECUTORS
 ###################
@@ -363,7 +303,6 @@ jobs:
           kubernetes_namespace: testing
           helm_values_file: ./helm/pcapi/values.testing.yaml
           app_version: ${CIRCLE_SHA1}
-      - <<: *slack-send-deployment-notification
 
   functional-tests-webapp:
     machine:
@@ -538,6 +477,7 @@ workflows:
             - GCP
             - GCP_EHP
             - Slack
+          <<: *slack-fail-post-step
       - restart-pcapi:
           requires:
             - deploy-pcapi
