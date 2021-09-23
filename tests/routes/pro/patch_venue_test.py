@@ -142,6 +142,39 @@ class Returns200Test:
         )
 
     @pytest.mark.usefixtures("db_session")
+    @override_features(ENABLE_VENUE_WITHDRAWAL_DETAILS=True)
+    @patch("pcapi.routes.pro.venues.update_all_venue_offers_accessibility_job.delay")
+    def test_edit_venue_accessibility_with_applied_on_all_offers(
+        self, mocked_update_all_venue_offers_accessibility_job, app
+    ):
+        user_offerer = offers_factories.UserOffererFactory()
+        venue = offers_factories.VenueFactory(
+            name="old name",
+            managingOfferer=user_offerer.offerer,
+        )
+        print("vefore", venue.audioDisabilityCompliant)
+
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+
+        venue_data = populate_missing_data_from_venue(
+            {
+                "name": "new name",
+                "audioDisabilityCompliant": True,
+                "isAccessibilityAppliedOnAllOffers": True,
+            },
+            venue,
+        )
+
+        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
+
+        assert response.status_code == 200
+        assert venue.audioDisabilityCompliant == True
+
+        mocked_update_all_venue_offers_accessibility_job.assert_called_once_with(
+            venue, {"audioDisabilityCompliant": True}
+        )
+
+    @pytest.mark.usefixtures("db_session")
     def when_siret_does_not_change(self, app) -> None:
         # Given
         user_offerer = offers_factories.UserOffererFactory()

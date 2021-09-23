@@ -202,6 +202,7 @@ class EditVenueBodyModel(BaseModel):
     venueTypeId: Optional[int]
     venueLabelId: Optional[int]
     withdrawalDetails: Optional[str]
+    isAccessibilityAppliedOnAllOffers: Optional[bool]
     isWithdrawalAppliedOnAllOffers: Optional[bool]
     isEmailAppliedOnAllOffers: Optional[bool]
     description: Optional[VenueDescription]  # type: ignore

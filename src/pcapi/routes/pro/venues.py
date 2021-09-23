@@ -10,6 +10,7 @@ from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
 from pcapi.flask_app import private_api
 from pcapi.models.feature import FeatureToggle
+from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.venues_serialize import EditVenueBodyModel
 from pcapi.routes.serialization.venues_serialize import GetVenueListResponseModel
 from pcapi.routes.serialization.venues_serialize import GetVenueResponseModel
@@ -22,6 +23,7 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_404
+from pcapi.workers.update_all_venue_offers_accessibility_job import update_all_venue_offers_accessibility_job
 from pcapi.workers.update_all_venue_offers_email_job import update_all_venue_offers_email_job
 from pcapi.workers.update_all_venue_offers_withdrawal_details_job import update_all_venue_offers_withdrawal_details_job
 
@@ -84,13 +86,37 @@ def edit_venue(venue_id: str, body: EditVenueBodyModel) -> GetVenueResponseModel
     venue = load_or_404(Venue, venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    not_venue_fields = {
+        "isAccessibilityAppliedOnAllOffers",
+        "isEmailAppliedOnAllOffers",
+        "isWithdrawalAppliedOnAllOffers",
+        "contact",
+    }
+    update_venue_attrs = body.dict(exclude=not_venue_fields, exclude_unset=True)
+    venue_attrs = as_dict(venue)
+    accessibility_fields = [
+        "audioDisabilityCompliant",
+        "mentalDisabilityCompliant",
+        "motorDisabilityCompliant",
+        "visualDisabilityCompliant",
+    ]
+    have_accessibility_changes = any(
+        (field in update_venue_attrs and update_venue_attrs[field] != venue_attrs[field])
+        for field in accessibility_fields
+    )
+    have_withdrawal_details_changes = body.withdrawalDetails != venue.withdrawalDetails
+    venue = offerers_api.update_venue(venue, body.contact, **update_venue_attrs)
 
-    not_venue_fields = {"isEmailAppliedOnAllOffers", "isWithdrawalAppliedOnAllOffers", "contact"}
-    venue_attrs = body.dict(exclude=not_venue_fields, exclude_unset=True)
-    venue = offerers_api.update_venue(venue, body.contact, **venue_attrs)
+    if have_accessibility_changes and body.isAccessibilityAppliedOnAllOffers:
+        edited_accessibility = edited_accessibility = {
+            field: update_venue_attrs[field]
+            for field in accessibility_fields
+            if field in update_venue_attrs and update_venue_attrs[field] != venue_attrs[field]
+        }
+        update_all_venue_offers_accessibility_job.delay(venue, edited_accessibility)
 
     if FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS.is_active():
-        if body.withdrawalDetails and body.isWithdrawalAppliedOnAllOffers:
+        if have_withdrawal_details_changes and body.isWithdrawalAppliedOnAllOffers:
             update_all_venue_offers_withdrawal_details_job.delay(venue, body.withdrawalDetails)
 
     if body.bookingEmail and body.isEmailAppliedOnAllOffers:
