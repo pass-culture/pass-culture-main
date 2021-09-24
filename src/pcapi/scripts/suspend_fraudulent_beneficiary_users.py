@@ -5,17 +5,15 @@ from pcapi.core.users.api import suspend_account
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.models import User
 from pcapi.repository.user_queries import find_beneficiary_users_by_email_provider
-from pcapi.repository.user_queries import find_user_by_email
 
 
 logger = logging.getLogger(__name__)
 
 
 def suspend_fraudulent_beneficiary_users_by_email_providers(
-    fraudulent_email_providers: list[str], admin_user_email: str, dry_run: bool = True
+    fraudulent_email_providers: list[str], admin_user: User, dry_run: bool = True
 ) -> dict:
     fraudulent_users = []
-    admin_user = find_user_by_email(admin_user_email)
 
     for email_provider in fraudulent_email_providers:
         fraudulent_users.extend(find_beneficiary_users_by_email_provider(email_provider))
@@ -24,15 +22,10 @@ def suspend_fraudulent_beneficiary_users_by_email_providers(
 
 
 def suspend_fraudulent_beneficiary_users_by_ids(
-    fraudulent_user_ids: list[int], admin_user_email: str, dry_run: bool = True
+    fraudulent_user_ids: list[int], admin_user: User, dry_run: bool = True
 ) -> dict:
-    fraudulent_users = []
-    admin_user = find_user_by_email(admin_user_email)
 
-    for user_id in fraudulent_user_ids:
-        user = User.query.filter_by(id=user_id).one_or_none()
-        if user:
-            fraudulent_users.append(user)
+    fraudulent_users = User.query.filter(User.id.in_(fraudulent_user_ids)).all()
 
     return suspend_fraudulent_beneficiary_users(fraudulent_users, admin_user, dry_run)
 

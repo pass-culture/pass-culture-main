@@ -34,6 +34,7 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 
 from . import templating
+from .custom_views.suspend_fraudulent_users_by_ids import SuspendFraudulentUsersByUserIdsView
 
 
 class Category(Enum):
@@ -160,6 +161,14 @@ def install_admin_views(admin: Admin, session: Session) -> None:
         SuspendFraudulentUsersByEmailProvidersView(
             name="Suspension d'utilisateurs via noms de domaine",
             endpoint="/suspend_fraud_users_by_email_providers",
+            category=Category.CUSTOM_OPERATIONS,
+        )
+    )
+
+    admin.add_view(
+        SuspendFraudulentUsersByUserIdsView(
+            name="Suspension d'utilisateurs via identifiants",
+            endpoint="/suspend_fraud_users_by_user_ids",
             category=Category.CUSTOM_OPERATIONS,
         )
     )

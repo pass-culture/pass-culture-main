@@ -21,9 +21,7 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
         BookingFactory(user=fraudulent_user, stock__price=2)
 
         # When
-        suspend_fraudulent_beneficiary_users_by_email_providers(
-            fraudulent_emails_providers, admin_user.email, dry_run=False
-        )
+        suspend_fraudulent_beneficiary_users_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
 
         # Then
         assert not fraudulent_user.isActive
@@ -38,9 +36,7 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
         booking_2 = BookingFactory(user=fraudulent_user, stock__price=2)
 
         # When
-        suspend_fraudulent_beneficiary_users_by_email_providers(
-            fraudulent_emails_providers, admin_user.email, dry_run=False
-        )
+        suspend_fraudulent_beneficiary_users_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
 
         # Then
         assert not fraudulent_user.isActive
@@ -58,9 +54,7 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
         uncancellable_booking = UsedBookingFactory(user=fraudulent_user, stock__price=1)
 
         # When
-        suspend_fraudulent_beneficiary_users_by_email_providers(
-            fraudulent_emails_providers, admin_user.email, dry_run=False
-        )
+        suspend_fraudulent_beneficiary_users_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
 
         # Then
         assert not fraudulent_user.isActive
@@ -81,9 +75,7 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
         BookingFactory(user=beneficiary_fraudulent_user, stock__price=1)
 
         # When
-        suspend_fraudulent_beneficiary_users_by_email_providers(
-            fraudulent_emails_providers, admin_user.email, dry_run=False
-        )
+        suspend_fraudulent_beneficiary_users_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
 
         # Then
         assert not beneficiary_fraudulent_user.isActive
@@ -103,9 +95,7 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
         BookingFactory(user=non_fraudulent_user, stock__price=1)
 
         # When
-        suspend_fraudulent_beneficiary_users_by_email_providers(
-            fraudulent_emails_providers, admin_user.email, dry_run=False
-        )
+        suspend_fraudulent_beneficiary_users_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
 
         # Then
         assert non_fraudulent_user.isActive
@@ -120,7 +110,7 @@ class SuspendFraudulentBeneficiaryUsersByIdsTest:
         fraudulent_user_booking_1 = BookingFactory(user=fraudulent_user, stock__price=1)
         fraudulent_user_booking_2 = BookingFactory(user=fraudulent_user, stock__price=2)
 
-        suspend_fraudulent_beneficiary_users_by_ids(fraudulent_user_ids, admin_user.email, dry_run=False)
+        suspend_fraudulent_beneficiary_users_by_ids(fraudulent_user_ids, admin_user, dry_run=False)
 
         assert not fraudulent_user.isActive
         assert fraudulent_user_booking_1.isCancelled
@@ -135,7 +125,7 @@ class SuspendFraudulentBeneficiaryUsersByIdsTest:
         fraudulent_user = BeneficiaryGrant18Factory(id=15)
         uncancellable_booking = UsedBookingFactory(user=fraudulent_user, stock__price=1)
 
-        suspend_fraudulent_beneficiary_users_by_ids(fraudulent_user_ids, admin_user.email, dry_run=False)
+        suspend_fraudulent_beneficiary_users_by_ids(fraudulent_user_ids, admin_user, dry_run=False)
 
         assert not fraudulent_user.isActive
         assert not uncancellable_booking.isCancelled
@@ -147,6 +137,6 @@ class SuspendFraudulentBeneficiaryUsersByIdsTest:
         admin_user = AdminFactory()
         beneficiary = BeneficiaryGrant18Factory(id=15)
 
-        suspend_fraudulent_beneficiary_users_by_ids(fraudulent_user_ids, admin_user.email, dry_run=False)
+        suspend_fraudulent_beneficiary_users_by_ids(fraudulent_user_ids, admin_user, dry_run=False)
 
         assert beneficiary.isActive
