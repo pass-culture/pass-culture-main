@@ -176,7 +176,6 @@ class AppSearchBackend:
         for field in [
             "category",
             "dates",
-            "description",
             "id",
             "is_digital",
             "is_duo",
