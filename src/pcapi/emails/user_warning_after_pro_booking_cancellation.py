@@ -1,5 +1,3 @@
-import datetime
-
 from babel.dates import format_date
 
 from pcapi.models import Booking
@@ -25,12 +23,15 @@ def retrieve_data_to_warn_user_after_pro_booking_cancellation(booking: Booking) 
     offerer_name = offer.venue.managingOfferer.name
     offer_name = offer.name
     offer_price = str(booking.total_amount)
-    user_first_name = booking.individualBooking.user.firstName
+    if booking.individualBooking is not None:
+        user_first_name = booking.individualBooking.user.firstName
+    if booking.educationalBooking is not None:
+        user_first_name = booking.educationalBooking.educationalRedactor.firstName
     venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
-    can_book_again = int(booking.user.deposit.expirationDate > datetime.datetime.now())
+    template_id = 1116690 if booking.individualBooking is not None else 3192295
 
     return {
-        "MJ-TemplateID": 1116690,
+        "MJ-TemplateID": template_id,
         "MJ-TemplateLanguage": True,
         "Vars": {
             "event_date": event_date,
@@ -43,7 +44,6 @@ def retrieve_data_to_warn_user_after_pro_booking_cancellation(booking: Booking) 
             "offer_price": offer_price,
             "offerer_name": offerer_name,
             "user_first_name": user_first_name,
-            "can_book_again": can_book_again,
             "venue_name": venue_name,
         },
     }

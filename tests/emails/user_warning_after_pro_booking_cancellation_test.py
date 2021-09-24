@@ -27,7 +27,6 @@ class RetrieveDataToWarnUserAfterProBookingCancellationTest:
             "MJ-TemplateID": 1116690,
             "MJ-TemplateLanguage": True,
             "Vars": {
-                "can_book_again": 1,
                 "event_date": "samedi 20 juillet 2019",
                 "event_hour": "14h",
                 "is_event": 1,
@@ -38,6 +37,38 @@ class RetrieveDataToWarnUserAfterProBookingCancellationTest:
                 "offer_price": "10.00",
                 "offerer_name": booking.offerer.name,
                 "user_first_name": "Georges",
+                "venue_name": booking.venue.name,
+            },
+        }
+
+    def test_should_return_redactor_first_name_when_booking_is_educational(self):
+        # Given
+        stock = offers_factories.EventStockFactory(
+            beginningDatetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+        )
+        booking = bookings_factories.EducationalBookingFactory(
+            stock=stock,
+            educationalBooking__educationalRedactor__firstName="Georgio",
+        )
+
+        # When
+        mailjet_data = retrieve_data_to_warn_user_after_pro_booking_cancellation(booking)
+
+        # Then
+        assert mailjet_data == {
+            "MJ-TemplateID": 3192295,
+            "MJ-TemplateLanguage": True,
+            "Vars": {
+                "event_date": "samedi 20 juillet 2019",
+                "event_hour": "14h",
+                "is_event": 1,
+                "is_free_offer": 0,
+                "is_online": 0,
+                "is_thing": 0,
+                "offer_name": booking.stock.offer.name,
+                "offer_price": "10.00",
+                "offerer_name": booking.offerer.name,
+                "user_first_name": "Georgio",
                 "venue_name": booking.venue.name,
             },
         }
@@ -55,7 +86,6 @@ class RetrieveDataToWarnUserAfterProBookingCancellationTest:
             "MJ-TemplateID": 1116690,
             "MJ-TemplateLanguage": True,
             "Vars": {
-                "can_book_again": 1,
                 "event_date": "",
                 "event_hour": "",
                 "is_event": 0,
@@ -83,7 +113,6 @@ class RetrieveDataToWarnUserAfterProBookingCancellationTest:
             "MJ-TemplateID": 1116690,
             "MJ-TemplateLanguage": True,
             "Vars": {
-                "can_book_again": 1,
                 "event_date": "",
                 "event_hour": "",
                 "is_event": 0,
