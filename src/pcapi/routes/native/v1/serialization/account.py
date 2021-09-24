@@ -1,5 +1,4 @@
 import datetime
-from datetime import date
 from enum import Enum
 from typing import Optional
 from uuid import UUID
@@ -44,7 +43,7 @@ class ActivityEnum(str, Enum):
 class AccountRequest(BaseModel):
     email: str
     password: str
-    birthdate: date
+    birthdate: datetime.date
     marketing_email_subscription: Optional[bool] = False
     token: str
     postal_code: Optional[str] = None
@@ -113,6 +112,28 @@ class DomainsCredit(BaseModel):
         orm_mode = True
 
 
+class CallToActionIcon(Enum):
+    info = "info"
+    warning = "warning"
+
+
+class PopOverIcon(Enum):
+    email = "Email"
+
+
+class CallToActionMessage(BaseModel):
+    callToActionTitle: str
+    callToActionLink: str
+    callToActionIcon: CallToActionIcon
+
+
+class SubscriptionMessage(BaseModel):
+    userMessage: str
+    callToAction: CallToActionMessage
+    popOverIcon: PopOverIcon
+    updatedAt: datetime.datetime
+
+
 class UserProfileResponse(BaseModel):
     id: int
     booked_offers: dict[str, int]
@@ -129,6 +150,7 @@ class UserProfileResponse(BaseModel):
     lastName: Optional[str]
     next_beneficiary_validation_step: Optional[BeneficiaryValidationStep]
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
+    subscriptionMessage: Optional[SubscriptionMessage]
     isBeneficiary: bool
     roles: list[UserRole]
     phoneNumber: Optional[str]

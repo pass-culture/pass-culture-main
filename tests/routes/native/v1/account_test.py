@@ -137,6 +137,7 @@ class AccountTest:
             "pseudo": "jdo",
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
+            "subscriptionMessage": None,
         }
         EXPECTED_DATA.update(USER_DATA)
 
@@ -187,6 +188,7 @@ class AccountTest:
             "pseudo": "jdo",
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
+            "subscriptionMessage": None,
         }
         EXPECTED_DATA.update(USER_DATA)
 
@@ -237,6 +239,7 @@ class AccountTest:
             "pseudo": "jdo",
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
+            "subscriptionMessage": None,
         }
         EXPECTED_DATA.update(USER_DATA)
 
