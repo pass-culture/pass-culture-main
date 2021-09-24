@@ -2,11 +2,7 @@
 * @debt directory "Gaël: SCSS file should be co-located and imported within a component"
 */
 
-input[type='radio'] {
-  vertical-align: middle;
-}
-
-.input-radio {
+input[type="radio"] {
   appearance: none;
   border: 2px solid $grey-dark;
   border-radius: 50%;
@@ -14,55 +10,30 @@ input[type='radio'] {
   height: 1.1875em;
   margin-right: rem(8px);
   outline: none;
-  padding: 0;
-  position: relative;
-  vertical-align: middle;
   width: 1.1875em;
 
   &:checked {
-    &::after {
-      background-color: $grey-dark;
-      background-position: center;
-      background-repeat: no-repeat;
-      border-radius: 50%;
-      content: "";
-      height: 60%;
-      left: rem(3px);
-      position: absolute;
-      top: rem(3px);
-      width: 60%;
-    }
+    background: radial-gradient($grey-dark 0%, $grey-dark 40%, transparent 50%, transparent);
 
     &:hover {
+      background: radial-gradient($primary 0%, $primary 40%, transparent 50%, transparent);
       border-color: $primary;
-
-      &::after {
-        background-color: $primary;
-      }
     }
 
     &:focus {
+      background: radial-gradient($primary-dark 0%, $primary-dark 40%, transparent 50%, transparent);
       border-color: $primary-dark;
-
-      &::after {
-        background-color: $primary-dark;
-      }
     }
 
     &:disabled {
+      background: radial-gradient($grey-medium 0%, $grey-medium 40%, transparent 50%, transparent);
       border-color: $grey-medium;
       cursor: not-allowed;
       opacity: 1;
-
-      &::after {
-        background-color: $grey-medium;
-      }
     }
   }
 
   &:not(:checked) {
-    background-color: $white;
-
     &:hover {
       border-color: $primary;
     }
