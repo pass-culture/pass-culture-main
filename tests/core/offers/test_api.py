@@ -538,7 +538,7 @@ class DeleteStockTest:
         mocked_async_index_offer_ids.assert_called_once_with([stock.offerId])
 
     @mock.patch("pcapi.domain.user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation")
-    @mock.patch("pcapi.domain.user_emails.send_warning_to_beneficiary_after_pro_booking_cancellation")
+    @mock.patch("pcapi.domain.user_emails.send_warning_to_user_after_pro_booking_cancellation")
     def test_delete_stock_cancel_bookings_and_send_emails(self, mocked_send_to_beneficiaries, mocked_send_to_offerer):
         stock = factories.EventStockFactory()
         booking1 = bookings_factories.BookingFactory(stock=stock)

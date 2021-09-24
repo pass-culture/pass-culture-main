@@ -32,9 +32,6 @@ from pcapi.emails.beneficiary_soon_to_be_expired_bookings import (
     build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary,
 )
 from pcapi.emails.beneficiary_soon_to_be_expired_bookings import filter_books_bookings
-from pcapi.emails.beneficiary_warning_after_pro_booking_cancellation import (
-    retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation,
-)
 from pcapi.emails.new_offer_validation import retrieve_data_for_offer_approval_email
 from pcapi.emails.new_offer_validation import retrieve_data_for_offer_rejection_email
 from pcapi.emails.new_offerer_validated_withdrawal_terms import (
@@ -54,6 +51,9 @@ from pcapi.emails.user_notification_after_stock_update import (
 )
 from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_native_app_email
 from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_user_email
+from pcapi.emails.user_warning_after_pro_booking_cancellation import (
+    retrieve_data_to_warn_user_after_pro_booking_cancellation,
+)
 from pcapi.models import Offer
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository.offerer_queries import find_new_offerer_user_email
@@ -101,8 +101,8 @@ def send_offerer_driven_cancellation_email_to_offerer(booking: Booking) -> None:
         mails.send(recipients=[offerer_booking_email], data=email)
 
 
-def send_warning_to_beneficiary_after_pro_booking_cancellation(booking: Booking) -> None:
-    data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
+def send_warning_to_user_after_pro_booking_cancellation(booking: Booking) -> None:
+    data = retrieve_data_to_warn_user_after_pro_booking_cancellation(booking)
     mails.send(recipients=[booking.user.email], data=data)
 
 
@@ -139,7 +139,7 @@ def send_booking_cancellation_emails_to_user_and_offerer(
         send_beneficiary_booking_cancellation_email(booking)
         send_user_driven_cancellation_email_to_offerer(booking)
     if reason == BookingCancellationReasons.OFFERER:
-        send_warning_to_beneficiary_after_pro_booking_cancellation(booking)
+        send_warning_to_user_after_pro_booking_cancellation(booking)
         send_offerer_driven_cancellation_email_to_offerer(booking)
     if reason == BookingCancellationReasons.FRAUD:
         send_user_driven_cancellation_email_to_offerer(booking)

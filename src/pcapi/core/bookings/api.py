@@ -171,7 +171,7 @@ def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons
     Cancel multiple bookings and update the users' credit information on Batch.
     Note that this will not reindex the stock.offer in Algolia
     """
-    deleted_bookings = []
+    deleted_bookings: list[Booking] = []
     with transaction():
         stock = offers_repository.get_and_lock_stock(stock_id=stock.id)
         for booking in stock.bookings:
@@ -186,7 +186,8 @@ def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons
         repository.save(*deleted_bookings)
 
     for booking in deleted_bookings:
-        update_external_user(booking.user)
+        if booking.individualBooking is not None:
+            update_external_user(booking.individualBooking.user)
 
     return deleted_bookings
 

@@ -36,7 +36,7 @@ from pcapi.domain.user_emails import send_reset_password_email_to_pro
 from pcapi.domain.user_emails import send_reset_password_email_to_user
 from pcapi.domain.user_emails import send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
-from pcapi.domain.user_emails import send_warning_to_beneficiary_after_pro_booking_cancellation
+from pcapi.domain.user_emails import send_warning_to_user_after_pro_booking_cancellation
 from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -129,7 +129,7 @@ class SendWarningToBeneficiaryAfterProBookingCancellationTest:
         booking = BookingFactory(user__email="user@example.com", user__firstName="Jeanne")
 
         # When
-        send_warning_to_beneficiary_after_pro_booking_cancellation(booking)
+        send_warning_to_user_after_pro_booking_cancellation(booking)
 
         # Then
         assert mails_testing.outbox[0].sent_data == {

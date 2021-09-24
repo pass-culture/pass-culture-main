@@ -7,7 +7,7 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 from pcapi.utils.mailing import get_event_datetime
 
 
-def retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking: Booking) -> dict:
+def retrieve_data_to_warn_user_after_pro_booking_cancellation(booking: Booking) -> dict:
     stock = booking.stock
     offer = stock.offer
     event_date = ""
@@ -25,7 +25,7 @@ def retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking: Bo
     offerer_name = offer.venue.managingOfferer.name
     offer_name = offer.name
     offer_price = str(booking.total_amount)
-    user_first_name = booking.user.firstName
+    user_first_name = booking.individualBooking.user.firstName
     venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
     can_book_again = int(booking.user.deposit.expirationDate > datetime.datetime.now())
 

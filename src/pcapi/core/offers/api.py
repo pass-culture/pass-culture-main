@@ -472,7 +472,7 @@ def delete_stock(stock: Stock) -> None:
     if cancelled_bookings:
         for booking in cancelled_bookings:
             try:
-                user_emails.send_warning_to_beneficiary_after_pro_booking_cancellation(booking)
+                user_emails.send_warning_to_user_after_pro_booking_cancellation(booking)
             except mailing.MailServiceException as exc:
                 logger.exception(
                     "Could not notify beneficiary about deletion of stock",
