@@ -3,20 +3,9 @@ from sentry_sdk import set_tag
 from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from pcapi import settings
-from pcapi.admin.install import install_admin_template_filters
-from pcapi.admin.install import install_admin_views
-from pcapi.connectors.educonnect_service_provider import EduconnectServiceProvider
-from pcapi.flask_app import admin
 from pcapi.flask_app import app
 from pcapi.local_providers.install import install_local_providers
-from pcapi.models import db
-from pcapi.routes import install_routes
-from pcapi.routes.adage.v1.blueprint import adage_v1
-from pcapi.routes.adage_iframe.blueprint import adage_iframe
-from pcapi.routes.native.v1.blueprint import native_v1
-from pcapi.routes.pro.blueprints import pro_api_v2
-from pcapi.tasks import install_handlers
-from pcapi.tasks.decorator import cloud_task_api
+from pcapi.routes import install_all_routes
 
 
 if settings.PROFILE_REQUESTS:
@@ -33,22 +22,9 @@ def install_login_manager() -> None:
 with app.app_context():
     if settings.IS_DEV:
         install_local_providers()
-
     install_login_manager()
-    install_admin_views(admin, db.session)
-    install_routes(app)
-    install_handlers(app)
+    install_all_routes(app)
 
-    install_admin_template_filters(app)
-
-    app.register_blueprint(adage_v1, url_prefix="/adage/v1")
-    app.register_blueprint(native_v1, url_prefix="/native/v1")
-    app.register_blueprint(pro_api_v2, url_prefix="/v2")
-    app.register_blueprint(adage_iframe, url_prefix="/adage-iframe")
-    app.register_blueprint(cloud_task_api)
-
-    educonnectSP = EduconnectServiceProvider()
-    app.register_blueprint(educonnectSP.create_blueprint(), url_prefix="/saml/")
 
 if __name__ == "__main__":
     port = settings.FLASK_PORT

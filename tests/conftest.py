@@ -1,5 +1,5 @@
+# isort: skip_file
 from functools import wraps
-from pathlib import Path
 from pprint import pprint
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -8,39 +8,30 @@ from alembic import command
 from alembic.config import Config
 from flask import Flask
 from flask.testing import FlaskClient
-from flask_jwt_extended import JWTManager
 from flask_jwt_extended.utils import create_access_token
-from flask_login import LoginManager
 import pytest
-import redis
 from requests import Response
 from requests.auth import _basic_auth_str
 
-import pcapi
+# FIXME (dbaty, 2020-02-08): avoid import loop (that occurs when
+# importing `pcapi.core.mails.testing`) when running tests. Remove
+# `isort: skip_file` above once fixed.
+import pcapi.models  # pylint: disable=unused-import
 from pcapi import settings
-from pcapi.admin.install import install_admin_views
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
 import pcapi.core.search.testing as search_testing
 import pcapi.core.testing
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
-from pcapi.flask_app import admin
 from pcapi.install_database_extensions import install_database_extensions
 from pcapi.local_providers.install import install_local_providers
-from pcapi.models.db import db
+from pcapi.models import db
 from pcapi.models.feature import install_feature_flags
 from pcapi.notifications.push import testing as push_notifications_testing
 from pcapi.notifications.sms import testing as sms_notifications_testing
 from pcapi.repository.clean_database import clean_all_database
-from pcapi.routes import install_routes
-from pcapi.routes.adage.v1.blueprint import adage_v1
-from pcapi.routes.adage_iframe.blueprint import adage_iframe
-from pcapi.routes.native.v1.blueprint import native_v1
-from pcapi.routes.pro.blueprints import pro_api_v2
-from pcapi.tasks import install_handlers
-from pcapi.tasks.decorator import cloud_task_api
-from pcapi.utils.json_encoder import EnumJSONEncoder
+from pcapi.routes import install_all_routes
 
 from tests.serialization.serialization_decorator_test import test_blueprint
 
@@ -58,51 +49,29 @@ def pytest_configure(config):
 
 @pytest.fixture(scope="session", name="app")
 def app_fixture():
-    app = Flask(
-        __name__,
-        template_folder=Path(pcapi.__path__[0]) / "templates",
-    )
+    from pcapi import flask_app
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URL
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["SQLALCHEMY_ECHO"] = False
-    app.config["SECRET_KEY"] = "@##&6cweafhv3426445"
-    app.config["SESSION_COOKIE_HTTPONLY"] = True
-    app.config["SESSION_COOKIE_SAMESITE"] = "Strict"
-    app.config["REMEMBER_COOKIE_SECURE"] = False
-    app.config["REMEMBER_COOKIE_DURATION"] = 90 * 24 * 3600
-    app.config["TESTING"] = True
-    app.url_map.strict_slashes = False
-    app.json_encoder = EnumJSONEncoder
+    app = flask_app.app
 
-    login_manager = LoginManager()
-    login_manager.init_app(app)
-    db.init_app(app)
+    # FIXME: some tests fail without this, for example:
+    #   - pytest tests/admin/custom_views/offer_view_test.py
+    #   - pytest tests/core/fraud/test_api.py
+    # Leave an XXX note about why we need that.
+    app.teardown_request_funcs[None].remove(flask_app.remove_db_session)
 
-    app.app_context().push()
-    install_database_extensions(app)
+    with app.app_context():
+        app.config["TESTING"] = True
 
-    run_migrations()
+        install_all_routes(app)
 
-    install_feature_flags()
+        app.register_blueprint(test_blueprint, url_prefix="/test-blueprint")
 
-    install_routes(app)
-    install_handlers(app)
-    install_local_providers()
-    admin.init_app(app)
-    install_admin_views(admin, db.session)
+        install_local_providers()
+        install_database_extensions(app)
+        install_feature_flags()
+        run_migrations()
 
-    app.redis_client = redis.from_url(url=settings.REDIS_URL)
-    app.register_blueprint(adage_v1, url_prefix="/adage/v1")
-    app.register_blueprint(native_v1, url_prefix="/native/v1")
-    app.register_blueprint(pro_api_v2, url_prefix="/v2")
-    app.register_blueprint(adage_iframe, url_prefix="/adage-iframe")
-    app.register_blueprint(test_blueprint, url_prefix="/test-blueprint")
-    app.register_blueprint(cloud_task_api)
-
-    JWTManager(app)
-
-    return app
+        yield app
 
 
 @pytest.fixture(autouse=True)
@@ -157,7 +126,6 @@ def _db(app):
     run_migrations()
     install_feature_flags()
 
-    install_routes(app)
     install_local_providers()
     clean_all_database()
 
