@@ -11,6 +11,7 @@ from pydantic import validator
 from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.categories.conf import can_create_from_isbn
 from pcapi.core.categories.conf import get_subcategory_from_type
+from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import Stock
@@ -246,7 +247,7 @@ class ListOffersOfferResponseModel(BaseModel):
     stocks: list[ListOffersStockResponseModel]
     thumbUrl: Optional[str]
     productIsbn: Optional[str]
-    subcategoryId: str
+    subcategoryId: SubcategoryIdEnum
     venue: ListOffersVenueResponseModel
     status: str
     venueId: str
@@ -506,7 +507,7 @@ class GetOfferResponseModel(BaseModel):
     product: GetOfferProductResponseModel
     productId: str
     stocks: list[GetOfferStockResponseModel]
-    subcategoryId: str
+    subcategoryId: SubcategoryIdEnum
     thumbUrl: Optional[str]
     type: str
     externalTicketOfficeUrl: Optional[str]

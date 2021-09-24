@@ -4,6 +4,7 @@ from typing import Optional
 
 from pydantic.class_validators import validator
 
+from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.models.offer_type import CategoryNameEnum
@@ -38,7 +39,7 @@ class FavoriteOfferResponse(BaseModel):
     id: int
     name: str
     category: FavoriteCategoryResponse
-    subcategoryId: str
+    subcategoryId: SubcategoryIdEnum
     externalTicketOfficeUrl: Optional[str]
     image: Optional[FavoriteMediationResponse]
     coordinates: Coordinates

@@ -216,7 +216,7 @@ class OfferResponse(BaseModel):
     isEducational: bool
     name: str
     category: OfferCategoryResponse
-    subcategoryId: str
+    subcategoryId: SubcategoryIdEnum
     stocks: list[OfferStockResponse]
     image: Optional[OfferImageResponse]
     venue: OfferVenueResponse

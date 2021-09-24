@@ -6,6 +6,7 @@ from pydantic.class_validators import validator
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.routes.native.utils import convert_to_cent
@@ -56,7 +57,7 @@ class BookingOfferResponse(BaseModel):
     id: int
     name: str
     category: OfferCategoryResponse
-    subcategoryId: str
+    subcategoryId: SubcategoryIdEnum
     extraData: Optional[BookingOfferExtraData]
     image: Optional[OfferImageResponse]
     isDigital: bool
