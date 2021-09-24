@@ -113,12 +113,43 @@ class VenueViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    def test_update_venue_reindex_all(self, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app):
+        AdminFactory(email="user@example.com")
+        venue = VenueFactory(isPermanent=False)
+
+        new_name = venue.name + "(updated)"
+        data = dict(
+            name=new_name,
+            siret=venue.siret,
+            city=venue.city,
+            postalCode=venue.postalCode,
+            address=venue.address,
+            publicName=venue.publicName,
+            latitude="42.01",
+            longitude=venue.longitude,
+            isPermanent=True,
+        )
+
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
+
+        assert response.status_code == 302
+
+        venue = Venue.query.get(venue.id)
+        assert venue.isPermanent
+        assert venue.name == new_name
+
+        mocked_async_index_offers_of_venue_ids.assert_called_once_with([venue.id])
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     @patch("pcapi.core.search.async_index_venues")
-    def test_reindex_venue_on_coordinates_change(
+    def test_update_venue_reindex_venue_only(
         self, mocked_async_index_venues, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app
     ):
         AdminFactory(email="user@example.com")
-        venue = VenueFactory()
+        venue = VenueFactory(isPermanent=False)
 
         data = dict(
             name=venue.name,
@@ -127,9 +158,9 @@ class VenueViewTest:
             postalCode=venue.postalCode,
             address=venue.address,
             publicName=venue.publicName,
-            latitude="42.01",
+            latitude=venue.latitude,
             longitude=venue.longitude,
-            isPermanent=venue.isPermanent,
+            isPermanent=True,
         )
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -137,8 +168,11 @@ class VenueViewTest:
 
         assert response.status_code == 302
 
+        venue = Venue.query.get(venue.id)
+        assert venue.isPermanent
+
         mocked_async_index_venues.assert_called_once_with([venue])
-        mocked_async_index_offers_of_venue_ids.assert_called_once_with([venue.id])
+        mocked_async_index_offers_of_venue_ids.assert_not_called()
 
 
 class GetVenueProviderLinkTest:

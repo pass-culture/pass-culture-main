@@ -45,7 +45,7 @@ def async_index_offer_ids(offer_ids: Iterable[int]) -> None:
 
 def async_index_venues(venues: Iterable[Venue]) -> None:
     """Ask for an asynchronous reindexation of the given list of
-    ``Venue``.
+    permanent ``Venue``.
 
     This function returns quickly. The "real" reindexation will be
     done later through a cron job.
@@ -170,6 +170,10 @@ def index_venues_in_queue(from_error_queue: bool = False) -> None:
 
 
 def _index_venues_in_queue(backend: base.SearchBackend, from_error_queue: bool = False) -> None:
+    """
+    Pop ids from indexing queue, index permanent venues and unindex
+    non permanent ones.
+    """
     chunk_size = settings.REDIS_VENUE_IDS_CHUNK_SIZE
     if from_error_queue:
         venue_ids = backend.pop_venue_ids_from_error_queue(count=chunk_size)
@@ -182,17 +186,25 @@ def _index_venues_in_queue(backend: base.SearchBackend, from_error_queue: bool =
     logger.info("Starting to index venues", extra={"count": len(venue_ids), "backend": str(backend)})
     venues = Venue.query.filter(Venue.id.in_(venue_ids))
 
+    to_add = [venue for venue in venues if venue.isPermanent]
+    to_add_ids = [venue.id for venue in to_add]
+
     try:
-        backend.index_venues(venues)
+        backend.index_venues(to_add)
     except Exception as exc:  # pylint: disable=broad-except
-        backend.enqueue_venue_ids_in_error(venue_ids)
+        backend.enqueue_venue_ids_in_error(to_add_ids)
         logger.warning(
             "Could not reindex venues, will automatically retry",
-            extra={"exc": str(exc), "venues": [venue.id for venue in venues], "backend": str(backend)},
+            extra={"exc": str(exc), "venues": to_add_ids, "backend": str(backend)},
             exc_info=True,
         )
     else:
-        logger.info("Finished indexing venues", extra={"count": len(venue_ids), "backend": str(backend)})
+        logger.info("Finished indexing venues", extra={"count": len(to_add), "backend": str(backend)})
+
+    to_delete_ids = [venue.id for venue in venues if not venue.isPermanent]
+    if to_delete_ids:
+        unindex_venue_ids(to_delete_ids)
+        logger.info("Finished unindexing venues", extra={"count": len(to_delete_ids), "backend": str(backend)})
 
 
 def index_offers_of_venues_in_queue() -> None:
@@ -315,6 +327,9 @@ def unindex_all_offers() -> None:
 
 
 def unindex_venue_ids(venue_ids: Iterable[int]) -> None:
+    if not venue_ids:
+        return
+
     backends = _get_backends()
     for backend in backends:
         try:

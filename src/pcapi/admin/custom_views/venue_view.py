@@ -114,12 +114,12 @@ class VenueView(BaseAdminView):
         )
 
         super().update_model(new_venue_form, venue)
+        search.async_index_venues([venue])
 
         if has_siret_changed and old_siret:
             update_offer_and_stock_id_at_providers(venue, old_siret)
 
         if has_indexed_attribute_changed:
-            search.async_index_venues([venue])
             search.async_index_offers_of_venue_ids([venue.id])
 
         return True
