@@ -129,7 +129,7 @@ class Booking(PcObject, Model):
         unique=True,
         index=True,
     )
-    educationalBooking = relationship(
+    educationalBooking: Optional[EducationalBooking] = relationship(
         EducationalBooking,
         back_populates="booking",
         uselist=False,
@@ -142,7 +142,7 @@ class Booking(PcObject, Model):
         unique=True,
         index=True,
     )
-    individualBooking = relationship(
+    individualBooking: Optional[IndividualBooking] = relationship(
         IndividualBooking,
         back_populates="booking",
         uselist=False,
