@@ -289,11 +289,7 @@ class SubcategoryResponseModel(BaseModel):
     search_group_name: Optional[subcategories.SearchGroupNameEnum]
     homepage_label_name: HomepageLabelNameEnum
     is_event: bool
-    can_expire: bool
-    can_be_duo: bool
     online_offline_platform: subcategories.OnlineOfflinePlatformChoicesEnum
-    is_digital_deposit: bool
-    is_physical_deposit: bool
 
     class Config:
         alias_generator = to_camel

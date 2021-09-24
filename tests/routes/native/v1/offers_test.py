@@ -531,11 +531,7 @@ class SubcategoriesTest:
                 "searchGroupName",
                 "homepageLabelName",
                 "isEvent",
-                "canExpire",
-                "canBeDuo",
                 "onlineOfflinePlatform",
-                "isDigitalDeposit",
-                "isPhysicalDeposit",
             ]
             for subcategory_dict in response.json["subcategories"]
         )
