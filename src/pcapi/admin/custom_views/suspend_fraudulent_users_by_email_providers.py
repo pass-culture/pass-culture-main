@@ -20,7 +20,7 @@ class EmailDomainsForm(SecureForm):
     )
 
 
-class SuspendFraudulentUsersView(BaseCustomAdminView):
+class SuspendFraudulentUsersByEmailProvidersView(BaseCustomAdminView):
     @expose("/", methods=["GET", "POST"])
     def search(self) -> Response:
         form = EmailDomainsForm()
@@ -44,7 +44,7 @@ class SuspendFraudulentUsersView(BaseCustomAdminView):
                     flash("Veuillez renseigner au moins un nom de domaine", "error")
 
         return self.render(
-            "admin/suspend_fraudulent_users.html",
+            "admin/suspend_fraudulent_users_by_email_providers.html",
             form=form,
             fraudulent_users=fraudulent_users,
             nb_fraud_users=len(fraudulent_users),
