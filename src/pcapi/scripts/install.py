@@ -8,5 +8,4 @@ def install_scripts():
     import pcapi.scripts.payment.generate_payments
     import pcapi.scripts.provider.check_provider_api
     import pcapi.scripts.sandbox
-    import pcapi.scripts.storage
     import pcapi.scripts.update_providables
