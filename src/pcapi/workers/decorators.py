@@ -3,10 +3,10 @@ from functools import wraps
 import logging
 import time
 
+from flask import current_app
 from rq.job import get_current_job
 from rq.queue import Queue
 
-from pcapi.flask_app import app
 from pcapi.settings import IS_RUNNING_TESTS
 from pcapi.workers.logger import job_extra_description
 
@@ -36,8 +36,7 @@ def job(queue: Queue):
                 },
             )
 
-            # TODO(xordoquy): use flask.current_app to retrieve context
-            with app.app_context():
+            with current_app.app_context():
                 result = func(*args, **kwargs)
 
             logger.info(

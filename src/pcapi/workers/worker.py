@@ -18,7 +18,6 @@ from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
 from pcapi.core.logging import install_logging
-from pcapi.flask_app import app
 from pcapi.models.db import db
 from pcapi.utils.health_checker import check_database_connection
 from pcapi.utils.health_checker import read_version_from_file
@@ -59,23 +58,25 @@ def log_redis_connection_status() -> None:
 
 
 def log_database_connection_status() -> None:
-    with app.app_context():
-        if check_database_connection():
-            logger.info("Worker: database connection OK")
-        else:
-            logger.critical("Worker: database connection KO")
-        db.session.remove()
-        db.session.close()
-        db.engine.dispose()
+    if check_database_connection():
+        logger.info("Worker: database connection OK")
+    else:
+        logger.critical("Worker: database connection KO")
+    db.session.remove()
+    db.session.close()
+    db.engine.dispose()
 
 
-if __name__ == "__main__":
+def main():
+    from pcapi.flask_app import app
+
     sentry_sdk.set_tag("pcapi.app_type", "worker")
     listen = sys.argv[1:] or ["default"]
     logger.info("Worker: listening to queues %s", listen)
 
     log_redis_connection_status()
-    log_database_connection_status()
+    with app.app_context():
+        log_database_connection_status()
 
     if settings.IS_DEV is False:
         # pylint: disable=abstract-class-instantiated
@@ -105,3 +106,7 @@ if __name__ == "__main__":
         except redis.ConnectionError:
             logger.warning("Worker connection error. Restarting in 5 seconds")
             time.sleep(5)
+
+
+if __name__ == "__main__":
+    main()
