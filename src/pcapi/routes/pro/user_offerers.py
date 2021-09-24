@@ -2,8 +2,8 @@ from flask import jsonify
 from flask_login import current_user
 from flask_login import login_required
 
-from pcapi.flask_app import private_api
 from pcapi.models.user_offerer import UserOfferer
+from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import USER_OFFERER_INCLUDES

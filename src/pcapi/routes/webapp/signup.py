@@ -12,17 +12,17 @@ from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
-from pcapi.flask_app import private_api
 from pcapi.models import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
+from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.feature import feature_required
 from pcapi.utils.includes import BENEFICIARY_INCLUDES
+from pcapi.validation.routes.users import check_valid_signup_webapp
 
 
 logger = logging.getLogger(__name__)
-from pcapi.validation.routes.users import check_valid_signup_webapp
 
 
 # @debt api-migration

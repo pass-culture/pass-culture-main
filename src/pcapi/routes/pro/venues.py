@@ -8,8 +8,8 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
-from pcapi.flask_app import private_api
 from pcapi.models.feature import FeatureToggle
+from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.venues_serialize import EditVenueBodyModel
 from pcapi.routes.serialization.venues_serialize import GetVenueListResponseModel

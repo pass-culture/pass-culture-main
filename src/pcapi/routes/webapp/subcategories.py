@@ -1,7 +1,7 @@
 from flask_login import login_required
 
 from pcapi.core.categories import subcategories
-from pcapi.flask_app import private_api
+from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 

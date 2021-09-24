@@ -1,7 +1,7 @@
 from flask import jsonify
 from flask.wrappers import Response
 
-from pcapi.flask_app import public_api
+from pcapi.routes.apis import public_api
 
 
 # WARNING: those routes are required for universal links - ie links to the

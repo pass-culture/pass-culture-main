@@ -8,9 +8,9 @@ from flask_login import login_required
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.exceptions import StockDoesNotExist
-from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import get_bookings_for_beneficiary
 from pcapi.models.feature import FeatureToggle
+from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.beneficiary_bookings_serialize import serialize_beneficiary_bookings
 from pcapi.routes.serialization.bookings_serialize import PostBookingBodyModel

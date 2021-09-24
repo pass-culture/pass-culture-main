@@ -7,11 +7,11 @@ from pcapi.core.offers.models import Mediation
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.repository import find_favorite_for_offer_and_user
 from pcapi.core.users.repository import find_favorites_domain_by_beneficiary
-from pcapi.flask_app import private_api
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
 from pcapi.models import Favorite
 from pcapi.models import Offer
 from pcapi.repository import repository
+from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.favorites_serialize import serialize_favorite
 from pcapi.routes.serialization.favorites_serialize import serialize_favorites

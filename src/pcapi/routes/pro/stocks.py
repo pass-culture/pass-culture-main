@@ -6,11 +6,11 @@ from flask_login import login_required
 from pcapi.core.offerers.models import Offerer
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.repository import get_stocks_for_offer
-from pcapi.flask_app import private_api
 from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.models import Venue
 from pcapi.repository import offerer_queries
+from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
 from pcapi.routes.serialization.stock_serialize import StockIdsResponseModel
 from pcapi.routes.serialization.stock_serialize import StockResponseModel

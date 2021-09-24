@@ -1,7 +1,7 @@
 from flask import jsonify
 
-from pcapi.flask_app import private_api
 from pcapi.models.api_errors import ApiErrors
+from pcapi.routes.apis import private_api
 from pcapi.sandboxes.scripts import getters
 
 

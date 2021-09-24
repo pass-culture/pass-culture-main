@@ -1,5 +1,8 @@
 from flask import Flask
 
+from pcapi.routes.apis import private_api
+from pcapi.routes.apis import public_api
+
 
 def install_all_routes(app: Flask) -> None:
     from pcapi.admin.install import install_admin_template_filters
@@ -30,8 +33,6 @@ def install_all_routes(app: Flask) -> None:
 
 
 def install_routes(app: Flask) -> None:
-    from pcapi.flask_app import private_api
-    from pcapi.flask_app import public_api
 
     from . import adage
     from . import adage_iframe

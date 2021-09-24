@@ -4,13 +4,13 @@ from pcapi.core.offerers import api
 from pcapi.core.offerers.exceptions import ValidationTokenNotFoundError
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
-from pcapi.flask_app import private_api
-from pcapi.flask_app import public_api
 from pcapi.models import UserOfferer
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import repository
 from pcapi.repository import user_offerer_queries
 from pcapi.repository import user_queries
+from pcapi.routes.apis import private_api
+from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.mailing import MailServiceException
 from pcapi.validation.routes.validate import check_valid_token_for_user_validation

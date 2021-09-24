@@ -1,7 +1,7 @@
 from flask_login import login_required
 
 from pcapi.core.offerers import repository as offerers_repository
-from pcapi.flask_app import private_api
+from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.venue_labels_serialize import VenueLabelListResponseModel
 from pcapi.routes.serialization.venue_labels_serialize import VenueLabelResponseModel
 from pcapi.serialization.decorator import spectree_serialize

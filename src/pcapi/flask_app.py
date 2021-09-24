@@ -3,14 +3,12 @@ import sys
 import time
 import typing
 
-from flask import Blueprint
 from flask import Flask
 from flask import g
 from flask import request
 from flask.logging import default_handler
 import flask.wrappers
 from flask_admin import Admin
-from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
 from flask_login import current_user
@@ -22,7 +20,6 @@ from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.rq import RqIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
-from spectree import SpecTree
 from sqlalchemy import orm
 from werkzeug.middleware.profiler import ProfilerMiddleware
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -32,8 +29,6 @@ from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.logging import install_logging
 from pcapi.models.db import db
 from pcapi.scripts.install import install_commands
-from pcapi.serialization.spec_tree import ExtendedSpecTree
-from pcapi.serialization.utils import before_handler
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.rate_limiting import rate_limiter
@@ -119,9 +114,6 @@ if not settings.IS_DEV or settings.IS_RUNNING_TESTS:
     # Remove default logger/handler, since we use our own (see pcapi.core.logging)
     app.logger.removeHandler(default_handler)
 
-api = SpecTree("flask", MODE="strict", before=before_handler)
-api.register(app)
-
 login_manager = LoginManager()
 admin = Admin(name="Back Office du Pass Culture", url="/pc/back-office/", template_mode="bootstrap4")
 
@@ -199,24 +191,10 @@ login_manager.init_app(app)
 install_commands(app)
 
 
-public_api = Blueprint("Public API", __name__)
-CORS(public_api, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
-
-private_api = Blueprint("Private API", __name__)
-CORS(
-    private_api,
-    origins=settings.CORS_ALLOWED_ORIGINS,
-    supports_credentials=True,
-)
-
 app.url_map.strict_slashes = False
 
 with app.app_context():
     app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)
-
-
-api = ExtendedSpecTree("flask", MODE="strict", before=before_handler, PATH="/", version=1)
-api.register(public_api)
 
 
 @app.shell_context_processor

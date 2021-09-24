@@ -15,10 +15,10 @@ from pcapi.domain.password import validate_change_password_request
 from pcapi.domain.password import validate_new_password_request
 from pcapi.domain.user_emails import send_reset_password_email_to_pro
 from pcapi.domain.user_emails import send_reset_password_email_to_user
-from pcapi.flask_app import private_api
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
+from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.mailing import MailServiceException

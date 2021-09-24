@@ -3,10 +3,10 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.offerers.models import Offerer
-from pcapi.flask_app import private_api
 from pcapi.models import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
+from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_all_offerers_reimbursement_details
 from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv
 from pcapi.routes.serialization.reimbursement_csv_serialize import legacy_find_all_offerers_reimbursement_details

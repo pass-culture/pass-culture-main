@@ -16,10 +16,10 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
-from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import list_offerers_for_pro_user
 from pcapi.models import ApiErrors
 from pcapi.repository import transaction
+from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
 from pcapi.routes.serialization.offerers_serialize import GenerateOffererApiKeyResponse

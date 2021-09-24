@@ -12,9 +12,9 @@ import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_image
 from pcapi.core.offers.validation import get_distant_image
-from pcapi.flask_app import private_api
 from pcapi.models import Offer
 from pcapi.repository.offer_queries import get_offer_by_id
+from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel

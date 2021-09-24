@@ -7,8 +7,8 @@ from flask_login import logout_user
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import TokenType
-from pcapi.flask_app import private_api
 from pcapi.models.api_errors import ApiErrors
+from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.users import LoginUserBodyModel
 from pcapi.routes.serialization.users import SharedLoginUserResponseModel

@@ -2,7 +2,7 @@ from flask import jsonify
 from flask_login import login_required
 
 from pcapi.domain.types import get_formatted_active_product_types
-from pcapi.flask_app import private_api
+from pcapi.routes.apis import private_api
 
 
 # @debt api-migration

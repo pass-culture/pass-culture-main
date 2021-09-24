@@ -14,11 +14,11 @@ from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
-from pcapi.flask_app import private_api
-from pcapi.flask_app import public_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.routes.apis import private_api
+from pcapi.routes.apis import public_api
 from pcapi.routes.serialization import beneficiaries as serialization_beneficiaries
 from pcapi.routes.serialization.beneficiaries import BeneficiaryAccountResponse
 from pcapi.routes.serialization.beneficiaries import ChangeBeneficiaryEmailBody

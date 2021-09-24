@@ -1,6 +1,6 @@
 from flask import request
 
-from pcapi.flask_app import public_api
+from pcapi.routes.apis import public_api
 from pcapi.validation.routes.bank_informations import check_demarches_simplifiees_webhook_payload
 from pcapi.validation.routes.bank_informations import check_demarches_simplifiees_webhook_token
 from pcapi.workers.bank_information_job import bank_information_job

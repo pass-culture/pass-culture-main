@@ -3,11 +3,10 @@ import ipaddress
 from flask import request
 
 from pcapi import settings
-from pcapi.flask_app import api
-from pcapi.flask_app import public_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
+from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
 
 
@@ -48,10 +47,7 @@ SENDINBLUE_IP_RANGE = [
 
 
 @public_api.route("/webhooks/sendinblue/unsubscribe", methods=["POST"])
-@spectree_serialize(
-    on_success_status=204,
-    api=api,
-)  # type: ignore
+@spectree_serialize(on_success_status=204)  # type: ignore
 def unsubscribe_user():
     source_ip = ipaddress.IPv4Address(request.headers.get("X-Forwarded-For", "0.0.0.0"))
     if source_ip not in SENDINBLUE_IP_RANGE and settings.IS_DEV is False:

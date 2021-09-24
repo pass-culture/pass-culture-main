@@ -8,10 +8,10 @@ import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.core.bookings.validation as bookings_validation
-from pcapi.flask_app import private_api
-from pcapi.flask_app import public_api
 from pcapi.models import EventType
 from pcapi.models.offer_type import ProductType
+from pcapi.routes.apis import private_api
+from pcapi.routes.apis import public_api
 from pcapi.routes.serialization import serialize
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResponseModel

@@ -12,8 +12,8 @@ from pydantic import BaseModel
 from spectree.spec import SpecTree
 from werkzeug.exceptions import BadRequest
 
-from pcapi.flask_app import api as default_api
 from pcapi.models import ApiErrors
+from pcapi.routes.apis import api as default_api
 
 from .spec_tree import ExtendedResponse as SpectreeResponse
 

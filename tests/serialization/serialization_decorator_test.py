@@ -5,7 +5,6 @@ from unittest.mock import patch
 from flask.blueprints import Blueprint
 from pydantic import BaseModel
 
-from pcapi.flask_app import api
 from pcapi.serialization.decorator import spectree_serialize
 
 
@@ -76,7 +75,7 @@ class SerializationDecoratorTest:
         # Then
         assert response.status_code == 206
 
-    @patch.object(api, "validate")
+    @patch("pcapi.routes.apis.api.validate")
     def should_call_validation_with_the_right_params(self, mocked_validate):
         # Given
         @spectree_serialize(response_model=TestResponseModel, on_success_status=206)

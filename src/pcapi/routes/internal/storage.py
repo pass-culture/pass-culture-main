@@ -4,7 +4,7 @@ import os.path
 from flask import send_file
 
 from pcapi.core.object_storage.backends.local import LocalBackend
-from pcapi.flask_app import public_api
+from pcapi.routes.apis import public_api
 
 
 print("LOCAL DEV MODE: Using disk based object storage")
