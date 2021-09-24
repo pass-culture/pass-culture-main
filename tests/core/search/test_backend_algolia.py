@@ -23,7 +23,7 @@ def test_enqueue_offer_ids(app):
     backend.enqueue_offer_ids([1])
     backend.enqueue_offer_ids({2, 3})
     backend.enqueue_offer_ids([])
-    assert set(app.redis_client.lrange("offer_ids", 0, 5)) == {b"1", b"2", b"3"}
+    assert set(app.redis_client.lrange("offer_ids", 0, 5)) == {"1", "2", "3"}
 
 
 def test_enqueue_offer_ids_in_error(app):
@@ -31,7 +31,7 @@ def test_enqueue_offer_ids_in_error(app):
     backend.enqueue_offer_ids_in_error([1])
     backend.enqueue_offer_ids_in_error({2, 3})
     backend.enqueue_offer_ids_in_error([])
-    assert set(app.redis_client.lrange("offer_ids_in_error", 0, 5)) == {b"1", b"2", b"3"}
+    assert set(app.redis_client.lrange("offer_ids_in_error", 0, 5)) == {"1", "2", "3"}
 
 
 def test_enqueue_venue_ids_for_offers(app):
@@ -39,7 +39,7 @@ def test_enqueue_venue_ids_for_offers(app):
     backend.enqueue_venue_ids_for_offers([1])
     backend.enqueue_venue_ids_for_offers({2, 3})
     backend.enqueue_venue_ids_for_offers([])
-    assert set(app.redis_client.lrange("venue_ids_for_offers", 0, 5)) == {b"1", b"2", b"3"}
+    assert set(app.redis_client.lrange("venue_ids_for_offers", 0, 5)) == {"1", "2", "3"}
 
 
 def test_pop_offer_ids_from_queue(app):
@@ -97,7 +97,7 @@ def test_delete_venue_ids_for_offers_from_queue(app):
     app.redis_client.lpush("venue_ids_for_offers", 1, 2, 3)
 
     backend.delete_venue_ids_for_offers_from_queue({1, 2})
-    assert set(app.redis_client.lrange("venue_ids_for_offers", 0, 5)) == {b"3"}
+    assert set(app.redis_client.lrange("venue_ids_for_offers", 0, 5)) == {"3"}
 
 
 def test_count_offers_to_index_from_queue(app):

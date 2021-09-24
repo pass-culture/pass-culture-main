@@ -25,7 +25,7 @@ def test_enqueue_offer_ids(app):
     backend.enqueue_offer_ids([])
 
     in_queue = app.redis_client.smembers("search:appsearch:offer-ids-to-index")
-    assert in_queue == {b"1", b"2", b"3"}
+    assert in_queue == {"1", "2", "3"}
 
 
 def test_enqueue_offer_ids_in_error(app):
@@ -35,7 +35,7 @@ def test_enqueue_offer_ids_in_error(app):
     backend.enqueue_offer_ids_in_error([])
 
     in_queue = app.redis_client.smembers("search:appsearch:offer-ids-in-error-to-index")
-    assert in_queue == {b"1", b"2", b"3"}
+    assert in_queue == {"1", "2", "3"}
 
 
 def test_enqueue_venue_ids_for_offers(app):
@@ -45,7 +45,7 @@ def test_enqueue_venue_ids_for_offers(app):
     backend.enqueue_venue_ids_for_offers([])
 
     in_queue = app.redis_client.smembers("search:appsearch:venue-ids-for-offers-to-index")
-    assert in_queue == {b"1", b"2", b"3"}
+    assert in_queue == {"1", "2", "3"}
 
 
 def test_pop_offer_ids_from_queue(app):
@@ -99,7 +99,7 @@ def test_get_venue_ids_for_offers_from_queue(app):
     # Make sure we did not pop values off the list.
     in_queue = app.redis_client.smembers("search:appsearch:venue-ids-for-offers-to-index")
     assert len(in_queue) == 1
-    assert in_queue <= {b"1", b"2", b"3"}
+    assert in_queue <= {"1", "2", "3"}
 
 
 def test_delete_venue_ids_for_offers_from_queue(app):
@@ -108,7 +108,7 @@ def test_delete_venue_ids_for_offers_from_queue(app):
 
     backend.delete_venue_ids_for_offers_from_queue({1, 2})
     in_queue = app.redis_client.smembers("search:appsearch:venue-ids-for-offers-to-index")
-    assert in_queue == {b"3"}
+    assert in_queue == {"3"}
 
 
 def test_count_offers_to_index_from_queue(app):

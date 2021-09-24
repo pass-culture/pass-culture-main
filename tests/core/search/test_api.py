@@ -25,12 +25,12 @@ def fail(*args, **kwargs):
 
 def test_async_index_offer_ids(app):
     search.async_index_offer_ids({1, 2})
-    assert app.redis_client.smembers("search:appsearch:offer-ids-to-index") == {b"1", b"2"}
+    assert app.redis_client.smembers("search:appsearch:offer-ids-to-index") == {"1", "2"}
 
 
 def test_async_index_offers_of_venue_ids(app):
     search.async_index_offers_of_venue_ids({1, 2})
-    assert app.redis_client.smembers("search:appsearch:venue-ids-for-offers-to-index") == {b"1", b"2"}
+    assert app.redis_client.smembers("search:appsearch:venue-ids-for-offers-to-index") == {"1", "2"}
 
 
 def test_async_index_venue_ids(app):
@@ -104,7 +104,7 @@ class ReindexOfferIdsTest:
         with override_settings(IS_RUNNING_TESTS=False):  # as on prod: don't catch errors
             search.reindex_offer_ids([offer.id])
         assert offer.id not in search_testing.search_store["offers"]
-        assert app.redis_client.smembers("search:appsearch:offer-ids-in-error-to-index") == {str(offer.id).encode()}
+        assert app.redis_client.smembers("search:appsearch:offer-ids-in-error-to-index") == {str(offer.id)}
 
     @mock.patch("pcapi.core.search.backends.testing.FakeClient.delete_documents", fail)
     def test_handle_unindexation_error(self, app):
@@ -113,7 +113,7 @@ class ReindexOfferIdsTest:
         with override_settings(IS_RUNNING_TESTS=False):  # as on prod: don't catch errors
             search.reindex_offer_ids([offer.id])
         assert offer.id in search_testing.search_store["offers"]
-        assert app.redis_client.smembers("search:appsearch:offer-ids-in-error-to-index") == {str(offer.id).encode()}
+        assert app.redis_client.smembers("search:appsearch:offer-ids-in-error-to-index") == {str(offer.id)}
 
 
 @override_settings(REDIS_OFFER_IDS_CHUNK_SIZE=3)
