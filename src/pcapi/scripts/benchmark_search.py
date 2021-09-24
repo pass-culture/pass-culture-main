@@ -244,6 +244,15 @@ class AppSearchBackend:
         }
         if filters:
             query["filters"] = {"all": [{key: value} for key, value in filters.items()]}
+        if "position" in criteria:
+            query["boosts"] = {
+                "venue_position": {
+                    "type": "proximity",
+                    "function": "exponential",
+                    "center": criteria["position"],
+                    "factor": 10,
+                }
+            }
         try:
             response = requests.get(self.url, headers=self.headers, json=query, timeout=30)
             out = response.json()
