@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
@@ -16,9 +16,11 @@ import {
   DEFAULT_FORM_VALUES,
   EDITED_OFFER_READ_ONLY_FIELDS,
 } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
+import { getDisabilityComplianceValues } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/AccessibilityCheckboxList'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 
 import OfferForm from './OfferForm'
+
 
 const computeNoDisabilityComplianceValue = offer => {
   const disabilityCompliantValues = [
@@ -30,8 +32,7 @@ const computeNoDisabilityComplianceValue = offer => {
 
   const unknownDisabilityCompliance = disabilityCompliantValues.includes(null)
   const hasDisabilityCompliance = disabilityCompliantValues.includes(true)
-
-  if (unknownDisabilityCompliance || hasDisabilityCompliance) {
+  if (hasDisabilityCompliance || unknownDisabilityCompliance) {
     return false
   }
 
@@ -61,7 +62,7 @@ const OfferEdition = ({
 
   useEffect(() => {
     const computeInitialValues = offer => {
-      const initialValues = Object.keys(DEFAULT_FORM_VALUES).reduce((acc, field) => {
+      let initialValues = Object.keys(DEFAULT_FORM_VALUES).reduce((acc, field) => {
         if (field in offer && offer[field] !== null) {
           return { ...acc, [field]: offer[field] }
         } else if (offer.extraData && field in offer.extraData) {
@@ -69,6 +70,15 @@ const OfferEdition = ({
         }
         return { ...acc, [field]: DEFAULT_FORM_VALUES[field] }
       }, {})
+      
+      const offerAccessibility = getDisabilityComplianceValues(offer)
+      const venueAccessibility = getDisabilityComplianceValues(offer.venue)
+      if (
+        Object.values(offerAccessibility).includes(null) 
+        && !Object.values(venueAccessibility).includes(null)
+      ) {
+        initialValues = { ...initialValues, ...venueAccessibility }
+      }
 
       initialValues.categoryId = subCategories.find(
         subCategory => subCategory.id === offer.subcategoryId

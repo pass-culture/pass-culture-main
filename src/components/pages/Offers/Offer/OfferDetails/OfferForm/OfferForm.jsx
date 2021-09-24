@@ -130,6 +130,7 @@ const OfferForm = ({
 
   const offererOptions = buildSelectOptions('id', 'name', offerersNames)
 
+
   useEffect(() => {
     if (isIsbnRequiredInLivreEditionEnabled) {
       mandatoryFields.push('isbn')
@@ -278,27 +279,15 @@ const OfferForm = ({
 
   useEffect(
     function setVenueValues() {
+      if (venue === null) return
+
       let venueValues = {}
-      if (venue?.withdrawalDetails) {
+      if (venue.withdrawalDetails && formValues.withdrawalDetails === DEFAULT_FORM_VALUES['withdrawalDetails']) {
         venueValues.withdrawalDetails = venue?.withdrawalDetails
       }
-
-      const venueAccessibilities = [
-        venue?.audioDisabilityCompliant,
-        venue?.mentalDisabilityCompliant,
-        venue?.motorDisabilityCompliant,
-        venue?.visualDisabilityCompliant,
-      ].map((val) => val === undefined ? null : val)
-      if (!venueAccessibilities.includes(null)) {
-        venueValues.audioDisabilityCompliant = venue.audioDisabilityCompliant
-        venueValues.mentalDisabilityCompliant = venue.mentalDisabilityCompliant
-        venueValues.motorDisabilityCompliant = venue.motorDisabilityCompliant
-        venueValues.visualDisabilityCompliant = venue.visualDisabilityCompliant
-      }
-
       handleFormUpdate(venueValues)
     },
-    [venue, handleFormUpdate]
+    [formValues, initialValues, venue, handleFormUpdate]
   )
 
   useEffect(() => {
@@ -360,7 +349,6 @@ const OfferForm = ({
   const submitForm = useCallback(
     event => {
       event.preventDefault()
-
       if (isValid()) {
         const editableFields = offerFormFields.filter(field => !readOnlyFields.includes(field))
 
@@ -408,10 +396,36 @@ const OfferForm = ({
     ]
   )
 
+  const handleChangeVenue = useCallback(
+    event => {
+      let updatedValues = {
+        venueId: event.target.value
+      }
+      const venue = venues.find(venue => venue.id === updatedValues.venueId)
+      if (venue) {
+        const venueAccessibilities = {
+          audioDisabilityCompliant: venue.audioDisabilityCompliant,
+          mentalDisabilityCompliant: venue.mentalDisabilityCompliant,
+          motorDisabilityCompliant: venue.motorDisabilityCompliant,
+          visualDisabilityCompliant: venue.visualDisabilityCompliant,
+        }
+        const haveUnsetAccessibility = Object.values(venueAccessibilities).includes(null || undefined)
+        updatedValues = {
+          ...updatedValues,
+          ...Object.keys(venueAccessibilities).reduce((acc, field) => ({ ...acc, [field]: !!venueAccessibilities[field] }), {}),
+          noDisabilityCompliant: haveUnsetAccessibility ? false : !Object.values(venueAccessibilities).includes(true),
+        }
+      }
+      handleFormUpdate(updatedValues)
+    },
+    [handleFormUpdate, venues]
+  )
+
   const handleSingleFormUpdate = useCallback(
     event => {
       const field = event.target.name
       const value = event.target.type === 'checkbox' ? !formValues[field] : event.target.value
+
       handleFormUpdate({ [field]: value })
     },
     [formValues, handleFormUpdate]
@@ -716,7 +730,7 @@ const OfferForm = ({
                     id: DEFAULT_FORM_VALUES.venueId,
                   }}
                   error={getErrorMessage('venueId')}
-                  handleSelection={handleSingleFormUpdate}
+                  handleSelection={handleChangeVenue}
                   isDisabled={readOnlyFields.includes('venueId')}
                   label="Lieu"
                   name="venueId"

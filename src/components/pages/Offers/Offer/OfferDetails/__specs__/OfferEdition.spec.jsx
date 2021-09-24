@@ -250,7 +250,6 @@ describe('offerDetails - Edition', () => {
             'mentalDisabilityCompliant',
             'motorDisabilityCompliant',
             'visualDisabilityCompliant',
-            'visualDisabilityCompliant',
           ]
 
           uncheckedDisabilityFields.forEach(label => {
@@ -259,7 +258,7 @@ describe('offerDetails - Edition', () => {
             })
             expect(input).toBeChecked()
           })
-
+  
           const noDisabilityCompliantCheckBox = screen.getByLabelText(
             fieldLabels.noDisabilityCompliant.label,
             {
@@ -1309,6 +1308,10 @@ describe('offerDetails - Edition', () => {
         venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
+        audioDisabilityCompliant: false,
+        visualDisabilityCompliant: true,
+        motorDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
         extraData: {
           stageDirector: 'Mr Stage Director',
         },
@@ -1506,6 +1509,10 @@ describe('offerDetails - Edition', () => {
         venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
+        audioDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
+        motorDisabilityCompliant: false,
+        visualDisabilityCompliant: false,
         extraData: {
           isbn: '1234567890123',
         },
@@ -1618,6 +1625,151 @@ describe('offerDetails - Edition', () => {
       const cancelLink = screen.getByRole('link', { name: 'Annuler et quitter' })
       expect(cancelLink).toBeInTheDocument()
       expect(cancelLink).toHaveAttribute('href', '/offres')
+    })
+  })
+
+  describe('accessibility fields', () => {
+    let accessibilityCheckboxes
+    
+    beforeEach(async () => {
+      editedOfferVenue = {
+        id: 'AB',
+        isVirtual: false,
+        managingOfferer: venueManagingOfferer,
+        managingOffererId: venueManagingOfferer.id,
+        name: 'Le lieu',
+        offererName: 'La structure',
+        bookingEmail: 'venue@example.com',
+        withdrawalDetails: null,
+        audioDisabilityCompliant: null,
+        mentalDisabilityCompliant: null,
+        motorDisabilityCompliant: null,
+        visualDisabilityCompliant: null,
+        noDisabilityCompliant: null,
+      }
+
+      editedOffer = {
+        id: 'ABC12',
+        subcategoryId: 'ID',
+        name: 'My edited offer',
+        description: 'Offer description',
+        venueId: editedOfferVenue.id,
+        venue: editedOfferVenue,
+        withdrawalDetails: 'Offer withdrawal details',
+        bookingEmail: null,
+        status: 'ACTIVE',
+        audioDisabilityCompliant: null,
+        mentalDisabilityCompliant: null,
+        motorDisabilityCompliant: null,
+        visualDisabilityCompliant: null,
+        noDisabilityCompliant: null,
+      }
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+    })
+
+    describe('with a offer that dont have accessibility set', () => {
+      beforeEach(async () => {
+        pcapi.loadOffer.mockResolvedValue(editedOffer)
+        await renderOffers(props, store)
+
+        accessibilityCheckboxes = {
+          audioDisabilityCompliant: await getOfferInputForField('audioDisabilityCompliant'),
+          mentalDisabilityCompliant: await getOfferInputForField('mentalDisabilityCompliant'),
+          motorDisabilityCompliant: await getOfferInputForField('motorDisabilityCompliant'),
+          visualDisabilityCompliant: await getOfferInputForField('visualDisabilityCompliant'),
+          noDisabilityCompliant: await getOfferInputForField('noDisabilityCompliant'),
+        }
+      })
+
+      it('should initializ with all checkboxes unchecked', async () => {
+        expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
+      })
+
+      it('onclick, the checkbox should be checked without any other change', async () => {
+        await fireEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
+        expect(accessibilityCheckboxes.audioDisabilityCompliant).toBeChecked()
+        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
+      })  
+
+      it('noDisabilityCompliant, should be auto-checked', async () => {
+        await fireEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
+        expect(accessibilityCheckboxes.audioDisabilityCompliant).toBeChecked()
+        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
+
+        await fireEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
+        expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.noDisabilityCompliant).toBeChecked()
+
+        // click on checked noDisabilityCompliant should not change anything
+        await fireEvent.click(accessibilityCheckboxes.noDisabilityCompliant)
+        expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.noDisabilityCompliant).toBeChecked()
+      })
+
+      it('onclick on noDisabilityCompliant, should uncheck other checkboxes', async () => {
+        // again, one accessibility true, other falses
+        await fireEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
+        expect(accessibilityCheckboxes.audioDisabilityCompliant).toBeChecked()
+        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
+  
+        // click on noDisabilityCompliant should change other accessibility to false
+        await fireEvent.click(accessibilityCheckboxes.noDisabilityCompliant)
+        expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.noDisabilityCompliant).toBeChecked()
+      })
+    })
+
+    describe('with a offer that dont have accessibility set but it venue does', () => {
+      let venueAccessibilities = {
+        audioDisabilityCompliant: true,
+        mentalDisabilityCompliant: false,
+        motorDisabilityCompliant: true,
+        visualDisabilityCompliant: true,
+      }
+
+      beforeEach(async () => {
+        editedOffer.venue = { ...editedOffer.venue, ...venueAccessibilities }
+        pcapi.loadOffer.mockResolvedValue(editedOffer)
+        await renderOffers(props, store)
+
+        accessibilityCheckboxes = {
+          audioDisabilityCompliant: await getOfferInputForField('audioDisabilityCompliant'),
+          mentalDisabilityCompliant: await getOfferInputForField('mentalDisabilityCompliant'),
+          motorDisabilityCompliant: await getOfferInputForField('motorDisabilityCompliant'),
+          visualDisabilityCompliant: await getOfferInputForField('visualDisabilityCompliant'),
+          noDisabilityCompliant: await getOfferInputForField('noDisabilityCompliant'),
+        }
+      })
+
+      it('should initialize with venueAccessibility', async () => {
+        expect(accessibilityCheckboxes.audioDisabilityCompliant).toBeChecked()
+        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
+        expect(accessibilityCheckboxes.motorDisabilityCompliant).toBeChecked()
+        expect(accessibilityCheckboxes.visualDisabilityCompliant).toBeChecked()
+        expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
+      })
     })
   })
 })
