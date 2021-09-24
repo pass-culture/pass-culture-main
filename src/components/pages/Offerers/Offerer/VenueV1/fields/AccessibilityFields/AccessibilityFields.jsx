@@ -80,7 +80,12 @@ const AccessibilityFields = ({ formValues, readOnly, venue }) => {
     <div className="section bank-information vp-content-section">
       <div className="main-list-title title-actions-container">
         <h2 className="main-list-title-text">
-          Accessibilités
+          Accessibilité
+          {!readOnly && (
+            <span className="field-asterisk">
+              *
+            </span>
+          )}
         </h2>
       </div>
       <p className="bi-subtitle">
@@ -90,9 +95,6 @@ const AccessibilityFields = ({ formValues, readOnly, venue }) => {
 
       <p className="bi-subtitle">
         Ce lieu est accessible aux publics en situation de handicaps :
-        <span className="field-asterisk">
-          *
-        </span>
       </p>
       <div>
         <CheckboxField
