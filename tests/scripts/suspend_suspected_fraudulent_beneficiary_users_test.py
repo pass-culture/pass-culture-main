@@ -7,6 +7,7 @@ from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import UserFactory
 from pcapi.scripts.suspend_fraudulent_beneficiary_users import suspend_fraudulent_beneficiary_users_by_email_providers
+from pcapi.scripts.suspend_fraudulent_beneficiary_users import suspend_fraudulent_beneficiary_users_by_ids
 
 
 class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
@@ -108,3 +109,44 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
 
         # Then
         assert non_fraudulent_user.isActive
+
+
+class SuspendFraudulentBeneficiaryUsersByIdsTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_suspend_users_by_ids_in_given_user_ids_list(self):
+        fraudulent_user_ids = [23]
+        admin_user = AdminFactory()
+        fraudulent_user = BeneficiaryGrant18Factory(id=23)
+        fraudulent_user_booking_1 = BookingFactory(user=fraudulent_user, stock__price=1)
+        fraudulent_user_booking_2 = BookingFactory(user=fraudulent_user, stock__price=2)
+
+        suspend_fraudulent_beneficiary_users_by_ids(fraudulent_user_ids, admin_user.email, dry_run=False)
+
+        assert not fraudulent_user.isActive
+        assert fraudulent_user_booking_1.isCancelled
+        assert fraudulent_user_booking_1.status is BookingStatus.CANCELLED
+        assert fraudulent_user_booking_2.isCancelled
+        assert fraudulent_user_booking_2.status is BookingStatus.CANCELLED
+
+    @pytest.mark.usefixtures("db_session")
+    def test_suspend_users_by_ids_does_not_cancel_bookings_when_not_cancellable(self):
+        fraudulent_user_ids = [15]
+        admin_user = AdminFactory()
+        fraudulent_user = BeneficiaryGrant18Factory(id=15)
+        uncancellable_booking = UsedBookingFactory(user=fraudulent_user, stock__price=1)
+
+        suspend_fraudulent_beneficiary_users_by_ids(fraudulent_user_ids, admin_user.email, dry_run=False)
+
+        assert not fraudulent_user.isActive
+        assert not uncancellable_booking.isCancelled
+        assert uncancellable_booking.status is not BookingStatus.CANCELLED
+
+    @pytest.mark.usefixtures("db_session")
+    def test_dont_suspend_users_not_in_given_user_ids_list(self):
+        fraudulent_user_ids = [16]
+        admin_user = AdminFactory()
+        beneficiary = BeneficiaryGrant18Factory(id=15)
+
+        suspend_fraudulent_beneficiary_users_by_ids(fraudulent_user_ids, admin_user.email, dry_run=False)
+
+        assert beneficiary.isActive

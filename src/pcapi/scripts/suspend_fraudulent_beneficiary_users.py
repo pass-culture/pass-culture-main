@@ -19,10 +19,32 @@ def suspend_fraudulent_beneficiary_users_by_email_providers(
 
     for email_provider in fraudulent_email_providers:
         fraudulent_users.extend(find_beneficiary_users_by_email_provider(email_provider))
+
+    return suspend_fraudulent_beneficiary_users(fraudulent_users, admin_user, dry_run)
+
+
+def suspend_fraudulent_beneficiary_users_by_ids(
+    fraudulent_user_ids: list[int], admin_user_email: str, dry_run: bool = True
+) -> dict:
+    fraudulent_users = []
+    admin_user = find_user_by_email(admin_user_email)
+
+    for user_id in fraudulent_user_ids:
+        user = User.query.filter_by(id=user_id).one_or_none()
+        if user:
+            fraudulent_users.append(user)
+
+    return suspend_fraudulent_beneficiary_users(fraudulent_users, admin_user, dry_run)
+
+
+def suspend_fraudulent_beneficiary_users(fraudulent_users: list[User], admin_user: User, dry_run: bool = True) -> dict:
     offers = find_offers_booked_by_beneficiaries(fraudulent_users)
 
     if not dry_run:
-        n_bookings = _suspend_fraudulent_beneficiary_users(fraudulent_users, admin_user)
+        n_bookings = 0
+        for fraudulent_user in fraudulent_users:
+            result = suspend_account(fraudulent_user, SuspensionReason.FRAUD, admin_user)
+            n_bookings += result["cancelled_bookings"]
         logger.info(
             "Fraudulent beneficiaries accounts suspended",
             extra={
@@ -42,11 +64,3 @@ def suspend_fraudulent_beneficiary_users_by_email_providers(
         print(f"Suspended users booked following distinct offers {[offer.id for offer in offers]}")
 
     return {"fraudulent_users": fraudulent_users, "nb_cancelled_bookings": n_bookings}
-
-
-def _suspend_fraudulent_beneficiary_users(fraudulent_users: list[User], admin_user: User) -> int:
-    n_bookings = 0
-    for fraudulent_user in fraudulent_users:
-        result = suspend_account(fraudulent_user, SuspensionReason.FRAUD, admin_user)
-        n_bookings += result["cancelled_bookings"]
-    return n_bookings
