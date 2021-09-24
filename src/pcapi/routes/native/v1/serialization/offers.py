@@ -298,7 +298,7 @@ class SubcategoryResponseModel(BaseModel):
 
 
 class SearchGroupResponseModel(BaseModel):
-    name: str
+    name: subcategories.SearchGroupNameEnum
     value: Optional[str]
 
     class Config:
@@ -308,7 +308,7 @@ class SearchGroupResponseModel(BaseModel):
 
 
 class HomepageLabelResponseModel(BaseModel):
-    name: str
+    name: HomepageLabelNameEnum
     value: Optional[str]
 
     class Config:
