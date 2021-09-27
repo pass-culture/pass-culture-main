@@ -205,9 +205,9 @@ workers:
     enabled: true
     replicaCount: 1
     command:
-      - python
+      - flask
     args:
-      - src/pcapi/workers/worker.py
+      - worker
     resources:
       limits:
         cpu: 500m
@@ -219,9 +219,9 @@ workers:
     enabled: true
     replicaCount: 1
     command:
-      - python
+      - flask
     args:
-      - src/pcapi/workers/worker.py
+      - worker
       - low
     resources:
       limits:
@@ -234,9 +234,9 @@ workers:
     enabled: true
     replicaCount: 1
     command:
-      - python
+      - flask
     args:
-      - src/pcapi/workers/worker.py
+      - worker
       - id_check
     resources:
       limits:

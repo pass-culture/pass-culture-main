@@ -1,9 +1,10 @@
 import logging
-import sys
 import time
 from typing import Any
 from typing import Type
 
+import click
+from flask import Blueprint
 import redis
 from rq import Connection
 from rq import Queue
@@ -14,18 +15,14 @@ from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.rq import RqIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
-# FIXME (cgaunet, 2021-01-13): this is to prevent Booking circular import when importing user in read_version_from_file
-from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
-from pcapi.core.logging import install_logging
 from pcapi.models.db import db
 from pcapi.utils.health_checker import check_database_connection
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.workers.logger import job_extra_description
 
 
-install_logging()
-
+blueprint = Blueprint(__name__, __name__)
 conn = redis.from_url(settings.REDIS_URL)
 
 default_queue = Queue("default", connection=conn, is_async=(not settings.IS_RUNNING_TESTS))
@@ -67,12 +64,14 @@ def log_database_connection_status() -> None:
     db.engine.dispose()
 
 
-def main():
-    from pcapi.flask_app import app
+@blueprint.cli.command("worker")
+@click.argument("queues", nargs=-1)
+def run_worker(queues=None):
+    from flask import current_app as app
 
     sentry_sdk.set_tag("pcapi.app_type", "worker")
-    listen = sys.argv[1:] or ["default"]
-    logger.info("Worker: listening to queues %s", listen)
+    queues = queues or ["default"]
+    logger.info("Worker: listening to queues %s", queues)
 
     log_redis_connection_status()
     with app.app_context():
@@ -100,13 +99,9 @@ def main():
                 db.session.close()
                 db.engine.dispose()
             with Connection(conn):
-                worker = Worker(list(map(Queue, listen)), exception_handlers=[log_worker_error])
+                worker = Worker(list(map(Queue, queues)), exception_handlers=[log_worker_error])
                 worker.work()
 
         except redis.ConnectionError:
             logger.warning("Worker connection error. Restarting in 5 seconds")
             time.sleep(5)
-
-
-if __name__ == "__main__":
-    main()

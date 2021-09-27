@@ -15,6 +15,7 @@ def install_commands(app):
         "pcapi.scripts.provider.check_provider_api",
         "pcapi.scripts.sandbox",
         "pcapi.scripts.update_providables",
+        "pcapi.workers.worker",
     )
 
     for path in module_paths:
