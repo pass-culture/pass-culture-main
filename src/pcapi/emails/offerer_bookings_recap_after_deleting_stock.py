@@ -35,8 +35,6 @@ def retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookin
 
 def _extract_users_information_from_bookings_list(bookings: list[Booking]) -> list[dict]:
     users_keys = ("firstName", "lastName", "email", "countermark")
-    users_properties = [
-        [booking.user.firstName, booking.user.lastName, booking.user.email, booking.token] for booking in bookings
-    ]
+    users_properties = [[booking.firstName, booking.lastName, booking.email, booking.token] for booking in bookings]
 
     return [dict(zip(users_keys, user_property)) for user_property in users_properties]

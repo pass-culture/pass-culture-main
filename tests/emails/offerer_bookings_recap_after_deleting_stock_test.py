@@ -1,19 +1,17 @@
 from datetime import datetime
 from unittest.mock import patch
 
+import pytest
+
+from pcapi.core.bookings import factories as booking_factories
+from pcapi.core.offers import factories as offer_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation,
 )
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
-from pcapi.model_creators.specific_creators import create_stock_from_offer
 
 
+@pytest.mark.usefixtures("db_session")
 class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
     @patch(
         "pcapi.emails.offerer_bookings_recap_after_deleting_stock.build_pc_pro_offer_link",
@@ -21,14 +19,22 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
     )
     def test_should_return_mailjet_data_with_correct_information_when_offer_is_an_event(self, build_pc_pro_offer_link):
         # Given
-        beneficiary = users_factories.BeneficiaryGrant18Factory.build(
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
             publicName="John Doe", firstName="John", lastName="Doe", email="john@example.com"
         )
-        offerer = create_offerer()
-        venue = create_venue(offerer, name="Venue name")
-        offer = create_offer_with_event_product(venue, event_name="My Event")
-        stock = create_stock_from_offer(offer, price=12.52, beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
-        booking = create_booking(beneficiary, stock=stock, venue=venue, quantity=2, token="12345")
+        offer = offer_factories.EventOfferFactory(
+            venue__name="Venue name",
+            product__name="My Event",
+        )
+        booking = booking_factories.IndividualBookingFactory(
+            user=beneficiary,
+            individualBooking__user=beneficiary,
+            stock__offer=offer,
+            stock__beginningDatetime=datetime(2019, 10, 9, 10, 20, 00),
+            stock__price=12.52,
+            quantity=2,
+            token="12345",
+        )
         bookings = [booking]
 
         # When
@@ -60,20 +66,34 @@ class RetrieveOffererBookingsRecapEmailDataAfterOffererCancellationTest:
     )
     def test_should_return_mailjet_data_when_multiple_bookings_and_offer_is_a_thing(self, build_pc_pro_offer_link):
         # Given
-        beneficiary = users_factories.BeneficiaryGrant18Factory.build(
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
             publicName="John Doe", firstName="John", lastName="Doe", email="john@example.com"
         )
-        offerer = create_offerer()
-        venue = create_venue(offerer, name="La petite librairie", public_name="La grande librairie")
-        thing_product = create_product_with_thing_subcategory(thing_name="Le récit de voyage")
-        offer = create_offer_with_thing_product(venue=venue, product=thing_product)
-        stock = create_stock_from_offer(offer, price=0)
-        booking = create_booking(user=beneficiary, stock=stock, token="12346", quantity=6)
+        offer = offer_factories.ThingOfferFactory(
+            venue__name="La petite librairie",
+            venue__publicName="La grande librairie",
+            product__name="Le récit de voyage",
+        )
+        booking = booking_factories.IndividualBookingFactory(
+            user=beneficiary,
+            individualBooking__user=beneficiary,
+            stock__offer=offer,
+            stock__price=0,
+            token="12346",
+            quantity=6,
+        )
 
-        other_beneficiary = users_factories.BeneficiaryGrant18Factory.build(
+        other_beneficiary = users_factories.BeneficiaryGrant18Factory(
             publicName="James Bond", firstName="James", lastName="Bond", email="bond@example.com"
         )
-        booking2 = create_booking(user=other_beneficiary, stock=stock, token="12345")
+        booking2 = booking_factories.IndividualBookingFactory(
+            user=other_beneficiary,
+            individualBooking__user=other_beneficiary,
+            stock__offer=offer,
+            stock__price=0,
+            token="12345",
+            quantity=1,
+        )
         bookings = [booking, booking2]
 
         # When
