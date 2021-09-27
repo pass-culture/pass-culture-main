@@ -212,6 +212,7 @@ class Returns200Test:
             "url": None,
             "venue": {
                 "address": "1 boulevard Poissonnière",
+                "bookingEmail": "test@test.com",
                 "city": "Paris",
                 "comment": None,
                 "dateCreated": "2020-10-15T00:00:00Z",

@@ -396,6 +396,7 @@ class GetOfferManagingOffererResponseModel(BaseModel):
 
 class GetOfferVenueResponseModel(BaseModel):
     address: Optional[str]
+    bookingEmail: Optional[str]
     city: Optional[str]
     comment: Optional[str]
     dateCreated: Optional[datetime]
