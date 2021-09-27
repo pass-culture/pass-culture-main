@@ -23,10 +23,7 @@ def retrieve_data_to_warn_user_after_pro_booking_cancellation(booking: Booking) 
     offerer_name = offer.venue.managingOfferer.name
     offer_name = offer.name
     offer_price = str(booking.total_amount)
-    if booking.individualBooking is not None:
-        user_first_name = booking.individualBooking.user.firstName
-    if booking.educationalBooking is not None:
-        user_first_name = booking.educationalBooking.educationalRedactor.firstName
+    user_first_name = booking.firstName
     venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
     template_id = 1116690 if booking.individualBooking is not None else 3192295
 

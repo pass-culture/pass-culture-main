@@ -270,6 +270,36 @@ class Booking(PcObject, Model):
     def isConfirmed(cls):  # pylint: disable=no-self-argument
         return and_(cls.cancellationLimitDate.isnot(None), cls.cancellationLimitDate <= datetime.utcnow())
 
+    @property
+    def firstName(self) -> Optional[str]:
+        if self.individualBooking is not None:
+            return self.individualBooking.user.firstName
+
+        if self.educationalBooking is not None:
+            return self.educationalBooking.educationalRedactor.firstName
+
+        return None
+
+    @property
+    def lastName(self) -> Optional[str]:
+        if self.individualBooking is not None:
+            return self.individualBooking.user.lastName
+
+        if self.educationalBooking is not None:
+            return self.educationalBooking.educationalRedactor.lastName
+
+        return None
+
+    @property
+    def email(self) -> Optional[str]:
+        if self.individualBooking is not None:
+            return self.individualBooking.user.email
+
+        if self.educationalBooking is not None:
+            return self.educationalBooking.educationalRedactor.email
+
+        return None
+
 
 # FIXME (dbaty, 2020-02-08): once `Deposit.expirationDate` has been
 # populated after the deployment of v122, make the column NOT NULLable
