@@ -7,6 +7,7 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
+import useNotification from 'components/hooks/useNotification'
 import Banner from 'components/layout/Banner/Banner'
 import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import Icon from 'components/layout/Icon'
@@ -21,28 +22,28 @@ const ApiKey = ({
   savedApiKeys,
   maxAllowedApiKeys,
   offererId,
-  showNotification,
   loadOffererById,
 }) => {
   const [newlyGeneratedKeys, setNewGeneratedKeys] = useState([])
   const [isGeneratingKey, setIsGeneratingKey] = useState(false)
   const [apiKeyToDelete, setApiKeyToDelete] = useState(null)
 
+  const notification = useNotification()
+
   const generateApiKey = useCallback(async () => {
     try {
       setIsGeneratingKey(true)
       const generatedApiKey = await generateOffererApiKey(offererId)
       setNewGeneratedKeys(previousKeys => [...previousKeys, generatedApiKey])
-      showNotification(
-        'success',
+      notification.success(
         'Votre clé a bien été générée. Attention elle ne sera affichée que quelques instants !'
       )
       setIsGeneratingKey(false)
     } catch {
-      showNotification('error', "Une erreur s'est produite, veuillez réessayer")
+      notification.error("Une erreur s'est produite, veuillez réessayer")
       setIsGeneratingKey(false)
     }
-  }, [offererId, showNotification])
+  }, [offererId, notification])
 
   function changeApiKeyToDelete(savedApiKey) {
     return () => {
@@ -55,17 +56,17 @@ const ApiKey = ({
       await deleteOffererApiKey(apiKeyToDelete)
       loadOffererById(offererId)
     } catch (e) {
-      showNotification('error', "Une erreur s'est produite, veuillez réessayer")
+      notification.error("Une erreur s'est produite, veuillez réessayer")
     }
     setApiKeyToDelete(null)
-  }, [apiKeyToDelete, loadOffererById, showNotification, offererId])
+  }, [apiKeyToDelete, loadOffererById, notification, offererId])
 
   const copyKey = apiKeyToCopy => async () => {
     try {
       await navigator.clipboard.writeText(apiKeyToCopy)
-      showNotification('success', 'Clé copiée dans le presse-papier !')
+      notification.success('Clé copiée dans le presse-papier !')
     } catch {
-      showNotification('error', 'Impossible de copier la clé dans le presse-papier')
+      notification.error('Impossible de copier la clé dans le presse-papier')
     }
   }
 
@@ -208,7 +209,6 @@ ApiKey.propTypes = {
   maxAllowedApiKeys: PropTypes.number.isRequired,
   offererId: PropTypes.string.isRequired,
   savedApiKeys: PropTypes.arrayOf(PropTypes.string).isRequired,
-  showNotification: PropTypes.func.isRequired,
 }
 
 export default ApiKey
