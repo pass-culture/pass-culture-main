@@ -141,7 +141,7 @@ def test_index_offers(app):
         backend.index_offers([offer])
         posted_json = posted.last_request.json()
         assert posted_json[0]["id"] == offer.id
-        assert posted_json[0]["description"] == offer.description
+        assert posted_json[0]["name"] == offer.name
 
 
 def test_unindex_offer_ids(app):
@@ -180,3 +180,9 @@ def test_unindex_venue_ids(app):
         backend.unindex_venue_ids([1])
         deleted_json = deleted.last_request.json()
         assert deleted_json == [1]
+
+
+def test_remove_stopwords():
+    description = "Il était une fois, dans la ville de Foix. Voilà Foix !"
+    expected = "fois ville foix voilà foix"
+    assert appsearch.remove_stopwords(description) == expected

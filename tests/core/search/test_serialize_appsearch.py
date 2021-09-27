@@ -20,7 +20,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 def test_serialize_offer():
     offer = offers_factories.OfferFactory(
         name="Titre formidable",
-        description="Un livre qu'il est bien pour le lire",
+        description="Un LIVRE qu'il est bien pour le lire",
         extraData={
             "author": "Author",
             "isbn": "2221001648",
@@ -41,7 +41,7 @@ def test_serialize_offer():
         "artist": "Author Performer Speaker Stage Director",
         "category": "LIVRE",
         "date_created": offer.dateCreated,
-        "description": "Un livre qu'il est bien pour le lire",
+        "description": "livre bien lire",
         "group": "2221001648",
         "is_digital": 0,
         "is_duo": 0,

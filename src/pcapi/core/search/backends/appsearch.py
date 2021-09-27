@@ -3,6 +3,7 @@ import decimal
 import enum
 import json
 import logging
+import re
 import typing
 from typing import Iterable
 import urllib.parse
@@ -15,9 +16,12 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.utils import requests
 import pcapi.utils.date as date_utils
+from pcapi.utils.stopwords import STOPWORDS
 
 from . import base
 
+
+WORD_SPLITTER = re.compile(r"\W+")
 
 REDIS_OFFER_IDS_TO_INDEX = "search:appsearch:offer-ids-to-index"
 REDIS_OFFER_IDS_IN_ERROR_TO_INDEX = "search:appsearch:offer-ids-in-error-to-index"
@@ -165,7 +169,7 @@ def url_path(url):
     return path
 
 
-def to_app_search_bool(value: typing.Optional[int]):
+def to_app_search_bool(value: typing.Optional[int]) -> int:
     """Return 0, 1 or ``None`` for boolean values.
 
     App Search does not have a boolean type. We index boolean values
@@ -176,13 +180,27 @@ def to_app_search_bool(value: typing.Optional[int]):
     return int(value)
 
 
-def omit_empty_values(data: dict):
+def omit_empty_values(data: dict) -> dict:
     """Return ``data`` without its empty values.
 
     We do not want to index fields with empty values, as it takes
     more space and could affect performance.
     """
     return {field: value for field, value in data.items() if value not in (None, [], "")}
+
+
+def remove_stopwords(s: str) -> str:
+    """Remove French stopwords from the given string and return what's
+    left, lowercased.
+
+    We are not interested in being thorough. App Search takes care of
+    ignoring stopwords and does it better than we do. Here we are
+    mostly interested in storing less data in App Search. But we want
+    to keep the order in which words appear (because it matters in App
+    Search).
+    """
+    words = [word for word in WORD_SPLITTER.split(s.lower()) if word and word not in STOPWORDS]
+    return " ".join(words)
 
 
 def get_batches(iterable, size=1):
@@ -371,7 +389,7 @@ class AppSearchBackend(base.SearchBackend):
                 "category": offer.offer_category_name_for_app,
                 "date_created": offer.dateCreated,  # used only to rank results
                 "dates": dates,
-                "description": offer.description,
+                "description": remove_stopwords(offer.description),
                 "group": group,
                 "is_digital": to_app_search_bool(offer.isDigital),
                 "is_duo": to_app_search_bool(offer.isDuo),
