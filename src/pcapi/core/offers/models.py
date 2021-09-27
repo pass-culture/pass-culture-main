@@ -34,6 +34,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 import pcapi.core.bookings.conf as bookings_conf
+from pcapi.core.categories import subcategories
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.categories.subcategories import Subcategory
 from pcapi.models.db import Model
@@ -528,19 +529,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     @property
     def is_offline_only(self) -> bool:
-        offline_thing = [
-            thing_type
-            for thing_type in ThingType
-            if self._is_same_type(thing_type) and self._is_offline_type_only(thing_type)
-        ]
-
-        return len(list(offline_thing)) == 1
-
-    def _is_same_type(self, thing_type) -> bool:
-        return str(thing_type) == self.type
-
-    def _is_offline_type_only(self, thing_type):
-        return thing_type.value["offlineOnly"]
+        return self.subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.OFFLINE.value
 
     def get_label_from_type_string(self):
         matching_type_thing = next(filter(lambda thing_type: str(thing_type) == self.type, ThingType))

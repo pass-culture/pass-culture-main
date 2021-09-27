@@ -107,6 +107,7 @@ class ThingProductFactory(ProductFactory):
 
 
 class DigitalProductFactory(ThingProductFactory):
+    subcategoryId = subcategories.VOD.id
     name = factory.Sequence("Digital product {}".format)
     url = factory.Sequence("http://example.com/product/{}".format)
     isNational = True
