@@ -44,7 +44,7 @@ def get_engine_names():
 
 OFFERS_ENGINE_NAMES = get_engine_names()
 OFFERS_META_ENGINE_NAME = "offers-meta"
-
+OFFERS_SEARCH_PRECISION = 3
 OFFERS_SCHEMA = {
     "artist": "text",
     "category": "text",
@@ -132,7 +132,7 @@ OFFERS_SYNONYM_SET = (
 )
 
 VENUES_ENGINE_NAME = "venues"
-
+VENUES_SEARCH_PRECISION = 2
 VENUES_SCHEMA = {
     "name": "text",
     "offerer_name": "text",
@@ -245,6 +245,7 @@ class AppSearchBackend(base.SearchBackend):
             synonyms=OFFERS_SYNONYM_SET,
             field_weights=OFFERS_FIELD_WEIGHTS,
             field_boosts=OFFERS_FIELD_BOOSTS,
+            search_precision=OFFERS_SEARCH_PRECISION,
             schema=OFFERS_SCHEMA,
         )
 
@@ -256,6 +257,7 @@ class AppSearchBackend(base.SearchBackend):
             synonyms=VENUES_SYNONYM_SET,
             field_weights=None,
             field_boosts=None,
+            search_precision=VENUES_SEARCH_PRECISION,
             schema=VENUES_SCHEMA,
         )
 
@@ -480,6 +482,7 @@ class AppSearchApiClient:
         synonyms: Iterable[set[str]],
         field_weights: typing.Optional[dict],
         field_boosts: typing.Optional[dict],
+        search_precision: int,
         schema: dict[str, str],
     ):
         self.host = host.rstrip("/")
@@ -489,6 +492,7 @@ class AppSearchApiClient:
         self.synonyms = synonyms
         self.field_weights = field_weights or {}
         self.field_boosts = field_boosts or {}
+        self.search_precision = search_precision
         self.schema = schema
 
     @property
@@ -537,15 +541,13 @@ class AppSearchApiClient:
         return f"{self.host}{path}"
 
     def set_search_settings(self, engine_name: str):
-        search_settings = {}
+        search_settings = {"precision": self.search_precision}
         if self.field_weights:
             search_settings["search_fields"] = {
                 field: {"weight": weight} for field, weight in self.field_weights.items()
             }
         if self.field_boosts:
             search_settings["boosts"] = self.field_boosts
-        if not search_settings:
-            return True
         url = self.get_search_settings_url(engine_name)
         return requests.put(url, headers=self.headers, json=search_settings)
 
