@@ -41,7 +41,7 @@ const ContactInfosFields = () => (
 
     <TextField
       className="field text-field"
-      label="Téléphonne"
+      label="Téléphone"
       name="contact.phoneNumber"
       placeholder="Ex : 06 06 06 06"
       type="phone"

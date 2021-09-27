@@ -283,6 +283,11 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           bic: '12345',
           bookingEmail: 'contact@example.net',
           city: 'Paris',
+          contact:{
+            email: "test@test.com",
+            phoneNumber: "0606060606",
+            website: "https://test.com",
+          },
           comment: 'Commentaire',
           iban: 'BHJ2XRT2C',
           latitude: '0.0',
@@ -313,6 +318,11 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           bookingEmail: 'contact@example.net',
           city: 'Paris',
           comment: 'Commentaire',
+          contact:{
+            email: "test@test.com",
+            phoneNumber: "0606060606",
+            website: "https://test.com",
+          },
           description: '',
           latitude: '0.0',
           longitude: '0.0',

@@ -22,6 +22,7 @@ import AccessibilityFields, {
   autoFillNoDisabilityCompliantDecorator,
 } from '../fields/AccessibilityFields'
 import BankInformation from '../fields/BankInformationFields/BankInformationFields'
+import ContactInfosFields from "../fields/ContactInfosFields"
 import IdentifierFields from '../fields/IdentifierFields/IdentifierFields'
 import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
 import bindGetSuggestionsToLongitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLongitude'
@@ -165,6 +166,7 @@ class VenueEdition extends PureComponent {
           readOnly={readOnly}
           venue={venue}
         />
+        <ContactInfosFields />
         <hr />
         <div
           className="field is-grouped is-grouped-centered"
