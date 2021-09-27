@@ -1,45 +1,41 @@
-"""
-    isort:skip_file
-"""
 from datetime import date
 from datetime import timedelta
 import logging
 
 from apscheduler.schedulers.blocking import BlockingScheduler
+from flask import Blueprint
 from flask import Flask
 from sentry_sdk import set_tag
 
-# FIXME (xordoquy, 2021-03-01): this is to prevent circular imports when importing pcapi.core.users.api
-import pcapi.models  # pylint: disable=unused-import
 from pcapi import settings
 import pcapi.core.bookings.api as bookings_api
-from pcapi.core.logging import install_logging
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import api as users_api
 from pcapi.core.users.repository import get_newly_eligible_users
-from pcapi.domain.user_emails import send_newly_eligible_user_email, send_withdrawal_terms_to_newly_validated_offerer
+from pcapi.domain.user_emails import send_newly_eligible_user_email
+from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
 from pcapi.local_providers.provider_api import provider_api_stocks
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.db import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository.offerer_queries import get_offerers_by_date_validated
 from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
 from pcapi.scheduled_tasks import utils
 from pcapi.scheduled_tasks.decorators import cron_context
 from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
-from pcapi.scripts.beneficiary import remote_import, remote_tag_has_completed
+from pcapi.scripts.beneficiary import remote_import
+from pcapi.scripts.beneficiary import remote_tag_has_completed
 from pcapi.scripts.booking.handle_expired_bookings import handle_expired_bookings
 from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_individual_bookings
 from pcapi.workers.push_notification_job import send_tomorrow_stock_notification
 
 
-install_logging()
-
+blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
 
@@ -180,8 +176,9 @@ def pc_send_withdrawal_terms_to_offerers_validated_yesterday(app: Flask) -> None
         send_withdrawal_terms_to_newly_validated_offerer(offerer)
 
 
-def main() -> None:
-    from pcapi.flask_app import app
+@blueprint.cli.command("clock")
+def clock():
+    from flask import current_app as app
 
     set_tag("pcapi.app_type", "clock")
     scheduler = BlockingScheduler()
@@ -231,7 +228,3 @@ def main() -> None:
     scheduler.add_job(pc_send_withdrawal_terms_to_offerers_validated_yesterday, "cron", [app], day="*", hour="6")
 
     scheduler.start()
-
-
-if __name__ == "__main__":
-    main()

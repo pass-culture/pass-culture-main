@@ -1,16 +1,16 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
+from flask import Blueprint
 from sentry_sdk import set_tag
 
 from pcapi import settings
 from pcapi.core import search
-from pcapi.core.logging import install_logging
 import pcapi.core.offers.api as offers_api
 from pcapi.scheduled_tasks import utils
 from pcapi.scheduled_tasks.decorators import cron_context
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 
 
-install_logging()
+blueprint = Blueprint(__name__, __name__)
 
 
 # FIXME (dbaty, 2021-06-16): rename the file and the cron (and the
@@ -51,8 +51,9 @@ def index_venues_in_error(app):
     search.index_venues_in_queue(from_error_queue=True)
 
 
-def main():
-    from pcapi.flask_app import app
+@blueprint.cli.command("algolia_clock")
+def algolia_clock():
+    from flask import current_app as app
 
     set_tag("pcapi.app_type", "algolia_clock")
     scheduler = BlockingScheduler()
@@ -102,7 +103,3 @@ def main():
     )
 
     scheduler.start()
-
-
-if __name__ == "__main__":
-    main()

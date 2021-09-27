@@ -3,6 +3,9 @@ import importlib
 
 def install_commands(app):
     module_paths = (
+        "pcapi.scheduled_tasks.algolia_clock",
+        "pcapi.scheduled_tasks.clock",
+        "pcapi.scheduled_tasks.titelive_clock",
         "pcapi.scripts.algolia_indexing.commands",
         "pcapi.scripts.clean_database",
         "pcapi.scripts.install_data",
