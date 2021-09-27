@@ -179,3 +179,13 @@ class VenueProviderCreationPayload:
     price: Optional[str] = None
     quantity: Optional[int] = None
     venueIdAtOfferProvider: Optional[str] = None
+
+
+@dataclass
+class StockDetail:
+    products_provider_reference: str
+    offers_provider_reference: str
+    venue_reference: str
+    stocks_provider_reference: str
+    available_quantity: int
+    price: Optional[float]

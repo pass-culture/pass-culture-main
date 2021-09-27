@@ -31,6 +31,7 @@ from pcapi.models import Stock
 from pcapi.models import UserOfferer
 from pcapi.models import Venue
 from pcapi.models import db
+from pcapi.utils.custom_keys import compute_venue_reference
 
 
 IMPORTED_CREATION_MODE = "imported"
@@ -185,7 +186,7 @@ def get_stocks_for_offer(offer_id: int) -> list[Stock]:
     )
 
 
-def get_products_map_by_id_at_providers(id_at_providers: list[str]) -> dict[str, Product]:
+def get_products_map_by_provider_reference(id_at_providers: list[str]) -> dict[str, Product]:
     products = (
         Product.query.filter(Product.isGcuCompatible)
         .filter(Product.subcategoryId == subcategories.LIVRE_PAPIER.id)
@@ -201,6 +202,19 @@ def get_offers_map_by_id_at_providers(id_at_providers: list[str]) -> dict[str, i
         db.session.query(Offer.id, Offer.idAtProviders).filter(Offer.idAtProviders.in_(id_at_providers)).all()
     ):
         offers_map[offer_id_at_providers] = offer_id
+
+    return offers_map
+
+
+def get_offers_map_by_venue_reference(id_at_providers: list[str], venue_id: int) -> dict[str, int]:
+
+    offers_map = {}
+    for offer_id, offer_id_at_provider in (
+        db.session.query(Offer.id, Offer.idAtProvider)
+        .filter(and_(Offer.venueId == venue_id, Offer.idAtProvider.in_(id_at_providers)))
+        .all()
+    ):
+        offers_map[compute_venue_reference(offer_id_at_provider, venue_id)] = offer_id
 
     return offers_map
 

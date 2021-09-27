@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from datetime import datetime
 import logging
 from typing import Iterable
@@ -10,7 +11,8 @@ from pcapi.core.offerers.repository import find_venue_by_id
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import get_offers_map_by_id_at_providers
-from pcapi.core.offers.repository import get_products_map_by_id_at_providers
+from pcapi.core.offers.repository import get_offers_map_by_venue_reference
+from pcapi.core.offers.repository import get_products_map_by_provider_reference
 from pcapi.core.offers.repository import get_stocks_by_id_at_providers
 from pcapi.core.providers.exceptions import NoSiretSpecified
 from pcapi.core.providers.exceptions import ProviderNotFound
@@ -19,6 +21,7 @@ from pcapi.core.providers.exceptions import VenueNotFound
 from pcapi.core.providers.exceptions import VenueSiretNotRegistered
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import Provider
+from pcapi.core.providers.models import StockDetail
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.core.providers.repository import get_provider_enabled_for_pro_by_id
@@ -135,23 +138,33 @@ def _siret_can_be_synchronized(
 
 
 def synchronize_stocks(
-    stock_details: Iterable[dict], venue: Venue, provider_id: Optional[int] = None
+    stock_details: Iterable[StockDetail], venue: Venue, provider_id: Optional[int] = None
 ) -> dict[str, int]:
-    products_provider_references = [stock_detail["products_provider_reference"] for stock_detail in stock_details]
-    products_by_provider_reference = get_products_map_by_id_at_providers(products_provider_references)
+    products_provider_references = [stock_detail.products_provider_reference for stock_detail in stock_details]
+    products_by_provider_reference = get_products_map_by_provider_reference(products_provider_references)
 
     stock_details = [
-        stock for stock in stock_details if stock["products_provider_reference"] in products_by_provider_reference
+        stock for stock in stock_details if stock.products_provider_reference in products_by_provider_reference
     ]
 
-    offers_provider_references = [stock_detail["offers_provider_reference"] for stock_detail in stock_details]
+    offers_provider_references = [stock_detail.offers_provider_reference for stock_detail in stock_details]
     offers_by_provider_reference = get_offers_map_by_id_at_providers(offers_provider_references)
 
-    offers_update_mapping = _get_offers_update_mapping(offers_by_provider_reference.values(), provider_id)
+    products_references = [stock_detail.products_provider_reference for stock_detail in stock_details]
+    offers_by_venue_reference = get_offers_map_by_venue_reference(products_references, venue.id)
+
+    offers_update_mapping = [
+        {"id": offer_id, "lastProviderId": provider_id} for offer_id in offers_by_provider_reference.values()
+    ]
     db.session.bulk_update_mappings(Offer, offers_update_mapping)
 
     new_offers = _build_new_offers_from_stock_details(
-        stock_details, offers_by_provider_reference, products_by_provider_reference, venue, provider_id
+        stock_details,
+        offers_by_provider_reference,
+        products_by_provider_reference,
+        offers_by_venue_reference,
+        venue,
+        provider_id,
     )
     new_offers_references = [new_offer.idAtProviders for new_offer in new_offers]
 
@@ -160,7 +173,7 @@ def synchronize_stocks(
     new_offers_by_provider_reference = get_offers_map_by_id_at_providers(new_offers_references)
     offers_by_provider_reference = {**offers_by_provider_reference, **new_offers_by_provider_reference}
 
-    stocks_provider_references = [stock["stocks_provider_reference"] for stock in stock_details]
+    stocks_provider_references = [stock.stocks_provider_reference for stock in stock_details]
     stocks_by_provider_reference = get_stocks_by_id_at_providers(stocks_provider_references)
     update_stock_mapping, new_stocks, offer_ids = _get_stocks_to_upsert(
         stock_details,
@@ -180,30 +193,34 @@ def synchronize_stocks(
     return {"new_offers": len(new_offers), "new_stocks": len(new_stocks), "updated_stocks": len(update_stock_mapping)}
 
 
-def _get_offers_update_mapping(offer_id_list: Iterable[int], provider_id: Optional[int]) -> list[dict]:
-    return [{"id": offer_id, "lastProviderId": provider_id} for offer_id in offer_id_list]
-
-
 def _build_new_offers_from_stock_details(
-    stock_details: list,
+    stock_details: list[StockDetail],
     existing_offers_by_provider_reference: dict[str, int],
     products_by_provider_reference: dict[str, Product],
+    existing_offers_by_venue_reference: dict[str, int],
     venue: Venue,
     provider_id: Optional[int],
 ) -> list[Offer]:
     new_offers = []
     for stock_detail in stock_details:
-        if stock_detail["offers_provider_reference"] in existing_offers_by_provider_reference:
+        if stock_detail.offers_provider_reference in existing_offers_by_provider_reference:
             continue
-        if not stock_detail["available_quantity"]:
+        if stock_detail.venue_reference in existing_offers_by_venue_reference:
+            logger.error(
+                "There is already an offer with same (isbn,venueId) but with a different idAtProviders. Update the idAtProviders of offers and stocks attached to venue %s with update_offer_and_stock_id_at_providers method",
+                venue.id,
+                extra=asdict(stock_detail),
+            )
+            continue
+        if not stock_detail.available_quantity:
             continue
 
-        product = products_by_provider_reference[stock_detail["products_provider_reference"]]
+        product = products_by_provider_reference[stock_detail.products_provider_reference]
         offer = _build_new_offer(
             venue,
             product,
-            id_at_providers=stock_detail["offers_provider_reference"],
-            id_at_provider=stock_detail["products_provider_reference"],
+            id_at_providers=stock_detail.offers_provider_reference,
+            id_at_provider=stock_detail.products_provider_reference,
             provider_id=provider_id,
         )
 
@@ -216,7 +233,7 @@ def _build_new_offers_from_stock_details(
 
 
 def _get_stocks_to_upsert(
-    stock_details: list[dict],
+    stock_details: list[StockDetail],
     stocks_by_provider_reference: dict[str, dict],
     offers_by_provider_reference: dict[str, int],
     products_by_provider_reference: dict[str, Product],
@@ -227,9 +244,9 @@ def _get_stocks_to_upsert(
     offer_ids = set()
 
     for stock_detail in stock_details:
-        stock_provider_reference = stock_detail["stocks_provider_reference"]
-        product = products_by_provider_reference[stock_detail["products_provider_reference"]]
-        book_price = stock_detail.get("price") or float(product.extraData["prix_livre"])
+        stock_provider_reference = stock_detail.stocks_provider_reference
+        product = products_by_provider_reference[stock_detail.products_provider_reference]
+        book_price = stock_detail.price or float(product.extraData["prix_livre"])
         if stock_provider_reference in stocks_by_provider_reference:
             stock = stocks_by_provider_reference[stock_provider_reference]
 
@@ -238,7 +255,7 @@ def _get_stocks_to_upsert(
             # sent a specific price before. Should we keep the
             # possibly specific price that we have received before? Or
             # should we override with the (generic) product price?
-            if not stock_detail.get("price") and float(stock["price"]) != book_price:
+            if not stock_detail.price and float(stock["price"]) != book_price:
                 logger.warning(
                     "Stock specific price has been overriden by product price because provider price is missing",
                     extra={
@@ -251,21 +268,27 @@ def _get_stocks_to_upsert(
             update_stock_mapping.append(
                 {
                     "id": stock["id"],
-                    "quantity": stock_detail["available_quantity"] + stock["booking_quantity"],
-                    "rawProviderQuantity": stock_detail["available_quantity"],
+                    "quantity": stock_detail.available_quantity + stock["booking_quantity"],
+                    "rawProviderQuantity": stock_detail.available_quantity,
                     "price": book_price,
                     "lastProviderId": provider_id,
                 }
             )
-            if _should_reindex_offer(stock_detail["available_quantity"], book_price, stock):
-                offer_ids.add(offers_by_provider_reference[stock_detail["offers_provider_reference"]])
+            if _should_reindex_offer(stock_detail.available_quantity, book_price, stock):
+                offer_ids.add(offers_by_provider_reference[stock_detail.offers_provider_reference])
 
         else:
-            if not stock_detail["available_quantity"]:
+            if not stock_detail.available_quantity:
                 continue
+
+            offer_id = offers_by_provider_reference.get(stock_detail.offers_provider_reference)
+
+            if not offer_id:
+                continue
+
             stock = _build_stock_from_stock_detail(
                 stock_detail,
-                offers_by_provider_reference[stock_detail["offers_provider_reference"]],
+                offer_id,
                 book_price,
                 provider_id,
             )
@@ -279,16 +302,16 @@ def _get_stocks_to_upsert(
 
 
 def _build_stock_from_stock_detail(
-    stock_detail: dict, offers_id: int, price: float, provider_id: Optional[int]
+    stock_detail: StockDetail, offers_id: int, price: float, provider_id: Optional[int]
 ) -> Stock:
     return Stock(
-        quantity=stock_detail["available_quantity"],
-        rawProviderQuantity=stock_detail["available_quantity"],
+        quantity=stock_detail.available_quantity,
+        rawProviderQuantity=stock_detail.available_quantity,
         bookingLimitDatetime=None,
         offerId=offers_id,
         price=price,
         dateModified=datetime.now(),
-        idAtProviders=stock_detail["stocks_provider_reference"],
+        idAtProviders=stock_detail.stocks_provider_reference,
         lastProviderId=provider_id,
     )
 

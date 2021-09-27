@@ -8,10 +8,12 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories
+from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.providers import api
 from pcapi.core.providers.exceptions import ProviderNotFound
+from pcapi.core.providers.models import StockDetail
 from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.models.product import Product
@@ -63,12 +65,13 @@ class SynchronizeStocksTest:
             {"ref": "3010000108123", "available": 17},
             {"ref": "3010000108124", "available": 17},
             {"ref": "3010000108125", "available": 17},
+            {"ref": "3010000101790", "available": 1},
         ]
         offerers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
         venue = VenueFactory()
         siret = venue.siret
         provider = offerers_factories.ProviderFactory()
-        stock_details = synchronize_provider_api._build_stock_details_from_raw_stocks(spec, siret, provider)
+        stock_details = synchronize_provider_api._build_stock_details_from_raw_stocks(spec, siret, provider, venue.id)
 
         stock = create_stock(
             spec[0]["ref"],
@@ -83,6 +86,9 @@ class SynchronizeStocksTest:
         stock_with_booking = create_stock(spec[5]["ref"], siret, quantity=20)
         BookingFactory(stock=stock_with_booking)
         BookingFactory(stock=stock_with_booking, quantity=2)
+
+        create_product(spec[7]["ref"])
+        OfferFactory(venue=venue, idAtProviders="out-of-date-id-at-p", idAtProvider=spec[7]["ref"])
 
         # When
         api.synchronize_stocks(stock_details, venue, provider_id=provider.id)
@@ -137,26 +143,35 @@ class SynchronizeStocksTest:
     def test_build_new_offers_from_stock_details(self, db_session):
         # Given
         spec = [
-            {  # known offer, must be ignored
-                "offers_provider_reference": "offer_ref1",
-            },
-            {  # new one, will be created
-                "available_quantity": 17,
-                "offers_provider_reference": "offer_ref_2",
-                "price": 28.989,
-                "products_provider_reference": "isbn_product_ref",
-                "stocks_provider_reference": "stock_ref",
-            },
-            {  # no quantity, must be ignored
-                "available_quantity": 0,
-                "offers_provider_reference": "offer_ref_3",
-                "price": 28.989,
-                "products_provider_reference": "isbn_product_ref",
-                "stocks_provider_reference": "stock_ref",
-            },
+            StockDetail(  # known offer, must be ignored
+                available_quantity=1,
+                offers_provider_reference="offer_ref1",
+                venue_reference="venue_ref1",
+                products_provider_reference="isbn_product_ref",
+                stocks_provider_reference="stock_ref",
+                price=28.989,
+            ),
+            StockDetail(  # new one, will be created
+                available_quantity=17,
+                offers_provider_reference="offer_ref_2",
+                price=28.989,
+                products_provider_reference="isbn_product_ref",
+                stocks_provider_reference="stock_ref",
+                venue_reference="venue_ref2",
+            ),
+            # no quantity, must be ignored
+            StockDetail(
+                available_quantity=0,
+                offers_provider_reference="offer_ref_3",
+                price=28.989,
+                products_provider_reference="isbn_product_ref",
+                stocks_provider_reference="stock_ref",
+                venue_reference="venue_ref3",
+            ),
         ]
 
-        existing_offers_by_provider_reference = {"offer_ref1"}
+        existing_offers_by_provider_reference = {"offer_ref1": 1}
+        existing_offers_by_venue_reference = {"venue_ref1": 1}
         provider = offerers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
         venue = VenueFactory(bookingEmail="booking_email", withdrawalDetails="My withdrawal details")
         product = Product(
@@ -174,6 +189,7 @@ class SynchronizeStocksTest:
             spec,
             existing_offers_by_provider_reference,
             products_by_provider_reference,
+            existing_offers_by_venue_reference,
             venue,
             provider_id=provider.id,
         )
@@ -210,34 +226,38 @@ class SynchronizeStocksTest:
     def test_get_stocks_to_upsert(self):
         # Given
         spec = [
-            {  # existing, will update
-                "offers_provider_reference": "offer_ref1",
-                "available_quantity": 15,
-                "price": 15.78,
-                "products_provider_reference": "product_ref1",
-                "stocks_provider_reference": "stock_ref1",
-            },
-            {  # new, will be added
-                "available_quantity": 17,
-                "offers_provider_reference": "offer_ref2",
-                "price": 28.989,
-                "products_provider_reference": "product_ref2",
-                "stocks_provider_reference": "stock_ref2",
-            },
-            {  # no quantity, must be ignored
-                "available_quantity": 0,
-                "offers_provider_reference": "offer_ref3",
-                "price": 28.989,
-                "products_provider_reference": "product_ref3",
-                "stocks_provider_reference": "stock_ref3",
-            },
-            {  # existing, will update but set product's price
-                "offers_provider_reference": "offer_ref4",
-                "available_quantity": 15,
-                "price": None,
-                "products_provider_reference": "product_ref4",
-                "stocks_provider_reference": "stock_ref4",
-            },
+            StockDetail(  # existing, will update
+                offers_provider_reference="offer_ref1",
+                available_quantity=15,
+                price=15.78,
+                products_provider_reference="product_ref1",
+                stocks_provider_reference="stock_ref1",
+                venue_reference="venue_ref1",
+            ),
+            StockDetail(  # new, will be added
+                available_quantity=17,
+                offers_provider_reference="offer_ref2",
+                price=28.989,
+                products_provider_reference="product_ref2",
+                stocks_provider_reference="stock_ref2",
+                venue_reference="venue_ref2",
+            ),
+            StockDetail(  # no quantity, must be ignored
+                available_quantity=0,
+                offers_provider_reference="offer_ref3",
+                price=28.989,
+                products_provider_reference="product_ref3",
+                stocks_provider_reference="stock_ref3",
+                venue_reference="venue_ref3",
+            ),
+            StockDetail(  # existing, will update but set product's price
+                offers_provider_reference="offer_ref4",
+                available_quantity=15,
+                price=None,
+                products_provider_reference="product_ref4",
+                stocks_provider_reference="stock_ref4",
+                venue_reference="venue_ref4",
+            ),
         ]
 
         stocks_by_provider_reference = {

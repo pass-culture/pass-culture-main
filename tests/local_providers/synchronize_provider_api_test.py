@@ -11,6 +11,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
+from pcapi.core.providers.models import StockDetail
 from pcapi.local_providers.provider_api import synchronize_provider_api
 
 
@@ -193,24 +194,26 @@ class ProviderAPICronTest:
 
             # When
             provider = offerers_factories.ProviderFactory()
-            result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret", provider)
+            result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret", provider, 11)
 
             # Then
             assert result == [
-                {
-                    "available_quantity": 17,
-                    "offers_provider_reference": "3010000108123@siret",
-                    "price": Decimal("23.99"),
-                    "products_provider_reference": "3010000108123",
-                    "stocks_provider_reference": "3010000108123@siret",
-                },
-                {
-                    "available_quantity": 17,
-                    "offers_provider_reference": "3010000108124@siret",
-                    "price": Decimal("28.99"),
-                    "products_provider_reference": "3010000108124",
-                    "stocks_provider_reference": "3010000108124@siret",
-                },
+                StockDetail(
+                    available_quantity=17,
+                    offers_provider_reference="3010000108123@siret",
+                    price=Decimal("23.99"),
+                    products_provider_reference="3010000108123",
+                    stocks_provider_reference="3010000108123@siret",
+                    venue_reference="3010000108123@11",
+                ),
+                StockDetail(
+                    available_quantity=17,
+                    offers_provider_reference="3010000108124@siret",
+                    price=Decimal("28.99"),
+                    products_provider_reference="3010000108124",
+                    stocks_provider_reference="3010000108124@siret",
+                    venue_reference="3010000108124@11",
+                ),
             ]
 
         def test_build_stock_details_from_raw_stocks_excludes_duplicates(self):
@@ -222,17 +225,18 @@ class ProviderAPICronTest:
 
             # When
             provider = offerers_factories.ProviderFactory()
-            result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret", provider)
+            result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret", provider, 12)
 
             # Then
             assert result == [
-                {
-                    "available_quantity": 17,
-                    "price": Decimal("28.99"),  # latest wins
-                    "offers_provider_reference": "3010000108123@siret",
-                    "products_provider_reference": "3010000108123",
-                    "stocks_provider_reference": "3010000108123@siret",
-                },
+                StockDetail(
+                    available_quantity=17,
+                    price=Decimal("28.99"),  # latest wins
+                    offers_provider_reference="3010000108123@siret",
+                    products_provider_reference="3010000108123",
+                    stocks_provider_reference="3010000108123@siret",
+                    venue_reference="3010000108123@12",
+                )
             ]
 
         def test_build_stock_details_with_euro_cents(self):
@@ -244,15 +248,16 @@ class ProviderAPICronTest:
 
             # When
             provider = offerers_factories.ProviderFactory(pricesInCents=True)
-            result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret", provider)
+            result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret", provider, 13)
 
             # Then
             assert result == [
-                {
-                    "available_quantity": 17,
-                    "price": Decimal("12.34"),  # latest wins
-                    "offers_provider_reference": "3010000108123@siret",
-                    "products_provider_reference": "3010000108123",
-                    "stocks_provider_reference": "3010000108123@siret",
-                },
+                StockDetail(
+                    available_quantity=17,
+                    price=Decimal("12.34"),  # latest wins
+                    offers_provider_reference="3010000108123@siret",
+                    products_provider_reference="3010000108123",
+                    stocks_provider_reference="3010000108123@siret",
+                    venue_reference="3010000108123@13",
+                )
             ]
