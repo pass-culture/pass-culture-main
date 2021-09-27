@@ -57,7 +57,13 @@ class IndividualBooking(Model):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
-    user = relationship("User", foreign_keys=[userId], backref="userIndividualBookings")
+    user = relationship(
+        "User",
+        foreign_keys=[userId],
+        backref="userIndividualBookings",
+        lazy="joined",
+        innerjoin=True,
+    )
 
     booking = relationship(
         "Booking",
