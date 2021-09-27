@@ -2384,40 +2384,6 @@ VALUES
     ('Offre de médiation spécifique', 'Offre possédant une médiation orientée pour les jeunes de 18 ans', 2);
 
 
---
--- Data for Name: feature; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-INSERT INTO public.feature (name, description, "isActive")
-VALUES
-    ('BENEFICIARIES_IMPORT',	'Permettre limport des comptes jeunes depuis DMS', true),
-    ('FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE',	'Permet la recherche de mots-clés dans les tables structures et lieux en plus de celles des offres', true),
-    ('QR_CODE',	'Permettre la validation dune contremarque via QR code', true),
-    ('SEARCH_ALGOLIA',	'Permettre la recherche via Algolia', true),
-    ('SYNCHRONIZE_ALGOLIA',	'Permettre la mise à jour des données pour la recherche via Algolia', true),
-    ('SYNCHRONIZE_ALLOCINE',	'Permettre la synchronisation journalière avec Allociné', true),
-    ('SYNCHRONIZE_BANK_INFORMATION',	'Permettre la synchronisation journalière avec DMS pour récupérer les informations bancaires des acteurs', true),
-    ('SYNCHRONIZE_LIBRAIRES',	'Permettre la synchronisation journalière avec leslibraires.fr', true),
-    ('SYNCHRONIZE_TITELIVE',	'Permettre la synchronisation journalière avec TiteLive / Epagine', true),
-    ('SYNCHRONIZE_TITELIVE_PRODUCTS',	'Permettre limport journalier du référentiel des livres', true),
-    ('SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION',	'Permettre limport journalier des résumés des livres', true),
-    ('SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS',	'Permettre limport journalier des couvertures de livres', true),
-    ('UPDATE_BOOKING_USED',	'Permettre la validation automatique des contremarques 48h après la fin de lévènement', true),
-    ('WEBAPP_SIGNUP',	'Permettre aux bénéficiaires de créer un compte', true),
-    ('API_SIRENE_AVAILABLE',	'Active les fonctionnalitées liées à l''API Sirene', true),
-    ('WEBAPP_HOMEPAGE',	'Permettre l affichage de la nouvelle page d accueil de la webapp', true),
-    ('WEBAPP_PROFILE_PAGE',	'Permettre l affichage de la page profil (route dédiée + navbar)', true),
-    ('APPLY_BOOKING_LIMITS_V2',	'Permettre l affichage des nouvelles règles de génération de portefeuille des jeunes', false),
-    ('ALLOW_IDCHECK_REGISTRATION',	'Autoriser les utilisateurs à suivre le parcours d inscription ID Check', true),
-    ('WHOLE_FRANCE_OPENING',	'Ouvre le service à la France entière', false),
-    ('PRO_HOMEPAGE',	'Permettre l affichage de la nouvelle page d accueil du portail pro', false),
-    ('PRO_TUTO',	'Permettre l affichage des cartes tuto du portail pro', false),
-    ('PARALLEL_SYNCHRONIZATION_OF_VENUE_PROVIDER', 'Active la parallèlisation des opérations de synchronisation pour les VenueProvider', true),
-    ('ENABLE_WHOLE_VENUE_PROVIDER_ALGOLIA_INDEXATION', 'Active la réindexation globale sur Algolia des VenueProvider', true),
-    ('SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER',	'Effectue la première synchronisation des venue_provider dans le worker', true),
-    ('ENABLE_NATIVE_APP_RECAPTCHA',	'Active le reCaptacha sur l''API native', true),
-    ('FNAC_SYNCHRONIZATION_V2', 'Active la synchronisation FNAC v2 : synchronisation par batch', true);
-
 
 --
 -- Data for Name: provider; Type: TABLE DATA; Schema: public; Owner: pass_culture
