@@ -3,7 +3,6 @@ Fetch users from database and update their informations on Batch.
 Goal: some users do not have all the expected attributes, this script should
 fix this issue.
 """
-from itertools import islice
 from typing import Generator
 
 from pcapi.core.users.external import batch
@@ -14,6 +13,7 @@ from pcapi.core.users.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.users.models import User
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.backends.batch import UserUpdateData
+from pcapi.utils import get_chunks
 
 
 def get_users(batch_size: int) -> Generator[User, None, None]:
@@ -26,17 +26,6 @@ def get_users(batch_size: int) -> Generator[User, None, None]:
         raise
     else:
         print("All users fetched")
-
-
-def get_users_chunks(chunk_size: int) -> Generator[list[User], None, None]:
-    users = get_users(chunk_size)
-    while True:
-        chunk = list(islice(users, chunk_size))
-        if chunk:
-            yield chunk
-
-        if len(chunk) < chunk_size:
-            break
 
 
 def format_batch_users(users: list[User]) -> list[UserUpdateData]:
@@ -68,7 +57,9 @@ def run(chunk_size: int, synchronize_batch: bool = True, synchronize_sendinblue:
     )
 
     print("%s started" % message)
-    for chunk in get_users_chunks(chunk_size):
+
+    users = get_users(chunk_size)
+    for chunk in get_chunks(chunk_size, users):
         if synchronize_batch:
             batch_users_data = format_batch_users(chunk)
             update_users_attributes(batch_users_data)
