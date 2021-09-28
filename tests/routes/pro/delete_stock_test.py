@@ -1,4 +1,4 @@
-from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import IndividualBookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
@@ -18,7 +18,7 @@ class Returns200Test:
             offerer=offer.venue.managingOfferer,
         )
         stock = offers_factories.StockFactory(offer=offer)
-        booking = BookingFactory(stock=stock)
+        booking = IndividualBookingFactory(stock=stock)
 
         # when
         client = TestClient(app.test_client()).with_session_auth("pro@example.com")

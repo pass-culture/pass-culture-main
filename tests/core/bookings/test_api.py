@@ -520,8 +520,8 @@ class CancelByOffererTest:
 
     def test_cancel_all_bookings_from_stock(self, app):
         stock = offers_factories.StockFactory(dnBookedQuantity=1)
-        booking_1 = factories.BookingFactory(stock=stock)
-        booking_2 = factories.BookingFactory(stock=stock)
+        booking_1 = factories.IndividualBookingFactory(stock=stock)
+        booking_2 = factories.IndividualBookingFactory(stock=stock)
         used_booking = factories.UsedBookingFactory(stock=stock)
         cancelled_booking = factories.CancelledBookingFactory(stock=stock)
 

@@ -541,7 +541,7 @@ class DeleteStockTest:
     @mock.patch("pcapi.domain.user_emails.send_warning_to_user_after_pro_booking_cancellation")
     def test_delete_stock_cancel_bookings_and_send_emails(self, mocked_send_to_beneficiaries, mocked_send_to_offerer):
         stock = factories.EventStockFactory()
-        booking1 = bookings_factories.BookingFactory(stock=stock)
+        booking1 = bookings_factories.IndividualBookingFactory(stock=stock)
         booking2 = bookings_factories.CancelledBookingFactory(stock=stock)
         booking3 = bookings_factories.UsedBookingFactory(stock=stock)
 

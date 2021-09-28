@@ -7,6 +7,7 @@ from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import OfferFactory
@@ -126,7 +127,7 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
 class SendWarningToBeneficiaryAfterProBookingCancellationTest:
     def test_should_sends_email_to_beneficiary_when_pro_cancels_booking(self):
         # Given
-        booking = BookingFactory(user__email="user@example.com", user__firstName="Jeanne")
+        booking = IndividualBookingFactory(user__email="user@example.com", user__firstName="Jeanne")
 
         # When
         send_warning_to_user_after_pro_booking_cancellation(booking)
@@ -148,7 +149,6 @@ class SendWarningToBeneficiaryAfterProBookingCancellationTest:
                 "offer_price": "10.00",
                 "offerer_name": booking.offerer.name,
                 "user_first_name": "Jeanne",
-                "can_book_again": True,
                 "venue_name": booking.venue.name,
                 "env": "-development",
             },
