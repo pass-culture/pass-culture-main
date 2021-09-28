@@ -23,9 +23,6 @@ serviceAccount:
 
 workflows:
   testing-dump:
-    secretsPrefix: pcapi-testing
-    secretsProject: passculture-metier-ehp
-    newUserPasswordSecretName: database_credentials_password
     script: "/scripts/testing_dump.py"
     envVars:
       ENV: testing
@@ -34,11 +31,14 @@ workflows:
       SOURCE_PROJECT: passculture-metier-ehp
       DUMP_BUCKET: passculture-metier-ehp-dump-sql
       SOURCE_DATABASES_TO_EXPORT: "pcapi-testing"
+    externalSecrets:
+      prefix: pcapi-testing
+      project: passculture-metier-ehp
+      mappings:
+        - secret: database_credentials_password
+          envVar: DEST_NEW_USER_PASSWORD
 
   staging:
-    secretsPrefix: pcapi-staging
-    secretsProject: passculture-metier-ehp
-    newUserPasswordSecretName: database_credentials_password
     dependsOn: [testing-dump]
     script: "/scripts/staging.py"
     envVars:
@@ -55,15 +55,18 @@ workflows:
       DUMP_BUCKET: passculture-metier-ehp-dump-sql
       TABLES_TO_EMPTY : "activity user_session email"
     additionnalEnvVars:
-      pcapiSecrets: true
       postProcessingEnvVars: true
-    secrets:
-      - STAGING_TEST_USER_PASSWORD
+    externalSecrets:
+      prefix: pcapi-staging
+      project: passculture-metier-ehp
+      pcapiSecrets: true
+      mappings:
+        - secret: database_credentials_password
+          envVar: DEST_NEW_USER_PASSWORD
+        - secret: staging_test_user_password
+          envVar: STAGING_TEST_USER_PASSWORD
 
   testing-restore:
-    secretsPrefix: pcapi-testing
-    secretsProject: passculture-metier-ehp
-    newUserPasswordSecretName: database_credentials_password
     dependsOn: [staging]
     script: "/scripts/testing_restore.py"
     envVars:
@@ -73,11 +76,14 @@ workflows:
       DEST_INSTANCE_REGION: europe-west1
       DEST_NEW_USER: pcapi-testing
       DUMP_BUCKET: passculture-metier-ehp-dump-sql
+    externalSecrets:
+      prefix: pcapi-testing
+      project: passculture-metier-ehp
+      mappings:
+        - secret: database_credentials_password
+          envVar: DEST_NEW_USER_PASSWORD
 
   perf:
-    secretsPrefix: pcapi-perf
-    secretsProject: passculture-metier-ehp
-    newUserPasswordSecretName: database_credentials_password
     dependsOn: [staging]
     script: "/scripts/perf.py"
     envVars:
@@ -91,6 +97,12 @@ workflows:
       DEST_PROJECT: passculture-metier-ehp
       DEST_NEW_USER: pcapi-perf
       DEST_INSTANCE_IP_ADDRESS_TYPE: public
+    externalSecrets:
+      prefix: pcapi-perf
+      project: passculture-metier-ehp
+      mappings:
+        - secret: database_credentials_password
+          envVar: DEST_NEW_USER_PASSWORD
 
 postProcessingEnvVars:
   ANONYMIZE_SQL_SCRIPT_PATH: /scripts/anonymize.sql
