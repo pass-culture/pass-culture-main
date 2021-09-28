@@ -33,15 +33,19 @@ def test_async_index_offers_of_venue_ids(app):
     assert app.redis_client.smembers("search:appsearch:venue-ids-for-offers-to-index") == {b"1", b"2"}
 
 
-def test_async_index_venues(app):
+def test_async_index_venue_ids(app):
+    """
+    Ensure that both permanent and non permanent venues are enqueues.
+    The permanent/non-permanent filter comes after, during indexing.
+    """
     permanent_venue = offers_factories.VenueFactory(isPermanent=True)
     other_venue = offers_factories.VenueFactory(isPermanent=False)
 
-    search.async_index_venues([permanent_venue, other_venue])
+    search.async_index_venue_ids([permanent_venue.id, other_venue.id])
 
     enqueued_ids = app.redis_client.smembers("search:appsearch:venue-ids-new-to-index")
     enqueued_ids = {int(venue_id) for venue_id in enqueued_ids}
-    assert enqueued_ids == {permanent_venue.id}
+    assert enqueued_ids == {permanent_venue.id, other_venue.id}
 
 
 @override_settings(REDIS_VENUE_IDS_CHUNK_SIZE=1)

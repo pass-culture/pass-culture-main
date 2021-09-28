@@ -43,9 +43,9 @@ def async_index_offer_ids(offer_ids: Iterable[int]) -> None:
             )
 
 
-def async_index_venues(venues: Iterable[Venue]) -> None:
+def async_index_venue_ids(venue_ids: Iterable[int]) -> None:
     """Ask for an asynchronous reindexation of the given list of
-    permanent ``Venue``.
+    permanent ``Venue`` ids.
 
     This function returns quickly. The "real" reindexation will be
     done later through a cron job.
@@ -53,7 +53,6 @@ def async_index_venues(venues: Iterable[Venue]) -> None:
     backends = _get_backends()
     for backend in backends:
         try:
-            venue_ids = [venue.id for venue in venues if venue.isPermanent]
             backend.enqueue_venue_ids(venue_ids)
         except Exception:  # pylint: disable=broad-except
             if settings.IS_RUNNING_TESTS:

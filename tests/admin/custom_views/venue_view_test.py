@@ -144,9 +144,9 @@ class VenueViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    @patch("pcapi.core.search.async_index_venues")
+    @patch("pcapi.core.search.async_index_venue_ids")
     def test_update_venue_reindex_venue_only(
-        self, mocked_async_index_venues, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app
+        self, mocked_async_index_venue_ids, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app
     ):
         AdminFactory(email="user@example.com")
         venue = VenueFactory(isPermanent=False)
@@ -171,7 +171,7 @@ class VenueViewTest:
         venue = Venue.query.get(venue.id)
         assert venue.isPermanent
 
-        mocked_async_index_venues.assert_called_once_with([venue])
+        mocked_async_index_venue_ids.assert_called_once_with([venue.id])
         mocked_async_index_offers_of_venue_ids.assert_not_called()
 
 
