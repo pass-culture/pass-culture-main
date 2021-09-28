@@ -269,13 +269,18 @@ def parse_beneficiary_information_graphql(application_detail: dict, procedure_id
 
         if "Veuillez indiquer votre département" in label:
             information["department"] = re.search("^[0-9]{2,3}|[2BbAa]{2}", value).group(0)
-        if label == "Quelle est votre date de naissance":
+        if label in ("Quelle est votre date de naissance", "Quelle est ta date de naissance ?"):
             information["birth_date"] = date_parser.parse(value, FrenchParserInfo())
-        if label == "Quel est votre numéro de téléphone":
+        if label in (
+            "Quel est votre numéro de téléphone",
+            "Quel est ton numéro de téléphone ?",
+        ):
             information["phone"] = value.replace(" ", "")
         if label in (
             "Quel est le code postal de votre commune de résidence ?",
             "Quel est le code postal de votre commune de résidence ? (ex : 25370)",
+            "Quel est le code postal de ta commune de résidence ? (ex : 25370)",
+            "Quel est le code postal de ta commune de résidence ?",
         ):
             space_free = str(value).strip().replace(" ", "")
             try:
@@ -283,11 +288,18 @@ def parse_beneficiary_information_graphql(application_detail: dict, procedure_id
             except Exception:  # pylint: disable=broad-except
                 parsing_errors["postal_code"] = value
 
-        if label == "Veuillez indiquer votre statut":
+        if label in ("Veuillez indiquer votre statut", "Merci d'indiquer ton statut", "Merci d' indiquer ton statut"):
             information["activity"] = value
-        if label == "Quelle est votre adresse de résidence":
+        if label in (
+            "Quelle est votre adresse de résidence",
+            "Quelle est ton adresse de résidence",
+            "Quelle est ton adresse de résidence ?",
+        ):
             information["address"] = value
-        if label == "Quel est le numéro de la pièce que vous venez de saisir ?":
+        if label in (
+            "Quel est le numéro de la pièce que vous venez de saisir ?",
+            "Quel est le numéro de la pièce que tu viens de saisir ?",
+        ):
             value = value.strip()
             if not fraud_api.validate_id_piece_number_format_fraud_item(value):
                 parsing_errors["id_piece_number"] = value

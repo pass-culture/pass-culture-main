@@ -445,7 +445,7 @@ def make_new_application():
                 {
                     "id": "Q2hhbXAtMTg3Mzc0Mw==",
                     "type": "text",
-                    "label": "Quel est le numéro de la pièce que vous venez de saisir ?",
+                    "label": "Quel est le numéro de la pièce que tu viens de saisir ?",
                     "description": "Indiquez ici le numéro de la pièce que vous avez envoyé (généralement située en haut à droite du recto). \nLe format ressemble à cela : \n- Ancienne carte d'identité : 880692310285\n- Nouvelle carte d'identité : F9GFAL123\n- Passeport : 21GT764978",
                     "required": True,
                     "options": None,
@@ -454,7 +454,7 @@ def make_new_application():
                 {
                     "id": "Q2hhbXAtNTgyMjE5",
                     "type": "phone",
-                    "label": "Quel est votre numéro de téléphone",
+                    "label": "Quel est ton numéro de téléphone ?",
                     "description": "",
                     "required": True,
                     "options": None,
@@ -463,7 +463,7 @@ def make_new_application():
                 {
                     "id": "Q2hhbXAtNTgyMjIx",
                     "type": "integer_number",
-                    "label": "Quel est le code postal de votre commune de résidence ? (ex : 25370)",
+                    "label": "Quel est le code postal de ta commune de résidence ? (ex : 25370)",
                     "description": "Renseigner le code postal à 5 chiffres\nExemple: 92110",
                     "required": True,
                     "options": None,
@@ -472,7 +472,7 @@ def make_new_application():
                 {
                     "id": "Q2hhbXAtNTgyMjIz",
                     "type": "address",
-                    "label": "Quelle est votre adresse de résidence",
+                    "label": "Quelle est ton adresse de résidence",
                     "description": None,
                     "required": True,
                     "options": None,
@@ -481,7 +481,7 @@ def make_new_application():
                 {
                     "id": "Q2hhbXAtNzE4MDk0",
                     "type": "drop_down_list",
-                    "label": "Veuillez indiquer votre statut",
+                    "label": "Merci d'indiquer ton statut",
                     "description": "",
                     "required": True,
                     "options": [
@@ -580,18 +580,18 @@ def make_new_application():
             },
             {
                 "id": "Q2hhbXAtMTg3Mzc0Mw==",
-                "label": "Quel est le numéro de la pièce que vous venez de saisir ?",
+                "label": "Quel est le numéro de la pièce que tu viens de saisir ?",
                 "stringValue": "F9GFAL123",
             },
-            {"id": "Q2hhbXAtNTgyMjE5", "label": "Quel est votre numéro de téléphone", "stringValue": "06 01 01 01 01"},
+            {"id": "Q2hhbXAtNTgyMjE5", "label": "Quel est ton numéro de téléphone ?", "stringValue": "06 01 01 01 01"},
             {
                 "id": "Q2hhbXAtNTgyMjIx",
-                "label": "Quel est le code postal de votre commune de résidence ? (ex : 25370)",
+                "label": "Quel est le code postal de ta commune de résidence ? (ex : 25370)",
                 "stringValue": "92700",
             },
             {
                 "id": "Q2hhbXAtNTgyMjIz",
-                "label": "Quelle est votre adresse de résidence",
+                "label": "Quelle est ton adresse de résidence",
                 "stringValue": "32 rue des sapins gris 21350 l'îsle à dent",
             },
             {"id": "Q2hhbXAtNzE4MDk0", "label": "Veuillez indiquer votre statut", "stringValue": "Employé"},
