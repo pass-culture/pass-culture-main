@@ -9,6 +9,9 @@ import { OfferType, ResultType, Role } from "utils/types"
 import { NoResultsPage } from "./NoResultsPage/NoResultsPage"
 import { Offer } from "./Offer"
 
+const getIdFromResultIdRaw = (resultId: string): number =>
+  parseInt(resultId.split("|")[1])
+
 export const Offers = ({
   userRole,
   results,
@@ -23,7 +26,8 @@ export const Offers = ({
   const offersThumbById = {}
   results.forEach(
     (result) =>
-      (offersThumbById[parseInt(result.id.raw)] = result.thumb_url?.raw)
+      (offersThumbById[getIdFromResultIdRaw(result.id.raw)] =
+        result.thumb_url?.raw)
   )
 
   const [offers, setOffers] = useState<OfferType[]>([])
@@ -37,7 +41,7 @@ export const Offers = ({
     let isSubscribed = true
     const offersFetchPromises = results.map((result) => {
       return pcapi
-        .getOffer(result.id.raw)
+        .getOffer(getIdFromResultIdRaw(result.id.raw))
         .then((offer) => {
           if (offerIsBookable(offer)) {
             return offer

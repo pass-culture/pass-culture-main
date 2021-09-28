@@ -30,7 +30,7 @@ const appSearchFakeResults: ResultType[] = [
       raw: ["2021-09-29T13:54:30+00:00"],
     },
     id: {
-      raw: "479",
+      raw: "offers-1|479",
     },
   },
   {

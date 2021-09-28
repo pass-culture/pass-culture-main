@@ -18,7 +18,7 @@ import { Offers } from "./Offers/Offers"
 
 const connector = new AppSearchAPIConnector({
   searchKey: APP_SEARCH_KEY,
-  engineName: "offers",
+  engineName: "offers-meta",
   endpointBase: APP_SEARCH_ENDPOINT,
 })
 
