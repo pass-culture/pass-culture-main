@@ -15,6 +15,7 @@ from pcapi.utils import requests
 logger = logging.getLogger(__name__)
 
 BATCH_CUSTOM_DATA_QUEUE_NAME = settings.GCP_BATCH_CUSTOM_DATA_QUEUE_NAME
+BATCH_NOTIFICATION_QUEUE_NAME = settings.GCP_BATCH_NOTIFICATION_QUEUE_NAME
 
 
 @dataclass
@@ -138,7 +139,6 @@ class BatchBackend:
                     "Could not delete batch user: %s",
                     exc,
                     extra={"user_id": user_id, "api": str(api)},
-                )
             else:
                 if response.status_code != 200:
                     logger.error(
@@ -146,6 +146,28 @@ class BatchBackend:
                         response.status_code,
                         response.content,
                     )
+
+
+    def send_transactional_notification_delayed(self, notification_data: TransactionalNotificationData) -> None:
+        user_ids = [str(user_id) for user_id in notification_data.user_ids]
+        json_data = {
+            "group_id": notification_data.group_id,
+            "recipients": {"custom_ids": user_ids},
+            "message": {
+                "title": notification_data.message.title,
+                "body": notification_data.message.body,
+            },
+            **notification_data.extra,
+        }
+
+        self._enqueue_api_call(
+            api_version="1.1",
+            url_suffix="transactional/send",
+            http_method=tasks_v2.HttpMethod.POST,
+            json=json_data,
+            queue_name=BATCH_NOTIFICATION_QUEUE_NAME,
+        )
+
 
     def _enqueue_api_call(
         self, api_version: str, url_suffix: str, http_method: int, json: dict[str, typing.Any], queue_name: str

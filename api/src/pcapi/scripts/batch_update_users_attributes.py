@@ -13,7 +13,7 @@ from pcapi.core.users.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.users.models import User
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.backends.batch import UserUpdateData
-from pcapi.utils import get_chunks
+from pcapi.utils.chunks import get_chunks
 
 
 def get_users(batch_size: int) -> Generator[User, None, None]:

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from dataclasses import field
+from datetime import datetime
 from enum import Enum
 from typing import Optional
 
@@ -15,6 +16,7 @@ class GroupId(Enum):
     CANCEL_BOOKING = "Cancel_booking"
     TOMORROW_STOCK = "Tomorrow_stock"
     OFFER_LINK = "Offer_link"
+    UNRETRIEVED_BOOKING = "Unretrieved_bookings"
 
 
 @dataclass
@@ -80,4 +82,18 @@ def get_offer_notification_data(user_id: int, offer: Offer) -> TransactionalNoti
             body="Pour réserver, c'est par ici !",
         ),
         extra={"deeplink": offer_webapp_link(offer)},
+    )
+
+
+def get_unretrieved_bookings_with_offers_notification_data(booking: Booking) -> TransactionalNotificationData:
+    remaining_time = datetime.now() - booking.expirationDate
+    remaining_days = remaining_time.days
+
+    return TransactionalNotificationData(
+        group_id=GroupId.UNRETRIEVED_BOOKING.value,
+        user_ids=[booking.userId],
+        message=TransactionalNotificationMessage(
+            title="Tu n'as pas récupéré ta réservation",
+            body=f'Vite, il ne te reste plus que {remaining_days} jours pour récupérer "{booking.stock.offer.name}"',
+        ),
     )

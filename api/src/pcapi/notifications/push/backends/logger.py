@@ -36,3 +36,6 @@ class LoggerBackend:
             "A request to delete user attributes would be sent for user with id=%d",
             user_id,
         )
+
+    def send_transactional_notification_delayed(self, notification_data: TransactionalNotificationData) -> None:
+        self.send_transactional_notification(notification_data)

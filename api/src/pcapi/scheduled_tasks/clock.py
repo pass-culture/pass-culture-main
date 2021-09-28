@@ -6,6 +6,7 @@ from flask import Blueprint
 from sentry_sdk import set_tag
 
 from pcapi import settings
+from pcapi import utils as generic_utils
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.finance.api as finance_api
 from pcapi.core.offerers.repository import get_offerers_by_date_validated
@@ -42,6 +43,7 @@ from pcapi.scripts.booking.handle_expired_bookings import handle_expired_booking
 from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_individual_bookings
 from pcapi.scripts.payment.user_recredit import recredit_underage_users
 from pcapi.workers.push_notification_job import send_tomorrow_stock_notification
+from pcapi.workers.push_notification_job import send_unretrieved_bookings_from_offer_notification_job
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -245,6 +247,14 @@ def pc_users_one_year_with_pass_automation() -> None:
     users_one_year_with_pass_automation()
 
 
+@log_cron_with_transaction
+@cron_context
+def pc_notify_users_bookings_not_retrieved() -> None:
+    booking_ids = bookings_api.get_unretrieved_booking_ids()
+    for chunk in generic_utils.get_chunks(settings.UNRETRIEVED_BOOKINGS_CHUNK_SIZE, booking_ids):
+        send_unretrieved_bookings_from_offer_notification_job.delay(chunk)
+
+
 @blueprint.cli.command("clock")
 def clock() -> None:
     set_tag("pcapi.app_type", "clock")
@@ -306,5 +316,7 @@ def clock() -> None:
     scheduler.add_job(pc_user_ex_beneficiary_automation, "cron", day="*", hour="4", minute="40")
     scheduler.add_job(pc_users_inactive_since_30_days_automation, "cron", day="*", hour="5", minute="0")
     scheduler.add_job(pc_users_one_year_with_pass_automation, "cron", day="1", hour="5", minute="20")
+
+    scheduler.add_job(pc_notify_users_bookings_not_retrieved, "cron", day="*", hour="17")
 
     scheduler.start()

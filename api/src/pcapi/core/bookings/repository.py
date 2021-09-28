@@ -2,8 +2,10 @@ import csv
 from datetime import date
 from datetime import datetime
 from datetime import time
+from datetime import timedelta
 from io import StringIO
 import math
+import typing
 from typing import Callable
 from typing import Iterable
 from typing import Optional
@@ -19,6 +21,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Query
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import load_only
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.util._collections import AbstractKeyedTuple
@@ -853,3 +856,22 @@ def _serialize_csv_report(query: Query) -> str:
         )
 
     return output.getvalue()
+
+
+def get_unretrieved_booking_ids() -> typing.Generator[int, None, None]:
+    three_days_ago = datetime.combine(date.today() - timedelta(days=3), time(0, 0))
+
+    bookings = (
+        Booking.query.join(Stock, Offer)
+        .filter_by(canExpire=True)
+        .filter(Booking.isUsed.is_(False))
+        .filter(Booking.isCancelled.is_(False))
+        .filter(Booking.dateCreated >= three_days_ago)
+        .options(load_only(Booking.id))
+    )
+
+    return (booking.id for booking in bookings)
+
+
+def get_bookings_with_offers(booking_ids: list[int]) -> typing.Iterator[Booking]:
+    return Booking.query.filter(Booking.id.in_(booking_ids)).options(joinedload(Booking.stock).joinedload(Stock.offer))
