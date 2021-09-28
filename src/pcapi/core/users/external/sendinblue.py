@@ -13,8 +13,8 @@ from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
 from pcapi import settings
 from pcapi.core.users import testing
 from pcapi.core.users.external import UserAttributes
-from pcapi.tasks.sendinblue_tasks import UpdateSendinblueContactRequest
 from pcapi.tasks.sendinblue_tasks import update_contact_attributes_task
+from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
 
 
 logger = logging.getLogger(__name__)

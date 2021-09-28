@@ -1,17 +1,35 @@
 from datetime import datetime
+from typing import Union
 from urllib.parse import quote
 
 from dateutil.relativedelta import relativedelta
 
+from pcapi import settings
 from pcapi.core.bookings import conf
+from pcapi.core.mails.transactional.models import SendinblueTransactionalEmailData
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmailSlug
 from pcapi.core.users import models as users_models
 from pcapi.models.deposit import DepositType
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils.urls import generate_firebase_dynamic_link
 
 
-def get_activation_email_data(user: users_models.User, token: users_models.Token) -> dict:
+def get_activation_email_data(
+    user: users_models.User, token: users_models.Token
+) -> Union[dict, SendinblueTransactionalEmailData]:
     first_name = user.firstName.capitalize()
     email = user.email
+
+    if FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
+        return SendinblueTransactionalEmailData(
+            template_id_slug=TransactionalEmailSlug.ACTIVATION_EMAIL,
+            params={
+                "prenom_user": first_name,
+                "token": token,
+                "activation_link": f"{settings.WEBAPP_FOR_NATIVE_REDIRECTION}/activation/{token}?email={email}",
+            },
+            tags=[],
+        )
 
     return {
         "Mj-TemplateID": 994771,
