@@ -44,8 +44,7 @@ class PhysicalOffersReimbursement(payments_models.ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue="ignored") -> bool:
-        offer = booking.stock.offer
-        return not offer.isEducational and (not offer.isDigital or _is_reimbursable_digital_offer(offer))
+        return is_relevant_for_gradual_decreasing(booking.stock.offer)
 
 
 class MaxReimbursementByOfferer(payments_models.ReimbursementRule):
@@ -56,7 +55,7 @@ class MaxReimbursementByOfferer(payments_models.ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if _irrevelant_for_gradual_decreasing(booking.stock.offer):
+        if not is_relevant_for_gradual_decreasing(booking.stock.offer):
             return False
         return cumulative_revenue > 20000
 
@@ -68,7 +67,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000(payment
     valid_until = SEPTEMBER_2021
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if _irrevelant_for_gradual_decreasing(booking.stock.offer):
+        if not is_relevant_for_gradual_decreasing(booking.stock.offer):
             return False
         return 20000 < cumulative_revenue <= 40000
 
@@ -80,7 +79,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000(paymen
     valid_until = SEPTEMBER_2021
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if _irrevelant_for_gradual_decreasing(booking.stock.offer):
+        if not is_relevant_for_gradual_decreasing(booking.stock.offer):
             return False
         return 40000 < cumulative_revenue <= 150000
 
@@ -92,7 +91,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000(payments_models.
     valid_until = SEPTEMBER_2021
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if _irrevelant_for_gradual_decreasing(booking.stock.offer):
+        if not is_relevant_for_gradual_decreasing(booking.stock.offer):
             return False
         return cumulative_revenue > 150000
 
@@ -104,7 +103,7 @@ class ReimbursementRateByVenueBetween20000And40000(payments_models.Reimbursement
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if _irrevelant_for_gradual_decreasing(booking.stock.offer):
+        if not is_relevant_for_gradual_decreasing(booking.stock.offer):
             return False
         return 20000 < cumulative_revenue <= 40000
 
@@ -116,7 +115,7 @@ class ReimbursementRateByVenueBetween40000And150000(payments_models.Reimbursemen
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if _irrevelant_for_gradual_decreasing(booking.stock.offer):
+        if not is_relevant_for_gradual_decreasing(booking.stock.offer):
             return False
         return 40000 < cumulative_revenue <= 150000
 
@@ -128,7 +127,7 @@ class ReimbursementRateByVenueAbove150000(payments_models.ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
-        if _irrevelant_for_gradual_decreasing(booking.stock.offer):
+        if not is_relevant_for_gradual_decreasing(booking.stock.offer):
             return False
         return cumulative_revenue > 150000
 
@@ -194,12 +193,12 @@ def find_all_booking_reimbursements(
     bookings: list[Booking], custom_rule_finder: CustomRuleFinder
 ) -> list[BookingReimbursement]:
     reimbursements = []
-    total_per_year = defaultdict(lambda: Decimal(0))
+    total_per_year: dict[int, Decimal] = defaultdict(lambda: Decimal(0))
 
     for booking in bookings:
         year = booking.dateUsed.year
 
-        if PhysicalOffersReimbursement().is_relevant(booking):
+        if is_relevant_for_gradual_decreasing(booking.stock.offer):
             total_per_year[year] += booking.total_amount
 
         rule = get_reimbursement_rule(booking, custom_rule_finder, total_per_year[year])
@@ -234,5 +233,5 @@ def _is_reimbursable_digital_offer(offer: Offer) -> bool:
     )
 
 
-def _irrevelant_for_gradual_decreasing(offer: Offer) -> bool:
-    return offer.isEducational or offer.product.isDigital
+def is_relevant_for_gradual_decreasing(offer: Offer) -> bool:
+    return not offer.isEducational and (not offer.isDigital or _is_reimbursable_digital_offer(offer))

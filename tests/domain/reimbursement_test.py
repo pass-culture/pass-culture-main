@@ -498,19 +498,30 @@ class FindAllBookingsReimbursementsTest:
     @freeze_time("2021-09-01 00:00:00")
     def test_degressive_reimbursement_around_20000(self):
         user = create_rich_user(20000)
-        event1 = create_event_booking(user=user, price=20000)
-        event2 = create_event_booking(price=100)
+        reimbursed_digital1 = create_digital_booking(
+            product_subcategory_id=subcategories.MUSEE_VENTE_DISTANCE.id,
+            user=user,
+            price=20000,
+        )
+        reimbursed_digital2 = create_digital_booking(
+            product_subcategory_id=subcategories.MUSEE_VENTE_DISTANCE.id,
+            price=100,
+        )
         thing = create_non_digital_thing_booking(price=100)
         digital = create_digital_booking(price=100)
         book = create_book_booking(price=100)
         educational = bookings_factories.UsedEducationalBookingFactory()
-        bookings = [event1, event2, thing, digital, book, educational]
+        bookings = [reimbursed_digital1, reimbursed_digital2, thing, digital, book, educational]
 
         reimbursements = reimbursement.find_all_booking_reimbursements(bookings, reimbursement.CustomRuleFinder())
 
-        assert_total_reimbursement(reimbursements[0], reimbursement.PhysicalOffersReimbursement, event1)
+        assert_total_reimbursement(
+            reimbursements[0],
+            reimbursement.PhysicalOffersReimbursement,
+            reimbursed_digital1,
+        )
         rule = reimbursement.ReimbursementRateByVenueBetween20000And40000
-        assert_partial_reimbursement(reimbursements[1], event2, rule, Decimal(95))
+        assert_partial_reimbursement(reimbursements[1], reimbursed_digital2, rule, 95)
         assert_partial_reimbursement(reimbursements[2], thing, rule, 95)
         assert_no_reimbursement_for_digital(reimbursements[3], digital)
         assert_partial_reimbursement(reimbursements[4], book, reimbursement.ReimbursementRateForBookAbove20000, 95)
