@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 import logging
+import typing
 
 from google.cloud import tasks_v2
 
@@ -33,24 +34,13 @@ class BatchBackend:
         self.headers = {"Content-Type": "application/json", "X-Authorization": settings.BATCH_SECRET_API_KEY}
 
     def update_user_attributes(self, user_id: int, attribute_values: dict) -> None:
-        for api in (BatchAPI.ANDROID, BatchAPI.IOS):
-            url = f"{settings.BATCH_API_URL}/1.0/{api.value}/data/users/{user_id}"
-            try:
-                http_request = CloudTaskHttpRequest(
-                    http_method=tasks_v2.HttpMethod.POST,
-                    headers=self.headers,
-                    url=url,
-                    json={"overwrite": False, "values": attribute_values},
-                )
-                enqueue_task(BATCH_CUSTOM_DATA_QUEUE_NAME, http_request)
-
-            except Exception as exc:  # pylint: disable=broad-except
-                logger.exception(
-                    "Unable to enqueue Cloud Task to update batch custom attributes: %s",
-                    exc,
-                    extra={"user_id": user_id, "api": str(api)},
-                    url=url,
-                )
+        self._enqueue_api_call(
+            api_version="1.0",
+            url_suffix=f"data/users/{user_id}",
+            http_method=tasks_v2.HttpMethod.POST,
+            json={"overwrite": False, "values": attribute_values},
+            queue_name=BATCH_CUSTOM_DATA_QUEUE_NAME,
+        )
 
     def update_user_attributes_with_legacy_internal_task(self, user_id: int, attribute_values: dict) -> None:
         for api in (BatchAPI.ANDROID, BatchAPI.IOS):
@@ -148,6 +138,36 @@ class BatchBackend:
                     "Could not delete batch user: %s",
                     exc,
                     extra={"user_id": user_id, "api": str(api)},
+                )
+            else:
+                if response.status_code != 200:
+                    logger.error(
+                        "Got %d status code from Batch Custom Data API: content=%s",
+                        response.status_code,
+                        response.content,
+                    )
+
+    def _enqueue_api_call(
+        self, api_version: str, url_suffix: str, http_method: int, json: dict[str, typing.Any], queue_name: str
+    ) -> None:
+        for api in (BatchAPI.ANDROID, BatchAPI.IOS):
+            url = f"{settings.BATCH_API_URL}/{api_version}/{api.value}/{url_suffix}"
+
+            try:
+                http_request = CloudTaskHttpRequest(
+                    http_method=http_method,
+                    headers=self.headers,
+                    url=url,
+                    json=json,
+                )
+
+                enqueue_task(queue_name, http_request)
+
+            except Exception as exc:  # pylint: disable=broad-except
+                logger.exception(
+                    "Unable to enqueue Cloud Task: %s",
+                    exc,
+                    extra={"url": url, "json": json},
                 )
             else:
                 if response.status_code != 200:
