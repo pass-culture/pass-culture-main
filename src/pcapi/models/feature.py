@@ -69,6 +69,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS = "Active le nouveau délai de rétractation pour les livres"
     ENABLE_DMS_GRAPHQL_API = "Utilise l'API GraphQL de DMS"
     ENABLE_EDUCONNECT_AUTHENTICATION = "Active l'authentification via educonnect sur l'app native"
+    ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS = (
+        "Utiliser Sendinblue pour envoyer les emails transactionnels (Ceux qui ont été migrés)"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -115,6 +118,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS,
     FeatureToggle.ENABLE_DMS_GRAPHQL_API,
     FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION,
+    FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS,
 )
 
 
