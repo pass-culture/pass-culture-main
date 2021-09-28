@@ -10,6 +10,10 @@ export const buildAlgoliaHit = searchHit => {
   const geoloc = searchHit.getRaw(AppSearchFields.venue_position)
   const [lat, lng] = (geoloc || ',').split(',')
 
+  // Offers are stored in engines grouped by a meta-engine. Thus their ids are `offers-2|9234`.
+  const id = searchHit.getRaw(AppSearchFields.id)
+  const objectID = id.split('|').slice(-1)[0]
+
   return {
     offer: {
       dates,
@@ -31,6 +35,6 @@ export const buildAlgoliaHit = searchHit => {
       name: searchHit.getRaw(AppSearchFields.venue_name),
       publicName: searchHit.getRaw(AppSearchFields.venue_public_name),
     },
-    objectID: searchHit.getRaw(AppSearchFields.id),
+    objectID,
   }
 }
