@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  slack: circleci/slack@4.2
 
 ###################
 #  EXECUTORS
@@ -243,6 +245,10 @@ jobs:
       - push-to-bucket:
           build_path: ~/pass-culture-main/pro/build/
           bucket_name: ${GCP_PROJECT}-testing-pro
+      - slack/notify:
+          event: fail
+          channel: stream-pro
+          template: basic_fail_1
 
 ###################
 #  WORKFLOWS
@@ -263,6 +269,7 @@ workflows:
           context:
             - GCP
             - GCP_EHP
+            - Slack
           requires:
             - unit-tests
             - e2e-tests
