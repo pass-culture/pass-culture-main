@@ -389,7 +389,7 @@ class AppSearchBackend(base.SearchBackend):
                 "category": offer.offer_category_name_for_app,
                 "date_created": offer.dateCreated,  # used only to rank results
                 "dates": dates,
-                "description": remove_stopwords(offer.description),
+                "description": remove_stopwords(offer.description or ""),
                 "group": group,
                 "is_digital": to_app_search_bool(offer.isDigital),
                 "is_duo": to_app_search_bool(offer.isDuo),
