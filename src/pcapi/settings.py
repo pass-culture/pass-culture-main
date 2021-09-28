@@ -37,22 +37,26 @@ if IS_PROD or IS_INTEGRATION:
         _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
     elif IS_INTEGRATION:
         _default_search_backend = "pcapi.core.search.backends.dummy.DummyBackend"
-    _default_email_backend = "pcapi.core.mails.backends.mailjet.MailjetBackend"
+    _default_email_backend = "pcapi.core.mails.backends.sendinblue.SendinblueBackend"
+    _mailjet_email_backend = "pcapi.core.mails.backends.mailjet.MailjetBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.SendinblueBackend"
 elif IS_STAGING or IS_TESTING:
     _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
-    _default_email_backend = "pcapi.core.mails.backends.mailjet.ToDevMailjetBackend"
+    _default_email_backend = "pcapi.core.mails.backends.mailjet.ToDevSendinblueBackend"
+    _mailjet_email_backend = "pcapi.core.mails.backends.mailjet.ToDevMailjetBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.ToDevSendinblueBackend"
 elif IS_RUNNING_TESTS:
     _default_search_backend = "pcapi.core.search.backends.testing.TestingBackend"
     _default_email_backend = "pcapi.core.mails.backends.testing.TestingBackend"
+    _mailjet_email_backend = "pcapi.core.mails.backends.testing.TestingBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.testing.TestingBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.testing.TestingBackend"
 elif IS_DEV:
     _default_search_backend = "pcapi.core.search.backends.testing.TestingBackend"
     _default_email_backend = "pcapi.core.mails.backends.logger.LoggerBackend"
+    _mailjet_email_backend = "pcapi.core.mails.backends.logger.LoggerBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.logger.LoggerBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.logger.LoggerBackend"
 else:
@@ -118,6 +122,7 @@ ADMINISTRATION_EMAIL_ADDRESS = os.environ.get("ADMINISTRATION_EMAIL_ADDRESS")
 COMPLIANCE_EMAIL_ADDRESS = os.environ.get("COMPLIANCE_EMAIL_ADDRESS", "")
 DEV_EMAIL_ADDRESS = os.environ.get("DEV_EMAIL_ADDRESS")
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", _default_email_backend)
+MAILJET_EMAIL_BACKEND = os.environ.get("MAILJET_EMAIL_BACKEND", _mailjet_email_backend)
 PAYMENTS_DETAILS_RECIPIENTS = utils.parse_str_to_list(os.environ.get("PAYMENTS_DETAILS_RECIPIENTS"))
 PAYMENTS_REPORT_RECIPIENTS = utils.parse_str_to_list(os.environ.get("PAYMENTS_REPORT_RECIPIENTS"))
 REPORT_OFFER_EMAIL_ADDRESS = os.environ.get("REPORT_OFFER_EMAIL_ADDRESS", "")

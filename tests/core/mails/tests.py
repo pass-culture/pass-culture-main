@@ -35,7 +35,7 @@ class SendTest:
         assert email.status == EmailStatus.SENT
         assert email.content == self.expected_sent_data
 
-    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.testing.FailingBackend")
+    @override_settings(MAILJET_EMAIL_BACKEND="pcapi.core.mails.backends.testing.FailingBackend")
     def test_send_failure(self):
         successful = mails.send(recipients=self.recipients, data=self.data)
         assert not successful
@@ -43,7 +43,7 @@ class SendTest:
         assert email.status == EmailStatus.ERROR
         assert email.content == self.expected_sent_data
 
-    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
+    @override_settings(MAILJET_EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
     def test_send_with_mailjet(self):
         expected = copy.deepcopy(self.expected_sent_data)
         expected["MJ-TemplateErrorReporting"] = "dev@example.com"
@@ -55,7 +55,7 @@ class SendTest:
 
 
 class MailingListFunctionsTest:
-    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
+    @override_settings(MAILJET_EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
     def test_create_contact_with_mailjet(self):
         with requests_mock.Mocker() as mock:
             posted = mock.post("https://api.eu.mailjet.com/v3/REST/contact")
@@ -63,7 +63,7 @@ class MailingListFunctionsTest:
         assert response.status_code == 200
         assert posted.last_request.json() == {"Email": "contact@example.com"}
 
-    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
+    @override_settings(MAILJET_EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
     def test_update_contact_with_mailjet(self):
         dt = datetime.date(2000, 1, 1)
         timestamp = 946684800  # `TZ=UTC` is set in .env.development
@@ -78,7 +78,7 @@ class MailingListFunctionsTest:
             ],
         }
 
-    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
+    @override_settings(MAILJET_EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
     def test_add_contact_to_list_with_mailjet(self):
         with requests_mock.Mocker() as mock:
             posted = mock.post("https://api.eu.mailjet.com/v3/REST/listrecipient")
