@@ -8,7 +8,6 @@ from psycopg2.errorcodes import UNIQUE_VIOLATION
 import pytz
 from sqlalchemy import exc
 from sqlalchemy.orm import joinedload
-from sqlalchemy.sql.functions import func
 import yaml
 from yaml.scanner import ScannerError
 
@@ -564,37 +563,50 @@ def create_mediation(
 def update_offer_and_stock_id_at_providers(venue: Venue, old_siret: str) -> None:
     current_siret = venue.siret
 
-    offer_ids = (
-        Offer.query.filter(Offer.venueId == venue.id)
-        .filter(Offer.idAtProviders.endswith(old_siret))
-        .with_entities(Offer.id)
-        .all()
-    )
-    stock_ids = (
-        Stock.query.join(Offer)
-        .filter(Offer.venueId == venue.id)
-        .filter(Stock.idAtProviders.endswith(old_siret))
-        .with_entities(Stock.id)
-        .all()
+    offers = Offer.query.filter(Offer.venueId == venue.id).filter(Offer.idAtProviders.endswith(old_siret)).all()
+    stocks = (
+        Stock.query.join(Offer).filter(Offer.venueId == venue.id).filter(Stock.idAtProviders.endswith(old_siret)).all()
     )
 
-    batch_size = 100
+    offer_ids_already_migrated = []
+    offers_to_update = []
 
-    for offer_index in range(0, len(offer_ids), batch_size):
-        Offer.query.filter(Offer.id.in_(offer_ids[offer_index : offer_index + batch_size])).update(
-            {Offer.idAtProviders: func.replace(Offer.idAtProviders, old_siret, current_siret)},
-            synchronize_session=False,
-        )
-        db.session.commit()
-        offer_index = offer_index + batch_size
+    for offer in offers:
+        new_id_at_providers = offer.idAtProviders.replace(old_siret, current_siret)
+        if db.session.query(
+            Offer.query.filter_by(venueId=venue.id, idAtProviders=new_id_at_providers).exists()
+        ).scalar():
+            offer_ids_already_migrated.append(offer.id)
+            continue
+        offer.idAtProviders = new_id_at_providers
+        offers_to_update.append(offer)
 
-    for stock_index in range(0, len(stock_ids), batch_size):
-        Stock.query.filter(Stock.id.in_(stock_ids[stock_index : stock_index + batch_size])).update(
-            {Stock.idAtProviders: func.replace(Stock.idAtProviders, old_siret, current_siret)},
-            synchronize_session=False,
-        )
-        db.session.commit()
-        stock_index = stock_index + batch_size
+    logger.warning(
+        "The following offers are already migrated from old siret to new siret: %s",
+        offer_ids_already_migrated,
+        extra={"venueId": venue.id, "current_siret": venue.siret, "old_siret": old_siret},
+    )
+
+    repository.save(*offers_to_update)
+
+    stock_ids_already_migrated = []
+    stocks_to_update = []
+
+    for stock in stocks:
+        new_id_at_providers = stock.idAtProviders.replace(old_siret, current_siret)
+        if db.session.query(Stock.query.filter_by(idAtProviders=new_id_at_providers).exists()).scalar():
+            stock_ids_already_migrated.append(stock.id)
+            continue
+        stock.idAtProviders = new_id_at_providers
+        stocks_to_update.append(stock)
+
+    logger.warning(
+        "The following stocks are already migrated from old siret to new siret: [%s]",
+        stock_ids_already_migrated,
+        extra={"venueId": venue.id, "current_siret": venue.siret, "old_siret": old_siret},
+    )
+
+    repository.save(*stocks_to_update)
 
 
 def get_expense_domains(offer: Offer) -> list[ExpenseDomain]:

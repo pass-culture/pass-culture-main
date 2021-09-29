@@ -1238,6 +1238,8 @@ class UpdateOfferAndStockIdAtProvidersTest:
         current_siret = "88888888888888"
         venue = VenueFactory(siret=current_siret)
         offer = OfferFactory(venue=venue, idAtProviders="1111111111111@22222222222222")
+        offer_already_migrated = OfferFactory(venue=venue, idAtProviders="1111111111112@22222222222222")
+        OfferFactory(venue=venue, idAtProviders="1111111111112@88888888888888")
         other_venue_offer = OfferFactory(venue=venue, idAtProviders="3333333333333@12222222222222")
         stock = StockFactory(offer=offer, idAtProviders="1111111111111@22222222222222")
 
@@ -1246,6 +1248,7 @@ class UpdateOfferAndStockIdAtProvidersTest:
 
         # Then
         assert offer.idAtProviders == "1111111111111@88888888888888"
+        assert offer_already_migrated.idAtProviders == "1111111111112@22222222222222"
         assert stock.idAtProviders == "1111111111111@88888888888888"
         assert other_venue_offer.idAtProviders == "3333333333333@12222222222222"
 

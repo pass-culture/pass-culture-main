@@ -211,7 +211,7 @@ def get_offers_map_by_venue_reference(id_at_providers: list[str], venue_id: int)
     offers_map = {}
     for offer_id, offer_id_at_provider in (
         db.session.query(Offer.id, Offer.idAtProvider)
-        .filter(and_(Offer.venueId == venue_id, Offer.idAtProvider.in_(id_at_providers)))
+        .filter(Offer.venueId == venue_id, Offer.idAtProvider.in_(id_at_providers))
         .all()
     ):
         offers_map[compute_venue_reference(offer_id_at_provider, venue_id)] = offer_id
