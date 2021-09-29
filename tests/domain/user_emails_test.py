@@ -149,6 +149,7 @@ class SendWarningToBeneficiaryAfterProBookingCancellationTest:
                 "offer_price": "10.00",
                 "offerer_name": booking.offerer.name,
                 "user_first_name": "Jeanne",
+                "user_last_name": "Doux",
                 "venue_name": booking.venue.name,
                 "env": "-development",
             },

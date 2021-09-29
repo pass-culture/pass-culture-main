@@ -17,7 +17,11 @@ class RetrieveDataToWarnUserAfterProBookingCancellationTest:
         stock = offers_factories.EventStockFactory(
             beginningDatetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
         )
-        booking = bookings_factories.IndividualBookingFactory(stock=stock, individualBooking__user__firstName="Georges")
+        booking = bookings_factories.IndividualBookingFactory(
+            stock=stock,
+            individualBooking__user__firstName="Georges",
+            individualBooking__user__lastName="Moustiquos",
+        )
 
         # When
         mailjet_data = retrieve_data_to_warn_user_after_pro_booking_cancellation(booking)
@@ -37,6 +41,7 @@ class RetrieveDataToWarnUserAfterProBookingCancellationTest:
                 "offer_price": "10.00",
                 "offerer_name": booking.offerer.name,
                 "user_first_name": "Georges",
+                "user_last_name": "Moustiquos",
                 "venue_name": booking.venue.name,
             },
         }
@@ -49,6 +54,7 @@ class RetrieveDataToWarnUserAfterProBookingCancellationTest:
         booking = bookings_factories.EducationalBookingFactory(
             stock=stock,
             educationalBooking__educationalRedactor__firstName="Georgio",
+            educationalBooking__educationalRedactor__lastName="Di georgio",
         )
 
         # When
@@ -69,6 +75,7 @@ class RetrieveDataToWarnUserAfterProBookingCancellationTest:
                 "offer_price": "10.00",
                 "offerer_name": booking.offerer.name,
                 "user_first_name": "Georgio",
+                "user_last_name": "Di georgio",
                 "venue_name": booking.venue.name,
             },
         }
@@ -76,7 +83,11 @@ class RetrieveDataToWarnUserAfterProBookingCancellationTest:
     def test_should_return_thing_data_when_booking_is_on_a_thing(self):
         # Given
         stock = offers_factories.ThingStockFactory()
-        booking = bookings_factories.IndividualBookingFactory(stock=stock, individualBooking__user__firstName="Georges")
+        booking = bookings_factories.IndividualBookingFactory(
+            stock=stock,
+            individualBooking__user__firstName="Georges",
+            individualBooking__user__lastName="Doux",
+        )
 
         # When
         mailjet_data = retrieve_data_to_warn_user_after_pro_booking_cancellation(booking)
@@ -96,6 +107,7 @@ class RetrieveDataToWarnUserAfterProBookingCancellationTest:
                 "offer_price": "10.00",
                 "offerer_name": booking.offerer.name,
                 "user_first_name": "Georges",
+                "user_last_name": "Doux",
                 "venue_name": booking.venue.name,
             },
         }
@@ -103,7 +115,11 @@ class RetrieveDataToWarnUserAfterProBookingCancellationTest:
     def test_should_return_thing_data_when_booking_is_on_an_online_offer(self):
         # Given
         stock = offers_factories.ThingStockFactory(offer__product=offers_factories.DigitalProductFactory())
-        booking = bookings_factories.IndividualBookingFactory(stock=stock, individualBooking__user__firstName="Georges")
+        booking = bookings_factories.IndividualBookingFactory(
+            stock=stock,
+            individualBooking__user__firstName="Georges",
+            individualBooking__user__lastName="Georges",
+        )
 
         # When
         mailjet_data = retrieve_data_to_warn_user_after_pro_booking_cancellation(booking)
@@ -123,6 +139,7 @@ class RetrieveDataToWarnUserAfterProBookingCancellationTest:
                 "offer_price": "10.00",
                 "offerer_name": booking.offerer.name,
                 "user_first_name": "Georges",
+                "user_last_name": "Georges",
                 "venue_name": booking.venue.name,
             },
         }
