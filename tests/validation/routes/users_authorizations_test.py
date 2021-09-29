@@ -81,7 +81,9 @@ class CheckUserCanValidateBookingV2Test:
             check_user_can_validate_bookings_v2(user, None)
 
         # Then
-        assert errors.value.errors["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
+        assert errors.value.errors["user"] == [
+            "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
+        ]
 
 
 class CheckApiKeyAllowsToValidateBookingTest:
@@ -114,4 +116,6 @@ class CheckApiKeyAllowsToValidateBookingTest:
             check_api_key_allows_to_validate_booking(validApiKey, None)
 
         # Then
-        assert errors.value.errors["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
+        assert errors.value.errors["user"] == [
+            "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
+        ]

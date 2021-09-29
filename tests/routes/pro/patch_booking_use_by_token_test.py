@@ -107,7 +107,9 @@ class Returns403Test:
 
             # Then
             assert response.status_code == 403
-            assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
+            assert response.json["user"] == [
+                "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
+            ]
 
         def test_when_api_key_is_provided_and_booking_has_been_cancelled_already(self, client):
             # Given
@@ -138,7 +140,9 @@ class Returns403Test:
 
             # Then
             assert response.status_code == 403
-            assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
+            assert response.json["user"] == [
+                "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
+            ]
             booking = Booking.query.get(booking.id)
             assert not booking.isUsed
             assert booking.status is not BookingStatus.USED

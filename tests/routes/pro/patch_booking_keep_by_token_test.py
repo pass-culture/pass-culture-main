@@ -109,7 +109,9 @@ class Returns403Test:
 
             # Then
             assert response.status_code == 403
-            assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
+            assert response.json["user"] == [
+                "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
+            ]
 
         @pytest.mark.usefixtures("db_session")
         def test_when_api_key_is_provided_and_booking_has_been_cancelled_already(self, client):
@@ -142,7 +144,9 @@ class Returns403Test:
 
             # Then
             assert response.status_code == 403
-            assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
+            assert response.json["user"] == [
+                "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
+            ]
             assert not booking.isUsed
 
         @pytest.mark.usefixtures("db_session")
