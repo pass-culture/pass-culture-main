@@ -182,6 +182,10 @@ def _index_venues_in_queue(backend: base.SearchBackend, from_error_queue: bool =
     if not venue_ids:
         return
 
+    _reindex_venue_ids(backend, venue_ids)
+
+
+def _reindex_venue_ids(backend: base.SearchBackend, venue_ids: Iterable[int]) -> None:
     logger.info("Starting to index venues", extra={"count": len(venue_ids), "backend": str(backend)})
     venues = Venue.query.filter(Venue.id.in_(venue_ids))
 
@@ -325,6 +329,25 @@ def unindex_all_offers() -> None:
             logger.exception("Could not unindex all offers", extra={"backend": str(backend)})
 
 
+def reindex_venue_ids(venue_ids: Iterable[int]) -> None:
+    """Given a list of `Venue.id`, reindex or unindex each venue
+    (i.e. request the external indexation service an update or a
+    removal).
+
+    This function calls the external indexation service and may thus
+    be slow. It should not be called by usual code. You should rather
+    call `async_index_venue_ids()` instead to return quickly.
+    """
+    backends = _get_backends()
+    for backend in backends:
+        try:
+            _reindex_venue_ids(backend, venue_ids)
+        except Exception:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
+            logger.exception("Could not reindex venues", extra={"venues": venue_ids, "backend": str(backend)})
+
+
 def unindex_venue_ids(venue_ids: Iterable[int]) -> None:
     if not venue_ids:
         return
@@ -337,3 +360,16 @@ def unindex_venue_ids(venue_ids: Iterable[int]) -> None:
             if settings.IS_RUNNING_TESTS:
                 raise
             logger.exception("Could not unindex venues", extra={"venues": venue_ids, "backend": str(backend)})
+
+
+def unindex_all_venues() -> None:
+    if settings.IS_PROD:
+        raise ValueError("It is forbidden to unindex all venues on this environment")
+    backends = _get_backends()
+    for backend in backends:
+        try:
+            backend.unindex_all_venues()
+        except Exception:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
+            logger.exception("Could not unindex all venues", extra={"backend": str(backend)})

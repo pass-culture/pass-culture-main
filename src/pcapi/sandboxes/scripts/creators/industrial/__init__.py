@@ -2,9 +2,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_activation_of
     create_industrial_activation_offers,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_algolia_objects import (
-    create_industrial_algolia_indexed_objects,
-)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import (
     associate_criterion_to_one_offer_with_mediation,
@@ -26,6 +23,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offers_with_a
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_payments import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users_api_keys import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_search_objects import (
+    create_industrial_search_indexed_objects,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_offers import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_products import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import *
@@ -88,7 +88,7 @@ def save_industrial_sandbox() -> None:
 
     create_industrial_activation_offers()
 
-    create_industrial_algolia_indexed_objects()
+    create_industrial_search_indexed_objects()
 
     create_venue_labels()
 
