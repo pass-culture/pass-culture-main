@@ -427,10 +427,12 @@ def auto_mark_as_used_after_event() -> None:
     n_individual_updated = individual_bookings.update(
         {"isUsed": True, "status": BookingStatus.USED, "dateUsed": now}, synchronize_session=False
     )
+    db.session.commit()
 
     n_educational_updated = educational_bookings.update(
         {"isUsed": True, "status": BookingStatus.USED, "dateUsed": now}, synchronize_session=False
     )
+    db.session.commit()
 
     logger.info(
         "Automatically marked bookings as used after event",
