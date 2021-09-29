@@ -7,5 +7,9 @@
   "python.testing.unittestEnabled": false,
   "python.testing.nosetestsEnabled": false,
   "python.testing.pytestEnabled": true,
-  "python.testing.pytestArgs": ["-vv", "-s"]
+  "python.testing.pytestArgs": [
+    "-vv",
+    "-s"
+  ],
+  "python.formatting.provider": "black"
 }
