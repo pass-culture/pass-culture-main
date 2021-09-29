@@ -50,6 +50,17 @@ export const autoFillNoDisabilityCompliantDecorator = createDecorator(
       motorDisabilityCompliant: initializeEmptyValue('motorDisabilityCompliant'),
       visualDisabilityCompliant: initializeEmptyValue('visualDisabilityCompliant'),
     },
+  },
+  {
+    field: /.*DisabilityCompliant/,
+    updates: {
+      isAccessibilityAppliedOnAllOffers: (_value, allValues) => {
+        if (allValues.isAccessibilityAppliedOnAllOffers === undefined) {
+          return true
+        }
+        return allValues.isAccessibilityAppliedOnAllOffers
+      },
+    },
   }
 )
 
