@@ -2,6 +2,7 @@ from functools import wraps
 import logging
 import time
 
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.scheduled_tasks.logger import CronStatus
 from pcapi.scheduled_tasks.logger import build_cron_log_message
@@ -34,17 +35,24 @@ def cron_require_feature(feature_toggle: FeatureToggle):
     return decorator
 
 
-def log_cron(func):
+def log_cron_with_transaction(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         start_time = time.time()
         logger.info(build_cron_log_message(name=func.__name__, status=CronStatus.STARTED))
 
-        result = func(*args, **kwargs)
+        try:
+            result = func(*args, **kwargs)
+            db.session.commit()
+            status = CronStatus.ENDED
+        except Exception as exception:
+            db.session.rollback()
+            status = CronStatus.FAILED
+            raise exception
+        finally:
+            duration = time.time() - start_time
+            logger.info(build_cron_log_message(name=func.__name__, status=status, duration=duration))
 
-        end_time = time.time()
-        duration = end_time - start_time
-        logger.info(build_cron_log_message(name=func.__name__, status=CronStatus.ENDED, duration=duration))
         return result
 
     return wrapper

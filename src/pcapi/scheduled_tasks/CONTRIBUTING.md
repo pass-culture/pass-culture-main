@@ -33,11 +33,11 @@ def synchronize_titelive_stocks(app):
 ```
 
 
-Un autre décorateur `@log_cron` permet de logguer l'exécution des crons sous un format standard afin de profiter des outils de monitoring.
+Un autre décorateur `@log_cron_with_transaction` permet de logguer l'exécution des crons sous un format standard afin de profiter des outils de monitoring.
 
 Exemple :
 ```python
-@log_cron
+@log_cron_with_transaction
 def synchronize_titelive_stocks(app):
     titelive_stocks_provider_id = get_provider_by_local_class(TITELIVE_STOCKS_PROVIDER_NAME).id
     update_venues_for_specific_provider(titelive_stocks_provider_id)
@@ -68,7 +68,7 @@ def synchronize_titelive_stocks(app):
 
 Exemple :
 ```python
-@log_cron
+@log_cron_with_transaction
 @cron_context
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE)
 def synchronize_titelive_stocks(app):
@@ -80,7 +80,7 @@ def synchronize_titelive_stocks(app):
 
 Exemple :
 ```python
-@log_cron
+@log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE)
 @cron_context
 def synchronize_titelive_stocks(app):

@@ -8,7 +8,7 @@ from pcapi.core.testing import override_features
 from pcapi.models.feature import FeatureToggle
 from pcapi.scheduled_tasks.decorators import cron_context
 from pcapi.scheduled_tasks.decorators import cron_require_feature
-from pcapi.scheduled_tasks.decorators import log_cron
+from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.scheduled_tasks.logger import CronStatus
 
 
@@ -67,7 +67,7 @@ class LogCronTest:
     @patch("pcapi.scheduled_tasks.decorators.build_cron_log_message")
     def test_should_call_logger_with_builded_message(self, mock_cron_log_builder, mock_logger_info, mock_time):
         # Given
-        @log_cron
+        @log_cron_with_transaction
         def decorated_function(*args):
             return "expected result"
 
