@@ -9,7 +9,7 @@ from pcapi.repository.clean_database import clean_all_database
 blueprint = Blueprint(__name__, __name__)
 
 
-@blueprint.cli.command
+@blueprint.cli.command("clean_database")
 def clean():
     try:
         clean_all_database()

@@ -10,7 +10,7 @@ blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
 
-@blueprint.cli.command
+@blueprint.cli.command("install_data")
 def install_data():
     from flask import current_app
 
@@ -18,7 +18,7 @@ def install_data():
     logger.info("Feature flags installed")
 
 
-@blueprint.cli.command
+@blueprint.cli.command("install_postgres_extension")
 def install_postgres_extension():
     from flask import current_app
 
