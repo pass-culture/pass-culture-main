@@ -630,10 +630,9 @@ elif [[ "$CMD" == "pgcli" ]]; then
 # Open a python prompt in the specified environment
 elif [[ "$CMD" == "python" ]]; then
     COLUMNS=${COLUMNS:-''};
-	if [[ "$ENV" == "development" ]]; then
-		RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && python -i src/pcapi/scripts/interact.py '"$CMD $*"'"'
-	else
-    if [ "$FILE_TO_UPLOAD" == 'none' ]; then
+    if [[ "$ENV" == "development" ]]; then
+        RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && flask shell '"$*"'"'
+    else if [ "$FILE_TO_UPLOAD" == 'none' ]; then
       kubectl -n $ENV exec -it $(pod_console) -- python -i src/pcapi/scripts/interact.py
     else
       kubectl cp -n $ENV "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD"
