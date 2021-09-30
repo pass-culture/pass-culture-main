@@ -16,7 +16,7 @@ from requests.auth import _basic_auth_str
 # FIXME (dbaty, 2020-02-08): avoid import loop (that occurs when
 # importing `pcapi.core.mails.testing`) when running tests. Remove
 # `isort: skip_file` above once fixed.
-import pcapi.models  # pylint: disable=unused-import
+import pcapi.models
 from pcapi import settings
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
@@ -66,10 +66,10 @@ def app_fixture():
 
         app.register_blueprint(test_blueprint, url_prefix="/test-blueprint")
 
-        install_local_providers()
         install_database_extensions()
-        install_feature_flags()
         run_migrations()
+        install_feature_flags()
+        install_local_providers()
 
         yield app
 
