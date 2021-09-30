@@ -75,7 +75,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         offerName=booking.stock.offer.product.name,
         offerType=BookingOfferType.EVENEMENT if booking.stock.offer.isEvent else BookingOfferType.EVENEMENT,
         phoneNumber=(booking.user.phoneNumber if booking.stock.offer.product.type == str(EventType.ACTIVATION) else ""),
-        price=booking.stock.price,
+        price=booking.amount,
         quantity=booking.quantity,
         theater=extra_data.get("theater", ""),
         userName=f"{booking.educationalBooking.educationalRedactor.firstName} {booking.educationalBooking.educationalRedactor.lastName}"
