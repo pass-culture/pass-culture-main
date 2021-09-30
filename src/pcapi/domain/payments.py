@@ -12,6 +12,7 @@ from flask import render_template
 from lxml import etree
 
 from pcapi import settings
+from pcapi.core.bookings.models import Booking
 import pcapi.core.payments.models as payments_models
 from pcapi.domain.bank_account import format_raw_iban_and_bic
 from pcapi.domain.reimbursement import BookingReimbursement
@@ -56,6 +57,7 @@ class PaymentDetails:
         "Type de l'offre",
         "Date de la réservation",
         "Prix de la réservation",
+        "Type de réservation",
         "Date de validation",
         "IBAN",
         "Paiement ID",
@@ -89,6 +91,7 @@ class PaymentDetails:
         )
         self.reimbursed_amount = payment.amount
         self.margin = payment.booking.total_amount - payment.amount
+        self.bookingType = _get_booking_type(payment.booking)
 
     def as_csv_row(self):
         return [
@@ -103,6 +106,7 @@ class PaymentDetails:
             self.offer_type,
             str(self.booking_date),
             str(self.booking_amount),
+            str(self.bookingType),
             str(self.booking_used_date),
             self.payment_iban,
             str(self.payment_id),
@@ -340,3 +344,13 @@ def _set_end_to_end_id_and_group_into_transactions(payment_query, batch_date) ->
         )
         for group in groups
     ]
+
+
+def _get_booking_type(booking: Booking) -> str:
+    if booking.educationalBookingId is not None:
+        return "EACC"
+
+    if booking.individualBookingId is not None:
+        return "PC"
+
+    return "UNKNOWN"

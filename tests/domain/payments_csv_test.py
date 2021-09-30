@@ -3,6 +3,8 @@ from decimal import Decimal
 
 import pytest
 
+from pcapi.core.bookings.factories import UsedEducationalBookingFactory
+from pcapi.core.bookings.factories import UsedIndividualBookingFactory
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
@@ -26,14 +28,16 @@ class GeneratePaymentDetailsCsvTest:
             managingOfferer__siren="111111111",
         )
         payment_message = payments_factories.PaymentMessageFactory()
+        p1_booking = UsedIndividualBookingFactory(
+            amount=10,
+            dateCreated=creation_date,
+            dateUsed=used_date,
+            stock__offer__product__name="Une histoire formidable",
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            stock__offer__venue=venue1,
+        )
         p1 = payments_factories.PaymentFactory(
-            booking__amount=10,
-            booking__dateCreated=creation_date,
-            booking__dateUsed=used_date,
-            booking__user__email="john.doe@example.com",
-            booking__stock__offer__product__name="Une histoire formidable",
-            booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-            booking__stock__offer__venue=venue1,
+            booking=p1_booking,
             iban="IBAN1",
             amount=9,
             reimbursementRate=0.9,
@@ -45,14 +49,33 @@ class GeneratePaymentDetailsCsvTest:
             managingOfferer__name="Le Gigantesque Cubitus Management Ltd.",
             managingOfferer__siren="222222222",
         )
+        p2_booking = UsedIndividualBookingFactory(
+            amount=12,
+            dateCreated=creation_date,
+            dateUsed=used_date,
+            stock__offer__product__name="Une histoire plutôt bien",
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            stock__offer__venue=venue2,
+        )
         p2 = payments_factories.PaymentFactory(
-            booking__amount=12,
-            booking__dateCreated=creation_date,
-            booking__dateUsed=used_date,
-            booking__user__email="jeanne.doux@example.com",
-            booking__stock__offer__product__name="Une histoire plutôt bien",
-            booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-            booking__stock__offer__venue=venue2,
+            booking=p2_booking,
+            iban="IBAN2",
+            amount=11,
+            reimbursementRate=None,
+            reimbursementRule=None,
+            customReimbursementRule=payments_factories.CustomReimbursementRuleFactory(),
+            paymentMessage=payment_message,
+        )
+        p3_booking = UsedEducationalBookingFactory(
+            amount=12,
+            dateCreated=creation_date,
+            dateUsed=used_date,
+            stock__offer__product__name="Une histoire plutôt bien",
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            stock__offer__venue=venue2,
+        )
+        p3 = payments_factories.PaymentFactory(
+            booking=p3_booking,
             iban="IBAN2",
             amount=11,
             reimbursementRate=None,
@@ -67,7 +90,7 @@ class GeneratePaymentDetailsCsvTest:
             csv = generate_payment_details_csv(Payment.query)
 
         rows = csv.splitlines()
-        assert len(rows) == 3
+        assert len(rows) == 4
         assert rows[0].split(",") == [
             '"Libellé fournisseur"',
             '"Raison sociale de la structure"',
@@ -80,6 +103,7 @@ class GeneratePaymentDetailsCsvTest:
             '"Type de l\'offre"',
             '"Date de la réservation"',
             '"Prix de la réservation"',
+            '"Type de réservation"',
             '"Date de validation"',
             '"IBAN"',
             '"Paiement ID"',
@@ -99,6 +123,7 @@ class GeneratePaymentDetailsCsvTest:
             '"Audiovisuel - films sur supports physiques et VOD"',
             '"2020-01-01 00:00:00"',
             '"10.00"',
+            '"PC"',
             '"2020-01-02 00:00:00"',
             '"IBAN1"',
             f'"{p1.id}"',
@@ -118,9 +143,30 @@ class GeneratePaymentDetailsCsvTest:
             '"Audiovisuel - films sur supports physiques et VOD"',
             '"2020-01-01 00:00:00"',
             '"12.00"',
+            '"PC"',
             '"2020-01-02 00:00:00"',
             '"IBAN2"',
             f'"{p2.id}"',
+            '"0.92"',
+            '"11.00"',
+            '"1.00"',
+        ]
+        assert rows[3].split(",") == [
+            '"Le Gigantesque Cubitus Management Ltd.-Le Gigantesque Cubitus"',
+            '"Le Gigantesque Cubitus Management Ltd."',
+            '"222222222"',
+            '"Le Gigantesque Cubitus"',
+            '"22222222233333"',
+            f'"{humanize(venue2.id)}"',
+            f'"{p3.booking.stock.offerId}"',
+            '"Une histoire plutôt bien"',
+            '"Cinéma - projections et autres évènements"',
+            '"2020-01-01 00:00:00"',
+            '"12.00"',
+            '"EACC"',
+            '"2020-01-02 00:00:00"',
+            '"IBAN2"',
+            f'"{p3.id}"',
             '"0.92"',
             '"11.00"',
             '"1.00"',
