@@ -2,7 +2,6 @@ import typing
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import venues_serialize
-from pcapi.serialization.utils import to_camel
 
 from . import BaseModel
 
@@ -15,11 +14,6 @@ class VenueAccessibilityModel(BaseModel):
 
 
 class VenueResponse(BaseModel):
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
     id: int
     name: str
     latitude: typing.Optional[float]
@@ -31,7 +25,7 @@ class VenueResponse(BaseModel):
     withdrawalDetails: typing.Optional[str]
     address: typing.Optional[str]
     postalCode: typing.Optional[str]
-    venueTypeCode: typing.Optional[offerers_models.VenueTypeCode]
+    venueTypeCode: typing.Optional[offerers_models.VenueTypeCodeKey]
     description: typing.Optional[venues_serialize.VenueDescription]  # type: ignore
     contact: typing.Optional[venues_serialize.VenueContactModel]
     accessibility: VenueAccessibilityModel

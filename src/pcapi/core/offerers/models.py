@@ -81,27 +81,29 @@ CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
     OR (siret IS NOT NULL AND "isVirtual" IS FALSE)
 """
 
+VENUE_TYPE_CODE_MAPPING = {
+    "VISUAL_ARTS": "Arts visuels, arts plastiques et galeries",
+    "CULTURAL_CENTRE": "Centre culturel",
+    "ARTISTIC_COURSE": "Cours et pratique artistiques",
+    "SCIENTIFIC_CULTURE": "Culture scientifique",
+    "FESTIVAL": "Festival",
+    "GAMES": "Jeux / Jeux vidéos",
+    "BOOKSTORE": "Librairie",
+    "LIBRARY": "Bibliothèque ou médiathèque",
+    "MUSEUM": "Musée",
+    "RECORD_STORE": "Musique - Disquaire",
+    "MUSICAL_INSTRUMENT_STORE": "Musique - Magasin d’instruments",
+    "CONCERT_HALL": "Musique - Salle de concerts",
+    "DIGITAL": "Offre numérique",
+    "PATRIMONY_TOURISM": "Patrimoine et tourisme",
+    "MOVIE": "Cinéma - Salle de projections",
+    "PERFORMING_ARTS": "Spectacle vivant",
+    "CREATIVE_ARTS_STORE": "Magasin arts créatifs",
+    "OTHER": "Autre",
+}
 
-class VenueTypeCode(enum.Enum):
-    VISUAL_ARTS = "Arts visuels, arts plastiques et galeries"
-    CULTURAL_CENTRE = "Centre culturel"
-    ARTISTIC_COURSE = "Cours et pratique artistiques"
-    SCIENTIFIC_CULTURE = "Culture scientifique"
-    FESTIVAL = "Festival"
-    GAMES = "Jeux / Jeux vidéos"
-    BOOKSTORE = "Librairie"
-    LIBRARY = "Bibliothèque ou médiathèque"
-    MUSEUM = "Musée"
-    RECORD_STORE = "Musique - Disquaire"
-    MUSICAL_INSTRUMENT_STORE = "Musique - Magasin d’instruments"
-    CONCERT_HALL = "Musique - Salle de concerts"
-    DIGITAL = "Offre numérique"
-    PATRIMONY_TOURISM = "Patrimoine et tourisme"
-    MOVIE = "Cinéma - Salle de projections"
-    PERFORMING_ARTS = "Spectacle vivant"
-    CREATIVE_ARTS_STORE = "Magasin arts créatifs"
-    OTHER = "Autre"
 
+class BaseVenueTypeCode(enum.Enum):
     @classmethod
     def __get_validators__(cls):
         cls.lookup = {v: k.name for v, k in cls.__members__.items()}
@@ -115,8 +117,15 @@ class VenueTypeCode(enum.Enum):
             raise ValueError(f"{v}: invalide")
 
     @classmethod
-    def from_label(cls, label: str) -> "VenueTypeCode":
+    def from_label(cls, label: str) -> "BaseVenueTypeCode":
         return {code.value: code.name for code in cls}[label]
+
+
+VenueTypeCode = enum.Enum("VenueTypeCode", VENUE_TYPE_CODE_MAPPING, type=BaseVenueTypeCode)
+VenueTypeCodeKey = enum.Enum(
+    "VenueTypeCodeKey",
+    {name: name for name, _ in VENUE_TYPE_CODE_MAPPING.items()},
+)
 
 
 class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, NeedsValidationMixin):
