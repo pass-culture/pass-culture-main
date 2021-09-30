@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
+from pcapi.core.offerers.factories import ProviderFactory
 import pcapi.core.offers.factories as offers_factories
 
 from tests.conftest import TestClient
@@ -15,6 +16,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @patch("pcapi.core.providers.api.synchronize_stocks")
 def test_accepts_request(mock_synchronize_stocks, app):
+    api_stocks_provider = ProviderFactory(name="Pass Culture API Stocks", localClass="PCAPIStocks")
     offerer = offers_factories.OffererFactory(siren=123456789)
     venue = offers_factories.VenueFactory(managingOfferer=offerer, id=3)
     ApiKeyFactory(offerer=offerer)
@@ -48,6 +50,7 @@ def test_accepts_request(mock_synchronize_stocks, app):
             },
         ],
         venue,
+        provider_id=api_stocks_provider.id,
     )
 
 
@@ -57,6 +60,7 @@ def test_accepts_request(mock_synchronize_stocks, app):
 )
 @patch("pcapi.core.providers.api.synchronize_stocks")
 def test_accepts_request_with_price(mock_synchronize_stocks, price, expected_price, app):
+    api_stocks_provider = ProviderFactory(name="Pass Culture API Stocks", localClass="PCAPIStocks")
     offerer = offers_factories.OffererFactory(siren=123456789)
     venue = offers_factories.VenueFactory(managingOfferer=offerer, id=3)
     ApiKeyFactory(offerer=offerer)
@@ -82,6 +86,7 @@ def test_accepts_request_with_price(mock_synchronize_stocks, price, expected_pri
             }
         ],
         venue,
+        provider_id=api_stocks_provider.id,
     )
 
 
