@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" entityID="https://pr4.educonnect.phm.education.gouv.fr/idp">
+
+    <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">
+
+        <KeyDescriptor use="signing">
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>
+MIIEfjCCAuagAwIBAgIVALEKBiKNzaVdzxjMFwgbqC+Z9nbaMA0GCSqGSIb3DQEB
+CwUAMC8xLTArBgNVBAMMJHByNC5lZHVjb25uZWN0LnBobS5lZHVjYXRpb24uZ291
+di5mcjAeFw0yMDA0MTcwODQ2NDhaFw00MDA0MTcwODQ2NDhaMC8xLTArBgNVBAMM
+JHByNC5lZHVjb25uZWN0LnBobS5lZHVjYXRpb24uZ291di5mcjCCAaIwDQYJKoZI
+hvcNAQEBBQADggGPADCCAYoCggGBAM56/dXvOTC0acwWUNOzefVN7Ypnaq1j+OAn
+1JZtM1rBI66651vunzk5ph5Qyw1/cBEHQibPyv8HVswbUNZJC7dzM/qLNE2EaUVy
+ShSESGdGlKZdkzHfRCWQIFv/bkBodkz/Zsf+t4z3uCNNxSgRp8TBLwCx7KrhJhF1
+zEOEyoNz2yz2pEkKp9Q0WVsp9d/4Bv2EZCU7w5xdXSgrDeygY6nDiFPLw3c3xqbf
+xHD3t8jIiXPrLXVdNLRxRJHEv9znrEXI4H/hR6TFra5xFG2Xm19WYcdr/YV39AUf
+m8ojJXwuKGWQpiS/TiEWWdFPe1sitqxfaVHqaEKPykJp5Pbfqo/HAvPgIZ5XEsxq
+pzhvnG0nd6dY4p2+TiJoUt90XDvrq1i9TOAQiMCm6Jj58NKa8G5JlFAeW+Qhaw2F
+2FLQ1u5n4OY1IPrekhlAwYly14R1p72Pebg8tbYDJRWDsqjvzDdm3uOicXQG8M/h
++97gXpb+ovgx+wHXof/kgUtUCsRruQIDAQABo4GQMIGNMB0GA1UdDgQWBBRrW7O0
+qgawsM42wqU2ZAucIey5+TBsBgNVHREEZTBjgiRwcjQuZWR1Y29ubmVjdC5waG0u
+ZWR1Y2F0aW9uLmdvdXYuZnKGO2h0dHBzOi8vcHI0LmVkdWNvbm5lY3QucGhtLmVk
+dWNhdGlvbi5nb3V2LmZyL2lkcC9zaGliYm9sZXRoMA0GCSqGSIb3DQEBCwUAA4IB
+gQBanmdOa7ZpsMPaLO1ho7LcPhRqOpsgWzjITA1xWEG4hRZk9feHL4AjhMz+RlyG
+kmBNy2BtSPNQ8ojh10/EuJeTfcQ+okS1hUKtAQq7WCB3qJYvhfsnB7pAoRKEtrQL
++4fitO58wDdN8DBHWdXZjEWM5JUgtZlzeifxUCg05KHDq2jxrWzz1KhjvnFvUl/f
+W2uwt7vBFB88yhwdFUdKdsDi4XgRq4ypXq7Po16g1wzKwXezYPsjNOzb9sVBvZaT
+EP+E4VGK5fcPTvIRmEBcHXqNtYpJHvgST3EvHYHsb2QCjAWX0PY/FMbkKKZA9iOL
+nTbmRqKWBOfq8O6FBuOsBnjvumlQxdrOYSg8p4xetNizYYcc+eFm4n+v+AzILqRI
+c66NtGMD5eGYSSN6FIWRjl73O/1rlWwYB1EPhxfIH1YndPYioG/Ao1/UpZjoYmjp
+KJHQ0RDtt+Hq4wzuswm+okB3+JxsGZZWACeiMH5OsMDXQ1UaL4jmScuRlZc/vxkX
+IS8=
+</ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+
+        </KeyDescriptor>
+        <KeyDescriptor use="encryption">
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>
+MIIEfTCCAuWgAwIBAgIUOQWudAYcn9bLlVC14jRQQNbyAnowDQYJKoZIhvcNAQEL
+BQAwLzEtMCsGA1UEAwwkcHI0LmVkdWNvbm5lY3QucGhtLmVkdWNhdGlvbi5nb3V2
+LmZyMB4XDTIwMDQxNzA4NDY1MFoXDTQwMDQxNzA4NDY1MFowLzEtMCsGA1UEAwwk
+cHI0LmVkdWNvbm5lY3QucGhtLmVkdWNhdGlvbi5nb3V2LmZyMIIBojANBgkqhkiG
+9w0BAQEFAAOCAY8AMIIBigKCAYEA99IJsA17KzoitP1pTmIQn1+TX0cdFLRY8RXC
+328vrV9qTV9K9ae/kxP4Sl6OLqrUCuIkRjYnaCDywAxfw7veV6JZvvMKS8BeL7dV
+LpfysFQrRRv2ZqKTPsoZ8Aq/ZR5fYQRRx47mxfox0XrTkj951gBVaezbHvEmjB9r
+AT3PlVtPGls/jMtY9ZCq5gVjXOt8cgltylKVEPbheMMtFl2xCXTTQaGisMNkwlNB
+M2mrkpgpjYZGR0kOtgQwJCFwlWeSJ0LoCwzG19tpE5ZgMFPc3p1x1FkOebgAsNCr
+h8BAK2d/+xoheuMwK3X62t5MbdsiZB4HQ2W1z9fD+1u4SOAwZiww17wQRKZvyzWG
+Kh+lWfhbSspwDa62Ho8Q2CLdL+FIM4Pr3J4j/sKstz9lFYlkI71Wie4iAScRX/WA
+3yJoZY84LEuYHldBzr6fbrGyJSikpUOu8DEC81cLFEchSSx1tpH71hrSPxa9uEOK
+WV/VFlJUwSHzBxEpxMXq5BxYQzf9AgMBAAGjgZAwgY0wHQYDVR0OBBYEFAHniJbW
+WGhUdVE6R+6795s03aqKMGwGA1UdEQRlMGOCJHByNC5lZHVjb25uZWN0LnBobS5l
+ZHVjYXRpb24uZ291di5mcoY7aHR0cHM6Ly9wcjQuZWR1Y29ubmVjdC5waG0uZWR1
+Y2F0aW9uLmdvdXYuZnIvaWRwL3NoaWJib2xldGgwDQYJKoZIhvcNAQELBQADggGB
+AJbsfjHpdgCH85gtgpU3jcC+BP7KKpJW2T/8aFjvLrhGpPrE/ovTIBlJtraF//xw
+4KCeKnPDJPreNeUUcYnQMxCFjrnAJfev/SfcGLbWqaAsKM5udemW2PKjs99ZcNdj
+AsDt/o3veGF9K1XwXBuz+WzfCpggyTvPg6N1khAbzZce5Voe3ZMtnfAqiXLe+TGn
+NYl3Dk4jxKZkEbDKoySKEnsS3Ynx6+q41SCIV3rrQYobgJIX+kZjKcRKSSyn+TVf
+TboDkTOn20JxcUJZx9pBBeZGlAVm0t3JiwUnK7zuu0OITscgKTK4iL8uCWx0hLCI
+D22BGqS8fAmkRMg3IjwXsKoYYcQ37qZ6jM2EFaya07cXd19fefVbwIETD1dqxPsQ
+MUWoGJTT8HdGqKrzcA1lx6ia7AQBvqjgbCVk3UuYK94f93DnS56Kez/hPTfZ3gjQ
+PeEu1sxTN/8vtBCNJNiijghJbcie9q4Jql8l13qtKIcJp6zcGwKm3hcE0zcdNEK8
+1Q==
+</ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+
+        </KeyDescriptor>
+
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://pr4.educonnect.phm.education.gouv.fr/idp/profile/SAML2/Redirect/SLO" />
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://pr4.educonnect.phm.education.gouv.fr/idp/profile/SAML2/POST/SLO" />
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign" Location="https://pr4.educonnect.phm.education.gouv.fr/idp/profile/SAML2/POST-SimpleSign/SLO" />
+
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://pr4.educonnect.phm.education.gouv.fr/idp/profile/SAML2/POST/SSO" />
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign" Location="https://pr4.educonnect.phm.education.gouv.fr/idp/profile/SAML2/POST-SimpleSign/SSO" />
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://pr4.educonnect.phm.education.gouv.fr/idp/profile/SAML2/Redirect/SSO" />
+
+    </IDPSSODescriptor>
+
+</EntityDescriptor>

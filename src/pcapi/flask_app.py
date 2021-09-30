@@ -12,8 +12,6 @@ from flask_admin import Admin
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
 from flask_login import current_user
-from flask_saml2.utils import certificate_from_string
-from flask_saml2.utils import private_key_from_string
 import redis
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -146,27 +144,6 @@ app.config["FLASK_ADMIN_SWATCH"] = "flatly"
 app.config["FLASK_ADMIN_FLUID_LAYOUT"] = True
 app.config["JWT_SECRET_KEY"] = settings.JWT_SECRET_KEY
 app.config["RATELIMIT_STORAGE_URL"] = settings.REDIS_URL
-
-# saml should not be setup in development mode as it uses certificates and private keys
-# TODO(anoukhello) setup saml in staging, integration and production environments
-if not settings.IS_DEV and settings.IS_TESTING:
-    app.config["SAML2_SP"] = {
-        "certificate": certificate_from_string(settings.EDUCONNECT_SP_CERTIFICATE),
-        "private_key": private_key_from_string(settings.EDUCONNECT_SP_PRIVATE_KEY),
-    }
-
-    app.config["SAML2_IDENTITY_PROVIDERS"] = [
-        {
-            "CLASS": "flask_saml2.sp.idphandler.IdPHandler",
-            "OPTIONS": {
-                "display_name": "Educonnect",
-                "entity_id": settings.EDUCONNECT_IDP_METADATA,
-                "sso_url": settings.EDUCONNECT_IDP_SSO_URL,
-                "slo_url": settings.EDUCONNECT_IDP_SLO_URL,
-                "certificate": certificate_from_string(settings.EDUCONNECT_IDP_CERTIFICATE),
-            },
-        },
-    ]
 
 
 jwt = JWTManager(app)

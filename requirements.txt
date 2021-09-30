@@ -17,7 +17,6 @@ Flask-Cors==3.0.9
 Flask-JWT-Extended==4.0.0
 Flask-Limiter==1.4
 Flask-Login==0.5.0
-flask-saml2==0.3.0
 Flask-SQLAlchemy==2.4.4
 freezegun==0.3.12
 google-auth==1.23.0
@@ -44,6 +43,7 @@ pydantic[email]==1.8.2
 PyJWT[crypto]==2.1.0
 pylint==2.8.3
 pylint-strict-informational
+pysaml2
 pytest-cov==2.10.1
 pytest-flask==1.0.0
 pytest-flask-sqlalchemy==1.0.2

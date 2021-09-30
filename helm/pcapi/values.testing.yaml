@@ -422,10 +422,6 @@ secrets:
     version: 4
   - name: EAC_API_KEY
     version: 1
-  - name: EDUCONNECT_IDP_CERTIFICATE
-    version: 1
-  - name: EDUCONNECT_IDP_METADATA
-    version: 1
   - name: EDUCONNECT_SP_CERTIFICATE
     version: 1
   - name: EDUCONNECT_SP_PRIVATE_KEY

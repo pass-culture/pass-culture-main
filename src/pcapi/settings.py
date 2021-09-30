@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 import semver
 
 from .utils import settings as utils
+from .utils.example_certificate import PRIVATE_KEY_EXAMPLE
+from .utils.example_certificate import PUBLIC_CERTIFICATE_EXAMPLE
 
 
 ENV = os.environ.get("ENV", "development")
@@ -318,9 +320,8 @@ JWT_ADAGE_PUBLIC_KEY_FILENAME = os.environ.get("JWT_ADAGE_PUBLIC_KEY_FILENAME", 
 NOTION_TOKEN = os.environ.get("NOTION_TOKEN", "")
 
 # EDUCONNECT
-EDUCONNECT_SP_CERTIFICATE = os.environ.get("EDUCONNECT_SP_CERTIFICATE", None)
-EDUCONNECT_SP_PRIVATE_KEY = os.environ.get("EDUCONNECT_SP_PRIVATE_KEY", None)
-EDUCONNECT_IDP_CERTIFICATE = os.environ.get("EDUCONNECT_IDP_CERTIFICATE", None)
-EDUCONNECT_IDP_METADATA = os.environ.get("EDUCONNECT_IDP_METADATA", None)
-EDUCONNECT_IDP_SSO_URL = os.environ.get("EDUCONNECT_IDP_SSO_URL", None)
-EDUCONNECT_IDP_SLO_URL = os.environ.get("EDUCONNECT_IDP_SLO_URL", None)
+API_URL_FOR_EDUCONNECT = os.environ.get(
+    "API_URL_FOR_EDUCONNECT", API_URL
+)  # corresponds to the metadata file given to educonnect
+EDUCONNECT_SP_CERTIFICATE = os.environ.get("EDUCONNECT_SP_CERTIFICATE", PUBLIC_CERTIFICATE_EXAMPLE)
+EDUCONNECT_SP_PRIVATE_KEY = os.environ.get("EDUCONNECT_SP_PRIVATE_KEY", PRIVATE_KEY_EXAMPLE)
