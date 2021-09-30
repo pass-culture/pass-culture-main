@@ -111,9 +111,9 @@ def get_newly_eligible_users(since: date) -> list[User]:
             User.isBeneficiary == False,  # not already beneficiary
             User.isAdmin == False,  # not an admin
             UserOfferer.userId.is_(None),  # not a pro
-            User.dateOfBirth > today - relativedelta(years=(constants.ELIGIBILITY_AGE + 1)),  # less than 19yo
-            User.dateOfBirth <= today - relativedelta(years=constants.ELIGIBILITY_AGE),  # more than or 18yo
-            User.dateOfBirth > since - relativedelta(years=constants.ELIGIBILITY_AGE),  # less than 18yo at since
+            User.dateOfBirth > today - relativedelta(years=(constants.ELIGIBILITY_AGE_18 + 1)),  # less than 19yo
+            User.dateOfBirth <= today - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # more than or 18yo
+            User.dateOfBirth > since - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # less than 18yo at since
             User.dateCreated < today,
         )
         .all()

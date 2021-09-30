@@ -176,7 +176,7 @@ class UserProfileResponse(BaseModel):
     @staticmethod
     def _show_eligible_card(user: User) -> bool:
         return (
-            relativedelta(user.dateCreated, user.dateOfBirth).years < users_constants.ELIGIBILITY_AGE
+            relativedelta(user.dateCreated, user.dateOfBirth).years < users_constants.ELIGIBILITY_AGE_18
             and user.isBeneficiary is False
             and user.is_eligible
         )

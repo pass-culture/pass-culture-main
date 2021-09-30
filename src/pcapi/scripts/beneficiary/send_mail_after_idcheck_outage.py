@@ -38,8 +38,8 @@ def _get_eligible_users_created_between(
         User.isBeneficiary == False,  # not already beneficiary
         User.isAdmin == False,  # not an admin
         UserOfferer.userId.is_(None),  # not a pro
-        User.dateOfBirth > today - relativedelta(years=(constants.ELIGIBILITY_AGE + 1)),  # less than 19yo
-        User.dateOfBirth <= today - relativedelta(years=constants.ELIGIBILITY_AGE),  # more than or 18yo
+        User.dateOfBirth > today - relativedelta(years=(constants.ELIGIBILITY_AGE_18 + 1)),  # less than 19yo
+        User.dateOfBirth <= today - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # more than or 18yo
     )
     query = _filter_by_eligible_postal_code(query)
     if max_number:

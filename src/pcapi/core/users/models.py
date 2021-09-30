@@ -316,7 +316,7 @@ class User(PcObject, Model, NeedsValidationMixin):
 
         return (
             self.age is not None
-            and self.age == constants.ELIGIBILITY_AGE
+            and self.age == constants.ELIGIBILITY_AGE_18
             and _is_postal_code_eligible(self.departementCode)
         )
 
@@ -329,10 +329,10 @@ class User(PcObject, Model, NeedsValidationMixin):
             return None
 
         eligibility_start = datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
-            years=constants.ELIGIBILITY_AGE
+            years=constants.ELIGIBILITY_AGE_18
         )
         eligibility_stop = datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
-            years=constants.ELIGIBILITY_AGE + 1
+            years=constants.ELIGIBILITY_AGE_18 + 1
         )
         now = datetime.combine(date.today(), time(0, 0))
         if not _is_postal_code_eligible(self.departementCode) and eligibility_start <= now < eligibility_stop:
@@ -348,10 +348,10 @@ class User(PcObject, Model, NeedsValidationMixin):
             return None
 
         eligibility_start = datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
-            years=constants.ELIGIBILITY_AGE
+            years=constants.ELIGIBILITY_AGE_18
         )
         eligibility_stop = datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
-            years=constants.ELIGIBILITY_AGE + 1
+            years=constants.ELIGIBILITY_AGE_18 + 1
         )
         now = datetime.combine(date.today(), time(0, 0))
         if not _is_postal_code_eligible(self.departementCode) and eligibility_start <= now < eligibility_stop:
