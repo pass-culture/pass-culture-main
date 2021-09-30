@@ -86,7 +86,7 @@ modifié quand ces problèmes seront réglés côté pylint/astroid.
     ```  
     ```shell
       source venv/bin/activate # Au cas ou vous l'auriez oublié :P
-      python src/pcapi/install_database_extensions.py
+      flask install_postgres_extensions
       alembic upgrade head
       ```
     - Injecter les données de tests (sandbox)

@@ -18,9 +18,7 @@ def install_data():
     logger.info("Feature flags installed")
 
 
-@blueprint.cli.command("install_postgres_extension")
-def install_postgres_extension():
-    from flask import current_app
-
-    install_database_extensions(current_app)
+@blueprint.cli.command("install_postgres_extensions")
+def install_postgres_extensions():
+    install_database_extensions()
     logger.info("Database extensions installed")

@@ -67,7 +67,7 @@ def app_fixture():
         app.register_blueprint(test_blueprint, url_prefix="/test-blueprint")
 
         install_local_providers()
-        install_database_extensions(app)
+        install_database_extensions()
         install_feature_flags()
         run_migrations()
 
@@ -122,7 +122,7 @@ def _db(app):
     """
     mock_db = db
     mock_db.init_app(app)
-    install_database_extensions(app)
+    install_database_extensions()
     run_migrations()
     install_feature_flags()
 

@@ -1,12 +1,11 @@
 from pcapi.models.db import db
 
 
-def install_database_extensions(app):
-    with app.app_context():
-        _create_text_search_configuration_if_not_exists()
-        _create_index_btree_gist_extension()
-        _create_postgis_extension()
-        _create_pgcrypto_extension()
+def install_database_extensions():
+    _create_text_search_configuration_if_not_exists()
+    _create_index_btree_gist_extension()
+    _create_postgis_extension()
+    _create_pgcrypto_extension()
 
 
 def _create_text_search_configuration_if_not_exists():
@@ -34,13 +33,3 @@ def _create_postgis_extension():
 def _create_pgcrypto_extension():
     # The `pgcrypto` is required to use `gen_random_uuid()` until PostgreSQL 13.
     db.engine.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto;")
-
-
-def main():
-    from pcapi.flask_app import app
-
-    install_database_extensions(app)
-
-
-if __name__ == "__main__":
-    main()

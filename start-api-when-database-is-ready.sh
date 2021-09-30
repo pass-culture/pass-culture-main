@@ -19,7 +19,7 @@ until psql $DATABASE_URL -c '\q'; do
 done
 
 echo >&2 -e "\n\033[0;32mPostgres is up - Install app\n"
-python src/pcapi/install_database_extensions.py
+flask install_postgres_extensions
 
 echo >&2 -e "\n\033[0;32mPostgres is up - Running migration\n"
 alembic upgrade head
