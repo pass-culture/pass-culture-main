@@ -3,7 +3,7 @@ import logging
 from flask import Blueprint
 
 from pcapi.install_database_extensions import install_database_extensions
-from pcapi.scripts.install_database_feature_flags import install_database_feature_flags
+from pcapi.models.feature import install_feature_flags
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -12,9 +12,7 @@ logger = logging.getLogger(__name__)
 
 @blueprint.cli.command("install_data")
 def install_data():
-    from flask import current_app
-
-    install_database_feature_flags(current_app)
+    install_feature_flags()
     logger.info("Feature flags installed")
 
 
