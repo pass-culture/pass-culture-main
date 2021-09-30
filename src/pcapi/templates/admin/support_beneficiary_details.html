@@ -202,7 +202,7 @@
     </table>
     {% else %}
     <div class="card card-body">
-      Aucun résultat d'import de bénéficiaire
+      Aucun résultat de fraude
     </div>
     {% endif %}
   </div>
@@ -265,7 +265,9 @@
         <td>
           <ul>
             {% for status in import.statuses %}
-            <li>{{ status.status.value }} - {{ status.detail }}</li>
+            <li>{{ status.status.value }} - {{ status.detail }} - {% if status.date %}le {{ status.date.strftime('le
+              %d/%m/%Y à %H:%M:%S') }} {% endif %}
+            </li>
             {% endfor %}
           </ul>
         </td>
