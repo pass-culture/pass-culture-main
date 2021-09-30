@@ -44,6 +44,7 @@ from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.deposit import Deposit
 from pcapi.models.deposit import DepositType
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.user_offerer import UserOfferer
@@ -97,6 +98,11 @@ class UserRole(enum.Enum):
     # TODO(bcalvez) : remove this role as soon as we get a proper identification mecanism in F.A.
     JOUVE = "JOUVE"
     UNDERAGE_BENEFICIARY = "UNDERAGE_BENEFICIARY"
+
+
+class EligibilityType(enum.Enum):
+    UNDERAGE = "underage"
+    AGE18 = "age-18"
 
 
 @dataclass
@@ -309,6 +315,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     def needsToSeeTutorials(self):
         return self.isBeneficiary and not self.hasSeenTutorials
 
+    # TODO(ahello) use eligibility instead of this property
     @property
     def is_eligible(self) -> bool:
         # To avoid import loops
@@ -319,6 +326,16 @@ class User(PcObject, Model, NeedsValidationMixin):
             and self.age == constants.ELIGIBILITY_AGE_18
             and _is_postal_code_eligible(self.departementCode)
         )
+
+    @property
+    def eligibility(self) -> Optional[EligibilityType]:
+        if self.is_eligible:
+            return EligibilityType.AGE18
+
+        if self.age in constants.ELIGIBILITY_UNDERAGE_RANGE and FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
+            return EligibilityType.UNDERAGE
+
+        return None
 
     @property
     def eligibility_start_datetime(self) -> Optional[datetime]:
