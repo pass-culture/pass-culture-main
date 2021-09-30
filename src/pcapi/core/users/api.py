@@ -36,6 +36,7 @@ from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
+from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
@@ -820,18 +821,28 @@ def check_sms_sending_is_allowed(user: User) -> None:
         raise exceptions.SMSSendingLimitReached()
 
 
-def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryValidationStep]:
+def get_id_check_validation_step(user: User) -> Optional[BeneficiaryValidationStep]:
     from pcapi.routes.native.utils import is_client_older
 
-    if user.isBeneficiary or not user.is_eligible:
-        return None
-    if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
-        return BeneficiaryValidationStep.PHONE_VALIDATION
-    if not user.hasCompletedIdCheck:
+    if not user.hasCompletedIdCheck and user.allowed_eligibility_check_methods:
         if is_client_older("1.160.0") or not user.extraData.get("is_identity_document_uploaded"):
             return BeneficiaryValidationStep.ID_CHECK
         return BeneficiaryValidationStep.BENEFICIARY_INFORMATION
+    return None
 
+
+def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryValidationStep]:
+
+    if user.isBeneficiary or user.eligibility is None:
+        return None
+
+    if user.eligibility == EligibilityType.AGE18:
+        if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
+            return BeneficiaryValidationStep.PHONE_VALIDATION
+        return get_id_check_validation_step(user)
+
+    if user.eligibility == EligibilityType.UNDERAGE:
+        return get_id_check_validation_step(user)
     return None
 
 

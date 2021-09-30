@@ -360,6 +360,50 @@ class AccountTest:
         assert response.status_code == 200
         assert not response.json["nextBeneficiaryValidationStep"]
 
+    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
+    @freeze_time("2021-06-01")
+    def test_next_beneficiary_validation_step_underage(self, client):
+        users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2006, 1, 1))
+
+        access_token = create_access_token(identity=self.identifier)
+        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        with override_features(ALLOW_IDCHECK_UNDERAGE_REGISTRATION=True, ENABLE_EDUCONNECT_AUTHENTICATION=False):
+            response = client.get("/native/v1/me")
+            assert response.status_code == 200
+            assert response.json["allowedEligibilityCheckMethods"] == ["jouve"]
+            assert response.json["nextBeneficiaryValidationStep"] == "id-check"
+
+        with override_features(ALLOW_IDCHECK_UNDERAGE_REGISTRATION=False, ENABLE_EDUCONNECT_AUTHENTICATION=True):
+            response = client.get("/native/v1/me")
+            assert response.status_code == 200
+            assert response.json["allowedEligibilityCheckMethods"] == ["educonnect"]
+            assert response.json["nextBeneficiaryValidationStep"] == "id-check"
+
+        with override_features(ALLOW_IDCHECK_UNDERAGE_REGISTRATION=True, ENABLE_EDUCONNECT_AUTHENTICATION=True):
+            response = client.get("/native/v1/me")
+            assert response.status_code == 200
+            assert response.json["allowedEligibilityCheckMethods"] == ["educonnect", "jouve"]
+            assert response.json["nextBeneficiaryValidationStep"] == "id-check"
+
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+        assert not response.json["allowedEligibilityCheckMethods"]
+        assert not response.json["nextBeneficiaryValidationStep"]
+
+    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=False)
+    @freeze_time("2021-06-01")
+    def test_next_beneficiary_validation_step_underage_not_eligible(self, client):
+        users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2006, 1, 1))
+
+        access_token = create_access_token(identity=self.identifier)
+        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+        assert not response.json["allowedEligibilityCheckMethods"]
+        assert not response.json["nextBeneficiaryValidationStep"]
+
 
 def build_test_client(app, identity):
     access_token = create_access_token(identity=identity)
