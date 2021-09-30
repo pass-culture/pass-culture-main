@@ -323,6 +323,6 @@ NOTION_TOKEN = os.environ.get("NOTION_TOKEN", "")
 # EDUCONNECT
 API_URL_FOR_EDUCONNECT = os.environ.get(
     "API_URL_FOR_EDUCONNECT", API_URL
-)  # corresponds to the metadata file given to educonnect
+)  # must match the url specified in the metadata file provided to educonnect
 EDUCONNECT_SP_CERTIFICATE = os.environ.get("EDUCONNECT_SP_CERTIFICATE", PUBLIC_CERTIFICATE_EXAMPLE)
 EDUCONNECT_SP_PRIVATE_KEY = os.environ.get("EDUCONNECT_SP_PRIVATE_KEY", PRIVATE_KEY_EXAMPLE)
