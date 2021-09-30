@@ -105,6 +105,11 @@ class EligibilityType(enum.Enum):
     AGE18 = "age-18"
 
 
+class EligibilityCheckMethods(enum.Enum):
+    JOUVE = "jouve"
+    EDUCONNECT = "educonnect"
+
+
 @dataclass
 class NotificationSubscriptions:
     marketing_push: bool = True
@@ -334,6 +339,25 @@ class User(PcObject, Model, NeedsValidationMixin):
 
         if self.age in constants.ELIGIBILITY_UNDERAGE_RANGE and FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
             return EligibilityType.UNDERAGE
+
+        return None
+
+    @property
+    def allowed_eligibility_check_methods(self) -> Optional[list[EligibilityCheckMethods]]:
+        eligibility = self.eligibility
+        if eligibility is None:
+            return None
+
+        if eligibility == EligibilityType.AGE18:
+            return [EligibilityCheckMethods.JOUVE]
+
+        if eligibility == EligibilityType.UNDERAGE:
+            underage_elibility_check_methods = []
+            if FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION.is_active():
+                underage_elibility_check_methods.append(EligibilityCheckMethods.EDUCONNECT)
+            if FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION.is_active():
+                underage_elibility_check_methods.append(EligibilityCheckMethods.JOUVE)
+            return underage_elibility_check_methods
 
         return None
 

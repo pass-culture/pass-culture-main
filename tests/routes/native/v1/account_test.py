@@ -117,6 +117,7 @@ class AccountTest:
         response = test_client.get("/native/v1/me")
 
         EXPECTED_DATA = {
+            "allowedEligibilityCheckMethods": ["jouve"],
             "id": user.id,
             "bookedOffers": {str(booking.stock.offer.id): booking.id},
             "domainsCredit": {
@@ -173,6 +174,7 @@ class AccountTest:
 
         EXPECTED_DATA = {
             "id": user.id,
+            "allowedEligibilityCheckMethods": None,
             "bookedOffers": {},
             "domainsCredit": None,
             "dateOfBirth": "2000-01-01",
@@ -224,6 +226,7 @@ class AccountTest:
 
         EXPECTED_DATA = {
             "id": user.id,
+            "allowedEligibilityCheckMethods": None,
             "bookedOffers": {},
             "domainsCredit": None,
             "dateOfBirth": "2000-01-01",

@@ -16,6 +16,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users.api import BeneficiaryValidationStep
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import get_next_beneficiary_validation_step
+from pcapi.core.users.models import EligibilityCheckMethods
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
@@ -157,6 +158,7 @@ class UserProfileResponse(BaseModel):
     publicName: Optional[str] = Field(None, alias="pseudo")
     needsToFillCulturalSurvey: bool
     show_eligible_card: bool
+    allowed_eligibility_check_methods: Optional[list[EligibilityCheckMethods]]
 
     class Config:
         orm_mode = True
