@@ -13,6 +13,7 @@ describe('src | getProviderInfo', () => {
       id: 'fnac',
       icon: 'logo-fnac',
       name: 'Fnac',
+      synchronizedOfferMessage: 'Offre synchronisée avec Fnac',
     })
   })
 
@@ -28,6 +29,7 @@ describe('src | getProviderInfo', () => {
       id: 'titelive',
       icon: 'logo-titeLive',
       name: 'Tite Live',
+      synchronizedOfferMessage: 'Offre synchronisée avec Tite Live',
     })
   })
 })

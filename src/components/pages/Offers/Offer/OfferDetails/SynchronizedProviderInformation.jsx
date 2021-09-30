@@ -17,7 +17,7 @@ const SynchronizedProviderInformation = ({ providerName }) => {
         alt={`Icône de ${providerInfo.name}`}
         svg={providerInfo.icon}
       />
-      {`Offre synchronisée avec ${providerInfo.name}`}
+      {providerInfo.synchronizedOfferMessage}
     </div>
   )
 }
