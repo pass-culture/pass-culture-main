@@ -79,38 +79,6 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
       })
     })
 
-    describe('see all offers in one venue link', () => {
-      it('should not be displayed if venue has no offers yet', () => {
-        const wrapper = mount(
-          <Router history={history}>
-            <VenueItem {...props} />
-          </Router>
-        )
-        const actions = wrapper.find('.actions')
-        const navLink = actions.find(Link)
-        const actionsTypes = actions.find('li')
-
-        // then
-        expect(navLink.at(1)).toHaveLength(0)
-        expect(actionsTypes.at(1).text()).toBe('0 offre')
-      })
-
-      it('should redirect to offers page', () => {
-        props.venue.nOffers = 3
-        const wrapper = mount(
-          <Router history={history}>
-            <VenueItem {...props} />
-          </Router>
-        )
-        const actions = wrapper.find('.actions')
-        const navLink = actions.find(Link)
-
-        // then
-        expect(navLink.at(1).text()).toBe('3 offres')
-        expect(navLink.at(1).prop('to')).toBe('/offres?lieu=AAA&structure=ABC')
-      })
-    })
-
     describe('see venue details link', () => {
       it('should redirect to venue details page', () => {
         const wrapper = mount(

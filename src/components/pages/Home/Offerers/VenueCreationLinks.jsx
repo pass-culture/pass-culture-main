@@ -25,15 +25,13 @@ const VenueCreationLinks = ({ hasPhysicalVenue, hasVirtualOffers, offererId }) =
       >
         {!hasPhysicalVenue ? 'Créer un lieu' : 'Ajouter un lieu'}
       </Link>
-
-      {!hasVirtualOffers && (
-        <Link
-          className="secondary-link"
-          to={`/offres/creation?structure=${offererId}`}
-        >
-          Créer une offre numérique
-        </Link>
-      )}
+      
+      <Link
+        className="secondary-link"
+        to={`/offres/creation?structure=${offererId}`}
+      >
+        Créer une offre
+      </Link>
     </div>
   )
 

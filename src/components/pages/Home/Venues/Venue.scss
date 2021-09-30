@@ -1,12 +1,43 @@
 .offerer-venue {
+  .h-card-header-row.h-card-is-open {
+    padding-bottom: rem(16px);
+  }
+
+  .h-card-header-row {
+    width: 100%;
+  }
+
+  .button-group {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+
+    .tertiary-button, .tertiary-link {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    &-separator {
+      height: rem(20px);
+      border-left: solid 1px $grey-medium;
+      margin-left: rem(16px);
+      margin-right: rem(12px);
+    }
+  }
+
+  .tertiary-button.od-primary {
+    color: $primary;
+
+    & .svg-color {
+      fill: $primary;
+    }
+  }
+
   .h-card-title {
-    overflow: hidden;
 
     .title-text {
+      display: block;
       margin-right: rem(16px);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
   }
 }

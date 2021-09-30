@@ -1,21 +1,28 @@
 .venue-stats {
-  display: grid;
-  grid-column-gap: rem(13px);
-  grid-template-columns: repeat(4, 1fr 1px) 1fr;
+  display: flex;
+  align-items: center;
   margin-bottom: rem(35px);
-  margin-top: rem(50px);
+  padding-top: rem(50px);
 
   .separator {
     background-color: $grey-medium;
   }
 
   .h-card-col {
-    align-items: center;
+    flex:  0 0 20%;
+    padding: 0 rem(24px);
     display: flex;
+    align-items: center;
     flex-direction: column;
     height: rem(110px);
     justify-content: space-between;
     text-align: center;
+
+    border-right: solid 1px $grey-medium;
+
+    &:last-child {
+      border-right: none;
+    }
 
     &.v-add-offer-link {
       justify-content: center;

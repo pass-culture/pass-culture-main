@@ -11,14 +11,14 @@ import { DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL } from 'utils/conf
 
 const BankInformations = ({
   offerer,
-  hasMissingBankInformations,
+  hasMissingBankInformation,
   hasRejectedOrDraftOffererBankInformations,
 }) => {
   return (
     <>
       <h3 className="h-card-secondary-title">
         Coordonnées bancaires
-        {hasMissingBankInformations && (
+        {hasMissingBankInformation && (
           <Icon
             alt="Informations bancaires manquantes"
             className="ico-bank-warning"
@@ -40,7 +40,9 @@ const BankInformations = ({
             href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
             linkTitle="Renseignez les coordonnées bancaires"
           >
-            Certains de vos lieux ne sont pas rattachés à des coordonnées bancaires. Pour percevoir les remboursements liés aux offres postées dans ces lieux, renseignez les coordonnées bancaires.
+            Certains de vos lieux ne sont pas rattachés à des coordonnées bancaires. Pour percevoir
+            les remboursements liés aux offres postées dans ces lieux, renseignez les coordonnées
+            bancaires.
           </Banner>
         )}
       </div>
@@ -49,7 +51,7 @@ const BankInformations = ({
 }
 
 BankInformations.propTypes = {
-  hasMissingBankInformations: PropTypes.bool.isRequired,
+  hasMissingBankInformation: PropTypes.bool.isRequired,
   hasRejectedOrDraftOffererBankInformations: PropTypes.bool.isRequired,
   offerer: PropTypes.shape({
     iban: PropTypes.string,

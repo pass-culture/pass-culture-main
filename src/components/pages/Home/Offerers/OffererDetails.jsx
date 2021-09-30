@@ -17,14 +17,9 @@ import { ReactComponent as ClosedEyeSvg } from './assets/ico-eye-close.svg'
 import { ReactComponent as OpenedEyeSvg } from './assets/ico-eye-open.svg'
 import BankInformations from './BankInformations'
 
-const hasBankInformations = offererOrVenue =>
+const hasRejectedOrDraftBankInformation = offerer =>
   Boolean(
-    (offererOrVenue.iban && offererOrVenue.bic) || offererOrVenue.demarchesSimplifieesApplicationId
-  )
-
-const hasRejectedOrDraftBankInformation = offererOrVenue =>
-  Boolean(
-    offererOrVenue.demarchesSimplifieesApplicationId && !offererOrVenue.iban && !offererOrVenue.bic
+    offerer.demarchesSimplifieesApplicationId && !offerer.iban && !offerer.bic
   )
 
 const OffererDetails = ({
@@ -42,21 +37,16 @@ const OffererDetails = ({
     []
   )
 
-  const hasMissingBankInformations = useMemo(() => {
-    if (!selectedOfferer || hasBankInformations(selectedOfferer)) return false
-
-    return selectedOfferer.managedVenues
-      .filter(venue => !venue.isVirtual)
-      .some(venue => !hasBankInformations(venue))
-  }, [selectedOfferer])
-
   const hasRejectedOrDraftOffererBankInformations = useMemo(() => {
     if (!selectedOfferer) return false
     return hasRejectedOrDraftBankInformation(selectedOfferer)
   }, [selectedOfferer])
 
   return (
-    <div className="h-card h-card-secondary">
+    <div
+      className="h-card h-card-secondary"
+      data-testid="offerrer-wrapper"
+    >
       <div className={`h-card-inner${isExpanded ? '' : ' h-no-bottom'}`}>
         <div className="od-header">
           <Select
@@ -85,7 +75,7 @@ const OffererDetails = ({
               </>
             )}
           </button>
-          {hasMissingBankInformations && (
+          {selectedOfferer.hasMissingBankInformation && (
             <Icon
               alt="Informations bancaires manquantes"
               className="ico-bank-warning"
@@ -153,23 +143,24 @@ const OffererDetails = ({
                         </span>
                         <address className="od-address">
                           {selectedOfferer.address}
-                          {hasMissingBankInformations && <br />}
+                          {selectedOfferer.hasMissingBankInformation && <br />}
                           {`${selectedOfferer.postalCode} ${selectedOfferer.city}`}
                         </address>
                       </li>
                     </ul>
                   </div>
                 </div>
-                {(hasMissingBankInformations || hasRejectedOrDraftOffererBankInformations) && (
-                  <div className="h-card-col">
-                    <BankInformations
-                      hasMissingBankInformations={hasMissingBankInformations}
-                      hasRejectedOrDraftOffererBankInformations={
-                        hasRejectedOrDraftOffererBankInformations
-                      }
-                      offerer={selectedOfferer}
-                    />
-                  </div>
+                {(selectedOfferer.hasMissingBankInformation ||
+                  hasRejectedOrDraftOffererBankInformations) && (
+                    <div className="h-card-col">
+                      <BankInformations
+                        hasMissingBankInformation={selectedOfferer.hasMissingBankInformation}
+                        hasRejectedOrDraftOffererBankInformations={
+                          hasRejectedOrDraftOffererBankInformations
+                        }
+                        offerer={selectedOfferer}
+                      />
+                    </div>
                 )}
               </div>
             )}

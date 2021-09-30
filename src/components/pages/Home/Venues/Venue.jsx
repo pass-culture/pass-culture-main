@@ -58,6 +58,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName, venueStats }) => {
 
   const showVenueLink = `/structures/${offererId}/lieux/${id}`
   let editVenueLink = `/structures/${offererId}/lieux/${id}`
+  
   if (!isVenueV2Enabled) {
     editVenueLink += '?modification'
   }

@@ -3,7 +3,8 @@
 */
 
 import '@testing-library/jest-dom'
-import { act, render, screen, within } from '@testing-library/react'
+import { act, render, screen, within, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -49,15 +50,20 @@ describe('venues', () => {
     // When
     await renderVenue(props, store)
 
+    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+
     // Then
     expect(pcapi.getVenueStats).toHaveBeenCalledWith(props.id)
+    
     const [
       activeOffersStat,
       activeBookingsStat,
       validatedBookingsStat,
       outOfStockOffersStat,
     ] = screen.getAllByTestId('venue-stat')
-    expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
+    
+    await waitFor(() => expect(within(activeOffersStat).getByText('2')).toBeInTheDocument())
+    
     expect(within(activeOffersStat).getByText('Offres actives')).toBeInTheDocument()
 
     expect(within(activeBookingsStat).getByText('0')).toBeInTheDocument()
@@ -73,6 +79,9 @@ describe('venues', () => {
   it('should contain a link for each stats', async () => {
     // When
     await renderVenue(props, store)
+    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    const [activeOffersStat] = screen.getAllByTestId('venue-stat')
+    await waitFor(() => expect(within(activeOffersStat).getByText('2')).toBeInTheDocument())
 
     // Then
     expect(screen.getAllByRole('link', { name: 'Voir' })).toHaveLength(4)
@@ -81,7 +90,7 @@ describe('venues', () => {
   it('should redirect to filtered bookings when clicking on link', async () => {
     // When
     await renderVenue(props, store)
-
+    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
     // Then
     const [
       activeOffersStat,
@@ -89,6 +98,9 @@ describe('venues', () => {
       validatedBookingsStat,
       outOfStockOffersStat,
     ] = screen.getAllByTestId('venue-stat')
+    
+    await waitFor(() => expect(within(activeOffersStat).getByText('2')).toBeInTheDocument())
+
     expect(within(activeOffersStat).getByRole('link', { name: 'Voir' })).toHaveAttribute(
       'href',
       '/offres?lieu=VENUE01&statut=active'
@@ -112,6 +124,9 @@ describe('venues', () => {
 
       // When
       await renderVenue(props, store)
+      userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+      const [activeOffersStat] = screen.getAllByTestId('venue-stat')
+      await waitFor(() => expect(within(activeOffersStat).getByText('2')).toBeInTheDocument())
 
       // Then
       expect(
@@ -127,6 +142,9 @@ describe('venues', () => {
 
       // When
       await renderVenue(props, store)
+      userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+      const [activeOffersStat] = screen.getAllByTestId('venue-stat')
+      await waitFor(() => expect(within(activeOffersStat).getByText('2')).toBeInTheDocument())
 
       // Then
       expect(screen.getByRole('link', { name: 'Créer une nouvelle offre' })).toBeInTheDocument()
@@ -138,6 +156,9 @@ describe('venues', () => {
 
       // When
       await renderVenue(props, store)
+      userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+      const [activeOffersStat] = screen.getAllByTestId('venue-stat')
+      await waitFor(() => expect(within(activeOffersStat).getByText('2')).toBeInTheDocument())
 
       // Then
       expect(screen.getByRole('link', { name: 'Modifier' }).href).toBe(

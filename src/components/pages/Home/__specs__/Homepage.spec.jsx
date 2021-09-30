@@ -5,7 +5,7 @@
 */
 
 import '@testing-library/jest-dom'
-import { act, render, screen, fireEvent } from '@testing-library/react'
+import { act, render, screen, fireEvent, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -14,7 +14,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
-import HomepageContainer from '../HomepageContainer'
+import Homepage from '../Homepage'
 
 jest.mock('utils/config', () => ({
   DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL:
@@ -50,7 +50,7 @@ const renderHomePage = async () => {
     await render(
       <Provider store={store}>
         <MemoryRouter>
-          <HomepageContainer />
+          <Homepage />
         </MemoryRouter>
       </Provider>
     )
@@ -65,13 +65,26 @@ describe('homepage', () => {
     baseOfferers = [
       {
         address: 'LA COULÉE D’OR',
+        apiKey: {
+          maxAllowed: 5,
+          prefixes: ['development_41'],
+        },
+        bic: 'test bic 01',
         city: 'Cayenne',
-        name: 'Bar des amis',
+        dateCreated: '2021-11-03T16:31:17.240807Z',
+        dateModifiedAtLastProvider: '2021-11-03T16:31:18.294494Z',
+        demarchesSimplifieesApplicationId: null,
+        fieldsUpdated: [],
+        hasDigitalVenueAtLeastOneOffer: true,
+        hasMissingBankInformation: true,
+        iban: 'test iban 01',
         id: 'GE',
+        idAtProviders: null,
+        isValidated: true,
+        lastProviderId: null,
+        name: 'Bar des amis',
         postalCode: '97300',
         siren: '111111111',
-        bic: 'test bic 01',
-        iban: 'test iban 01',
         managedVenues: [
           {
             id: 'test_venue_id_1',
@@ -104,16 +117,30 @@ describe('homepage', () => {
       },
       {
         address: 'RUE DE NIEUPORT',
+        apiKey: {
+          maxAllowed: 5,
+          prefixes: ['development_41'],
+        },
+        bic: 'test bic 02',
         city: 'Drancy',
+        dateCreated: '2021-11-03T16:31:17.240807Z',
+        dateModifiedAtLastProvider: '2021-11-03T16:31:18.294494Z',
+        demarchesSimplifieesApplicationId: null,
+        fieldsUpdated: [],
+        hasDigitalVenueAtLeastOneOffer: true,
+        hasMissingBankInformation: true,
+        iban: 'test iban 02',
         id: 'FQ',
+        idAtProviders: null,
+        isValidated: true,
+        lastProviderId: null,
         name: 'Club Dorothy',
         postalCode: '93700',
         siren: '222222222',
-        bic: 'test bic 02',
-        iban: 'test iban 02',
         managedVenues: [],
       },
     ]
+
     baseOfferersNames = baseOfferers.map(offerer => ({
       id: offerer.id,
       name: offerer.name,
@@ -177,10 +204,10 @@ describe('homepage', () => {
           fireEvent.click(screen.getByText('Modifier', { selector: 'button' }))
 
           // then
-          expect(await screen.findByLabelText('Nom')).toBeInTheDocument()
-          expect(await screen.findByLabelText('Prénom')).toBeInTheDocument()
-          expect(await screen.findByLabelText('Email')).toBeInTheDocument()
-          expect(await screen.findByLabelText('Téléphone')).toBeInTheDocument()
+          await expect(screen.findByLabelText('Nom')).resolves.toBeInTheDocument()
+          await expect(screen.findByLabelText('Prénom')).resolves.toBeInTheDocument()
+          await expect(screen.findByLabelText('Email')).resolves.toBeInTheDocument()
+          await expect(screen.findByLabelText('Téléphone')).resolves.toBeInTheDocument()
         })
 
         it('should close the modal when clicking on cancel button', async () => {
@@ -191,7 +218,7 @@ describe('homepage', () => {
           fireEvent.click(screen.getByText('Annuler', { selector: 'button' }))
 
           // then
-          expect(await screen.queryByLabelText('Nom')).not.toBeInTheDocument()
+          await waitFor(() => expect(screen.queryByLabelText('Nom')).not.toBeInTheDocument())
         })
 
         it('should update user info on submit', async () => {

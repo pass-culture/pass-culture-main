@@ -12,9 +12,14 @@ import { BOOKING_STATUS } from 'components/pages/Bookings/BookingsRecapTable/Cel
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import { ReactComponent as ClosedEyeSvg } from '../Offerers/assets/ico-eye-close.svg'
+import { ReactComponent as OpenedEyeSvg } from '../Offerers/assets/ico-eye-open.svg'
+
 import VenueStat from './VenueStat'
 
 const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
+  const [isStatOpen, setIsStatOpen] = useState(false)
+  const [isStatLoaded, setIsStatLoaded] = useState(false)
   const [stats, setStats] = useState({
     activeBookingsQuantity: '',
     activeOffersCount: '',
@@ -65,26 +70,45 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
   const isVenueV2Enabled = useActiveFeature('ENABLE_NEW_VENUE_PAGES')
 
   useEffect(() => {
-    pcapi.getVenueStats(id).then(stats => {
-      setStats({
-        activeBookingsQuantity: stats.activeBookingsQuantity.toString(),
-        activeOffersCount: stats.activeOffersCount.toString(),
-        soldOutOffersCount: stats.soldOutOffersCount.toString(),
-        validatedBookingsQuantity: stats.validatedBookingsQuantity.toString(),
-      })
+    if (isStatOpen && !isStatLoaded) {
+      (async () => {
+        const stats = await pcapi.getVenueStats(id)
+        setStats({
+          activeBookingsQuantity: stats.activeBookingsQuantity.toString(),
+          activeOffersCount: stats.activeOffersCount.toString(),
+          soldOutOffersCount: stats.soldOutOffersCount.toString(),
+          validatedBookingsQuantity: stats.validatedBookingsQuantity.toString(),
+        })
+        setIsStatLoaded(true)
+      })()
+    }
+  }, [id, isStatOpen, isStatLoaded])
+
+  useEffect(() => {
+    setIsStatOpen(false)
+    setIsStatLoaded(false)
+    setStats({
+      activeBookingsQuantity: '',
+      activeOffersCount: '',
+      soldOutOffersCount: '',
+      validatedBookingsQuantity: '',
     })
-  }, [id])
+  }, [offererId])
 
   let editVenueLink = `/structures/${offererId}/lieux/${id}`
+  
   if (!isVenueV2Enabled) {
     editVenueLink += '?modification'
   }
 
   return (
-    <div className="h-section-row nested offerer-venue">
+    <div
+      className="h-section-row nested offerer-venue"
+      data-testid="venue-wrapper"
+    >
       <div className={`h-card h-card-${isVirtual ? 'primary' : 'secondary'}`}>
         <div className="h-card-inner">
-          <div className="h-card-header-row">
+          <div className={`h-card-header-row ${isStatOpen ? 'h-card-is-open' : ''}`}>
             <h3 className="h-card-title">
               <Icon
                 className="h-card-title-ico"
@@ -97,36 +121,65 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
                 {publicName || name}
               </span>
             </h3>
-            {!isVirtual && (
-              <Link
-                className="tertiary-link"
-                to={editVenueLink}
+            <div className="button-group">
+              <button
+                className={`tertiary-button ${isStatOpen ? 'od-primary' : ''}`}
+                onClick={() => setIsStatOpen(prev => !prev)}
+                type="button"
               >
-                <Icon svg="ico-outer-pen" />
-                Modifier
-              </Link>
-            )}
-          </div>
-          <div className="venue-stats">
-            {venueStatData.map(stat => (
-              <Fragment key={stat.label}>
-                <VenueStat stat={stat} />
-                <div className="separator" />
-              </Fragment>
-            ))}
-
-            <div className="h-card-col v-add-offer-link">
-              <Link
-                className="tertiary-link"
-                to={`/offres/creation?structure=${offererId}&lieu=${id}`}
-              >
-                <IcoPlus />
-                <div>
-                  {isVirtual ? 'Créer une nouvelle offre numérique' : 'Créer une nouvelle offre'}
-                </div>
-              </Link>
+                {isStatOpen ? (
+                  <>
+                    <ClosedEyeSvg />
+                    {' '}
+                    Masquer
+                  </>
+                ) : (
+                  <>
+                    <OpenedEyeSvg />
+                    {' '}
+                    Afficher
+                  </>
+                )}
+              </button>
+              {!isVirtual && (
+                <>
+                  <span className="button-group-separator" />
+                  <Link
+                    className="tertiary-link"
+                    to={editVenueLink}
+                  >
+                    <Icon svg="ico-outer-pen" />
+                    Modifier
+                  </Link>
+                </>
+              )}
             </div>
           </div>
+          {isStatOpen && (
+            <>
+              <div className="od-separator horizontal" />
+              <div className="venue-stats">
+                {venueStatData.map(stat => (
+                  <Fragment key={stat.label}>
+                    <VenueStat stat={stat} />
+                  </Fragment>
+                ))}
+                <div className="h-card-col v-add-offer-link">
+                  <Link
+                    className="tertiary-link"
+                    to={`/offres/creation?structure=${offererId}&lieu=${id}`}
+                  >
+                    <IcoPlus />
+                    <div>
+                      {isVirtual
+                        ? 'Créer une nouvelle offre numérique'
+                        : 'Créer une nouvelle offre'}
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

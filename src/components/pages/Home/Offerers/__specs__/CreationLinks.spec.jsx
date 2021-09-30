@@ -12,7 +12,7 @@ import { MemoryRouter } from 'react-router'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
-import HomepageContainer from '../../HomepageContainer'
+import Homepage from '../../Homepage'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getOfferer: jest.fn(),
@@ -39,7 +39,7 @@ const renderHomePage = async () => {
     await render(
       <Provider store={store}>
         <MemoryRouter>
-          <HomepageContainer />
+          <Homepage />
         </MemoryRouter>
       </Provider>
     )
@@ -61,7 +61,6 @@ describe('creationLinks', () => {
       name: 'Le Sous-sol (Offre numérique)',
       offererName: 'Bar des amis',
       publicName: null,
-      nOffers: 2,
     }
 
     physicalVenue = {
@@ -71,8 +70,8 @@ describe('creationLinks', () => {
       name: 'Le Sous-sol (Offre physique)',
       offererName: 'Bar des amis',
       publicName: null,
-      nOffers: 2,
     }
+    
     physicalVenueWithPublicName = {
       id: 'test_venue_id_3',
       isVirtual: false,
@@ -80,29 +79,55 @@ describe('creationLinks', () => {
       name: 'Le deuxième Sous-sol (Offre physique)',
       offererName: 'Bar des amis',
       publicName: 'Le deuxième Sous-sol',
-      nOffers: 2,
     }
+
     baseOfferers = [
       {
         address: 'LA COULÉE D’OR',
+        apiKey: {
+          maxAllowed: 5,
+          prefixes: ['development_41'],
+        },
+        bic: 'test bic 01',
         city: 'Cayenne',
-        name: 'Bar des amis',
+        dateCreated: '2021-11-03T16:31:17.240807Z',
+        dateModifiedAtLastProvider: '2021-11-03T16:31:18.294494Z',
+        demarchesSimplifieesApplicationId: null,
+        fieldsUpdated: [],
+        hasDigitalVenueAtLeastOneOffer: true,
+        hasMissingBankInformation: false,
+        iban: 'test iban 01',
         id: 'GE',
+        idAtProviders: null,
+        isValidated: true,
+        lastProviderId: null,
+        name: 'Bar des amis',
         postalCode: '97300',
         siren: '111111111',
-        bic: 'test bic 01',
-        iban: 'test iban 01',
         managedVenues: [virtualVenue, physicalVenue, physicalVenueWithPublicName],
       },
       {
         address: 'RUE DE NIEUPORT',
+        apiKey: {
+          maxAllowed: 5,
+          prefixes: ['development_41'],
+        },
+        bic: 'test bic 02',
         city: 'Drancy',
+        dateCreated: '2021-11-03T16:31:17.240807Z',
+        dateModifiedAtLastProvider: '2021-11-03T16:31:18.294494Z',
+        demarchesSimplifieesApplicationId: null,
+        fieldsUpdated: [],
+        hasDigitalVenueAtLeastOneOffer: true,
+        hasMissingBankInformation: false,
+        iban: 'test iban 02',
         id: 'FQ',
+        idAtProviders: null,
+        isValidated: true,
+        lastProviderId: null,
         name: 'Club Dorothy',
         postalCode: '93700',
         siren: '222222222',
-        bic: 'test bic 02',
-        iban: 'test iban 02',
         managedVenues: [],
       },
     ]
@@ -126,12 +151,10 @@ describe('creationLinks', () => {
       // Given
       baseOfferers = [
         {
-          ...baseOfferers[0],
+          ...baseOfferers[1],
+          hasDigitalVenueAtLeastOneOffer: false,
           managedVenues: [
-            {
-              ...virtualVenue,
-              nOffers: 0,
-            },
+            virtualVenue,
           ],
         },
       ]
@@ -148,9 +171,10 @@ describe('creationLinks', () => {
           name: 'Créer un lieu',
         })
       ).toBeInTheDocument()
+
       expect(
         screen.getByRole('link', {
-          name: 'Créer une offre numérique',
+          name: 'Créer une offre',
         })
       ).toBeInTheDocument()
     })
@@ -162,12 +186,10 @@ describe('creationLinks', () => {
       baseOfferers = [
         {
           ...baseOfferers[0],
+          hasDigitalVenueAtLeastOneOffer: false,
           managedVenues: [
             physicalVenue,
-            {
-              ...virtualVenue,
-              nOffers: 0,
-            },
+            virtualVenue,
           ],
         },
       ]
@@ -181,9 +203,10 @@ describe('creationLinks', () => {
 
       expect(
         screen.getByRole('link', {
-          name: 'Créer une offre numérique',
+          name: 'Créer une offre',
         })
       ).toBeInTheDocument()
+      
       expect(
         screen.getByRole('link', {
           name: 'Ajouter un lieu',
@@ -208,11 +231,12 @@ describe('creationLinks', () => {
       expect(
         screen.queryByText('Avant de créer votre première offre physique vous devez avoir un lieu')
       ).not.toBeInTheDocument()
+      
       expect(
         screen.queryByRole('link', {
-          name: 'Créer une offre numérique',
+          name: 'Créer une offre',
         })
-      ).not.toBeInTheDocument()
+      ).toBeInTheDocument()
 
       expect(
         screen.getByRole('link', {
@@ -240,9 +264,9 @@ describe('creationLinks', () => {
       ).not.toBeInTheDocument()
       expect(
         screen.queryByRole('link', {
-          name: 'Créer une offre numérique',
+          name: 'Créer une offre',
         })
-      ).not.toBeInTheDocument()
+      ).toBeInTheDocument()
 
       expect(
         screen.getByRole('link', {
@@ -265,11 +289,13 @@ describe('creationLinks', () => {
           'Votre précédente structure a été supprimée. Pour plus d’informations sur la suppression et vos données, veuillez contacter notre support.'
         )
       ).toBeInTheDocument()
+      
       expect(
         screen.getByRole('link', { name: 'Ajouter une nouvelle structure' })
       ).toBeInTheDocument()
 
       const offererBanner = screen.getByTestId('offerers-creation-links-card')
+      
       expect(
         within(offererBanner).getByRole('link', { name: 'Contacter le support' })
       ).toBeInTheDocument()
@@ -279,9 +305,10 @@ describe('creationLinks', () => {
       expect(
         screen.queryByText('Avant de créer votre première offre physique vous devez avoir un lieu')
       ).not.toBeInTheDocument()
+      
       expect(
         screen.queryByRole('link', {
-          name: 'Créer une offre numérique',
+          name: 'Créer une offre',
         })
       ).not.toBeInTheDocument()
 

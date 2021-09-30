@@ -58,22 +58,36 @@ export const navigateAfterVenueSubmit = creationOrModification => async t => {
 
 export const navigateToNewOfferAs = (user, offerer, venue, userRole) => async t => {
   if (venue) {
-    const newOfferAnchor = Selector('h3.h-card-title')
+    const venueWrapper = Selector('h3.h-card-title')
       .withText(venue.name)
+
+    const displayVenueStats = venueWrapper
+      .parent('div.h-card-header-row')
+      .find('button')
+
+    const newOfferAnchor = venueWrapper
       .parent('div.h-card-inner')
+      .find('.venue-stats')
       .find("a[href^='/offres/creation']")
 
     await navigateToOffererAs(user, offerer, userRole)(t)
-
+    await t.click(displayVenueStats)
     await t.click(newOfferAnchor)
     return
   } else if (offerer) {
-    const newOfferAnchor = Selector('h3.h-card-title')
-      .withText('Offres numériques')
+    const venueWrapper = Selector('h3.h-card-title').withText('Offres numériques')
+
+    const displayVenueStats = venueWrapper
+      .parent('div.h-card-header-row')
+      .find('button')
+
+    const newOfferAnchor = venueWrapper
       .parent('div.h-card-inner')
-      .find("a[href^='/offres/creation?structure=']")
+      .find('.venue-stats')
+      .find("a[href^='/offres/creation']")
 
     await navigateToOffererAs(user, offerer, userRole)(t)
+    await t.click(displayVenueStats)
 
     await t.click(newOfferAnchor)
     return

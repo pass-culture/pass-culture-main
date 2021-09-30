@@ -60,7 +60,7 @@ const Offerers = () => {
   useEffect(() => {
     if (!selectedOffererId) return
     pcapi
-      .getOffererWithVenueStats(selectedOffererId)
+      .getOfferer(selectedOffererId)
       .then(receivedOfferer => {
         setSelectedOfferer(receivedOfferer)
         setPhysicalVenues(receivedOfferer.managedVenues.filter(venue => !venue.isVirtual))
@@ -120,7 +120,7 @@ const Offerers = () => {
           <VenueList
             physicalVenues={physicalVenues}
             selectedOffererId={selectedOfferer.id}
-            virtualVenue={virtualVenue?.nOffers ? virtualVenue : null}
+            virtualVenue={selectedOfferer.hasDigitalVenueAtLeastOneOffer ? virtualVenue : null}
           />
         </>
       )}
@@ -130,7 +130,7 @@ const Offerers = () => {
       {isUserOffererValidated && (
         <VenueCreationLinks
           hasPhysicalVenue={physicalVenues.length > 0}
-          hasVirtualOffers={virtualVenue && virtualVenue.nOffers > 0}
+          hasVirtualOffers={!!virtualVenue && !!selectedOfferer.hasDigitalVenueAtLeastOneOffer}
           offererId={selectedOfferer ? selectedOfferer.id : null}
         />
       )}

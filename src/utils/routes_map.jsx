@@ -5,7 +5,7 @@ import CsvDetailViewContainer from 'components/layout/CsvTable/CsvTableContainer
 import BookingsRecapContainer from 'components/pages/Bookings/BookingsRecapContainer'
 import DeskContainer from 'components/pages/Desk/DeskContainer'
 import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
-import HomepageContainer from 'components/pages/Home/HomepageContainer'
+import Homepage from 'components/pages/Home/Homepage'
 import LostPasswordContainer from 'components/pages/LostPassword/LostPasswordContainer'
 import OfferersLayout from 'components/pages/Offerers/OfferersLayout'
 import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
@@ -109,7 +109,7 @@ export const routesWithMain = [
 // Routes that does not use <Main> and are now functional components
 const routes = [
   {
-    component: HomepageContainer,
+    component: Homepage,
     exact: true,
     path: '/accueil',
     title: 'Accueil',

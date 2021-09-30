@@ -7,13 +7,13 @@
 
 import '@testing-library/jest-dom'
 import {
-  act,
   fireEvent,
   render,
   screen,
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -21,8 +21,7 @@ import { MemoryRouter } from 'react-router'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
-import HomepageContainer from '../../HomepageContainer'
-import { CREATE_OFFERER_SELECT_ID } from '../Offerers'
+import Homepage from '../../Homepage'
 
 const mockHistoryPush = jest.fn()
 jest.mock('react-router-dom', () => ({
@@ -38,21 +37,13 @@ jest.mock('utils/config', () => ({
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getOffererWithVenueStats: jest.fn(),
+  getOfferer: jest.fn(),
   getAllOfferersNames: jest.fn(),
+  getVenueStats: jest.fn(),
 }))
 
-const renderHomePage = async () => {
+const renderHomePage = () => {
   const store = configureTestStore({
-    features: {
-      list: [
-        {
-          isActive: true,
-          name: 'PERF_VENUE_STATS',
-          nameKey: 'PERF_VENUE_STATS',
-        },
-      ],
-    },
     data: {
       users: [
         {
@@ -65,18 +56,39 @@ const renderHomePage = async () => {
       ],
     },
   })
-  return await act(async () => {
-    await render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <HomepageContainer />
-        </MemoryRouter>
-      </Provider>
-    )
-  })
+  
+  const utils = render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <Homepage />
+      </MemoryRouter>
+    </Provider>
+  )
+
+  const waitForElements = async () => {
+    await screen.findByTestId('offerrer-wrapper')
+    const offerer = screen.queryByTestId('offerrer-wrapper')
+    const venues = screen.queryAllByTestId('venue-wrapper')
+
+    const selectOfferer = (offererName) => {
+      userEvent.selectOptions(within(offerer).getByDisplayValue('Bar des amis'), offererName)
+    }
+
+
+    return {
+      offerer,
+      venues,
+      selectOfferer,
+    }
+  }
+
+  return {
+    ...utils,
+    waitForElements,
+  }
 }
 
-describe('offererDetails', () => {
+describe('offererDetailsLegacy', () => {
   let baseOfferers
   let firstOffererByAlphabeticalOrder
   let baseOfferersNames
@@ -93,12 +105,6 @@ describe('offererDetails', () => {
       offererName: 'Bar des amis',
       publicName: null,
       nOffers: 2,
-      stats: {
-        activeBookingsQuantity: 4,
-        activeOffersCount: 2,
-        soldOutOffersCount: 3,
-        validatedBookingsQuantity: 3,
-      },
     }
     physicalVenue = {
       id: 'test_venue_id_2',
@@ -108,12 +114,6 @@ describe('offererDetails', () => {
       offererName: 'Bar des amis',
       publicName: null,
       nOffers: 2,
-      stats: {
-        activeBookingsQuantity: 4,
-        activeOffersCount: 2,
-        soldOutOffersCount: 3,
-        validatedBookingsQuantity: 3,
-      },
     }
     physicalVenueWithPublicName = {
       id: 'test_venue_id_3',
@@ -123,24 +123,30 @@ describe('offererDetails', () => {
       offererName: 'Bar des amis',
       publicName: 'Le deuxième Sous-sol',
       nOffers: 2,
-      stats: {
-        activeBookingsQuantity: 4,
-        activeOffersCount: 2,
-        soldOutOffersCount: 3,
-        validatedBookingsQuantity: 3,
-      },
     }
     baseOfferers = [
       {
         address: 'RUE DE NIEUPORT',
+        apiKey: {
+          maxAllowed: 5,
+          prefixes: ['development_41'],
+        },
+        bic: 'test bic 02',
         city: 'Drancy',
+        dateCreated: '2021-11-03T16:31:17.240807Z',
+        dateModifiedAtLastProvider: '2021-11-03T16:31:18.294494Z',
+        demarchesSimplifieesApplicationId: null,
+        fieldsUpdated: [],
+        hasDigitalVenueAtLeastOneOffer: true,
+        hasMissingBankInformation: true,
+        iban: 'test iban 02',
         id: 'FQ',
+        idAtProviders: null,
         isValidated: true,
+        lastProviderId: null,
         name: 'Club Dorothy',
         postalCode: '93700',
         siren: '222222222',
-        bic: 'test bic 02',
-        iban: 'test iban 02',
         managedVenues: [
           {
             ...virtualVenue,
@@ -151,14 +157,26 @@ describe('offererDetails', () => {
       },
       {
         address: 'LA COULÉE D’OR',
+        apiKey: {
+          maxAllowed: 5,
+          prefixes: ['development_41'],
+        },
+        bic: 'test bic 01',
         city: 'Cayenne',
-        name: 'Bar des amis',
+        dateCreated: '2021-11-03T16:31:17.240807Z',
+        dateModifiedAtLastProvider: '2021-11-03T16:31:18.294494Z',
+        demarchesSimplifieesApplicationId: null,
+        fieldsUpdated: [],
+        hasDigitalVenueAtLeastOneOffer: true,
+        hasMissingBankInformation: true,
+        iban: 'test iban 01',
         id: 'GE',
+        idAtProviders: null,
         isValidated: true,
+        lastProviderId: null,
+        name: 'Bar des amis',
         postalCode: '97300',
         siren: '111111111',
-        bic: 'test bic 01',
-        iban: 'test iban 01',
         managedVenues: [virtualVenue, physicalVenue, physicalVenueWithPublicName],
       },
     ]
@@ -168,34 +186,30 @@ describe('offererDetails', () => {
       name: offerer.name,
     }))
 
-    pcapi.getOffererWithVenueStats.mockResolvedValue(firstOffererByAlphabeticalOrder)
+    pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
     pcapi.getAllOfferersNames.mockResolvedValue(baseOfferersNames)
+    pcapi.getVenueStats.mockResolvedValue({
+      activeBookingsQuantity: 4,
+      activeOffersCount: 2,
+      soldOutOffersCount: 3,
+      validatedBookingsQuantity: 3,
+    })
   })
 
   it('should display offerer select', async () => {
-    await renderHomePage()
-    const showButton = screen.getByRole('button', { name: 'Afficher' })
+    const { waitForElements } = renderHomePage()
+    const { offerer } = await waitForElements()
+    const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
     fireEvent.click(showButton)
 
     expect(screen.getByDisplayValue(firstOffererByAlphabeticalOrder.name)).toBeInTheDocument()
   })
 
-  it('should not display offerer when none exist', async () => {
-    // Given
-    pcapi.getAllOfferersNames.mockResolvedValue([])
-
-    // When
-    await renderHomePage()
-
-    // Then
-    expect(screen.queryByRole('button', { name: 'Afficher' })).not.toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Ajouter une nouvelle structure' })).toBeInTheDocument()
-  })
-
   it('should not warn user when offerer is validated', async () => {
     // Given
-    await renderHomePage()
-    const showButton = screen.getByRole('button', { name: 'Afficher' })
+    const { waitForElements } = renderHomePage()
+    const { offerer } = await waitForElements()
+    const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
 
     // When
     fireEvent.click(showButton)
@@ -205,8 +219,9 @@ describe('offererDetails', () => {
   })
 
   it('should display first offerer informations', async () => {
-    await renderHomePage()
-    const showButton = screen.getByRole('button', { name: 'Afficher' })
+    const { waitForElements } = renderHomePage()
+    const { offerer } = await waitForElements()
+    const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
     fireEvent.click(showButton)
 
     const selectedOfferer = firstOffererByAlphabeticalOrder
@@ -219,8 +234,9 @@ describe('offererDetails', () => {
   })
 
   it('should display offerer venues informations', async () => {
-    await renderHomePage()
-    const showButton = screen.getByRole('button', { name: 'Afficher' })
+    const { waitForElements } = renderHomePage()
+    const { offerer } = await waitForElements()
+    const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
     fireEvent.click(showButton)
 
     const selectedOfferer = firstOffererByAlphabeticalOrder
@@ -240,27 +256,30 @@ describe('offererDetails', () => {
 
   it('should not display virtual venue informations when no virtual offers', async () => {
     // Given
-    firstOffererByAlphabeticalOrder.managedVenues = [
-      {
-        ...virtualVenue,
-        nOffers: 0,
-      },
-      physicalVenue,
-    ]
+    firstOffererByAlphabeticalOrder = {
+      ...firstOffererByAlphabeticalOrder,
+      hasDigitalVenueAtLeastOneOffer: false,
+      managedVenues : [
+        {
+          ...virtualVenue,
+        },
+        physicalVenue,
+      ]
+    }
+    pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
     // When
-    await renderHomePage()
+    const { waitForElements } = renderHomePage()
+    const { venues } = await waitForElements()
 
     // Then
-    expect(
-      screen.queryByRole('heading', { level: 3, name: 'Offres numériques', exact: false })
-    ).not.toBeInTheDocument()
+    expect(venues).toHaveLength(1)
+    expect(within(venues[0]).queryByText('Offre numérique')).not.toBeInTheDocument()
   })
 
   describe('when selected offerer change', () => {
     let newSelectedOfferer
     beforeEach(async () => {
-      const selectedOffer = firstOffererByAlphabeticalOrder
       newSelectedOfferer = {
         ...baseOfferers[0],
         managedVenues: [
@@ -272,12 +291,6 @@ describe('offererDetails', () => {
             offererName: baseOfferers[0].name,
             publicName: null,
             nOffers: 2,
-            stats: {
-              activeBookingsQuantity: 4,
-              activeOffersCount: 2,
-              soldOutOffersCount: 3,
-              validatedBookingsQuantity: 3,
-            },
           },
           {
             id: 'test_venue_id_4',
@@ -287,12 +300,6 @@ describe('offererDetails', () => {
             offererName: baseOfferers[0].name,
             publicName: null,
             nOffers: 2,
-            stats: {
-              activeBookingsQuantity: 4,
-              activeOffersCount: 2,
-              soldOutOffersCount: 3,
-              validatedBookingsQuantity: 3,
-            },
           },
           {
             id: 'test_venue_id_5',
@@ -302,23 +309,17 @@ describe('offererDetails', () => {
             offererName: baseOfferers[0].name,
             publicName: 'Second new venue public name',
             nOffers: 2,
-            stats: {
-              activeBookingsQuantity: 4,
-              activeOffersCount: 2,
-              soldOutOffersCount: 3,
-              validatedBookingsQuantity: 3,
-            },
           },
         ],
       }
-      await renderHomePage()
-      pcapi.getOffererWithVenueStats.mockResolvedValue(newSelectedOfferer)
-      await act(async () => {
-        await fireEvent.change(screen.getByDisplayValue(selectedOffer.name), {
-          target: { value: newSelectedOfferer.id },
-        })
-      })
-      const showButton = screen.getByRole('button', { name: 'Afficher' })
+      const { waitForElements } = renderHomePage()
+      const { selectOfferer } = await waitForElements()
+      pcapi.getOfferer.mockResolvedValue(newSelectedOfferer)
+
+      selectOfferer(newSelectedOfferer.name)
+      const { offerer : newOfferer } = await waitForElements()
+
+      const showButton = within(newOfferer).getByRole('button', { name: 'Afficher' })
       fireEvent.click(showButton)
     })
 
@@ -354,62 +355,25 @@ describe('offererDetails', () => {
   describe('when selecting "add offerer" option"', () => {
     it('should redirect to offerer creation page', async () => {
       // Given
-      const selectedOffer = firstOffererByAlphabeticalOrder
-      await renderHomePage()
-
+      const { waitForElements } = renderHomePage()
+      const { selectOfferer } = await waitForElements()
       // When
-      await act(async () => {
-        await fireEvent.change(screen.getByDisplayValue(selectedOffer.name), {
-          target: { value: CREATE_OFFERER_SELECT_ID },
-        })
-      })
+      selectOfferer('+ Ajouter une structure')
 
       // Then
       expect(mockHistoryPush).toHaveBeenCalledWith('/structures/creation')
     })
   })
 
-  describe('when offerer have bank informations', () => {
-    it('should display bank file warning when bank informations are DRAFT or REJECTED', async () => {
-      // Given
-      baseOfferers = [
-        {
-          ...firstOffererByAlphabeticalOrder,
-          bic: '',
-          iban: '',
-          demarchesSimplifieesApplicationId: 12345,
-        },
-      ]
-      pcapi.getOffererWithVenueStats.mockResolvedValue(baseOfferers[0])
-
-      // When
-      await renderHomePage()
-      const showButton = screen.getByRole('button', { name: 'Afficher' })
-      fireEvent.click(showButton)
-
-      // Then
-      const link = screen.getByRole('link', { name: 'Voir le dossier' })
-      expect(link).toBeInTheDocument()
-    })
-  })
-
   describe("when offerer doesn't have bank informations", () => {
-    it('should display bank warning if offerer has physical venue without bank informations', async () => {
+    it('should display bank warning if offerer has missing bank information', async () => {
       // Given
-      baseOfferers = [
-        {
-          ...firstOffererByAlphabeticalOrder,
-          bic: '',
-          iban: '',
-          demarchesSimplifieesApplicationId: '',
-          managedVenues: [virtualVenue, { ...physicalVenue, iban: '', bic: '' }],
-        },
-      ]
-      pcapi.getOffererWithVenueStats.mockResolvedValue(baseOfferers[0])
+      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
       // When
-      await renderHomePage()
-      const showButton = screen.getByRole('button', { name: 'Afficher' })
+      const { waitForElements } = renderHomePage()
+      const { offerer } = await waitForElements()
+      const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
       fireEvent.click(showButton)
 
       // Then
@@ -424,32 +388,34 @@ describe('offererDetails', () => {
       expect(warningIcons).toHaveLength(nbWarningIcons)
     })
 
-    it("shouldn't display bank warning if all physical venues have bank informations", async () => {
-      physicalVenue = {
-        ...physicalVenue,
-        bic: 'fake_bic',
-        iban: 'fake_iban',
-      }
-      physicalVenueWithPublicName = {
-        ...physicalVenueWithPublicName,
-        demarchesSimplifieesApplicationId: 'fake_demarchesSimplifieesApplicationId',
-      }
-      virtualVenue = {
-        ...virtualVenue,
-        nOffers: 0,
-      }
+    it("shouldn't display bank warning offerer has NO missing bank information", async () => {
+      pcapi.getOfferer.mockResolvedValue({
+        ...firstOffererByAlphabeticalOrder,
+        hasMissingBankInformation: false,
+      })
+      const { waitForElements } = renderHomePage()
+      const { offerer } = await waitForElements()
+      const warningIcons = within(offerer).queryByAltText('Informations bancaires manquantes')
+      expect(warningIcons).not.toBeInTheDocument()
+    })
+
+    it('should display file information for pending registration', async () => {
       baseOfferers = [
         {
           ...firstOffererByAlphabeticalOrder,
+          hasMissingBankInformation: false,
           bic: '',
           iban: '',
-          managedVenues: [virtualVenue, physicalVenue, physicalVenueWithPublicName],
+          demarchesSimplifieesApplicationId: 'demarchesSimplifieesApplication_fake_id',
         },
       ]
-      pcapi.getOffererWithVenueStats.mockResolvedValue(firstOffererByAlphabeticalOrder)
-      await renderHomePage()
-
-      const warningIcons = await screen.queryByAltText('Informations bancaires manquantes')
+      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+      const { waitForElements } = renderHomePage()
+      const { offerer } = await waitForElements()
+      const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
+      fireEvent.click(showButton)
+      expect(screen.getByRole('link', { name: 'Voir le dossier' })).toBeInTheDocument()
+      const warningIcons = within(offerer).queryByAltText('Informations bancaires manquantes')
       expect(warningIcons).not.toBeInTheDocument()
     })
   })
@@ -466,33 +432,14 @@ describe('offererDetails', () => {
         name: 'Le Sous-sol (Offre numérique)',
         offererName: 'Bar des amis',
         publicName: null,
-        stats: {
-          activeBookingsQuantity: 4,
-          activeOffersCount: 2,
-          soldOutOffersCount: 3,
-          validatedBookingsQuantity: 3,
-        },
       }
+      
       offererWithNoPhysicalVenues = {
-        address: 'LA COULÉE D’OR',
-        city: 'Cayenne',
-        name: 'Bar des amis',
-        id: 'GE',
-        isValidated: true,
+        ...firstOffererByAlphabeticalOrder,
         managedVenues: [virtualVenue],
-        postalCode: '97300',
-        siren: '111111111',
-        bic: 'test bic 01',
-        iban: 'test iban 01',
-        stats: {
-          activeBookingsQuantity: 4,
-          activeOffersCount: 2,
-          soldOutOffersCount: 3,
-          validatedBookingsQuantity: 3,
-        },
       }
 
-      pcapi.getOffererWithVenueStats.mockResolvedValue(offererWithNoPhysicalVenues)
+      pcapi.getOfferer.mockResolvedValue(offererWithNoPhysicalVenues)
       pcapi.getAllOfferersNames.mockResolvedValue([
         {
           id: offererWithNoPhysicalVenues.id,
@@ -503,18 +450,19 @@ describe('offererDetails', () => {
 
     it('should display offerer informations', async () => {
       // When
-      await renderHomePage()
+      const { waitForElements } = renderHomePage()
+      const { offerer } = await waitForElements()
 
       // Then
-      expect(screen.getByText(offererWithNoPhysicalVenues.siren)).toBeInTheDocument()
+      expect(within(offerer).getByText(offererWithNoPhysicalVenues.siren)).toBeInTheDocument()
       expect(
-        screen.getByText(offererWithNoPhysicalVenues.name, { selector: 'span' })
+        within(offerer).getByText(offererWithNoPhysicalVenues.name, { selector: 'span' })
       ).toBeInTheDocument()
       expect(
-        screen.getByText(offererWithNoPhysicalVenues.address, { exact: false })
+        within(offerer).getByText(offererWithNoPhysicalVenues.address, { exact: false })
       ).toBeInTheDocument()
       expect(
-        screen.getByText(
+        within(offerer).getByText(
           `${offererWithNoPhysicalVenues.postalCode} ${offererWithNoPhysicalVenues.city}`,
           { exact: false }
         )
@@ -523,19 +471,20 @@ describe('offererDetails', () => {
 
     it('should hide offerer informations on click on hide button', async () => {
       // Given
-      await renderHomePage()
-      const hideButton = screen.getByRole('button', { name: 'Masquer' })
+      const { waitForElements } = renderHomePage()
+      const { offerer } = await waitForElements()
+      const hideButton = within(offerer).getByRole('button', { name: 'Masquer' })
 
       // When
       fireEvent.click(hideButton)
 
       //Then
       const selectedOffererAddress = `${offererWithNoPhysicalVenues.address} ${offererWithNoPhysicalVenues.postalCode} ${offererWithNoPhysicalVenues.city}`
-      expect(screen.queryByText(offererWithNoPhysicalVenues.siren)).not.toBeInTheDocument()
+      expect(within(offerer).queryByText(offererWithNoPhysicalVenues.siren)).not.toBeInTheDocument()
       expect(
-        screen.queryByText(offererWithNoPhysicalVenues.name, { selector: 'span' })
+        within(offerer).queryByText(offererWithNoPhysicalVenues.name, { selector: 'span' })
       ).not.toBeInTheDocument()
-      expect(screen.queryByText(selectedOffererAddress)).not.toBeInTheDocument()
+      expect(within(offerer).queryByText(selectedOffererAddress)).not.toBeInTheDocument()
     })
   })
 
@@ -551,12 +500,6 @@ describe('offererDetails', () => {
           name: 'Le Sous-sol (Offre numérique)',
           offererName: 'Bar des amis',
           publicName: null,
-          stats: {
-            activeBookingsQuantity: 4,
-            activeOffersCount: 2,
-            soldOutOffersCount: 3,
-            validatedBookingsQuantity: 3,
-          },
         },
         {
           id: 'test_venue_id_2',
@@ -565,28 +508,14 @@ describe('offererDetails', () => {
           name: 'Le Sous-sol (Offre physique)',
           offererName: 'Bar des amis',
           publicName: null,
-          stats: {
-            activeBookingsQuantity: 4,
-            activeOffersCount: 2,
-            soldOutOffersCount: 3,
-            validatedBookingsQuantity: 3,
-          },
         },
       ]
       offererWithPhysicalVenues = {
-        address: 'LA COULÉE D’OR',
-        city: 'Cayenne',
-        name: 'Bar des amis',
-        id: 'GE',
-        isValidated: true,
+        ...firstOffererByAlphabeticalOrder,
         managedVenues: offererVenues,
-        postalCode: '97300',
-        siren: '111111111',
-        bic: 'test bic 01',
-        iban: 'test iban 01',
       }
 
-      pcapi.getOffererWithVenueStats.mockResolvedValue(offererWithPhysicalVenues)
+      pcapi.getOfferer.mockResolvedValue(offererWithPhysicalVenues)
       pcapi.getAllOfferersNames.mockResolvedValue([
         {
           id: offererWithPhysicalVenues.id,
@@ -597,35 +526,37 @@ describe('offererDetails', () => {
 
     it('should not display offerer informations', async () => {
       // When
-      await renderHomePage()
+      const { waitForElements } = renderHomePage()
+      const { offerer } = await waitForElements()
 
       // Then
       const selectedOffererAddress = `${offererWithPhysicalVenues.address} ${offererWithPhysicalVenues.postalCode} ${offererWithPhysicalVenues.city}`
-      expect(screen.queryByText(offererWithPhysicalVenues.siren)).not.toBeInTheDocument()
+      expect(within(offerer).queryByText(offererWithPhysicalVenues.siren)).not.toBeInTheDocument()
       expect(
-        screen.queryByText(offererWithPhysicalVenues.name, { selector: 'span' })
+        within(offerer).queryByText(offererWithPhysicalVenues.name, { selector: 'span' })
       ).not.toBeInTheDocument()
-      expect(screen.queryByText(selectedOffererAddress)).not.toBeInTheDocument()
+      expect(within(offerer).queryByText(selectedOffererAddress)).not.toBeInTheDocument()
     })
 
     it('should show offerer informations on click on show button', async () => {
       // Given
-      await renderHomePage()
-      const showButton = screen.getByRole('button', { name: 'Afficher' })
+      const { waitForElements } = renderHomePage()
+      const { offerer } = await waitForElements()
+      const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
 
       // When
       fireEvent.click(showButton)
 
       //Then
-      expect(screen.getByText(offererWithPhysicalVenues.siren)).toBeInTheDocument()
+      expect(within(offerer).getByText(offererWithPhysicalVenues.siren)).toBeInTheDocument()
       expect(
-        screen.getByText(offererWithPhysicalVenues.name, { selector: 'span' })
+        within(offerer).getByText(offererWithPhysicalVenues.name, { selector: 'span' })
       ).toBeInTheDocument()
       expect(
-        screen.getByText(offererWithPhysicalVenues.address, { exact: false })
+        within(offerer).getByText(offererWithPhysicalVenues.address, { exact: false })
       ).toBeInTheDocument()
       expect(
-        screen.getByText(
+        within(offerer).getByText(
           `${offererWithPhysicalVenues.postalCode} ${offererWithPhysicalVenues.city}`,
           { exact: false }
         )
@@ -641,7 +572,7 @@ describe('offererDetails', () => {
         isValidated: false,
         managedVenues: [virtualVenue],
       }
-      pcapi.getOffererWithVenueStats.mockResolvedValue(nonValidatedOfferer)
+      pcapi.getOfferer.mockResolvedValue(nonValidatedOfferer)
       pcapi.getAllOfferersNames.mockResolvedValue([
         { name: nonValidatedOfferer.name, id: nonValidatedOfferer.id },
       ])
@@ -649,39 +580,32 @@ describe('offererDetails', () => {
 
     it('should warn user that offerer is being validated', async () => {
       // When
-      await renderHomePage()
+      const { waitForElements } = renderHomePage()
+      const { offerer } = await waitForElements()
 
       // Then
-      expect(screen.getByText('Votre structure est en cours de validation')).toBeInTheDocument()
+      expect(
+        within(offerer).getByText('Votre structure est en cours de validation')
+      ).toBeInTheDocument()
     })
 
     it('should allow user to view offerer informations', async () => {
-      // Given
-      const offerer = {
-        ...firstOffererByAlphabeticalOrder,
-        iban: '',
-        bic: '',
-        managedVenues: [{ ...physicalVenue, iban: '', bic: '' }],
-      }
-      pcapi.getOffererWithVenueStats.mockResolvedValue(offerer)
-
       // When
-      await renderHomePage()
-      const showButton = screen.getByRole('button', { name: 'Afficher' })
-      fireEvent.click(showButton)
+      const { waitForElements } = renderHomePage()
+      const { offerer } = await waitForElements()
 
       // Then
-      expect(screen.getByText('Informations pratiques')).toBeInTheDocument()
-      expect(screen.getByText('Coordonnées bancaires')).toBeInTheDocument()
+      expect(within(offerer).getByText('Informations pratiques')).toBeInTheDocument()
     })
 
-    it('should allow user to add venue and virtual offer', async () => {
+    it('should allow user to add venue and offer', async () => {
       // When
-      await renderHomePage()
+      const { waitForElements } = renderHomePage()
+      await waitForElements()
 
       // Then
       expect(screen.getByRole('link', { name: 'Créer un lieu' })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: 'Créer une offre numérique' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Créer une offre' })).toBeInTheDocument()
     })
   })
 
@@ -691,12 +615,13 @@ describe('offererDetails', () => {
         { name: firstOffererByAlphabeticalOrder.name, id: firstOffererByAlphabeticalOrder.id },
         { name: baseOfferers[0].name, id: baseOfferers[0].id },
       ])
-      pcapi.getOffererWithVenueStats.mockRejectedValue({ status: 403 })
+      pcapi.getOfferer.mockRejectedValue({ status: 403 })
     })
 
     it('should warn user offerer is being validated', async () => {
       // When
-      await renderHomePage()
+      const { waitForElements } = renderHomePage()
+      await waitForElements()
 
       // Then
       expect(screen.getByText('Votre structure est en cours de validation')).toBeInTheDocument()
@@ -704,8 +629,8 @@ describe('offererDetails', () => {
 
     it('should not allow user to view offerer informations', async () => {
       // When
-      await renderHomePage()
-
+      const { waitForElements } = renderHomePage()
+      await waitForElements()
       // Then
       expect(screen.queryByText('Informations pratiques')).not.toBeInTheDocument()
       expect(screen.queryByText('Coordonnées bancaires')).not.toBeInTheDocument()
@@ -713,7 +638,8 @@ describe('offererDetails', () => {
 
     it('should not allow user to update offerer informations', async () => {
       // When
-      await renderHomePage()
+      const { waitForElements } = renderHomePage()
+      await waitForElements()
 
       // Then
       const [offererUpdateButton] = screen.getAllByRole('button', { name: 'Modifier' })
@@ -723,12 +649,13 @@ describe('offererDetails', () => {
 
     it('should not allow user to add venue and virtual offer', async () => {
       // When
-      await renderHomePage()
+      const { waitForElements } = renderHomePage()
+      await waitForElements()
 
       // Then
       expect(screen.queryByRole('link', { name: 'Créer un lieu' })).not.toBeInTheDocument()
       expect(
-        screen.queryByRole('link', { name: 'Créer une offre numérique' })
+        screen.queryByRole('link', { name: 'Créer une offre' })
       ).not.toBeInTheDocument()
     })
 
@@ -738,14 +665,15 @@ describe('offererDetails', () => {
         { name: baseOfferers[0].name, id: baseOfferers[0].id },
         { name: firstOffererByAlphabeticalOrder.name, id: firstOffererByAlphabeticalOrder.id },
       ])
-      pcapi.getOffererWithVenueStats
+      pcapi.getOfferer
         .mockResolvedValueOnce({
           ...firstOffererByAlphabeticalOrder,
           managedVenues: [virtualVenue, physicalVenue],
         })
         .mockRejectedValueOnce({ status: 403 })
 
-      await renderHomePage()
+      const { waitForElements } = renderHomePage()
+      await waitForElements()
 
       // When
       fireEvent.change(screen.getByDisplayValue(firstOffererByAlphabeticalOrder.name), {
@@ -753,7 +681,8 @@ describe('offererDetails', () => {
       })
 
       // Then
-      expect(pcapi.getOffererWithVenueStats).toHaveBeenCalledTimes(2)
+      expect(pcapi.getOfferer).toHaveBeenCalledTimes(2)
+
       await waitForElementToBeRemoved(() =>
         screen.getByRole('heading', { level: 3, name: 'Offres numériques' })
       )

@@ -2,18 +2,15 @@
 * @debt directory "Gaël: this file should be migrated within the new directory structure"
 */
 
-import PropTypes from 'prop-types'
 import React, { useRef } from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 
 import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
-import OfferersLegacy from './Offerers/OfferersLegacy'
 import ProfileAndSupportContainer from './ProfileAndSupport/ProfileAndSupportContainer'
 
-const Homepage = props => {
-  const { isPerfVenueStatsEnabled } = props
+const Homepage = () => {
   const profileRef = useRef(null)
 
   return (
@@ -29,7 +26,7 @@ const Homepage = props => {
       />
 
       <section className="h-section">
-        {isPerfVenueStatsEnabled ? <Offerers /> : <OfferersLegacy />}
+        <Offerers />
       </section>
 
       <section
@@ -40,14 +37,6 @@ const Homepage = props => {
       </section>
     </div>
   )
-}
-
-Homepage.defaultProps = {
-  isPerfVenueStatsEnabled: false,
-}
-
-Homepage.propTypes = {
-  isPerfVenueStatsEnabled: PropTypes.bool,
 }
 
 export default Homepage
