@@ -5,7 +5,6 @@
 
 import { connect } from 'react-redux'
 
-import { setUsers } from 'store/reducers/data'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import ProfileAndSupport from './ProfileAndSupport'
@@ -16,11 +15,4 @@ export function mapStateToProps(state) {
   }
 }
 
-const mapDispatchToProps = dispatch => ({
-  setUserInformations: (user, updatedInformations) => {
-    const updatedUser = { ...user, ...updatedInformations }
-    dispatch(setUsers([updatedUser]))
-  },
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileAndSupport)
+export default connect(mapStateToProps)(ProfileAndSupport)

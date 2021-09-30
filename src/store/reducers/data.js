@@ -1,6 +1,6 @@
 /*
-* @debt deprecated "Gaël: deprecated usage of redux-saga-data"
-*/
+ * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
+ */
 
 import { createDataReducer } from 'redux-saga-data'
 
@@ -9,6 +9,7 @@ const SET_MEDIATIONS = 'SET_MEDIATIONS'
 const SET_STOCKS = 'SET_STOCKS'
 const SET_VENUES = 'SET_VENUES'
 const SET_USERS = 'SET_USERS'
+const UPDATE_USER = 'UPDATE_USER'
 
 export const initialState = {
   bookings: [],
@@ -47,6 +48,11 @@ export const setUsers = users => ({
   type: SET_USERS,
 })
 
+export const updateUser = userData => ({
+  userData,
+  type: UPDATE_USER,
+})
+
 const dataAndOffersRecapReducer = (state = initialState, action) => {
   switch (action.type) {
     case GET_DESK_BOOKINGS:
@@ -59,6 +65,10 @@ const dataAndOffersRecapReducer = (state = initialState, action) => {
       return { ...state, ...{ venues: action.venues } }
     case SET_USERS:
       return { ...state, ...{ users: action.users } }
+    case UPDATE_USER: {
+      const currentUser = state.users[0]
+      return { ...state, ...{ users: [{ ...currentUser, ...action.userData }] } }
+    }
     default:
       return dataReducer(state, action)
   }

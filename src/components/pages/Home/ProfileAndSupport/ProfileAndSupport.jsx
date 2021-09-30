@@ -54,7 +54,7 @@ export const formatPhoneNumber = phoneNumber => {
   return phoneNumber
 }
 
-const Profile = ({ setUserInformations, user }) => {
+const Profile = ({ user }) => {
   const [isEditingProfile, setIsEditingProfile] = useState(false)
 
   const showProfileInfoModal = useCallback(() => setIsEditingProfile(true), [])
@@ -132,7 +132,6 @@ const Profile = ({ setUserInformations, user }) => {
       {isEditingProfile && (
         <ProfileInformationsModal
           hideProfileInfoModal={hideProfileInfoModal}
-          setUserInformations={setUserInformations}
           user={user}
         />
       )}
@@ -141,7 +140,6 @@ const Profile = ({ setUserInformations, user }) => {
 }
 
 Profile.propTypes = {
-  setUserInformations: PropTypes.func.isRequired,
   user: PropTypes.shape().isRequired,
 }
 

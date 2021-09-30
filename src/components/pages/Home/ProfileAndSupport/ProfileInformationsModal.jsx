@@ -3,56 +3,19 @@
  */
 
 import PropTypes from 'prop-types'
-import React, { useCallback, useState } from 'react'
+import React from 'react'
 
-import useNotification from 'components/hooks/useNotification'
 import { DialogBox } from 'components/layout/DialogBox/DialogBox'
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import * as pcapi from 'repository/pcapi/pcapi'
 
-const ProfileInformationsModal = ({ hideProfileInfoModal, setUserInformations, user }) => {
-  const [lastName, setLastName] = useState(user.lastName || '')
-  const [firstName, setFirstName] = useState(user.firstName || '')
-  const [email, setEmail] = useState(user.email || '')
-  const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber || '')
-  const [formErrors, setFormErrors] = useState({})
+import ProfileForm from './ProfileForm'
 
-  const notification = useNotification()
-
-  const submitProfileInformations = useCallback(
-    event => {
-      event.preventDefault()
-      const body = {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        phoneNumber: phoneNumber,
-      }
-
-      pcapi
-        .updateUserInformations(body)
-        .then(() => {
-          setUserInformations(user, body)
-          notification.success('Les informations ont bien été enregistrées.')
-          hideProfileInfoModal()
-        })
-        .catch(error => {
-          setFormErrors(error.errors)
-        })
-    },
-    [
-      firstName,
-      lastName,
-      email,
-      hideProfileInfoModal,
-      notification,
-      phoneNumber,
-      setUserInformations,
-      user,
-    ]
-  )
-
-  const setInput = setter => event => setter(event.target.value)
+const ProfileInformationsModal = ({ hideProfileInfoModal, user }) => {
+  const initialValues = {
+    lastName: user.lastName || '',
+    firstName: user.firstName || '',
+    email: user.email || '',
+    phoneNumber: user.phoneNumber || '',
+  }
 
   return (
     <DialogBox
@@ -66,54 +29,11 @@ const ProfileInformationsModal = ({ hideProfileInfoModal, setUserInformations, u
         >
           Profil
         </h1>
-        <div className="pi-mandatory-message">
-          Tous les champs sont obligatoires
-        </div>
-        <form onSubmit={submitProfileInformations}>
-          <TextInput
-            error={formErrors.lastName?.[0]}
-            label="Nom"
-            name="last-name-input"
-            onChange={setInput(setLastName)}
-            value={lastName}
-          />
-          <TextInput
-            error={formErrors.firstName?.[0]}
-            label="Prénom"
-            name="first-name-input"
-            onChange={setInput(setFirstName)}
-            value={firstName}
-          />
-          <TextInput
-            error={formErrors.email?.[0]}
-            label="Email"
-            name="email-input"
-            onChange={setInput(setEmail)}
-            value={email}
-          />
-          <TextInput
-            error={formErrors.phoneNumber?.[0]}
-            label="Téléphone"
-            name="phone-input"
-            onChange={setInput(setPhoneNumber)}
-            value={phoneNumber}
-          />
-          <div className="actions-group">
-            <button
-              className="secondary-button"
-              onClick={hideProfileInfoModal}
-              type="button"
-            >
-              Annuler
-            </button>
-            <button
-              className="primary-button"
-              type="submit"
-            >
-              Enregistrer
-            </button>
-          </div>
-        </form>
+        <ProfileForm
+          initialValues={initialValues}
+          onCancel={hideProfileInfoModal}
+          onSuccess={hideProfileInfoModal}
+        />
       </div>
     </DialogBox>
   )
@@ -121,7 +41,6 @@ const ProfileInformationsModal = ({ hideProfileInfoModal, setUserInformations, u
 
 ProfileInformationsModal.propTypes = {
   hideProfileInfoModal: PropTypes.func.isRequired,
-  setUserInformations: PropTypes.func.isRequired,
   user: PropTypes.shape({
     firstName: PropTypes.string,
     lastName: PropTypes.string,
