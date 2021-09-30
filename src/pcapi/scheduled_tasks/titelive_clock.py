@@ -13,22 +13,22 @@ from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 blueprint = Blueprint(__name__, __name__)
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS)
 def synchronize_titelive_things(app):
     synchronize_data_for_provider("TiteLiveThings")
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION)
 def synchronize_titelive_thing_descriptions(app):
     synchronize_data_for_provider("TiteLiveThingDescriptions")
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS)
 def synchronize_titelive_thing_thumbs(app):
     synchronize_data_for_provider("TiteLiveThingThumbs")

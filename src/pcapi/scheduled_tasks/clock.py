@@ -39,31 +39,31 @@ blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 @cron_require_feature(FeatureToggle.UPDATE_BOOKING_USED)
 def update_booking_used(app: Flask) -> None:
     bookings_api.auto_mark_as_used_after_event()
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_ALLOCINE)
 def synchronize_allocine_stocks(app: Flask) -> None:
     allocine_stocks_provider_id = get_provider_by_local_class("AllocineStocks").id
     synchronize_venue_providers_for_provider(allocine_stocks_provider_id)
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def synchronize_provider_api(app: Flask) -> None:
     provider_api_stocks.synchronize_stocks()
 
 
 # FIXME (asaunier, 2021-05-25): This clock must be removed once every application from procedure
 #  defined in DMS_NEW_ENROLLMENT_PROCEDURE_ID has been treated
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def pc_remote_import_beneficiaries(app: Flask) -> None:
     procedure_id = settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
@@ -75,8 +75,8 @@ def pc_remote_import_beneficiaries(app: Flask) -> None:
 
 # FIXME (xordoquy, 2021-06-16): This clock must be removed once every application from procedure
 #  defined in 44623 has been treated
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def pc_remote_import_beneficiaries_from_old_dms(app: Flask) -> None:
     if not settings.IS_PROD:
         return
@@ -88,8 +88,8 @@ def pc_remote_import_beneficiaries_from_old_dms(app: Flask) -> None:
     remote_tag_has_completed.run(import_from_date, procedure_id)
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def pc_import_beneficiaries_from_dms_v3(app: Flask) -> None:
     procedure_id = settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
@@ -99,8 +99,8 @@ def pc_import_beneficiaries_from_dms_v3(app: Flask) -> None:
     remote_tag_has_completed.run(import_from_date, procedure_id)
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def pc_import_beneficiaries_from_dms_v4(app: Flask) -> None:
     for procedure_name, procedure_id in (
         ("v4_FR", settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR),
@@ -116,20 +116,20 @@ def pc_import_beneficiaries_from_dms_v4(app: Flask) -> None:
         remote_tag_has_completed.run(import_from_date, procedure_id)
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def pc_handle_expired_bookings(app: Flask) -> None:
     handle_expired_bookings()
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def pc_notify_soon_to_be_expired_individual_bookings(app: Flask) -> None:
     notify_soon_to_be_expired_individual_bookings()
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def pc_notify_newly_eligible_users(app: Flask) -> None:
     if not settings.IS_PROD and not settings.IS_TESTING:
         return
@@ -138,37 +138,37 @@ def pc_notify_newly_eligible_users(app: Flask) -> None:
         send_newly_eligible_user_email(user)
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def pc_clean_expired_tokens(app: Flask) -> None:
     users_api.delete_expired_tokens()
     db.session.commit()
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def pc_check_stock_quantity_consistency(app: Flask) -> None:
     inconsistent_stocks = check_stock_consistency()
     if inconsistent_stocks:
         logger.error("Found inconsistent stocks: %s", ", ".join([str(stock_id) for stock_id in inconsistent_stocks]))
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def pc_send_tomorrow_events_notifications(app: Flask) -> None:
     stock_ids = find_tomorrow_event_stock_ids()
     for stock_id in stock_ids:
         send_tomorrow_stock_notification.delay(stock_id)
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def pc_clean_past_draft_offers(app: Flask) -> None:
     delete_past_draft_offers()
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def pc_send_withdrawal_terms_to_offerers_validated_yesterday(app: Flask) -> None:
     yesterday = date.today() - timedelta(days=1)
     offerers_validated_yesterday = get_offerers_by_date_validated(yesterday)

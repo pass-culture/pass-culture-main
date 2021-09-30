@@ -68,8 +68,8 @@ def synchronize_titelive_stocks(app):
 
 Exemple :
 ```python
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE)
 def synchronize_titelive_stocks(app):
     titelive_stocks_provider_id = get_provider_by_local_class(TITELIVE_STOCKS_PROVIDER_NAME).id

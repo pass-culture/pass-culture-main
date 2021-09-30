@@ -15,38 +15,38 @@ blueprint = Blueprint(__name__, __name__)
 
 # FIXME (dbaty, 2021-06-16): rename the file and the cron (and the
 # name of the pod).
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def index_offers_in_algolia_by_offer(app):
     search.index_offers_in_queue()
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def index_offers_in_algolia_by_venue(app):
     search.index_offers_of_venues_in_queue()
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def delete_expired_offers_in_algolia(app):
     offers_api.unindex_expired_offers()
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def index_offers_in_error_in_algolia_by_offer(app):
     search.index_offers_in_queue(from_error_queue=True)
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def index_venues(app):
     search.index_venues_in_queue()
 
 
-@log_cron_with_transaction
 @cron_context
+@log_cron_with_transaction
 def index_venues_in_error(app):
     search.index_venues_in_queue(from_error_queue=True)
 
