@@ -315,9 +315,9 @@ jobs:
       - run:
           name: Initialize environment
           command: |
-            git clone https://github.com/betagouv/pass-culture-main.git
+            git clone https://github.com/pass-culture/pass-culture-main.git
             cd pass-culture-main
-            git clone https://github.com/betagouv/pass-culture-browser.git webapp
+            git clone https://github.com/pass-culture/pass-culture-browser.git webapp
             ./install_lib_ci_with_chrome.sh
       - checkout:
           path: ~/pass-culture-main/api
@@ -374,9 +374,9 @@ jobs:
       - run:
           name: Init env
           command: |
-            git clone https://github.com/betagouv/pass-culture-main.git
+            git clone https://github.com/pass-culture/pass-culture-main.git
             cd pass-culture-main
-            git clone https://github.com/betagouv/pass-culture-pro.git pro
+            git clone https://github.com/pass-culture/pass-culture-pro.git pro
             ./install_lib_ci_with_chrome.sh
       - checkout:
           path: ~/pass-culture-main/api
