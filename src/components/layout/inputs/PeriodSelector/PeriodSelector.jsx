@@ -1,10 +1,9 @@
 /*
  * @debt directory "Gaël: this file should be migrated within the new directory structure"
  */
-
 import fr from 'date-fns/locale/fr'
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useRef } from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
 
 import InputWithCalendar from './InputWithCalendar'
@@ -22,12 +21,18 @@ const PeriodSelector = ({
   periodEndingDate,
   todayDate,
 }) => {
+  const endDateInput = useRef(null)
+  const focusEndDate = () => endDateInput.current && endDateInput.current.setOpen(true)
+
   return (
     <div className="period-filter">
-      <label className="period-filter-label">
+      <div className="period-filter-label">
         {label}
         <div className={`period-filter-inputs ${isDisabled ? 'disabled' : ''}`}>
-          <div className="period-filter-begin-picker">
+          <div
+            className="period-filter-begin-picker"
+            data-testid="period-filter-begin-picker"
+          >
             <DatePicker
               className="period-filter-input"
               customInput={(
@@ -43,13 +48,17 @@ const PeriodSelector = ({
               maxDate={periodEndingDate}
               minDate={minDateBeginning}
               onChange={changePeriodBeginningDateValue}
+              onSelect={() => focusEndDate()}
               openToDate={periodBeginningDate ? periodBeginningDate : todayDate}
               placeholderText="JJ/MM/AAAA"
               selected={periodBeginningDate}
             />
           </div>
           <span className="vertical-bar" />
-          <div className="period-filter-end-picker">
+          <div
+            className="period-filter-end-picker"
+            data-testid="period-filter-end-picker"
+          >
             <DatePicker
               className="period-filter-input"
               customInput={(
@@ -67,11 +76,12 @@ const PeriodSelector = ({
               onChange={changePeriodEndingDateValue}
               openToDate={periodEndingDate ? periodEndingDate : todayDate}
               placeholderText="JJ/MM/AAAA"
+              ref={endDateInput}
               selected={periodEndingDate}
             />
           </div>
         </div>
-      </label>
+      </div>
     </div>
   )
 }

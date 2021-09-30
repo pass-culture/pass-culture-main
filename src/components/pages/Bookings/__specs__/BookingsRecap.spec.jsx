@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
@@ -82,7 +82,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // Then
     const eventDateFilter = screen.getByLabelText('Date de l’évènement')
     const eventVenueFilter = screen.getByLabelText('Lieu')
-    const eventBookingPeriodFilter = screen.getByLabelText('Période de réservation')
+    const eventBookingPeriodFilter = screen.getByText('Période de réservation')
     expect(eventDateFilter).toBeInTheDocument()
     expect(eventVenueFilter).toBeInTheDocument()
     expect(eventBookingPeriodFilter).toBeInTheDocument()
@@ -381,7 +381,7 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     await renderBookingsRecap(props, store)
 
-    const bookingPeriodWrapper = screen.getByLabelText('Période de réservation').closest('label')
+    const bookingPeriodWrapper = screen.getByText('Période de réservation')
     const [beginningPeriodInput, endingPeriodInput] = within(
       bookingPeriodWrapper
     ).getAllByPlaceholderText('JJ/MM/AAAA')
@@ -414,7 +414,7 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     await renderBookingsRecap(props, store)
 
-    const bookingPeriodWrapper = screen.getByLabelText('Période de réservation').closest('label')
+    const bookingPeriodWrapper = screen.getByText('Période de réservation')
     const [beginningPeriodInput, endingPeriodInput] = within(
       bookingPeriodWrapper
     ).getAllByPlaceholderText('JJ/MM/AAAA')
@@ -444,7 +444,7 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     await renderBookingsRecap(props, store)
 
-    const bookingPeriodWrapper = screen.getByLabelText('Période de réservation').closest('label')
+    const bookingPeriodWrapper = screen.getByText('Période de réservation')
     const [beginningPeriodInput, endingPeriodInput] = within(
       bookingPeriodWrapper
     ).getAllByPlaceholderText('JJ/MM/AAAA')
@@ -474,7 +474,7 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     await renderBookingsRecap(props, store)
 
-    const bookingPeriodWrapper = screen.getByLabelText('Période de réservation').closest('label')
+    const bookingPeriodWrapper = screen.getByText('Période de réservation')
     const endingPeriodInput = within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')[1]
 
     // When
