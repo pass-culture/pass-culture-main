@@ -430,7 +430,6 @@ describe('offerDetails - Edition', () => {
       it("should have a preview link redirecting to the webapp's offer page with mediationId as parameter when an active mediation exists", async () => {
         // Given
         editedOffer.thumbUrl = 'http://example.net/active-image.png'
-        editedOffer.activeMediation = { id: 'CBA' }
 
         // When
         await renderOffers({}, store)
@@ -438,7 +437,7 @@ describe('offerDetails - Edition', () => {
         // Then
         const previewLink = await screen.findByText('Prévisualiser dans l’app', { selector: 'a' })
         expect(previewLink).toBeInTheDocument()
-        const expectedWebappUri = `offre/details/${editedOffer.id}/${editedOffer.activeMediation.id}`
+        const expectedWebappUri = `offre/details/`
         expect(previewLink).toHaveAttribute('href', expect.stringContaining(expectedWebappUri))
       })
     })
