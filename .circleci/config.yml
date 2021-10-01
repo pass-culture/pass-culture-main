@@ -5,7 +5,7 @@ orbs:
 parameters:
   venv_cache_key:
     type: string
-    default: 'deps1-{{ checksum "/home/circleci/.pyenv/version" }}-{{ .Branch }}-{{ checksum "requirements.txt" }}'
+    default: 'deps1-{{ checksum "/home/circleci/.pyenv/version" }}-{{ checksum "requirements.txt" }}'
 
 slack-fail-post-step: &slack-fail-post-step
   post-steps:
