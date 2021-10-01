@@ -15,27 +15,34 @@ from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_f
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
+stock_date = datetime(2021, 5, 15)
+educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
+
+
+def _create_adage_valid_token_with_email(
+    email: str,
+    civility: Optional[str] = "Mme",
+    lastname: Optional[str] = "LAPROF",
+    firstname: Optional[str] = "Jeanne",
+    uai: Optional[str] = "EAU123",
+) -> ByteString:
+    return create_adage_jwt_fake_valid_token(
+        civility=civility, lastname=lastname, firstname=firstname, email=email, uai=uai
+    )
+
 
 @freeze_time("2020-11-17 15:00:00")
-class PostEducationalBookingTest:
-    stock_date = datetime(2021, 5, 15)
-    educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
-
-    def _create_adage_valid_token_with_email(self, email: str, uai: Optional[str] = "EAU123") -> ByteString:
-        return create_adage_jwt_fake_valid_token(
-            civility="Mme.", lastname="LAPROF", firstname="Jeanne", email=email, uai=uai
-        )
-
+class Returns200Test:
     def test_post_educational_booking(self, app):
         # Given
-        stock = offer_factories.EducationalStockFactory(beginningDatetime=self.stock_date)
+        stock = offer_factories.EducationalStockFactory(beginningDatetime=stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_year = educational_factories.EducationalYearFactory(
-            beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
+            beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]
         )
         educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
 
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(
+        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
             email=educational_redactor.email, uai=educational_institution.institutionId
         )
         test_client = TestClient(app.test_client())
@@ -59,16 +66,23 @@ class PostEducationalBookingTest:
         assert booking.educationalBooking.educationalYear.adageId == educational_year.adageId
         assert response.json["bookingId"] == booking.id
 
-    def test_should_not_allow_booking_when_educational_institution_is_unknown(self, app):
-        # Given
-        stock = offer_factories.EducationalStockFactory(beginningDatetime=self.stock_date)
-        educational_factories.EducationalInstitutionFactory()
+
+@freeze_time("2020-11-17 15:00:00")
+class Returns400Test:
+    @pytest.fixture()
+    def test_data(self):
+        stock = offer_factories.EducationalStockFactory(beginningDatetime=stock_date)
+        educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory(
-            beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
+            beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]
         )
         educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
+        return (stock, educational_institution, educational_redactor)
 
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(
+    def test_should_not_allow_booking_when_educational_institution_is_unknown(self, test_data, app):
+        # Given
+        stock, _, educational_redactor = test_data
+        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
             email=educational_redactor.email, uai="Unknown"
         )
         test_client = TestClient(app.test_client())
@@ -86,16 +100,11 @@ class PostEducationalBookingTest:
         assert response.status_code == 400
         assert response.json == {"educationalInstitution": "Cet établissement n'est pas éligible au pass Culture."}
 
-    def test_should_not_allow_booking_when_stock_has_no_remaining_quantity(self, app):
+    def test_should_not_allow_booking_when_stock_has_no_remaining_quantity(self, test_data, app):
         # Given
-        stock = offer_factories.EducationalStockFactory(quantity=0, beginningDatetime=self.stock_date)
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        educational_factories.EducationalYearFactory(
-            beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
-        )
-        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
-
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(
+        _, educational_institution, educational_redactor = test_data
+        stock = offer_factories.EducationalStockFactory(beginningDatetime=stock_date, quantity=0)
+        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
             email=educational_redactor.email, uai=educational_institution.institutionId
         )
         test_client = TestClient(app.test_client())
@@ -113,16 +122,11 @@ class PostEducationalBookingTest:
         assert response.status_code == 400
         assert response.json == {"stock": "Cette offre n'est pas disponible à la réservation"}
 
-    def test_should_not_allow_booking_when_offer_is_not_educational(self, app):
+    def test_should_not_allow_booking_when_offer_is_not_educational(self, test_data, app):
         # Given
-        stock = offer_factories.EventStockFactory(offer__isEducational=False, beginningDatetime=self.stock_date)
-        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        educational_factories.EducationalYearFactory(
-            beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
-        )
-
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(
+        _, educational_institution, educational_redactor = test_data
+        stock = offer_factories.EventStockFactory(beginningDatetime=stock_date, offer__isEducational=False)
+        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
             email=educational_redactor.email, uai=educational_institution.institutionId
         )
         test_client = TestClient(app.test_client())
@@ -140,16 +144,11 @@ class PostEducationalBookingTest:
         assert response.status_code == 400
         assert response.json == {"offer": "L'offre n'est pas une offre éducationnelle"}
 
-    def test_should_not_allow_booking_when_educational_offer_is_not_an_event(self, app):
+    def test_should_not_allow_booking_when_educational_offer_is_not_an_event(self, test_data, app):
         # Given
-        stock = offer_factories.ThingStockFactory(offer__isEducational=True, beginningDatetime=self.stock_date)
-        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        educational_factories.EducationalYearFactory(
-            beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
-        )
-
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(
+        _, educational_institution, educational_redactor = test_data
+        stock = offer_factories.ThingStockFactory(offer__isEducational=True, beginningDatetime=stock_date)
+        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
             email=educational_redactor.email, uai=educational_institution.institutionId
         )
         test_client = TestClient(app.test_client())
@@ -167,17 +166,45 @@ class PostEducationalBookingTest:
         assert response.status_code == 400
         assert response.json == {"offer": "L'offre n'est pas un évènement"}
 
-    def test_should_not_allow_booking_when_uai_code_is_not_provided_through_jwt(self, app):
-        # Given
-        stock = offer_factories.EducationalStockFactory(beginningDatetime=self.stock_date)
-        educational_factories.EducationalInstitutionFactory()
+
+@freeze_time("2020-11-17 15:00:00")
+class Returns403Test:
+    @pytest.fixture()
+    def test_data(self):
+        stock = offer_factories.EducationalStockFactory(beginningDatetime=stock_date)
+        educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory(
-            beginningDate=self.educational_year_dates["start"], expirationDate=self.educational_year_dates["end"]
+            beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]
         )
         educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
+        return (stock, educational_institution, educational_redactor)
 
-        adage_jwt_fake_valid_token = self._create_adage_valid_token_with_email(
-            email=educational_redactor.email, uai=None
+    def test_should_not_allow_booking_when_uai_code_is_not_provided_through_jwt(self, test_data, app):
+        # Given
+        stock, _, educational_redactor = test_data
+        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(email=educational_redactor.email, uai=None)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
+
+        # When
+        response = test_client.post(
+            "/adage-iframe/bookings",
+            json={
+                "stockId": stock.id,
+            },
+        )
+
+        # Then
+        assert response.status_code == 403
+        assert response.json == {
+            "authorization": "Des informations sur le rédacteur de projet, et nécessaires à la préréservation, sont manquantes"
+        }
+
+    def test_should_not_allow_booking_when_civility_is_not_provided_through_jwt(self, test_data, app):
+        # Given
+        stock, educational_institution, educational_redactor = test_data
+        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
+            email=educational_redactor.email, uai=educational_institution.institutionId, civility=None
         )
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
@@ -191,7 +218,53 @@ class PostEducationalBookingTest:
         )
 
         # Then
-        assert response.status_code == 400
+        assert response.status_code == 403
         assert response.json == {
-            "global": "Vous devez sélectionner un établissement scolaire pour pouvoir effectuer une pré-réservation"
+            "authorization": "Des informations sur le rédacteur de projet, et nécessaires à la préréservation, sont manquantes"
+        }
+
+    def test_should_not_allow_booking_when_lastname_is_not_provided_through_jwt(self, test_data, app):
+        # Given
+        stock, educational_institution, educational_redactor = test_data
+        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
+            email=educational_redactor.email, uai=educational_institution.institutionId, lastname=None
+        )
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
+
+        # When
+        response = test_client.post(
+            "/adage-iframe/bookings",
+            json={
+                "stockId": stock.id,
+            },
+        )
+
+        # Then
+        assert response.status_code == 403
+        assert response.json == {
+            "authorization": "Des informations sur le rédacteur de projet, et nécessaires à la préréservation, sont manquantes"
+        }
+
+    def test_should_not_allow_booking_when_firstname_is_not_provided_through_jwt(self, test_data, app):
+        # Given
+        stock, educational_institution, educational_redactor = test_data
+        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
+            email=educational_redactor.email, uai=educational_institution.institutionId, firstname=None
+        )
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
+
+        # When
+        response = test_client.post(
+            "/adage-iframe/bookings",
+            json={
+                "stockId": stock.id,
+            },
+        )
+
+        # Then
+        assert response.status_code == 403
+        assert response.json == {
+            "authorization": "Des informations sur le rédacteur de projet, et nécessaires à la préréservation, sont manquantes"
         }

@@ -9,9 +9,6 @@ from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_f
 
 class Returns200Test:
     valid_user = {
-        "civilite": "Mme.",
-        "nom": "LAPROF",
-        "prenom": "Sabine",
         "mail": "sabine.laprof@example.com",
         "uai": "EAU123",
     }

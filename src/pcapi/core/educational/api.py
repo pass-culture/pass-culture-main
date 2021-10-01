@@ -22,6 +22,7 @@ from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
+from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
@@ -43,7 +44,7 @@ def _create_redactor(redactor_informations: AuthenticatedInformation) -> Educati
     return redactor
 
 
-def book_educational_offer(redactor_informations: AuthenticatedInformation, stock_id: int) -> EducationalBooking:
+def book_educational_offer(redactor_informations: RedactorInformation, stock_id: int) -> EducationalBooking:
     redactor = educational_repository.find_redactor_by_email(redactor_informations.email)
     if not redactor:
         redactor = _create_redactor(redactor_informations)

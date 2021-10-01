@@ -7,7 +7,7 @@ class EducationalInstitutionUnknown(ClientError):
 
 
 class StockNotBookable(ClientError):
-    def __init__(self, stock_id) -> None:
+    def __init__(self, stock_id: int) -> None:
         super().__init__("stock", f"Le stock {stock_id} n'est pas réservable")
 
 
@@ -19,12 +19,12 @@ class EducationalYearNotFound(ClientError):
 
 
 class OfferIsNotEducational(ClientError):
-    def __init__(self, offer_id) -> None:
+    def __init__(self, offer_id: int) -> None:
         super().__init__("offer", f"L'offre {offer_id} n'est pas une offre éducationnelle")
 
 
 class OfferIsNotEvent(ClientError):
-    def __init__(self, offer_id) -> None:
+    def __init__(self, offer_id: int) -> None:
         super().__init__("offer", f"L'offre {offer_id} n'est pas une offre évènementielle")
 
 
@@ -61,4 +61,8 @@ class EducationalBookingIsRefused(Exception):
 
 
 class BookingIsCancelled(Exception):
+    pass
+
+
+class MissingRequiredRedactorInformation(Exception):
     pass

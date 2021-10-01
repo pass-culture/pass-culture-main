@@ -4,10 +4,14 @@ from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import InstitutionalProjectRedactorNotFoundException
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions
+from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
+from pcapi.routes.adage_iframe.serialization.adage_authentication import (
+    get_redactor_information_from_adage_authentication,
+)
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.educational_booking import BookEducationalOfferRequest
 from pcapi.routes.adage_iframe.serialization.educational_booking import BookEducationalOfferResponse
@@ -18,20 +22,15 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.adage_iframe.route("/bookings", methods=["POST"])
-@spectree_serialize(api=blueprint.api, response_model=BookEducationalOfferResponse, on_error_statuses=[400])
+@spectree_serialize(api=blueprint.api, response_model=BookEducationalOfferResponse, on_error_statuses=[400, 403])
 @adage_jwt_required
 def book_educational_offer(
-    authenticated_information: AuthenticatedInformation, body: BookEducationalOfferRequest
+    body: BookEducationalOfferRequest,
+    authenticated_information: AuthenticatedInformation,
 ) -> BookEducationalOfferResponse:
-    if authenticated_information.uai is None:
-        raise ApiErrors(
-            {"global": "Vous devez sélectionner un établissement scolaire pour pouvoir effectuer une pré-réservation"},
-            status_code=400,
-        )
-
     try:
         booking = educational_api.book_educational_offer(
-            redactor_informations=authenticated_information,
+            redactor_informations=get_redactor_information_from_adage_authentication(authenticated_information),
             stock_id=body.stockId,
         )
     except AdageException as exception:
@@ -47,6 +46,19 @@ def book_educational_offer(
             {"global": "La récupération des informations du rédacteur de projet via Adage a échoué"},
             status_code=500,
         )
+
+    except MissingRequiredRedactorInformation:
+        logger.info(
+            "Could not book offer: missing information in adage jwt",
+            extra={"authenticated_information": authenticated_information.dict()},
+        )
+        raise ApiErrors(
+            {
+                "authorization": "Des informations sur le rédacteur de projet, et nécessaires à la préréservation, sont manquantes"
+            },
+            status_code=403,
+        )
+
     except InstitutionalProjectRedactorNotFoundException:
         logger.info(
             "Could not book offer: redactor does not exist in Adage",
