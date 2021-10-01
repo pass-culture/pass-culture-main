@@ -108,3 +108,8 @@ class DMSGraphQLClient:
         return self.execute_query(
             query, variables={"input": {"dossierId": application_techid, "instructeurId": instructeur_techid}}
         )
+
+    def get_single_application_details(self, application_id: int) -> Any:
+        query = self.build_query("get_single_application_details")
+
+        return self.execute_query(query, variables={"applicationNumber": application_id})

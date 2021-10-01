@@ -10,6 +10,7 @@ from pcapi.connectors.api_demarches_simplifiees import get_all_applications_for_
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
 
 from tests.scripts.beneficiary.fixture import make_graphql_application
+from tests.scripts.beneficiary.fixture import make_single_application
 
 
 class GetAllApplicationsForProcedureTest:
@@ -93,5 +94,15 @@ class GraphqlResponseTest:
         execute_query.return_value = {"dossierArchiver": {"dossier": {"id": technical_id}, "errors": None}}
         client = DMSGraphQLClient()
         client.archive_application("ApplicationTechnicalId", "InstructorTechId")
+
+        assert client.execute_query.call_count == 1
+
+    @patch.object(DMSGraphQLClient, "execute_query")
+    def test_get_single_application_details(self, execute_query):
+
+        execute_query.return_value = make_single_application(12, state="closed")
+
+        client = DMSGraphQLClient()
+        client.get_single_application_details(42)
 
         assert client.execute_query.call_count == 1

@@ -727,3 +727,7 @@ def make_new_stranger_application():
         "demandeur": {"civilite": "M", "nom": "VALGEAN", "prenom": "Jean", "dateDeNaissance": None},
     }
     return data
+
+
+def make_single_application(*args, **kwargs):
+    return {"dossier": make_graphql_application(*args, **kwargs)}
