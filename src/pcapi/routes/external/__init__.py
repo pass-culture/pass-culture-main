@@ -5,3 +5,4 @@ def install_routes(app: Flask) -> None:
     # pylint: disable=unused-import
     from . import bank_informations
     from . import unsubscribe_users
+    from . import users_subscription
