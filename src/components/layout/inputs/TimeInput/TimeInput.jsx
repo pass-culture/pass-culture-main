@@ -1,12 +1,15 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
+import fr from 'date-fns/locale/fr'
 import * as PropTypes from 'prop-types'
 import React from 'react'
-import DatePicker from 'react-datepicker'
+import DatePicker, { registerLocale } from 'react-datepicker'
 
 import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
+
+registerLocale('fr', fr)
 
 const TimeInput = ({ ariaLabel, disabled, inError, onChange, dateTime }) => {
   return (
@@ -23,6 +26,7 @@ const TimeInput = ({ ariaLabel, disabled, inError, onChange, dateTime }) => {
       dateFormat="HH:mm"
       disabled={disabled}
       dropdownMode="scroll"
+      locale="fr"
       onChange={onChange}
       placeholderText="HH:MM"
       selected={dateTime}

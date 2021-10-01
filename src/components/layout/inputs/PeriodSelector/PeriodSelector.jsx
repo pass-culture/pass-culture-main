@@ -1,12 +1,15 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
+import fr from 'date-fns/locale/fr'
 import PropTypes from 'prop-types'
 import React from 'react'
-import DatePicker from 'react-datepicker'
+import DatePicker, { registerLocale } from 'react-datepicker'
 
 import InputWithCalendar from './InputWithCalendar'
+
+registerLocale('fr', fr)
 
 const PeriodSelector = ({
   changePeriodBeginningDateValue,
@@ -36,6 +39,7 @@ const PeriodSelector = ({
               dateFormat="dd/MM/yyyy"
               disabled={isDisabled}
               dropdownMode="select"
+              locale="fr"
               maxDate={periodEndingDate}
               minDate={minDateBeginning}
               onChange={changePeriodBeginningDateValue}
@@ -57,6 +61,7 @@ const PeriodSelector = ({
               dateFormat="dd/MM/yyyy"
               disabled={isDisabled}
               dropdownMode="select"
+              locale="fr"
               maxDate={maxDateEnding}
               minDate={periodBeginningDate}
               onChange={changePeriodEndingDateValue}

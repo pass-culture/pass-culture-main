@@ -245,7 +245,7 @@ describe('components | BookingsRecap | Pro user', () => {
       defaultBookingPeriodEndingDateInput
     )
     fireEvent.click(bookingPeriodEndingDateInput)
-    fireEvent.click(screen.getByText('5'))
+    fireEvent.click(screen.getAllByText('5')[0])
     fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // When
@@ -390,7 +390,7 @@ describe('components | BookingsRecap | Pro user', () => {
     fireEvent.click(beginningPeriodInput)
     fireEvent.click(screen.getByText('10'))
     fireEvent.click(endingPeriodInput)
-    fireEvent.click(screen.getByText('5'))
+    fireEvent.click(screen.getAllByText('5')[0])
     fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // Then

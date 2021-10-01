@@ -1,14 +1,17 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
+import fr from 'date-fns/locale/fr'
 import PropTypes from 'prop-types'
 import React from 'react'
-import DatePicker from 'react-datepicker'
+import DatePicker, { registerLocale } from 'react-datepicker'
 
 import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
 import { getToday } from 'utils/date'
+
+registerLocale('fr', fr)
 
 const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
   function handleOfferDateChange(offerEventDate) {
@@ -32,6 +35,7 @@ const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
           dateFormat="dd/MM/yyyy"
           dropdownMode="select"
           id="select-filter-date"
+          locale="fr"
           onChange={handleOfferDateChange}
           openToDate={
             selectedOfferDate === DEFAULT_PRE_FILTERS.offerEventDate
