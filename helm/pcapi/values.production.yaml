@@ -70,7 +70,6 @@ api:
         more_set_headers -s 503 'Access-Control-Allow-Headers: AppName,AppVersion,X-Request-ID,Content-Type';
         more_set_headers -s 503 'Access-Control-Allow-Origin: $http_origin';
         more_set_headers -s 503 'Access-Control-Allow-Credentials: true';
-      cert-manager.io/cluster-issuer: letsencrypt-production
     hosts:
       - host: backend.passculture.beta.gouv.fr
         paths:
@@ -82,7 +81,7 @@ api:
         paths:
           - path: /
     tls:
-      - secretName: pcapi-ingress-cert
+      - secretName: pcapi-gandi-cert
         hosts:
           - backend.passculture.beta.gouv.fr
           - backend.passculture.app
@@ -128,7 +127,6 @@ highLatencyApi:
         more_set_headers -s 503 'Access-Control-Allow-Headers: AppName,AppVersion,X-Request-ID,Content-Type';
         more_set_headers -s 503 'Access-Control-Allow-Origin: $http_origin';
         more_set_headers -s 503 'Access-Control-Allow-Credentials: true';
-      cert-manager.io/cluster-issuer: letsencrypt-production
     hosts:
       - host: backend.passculture.beta.gouv.fr
         paths:
@@ -161,7 +159,7 @@ highLatencyApi:
           - path: /venues/(.*)/stats$
           - path: /venueProviders$
     tls:
-      - secretName: pcapi-ingress-cert
+      - secretName: pcapi-gandi-cert
         hosts:
           - backend.passculture.beta.gouv.fr
           - backend.passculture.app
@@ -200,7 +198,6 @@ admin:
         more_set_headers -s 503 'Access-Control-Allow-Headers: AppName,AppVersion,X-Request-ID,Content-Type';
         more_set_headers -s 503 'Access-Control-Allow-Origin: $http_origin';
         more_set_headers -s 503 'Access-Control-Allow-Credentials: true';
-      cert-manager.io/cluster-issuer: letsencrypt-production
     hosts:
       - host: backend.passculture.beta.gouv.fr
         paths:
@@ -212,7 +209,7 @@ admin:
         paths:
           - path: /pc/back-office/
     tls:
-      - secretName: pcapi-ingress-cert
+      - secretName: pcapi-gandi-cert
         hosts:
           - backend.passculture.beta.gouv.fr
           - backend.passculture.app
@@ -357,7 +354,6 @@ cloudTaskIdcheck:
       nginx.ingress.kubernetes.io/use-regex: "true"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
       nginx.ingress.kubernetes.io/proxy-body-size: 10m
-      cert-manager.io/cluster-issuer: letsencrypt-production
     hosts:
       - host: backend.passculture.beta.gouv.fr
         paths:
@@ -372,7 +368,7 @@ cloudTaskIdcheck:
           - path: /native/v1/identity_document$
           - path: /cloud-tasks/verify_identity_document$
     tls:
-      - secretName: pcapi-ingress-cert
+      - secretName: pcapi-gandi-cert
         hosts:
           - backend.passculture.beta.gouv.fr
           - backend.passculture.app
