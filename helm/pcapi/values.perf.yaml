@@ -326,7 +326,6 @@ configmapApi:
 
 configmap:
   ENV: testing
-  NLTK_DATA: /root/nltk_data
   GUNICORN_PORT: 5000
   GUNICORN_MAX_REQUESTS: 3000
   GUNICORN_MAX_REQUESTS_JITTER: 10

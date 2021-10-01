@@ -1,17 +1,15 @@
-from nltk.corpus import stopwords
 from sqlalchemy import Index
 from sqlalchemy import and_
 from sqlalchemy import func
 from sqlalchemy.sql.expression import or_
 
+from pcapi.utils import stopwords
 from pcapi.utils.string_processing import remove_single_letters_for_search
 from pcapi.utils.string_processing import tokenize_for_search
 
 
 LANGUAGE = "french"
-CUSTOM_STOPWORDS = ["où"]
-STOP_WORDS = set(stopwords.words(LANGUAGE))
-STOP_WORDS.update(CUSTOM_STOPWORDS)
+SEARCH_STOPWORDS = stopwords.STOPWORDS | {"où"}
 
 
 def create_ts_vector_and_table_args(ts_indexes):
@@ -60,8 +58,10 @@ def _get_ts_queries_from_keywords_string(keywords_string) -> list[str]:
     keywords = tokenize_for_search(keywords_string)
     keywords_without_single_letter = remove_single_letters_for_search(keywords)
 
+    # FIXME (dbaty, 2021-10-01): this is probably useless because
+    # PostgreSQL already has a list of stopwords that it ignores.
     keywords_without_stop_words = [
-        keyword for keyword in keywords_without_single_letter if keyword.lower() not in STOP_WORDS
+        keyword for keyword in keywords_without_single_letter if keyword.lower() not in SEARCH_STOPWORDS
     ]
 
     ts_queries = ["{}:*".format(keyword) for keyword in keywords_without_stop_words]

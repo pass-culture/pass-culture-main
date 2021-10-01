@@ -91,7 +91,6 @@ modifié quand ces problèmes seront réglés côté pylint/astroid.
       ```
     - Injecter les données de tests (sandbox)
     ```shell
-    python -m nltk.downloader punkt stopwords   # Cette ligne c'est pour downloader les médiations (images thumbnail des offres) 
     python src/pcapi/scripts/pc.py sandbox -n industrial
     ```
     - Lancer l'appli

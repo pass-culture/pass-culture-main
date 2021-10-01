@@ -366,7 +366,6 @@ configmapApi:
 
 configmap:
   ENV: testing
-  NLTK_DATA: /root/nltk_data
   FIREBASE_DYNAMIC_LINKS_URL: https://passcultureapptesting.page.link
   GCP_BUCKET_NAME: passculture-metier-ehp-testing-assets
   GUNICORN_PORT: 5000

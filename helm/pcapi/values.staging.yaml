@@ -358,7 +358,6 @@ configmapApi:
 
 configmap:
   ENV: staging
-  NLTK_DATA: /root/nltk_data
   FIREBASE_DYNAMIC_LINKS_URL: https://passcultureappstaging.page.link
   GCP_BUCKET_NAME: passculture-metier-ehp-staging-assets
   GUNICORN_PORT: 5000

@@ -16,8 +16,6 @@ RUN pip install \
 	--no-cache-dir \
 	--requirement ./requirements.txt
 
-RUN python -m nltk.downloader punkt stopwords
-
 ##################### GCP run layer #####################
 
 FROM api-flask
@@ -25,8 +23,6 @@ FROM api-flask
 COPY --from=us-docker.pkg.dev/berglas/berglas/berglas:latest /bin/berglas /bin/berglas
 
 WORKDIR /usr/src/app
-
-ENV NLTK_DATA /root/nltk_data
 
 RUN apt-get update && \
     apt-get -y install postgresql-client curl git && \

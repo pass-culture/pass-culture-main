@@ -28,6 +28,5 @@ LICENSE
 .pylintrc
 .tyrion-config.json
 mypy.ini
-nltk.txt
 Procfile
 pyproject.toml

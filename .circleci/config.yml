@@ -146,7 +146,6 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            python -m nltk.downloader punkt stopwords &> /dev/null
             if [ ! -z "$(alembic branches)" ]; then echo "Multiple alembic heads found"; exit 1; fi
       - run:
           name: Check database and model are aligned
