@@ -15,11 +15,14 @@ from pcapi.models.pc_object import PcObject
 
 
 class ImportStatus(enum.Enum):
+    DRAFT = "DRAFT"
+    ONGOING = "ONGOING"
     DUPLICATE = "DUPLICATE"
     ERROR = "ERROR"
     CREATED = "CREATED"
     REJECTED = "REJECTED"
     RETRY = "RETRY"
+    WITHOUT_CONTINUATION = "WITHOUT_CONTINUATION"
 
 
 class BeneficiaryImportStatus(PcObject, Model):
@@ -28,7 +31,7 @@ class BeneficiaryImportStatus(PcObject, Model):
         updated_at = datetime.strftime(self.date, "%d/%m/%Y")
         return f"{self.status.value}, le {updated_at} par {author}"
 
-    status = Column(Enum(ImportStatus), nullable=False)
+    status = Column(Enum(ImportStatus, create_constraint=False), nullable=False)
 
     date = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
 
