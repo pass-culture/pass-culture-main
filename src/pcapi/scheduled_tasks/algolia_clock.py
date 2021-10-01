@@ -17,47 +17,44 @@ blueprint = Blueprint(__name__, __name__)
 # name of the pod).
 @cron_context
 @log_cron_with_transaction
-def index_offers_in_algolia_by_offer(app):
+def index_offers_in_algolia_by_offer():
     search.index_offers_in_queue()
 
 
 @cron_context
 @log_cron_with_transaction
-def index_offers_in_algolia_by_venue(app):
+def index_offers_in_algolia_by_venue():
     search.index_offers_of_venues_in_queue()
 
 
 @cron_context
 @log_cron_with_transaction
-def delete_expired_offers_in_algolia(app):
+def delete_expired_offers_in_algolia():
     offers_api.unindex_expired_offers()
 
 
 @cron_context
 @log_cron_with_transaction
-def index_offers_in_error_in_algolia_by_offer(app):
+def index_offers_in_error_in_algolia_by_offer():
     search.index_offers_in_queue(from_error_queue=True)
 
 
 @cron_context
 @log_cron_with_transaction
-def index_venues(app):
+def index_venues():
     search.index_venues_in_queue()
 
 
 @cron_context
 @log_cron_with_transaction
-def index_venues_in_error(app):
+def index_venues_in_error():
     search.index_venues_in_queue(from_error_queue=True)
 
 
 @blueprint.cli.command("algolia_clock")
 def algolia_clock():
-    from flask import current_app as app
-
     set_tag("pcapi.app_type", "algolia_clock")
     scheduler = BlockingScheduler()
-
     utils.activate_sentry(scheduler)
 
     # ---- Offers ----- #
@@ -65,7 +62,6 @@ def algolia_clock():
     scheduler.add_job(
         index_offers_in_algolia_by_offer,
         "cron",
-        [app],
         minute=settings.ALGOLIA_CRON_INDEXING_OFFERS_BY_OFFER_FREQUENCY,
         max_instances=4,
     )
@@ -73,16 +69,14 @@ def algolia_clock():
     scheduler.add_job(
         index_offers_in_algolia_by_venue,
         "cron",
-        [app],
         minute=settings.ALGOLIA_CRON_INDEXING_OFFERS_BY_VENUE_PROVIDER_FREQUENCY,
     )
 
-    scheduler.add_job(delete_expired_offers_in_algolia, "cron", [app], day="*", hour="1")
+    scheduler.add_job(delete_expired_offers_in_algolia, "cron", day="*", hour="1")
 
     scheduler.add_job(
         index_offers_in_error_in_algolia_by_offer,
         "cron",
-        [app],
         minute=settings.ALGOLIA_CRON_INDEXING_OFFERS_IN_ERROR_BY_OFFER_FREQUENCY,
     )
 
@@ -91,14 +85,12 @@ def algolia_clock():
     scheduler.add_job(
         index_venues,
         "cron",
-        [app],
         minute=settings.CRON_INDEXING_VENUES_FREQUENCY,
     )
 
     scheduler.add_job(
         index_venues_in_error,
         "cron",
-        [app],
         minute=settings.CRON_INDEXING_VENUES_IN_ERROR_FREQUENCY,
     )
 

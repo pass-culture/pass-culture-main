@@ -16,36 +16,34 @@ blueprint = Blueprint(__name__, __name__)
 @cron_context
 @log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS)
-def synchronize_titelive_things(app):
+def synchronize_titelive_things():
     synchronize_data_for_provider("TiteLiveThings")
 
 
 @cron_context
 @log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION)
-def synchronize_titelive_thing_descriptions(app):
+def synchronize_titelive_thing_descriptions():
     synchronize_data_for_provider("TiteLiveThingDescriptions")
 
 
 @cron_context
 @log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS)
-def synchronize_titelive_thing_thumbs(app):
+def synchronize_titelive_thing_thumbs():
     synchronize_data_for_provider("TiteLiveThingThumbs")
 
 
 @blueprint.cli.command("titelive_clock")
 def titelive_clock():
-    from flask import current_app as app
-
     set_tag("pcapi.app_type", "titelive_clock")
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)
 
-    scheduler.add_job(synchronize_titelive_things, "cron", [app], day="*", hour="1")
+    scheduler.add_job(synchronize_titelive_things, "cron", day="*", hour="1")
 
-    scheduler.add_job(synchronize_titelive_thing_descriptions, "cron", [app], day="*", hour="2")
+    scheduler.add_job(synchronize_titelive_thing_descriptions, "cron", day="*", hour="2")
 
-    scheduler.add_job(synchronize_titelive_thing_thumbs, "cron", [app], day="*", hour="3")
+    scheduler.add_job(synchronize_titelive_thing_thumbs, "cron", day="*", hour="3")
 
     scheduler.start()

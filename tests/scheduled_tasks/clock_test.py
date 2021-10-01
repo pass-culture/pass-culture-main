@@ -13,7 +13,7 @@ from pcapi.scheduled_tasks.clock import pc_send_tomorrow_events_notifications
 
 
 @pytest.mark.usefixtures("db_session")
-def test_pc_send_tomorrow_events_notifications_only_to_individual_bookings_users(app):
+def test_pc_send_tomorrow_events_notifications_only_to_individual_bookings_users():
     """
     Test that each stock that is linked to an offer that occurs tomorrow and
     creates a job that will send a notification to all of the stock's users
@@ -30,7 +30,7 @@ def test_pc_send_tomorrow_events_notifications_only_to_individual_bookings_users
     BookingFactory.create_batch(2, stock=stock_next_week, isCancelled=False)
     EducationalBookingFactory.create_batch(2, stock=stock_tomorrow, isCancelled=False)
 
-    pc_send_tomorrow_events_notifications(app)
+    pc_send_tomorrow_events_notifications()
 
     assert len(testing.requests) == 1
     assert all(data["message"]["title"] == "my_offer, c'est demain !" for data in testing.requests)
