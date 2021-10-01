@@ -14,8 +14,12 @@ logger = logging.getLogger(__name__)
 def cron_context(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        clock_application = args[0]
-        with clock_application.app_context():
+        # The `flask clock` command sets up an application context,
+        # but it gets lost when apscheduler starts a job in a new
+        # thread. So here we must set an application context again.
+        from pcapi.flask_app import app
+
+        with app.app_context():
             return func(*args, **kwargs)
 
     return wrapper

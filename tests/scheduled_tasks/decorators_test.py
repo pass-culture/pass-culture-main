@@ -1,4 +1,3 @@
-from unittest.mock import MagicMock
 from unittest.mock import call
 from unittest.mock import patch
 
@@ -6,28 +5,9 @@ import pytest
 
 from pcapi.core.testing import override_features
 from pcapi.models.feature import FeatureToggle
-from pcapi.scheduled_tasks.decorators import cron_context
 from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.scheduled_tasks.logger import CronStatus
-
-
-class CronContextTest:
-    def test_should_give_app_context_to_decorated_function(self):
-        # Given
-        @cron_context
-        def decorated_function(*args):
-            return "expected result"
-
-        application = MagicMock()
-        application.app_context.return_value = MagicMock()
-
-        # When
-        result = decorated_function(application)
-
-        # Then
-        assert result == "expected result"
-        application.app_context.assert_called_once()
 
 
 @pytest.mark.usefixtures("db_session")
