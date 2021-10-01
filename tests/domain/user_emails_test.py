@@ -127,7 +127,10 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
 class SendWarningToBeneficiaryAfterProBookingCancellationTest:
     def test_should_sends_email_to_beneficiary_when_pro_cancels_booking(self):
         # Given
-        booking = IndividualBookingFactory(user__email="user@example.com", user__firstName="Jeanne")
+        booking = IndividualBookingFactory(
+            individualBooking__user__email="user@example.com",
+            user__firstName="Jeanne",
+        )
 
         # When
         send_warning_to_user_after_pro_booking_cancellation(booking)

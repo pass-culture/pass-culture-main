@@ -103,7 +103,7 @@ def send_offerer_driven_cancellation_email_to_offerer(booking: Booking) -> None:
 
 def send_warning_to_user_after_pro_booking_cancellation(booking: Booking) -> None:
     data = retrieve_data_to_warn_user_after_pro_booking_cancellation(booking)
-    mails.send(recipients=[booking.user.email], data=data)
+    mails.send(recipients=[booking.email], data=data)
 
 
 def send_reset_password_email_to_user(user: User) -> bool:
