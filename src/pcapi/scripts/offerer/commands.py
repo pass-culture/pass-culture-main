@@ -1,3 +1,5 @@
+from typing import Iterable
+
 import click
 from flask import Blueprint
 
@@ -22,11 +24,6 @@ def delete_venue(venue_id: int) -> None:
 
 
 @blueprint.cli.command("generate_and_save_api_key")
-@click.option(
-    "--sirens",
-    required=True,
-    help="comma separated list of sirens e.g 381508548,524499555",
-    type=str,
-)
-def generate_and_save_api_key(sirens: str) -> None:
-    generate_and_save_api_key_for_offerer(sirens.split(","))
+@click.argument("sirens", nargs=-1, type=str, required=True)
+def generate_and_save_api_key(sirens: Iterable[str]) -> None:
+    generate_and_save_api_key_for_offerer(sirens)
