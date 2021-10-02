@@ -386,3 +386,11 @@ def validate_frauds(user: User, fraud_items: list[models.FraudItem]) -> models.B
     )
 
     return fraud_result
+
+
+def has_user_passed_fraud_checks(user: User):
+    return bool(user.beneficiaryFraudResult)
+
+
+def is_user_fraudster(user: User) -> bool:
+    return user.beneficiaryFraudResult.status != models.FraudStatus.OK

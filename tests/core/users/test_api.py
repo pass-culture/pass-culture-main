@@ -752,6 +752,7 @@ class UpdateBeneficiaryMandatoryInformationTest:
         user = users_factories.UserFactory(
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED, dateOfBirth=eighteen_years_in_the_past
         )
+        fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.CREATED)
 
@@ -803,6 +804,31 @@ class UpdateBeneficiaryMandatoryInformationTest:
         assert user.city == new_city
 
         assert user.hasCompletedIdCheck
+        assert not user.isBeneficiary
+        assert not user.deposit
+
+    def test_user_has_not_passed_fraud_checks(self):
+        user = users_factories.UserFactory()
+        users_api.update_beneficiary_mandatory_information(
+            user=user,
+            address=f"{user.address}_test",
+            city=f"{user.city}_test",
+            postal_code="93000",
+            activity=user.activity,
+        )
+        assert not user.isBeneficiary
+        assert not user.deposit
+
+    def test_user_is_fraudster(self):
+        user = users_factories.UserFactory()
+        fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
+        users_api.update_beneficiary_mandatory_information(
+            user=user,
+            address=f"{user.address}_test",
+            city=f"{user.city}_test",
+            postal_code="93000",
+            activity=user.activity,
+        )
         assert not user.isBeneficiary
         assert not user.deposit
 

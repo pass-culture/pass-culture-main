@@ -260,6 +260,7 @@ def validate_phone_number_and_activate_user(user: User, code: str) -> User:
 def update_beneficiary_mandatory_information(
     user: User, address: str, city: str, postal_code: str, activity: str, phone_number: Optional[str] = None
 ) -> None:
+
     update_payload = {
         "address": address,
         "city": city,
@@ -275,7 +276,11 @@ def update_beneficiary_mandatory_information(
         User.query.filter(User.id == user.id).update(update_payload)
     db.session.refresh(user)
 
-    if not steps_to_become_beneficiary(user):
+    if (
+        not steps_to_become_beneficiary(user)
+        and fraud_api.has_user_passed_fraud_checks(user)
+        and not fraud_api.is_user_fraudster(user)
+    ):
         check_and_activate_beneficiary(user.id)
     else:
         update_external_user(user)

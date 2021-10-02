@@ -366,3 +366,18 @@ class DMSFraudCheckTest:
         fraud_check = fraud_api.admin_update_identity_fraud_check_result(user, "id-piece-number")
         content = fraud_models.DMSContent(**fraud_check.resultContent)
         assert content.id_piece_number == "id-piece-number"
+
+
+@pytest.mark.usefixtures("db_session")
+class UserFraudsterTest:
+    @pytest.mark.parametrize(
+        "fraud_status,is_fraudster",
+        (
+            (fraud_models.FraudStatus.OK, False),
+            (fraud_models.FraudStatus.KO, True),
+            (fraud_models.FraudStatus.SUSPICIOUS, True),
+        ),
+    )
+    def test_is_user_fraudster(self, fraud_status, is_fraudster):
+        fraud_result = fraud_factories.BeneficiaryFraudResultFactory(status=fraud_status)
+        assert is_fraudster == fraud_api.is_user_fraudster(fraud_result.user)
