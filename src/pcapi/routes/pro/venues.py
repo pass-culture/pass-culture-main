@@ -64,6 +64,10 @@ def get_venues(query: VenueListQueryModel) -> GetVenueListResponseModel:
                 isVirtual=venue.isVirtual,
                 bookingEmail=venue.bookingEmail,
                 withdrawalDetails=venue.withdrawalDetails,
+                audioDisabilityCompliant=venue.audioDisabilityCompliant,
+                mentalDisabilityCompliant=venue.mentalDisabilityCompliant,
+                motorDisabilityCompliant=venue.motorDisabilityCompliant,
+                visualDisabilityCompliant=venue.visualDisabilityCompliant,
             )
             for venue in venue_list
         ]

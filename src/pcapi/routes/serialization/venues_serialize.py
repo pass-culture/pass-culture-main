@@ -229,6 +229,10 @@ class VenueListItemResponseModel(BaseModel):
     isVirtual: bool
     bookingEmail: Optional[str]
     withdrawalDetails: Optional[str]
+    audioDisabilityCompliant: Optional[bool]
+    mentalDisabilityCompliant: Optional[bool]
+    motorDisabilityCompliant: Optional[bool]
+    visualDisabilityCompliant: Optional[bool]
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
