@@ -31,6 +31,7 @@ from pcapi.core.bookings.conf import get_limit_configuration_for_type_and_versio
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users.external import update_external_user
@@ -392,7 +393,7 @@ def attach_beneficiary_import_details(
 
 def request_email_confirmation(user: User) -> None:
     token = create_email_validation_token(user)
-    user_emails.send_activation_email(user, native_version=True, token=token)
+    send_email_confirmation_email(user, token=token)
 
 
 def request_password_reset(user: User) -> None:

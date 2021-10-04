@@ -3,6 +3,7 @@ from datetime import datetime
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.mails.transactional.users.email_confirmation_email import get_email_confirmation_email_data
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.emails import beneficiary_activation
@@ -38,7 +39,7 @@ class GetActivationEmailTest:
         token = users_factories.EmailValidationToken.build(user=user)
 
         # When
-        activation_email_data = beneficiary_activation.get_activation_email_data_for_native(user, token)
+        activation_email_data = get_email_confirmation_email_data(user, token)
 
         # Then
         assert activation_email_data["Vars"]["nativeAppLink"]
@@ -56,7 +57,7 @@ class GetActivationEmailTest:
         token = users_factories.EmailValidationToken.build(user=user)
 
         # When
-        activation_email_data = beneficiary_activation.get_activation_email_data_for_native(user, token)
+        activation_email_data = get_email_confirmation_email_data(user, token)
 
         # Then
         assert activation_email_data["Vars"]["nativeAppLink"]
@@ -73,7 +74,7 @@ class GetActivationEmailTest:
         token = users_factories.EmailValidationToken.build(user=user)
 
         # When
-        activation_email_data = beneficiary_activation.get_activation_email_data_for_native(user, token)
+        activation_email_data = get_email_confirmation_email_data(user, token)
 
         # Then
         assert activation_email_data["Vars"]["nativeAppLink"]

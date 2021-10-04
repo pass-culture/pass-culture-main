@@ -12,7 +12,6 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users import api as users_api
-from pcapi.core.users import models as users_models
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.emails import beneficiary_activation
@@ -246,13 +245,9 @@ def send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
 
 def send_activation_email(
     user: User,
-    token: users_models.Token,
-    native_version: bool = False,
+    token: Token,
 ) -> bool:
-    if not native_version:
-        data = beneficiary_activation.get_activation_email_data(user=user, token=token)
-    else:
-        data = beneficiary_activation.get_activation_email_data_for_native(user=user, token=token)
+    data = beneficiary_activation.get_activation_email_data(user=user, token=token)
     return mails.send(recipients=[user.email], data=data)
 
 

@@ -10,6 +10,7 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ProductFactory
@@ -267,7 +268,7 @@ class SendActivationEmailTest:
         token = users_factories.EmailValidationToken.build(user=beneficiary)
 
         # when
-        send_activation_email(beneficiary, native_version=True, token=token)
+        send_email_confirmation_email(beneficiary, token=token)
 
         # then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
