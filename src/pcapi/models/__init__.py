@@ -19,6 +19,7 @@ from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
+from pcapi.core.subscription.models import SubscriptionMessage
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
@@ -88,6 +89,7 @@ __all__ = (
     "PaymentStatus",
     "PaymentMessage",
     "Product",
+    "SubscriptionMessage",
     "ThingType",
     "Token",
     "UserOfferer",
@@ -135,4 +137,5 @@ models = (
     Payment,
     PaymentStatus,
     Token,
+    SubscriptionMessage,
 )

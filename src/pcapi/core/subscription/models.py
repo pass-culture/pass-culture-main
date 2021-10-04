@@ -1,10 +1,15 @@
 import dataclasses
 import datetime
+import enum
 from typing import Optional
+
+import sqlalchemy
 
 import pcapi.core.fraud.models as fraud_models
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
+from pcapi.models.db import Model
+from pcapi.models.pc_object import PcObject
 
 
 @dataclasses.dataclass
@@ -56,3 +61,34 @@ class BeneficiaryPreSubscription:
             source_id=source_data.procedure_id,
             fraud_fields={},
         )
+
+
+class CallToActionIcon(enum.Enum):
+    info = "info"
+    warning = "warning"
+
+
+class PopOverIcon(enum.Enum):
+    email = "Email"
+
+
+class SubscriptionMessage(PcObject, Model):
+    __tablename__ = "beneficiary_subscription_message"
+
+    dateCreated = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False, server_default=sqlalchemy.func.now())
+
+    userId = sqlalchemy.Column(
+        sqlalchemy.BigInteger, sqlalchemy.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+
+    user = sqlalchemy.orm.relationship("User", foreign_keys=[userId], backref="subscriptionMessages")
+
+    userMessage = sqlalchemy.Column(sqlalchemy.Text, nullable=False)
+
+    callToActionTitle = sqlalchemy.Column(sqlalchemy.Text, nullable=False)
+
+    callToActionLink = sqlalchemy.Column(sqlalchemy.Text, nullable=False)
+
+    callToActionIcon = sqlalchemy.Column(sqlalchemy.Enum(CallToActionIcon, create_constraint=False), nullable=False)
+
+    popOverIcon = sqlalchemy.Column(sqlalchemy.Enum(PopOverIcon, create_constraint=False), nullable=False)
