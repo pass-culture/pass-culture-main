@@ -3,6 +3,7 @@ from datetime import datetime
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.email_confirmation_email import get_email_confirmation_email_data
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -31,6 +32,20 @@ class GetActivationEmailTest:
                 "email": "fabien%2Btest%40example.net",
             },
         }
+
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_should_return_sendinblue_data_when_feature_toggled(self):
+        # Given
+        user = users_factories.UserFactory.build(email="fabien+test@example.net", firstName="Fabien")
+        users_factories.ResetPasswordToken(user=user, value="ABCD123")
+
+        # When
+        activation_email_data = get_email_confirmation_email_data(user, user.tokens[0])
+
+        # Then
+        assert activation_email_data.template == TransactionalEmail.EMAIL_CONFIRMATION
+        assert activation_email_data.params["CONFIRMATION_LINK"]
+        assert "email%3Dfabien%252Btest%2540example.net" in activation_email_data.params["CONFIRMATION_LINK"]
 
     @freeze_time("2013-05-15 09:00:00")
     def test_return_dict_for_native_eligible_user(self):
