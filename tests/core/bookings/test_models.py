@@ -19,13 +19,14 @@ from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 def test_total_amount():
     booking = factories.BookingFactory(amount=1.2, quantity=2)
     assert booking.total_amount == Decimal("2.4")
 
 
-@pytest.mark.usefixtures("db_session")
 def test_save_cancellation_date_postgresql_function():
     # In this test, we manually COMMIT so that save_cancellation_date
     # PotsgreSQL function is triggered.
@@ -48,7 +49,6 @@ def test_save_cancellation_date_postgresql_function():
     assert booking.cancellationDate is None
 
 
-@pytest.mark.usefixtures("db_session")
 def test_booking_completed_url_gets_normalized():
     booking = factories.BookingFactory(
         token="ABCDEF",
@@ -58,7 +58,6 @@ def test_booking_completed_url_gets_normalized():
     assert booking.completedUrl == "http://example.com?token=ABCDEF&email=1@example.com"
 
 
-@pytest.mark.usefixtures("db_session")
 def test_too_many_bookings_postgresql_exception():
     booking1 = factories.BookingFactory(stock__quantity=1)
     with db.session.no_autoflush:
@@ -75,7 +74,6 @@ def test_too_many_bookings_postgresql_exception():
         assert exc.value.errors["global"] == ["La quantité disponible pour cette offre est atteinte."]
 
 
-@pytest.mark.usefixtures("db_session")
 class BookingThumbUrlTest:
     def test_thumb_url_use_mediation_if_exists(self):
         mediation = MediationFactory(thumbCount=1)
@@ -102,7 +100,6 @@ class BookingThumbUrlTest:
         assert booking.thumbUrl is None
 
 
-@pytest.mark.usefixtures("db_session")
 class BookingQrCodeTest:
     def test_event_return_qr_code_if_event_is_not_expired_nor_cancelled(self):
         booking = factories.BookingFactory(
@@ -142,7 +139,6 @@ class BookingQrCodeTest:
         assert booking.qrCode is None
 
 
-@pytest.mark.usefixtures("db_session")
 class BookingIsConfirmedPropertyTest:
     def test_booking_is_confirmed_when_cancellation_limit_date_is_in_the_past(self):
         yesterday = datetime.utcnow() - timedelta(days=1)
@@ -162,7 +158,6 @@ class BookingIsConfirmedPropertyTest:
         assert booking.isConfirmed is False
 
 
-@pytest.mark.usefixtures("db_session")
 class BookingIsConfirmedSqlQueryTest:
     def test_booking_is_confirmed_when_cancellation_limit_date_is_in_the_past(self):
         yesterday = datetime.utcnow() - timedelta(days=1)
@@ -188,7 +183,6 @@ class BookingIsConfirmedSqlQueryTest:
         assert len(query_result) == 1
 
 
-@pytest.mark.usefixtures("db_session")
 class BookingExpirationDateLegacyRulesTest:
     @patch("pcapi.core.bookings.models.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE", datetime(2021, 8, 3))
     @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
@@ -231,7 +225,6 @@ class BookingExpirationDateLegacyRulesTest:
         assert not digital_book_booking.expirationDate
 
 
-@pytest.mark.usefixtures("db_session")
 class BookingExpirationDateNewRulesTest:
     @patch("pcapi.core.bookings.models.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE", datetime(2021, 8, 3))
     @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
@@ -272,3 +265,21 @@ class BookingExpirationDateNewRulesTest:
         assert book_booking.expirationDate == datetime(2021, 8, 15, 15, 0, 0)
         assert dvd_booking.expirationDate == datetime(2021, 9, 4, 15, 0, 0)
         assert not digital_book_booking.expirationDate
+
+
+class BookingHasConfirmationLimitDatePassedTest:
+    @freeze_time("2021-08-05 15:00:00")
+    def test_when_has_confirmation_limite_date_passed(self) -> None:
+        booking: Booking = factories.EducationalBookingFactory(
+            educationalBooking__confirmationLimitDate=datetime(2021, 8, 5, 14)
+        )
+
+        assert booking.has_confirmation_limit_date_passed()
+
+    @freeze_time("2021-08-05 15:00:00")
+    def test_when_has_not_confirmation_limite_date_passed(self) -> None:
+        booking: Booking = factories.EducationalBookingFactory(
+            educationalBooking__confirmationLimitDate=datetime(2021, 8, 5, 16)
+        )
+
+        assert not booking.has_confirmation_limit_date_passed()

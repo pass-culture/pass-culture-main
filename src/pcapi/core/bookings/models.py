@@ -150,6 +150,12 @@ class Booking(PcObject, Model):
         uselist=False,
     )
 
+    def has_confirmation_limit_date_passed(self) -> bool:
+        if self.educationalBooking is None:
+            return False
+
+        return self.educationalBooking.has_confirmation_limit_date_passed()
+
     def mark_as_used(self) -> None:
         if self.status is BookingStatus.USED or self.isUsed:
             raise exceptions.BookingHasAlreadyBeenUsed()

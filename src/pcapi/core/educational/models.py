@@ -147,6 +147,9 @@ class EducationalBooking(Model):
         uselist=False,
     )
 
+    def has_confirmation_limit_date_passed(self) -> bool:
+        return bool(self.confirmationLimitDate and self.confirmationLimitDate <= datetime.utcnow())
+
     def mark_as_used_by_institute(self) -> None:
         from pcapi.core.bookings.models import BookingStatus
 
