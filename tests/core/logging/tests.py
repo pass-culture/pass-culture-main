@@ -1,3 +1,5 @@
+import decimal
+import enum
 import json
 import logging
 import uuid
@@ -9,6 +11,10 @@ from pcapi.core.logging import JsonFormatter
 from pcapi.core.logging import get_logged_in_user_id
 from pcapi.core.logging import get_or_set_correlation_id
 import pcapi.core.users.factories as users_factories
+
+
+class TestingEnum(enum.Enum):
+    Foo = "foo"
 
 
 class GetOrSetCorrelationIdTest:
@@ -72,6 +78,18 @@ class JsonFormatterTest:
         deserialized = json.loads(serialized)
         assert deserialized["message"] == "Frobulated 12 blobs"
         assert deserialized["extra"] == {"blobs": 12}
+
+        # use custom serializer
+        user = users_factories.UserFactory.build(id=7)
+        record = self._make_record(
+            "Frobulated %d blobs",
+            12,
+            extra={"decimal": decimal.Decimal("12.34"), "enum": TestingEnum.Foo, "user": user},
+        )
+        serialized = formatter.format(record)
+        deserialized = json.loads(serialized)
+        assert deserialized["message"] == "Frobulated 12 blobs"
+        assert deserialized["extra"] == {"decimal": 12.34, "enum": "foo", "user": 7}
 
         # gracefully handle non-serializable objects
         obj = object()

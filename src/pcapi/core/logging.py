@@ -1,3 +1,5 @@
+import decimal
+import enum
 import json
 import logging
 import sys
@@ -90,6 +92,17 @@ def monkey_patch_logger_makeRecord():
     logging.Logger.makeRecord = makeRecord
 
 
+class JsonLogEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, decimal.Decimal):
+            return float(obj)
+        if isinstance(obj, enum.Enum):
+            return obj.value
+        if hasattr(obj, "id"):
+            return obj.id
+        return super().default(obj)
+
+
 class JsonFormatter(logging.Formatter):
     def format(self, record):
         # `getattr()` is necessary for log records that have not
@@ -111,7 +124,7 @@ class JsonFormatter(logging.Formatter):
             "extra": extra,
         }
         try:
-            return json.dumps(json_record)
+            return json.dumps(json_record, cls=JsonLogEncoder)
         except TypeError:
             # Perhaps the `extra` arguments were not serializable?
             # Let's try by dumping them as a string.
