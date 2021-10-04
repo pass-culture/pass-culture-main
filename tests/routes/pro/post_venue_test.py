@@ -68,8 +68,8 @@ def test_should_register_new_venue(app):
     assert venue.visualDisabilityCompliant == venue_data["visualDisabilityCompliant"]
     assert venue.contact.email == venue_data["contact"]["email"]
 
-    assert venue.isPermanent == True
     assert venue.isValidated
+    assert not venue.isPermanent
     assert not venue.contact.phone_number
     assert not venue.contact.social_medias
 

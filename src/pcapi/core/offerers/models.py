@@ -168,7 +168,7 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
     isPermanent = Column(
         Boolean,
         nullable=True,
-        default=True,
+        default=False,
     )
 
     comment = Column(

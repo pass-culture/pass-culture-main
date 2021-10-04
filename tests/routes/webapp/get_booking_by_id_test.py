@@ -155,7 +155,7 @@ class Returns200Test:
                         "fieldsUpdated": [],
                         "id": humanize(offer.venue.id),
                         "idAtProviders": None,
-                        "isPermanent": True,
+                        "isPermanent": False,
                         "isVirtual": False,
                         "lastProviderId": None,
                         "latitude": 48.87004,

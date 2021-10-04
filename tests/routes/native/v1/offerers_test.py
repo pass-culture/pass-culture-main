@@ -8,7 +8,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class VenuesTest:
     def test_get_venue(self, client):
-        venue = offerer_factories.VenueFactory()
+        venue = offerer_factories.VenueFactory(isPermanent=True)
 
         response = client.get(f"/native/v1/venue/{venue.id}")
 
