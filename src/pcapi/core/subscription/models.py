@@ -64,12 +64,13 @@ class BeneficiaryPreSubscription:
 
 
 class CallToActionIcon(enum.Enum):
-    info = "info"
-    warning = "warning"
+    INFO = "INFO"
+    WARNING = "WARNING"
 
 
 class PopOverIcon(enum.Enum):
-    email = "Email"
+    EMAIL = "EMAIL"
+    RETRY = "RETRY"
 
 
 class SubscriptionMessage(PcObject, Model):
