@@ -1,4 +1,5 @@
 from pcapi.core.bookings import conf
+from pcapi.core.users import constants
 from pcapi.models.deposit import DepositType
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
@@ -55,4 +56,5 @@ def get_settings() -> serializers.SettingsResponse:
         id_check_address_autocompletion=features[FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION],
         is_webapp_v2_enabled=features[FeatureToggle.WEBAPP_V2_ENABLED],
         enable_native_eac_individual=features[FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL],
+        account_creation_minimum_age=constants.ACCOUNT_CREATION_MINIMUM_AGE,
     )

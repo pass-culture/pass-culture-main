@@ -22,6 +22,7 @@ class SettingsResponse(BaseModel):
     id_check_address_autocompletion: bool
     is_webapp_v2_enabled: bool
     enable_native_eac_individual: bool
+    account_creation_minimum_age: int
 
     _convert_deposit_amount = validator("deposit_amount", pre=True, allow_reuse=True)(convert_to_cent)
 

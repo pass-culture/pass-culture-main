@@ -44,6 +44,7 @@ class SettingsTest:
             "idCheckAddressAutocompletion": True,
             "isWebappV2Enabled": False,
             "enableNativeEacIndividual": False,
+            "accountCreationMinimumAge": 15,
         }
 
     @override_features(
@@ -66,6 +67,7 @@ class SettingsTest:
         response = TestClient(app.test_client()).get("/native/v1/settings")
         assert response.status_code == 200
         assert response.json == {
+            "accountCreationMinimumAge": 15,
             "allowIdCheckRegistration": False,
             "autoActivateDigitalBookings": True,
             "depositAmount": 30000,
