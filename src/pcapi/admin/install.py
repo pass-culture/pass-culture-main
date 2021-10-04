@@ -5,6 +5,7 @@ from flask_admin.base import Admin
 from sqlalchemy.orm.session import Session
 
 from pcapi import models
+from pcapi.admin.custom_views import inapp_messages
 from pcapi.admin.custom_views import offer_view
 from pcapi.admin.custom_views import support_view
 from pcapi.admin.custom_views.admin_user_view import AdminUserView
@@ -31,6 +32,7 @@ from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.providers.models import VenueProvider
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users.models import User
 
 from . import templating
@@ -185,6 +187,14 @@ def install_admin_views(admin: Admin, session: Session) -> None:
         SubcategoryView(
             name="Sous-catégories",
             endpoint="/subcategories",
+            category=Category.CUSTOM_OPERATIONS,
+        )
+    )
+    admin.add_view(
+        inapp_messages.MessageView(
+            subscription_models.SubscriptionMessage,
+            session,
+            name="Messages utilisateurs dans l'app",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
