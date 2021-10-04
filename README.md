@@ -124,9 +124,6 @@ Si les hooks ne se lancent pas, lancer `pc install-hooks` (commande incluse dans
 En cas d'erreur lors de l'installation des dépendances avec psycopg, [ceci peut vous aider](https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7/62931654#62931654).
 
 - `pip install -e .`
-- Installation de nltk:
-  - Version Ubuntu: `python -m nltk.downloader punkt stopwords`
-  - Version Mac: `pip install nltk`
 
 ### Editeur de code (IDE)
 

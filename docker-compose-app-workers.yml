@@ -19,7 +19,6 @@ services:
       bash -c "set -x;
               pip install -e .
               pip install -r ./requirements.txt;
-              python -m nltk.downloader punkt stopwords;
               python src/pcapi/workers/worker.py;"
     volumes:
       - ./api:/opt/services/flaskapp/src
@@ -41,7 +40,6 @@ services:
       bash -c "set -x;
               pip install -e .
               pip install -r ./requirements.txt;
-              python -m nltk.downloader punkt stopwords;
               python src/pcapi/workers/worker.py low;"
     volumes:
       - ./api:/opt/services/flaskapp/src
