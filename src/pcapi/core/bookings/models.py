@@ -19,14 +19,10 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
+from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.conf import BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.conf import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.conf import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE
-from pcapi.core.bookings.exceptions import BookingHasAlreadyBeenUsed
-from pcapi.core.bookings.exceptions import BookingIsAlreadyCancelled
-from pcapi.core.bookings.exceptions import BookingIsAlreadyUsed
-from pcapi.core.bookings.exceptions import BookingIsCancelled
-from pcapi.core.bookings.exceptions import BookingIsNotCancelledCannotBeUncancelled
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.offers.models import Mediation
@@ -156,9 +152,9 @@ class Booking(PcObject, Model):
 
     def mark_as_used(self) -> None:
         if self.status is BookingStatus.USED or self.isUsed:
-            raise BookingHasAlreadyBeenUsed()
+            raise exceptions.BookingHasAlreadyBeenUsed()
         if self.status is BookingStatus.CANCELLED or self.isCancelled:
-            raise BookingIsCancelled()
+            raise exceptions.BookingIsCancelled()
         self.isUsed = True
         self.dateUsed = datetime.utcnow()
         self.status = BookingStatus.USED
@@ -170,16 +166,16 @@ class Booking(PcObject, Model):
 
     def cancel_booking(self) -> None:
         if self.status is BookingStatus.CANCELLED or self.isCancelled:
-            raise BookingIsAlreadyCancelled()
+            raise exceptions.BookingIsAlreadyCancelled()
         if self.status is BookingStatus.USED or self.isUsed:
-            raise BookingIsAlreadyUsed()
+            raise exceptions.BookingIsAlreadyUsed()
         self.isCancelled = True
         self.status = BookingStatus.CANCELLED
         self.cancellationDate = datetime.utcnow()
 
     def uncancel_booking_set_used(self) -> None:
         if not (self.status is BookingStatus.CANCELLED or self.isCancelled):
-            raise BookingIsNotCancelledCannotBeUncancelled()
+            raise exceptions.BookingIsNotCancelledCannotBeUncancelled()
         self.isCancelled = False
         self.cancellationDate = None
         self.cancellationReason = None
