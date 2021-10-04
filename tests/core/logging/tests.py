@@ -62,21 +62,21 @@ class JsonFormatterTest:
         # empty extra
         record = self._make_record("Frobulated %d blobs", 12)
         serialized = formatter.format(record)
-        unserialized = json.loads(serialized)
-        assert unserialized["message"] == "Frobulated 12 blobs"
-        assert unserialized["extra"] == {}
+        deserialized = json.loads(serialized)
+        assert deserialized["message"] == "Frobulated 12 blobs"
+        assert deserialized["extra"] == {}
 
         # non-empty extra
         record = self._make_record("Frobulated %d blobs", 12, extra={"blobs": 12})
         serialized = formatter.format(record)
-        unserialized = json.loads(serialized)
-        assert unserialized["message"] == "Frobulated 12 blobs"
-        assert unserialized["extra"] == {"blobs": 12}
+        deserialized = json.loads(serialized)
+        assert deserialized["message"] == "Frobulated 12 blobs"
+        assert deserialized["extra"] == {"blobs": 12}
 
-        # non-serializable object
+        # gracefully handle non-serializable objects
         obj = object()
         record = self._make_record("Frobulated %d blobs", 12, extra={"blobs": obj})
         serialized = formatter.format(record)
-        unserialized = json.loads(serialized)
-        assert unserialized["message"] == "Frobulated 12 blobs"
-        assert unserialized["extra"] == {"unserializable": str({"blobs": obj})}
+        deserialized = json.loads(serialized)
+        assert deserialized["message"] == "Frobulated 12 blobs"
+        assert deserialized["extra"] == {"unserializable": str({"blobs": obj})}
