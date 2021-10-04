@@ -29,12 +29,8 @@ def _get_hours_from_timedelta(td: datetime.timedelta) -> float:
     return td.total_seconds() / 3600
 
 
-def _compute_next_birthday_date(birth_date: datetime.datetime) -> datetime.datetime:
-    if birth_date.replace(year=datetime.date.today().year) > datetime.datetime.now():
-        next_birthday = birth_date.replace(year=datetime.date.today().year)
-    else:
-        next_birthday = birth_date.replace(year=datetime.date.today().year + 1)
-    return next_birthday
+def _compute_eighteenth_birthday(birth_date: datetime.datetime) -> datetime.datetime:
+    return birth_date + relativedelta(years=18)
 
 
 BOOKING_CONFIRMATION_ERROR_CLAUSES = {
@@ -80,7 +76,7 @@ class Grant15LimitConfiguration(BaseLimitConfiguration):
     PHYSICAL_CAP = None
 
     def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
-        return _compute_next_birthday_date(birth_date)
+        return _compute_eighteenth_birthday(birth_date)
 
 
 class Grant16LimitConfiguration(BaseLimitConfiguration):
@@ -89,7 +85,7 @@ class Grant16LimitConfiguration(BaseLimitConfiguration):
     PHYSICAL_CAP = None
 
     def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
-        return _compute_next_birthday_date(birth_date)
+        return _compute_eighteenth_birthday(birth_date)
 
 
 class Grant17LimitConfiguration(BaseLimitConfiguration):
@@ -98,7 +94,7 @@ class Grant17LimitConfiguration(BaseLimitConfiguration):
     PHYSICAL_CAP = None
 
     def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
-        return _compute_next_birthday_date(birth_date)
+        return _compute_eighteenth_birthday(birth_date)
 
 
 class Grant18LimitConfigurationV1(BaseLimitConfiguration):
