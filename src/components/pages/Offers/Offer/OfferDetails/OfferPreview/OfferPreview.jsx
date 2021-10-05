@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -25,11 +25,10 @@ const OfferPreview = ({ formValues, offerSubCategory }) => {
   }
 
   useEffect(() => {
-    formValues.venueId
-      ? pcapi.getVenue(formValues.venueId).then(venue => {
-        setVenue(venue)
-      })
-      : setVenue(null)
+    async function changeVenue() {
+      setVenue(await pcapi.getVenue(formValues.venueId))
+    }
+    formValues.venueId ? changeVenue() : setVenue(null)
   }, [formValues.venueId])
 
   const isDuoEnabled = useMemo(() => offerSubCategory?.isEvent && formValues.isDuo, [
@@ -86,7 +85,11 @@ const OfferPreview = ({ formValues, offerSubCategory }) => {
         )}
       </div>
 
-      {venue && !venue.isVirtual && <VenueDetails physicalVenue={venue} />}
+      {venue && (
+        <div>
+          {!venue.isVirtual && <VenueDetails physicalVenue={venue} />}
+        </div>
+      )}
 
       {formValues.withdrawalDetails && (
         <div className="op-section">

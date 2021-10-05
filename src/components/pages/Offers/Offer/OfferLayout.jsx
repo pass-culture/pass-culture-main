@@ -32,16 +32,17 @@ const OfferLayout = ({ location, match }) => {
   const [isCreatingOffer, setIsCreatingOffer] = useState(true)
 
   const loadOffer = useCallback(
-    async (offerId, isCreatingOffer = false) => {
+    async (offerId, creationMode = false) => {
+
       const existingOffer = await pcapi.loadOffer(offerId)
       setOffer(existingOffer)
-      setIsCreatingOffer(isCreatingOffer || existingOffer.status === OFFER_STATUS_DRAFT)
+      setIsCreatingOffer(creationMode || existingOffer.status === OFFER_STATUS_DRAFT)
     },
     [setOffer]
   )
 
   const reloadOffer = useCallback(
-    async (isCreatingOffer = false) => (offer.id ? loadOffer(offer.id, isCreatingOffer) : false),
+    async (creationMode = false) => (offer.id ? await loadOffer(offer.id, creationMode) : false),
     [loadOffer, offer?.id]
   )
 
@@ -82,9 +83,10 @@ const OfferLayout = ({ location, match }) => {
   )
 
   useEffect(() => {
-    if (match.params.offerId) {
-      loadOffer(match.params.offerId)
+    async function loadOfferFromQueryParam () {
+      await loadOffer(match.params.offerId)
     }
+    match.params.offerId && loadOfferFromQueryParam()
   }, [loadOffer, match.params.offerId])
 
   const stepName = location.pathname.match(/[a-z]+$/)

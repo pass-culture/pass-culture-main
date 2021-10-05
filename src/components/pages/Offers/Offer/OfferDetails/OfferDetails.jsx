@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux'
 import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
+import { DEFAULT_FORM_VALUES } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
 import OfferCreation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/OfferCreation'
 import OfferEditionContainer from 'components/pages/Offers/Offer/OfferDetails/OfferForm/OfferEditionContainer'
 import OfferPreview from 'components/pages/Offers/Offer/OfferDetails/OfferPreview/OfferPreview'
@@ -18,7 +19,6 @@ import OfferThumbnail from 'components/pages/Offers/Offer/OfferDetails/OfferThum
 import OfferPreviewLink from 'components/pages/Offers/Offer/OfferPreviewLink/OfferPreviewLink'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { loadCategories } from 'store/offers/thunks'
-import { DEFAULT_FORM_VALUES } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
 
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 
@@ -62,10 +62,9 @@ const OfferDetails = ({
     offer?.id && reloadOffer()
   }, [offer?.id, reloadOffer])
 
-  useEffect(() => 
-    setShowThumbnailForm(formValues.subcategoryId !== DEFAULT_FORM_VALUES.subcategoryId), 
-    [setShowThumbnailForm, formValues.subcategoryId]
-  )
+  useEffect(() => {
+    formValues.subcategoryId && setShowThumbnailForm(formValues.subcategoryId !== DEFAULT_FORM_VALUES.subcategoryId)
+  }, [setShowThumbnailForm, formValues.subcategoryId])
 
   const postThumbnail = useCallback(
     async (offerId, thumbnailInfo) => {
@@ -98,6 +97,7 @@ const OfferDetails = ({
   const handleSubmitOffer = useCallback(
     async offerValues => {
       setIsSubmitLoading(true)
+
       try {
         if (offer) {
           await pcapi.updateOffer(offer.id, offerValues)
@@ -122,6 +122,7 @@ const OfferDetails = ({
           }
 
           history.push(`/offres/${createdOfferId}/stocks${queryString}`)
+          return Promise.resolve()
         }
       } catch (error) {
         if (error && 'errors' in error) {

@@ -96,3 +96,9 @@ export const setOfferValues = values => {
 
   return Promise.resolve(modifiedInputs)
 }
+
+
+export const sidebarDisplayed = async () => {
+  await screen.findByText('Ajouter une image')
+  return Promise.resolve(null)
+}

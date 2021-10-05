@@ -81,7 +81,7 @@ TextInput.defaultProps = {
 TextInput.propTypes = {
   countCharacters: PropTypes.bool,
   disabled: PropTypes.bool,
-  error: PropTypes.string,
+  error: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]),
   inputRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape()]),
   label: PropTypes.string.isRequired,
   longDescription: PropTypes.string,

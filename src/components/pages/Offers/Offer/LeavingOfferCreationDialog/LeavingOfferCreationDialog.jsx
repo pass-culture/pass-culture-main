@@ -17,13 +17,15 @@ const LeavingOfferCreationDialog = ({ shouldBlockNavigation, when }) => {
       shouldBlockNavigation={shouldBlockNavigation}
       when={when}
     >
-      <IllusError />
-      <p>
-        Voulez-vous quitter la création d’offre ?
-      </p>
-      <p>
-        Votre offre ne sera pas sauvegardée et toutes les informations seront perdues
-      </p>
+      <>
+        <IllusError />
+        <p>
+          Voulez-vous quitter la création d’offre ?
+        </p>
+        <p>
+          Votre offre ne sera pas sauvegardée et toutes les informations seront perdues
+        </p>
+      </>
     </RouteLeavingGuard>
   )
 }
