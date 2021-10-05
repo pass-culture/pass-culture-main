@@ -1,12 +1,12 @@
 version: 2.1
 orbs:
   slack: circleci/slack@4.2
-  
+
 parameters:
   venv_cache_key:
     type: string
     default: 'deps1-{{ checksum "/home/circleci/.pyenv/version" }}-{{ .Branch }}-{{ checksum "requirements.txt" }}'
-      
+
 slack-fail-post-step: &slack-fail-post-step
   post-steps:
     - slack/notify:
@@ -38,7 +38,6 @@ executors:
 ###################
 
 commands:
-
   authenticate_gcp:
     description: Authenticate to a GCP project
     parameters:
@@ -118,7 +117,7 @@ jobs:
       - checkout
       - unless:
           condition:
-            equal: [ "master", << pipeline.git.branch >> ]
+            equal: ["master", << pipeline.git.branch >>]
           steps:
             - restore_cache:
                 key: << pipeline.parameters.venv_cache_key >>
@@ -130,7 +129,7 @@ jobs:
             pip install -r requirements.txt --progress-bar off
       - unless:
           condition:
-            equal: [ "master", << pipeline.git.branch >> ]
+            equal: ["master", << pipeline.git.branch >>]
           steps:
             - save_cache:
                 key: << pipeline.parameters.venv_cache_key >>
@@ -141,6 +140,9 @@ jobs:
           command: |
             venv/bin/pip install -e .
             venv/bin/pip freeze
+      - run:
+          name: Install xmlsec1
+          command: sudo apt-get update && sudo apt-get install xmlsec1
       - run:
           name: Check for alembic multiple heads
           command: |
@@ -190,7 +192,7 @@ jobs:
       - checkout
       - unless:
           condition:
-            equal: [ "master", << pipeline.git.branch >> ]
+            equal: ["master", << pipeline.git.branch >>]
           steps:
             - restore_cache:
                 key: << pipeline.parameters.venv_cache_key >>
@@ -202,7 +204,7 @@ jobs:
             pip install -r requirements.txt --progress-bar off
       - unless:
           condition:
-            equal: [ "master", << pipeline.git.branch >> ]
+            equal: ["master", << pipeline.git.branch >>]
           steps:
             - save_cache:
                 key: << pipeline.parameters.venv_cache_key >>
@@ -485,7 +487,7 @@ workflows:
           context:
             - GCP
             - GCP_EHP
-            
+
   nightly:
     triggers:
       - schedule:
