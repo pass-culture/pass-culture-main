@@ -633,10 +633,10 @@ elif [[ "$CMD" == "python" ]]; then
     if [[ "$ENV" == "development" ]]; then
         RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && flask shell '"$*"'"'
     else if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-      kubectl -n $ENV exec -it $(pod_console) -- python -i src/pcapi/scripts/interact.py
+      kubectl -n $ENV exec -it $(pod_console) -- flask shell
     else
       kubectl cp -n $ENV "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD"
-      kubectl -n $ENV exec -it $(pod_console) -- python -i src/pcapi/scripts/interact.py
+      kubectl -n $ENV exec -it $(pod_console) -- flask shell
     fi
     exit
   fi
@@ -668,10 +668,10 @@ else
     RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && flask '"$CMD $*"'"'
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-      kubectl -n $ENV exec -it $(pod_console) -- python src/pcapi/scripts/pc.py "$CMD" $*
+      kubectl -n $ENV exec -it $(pod_console) -- flask "$CMD" $*
     else
       kubectl cp -n $ENV "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD"
-      kubectl -n $ENV exec -it $(pod_console) -- python src/pcapi/scripts/pc.py "$CMD" $*
+      kubectl -n $ENV exec -it $(pod_console) -- flask "$CMD" $*
     fi
     exit
   fi
