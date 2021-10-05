@@ -166,7 +166,9 @@ class VenueEdition extends PureComponent {
           readOnly={readOnly}
           venue={venue}
         />
-        <ContactInfosFields />
+        <ContactInfosFields
+          readOnly={readOnly}
+        />
         <hr />
         <div
           className="field is-grouped is-grouped-centered"

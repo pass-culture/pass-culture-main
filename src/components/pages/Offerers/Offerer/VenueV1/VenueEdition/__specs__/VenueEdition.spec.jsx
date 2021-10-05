@@ -1,24 +1,13 @@
-/*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+import '@testing-library/jest-dom'
+import { render, screen, waitFor } from "@testing-library/react"
+import userEvent from '@testing-library/user-event'
+import { createBrowserHistory } from "history"
+import React from "react"
+import { Provider } from "react-redux"
+import { Router } from "react-router-dom"
 
-import { mount, shallow } from 'enzyme'
-import { createBrowserHistory, createMemoryHistory } from 'history'
-import React from 'react'
-import { Form } from 'react-final-form'
-import { Provider } from 'react-redux'
-import { Router } from 'react-router-dom'
-
-import * as usersSelectors from 'store/selectors/data/usersSelectors'
-import { configureTestStore } from 'store/testUtils'
-
-import AddressField from '../../fields/LocationFields/AddressField'
-import LocationFields from '../../fields/LocationFields/LocationFields'
-import VenueEdition from '../VenueEdition'
+import { configureTestStore } from "../../../../../../../store/testUtils"
+import VenueEditon from "../VenueEdition"
 
 jest.mock('repository/pcapi/pcapi', () => ({
   createVenueProvider: jest.fn(),
@@ -26,7 +15,54 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadVenueProviders: jest.fn().mockResolvedValue([]),
 }))
 
-describe('src | components | pages | VenueEdition', () => {
+jest.mock('utils/config', () => ({
+  DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL: 'foo'
+}))
+
+const renderVenueEdition = ({ props }) => {
+  const store = configureTestStore()
+  const history = createBrowserHistory()
+  history.push(`/structures/AE/lieux/TR?modification`)
+
+  const utils = render(
+    <Provider store={store}>
+      <Router history={history}>
+        <VenueEditon {...props} />
+      </Router>
+    </Provider>
+  )
+
+  const getContactInputs = async () => {
+    const contactPhoneNumber = await screen.findByLabelText("Téléphone")
+    const contactMail = await screen.findByLabelText("Mail")
+    const contactUrl = await screen.findByLabelText("URL de votre site web")
+
+    const clearAndFillContact = ({ phone, mail, website })=>{
+      userEvent.clear(contactPhoneNumber)
+      userEvent.clear(contactMail)
+      userEvent.clear(contactUrl)
+
+      userEvent.paste(contactPhoneNumber, phone)
+      userEvent.paste(contactMail, mail)
+      userEvent.paste(contactUrl, website)
+    }
+
+    return {
+      contactPhoneNumber,
+      contactMail,
+      contactUrl,
+      clearAndFillContact
+    }
+  }
+
+  return  {
+    ...utils,
+    getContactInputs
+  }
+}
+
+describe('contact form enable in venue creation form', () => {
+
   let push
   let props
 
@@ -34,7 +70,30 @@ describe('src | components | pages | VenueEdition', () => {
     push = jest.fn()
     props = {
       venue: {
-        id: 'CM',
+        noDisabilityCompliant: false,
+        isAccessibilityAppliedOnAllOffers: true,
+        audioDisabilityCompliant: true,
+        mentalDisabilityCompliant: true,
+        motorDisabilityCompliant: true,
+        visualDisabilityCompliant: true,
+        address: "1 boulevard Poissonnière",
+        bookingEmail: "fake@example.com",
+        city: "Paris",
+        dateCreated: "2021-09-13T14:59:21.661969Z",
+        dateModifiedAtLastProvider: "2021-09-13T14:59:21.661955Z",
+        departementCode: "75",
+        id: "AQ",
+        isValidated: true,
+        isVirtual: false,
+        latitude: 48.91683,
+        longitude: 2.43884,
+        managingOffererId: "AM",
+        nOffers: 7,
+        name: "Maison de la Brique",
+        postalCode: "75000",
+        publicName: "Maison de la Brique",
+        siret: "22222222311111",
+        venueTypeId: "DE",
       },
       history: {
         location: {
@@ -42,6 +101,7 @@ describe('src | components | pages | VenueEdition', () => {
         },
         push: push,
       },
+      withdrawalDetailActive: true,
       handleInitialRequest: jest.fn(),
       handleSubmitRequest: jest.fn(),
       handleSubmitRequestSuccess: jest.fn(),
@@ -70,292 +130,114 @@ describe('src | components | pages | VenueEdition', () => {
     }
   })
 
-  describe('render', () => {
-    it('should render component with default state', () => {
-      // when
-      const wrapper = shallow(<VenueEdition {...props} />)
+  describe('when editing', () => {
 
-      // then
-      expect(wrapper.state('isRequestPending')).toBe(false)
-    })
-
-    it('should not render a Form when venue is virtual', () => {
-      // given
-      props.venue.isVirtual = true
-
-      // when
-      const wrapper = shallow(<VenueEdition {...props} />)
-
-      // then
-      const form = wrapper.find(Form)
-      expect(form).toHaveLength(0)
-    })
-
-    describe('when editing', () => {
-      beforeEach(() => {
-        props.location = {
-          search: '?modifie',
-        }
-        props.match = {
-          params: {
-            offererId: 'APEQ',
-            venueId: 'AQYQ',
-          },
-        }
-        props.query.context = () => ({
-          readOnly: false,
-        })
-      })
-
-      it('should render component with correct state values', () => {
-        // when
-        const wrapper = shallow(<VenueEdition {...props} />)
-
-        // then
-        expect(wrapper.state('isRequestPending')).toBe(false)
-      })
-
-      it('should be able to edit address field when venue has no SIRET', async () => {
-        // given
-        jest
-          .spyOn(usersSelectors, 'selectCurrentUser')
-          .mockReturnValue({ currentUser: 'fakeUser', publicName: 'fakeName' })
-
-        props = {
-          ...props,
-          venue: {
-            publicName: 'fake public name',
-            id: 'TR',
-            siret: null,
-          },
-        }
-
-        const store = configureTestStore()
-        const history = createBrowserHistory()
-        history.push(`/structures/AE/lieux/TR?modification`)
-
-        let wrapper = mount(
-          <Provider store={store}>
-            <Router history={history}>
-              <VenueEdition {...props} />
-            </Router>
-          </Provider>
-        )
-
-        let addressField = wrapper
-          .find(LocationFields)
-          .find(AddressField)
-          .find('input.field-address')
-          .first()
-
-        await addressField.simulate('change', { target: { value: 'Addresse de test' } })
-
-        wrapper = wrapper.update()
-
-        addressField = wrapper
-          .find(LocationFields)
-          .find(AddressField)
-          .find('input.field-address')
-          .first()
-
-        // then
-        expect(addressField.prop('value')).toBe('Addresse de test')
-      })
-
-      it('should show apply booking checkbox on all existing offers when booking email field is edited', async () => {
-        // given
-        jest
-          .spyOn(usersSelectors, 'selectCurrentUser')
-          .mockReturnValue({ currentUser: 'fakeUser', publicName: 'fakeName' })
-
-        props = {
-          ...props,
-          venue: {
-            publicName: 'fake public name',
-            id: 'TR',
-            siret: '12345678901234',
-          },
-        }
-
-        const store = configureTestStore()
-        const history = createBrowserHistory()
-        history.push(`/structures/AE/lieux/TR?modification`)
-
-        // when
-        let wrapper = mount(
-          <Provider store={store}>
-            <Router history={history}>
-              <VenueEdition {...props} />
-            </Router>
-          </Provider>
-        )
-
-        // then
-        let applyEmailBookingOnAllOffersLabel = wrapper.find({
-          children:
-            'Utiliser cet email pour me notifier des réservations de toutes les offres déjà postées dans ce lieu.',
-        })
-        expect(applyEmailBookingOnAllOffersLabel).toHaveLength(0)
-        let emailBookingField = wrapper.find('input[name="bookingEmail"]').first()
-
-        emailBookingField.simulate('change', { target: { value: 'newbookingemail@example.com' } })
-
-        wrapper = wrapper.update()
-
-        applyEmailBookingOnAllOffersLabel = wrapper.find({
-          children:
-            'Utiliser cet email pour me notifier des réservations de toutes les offres déjà postées dans ce lieu.',
-        })
-        expect(applyEmailBookingOnAllOffersLabel).toHaveLength(1)
-      })
-    })
-
-    describe('when reading', () => {
-      beforeEach(() => {
-        props.query.context = () => ({
-          isCreatedEntity: false,
-          isModifiedEntity: false,
-          readOnly: true,
-        })
-      })
-
-      it('should render component with correct state values', () => {
-        // when
-        const wrapper = shallow(<VenueEdition {...props} />)
-
-        // then
-        expect(wrapper.state('isRequestPending')).toBe(false)
-      })
-
-      describe('create new offer link', () => {
-        it('should redirect to offer creation page', () => {
-          // given
-          jest
-            .spyOn(usersSelectors, 'selectCurrentUser')
-            .mockReturnValue({ currentUser: 'fakeUser' })
-
-          props.venue = {
-            publicName: 'fake public name',
-            id: 'CM',
+    it('should display contact fields', async ()=> {
+      props= {
+        ...props,
+        venue: {
+          ...props.venue,
+          contact: {
+            email: "contact@venue.com",
+            website: "https://my@website.com",
+            phoneNumber: "+33102030405",
           }
-
-          const store = configureTestStore()
-          const history = createMemoryHistory()
-          history.push('/structures/APEQ/lieux/CM')
-
-          let wrapper = mount(
-            <Provider store={store}>
-              <Router history={history}>
-                <VenueEdition
-                  {...props}
-                  history={history}
-                />
-              </Router>
-            </Provider>
-          )
-          const createOfferLink = wrapper.find({ children: 'Créer une offre' })
-
-          // when
-          createOfferLink.simulate('click', { button: 0 })
-
-          // then
-          expect(`${history.location.pathname}${history.location.search}`).toBe(
-            '/offres/creation?lieu=CM&structure=APEQ'
-          )
-        })
-      })
-    })
-  })
-
-  describe('form Success', () => {
-    describe('handleFormSuccess', () => {
-      describe('when editing a venue', () => {
-        beforeEach(() => {
-          props.query.context = () => ({
-            isCreatedEntity: false,
-            isModifiedEntity: true,
-            readOnly: false,
-          })
-        })
-
-        const action = {
-          config: {
-            apiPath: '/venues/CM',
-            method: 'PATCH',
-          },
-          payload: {
-            datum: {
-              id: 'CM',
-            },
-          },
-        }
-
-        it('should change query to read only null', () => {
-          // given
-          const wrapper = shallow(<VenueEdition {...props} />)
-          const state = wrapper.state()
-
-          // when
-          wrapper.instance().handleFormSuccess(jest.fn())(state, action)
-
-          // then
-          expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null)
-        })
-
-        it('should call handleSubmitRequestSuccess with the right parameters when venue is modified', () => {
-          // given
-          const wrapper = shallow(<VenueEdition {...props} />)
-          const state = wrapper.state()
-
-          // when
-          wrapper.instance().handleFormSuccess(jest.fn(), false)(state, action)
-
-          // then
-          expect(props.handleSubmitRequestSuccess).toHaveBeenCalledWith(
-            {
-              config: {
-                apiPath: '/venues/CM',
-                method: 'PATCH',
-              },
-              payload: {
-                datum: {
-                  id: 'CM',
-                },
-              },
-            },
-            { hasDelayedUpdates: false }
-          )
-        })
-      })
-    })
-  })
-
-  describe('event tracking', () => {
-    it('should track venue update', () => {
-      // given
-      const state = {}
-
-      jest.spyOn(props.query, 'context').mockReturnValue({
-        isCreatedEntity: false,
-        isModifiedEntity: false,
-        readOnly: false,
-      })
-
-      const action = {
-        payload: {
-          datum: {
-            id: 'Ty5645dgfd',
-          },
         },
       }
-      const wrapper = shallow(<VenueEdition {...props} />)
-      const formResolver = jest.fn()
+      const { getContactInputs } = renderVenueEdition({ props })
+      const { contactPhoneNumber, contactMail, contactUrl } = await getContactInputs()
 
-      // when
-      wrapper.instance().handleFormSuccess(formResolver)(state, action)
+      expect(contactPhoneNumber).toBeInTheDocument()
+      expect(contactMail).toBeInTheDocument()
+      expect(contactUrl).toBeInTheDocument()
 
-      // then
-      expect(props.trackModifyVenue).toHaveBeenCalledWith('CM')
+      expect(contactPhoneNumber).toBeEnabled()
+      expect(contactMail).toBeEnabled()
+      expect(contactUrl).toBeEnabled()
+
+      expect(contactUrl).toHaveValue(props.venue.contact.website)
+      expect(contactPhoneNumber).toHaveValue(props.venue.contact.phoneNumber)
+      expect(contactMail).toHaveValue(props.venue.contact.email)
+    })
+
+    it('should be able to edit fields', async ()=> {
+      props= {
+        ...props,
+        venue: {
+          ...props.venue,
+          contact: {
+            email: "contact@venue.com",
+            website: "https://my@website.com",
+            phoneNumber: "+33102030405",
+          }
+        },
+      }
+      const { getContactInputs } = renderVenueEdition({ props })
+      const { contactPhoneNumber, contactMail, contactUrl, clearAndFillContact } = await getContactInputs()
+      const contactInfos = {
+        phone: "0606060606",
+        website:"https://some-url-test.com",
+        mail:"test@test.com"
+      }
+      clearAndFillContact(contactInfos)
+
+      expect(contactUrl).toHaveValue(contactInfos.website)
+      expect(contactPhoneNumber).toHaveValue(contactInfos.phone)
+      expect(contactMail).toHaveValue(contactInfos.mail)
+
+      screen.getByText('Valider').click()
+
+      const expectedRequestParams = {
+        ...props.venue,
+        contact:  {
+          email: contactInfos.mail,
+          phoneNumber: contactInfos.phone,
+          website: contactInfos.website,
+        },
+      }
+
+      await waitFor(() => {
+        expect(props.handleSubmitRequest).toHaveBeenCalledWith(
+          expect.objectContaining({ formValues: expectedRequestParams })
+        )
+      })
+    })
+
+  })
+
+  describe('when read only', () => {
+    beforeEach( ()=> {
+      jest.spyOn(props.query, 'context').mockImplementation().mockReturnValue({
+        readOnly: true,
+      })
+    })
+    it('should display disabled fields', async() => {
+      props= {
+        ...props,
+        venue: {
+          ...props.venue,
+          contact: {
+            email: "contact@venue.com",
+            website: "https://my@website.com",
+            phoneNumber: "+33102030405",
+          }
+        },
+      }
+
+      const { getContactInputs } = renderVenueEdition({ props })
+      const { contactPhoneNumber, contactMail, contactUrl } = await getContactInputs()
+
+      expect(contactPhoneNumber).toBeInTheDocument()
+      expect(contactMail).toBeInTheDocument()
+      expect(contactUrl).toBeInTheDocument()
+
+      expect(contactPhoneNumber).toBeDisabled()
+      expect(contactMail).toBeDisabled()
+      expect(contactUrl).toBeDisabled()
+
+      expect(contactUrl).toHaveValue(props.venue.contact.website)
+      expect(contactPhoneNumber).toHaveValue(props.venue.contact.phoneNumber)
+      expect(contactMail).toHaveValue(props.venue.contact.email)
     })
   })
 })

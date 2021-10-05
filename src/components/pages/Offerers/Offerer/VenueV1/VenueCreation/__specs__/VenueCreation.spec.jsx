@@ -1,23 +1,30 @@
-/*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+import '@testing-library/jest-dom'
+import { render, screen } from "@testing-library/react"
+import userEvent from '@testing-library/user-event'
+import { createBrowserHistory } from "history"
+import React from "react"
+import { Provider } from "react-redux"
+import { Router } from "react-router-dom"
 
-import { mount, shallow } from 'enzyme'
-import { createBrowserHistory } from 'history'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { Router } from 'react-router-dom'
+import { configureTestStore } from "../../../../../../../store/testUtils"
+import VenueCreation from "../VenueCreation"
 
-import * as usersSelectors from 'store/selectors/data/usersSelectors'
-import { configureTestStore } from 'store/testUtils'
+const renderVenueCreation = ({ props }) => {
+  const store = configureTestStore()
+  const history = createBrowserHistory()
+  history.push(`/structures/AE/lieux/TR?modification`)
 
-import AddressField from '../../fields/LocationFields/AddressField'
-import LocationFields from '../../fields/LocationFields/LocationFields'
-import VenueCreation from '../VenueCreation'
+  return render(
+    <Provider store={store}>
+      <Router history={history}>
+        <VenueCreation {...props} />
+      </Router>
+    </Provider>
+  )
+}
 
-describe('src | components | pages | Venue', () => {
+describe('contact form enable in venue creation form', () => {
+
   let push
   let props
 
@@ -62,222 +69,38 @@ describe('src | components | pages | Venue', () => {
     }
   })
 
-  describe('render', () => {
-    it('should render component with default state', () => {
-      // when
-      const wrapper = shallow(<VenueCreation {...props} />)
+  it('should display contact fields', async ()=> {
+    renderVenueCreation({ props })
+    const contactPhoneNumber = await screen.findByLabelText("Téléphone")
+    const contactMail = await screen.findByLabelText("Mail")
+    const contactUrl = await screen.findByLabelText("URL de votre site web")
 
-      // then
-      expect(wrapper.state('isRequestPending')).toBe(false)
-    })
+    expect(contactPhoneNumber).toBeInTheDocument()
+    expect(contactMail).toBeInTheDocument()
+    expect(contactUrl).toBeInTheDocument()
 
-    describe('when creating', () => {
-      beforeEach(() => {
-        props.match = {
-          params: {
-            offererId: 'APEQ',
-            venueId: 'nouveau',
-          },
-        }
-        props.query.context = () => ({
-          isCreatedEntity: true,
-          isModifiedEntity: false,
-          readOnly: false,
-        })
-      })
+    expect(contactPhoneNumber).toBeEnabled()
+    expect(contactMail).toBeEnabled()
+    expect(contactUrl).toBeEnabled()
 
-      it('should render component with correct state values', () => {
-        // when
-        const wrapper = shallow(<VenueCreation {...props} />)
-
-        // then
-        expect(wrapper.state('isRequestPending')).toBe(false)
-      })
-
-      it('should display proper title', () => {
-        // when
-        const wrapper = shallow(<VenueCreation {...props} />)
-
-        // then
-        const title = wrapper.find({ children: 'Ajoutez un lieu où accéder à vos offres.' })
-        expect(title).toHaveLength(1)
-      })
-    })
-
-    describe('when editing', () => {
-      beforeEach(() => {
-        props.location = {
-          search: '?modifie',
-        }
-        props.match = {
-          params: {
-            offererId: 'APEQ',
-            venueId: 'AQYQ',
-          },
-        }
-        props.query.context = () => ({
-          isCreatedEntity: false,
-          isModifiedEntity: true,
-          readOnly: false,
-        })
-      })
-
-      it('should render component with correct state values', () => {
-        // when
-        const wrapper = shallow(<VenueCreation {...props} />)
-
-        // then
-        expect(wrapper.state('isRequestPending')).toBe(false)
-      })
-
-      it('should be able to edit address field when venue has no SIRET', () => {
-        // given
-        props.formInitialValues = {
-          siret: null,
-        }
-
-        jest
-          .spyOn(usersSelectors, 'selectCurrentUser')
-          .mockReturnValue({ currentUser: 'fakeUser', publicName: 'fakeName' })
-
-        props.venue = {
-          publicName: 'fake public name',
-        }
-
-        const store = configureTestStore()
-        const history = createBrowserHistory()
-        history.push(`/structures/AE/lieux/TR?modification`)
-
-        let wrapper = mount(
-          <Provider store={store}>
-            <Router history={history}>
-              <VenueCreation {...props} />
-            </Router>
-          </Provider>
-        )
-
-        let addressField = wrapper
-          .find(LocationFields)
-          .find(AddressField)
-          .find('input.field-address')
-          .first()
-
-        addressField.simulate('change', { target: { value: 'Addresse de test' } })
-
-        wrapper = wrapper.update()
-
-        addressField = wrapper
-          .find(LocationFields)
-          .find(AddressField)
-          .find('input.field-address')
-          .first()
-
-        // then
-        expect(addressField.prop('value')).toBe('Addresse de test')
-      })
-    })
-
-    describe('when reading', () => {
-      beforeEach(() => {
-        props.query.context = () => ({
-          isCreatedEntity: false,
-          isModifiedEntity: false,
-          readOnly: true,
-        })
-      })
-
-      it('should render component with correct state values', () => {
-        // when
-        const wrapper = shallow(<VenueCreation {...props} />)
-
-        // then
-        expect(wrapper.state('isRequestPending')).toBe(false)
-      })
-    })
   })
 
-  describe('form Success', () => {
-    describe('handleFormSuccess', () => {
-      describe('when creating a venue', () => {
-        beforeEach(() => {
-          props.query.context = () => ({
-            isCreatedEntity: true,
-            isModifiedEntity: false,
-            readOnly: false,
-          })
-        })
+  it('should fill contact fields', async ()=> {
+    renderVenueCreation({ props })
+    const contactPhoneNumber = await screen.findByLabelText("Téléphone")
+    const contactMail = await screen.findByLabelText("Mail")
+    const contactUrl = await screen.findByLabelText("URL de votre site web")
 
-        const action = {
-          config: {
-            apiPath: '/venues/CM',
-            method: 'POST',
-          },
-          payload: {
-            datum: {
-              id: 'CM',
-            },
-          },
-        }
+    userEvent.paste(contactPhoneNumber, '0606060606')
+    userEvent.paste(contactMail, 'test@test.com')
+    userEvent.paste(contactUrl, 'https://some-url-test.com')
 
-        it('should redirect to homepage with selected offerer', () => {
-          // given
-          const wrapper = shallow(<VenueCreation {...props} />)
-          const state = wrapper.state()
 
-          // when
-          wrapper.instance().handleFormSuccess(jest.fn())(state, action)
-
-          // then
-          expect(push).toHaveBeenCalledWith('/accueil?structure=APEQ')
-        })
-
-        it('should call handleSubmitRequestSuccess with the right parameters when venue is created', () => {
-          // given
-          const wrapper = shallow(<VenueCreation {...props} />)
-          const state = wrapper.state()
-
-          // when
-          wrapper.instance().handleFormSuccess(jest.fn())(state, action)
-
-          // then
-          expect(props.handleSubmitRequestSuccess).toHaveBeenCalledWith(
-            { isRequestPending: false },
-            {
-              config: {
-                apiPath: '/venues/CM',
-                method: 'POST',
-              },
-              payload: {
-                datum: {
-                  id: 'CM',
-                },
-              },
-            }
-          )
-        })
-      })
-    })
+    expect(contactUrl).toHaveValue('https://some-url-test.com')
+    expect(contactPhoneNumber).toHaveValue('0606060606')
+    expect(contactMail).toHaveValue('test@test.com')
   })
 
-  describe('event tracking', () => {
-    it('should track venue creation', () => {
-      // given
-      const state = {}
-      const action = {
-        payload: {
-          datum: {
-            id: 'Ty5645dgfd',
-          },
-        },
-      }
-      const wrapper = shallow(<VenueCreation {...props} />)
-      const formResolver = jest.fn()
 
-      // when
-      wrapper.instance().handleFormSuccess(formResolver)(state, action)
 
-      // then
-      expect(props.trackCreateVenue).toHaveBeenCalledWith('Ty5645dgfd')
-    })
-  })
 })

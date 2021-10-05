@@ -291,7 +291,6 @@ class IdentifierFields extends PureComponent {
             label="Description : "
             name="description"
             readOnly={readOnly}
-            rows={10}
           />
         </div>
       </div>

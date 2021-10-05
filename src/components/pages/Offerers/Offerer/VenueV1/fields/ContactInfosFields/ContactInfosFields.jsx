@@ -5,33 +5,15 @@
  * @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
  */
 
+import PropTypes from 'prop-types'
 import React from 'react'
-import { string } from 'yup'
 
 import TextField from 'components/layout/form/fields/TextField'
 
-const validatePhone = val => {
-  const phoneRegex = /^(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?$/
-  if (val && !phoneRegex.test(val)) {
-    return 'Ce numéro de téléphone n’est pas valide merci de fournir un numéro de téléphone sans espaces'
-  }
-}
+import { validatePhone , validateEmail, validateUrl } from './validators'
 
-const validateEmail = async val => {
-  const isValid = await string().email().isValid(val)
-  if (!isValid) {
-    return 'Votre email n’est pas valide'
-  }
-}
 
-const validateUrl = async val => {
-  const isValid = await string().url().isValid(val)
-  if (!isValid) {
-    return 'L’URL renseignée n’est pas valide'
-  }
-}
-
-const ContactInfosFields = () => (
+const ContactInfosFields = ({ readOnly }) => (
   <div className="section vp-content-section bank-information">
     <div className="main-list-title title-actions-container">
       <h2 className="main-list-title-text">
@@ -44,6 +26,7 @@ const ContactInfosFields = () => (
       label="Téléphone"
       name="contact.phoneNumber"
       placeholder="Ex : 06 06 06 06"
+      readOnly={readOnly}
       type="phone"
       validate={validatePhone}
     />
@@ -52,6 +35,7 @@ const ContactInfosFields = () => (
       label="Mail"
       name="contact.email"
       placeholder="Ex : nomprenom@nomdedomaine.fr"
+      readOnly={readOnly}
       type="email"
       validate={validateEmail}
     />
@@ -60,10 +44,15 @@ const ContactInfosFields = () => (
       label="URL de votre site web"
       name="contact.website"
       placeholder="https://votresite.com"
+      readOnly={readOnly}
       type="url"
       validate={validateUrl}
     />
   </div>
 )
+
+ContactInfosFields.propTypes = {
+  readOnly: PropTypes.bool.isRequired
+}
 
 export default ContactInfosFields
