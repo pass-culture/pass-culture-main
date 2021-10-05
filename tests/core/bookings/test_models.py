@@ -6,9 +6,11 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
 from pcapi.core.bookings import models
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.testing import override_features
@@ -269,7 +271,7 @@ class BookingExpirationDateNewRulesTest:
 
 class BookingHasConfirmationLimitDatePassedTest:
     @freeze_time("2021-08-05 15:00:00")
-    def test_when_has_confirmation_limite_date_passed(self) -> None:
+    def test_when_has_confirmation_limit_date_passed(self) -> None:
         booking: Booking = factories.EducationalBookingFactory(
             educationalBooking__confirmationLimitDate=datetime(2021, 8, 5, 14)
         )
@@ -277,9 +279,45 @@ class BookingHasConfirmationLimitDatePassedTest:
         assert booking.has_confirmation_limit_date_passed()
 
     @freeze_time("2021-08-05 15:00:00")
-    def test_when_has_not_confirmation_limite_date_passed(self) -> None:
+    def test_when_has_not_confirmation_limit_date_passed(self) -> None:
         booking: Booking = factories.EducationalBookingFactory(
             educationalBooking__confirmationLimitDate=datetime(2021, 8, 5, 16)
         )
 
         assert not booking.has_confirmation_limit_date_passed()
+
+
+class BookingMarkAsConfirmedTest:
+    @freeze_time("2021-08-05 15:00:00")
+    def test_confirm_when_confirmation_limit_date_has_not_passed(self) -> None:
+        booking: Booking = factories.EducationalBookingFactory(
+            educationalBooking__confirmationLimitDate=datetime(2021, 8, 5, 16)
+        )
+
+        booking.mark_as_confirmed()
+        db.session.flush()
+
+        assert booking.status == BookingStatus.CONFIRMED
+
+    @freeze_time("2021-08-05 15:00:00")
+    def test_confirm_when_has_confirmation_limit_date_passed(self) -> None:
+        booking: Booking = factories.EducationalBookingFactory(
+            educationalBooking__confirmationLimitDate=datetime(2021, 8, 5, 14),
+            status=models.BookingStatus.PENDING,
+        )
+
+        with pytest.raises(exceptions.ConfirmationLimitDateHasPassed):
+            booking.mark_as_confirmed()
+
+        assert booking.status == BookingStatus.PENDING
+
+    @freeze_time("2021-08-05 15:00:00")
+    def test_when_booking_is_not_educational(self) -> None:
+        booking: Booking = factories.IndividualBookingFactory(
+            status=models.BookingStatus.PENDING,
+        )
+
+        with pytest.raises(exceptions.CannotMarkAsConfirmedIndividualBooking):
+            booking.mark_as_confirmed()
+
+        assert booking.status == BookingStatus.PENDING

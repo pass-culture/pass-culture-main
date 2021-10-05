@@ -116,3 +116,11 @@ class BookingAlreadyCancelled(Exception):
 
 class BookingAlreadyRefunded(Exception):
     pass
+
+
+class CannotMarkAsConfirmedIndividualBooking(Exception):
+    pass
+
+
+class ConfirmationLimitDateHasPassed(Exception):
+    pass

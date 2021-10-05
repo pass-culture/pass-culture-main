@@ -190,6 +190,11 @@ class Booking(PcObject, Model):
         self.dateUsed = datetime.utcnow()
 
     def mark_as_confirmed(self) -> None:
+        if self.educationalBooking is None:
+            raise exceptions.CannotMarkAsConfirmedIndividualBooking()
+        if self.has_confirmation_limit_date_passed():
+            raise exceptions.ConfirmationLimitDateHasPassed()
+
         self.status = BookingStatus.CONFIRMED
         self.educationalBooking.confirmationDate = datetime.utcnow()
 
