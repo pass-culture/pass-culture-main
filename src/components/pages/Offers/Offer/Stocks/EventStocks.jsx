@@ -115,7 +115,7 @@ const EventStocks = ({
   const areValid = stocks => {
     const stocksErrors = stocks.reduce((stocksErrors, stock) => {
       const isNewStock = stock.id === undefined
-      const stockErrors = isNewStock ? validateCreatedStock(stock) : validateUpdatedStock(stock)
+      const stockErrors = isNewStock ? validateCreatedStock(stock, offer.isEvent, offer.isEducational) : validateUpdatedStock(stock, offer.isEvent, offer.isEducational)
       const stockHasErrors = Object.keys(stockErrors).length > 0
       return stockHasErrors ? { ...stocksErrors, [stock.key]: stockErrors } : stocksErrors
     }, {})
