@@ -1,5 +1,6 @@
 import logging
 
+from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.educational import api
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.repository import find_educational_bookings_for_adage
@@ -55,6 +56,8 @@ def confirm_prebooking(educational_booking_id: int) -> prebooking_serialization.
         raise ApiErrors({"code": "EDUCATIONAL_BOOKING_IS_REFUSED"}, status_code=422)
     except exceptions.BookingIsCancelled:
         raise ApiErrors({"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"}, status_code=422)
+    except bookings_exceptions.ConfirmationLimitDateHasPassed:
+        raise ApiErrors({"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"}, status_code=422)
     except exceptions.EducationalBookingNotFound:
         raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
     except exceptions.EducationalDepositNotFound:

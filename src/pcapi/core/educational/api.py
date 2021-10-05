@@ -111,6 +111,7 @@ def confirm_educational_booking(educational_booking_id: int) -> EducationalBooki
         return educational_booking
 
     validation.check_educational_booking_status(educational_booking)
+    validation.check_confirmation_limit_date_has_not_passed(educational_booking)
 
     educational_institution_id = educational_booking.educationalInstitutionId
     educational_year_id = educational_booking.educationalYearId

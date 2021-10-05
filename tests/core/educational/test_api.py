@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 import sqlalchemy.exc
 from sqlalchemy.sql import text
 
+from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
@@ -27,6 +28,7 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import clean_database
 
 
+@freeze_time("2020-11-17 15:00:00")
 class ConfirmEducationalBookingTest:
     @clean_database
     def test_confirm_educational_booking_lock(self, app):
@@ -210,6 +212,18 @@ class ConfirmEducationalBookingTest:
 
         # Then
         with pytest.raises(exceptions.BookingIsCancelled):
+            educational_api.confirm_educational_booking(booking.educationalBookingId)
+
+    @freeze_time("2021-08-05 15:00:00")
+    def test_raises_confirmation_limit_date_has_passed(self, db_session) -> None:
+        # Given
+        booking: Booking = bookings_factories.EducationalBookingFactory(
+            educationalBooking__confirmationLimitDate=datetime.datetime(2021, 8, 5, 14),
+            status=BookingStatus.PENDING,
+        )
+
+        # Then
+        with pytest.raises(bookings_exceptions.ConfirmationLimitDateHasPassed):
             educational_api.confirm_educational_booking(booking.educationalBookingId)
 
 

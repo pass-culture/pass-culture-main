@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 
 from freezegun import freeze_time
@@ -50,6 +51,7 @@ class Returns200Test:
             educationalBooking__educationalYear=educational_year,
             educationalBooking__educationalRedactor=redactor,
             status=BookingStatus.PENDING,
+            educationalBooking__confirmationLimitDate=datetime(2021, 10, 15, 10),
         )
 
         client = TestClient(app.test_client()).with_eac_token()
@@ -103,6 +105,7 @@ class Returns200Test:
         assert Booking.query.filter(Booking.id == booking.id).one().status == BookingStatus.CONFIRMED
 
 
+@freeze_time("2021-10-15 09:00:00")
 class ReturnsErrorTest:
     def test_no_educational_booking(self, app, db_session) -> None:
         client = TestClient(app.test_client()).with_eac_token()
@@ -116,6 +119,7 @@ class ReturnsErrorTest:
             amount=Decimal(20.00),
             quantity=20,
             status=BookingStatus.PENDING,
+            educationalBooking__confirmationLimitDate=datetime(2021, 10, 15, 10),
         )
 
         client = TestClient(app.test_client()).with_eac_token()
@@ -139,6 +143,7 @@ class ReturnsErrorTest:
             educationalBooking__educationalInstitution=educational_institution,
             educationalBooking__educationalYear=educational_year,
             status=BookingStatus.PENDING,
+            educationalBooking__confirmationLimitDate=datetime(2021, 10, 15, 10),
         )
 
         client = TestClient(app.test_client()).with_eac_token()
@@ -162,6 +167,7 @@ class ReturnsErrorTest:
             educationalBooking__educationalInstitution=educational_institution,
             educationalBooking__educationalYear=educational_year,
             status=BookingStatus.PENDING,
+            educationalBooking__confirmationLimitDate=datetime(2021, 10, 15, 10),
         )
 
         client = TestClient(app.test_client()).with_eac_token()
@@ -192,3 +198,16 @@ class ReturnsErrorTest:
 
         assert response.status_code == 422
         assert response.json == {"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"}
+
+    @freeze_time("2021-08-05 15:00:00")
+    def test_confirmation_limit_date_has_passed(self, app, db_session) -> None:
+        booking: Booking = EducationalBookingFactory(
+            educationalBooking__confirmationLimitDate=datetime(2021, 8, 5, 14),
+            status=BookingStatus.PENDING,
+        )
+
+        client = TestClient(app.test_client()).with_eac_token()
+        response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/confirm")
+
+        assert response.status_code == 422
+        assert response.json == {"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"}

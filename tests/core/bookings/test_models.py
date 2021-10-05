@@ -311,7 +311,6 @@ class BookingMarkAsConfirmedTest:
 
         assert booking.status == BookingStatus.PENDING
 
-    @freeze_time("2021-08-05 15:00:00")
     def test_when_booking_is_not_educational(self) -> None:
         booking: Booking = factories.IndividualBookingFactory(
             status=models.BookingStatus.PENDING,
