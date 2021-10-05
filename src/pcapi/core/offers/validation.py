@@ -104,15 +104,15 @@ def check_stock_quantity(quantity: Union[int, None], bookingQuantity: int = 0) -
         raise api_errors
 
 
-def check_stock_price(price: float, offer_is_event: bool) -> None:
+def check_stock_price(price: float, offer: Offer) -> None:
     if price < 0:
         api_errors = ApiErrors()
         api_errors.add_error("price", "Le prix doit être positif")
         raise api_errors
-    if price > 300 and not offer_is_event:
+    if price > 300 and not offer.isEducational and not offer.isEvent:
         api_errors = ApiErrors()
         api_errors.add_error(
-            "priceexceeds300",
+            "price300",
             "Le prix d’une offre ne peut excéder 300 euros.",
         )
         raise api_errors

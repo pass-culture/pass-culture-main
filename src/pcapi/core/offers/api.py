@@ -268,7 +268,7 @@ def _create_stock(
 ) -> Stock:
     validation.check_required_dates_for_stock(offer, beginning, booking_limit_datetime)
     validation.check_stock_can_be_created_for_offer(offer)
-    validation.check_stock_price(price, offer.isEvent)
+    validation.check_stock_price(price, offer)
     validation.check_stock_quantity(quantity)
 
     return Stock(
@@ -305,7 +305,7 @@ def _edit_stock(
 
     validation.check_stock_is_updatable(stock)
     validation.check_required_dates_for_stock(stock.offer, beginning, booking_limit_datetime)
-    validation.check_stock_price(price, stock.offer.isEvent)
+    validation.check_stock_price(price, stock.offer)
     validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
     validation.check_activation_codes_expiration_datetime_on_stock_edition(
         stock.activationCodes,

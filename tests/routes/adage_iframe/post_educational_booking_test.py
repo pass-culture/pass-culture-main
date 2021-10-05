@@ -35,7 +35,7 @@ def _create_adage_valid_token_with_email(
 class Returns200Test:
     def test_post_educational_booking(self, app):
         # Given
-        stock = offer_factories.EducationalStockFactory(beginningDatetime=stock_date)
+        stock = offer_factories.EducationalEventStockFactory(beginningDatetime=stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_year = educational_factories.EducationalYearFactory(
             beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]
@@ -68,7 +68,7 @@ class Returns200Test:
 
     def test_post_educational_booking_with_less_redactor_information(self, app):
         # Given
-        stock = offer_factories.EducationalStockFactory(beginningDatetime=stock_date)
+        stock = offer_factories.EducationalEventStockFactory(beginningDatetime=stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_year = educational_factories.EducationalYearFactory(
             beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]
@@ -114,7 +114,7 @@ class Returns200Test:
 class Returns400Test:
     @pytest.fixture()
     def test_data(self):
-        stock = offer_factories.EducationalStockFactory(beginningDatetime=stock_date)
+        stock = offer_factories.EducationalEventStockFactory(beginningDatetime=stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory(
             beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]
@@ -146,7 +146,7 @@ class Returns400Test:
     def test_should_not_allow_booking_when_stock_has_no_remaining_quantity(self, test_data, app):
         # Given
         _, educational_institution, educational_redactor = test_data
-        stock = offer_factories.EducationalStockFactory(beginningDatetime=stock_date, quantity=0)
+        stock = offer_factories.EducationalEventStockFactory(beginningDatetime=stock_date, quantity=0)
         adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
             email=educational_redactor.email, uai=educational_institution.institutionId
         )
@@ -214,7 +214,7 @@ class Returns400Test:
 class Returns403Test:
     @pytest.fixture()
     def test_data(self):
-        stock = offer_factories.EducationalStockFactory(beginningDatetime=stock_date)
+        stock = offer_factories.EducationalEventStockFactory(beginningDatetime=stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory(
             beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]

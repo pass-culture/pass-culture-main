@@ -3,7 +3,7 @@ import datetime
 from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.educational.factories as educational_factories
-from pcapi.core.offers.factories import EducationalStockFactory
+from pcapi.core.offers.factories import EducationalEventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 
@@ -75,7 +75,7 @@ def create_industrial_educational_bookings() -> None:
 
     for stock_data in FAKE_STOCK_DATA:
         stocks.append(
-            EducationalStockFactory(
+            EducationalEventStockFactory(
                 quantity=100,
                 price=stock_data["price"],
                 beginningDatetime=now + datetime.timedelta(days=stock_data["timedelta"]),
@@ -91,7 +91,7 @@ def create_industrial_educational_bookings() -> None:
         store_public_object_from_sandbox_assets("thumbs", mediation, mediation.offer.type)
 
     next_year_stocks = [
-        EducationalStockFactory(
+        EducationalEventStockFactory(
             quantity=100,
             price=1200,
             beginningDatetime=educational_next_year.beginningDate + datetime.timedelta(days=10),
@@ -100,7 +100,7 @@ def create_industrial_educational_bookings() -> None:
             offer__description="Une description multi-lignes.\nOù il est notamment question du nombre d'élèves.\nNbr d'élèves max: 50",
             offer__name="Stage d'initiation à la photographie : prise en main de l'appareil-photo",
         ),
-        EducationalStockFactory(
+        EducationalEventStockFactory(
             quantity=60,
             price=1400,
             beginningDatetime=educational_next_year.beginningDate + datetime.timedelta(days=15),

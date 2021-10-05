@@ -276,6 +276,119 @@ class UpsertStocksTest:
             "price": ["Le prix doit être positif"],
         }
 
+    def test_does_not_allow_price_above_300_euros_on_creation_for_individual_thing_offers(self):
+        # Given
+        user = users_factories.ProFactory()
+        offer = factories.ThingOfferFactory()
+        created_stock_data = StockCreationBodyModel(price=301)
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
+
+        # Then
+        assert error.value.errors == {
+            "price300": ["Le prix d’une offre ne peut excéder 300 euros."],
+        }
+
+    def test_does_not_allow_price_above_300_euros_on_edition_for_individual_thing_offers(self):
+        # Given
+        user = users_factories.ProFactory()
+        existing_stock = factories.ThingStockFactory(price=10)
+        edited_stock_data = StockEditionBodyModel(id=existing_stock.id, price=301)
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.upsert_stocks(offer_id=existing_stock.offer.id, stock_data_list=[edited_stock_data], user=user)
+
+        # Then
+        assert error.value.errors == {
+            "price300": ["Le prix d’une offre ne peut excéder 300 euros."],
+        }
+
+    def test_allow_price_above_300_euros_on_creation_for_individual_event_offers(self):
+        # Given
+        user = users_factories.ProFactory()
+        offer = factories.EventOfferFactory()
+        now = datetime.now()
+        created_stock_data = StockCreationBodyModel(price=301, beginningDatetime=now, bookingLimitDatetime=now)
+
+        # When
+        api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
+
+        # Then
+        created_stock = Stock.query.one()
+        assert created_stock.price == 301
+
+    def test_allow_price_above_300_euros_on_edition_for_individual_event_offers(self):
+        # Given
+        user = users_factories.ProFactory()
+        existing_stock = factories.EventStockFactory(price=10)
+        now = datetime.now()
+        edited_stock_data = StockEditionBodyModel(
+            id=existing_stock.id, price=301, beginningDatetime=now, bookingLimitDatetime=now
+        )
+
+        # When
+        api.upsert_stocks(offer_id=existing_stock.offer.id, stock_data_list=[edited_stock_data], user=user)
+
+        # Then
+        assert existing_stock.price == 301
+
+    def test_allow_price_above_300_euros_on_creation_for_educational_thing_offers(self):
+        # Given
+        user = users_factories.ProFactory()
+        offer = factories.EducationalThingOfferFactory()
+        created_stock_data = StockCreationBodyModel(price=301)
+
+        # When
+        api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
+
+        # Then
+        created_stock = Stock.query.one()
+        assert created_stock.price == 301
+
+    def test_allow_price_above_300_euros_on_edition_for_educational_thing_offers(self):
+        # Given
+        user = users_factories.ProFactory()
+        existing_stock = factories.EducationalThingStockFactory(price=10)
+        edited_stock_data = StockEditionBodyModel(id=existing_stock.id, price=301)
+
+        # When
+        api.upsert_stocks(offer_id=existing_stock.offer.id, stock_data_list=[edited_stock_data], user=user)
+
+        # Then
+        assert existing_stock.price == 301
+
+    def test_allow_price_above_300_euros_on_creation_for_educational_event_offers(self):
+        # Given
+        user = users_factories.ProFactory()
+        offer = factories.EducationalEventOfferFactory()
+        now = datetime.now()
+        created_stock_data = StockCreationBodyModel(price=301, beginningDatetime=now, bookingLimitDatetime=now)
+
+        # When
+        api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
+
+        # Then
+        created_stock = Stock.query.one()
+        assert created_stock.price == 301
+
+    def test_allow_price_above_300_euros_on_edition_for_educational_event_offers(self):
+        # Given
+        user = users_factories.ProFactory()
+        existing_stock = factories.EventStockFactory(price=10)
+        now = datetime.now()
+        edited_stock_data = StockEditionBodyModel(
+            id=existing_stock.id, price=301, beginningDatetime=now, bookingLimitDatetime=now
+        )
+
+        # When
+        api.upsert_stocks(offer_id=existing_stock.offer.id, stock_data_list=[edited_stock_data], user=user)
+
+        # Then
+        assert existing_stock.price == 301
+
     def test_does_not_allow_beginning_datetime_on_thing_offer_on_creation_and_edition(self):
         # Given
         user = users_factories.ProFactory()

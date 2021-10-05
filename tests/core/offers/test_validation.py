@@ -6,7 +6,7 @@ import requests
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import exceptions
-from pcapi.core.offers import factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import validation
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.payments.factories as payments_factories
@@ -21,12 +21,12 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 @pytest.mark.usefixtures("db_session")
 class CheckOfferExistingStocksAreEditableTest:
     def test_approved_offer(self):
-        offer = factories.OfferFactory()
+        offer = offers_factories.OfferFactory()
 
         validation.check_offer_existing_stocks_are_editable(offer)
 
     def test_pending_offer(self):
-        pending_validation_offer = factories.OfferFactory(validation=OfferValidationStatus.PENDING)
+        pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
         with pytest.raises(ApiErrors) as error:
             validation.check_offer_existing_stocks_are_editable(pending_validation_offer)
@@ -37,13 +37,13 @@ class CheckOfferExistingStocksAreEditableTest:
 
     def test_allocine_offer(self):
         provider = offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
-        offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
+        offer = offers_factories.OfferFactory(lastProvider=provider, idAtProviders="1")
 
         validation.check_offer_existing_stocks_are_editable(offer)
 
     def test_non_allocine_provider_offer(self):
         offerer = offerers_factories.APIProviderFactory()
-        provider_offer = factories.OfferFactory(lastProvider=offerer, idAtProviders="1")
+        provider_offer = offers_factories.OfferFactory(lastProvider=offerer, idAtProviders="1")
 
         with pytest.raises(ApiErrors) as error:
             validation.check_offer_existing_stocks_are_editable(provider_offer)
@@ -54,31 +54,29 @@ class CheckOfferExistingStocksAreEditableTest:
 @pytest.mark.usefixtures("db_session")
 class CheckPricesForStockTest:
     def test_event_prices(self):
-        validation.check_stock_price(0, True)
-        validation.check_stock_price(1.5, True)
-        validation.check_stock_price(310.5, True)
+        offer = offers_factories.EventOfferFactory()
+        validation.check_stock_price(0, offer)
+        validation.check_stock_price(1.5, offer)
+        validation.check_stock_price(310.5, offer)
 
         with pytest.raises(ApiErrors) as error:
-            validation.check_stock_price(-1.5, True)
+            validation.check_stock_price(-1.5, offer)
         assert error.value.errors["price"] == ["Le prix doit être positif"]
 
     def test_thing_prices(self):
-        validation.check_stock_price(0, False)
-        validation.check_stock_price(1.5, False)
+        offer = offers_factories.ThingOfferFactory()
+        validation.check_stock_price(0, offer)
+        validation.check_stock_price(1.5, offer)
 
         with pytest.raises(ApiErrors) as error:
-            validation.check_stock_price(-1.5, False)
+            validation.check_stock_price(-1.5, offer)
         assert error.value.errors["price"] == ["Le prix doit être positif"]
-
-        with pytest.raises(ApiErrors) as error:
-            validation.check_stock_price(310.5, False)
-        assert error.value.errors["priceexceeds300"] == ["Le prix d’une offre ne peut excéder 300 euros."]
 
 
 @pytest.mark.usefixtures("db_session")
 class CheckRequiredDatesForStockTest:
     def test_thing_offer_must_not_have_beginning(self):
-        offer = factories.ThingOfferFactory()
+        offer = offers_factories.ThingOfferFactory()
 
         with pytest.raises(ApiErrors) as error:
             validation.check_required_dates_for_stock(
@@ -92,7 +90,7 @@ class CheckRequiredDatesForStockTest:
         ]
 
     def test_thing_offer_ok_with_booking_limit_datetime(self):
-        offer = factories.ThingOfferFactory()
+        offer = offers_factories.ThingOfferFactory()
 
         validation.check_required_dates_for_stock(
             offer,
@@ -101,7 +99,7 @@ class CheckRequiredDatesForStockTest:
         )
 
     def test_thing_offer_ok_without_booking_limit_datetime(self):
-        offer = factories.ThingOfferFactory()
+        offer = offers_factories.ThingOfferFactory()
 
         validation.check_required_dates_for_stock(
             offer,
@@ -110,7 +108,7 @@ class CheckRequiredDatesForStockTest:
         )
 
     def test_event_offer_must_have_beginning(self):
-        offer = factories.EventOfferFactory()
+        offer = offers_factories.EventOfferFactory()
 
         with pytest.raises(ApiErrors) as error:
             validation.check_required_dates_for_stock(
@@ -121,7 +119,7 @@ class CheckRequiredDatesForStockTest:
         assert error.value.errors["beginningDatetime"] == ["Ce paramètre est obligatoire"]
 
     def test_event_offer_must_have_booking_limit_datetime(self):
-        offer = factories.EventOfferFactory()
+        offer = offers_factories.EventOfferFactory()
 
         with pytest.raises(ApiErrors) as error:
             validation.check_required_dates_for_stock(
@@ -132,7 +130,7 @@ class CheckRequiredDatesForStockTest:
         assert error.value.errors["bookingLimitDatetime"] == ["Ce paramètre est obligatoire"]
 
     def test_event_offer_ok_with_beginning_and_booking_limit_datetime(self):
-        offer = factories.EventOfferFactory()
+        offer = offers_factories.EventOfferFactory()
 
         validation.check_required_dates_for_stock(
             offer,
@@ -144,13 +142,13 @@ class CheckRequiredDatesForStockTest:
 @pytest.mark.usefixtures("db_session")
 class CheckStockCanBeCreatedForOfferTest:
     def test_approved_offer_not_from_provider(self):
-        offer = factories.OfferFactory(lastProvider=None)
+        offer = offers_factories.OfferFactory(lastProvider=None)
 
         validation.check_stock_can_be_created_for_offer(offer)
 
     def test_offer_from_provider(self, app):
         provider = offerers_factories.AllocineProviderFactory()
-        offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
+        offer = offers_factories.OfferFactory(lastProvider=provider, idAtProviders="1")
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_can_be_created_for_offer(offer)
@@ -158,7 +156,7 @@ class CheckStockCanBeCreatedForOfferTest:
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
     def test_pending_offer_not_from_provider(self):
-        offer = factories.OfferFactory(lastProvider=None, validation=OfferValidationStatus.PENDING)
+        offer = offers_factories.OfferFactory(lastProvider=None, validation=OfferValidationStatus.PENDING)
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_can_be_created_for_offer(offer)
@@ -171,21 +169,21 @@ class CheckStockCanBeCreatedForOfferTest:
 @pytest.mark.usefixtures("db_session")
 class CheckStockIsDeletableTest:
     def test_approved_offer(self):
-        offer = factories.OfferFactory()
-        stock = factories.StockFactory(offer=offer)
+        offer = offers_factories.OfferFactory()
+        stock = offers_factories.StockFactory(offer=offer)
 
         validation.check_stock_is_deletable(stock)
 
     def test_allocine_offer(self):
         provider = offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
-        offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
-        stock = factories.StockFactory(offer=offer)
+        offer = offers_factories.OfferFactory(lastProvider=provider, idAtProviders="1")
+        stock = offers_factories.StockFactory(offer=offer)
 
         validation.check_stock_is_deletable(stock)
 
     def test_non_approved_offer(self):
-        offer = factories.OfferFactory(validation=OfferValidationStatus.PENDING)
-        stock = factories.StockFactory(offer=offer)
+        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
+        stock = offers_factories.StockFactory(offer=offer)
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_is_deletable(stock)
@@ -196,8 +194,8 @@ class CheckStockIsDeletableTest:
 
     def test_offer_from_non_allocine_provider(self):
         provider = offerers_factories.APIProviderFactory()
-        offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
-        stock = factories.StockFactory(offer=offer)
+        offer = offers_factories.OfferFactory(lastProvider=provider, idAtProviders="1")
+        stock = offers_factories.StockFactory(offer=offer)
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_is_deletable(stock)
@@ -206,13 +204,13 @@ class CheckStockIsDeletableTest:
 
     def test_recently_begun_event_stock(self):
         recently = datetime.datetime.now() - datetime.timedelta(days=1)
-        stock = factories.EventStockFactory(beginningDatetime=recently)
+        stock = offers_factories.EventStockFactory(beginningDatetime=recently)
 
         validation.check_stock_is_deletable(stock)
 
     def test_long_begun_event_stock(self):
         too_long_ago = datetime.datetime.now() - datetime.timedelta(days=3)
-        stock = factories.EventStockFactory(beginningDatetime=too_long_ago)
+        stock = offers_factories.EventStockFactory(beginningDatetime=too_long_ago)
 
         with pytest.raises(exceptions.TooLateToDeleteStock) as error:
             validation.check_stock_is_deletable(stock)
@@ -225,21 +223,21 @@ class CheckStockIsDeletableTest:
 @pytest.mark.usefixtures("db_session")
 class CheckStockIsUpdatableTest:
     def test_approved_offer(self):
-        offer = factories.OfferFactory()
-        stock = factories.StockFactory(offer=offer)
+        offer = offers_factories.OfferFactory()
+        stock = offers_factories.StockFactory(offer=offer)
 
         validation.check_stock_is_updatable(stock)
 
     def test_allocine_offer(self):
         provider = offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
-        offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
-        stock = factories.StockFactory(offer=offer)
+        offer = offers_factories.OfferFactory(lastProvider=provider, idAtProviders="1")
+        stock = offers_factories.StockFactory(offer=offer)
 
         validation.check_stock_is_updatable(stock)
 
     def test_non_approved_offer(self):
-        offer = factories.OfferFactory(validation=OfferValidationStatus.PENDING)
-        stock = factories.StockFactory(offer=offer)
+        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
+        stock = offers_factories.StockFactory(offer=offer)
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_is_updatable(stock)
@@ -250,8 +248,8 @@ class CheckStockIsUpdatableTest:
 
     def test_offer_from_non_allocine_provider(self):
         provider = offerers_factories.APIProviderFactory()
-        offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
-        stock = factories.StockFactory(offer=offer)
+        offer = offers_factories.OfferFactory(lastProvider=provider, idAtProviders="1")
+        stock = offers_factories.StockFactory(offer=offer)
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_is_updatable(stock)
@@ -260,7 +258,7 @@ class CheckStockIsUpdatableTest:
 
     def test_past_event_stock(self):
         recently = datetime.datetime.now() - datetime.timedelta(minutes=1)
-        stock = factories.EventStockFactory(beginningDatetime=recently)
+        stock = offers_factories.EventStockFactory(beginningDatetime=recently)
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_is_updatable(stock)
@@ -407,17 +405,17 @@ class CheckImageTest:
 @pytest.mark.usefixtures("db_session")
 class CheckValidationStatusTest:
     def test_approved_offer(self):
-        approved_offer = factories.OfferFactory()
+        approved_offer = offers_factories.OfferFactory()
 
         validation.check_validation_status(approved_offer)
 
     def test_draft_offer(self):
-        draft_offer = factories.OfferFactory(validation=OfferValidationStatus.DRAFT)
+        draft_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.DRAFT)
 
         validation.check_validation_status(draft_offer)
 
     def test_pending_offer(self):
-        pending_validation_offer = factories.OfferFactory(validation=OfferValidationStatus.PENDING)
+        pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
         with pytest.raises(ApiErrors) as error:
             validation.check_validation_status(pending_validation_offer)
@@ -427,7 +425,7 @@ class CheckValidationStatusTest:
         ]
 
     def test_rejected_offer(self):
-        rejected_offer = factories.OfferFactory(validation=OfferValidationStatus.REJECTED)
+        rejected_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.REJECTED)
 
         with pytest.raises(ApiErrors) as error:
             validation.check_validation_status(rejected_offer)
@@ -439,7 +437,7 @@ class CheckValidationStatusTest:
 
 @pytest.mark.usefixtures("db_session")
 def test_check_stock_has_no_custom_reimbursement_rule():
-    stock = factories.StockFactory()
+    stock = offers_factories.StockFactory()
     validation.check_stock_has_no_custom_reimbursement_rule(stock)  # should not raise
 
     payments_factories.CustomReimbursementRuleFactory(offer=stock.offer)

@@ -160,8 +160,13 @@ class EventOfferFactory(OfferFactory):
     product = factory.SubFactory(EventProductFactory)
 
 
-class EducationalOfferFactory(OfferFactory):
+class EducationalEventOfferFactory(OfferFactory):
     product = factory.SubFactory(EventProductFactory)
+    isEducational = True
+
+
+class EducationalThingOfferFactory(OfferFactory):
+    product = factory.SubFactory(ThingProductFactory)
     isEducational = True
 
 
@@ -203,8 +208,12 @@ class EventStockFactory(StockFactory):
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
 
 
-class EducationalStockFactory(StockFactory):
-    offer = factory.SubFactory(EducationalOfferFactory)
+class EducationalThingStockFactory(StockFactory):
+    offer = factory.SubFactory(EducationalThingOfferFactory)
+
+
+class EducationalEventStockFactory(StockFactory):
+    offer = factory.SubFactory(EducationalEventOfferFactory)
     beginningDatetime = factory.LazyFunction(lambda: datetime.datetime.now() + datetime.timedelta(days=5))
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
 

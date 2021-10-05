@@ -279,7 +279,7 @@ class BookOfferTest:
         with pytest.raises(exceptions.EducationalOfferCannotBeBooked):
             api.book_offer(
                 beneficiary=users_factories.BeneficiaryGrant18Factory(),
-                stock_id=offers_factories.EducationalStockFactory(offer__isEducational=True).id,
+                stock_id=offers_factories.EducationalEventStockFactory(offer__isEducational=True).id,
                 quantity=2,
             )
 

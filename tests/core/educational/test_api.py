@@ -218,7 +218,7 @@ class ConfirmEducationalBookingTest:
 class BookEducationalOfferTest:
     def test_should_create_educational_booking_on_requested_educational_offer(self):
         # Given
-        stock = offers_factories.EducationalStockFactory(beginningDatetime=datetime.datetime(2021, 5, 15))
+        stock = offers_factories.EducationalEventStockFactory(beginningDatetime=datetime.datetime(2021, 5, 15))
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_year = educational_factories.EducationalYearFactory(
             beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
@@ -256,7 +256,7 @@ class BookEducationalOfferTest:
 
     def test_should_send_email_on_educational_booking_creation(self):
         # Given
-        stock = offers_factories.EducationalStockFactory(
+        stock = offers_factories.EducationalEventStockFactory(
             beginningDatetime=datetime.datetime(2021, 5, 15),
             offer__bookingEmail="test@email.com",
         )
@@ -314,7 +314,7 @@ class BookEducationalOfferTest:
 
     def test_should_create_educational_redactor_when_it_does_not_exist(self):
         # Given
-        stock = offers_factories.EducationalStockFactory(beginningDatetime=datetime.datetime(2021, 5, 15))
+        stock = offers_factories.EducationalEventStockFactory(beginningDatetime=datetime.datetime(2021, 5, 15))
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory(
             beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
@@ -347,7 +347,7 @@ class BookEducationalOfferTest:
 
     def test_should_not_create_educational_booking_when_educational_institution_unknown(self):
         # Given
-        stock = offers_factories.EducationalStockFactory(beginningDatetime=datetime.datetime(2021, 5, 15))
+        stock = offers_factories.EducationalEventStockFactory(beginningDatetime=datetime.datetime(2021, 5, 15))
         educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory()
         educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
@@ -375,7 +375,7 @@ class BookEducationalOfferTest:
 
     def test_should_not_create_educational_booking_when_stock_does_not_exist(self):
         # Given
-        offers_factories.EducationalStockFactory(beginningDatetime=datetime.datetime(2021, 5, 15))
+        offers_factories.EducationalEventStockFactory(beginningDatetime=datetime.datetime(2021, 5, 15))
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory()
         educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
@@ -432,7 +432,7 @@ class BookEducationalOfferTest:
     def test_should_not_create_educational_booking_when_educational_year_not_found(self):
         # Given
         date_before_education_year_beginning = datetime.datetime(2018, 9, 20)
-        stock = offers_factories.EducationalStockFactory(beginningDatetime=date_before_education_year_beginning)
+        stock = offers_factories.EducationalEventStockFactory(beginningDatetime=date_before_education_year_beginning)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory()
         educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
@@ -541,7 +541,7 @@ class RefuseEducationalBookingTest:
         assert refreshed_booking.status == BookingStatus.CONFIRMED
 
     def test_refuse_educational_booking(self, db_session):
-        stock = offers_factories.EducationalStockFactory(quantity=200, dnBookedQuantity=0)
+        stock = offers_factories.EducationalEventStockFactory(quantity=200, dnBookedQuantity=0)
         booking = bookings_factories.EducationalBookingFactory(
             status=BookingStatus.CONFIRMED,
             stock=stock,
@@ -559,7 +559,7 @@ class RefuseEducationalBookingTest:
             educational_api.refuse_educational_booking(123)
 
     def test_no_op_when_educational_booking_already_refused(self, db_session):
-        stock = offers_factories.EducationalStockFactory(dnBookedQuantity=20)
+        stock = offers_factories.EducationalEventStockFactory(dnBookedQuantity=20)
         booking = bookings_factories.EducationalBookingFactory(
             educationalBooking__status=EducationalBookingStatus.REFUSED,
             quantity=1,
