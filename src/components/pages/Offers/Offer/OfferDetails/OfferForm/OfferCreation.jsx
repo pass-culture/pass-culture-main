@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
@@ -22,7 +22,6 @@ const OfferCreation = ({
   onSubmit,
   showErrorNotification,
   setPreviewOfferCategory,
-  setShowThumbnailForm,
   setFormValues,
   submitErrors,
 }) => {
@@ -114,7 +113,6 @@ const OfferCreation = ({
       setIsLoading={setIsLoading}
       setPreviewOfferCategory={setPreviewOfferCategory}
       setSelectedOfferer={setSelectedOfferer}
-      setShowThumbnailForm={setShowThumbnailForm}
       showErrorNotification={showErrorNotification}
       submitErrors={submitErrors}
       userEmail={userEmail}
@@ -136,7 +134,6 @@ OfferCreation.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   setFormValues: PropTypes.func.isRequired,
   setPreviewOfferCategory: PropTypes.func.isRequired,
-  setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submitErrors: PropTypes.shape().isRequired,
   userEmail: PropTypes.string.isRequired,

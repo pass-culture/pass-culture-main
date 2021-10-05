@@ -21,7 +21,6 @@ import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl
 
 import OfferForm from './OfferForm'
 
-
 const computeNoDisabilityComplianceValue = offer => {
   const disabilityCompliantValues = [
     offer.audioDisabilityCompliant,
@@ -50,7 +49,6 @@ const OfferEdition = ({
   onSubmit,
   setFormValues,
   setPreviewOfferCategory,
-  setShowThumbnailForm,
   showErrorNotification,
   submitErrors,
   userEmail,
@@ -70,12 +68,12 @@ const OfferEdition = ({
         }
         return { ...acc, [field]: DEFAULT_FORM_VALUES[field] }
       }, {})
-      
+
       const offerAccessibility = getDisabilityComplianceValues(offer)
       const venueAccessibility = getDisabilityComplianceValues(offer.venue)
       if (
-        Object.values(offerAccessibility).includes(null) 
-        && !Object.values(venueAccessibility).includes(null)
+        Object.values(offerAccessibility).includes(null) &&
+        !Object.values(venueAccessibility).includes(null)
       ) {
         initialValues = { ...initialValues, ...venueAccessibility }
       }
@@ -138,7 +136,6 @@ const OfferEdition = ({
       readOnlyFields={readOnlyFields}
       setFormValues={setFormValues}
       setPreviewOfferCategory={setPreviewOfferCategory}
-      setShowThumbnailForm={setShowThumbnailForm}
       showErrorNotification={showErrorNotification}
       submitErrors={submitErrors}
       userEmail={userEmail}
@@ -174,7 +171,6 @@ OfferEdition.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   setFormValues: PropTypes.func.isRequired,
   setPreviewOfferCategory: PropTypes.func.isRequired,
-  setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submitErrors: PropTypes.shape().isRequired,
   userEmail: PropTypes.string.isRequired,

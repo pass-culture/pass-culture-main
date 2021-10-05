@@ -18,6 +18,7 @@ import OfferThumbnail from 'components/pages/Offers/Offer/OfferDetails/OfferThum
 import OfferPreviewLink from 'components/pages/Offers/Offer/OfferPreviewLink/OfferPreviewLink'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { loadCategories } from 'store/offers/thunks'
+import { DEFAULT_FORM_VALUES } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
 
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 
@@ -60,6 +61,11 @@ const OfferDetails = ({
   useEffect(() => {
     offer?.id && reloadOffer()
   }, [offer?.id, reloadOffer])
+
+  useEffect(() => 
+    setShowThumbnailForm(formValues.subcategoryId !== DEFAULT_FORM_VALUES.subcategoryId), 
+    [setShowThumbnailForm, formValues.subcategoryId]
+  )
 
   const postThumbnail = useCallback(
     async (offerId, thumbnailInfo) => {
@@ -176,7 +182,6 @@ const OfferDetails = ({
                 onSubmit={handleSubmitOffer}
                 setFormValues={setFormValues}
                 setPreviewOfferCategory={setOfferSubCategory}
-                setShowThumbnailForm={setShowThumbnailForm}
                 showErrorNotification={showErrorNotification}
                 submitErrors={formErrors}
                 userEmail={userEmail}
@@ -191,7 +196,6 @@ const OfferDetails = ({
               onSubmit={handleSubmitOffer}
               setFormValues={setFormValues}
               setPreviewOfferCategory={setOfferSubCategory}
-              setShowThumbnailForm={setShowThumbnailForm}
               showErrorNotification={showErrorNotification}
               submitErrors={formErrors}
               userEmail={userEmail}

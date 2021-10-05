@@ -99,7 +99,6 @@ const OfferForm = ({
   setFormValues,
   setSelectedOfferer,
   setPreviewOfferCategory,
-  setShowThumbnailForm,
   showErrorNotification,
   submitErrors,
   userEmail,
@@ -253,15 +252,6 @@ const OfferForm = ({
       }
     },
     [handleFormUpdate, offerersNames]
-  )
-
-  useEffect(
-    function showThumbnail() {
-      setShowThumbnailForm(
-        !isLoading && formValues.subcategoryId !== DEFAULT_FORM_VALUES.subcategoryId
-      )
-    },
-    [formValues.subcategoryId, isLoading, setShowThumbnailForm]
   )
 
   useEffect(
@@ -947,7 +937,6 @@ OfferForm.propTypes = {
   setFormValues: PropTypes.func.isRequired,
   setPreviewOfferCategory: PropTypes.func.isRequired,
   setSelectedOfferer: PropTypes.func,
-  setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submitErrors: PropTypes.shape().isRequired,
   userEmail: PropTypes.string.isRequired,
