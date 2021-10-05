@@ -12,6 +12,8 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.offers import validation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users.api import BeneficiaryValidationStep
 from pcapi.core.users.api import get_domains_credit
@@ -114,26 +116,49 @@ class DomainsCredit(BaseModel):
         orm_mode = True
 
 
-class CallToActionIcon(Enum):
-    info = "info"
-    warning = "warning"
-
-
-class PopOverIcon(Enum):
-    email = "Email"
-
-
 class CallToActionMessage(BaseModel):
     callToActionTitle: str
     callToActionLink: str
-    callToActionIcon: CallToActionIcon
+    callToActionIcon: subscription_models.CallToActionIcon
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        use_enum_values = True
 
 
 class SubscriptionMessage(BaseModel):
     userMessage: str
     callToAction: CallToActionMessage
-    popOverIcon: PopOverIcon
+    popOverIcon: subscription_models.PopOverIcon
     updatedAt: datetime.datetime
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        json_encoders = {datetime.datetime: format_into_utc_date}
+        use_enum_values = True
+
+    @classmethod
+    def from_model(
+        cls, model_instance: Optional[subscription_models.SubscriptionMessage]
+    ) -> Optional["SubscriptionMessage"]:
+        if not model_instance:
+            return None
+        cta_message = None
+        if any((model_instance.callToActionTitle, model_instance.callToActionLink, model_instance.callToActionIcon)):
+            cta_message = CallToActionMessage(
+                callToActionTitle=model_instance.callToActionTitle,
+                callToActionLink=model_instance.callToActionLink,
+                callToActionIcon=model_instance.callToActionIcon,
+            )
+        subscription_message = SubscriptionMessage(
+            userMessage=model_instance.userMessage,
+            callToAction=cta_message,
+            popOverIcon=model_instance.popOverIcon,
+            updatedAt=model_instance.dateCreated,
+        )
+        return subscription_message
 
 
 class UserProfileResponse(BaseModel):
@@ -201,6 +226,9 @@ class UserProfileResponse(BaseModel):
         user.next_beneficiary_validation_step = get_next_beneficiary_validation_step(user)
         result = super().from_orm(user)
         result.needsToFillCulturalSurvey = False
+        result.subscriptionMessage = SubscriptionMessage.from_model(
+            subscription_api.get_latest_subscription_message(user)
+        )
         return result
 
 

@@ -18,6 +18,7 @@ from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.subscription.factories as subscription_factories
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
@@ -106,6 +107,8 @@ class AccountTest:
             departementCode="93",
             **USER_DATA,
         )
+        subscription_factories.SubscriptionMessageFactory(user=user)
+        subscription_message = subscription_factories.SubscriptionMessageFactory(user=user, dateCreated=datetime.now())
         booking = BookingFactory(user=user, amount=Decimal("123.45"))
         CancelledBookingFactory(user=user, amount=Decimal("123.45"))
 
@@ -137,7 +140,16 @@ class AccountTest:
             "pseudo": "jdo",
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
-            "subscriptionMessage": None,
+            "subscriptionMessage": {
+                "userMessage": subscription_message.userMessage,
+                "popOverIcon": subscription_message.popOverIcon.value,
+                "updatedAt": "2018-06-01T00:00:00Z",
+                "callToAction": {
+                    "callToActionTitle": subscription_message.callToActionTitle,
+                    "callToActionLink": subscription_message.callToActionLink,
+                    "callToActionIcon": subscription_message.callToActionIcon.value,
+                },
+            },
         }
         EXPECTED_DATA.update(USER_DATA)
 
