@@ -1,4 +1,5 @@
 import enum
+import logging
 import os
 import pathlib
 from typing import Any
@@ -10,6 +11,7 @@ from pcapi import settings
 from pcapi.utils import requests
 
 
+logger = logging.getLogger(__name__)
 GRAPHQL_DIRECTORY = pathlib.Path(os.path.dirname(__file__)) / "beneficiaries" / "dms" / "graphql"
 
 
@@ -86,6 +88,12 @@ class DMSGraphQLClient:
         if page_token:
             variables["after"] = page_token
         results = self.execute_query(query, variables=variables)
+        logger.info(
+            "Found %s applications for procedure %d (page token :%s)",
+            len(results["demarche"]["dossiers"]["nodes"]),
+            procedure_id,
+            page_token,
+        )
         for application in results["demarche"]["dossiers"]["nodes"]:
             yield application
 
