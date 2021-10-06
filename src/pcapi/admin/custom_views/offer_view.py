@@ -107,7 +107,7 @@ class OfferChangeForm(Form):
 
 
 class OfferView(BaseAdminView):
-    list_template = "admin/edit_many_offers_components/custom_list_with_modal.html"
+    list_template = "admin/bulk_edit_components/custom_list_with_modal.html"
     can_create = False
     can_edit = True
     can_delete = False
@@ -185,7 +185,8 @@ class OfferView(BaseAdminView):
         self._template_args["url"] = url
         self._template_args["change_form"] = change_form
         self._template_args["change_modal"] = True
-        self._template_args["number_of_edited_items"] = len(ids)
+        self._template_args["update_view"] = "offer.update_view"
+        self._template_args["number_of_edited_items"] = f"Éditer des Offres - {len(ids)} offre(s) sélectionnée(s)"
         return self.index_view()
 
     @expose("/update/", methods=["POST"])
