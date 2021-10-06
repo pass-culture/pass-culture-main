@@ -10,6 +10,7 @@ from flask_login import login_user
 from jwt import InvalidTokenError
 
 from pcapi import settings
+from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
@@ -136,11 +137,14 @@ def verify_id_check_licence_token(
         raise ApiErrors(errors={"token": "Le token renseigné n'est pas valide"})
 
     # Let's try with the legacy webapp tokens
-    check_webapp_recaptcha_token(
-        body.token,
-        "submit",
-        settings.RECAPTCHA_LICENCE_MINIMAL_SCORE,
-    )
+    try:
+        check_webapp_recaptcha_token(
+            body.token,
+            "submit",
+            settings.RECAPTCHA_LICENCE_MINIMAL_SCORE,
+        )
+    except ReCaptchaException:
+        raise ApiErrors({"token": "The given token is invalid"})
 
     return serialization_beneficiaries.VerifyIdCheckLicenceResponse()
 
