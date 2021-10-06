@@ -419,7 +419,7 @@ describe('offerDetails - Creation - pro user', () => {
           expect(within(offerPreview).getByText('Mes jolies modalités')).toBeInTheDocument()
         })
 
-        it("should display disabled 'isDuo' icone for offers that aren't event", async () => {
+        it("should display disabled 'isDuo' icon for offers that aren't event", async () => {
           await renderOffers(props, store)
           await setOfferValues({ categoryId: 'LIVRE' })
           await setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
@@ -592,10 +592,11 @@ describe('offerDetails - Creation - pro user', () => {
           screen.getByRole('heading', { name: 'Informations pratiques', level: 3 })
         ).toBeInTheDocument()
         expect(screen.getByRole('heading', { name: 'Accessibilité', level: 3 })).toBeInTheDocument()
+        expect(screen.getByRole('heading', { name: 'Autres caractéristiques', level: 3 })).toBeInTheDocument()
         expect(
           screen.getByRole('heading', { name: 'Lien de réservation externe', level: 3 })
         ).toBeInTheDocument()
-        expect(screen.getByRole('heading', { name: 'Autre', level: 3 })).toBeInTheDocument()
+        expect(screen.getByRole('heading', { name: 'Notifications', level: 3 })).toBeInTheDocument()
       })
 
       it('should display email notification input when asking to receive booking emails', async () => {
@@ -1432,7 +1433,7 @@ describe('offerDetails - Creation - pro user', () => {
         expect(accessibilityCheckboxes.visualDisabilityCompliant).toBeChecked()
         expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
 
-        // change to venue without accessibility set should change all values to false 
+        // change to venue without accessibility set should change all values to false
         await setOfferValues({ subcategoryId: 'LIVRE_PAPIER', venueId: venues[0].id })
         expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
         expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
@@ -1809,7 +1810,7 @@ describe('offerDetails - Creation - pro user', () => {
       fireEvent.click(screen.getByText('Étape suivante'))
 
       // Then
-      waitFor(() => expect(screen.getByText('Ajouter une image')).toBeInTheDocument())
+      await screen.findByText('Ajouter une image')
       const errorNotification = await screen.findByText(
         'Une ou plusieurs erreurs sont présentes dans le formulaire'
       )

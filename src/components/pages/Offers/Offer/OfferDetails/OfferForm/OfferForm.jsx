@@ -781,6 +781,19 @@ const OfferForm = ({
                   />
                 </div>
               )}
+
+              {offerFormFields.includes('isNational') && (
+                <div className="form-row">
+                  <CheckboxInput
+                    checked={formValues.isNational || false}
+                    disabled={readOnlyFields.includes('isNational') ? 'disabled' : ''}
+                    isLabelDisable={isDisabled}
+                    label="Rayonnement national"
+                    name="isNational"
+                    onChange={handleSingleFormUpdate}
+                  />
+                </div>
+              )}
             </section>
 
             <section className="form-section accessibility-section">
@@ -797,6 +810,28 @@ const OfferForm = ({
                 onChange={handleDisabilityCompliantUpdate}
                 readOnly={isDisabilityFieldsReadOnly}
               />
+            </section>
+
+            <section className="form-section">
+              <h3 className="section-title">
+                Autres caractéristiques
+              </h3>
+
+              {offerFormFields.includes('isDuo') && (
+                <div className="form-row">
+                  <CheckboxInput
+                    checked={formValues.isDuo || false}
+                    disabled={readOnlyFields.includes('isDuo') ? 'disabled' : ''}
+                    isLabelDisable={isDisabled}
+                    label={'Accepter les réservations "duo"'}
+                    name="isDuo"
+                    onChange={handleSingleFormUpdate}
+                    subLabel={
+                      "En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur."
+                    }
+                  />
+                </div>
+              )}
             </section>
 
             <section className="form-section">
@@ -821,36 +856,9 @@ const OfferForm = ({
 
             <section className="form-section">
               <h3 className="section-title">
-                Autre
+                Notifications
               </h3>
 
-              {offerFormFields.includes('isNational') && (
-                <div className="form-row">
-                  <CheckboxInput
-                    checked={formValues.isNational || false}
-                    disabled={readOnlyFields.includes('isNational') ? 'disabled' : ''}
-                    isLabelDisable={isDisabled}
-                    label="Rayonnement national"
-                    name="isNational"
-                    onChange={handleSingleFormUpdate}
-                  />
-                </div>
-              )}
-              {offerFormFields.includes('isDuo') && (
-                <div className="form-row">
-                  <CheckboxInput
-                    checked={formValues.isDuo || false}
-                    disabled={readOnlyFields.includes('isDuo') ? 'disabled' : ''}
-                    isLabelDisable={isDisabled}
-                    label={'Accepter les réservations "duo"'}
-                    name="isDuo"
-                    onChange={handleSingleFormUpdate}
-                    subLabel={
-                      "En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur."
-                    }
-                  />
-                </div>
-              )}
               <div className="form-row">
                 <CheckboxInput
                   checked={receiveNotificationEmails}
