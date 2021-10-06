@@ -895,9 +895,11 @@ def _get_identity_document_informations(image_storage_path: str) -> Tuple[str, b
     if not image_blob:
         # This means the image cannot be downloaded.
         # It either has been treated or there is a network problem
+        logger.warning("No image_blob to download at storage path: %s", image_storage_path)
         raise exceptions.IdentityDocumentVerificationException()
     email = image_blob.metadata.get("email", "").strip()
     if email == "":
+        logger.error("No email in image metadata at storage path: %s", image_storage_path)
         raise exceptions.MissingEmailInMetadataException()
     image = image_blob.download_as_bytes()
 
