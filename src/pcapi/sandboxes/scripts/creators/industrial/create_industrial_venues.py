@@ -76,6 +76,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
                 name=venue_name,
                 siret=siret,
                 venueTypeId=venue_types[0].id,
+                isPermanent=True,
             )
             VenueProviderFactory(venue=venue)
 
