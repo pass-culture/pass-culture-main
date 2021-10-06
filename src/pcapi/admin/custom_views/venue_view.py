@@ -1,12 +1,18 @@
 from typing import Union
 
 from flask import flash
+from flask import redirect
 from flask import request
 from flask import url_for
+from flask_admin.actions import action
+from flask_admin.base import expose
+from flask_admin.helpers import get_redirect_target
 from markupsafe import Markup
 from markupsafe import escape
 from sqlalchemy.orm import query
 from wtforms import Form
+from wtforms.fields.core import BooleanField
+from wtforms.fields.simple import HiddenField
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core import search
@@ -14,6 +20,7 @@ from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsExceptio
 from pcapi.core.offerers.api import VENUE_ALGOLIA_INDEXED_FIELDS
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
+from pcapi.models import db
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 
 
@@ -29,7 +36,15 @@ def _get_venue_provider_link(view, context, model, name) -> Union[Markup, None]:
     return Markup('<a href="{url}">{text}</a>').format(url=url, text=model.venueProviders[0].provider.name)
 
 
+class VenueChangeForm(Form):
+    ids = HiddenField()
+    is_permanent = BooleanField(
+        label="Lieu permanent",
+    )
+
+
 class VenueView(BaseAdminView):
+    list_template = "admin/bulk_edit_components/custom_list_with_modal.html"
     can_edit = True
     can_delete = True
     column_list = [
@@ -125,3 +140,43 @@ class VenueView(BaseAdminView):
             search.async_index_offers_of_venue_ids([venue.id])
 
         return True
+
+    @action("bulk_edit", "Édition multiple")
+    def action_bulk_edit(self, ids):
+        url = get_redirect_target() or self.get_url(".index_view")
+        return redirect(url, code=307)
+
+    @expose("/", methods=["POST"])
+    def index(self):
+        url = get_redirect_target() or self.get_url(".index_view")
+        ids = request.form.getlist("rowid")
+        joined_ids = ",".join(ids)
+        change_form = VenueChangeForm()
+        change_form.ids.data = joined_ids
+        change_form.is_permanent.data = True
+
+        self._template_args["url"] = url
+        self._template_args["change_form"] = change_form
+        self._template_args["change_modal"] = True
+        self._template_args["update_view"] = "venue.update_view"
+        self._template_args["modal_title"] = f"Éditer des Lieux - {len(ids)} lieu(x) sélectionné(s)"
+
+        return self.index_view()
+
+    @expose("/update/", methods=["POST"])
+    def update_view(self):
+        url = get_redirect_target() or self.get_url(".index_view")
+        change_form = VenueChangeForm(request.form)
+        if change_form.validate():
+            venue_ids: list[str] = change_form.ids.data.split(",")
+            is_permanent: bool = change_form.is_permanent.data
+
+            Venue.query.filter(Venue.id.in_(venue_ids)).update(
+                values={"isPermanent": is_permanent}, synchronize_session=False
+            )
+            db.session.commit()
+            return redirect(url)
+
+        # Form didn't validate
+        flash("Le formulaire est invalide: %s" % (change_form.errors), "error")
+        return redirect(url, code=307)
