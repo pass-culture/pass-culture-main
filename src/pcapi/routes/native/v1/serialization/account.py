@@ -17,6 +17,7 @@ from pcapi.core.users.api import BeneficiaryValidationStep
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import get_next_beneficiary_validation_step
 from pcapi.core.users.models import EligibilityCheckMethods
+from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
@@ -180,7 +181,7 @@ class UserProfileResponse(BaseModel):
         return (
             relativedelta(user.dateCreated, user.dateOfBirth).years < users_constants.ELIGIBILITY_AGE_18
             and user.isBeneficiary is False
-            and user.is_eligible
+            and user.eligibility == EligibilityType.AGE18
         )
 
     @staticmethod

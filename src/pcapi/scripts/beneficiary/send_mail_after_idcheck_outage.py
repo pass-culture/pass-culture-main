@@ -7,6 +7,7 @@ from sqlalchemy import not_
 from sqlalchemy.orm import Query
 
 from pcapi.core.users import constants
+from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.validator import ELIGIBLE_DEPARTMENTS
 from pcapi.domain.beneficiary_pre_subscription.validator import EXCLUDED_DEPARTMENTS
@@ -63,7 +64,7 @@ def send_mail_to_potential_beneficiaries(
     user = None
     try:
         for i, user in enumerate(_get_eligible_users_created_between(start_date, end_date, max_number)):
-            if user.is_eligible:
+            if user.eligibility == EligibilityType.AGE18:
                 if not send_newly_eligible_user_email(user):
                     print(f"Could not send mail to user {user.id}")
             if i % 100:

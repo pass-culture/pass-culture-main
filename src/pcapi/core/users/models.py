@@ -320,21 +320,16 @@ class User(PcObject, Model, NeedsValidationMixin):
     def needsToSeeTutorials(self):
         return self.isBeneficiary and not self.hasSeenTutorials
 
-    # TODO(ahello) use eligibility instead of this property
     @property
     def is_eligible(self) -> bool:
-        # To avoid import loops
-        from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
-
-        return (
-            self.age is not None
-            and self.age == constants.ELIGIBILITY_AGE_18
-            and _is_postal_code_eligible(self.departementCode)
-        )
+        return self.eligibility is not None
 
     @property
     def eligibility(self) -> Optional[EligibilityType]:
-        if self.is_eligible:
+        # To avoid import loops
+        from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
+
+        if self.age == constants.ELIGIBILITY_AGE_18 and _is_postal_code_eligible(self.departementCode):
             return EligibilityType.AGE18
 
         if self.age in constants.ELIGIBILITY_UNDERAGE_RANGE and FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
