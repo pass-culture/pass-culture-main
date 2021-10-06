@@ -109,6 +109,7 @@ def test_format_sendinblue_user():
         "DEPARTMENT_CODE": "75",
         "DEPOSIT_ACTIVATION_DATE": user.deposit_activation_date,
         "DEPOSIT_EXPIRATION_DATE": user.deposit_expiration_date,
+        "ELIGIBILITY": user.eligibility,
         "FIRSTNAME": "Jeanne",
         "HAS_COMPLETED_ID_CHECK": None,
         "INITIAL_CREDIT": Decimal("500"),

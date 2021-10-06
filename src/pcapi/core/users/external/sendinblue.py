@@ -36,6 +36,7 @@ class SendinblueAttributes(Enum):
     DEPARTMENT_CODE = "DEPARTMENT_CODE"
     DEPOSIT_ACTIVATION_DATE = "DEPOSIT_ACTIVATION_DATE"
     DEPOSIT_EXPIRATION_DATE = "DEPOSIT_EXPIRATION_DATE"
+    ELIGIBILITY = "ELIGIBILITY"
     FIRSTNAME = "FIRSTNAME"
     HAS_COMPLETED_ID_CHECK = "HAS_COMPLETED_ID_CHECK"
     INITIAL_CREDIT = "INITIAL_CREDIT"
@@ -93,6 +94,7 @@ def format_user_attributes(user_attributes: UserAttributes) -> dict:
         SendinblueAttributes.DEPARTMENT_CODE.value: user_attributes.departement_code,
         SendinblueAttributes.DEPOSIT_ACTIVATION_DATE.value: user_attributes.deposit_activation_date,
         SendinblueAttributes.DEPOSIT_EXPIRATION_DATE.value: user_attributes.deposit_expiration_date,
+        SendinblueAttributes.ELIGIBILITY.value: user_attributes.eligibility,
         SendinblueAttributes.FIRSTNAME.value: user_attributes.first_name,
         SendinblueAttributes.HAS_COMPLETED_ID_CHECK.value: user_attributes.has_completed_id_check,
         SendinblueAttributes.INITIAL_CREDIT.value: user_attributes.domains_credit.all.initial

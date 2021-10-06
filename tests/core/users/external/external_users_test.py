@@ -94,6 +94,7 @@ def test_get_user_attributes():
         date_of_birth=datetime(2000, 1, 1, 0, 0),
         departement_code="75",
         deposit_expiration_date=user.deposit_expiration_date,
+        eligibility=None,
         first_name="Jeanne",
         is_beneficiary=True,
         is_pro=False,

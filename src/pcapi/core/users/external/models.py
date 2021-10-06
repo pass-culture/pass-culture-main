@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 from pcapi.core.users.models import DomainsCredit
+from pcapi.core.users.models import EligibilityType
 
 
 @dataclass
@@ -16,6 +17,7 @@ class UserAttributes:
     deposit_activation_date: Optional[datetime]
     deposit_expiration_date: Optional[datetime]
     domains_credit: Optional[DomainsCredit]
+    eligibility: Optional[EligibilityType]
     first_name: Optional[str]
     has_completed_id_check: bool
     user_id: int

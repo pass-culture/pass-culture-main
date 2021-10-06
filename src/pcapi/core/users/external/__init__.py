@@ -53,6 +53,7 @@ def get_user_attributes(user: User) -> UserAttributes:
         deposit_activation_date=user.deposit_activation_date,
         deposit_expiration_date=user.deposit_expiration_date,
         domains_credit=domains_credit,
+        eligibility=user.eligibility,
         first_name=user.firstName,
         has_completed_id_check=user.hasCompletedIdCheck,
         user_id=user.id,

@@ -20,6 +20,7 @@ common_user_attributes = UserAttributes(
         digital=Credit(initial=Decimal("200"), remaining=Decimal("200")),
         physical=Credit(initial=200, remaining=Decimal("180.00")),
     ),
+    eligibility="age-18",
     first_name="First name",
     has_completed_id_check=True,
     is_beneficiary=True,
