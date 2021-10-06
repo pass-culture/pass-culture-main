@@ -45,21 +45,23 @@ class VenueView(BaseAdminView):
         "longitude",
         "isPermanent",
         "provider_name",
+        "managingOfferer.name",
     ]
-    column_labels = dict(
-        name="Nom",
-        siret="SIRET",
-        city="Ville",
-        postalCode="Code postal",
-        address="Adresse",
-        publicName="Nom d'usage",
-        latitude="Latitude",
-        longitude="Longitude",
-        isPermanent="Lieu permanent",
-        provider_name="Provider",
-    )
+    column_labels = {
+        "name": "Nom",
+        "siret": "SIRET",
+        "city": "Ville",
+        "postalCode": "Code postal",
+        "address": "Adresse",
+        "publicName": "Nom d'usage",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "isPermanent": "Lieu permanent",
+        "provider_name": "Provider",
+        "managingOfferer.name": "Structure",
+    }
     column_searchable_list = ["name", "siret", "publicName"]
-    column_filters = ["postalCode", "city", "publicName", "id"]
+    column_filters = ["postalCode", "city", "publicName", "id", "managingOfferer.name"]
     form_columns = [
         "name",
         "siret",
