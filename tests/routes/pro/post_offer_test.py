@@ -98,6 +98,36 @@ class Returns200Test:
         assert offer.audioDisabilityCompliant == True
         assert offer.mentalDisabilityCompliant == False
 
+    def test_create_valid_educational_offer(self, app):
+        # Given
+        venue = offers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "venueId": humanize(venue.id),
+            "bookingEmail": "offer@example.com",
+            "durationMinutes": 60,
+            "name": "La pièce de théâtre",
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "extraData": {"toto": "text"},
+            "externalTicketOfficeUrl": "http://example.net",
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "isEducational": True,
+        }
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post("/offers", json=data)
+
+        # Then
+        assert response.status_code == 201
+        offer_id = dehumanize(response.json["id"])
+        offer = Offer.query.get(offer_id)
+        assert offer.isEducational
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
@@ -162,6 +192,68 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
         assert response.json["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
+
+    def test_fail_if_inactive_subcategory(self, app):
+        # Given
+        venue = offers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "venueId": humanize(venue.id),
+            "name": "A cool offer name",
+            "subcategoryId": "OEUVRE_ART",
+        }
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post("/offers", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["subcategory"] == [
+            "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
+        ]
+
+    def test_fail_when_educational_and_non_eligible_subcategory(self, app):
+        # Given
+        venue = offers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "venueId": humanize(venue.id),
+            "name": "An cool educational name",
+            "subcategoryId": "SUPPORT_PHYSIQUE_FILM",
+            "isEducational": True,
+        }
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post("/offers", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["offer"] == ["Cette catégorie d'offre n'est pas éligible aux offres éducationnelles"]
+
+    def test_fail_when_educational_and_duo(self, app):
+        # Given
+        venue = offers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "venueId": humanize(venue.id),
+            "name": "An unacceptable name",
+            "subcategoryId": "SEANCE_CINE",
+            "isEducational": True,
+            "isDuo": True,
+        }
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post("/offers", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["offer"] == ["Une offre ne peut être à la fois 'duo' et 'éducationnelle'."]
 
     def test_fail_when_offer_type_does_not_allow_virtual_offer_and_venue_is_virtuel(self, app):
         # Given

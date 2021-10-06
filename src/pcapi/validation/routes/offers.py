@@ -1,4 +1,3 @@
-from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_type import ProductType
 
@@ -8,17 +7,6 @@ def check_offer_type_is_valid(offer_type_name):
         api_error = ApiErrors()
         api_error.add_error("type", "Le type de cette offre est inconnu")
         api_error.add_error("subcategory", "La sous-catégorie de cette offre est inconnue")
-        raise api_error
-
-
-def check_offer_subcategory_is_valid(offer_subcategory_id):
-    if offer_subcategory_id not in ALL_SUBCATEGORIES_DICT:
-        api_error = ApiErrors()
-        api_error.add_error("subcategory", "La sous-catégorie de cette offre est inconnue")
-        raise api_error
-    if not ALL_SUBCATEGORIES_DICT[offer_subcategory_id].is_selectable:
-        api_error = ApiErrors()
-        api_error.add_error("subcategory", "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie")
         raise api_error
 
 
@@ -44,11 +32,4 @@ def check_offer_isbn_is_valid(isbn: str):
     if not (isbn and isbn.isnumeric() and len(isbn) == isbn_length):
         api_errors = ApiErrors()
         api_errors.add_error("isbn", "Format d’ISBN incorrect. Exemple de format correct : 9782020427852")
-        raise api_errors
-
-
-def check_offer_not_duo_and_educational(is_duo: bool, is_educational: bool):
-    if is_duo and is_educational:
-        api_errors = ApiErrors()
-        api_errors.add_error("educational", "An offer cannot be both 'duo' and 'educational'")
         raise api_errors

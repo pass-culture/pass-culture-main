@@ -15,6 +15,8 @@ from pcapi.models.api_errors import ForbiddenError
 from pcapi.utils import requests as pcapi_requests
 
 from . import exceptions
+from ..categories import subcategories
+from ..categories.subcategories import ALL_SUBCATEGORIES_DICT
 from ..providers.models import Provider
 from .models import ActivationCode
 from .models import OfferValidationStatus
@@ -314,3 +316,22 @@ def check_validation_config_parameters(config_as_dict: dict, valid_keys: list) -
         # Note that these are case-senstive
         elif not (value in VALUE_VALIDATION_CONFIG[key] or type(value) in VALUE_VALIDATION_CONFIG[key]):
             raise ValueError(f"{value} of type {type(value)} not in: {VALUE_VALIDATION_CONFIG[key]}")
+
+
+def check_offer_is_eligible_for_educational(subcategory_id: str, is_educational: bool) -> None:
+    if is_educational:
+        subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(subcategory_id)
+        if not subcategory or not subcategory.can_be_educational:
+            raise exceptions.SubcategoryNotEligibleForEducationalOffer()
+
+
+def check_offer_not_duo_and_educational(is_duo: bool, is_educational: bool):
+    if is_duo and is_educational:
+        raise exceptions.OfferCannotBeDuoAndEducational()
+
+
+def check_offer_subcategory_is_valid(offer_subcategory_id):
+    if offer_subcategory_id not in ALL_SUBCATEGORIES_DICT:
+        raise exceptions.UnknownOfferSubCategory()
+    if not ALL_SUBCATEGORIES_DICT[offer_subcategory_id].is_selectable:
+        raise exceptions.SubCategoryIsInactive()

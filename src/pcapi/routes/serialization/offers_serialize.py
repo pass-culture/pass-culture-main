@@ -24,8 +24,6 @@ from pcapi.utils.date import DateTimes
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_isbn_is_valid
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
-from pcapi.validation.routes.offers import check_offer_not_duo_and_educational
-from pcapi.validation.routes.offers import check_offer_subcategory_is_valid
 
 
 class SubcategoryResponseModel(BaseModel):
@@ -108,17 +106,6 @@ class PostOfferBodyModel(BaseModel):
         if not values["product_id"]:
             check_offer_name_length_is_valid(name)
         return name
-
-    @validator("is_educational", pre=True)
-    def validate_educational(cls, type_field, values):  # pylint: disable=no-self-argument
-        check_offer_not_duo_and_educational(values["is_duo"], type_field)
-        return type_field
-
-    @validator("subcategory_id", pre=True)
-    def validate_subcategory_id(cls, subcategory_id_field, values):  # pylint: disable=no-self-argument
-        if not values["product_id"]:
-            check_offer_subcategory_is_valid(subcategory_id_field)
-        return subcategory_id_field
 
     @validator("extra_data", pre=True)
     def validate_isbn(cls, extra_data_field, values):  # pylint: disable=no-self-argument

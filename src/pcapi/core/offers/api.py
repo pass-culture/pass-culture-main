@@ -35,6 +35,9 @@ from pcapi.core.offers.offer_validation import compute_offer_validation_score
 from pcapi.core.offers.offer_validation import parse_offer_validation_config
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import KEY_VALIDATION_CONFIG
+from pcapi.core.offers.validation import check_offer_is_eligible_for_educational
+from pcapi.core.offers.validation import check_offer_not_duo_and_educational
+from pcapi.core.offers.validation import check_offer_subcategory_is_valid
 from pcapi.core.offers.validation import check_validation_config_parameters
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
@@ -111,59 +114,67 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(offer_data.subcategory_id)
     venue = load_or_raise_error(Venue, offer_data.venue_id)
     check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
-    if offer_data.product_id:
-        product = load_or_raise_error(Product, offer_data.product_id)
-        product_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[product.subcategoryId]
-        offer = Offer(
-            product=product,
-            type=product_subcategory.matching_type,  # FIXME: fseguin(2021-07-22): deprecated
-            subcategoryId=product.subcategoryId,
-            name=product.name,
-            description=product.description,
-            url=product.url,
-            mediaUrls=product.mediaUrls,
-            conditions=product.conditions,
-            ageMin=product.ageMin,
-            ageMax=product.ageMax,
-            durationMinutes=product.durationMinutes,
-            isNational=product.isNational,
-            extraData=product.extraData,
-        )
-    elif FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active() and can_create_from_isbn(
-        subcategory_id=subcategory.id if subcategory else None, offer_type=subcategory.matching_type
-    ):
-        product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(offer_data.extra_data["isbn"])
-        product_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[product.subcategoryId]
-        extra_data = product.extraData
-        extra_data.update(offer_data.extra_data)
-        offer = Offer(
-            product=product,
-            type=product_subcategory.matching_type,  # FIXME: fseguin(2021-07-22): deprecated
-            subcategoryId=product.subcategoryId,
-            name=offer_data.name,
-            description=offer_data.description if offer_data.description else product.description,
-            url=offer_data.url if offer_data.url else product.url,
-            mediaUrls=offer_data.url if offer_data.url else product.url,
-            conditions=offer_data.conditions if offer_data.conditions else product.conditions,
-            ageMin=offer_data.age_min if offer_data.age_min else product.ageMin,
-            ageMax=offer_data.age_max if offer_data.age_max else product.ageMax,
-            isNational=offer_data.is_national if offer_data.is_national else product.isNational,
-            extraData=extra_data,
-        )
+    _check_offer_data_is_valid(offer_data)
+    if _is_able_to_create_book_offer_from_isbn(subcategory):
+        offer = _initialize_book_offer_from_template(offer_data)
     else:
-        data = offer_data.dict(by_alias=True)
-        data["type"] = subcategory.matching_type  # FIXME: fseguin(2021-07-22): deprecated
-        product = Product()
-        if data.get("url"):
-            data["isNational"] = True
-        product.populate_from_dict(data)
-        offer = Offer()
-        offer.populate_from_dict(data)
-        offer.product = product
-        offer.subcategoryId = subcategory.id if subcategory else None
-        offer.type = subcategory.matching_type
-        offer.product.owningOfferer = venue.managingOfferer
+        offer = _initialize_offer_with_new_data(offer_data, subcategory, venue)
 
+    _complete_common_offer_fields(offer, offer_data, venue)
+
+    repository.save(offer)
+    logger.info("Offer has been created", extra={"offer": offer.id, "venue": venue.id, "product": offer.productId})
+
+    return offer
+
+
+def _is_able_to_create_book_offer_from_isbn(subcategory: subcategories.Subcategory) -> bool:
+    return FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active() and can_create_from_isbn(
+        subcategory_id=subcategory.id if subcategory else None, offer_type=subcategory.matching_type
+    )
+
+
+def _initialize_book_offer_from_template(offer_data: PostOfferBodyModel) -> Offer:
+    product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(offer_data.extra_data["isbn"])
+    product_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[product.subcategoryId]
+    extra_data = product.extraData
+    extra_data.update(offer_data.extra_data)
+    offer = Offer(
+        product=product,
+        type=product_subcategory.matching_type,  # FIXME: fseguin(2021-07-22): deprecated
+        subcategoryId=product.subcategoryId,
+        name=offer_data.name,
+        description=offer_data.description if offer_data.description else product.description,
+        url=offer_data.url if offer_data.url else product.url,
+        mediaUrls=offer_data.url if offer_data.url else product.url,
+        conditions=offer_data.conditions if offer_data.conditions else product.conditions,
+        ageMin=offer_data.age_min if offer_data.age_min else product.ageMin,
+        ageMax=offer_data.age_max if offer_data.age_max else product.ageMax,
+        isNational=offer_data.is_national if offer_data.is_national else product.isNational,
+        extraData=extra_data,
+    )
+    return offer
+
+
+def _initialize_offer_with_new_data(
+    offer_data: PostOfferBodyModel, subcategory: subcategories.Subcategory, venue: Venue
+) -> Offer:
+    data = offer_data.dict(by_alias=True)
+    data["type"] = subcategory.matching_type  # FIXME: fseguin(2021-07-22): deprecated
+    product = Product()
+    if data.get("url"):
+        data["isNational"] = True
+    product.populate_from_dict(data)
+    offer = Offer()
+    offer.populate_from_dict(data)
+    offer.product = product
+    offer.subcategoryId = subcategory.id if subcategory else None
+    offer.type = subcategory.matching_type
+    offer.product.owningOfferer = venue.managingOfferer
+    return offer
+
+
+def _complete_common_offer_fields(offer: Offer, offer_data: PostOfferBodyModel, venue: Venue) -> None:
     offer.venue = venue
     offer.bookingEmail = offer_data.booking_email
     offer.externalTicketOfficeUrl = offer_data.external_ticket_office_url
@@ -171,13 +182,14 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
     offer.mentalDisabilityCompliant = offer_data.mental_disability_compliant
     offer.motorDisabilityCompliant = offer_data.motor_disability_compliant
     offer.visualDisabilityCompliant = offer_data.visual_disability_compliant
-    offer.isEducational = offer_data.is_educational
     offer.validation = OfferValidationStatus.DRAFT
+    offer.isEducational = offer_data.is_educational
 
-    repository.save(offer)
-    logger.info("Offer has been created", extra={"offer": offer.id, "venue": venue.id, "product": offer.productId})
 
-    return offer
+def _check_offer_data_is_valid(offer_data: PostOfferBodyModel) -> None:
+    check_offer_not_duo_and_educational(offer_data.is_duo, offer_data.is_educational)
+    check_offer_is_eligible_for_educational(offer_data.subcategory_id, offer_data.is_educational)
+    check_offer_subcategory_is_valid(offer_data.subcategory_id)
 
 
 def update_offer(
@@ -747,7 +759,7 @@ def _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(isbn: str) 
     return product
 
 
-def unindex_expired_offers(process_all_expired: bool = False):
+def unindex_expired_offers(process_all_expired: bool = False) -> None:
     """Unindex offers that have expired.
 
     By default, process offers that have expired within the last 2
@@ -778,7 +790,7 @@ def unindex_expired_offers(process_all_expired: bool = False):
         page += 1
 
 
-def is_activation_code_applicable(stock: Stock):
+def is_activation_code_applicable(stock: Stock) -> bool:
     return (
         stock.canHaveActivationCodes
         and FeatureToggle.ENABLE_ACTIVATION_CODES.is_active()

@@ -44,6 +44,38 @@ class MissingImage(ImageValidationError):
         super().__init__("Nous n'avons pas réceptionné l'image, merci d'essayer à nouveau.")
 
 
+class SubcategoryNotEligibleForEducationalOffer(ClientError):
+    def __init__(self):
+        super().__init__(
+            "offer",
+            "Cette catégorie d'offre n'est pas éligible aux offres éducationnelles",
+        )
+
+
+class OfferCannotBeDuoAndEducational(ClientError):
+    def __init__(self):
+        super().__init__(
+            "offer",
+            "Une offre ne peut être à la fois 'duo' et 'éducationnelle'.",
+        )
+
+
+class UnknownOfferSubCategory(ClientError):
+    def __init__(self):
+        super().__init__(
+            "subcategory",
+            "La sous-catégorie de cette offre est inconnue",
+        )
+
+
+class SubCategoryIsInactive(ClientError):
+    def __init__(self):
+        super().__init__(
+            "subcategory",
+            "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie",
+        )
+
+
 class ThumbnailStorageError(ApiErrors):
     status_code = 500
 

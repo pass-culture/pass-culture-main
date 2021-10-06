@@ -12,6 +12,7 @@ import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_image
 from pcapi.core.offers.validation import get_distant_image
+from pcapi.models import ApiErrors
 from pcapi.models import Offer
 from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.routes.apis import private_api
@@ -60,7 +61,49 @@ def get_offer(offer_id: str) -> offers_serialize.GetOfferResponseModel:
 @login_required
 @spectree_serialize(response_model=offers_serialize.OfferResponseIdModel, on_success_status=201)  # type: ignore
 def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
-    offer = offers_api.create_offer(offer_data=body, user=current_user)
+    try:
+        offer = offers_api.create_offer(offer_data=body, user=current_user)
+
+    except exceptions.OfferCannotBeDuoAndEducational as error:
+        logger.info(
+            "Could not create offer: offer cannot be both 'duo' and 'educational'",
+            extra={"offer_name": body.name, "venue_id": body.venue_id},
+        )
+        raise ApiErrors(
+            error.errors,
+            status_code=400,
+        )
+
+    except exceptions.UnknownOfferSubCategory as error:
+        logger.info(
+            "Could not create offer: selected subcategory is unknown.",
+            extra={"offer_name": body.name, "venue_id": body.venue_id},
+        )
+        raise ApiErrors(
+            error.errors,
+            status_code=400,
+        )
+
+    except exceptions.SubCategoryIsInactive as error:
+        logger.info(
+            "Could not create offer: subcategory cannot be selected.",
+            extra={"offer_name": body.name, "venue_id": body.venue_id},
+        )
+        raise ApiErrors(
+            error.errors,
+            status_code=400,
+        )
+
+    except exceptions.SubcategoryNotEligibleForEducationalOffer as error:
+        logger.info(
+            "Could not create offer: subcategory is not eligible for educational offer.",
+            extra={"offer_name": body.name, "venue_id": body.venue_id},
+        )
+        raise ApiErrors(
+            error.errors,
+            status_code=400,
+        )
+
     return offers_serialize.OfferResponseIdModel.from_orm(offer)
 
 

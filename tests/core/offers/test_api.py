@@ -961,8 +961,9 @@ class CreateOfferTest:
 
     def test_cannot_create_activation_offer(self):
         venue = factories.VenueFactory()
-        with pytest.raises(api_errors.ApiErrors) as error:
-            offers_serialize.PostOfferBodyModel(
+        user_offerer = factories.UserOffererFactory(offerer=venue.managingOfferer)
+        with pytest.raises(exceptions.SubCategoryIsInactive) as error:
+            data = offers_serialize.PostOfferBodyModel(
                 venueId=humanize(venue.id),
                 name="An offer he can't refuse",
                 subcategoryId=subcategories.ACTIVATION_EVENT.id,
@@ -971,9 +972,28 @@ class CreateOfferTest:
                 motorDisabilityCompliant=True,
                 visualDisabilityCompliant=True,
             )
+            api.create_offer(data, user_offerer.user)
+
         assert error.value.errors["subcategory"] == [
             "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
         ]
+
+    def test_cannot_create_offer_when_invalid_subcategory(self):
+        venue = factories.VenueFactory()
+        user_offerer = factories.UserOffererFactory(offerer=venue.managingOfferer)
+        with pytest.raises(exceptions.UnknownOfferSubCategory) as error:
+            data = offers_serialize.PostOfferBodyModel(
+                venueId=humanize(venue.id),
+                name="An offer he can't refuse",
+                subcategoryId="TOTO",
+                audioDisabilityCompliant=True,
+                mentalDisabilityCompliant=True,
+                motorDisabilityCompliant=True,
+                visualDisabilityCompliant=True,
+            )
+            api.create_offer(data, user_offerer.user)
+
+        assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
     def test_create_educational_offer(self):
         venue = factories.VenueFactory()
@@ -994,6 +1014,60 @@ class CreateOfferTest:
         offer = api.create_offer(data, user)
 
         assert offer.isEducational
+
+    def test_cannot_create_educational_offer_when_is_duo(self):
+
+        # Given
+        venue = factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user_offerer = factories.UserOffererFactory(offerer=offerer)
+        user = user_offerer.user
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            name="A pretty good offer",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            externalTicketOfficeUrl="http://example.net",
+            isEducational=True,
+            isDuo=True,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+        )
+
+        # When
+        with pytest.raises(exceptions.OfferCannotBeDuoAndEducational) as error:
+            api.create_offer(data, user)
+
+        # Then
+        assert error.value.errors["offer"] == ["Une offre ne peut être à la fois 'duo' et 'éducationnelle'."]
+
+    def test_cannot_create_educational_offer_when_not_eligible_subcategory(self):
+
+        # Given
+        unauthorized_subcategory_id = "BON_ACHAT_INSTRUMENT"
+        venue = factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user_offerer = factories.UserOffererFactory(offerer=offerer)
+        user = user_offerer.user
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            name="A pretty good offer",
+            subcategoryId=unauthorized_subcategory_id,
+            externalTicketOfficeUrl="http://example.net",
+            isEducational=True,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+        )
+
+        # When
+        with pytest.raises(exceptions.SubcategoryNotEligibleForEducationalOffer) as error:
+            api.create_offer(data, user)
+
+        # Then
+        assert error.value.errors["offer"] == ["Cette catégorie d'offre n'est pas éligible aux offres éducationnelles"]
 
     def test_fail_if_unknown_venue(self):
         user = users_factories.ProFactory()
