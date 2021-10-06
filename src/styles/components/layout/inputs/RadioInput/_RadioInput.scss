@@ -6,11 +6,12 @@ input[type="radio"] {
   appearance: none;
   border: 2px solid $grey-dark;
   border-radius: 50%;
+  flex: 0 0 auto;
   font-size: inherit;
-  height: 1.1875em;
+  height: rem(19px);
   margin-right: rem(8px);
   outline: none;
-  width: 1.1875em;
+  width: rem(19px);
 
   &:checked {
     background: radial-gradient($grey-dark 0%, $grey-dark 40%, transparent 50%, transparent);
@@ -46,5 +47,30 @@ input[type="radio"] {
       border-color: $grey-medium;
       opacity: 1;
     }
+  }
+}
+
+.field-radio {
+  align-items: center;
+  display: flex;
+
+  .field-radio-label {
+    display: flex;
+    flex-direction: column;
+
+    .field-radio-sub-label {
+      @include caption();
+
+      color: $grey-dark;
+      margin-top: rem(8px);
+
+      &.disabled {
+        color: $grey-medium;
+      }
+    }
+  }
+
+  .field-radio-input {
+    align-self: flex-start;
   }
 }
