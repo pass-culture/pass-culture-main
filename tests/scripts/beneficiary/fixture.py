@@ -1,4 +1,6 @@
 import copy
+import random
+import string
 from typing import Optional
 
 
@@ -271,7 +273,7 @@ def make_graphql_application(
     has_next_page: bool = False,
 ) -> dict:
     data = {
-        "id": "RG9zc2llci0xNzEwMDc0",
+        "id": "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20)),
         "number": application_id,
         "archived": False,
         "state": state,
