@@ -91,11 +91,11 @@ class EducationalRedactor(Model):
 
     email: str = Column(String(120), nullable=False, unique=True, index=True)
 
-    firstName: str = Column(String(128), nullable=False)
+    firstName: str = Column(String(128), nullable=True)
 
-    lastName: str = Column(String(128), nullable=False)
+    lastName: str = Column(String(128), nullable=True)
 
-    civility: str = Column(String(20), nullable=False)
+    civility: str = Column(String(20), nullable=True)
 
     educationalBookings = relationship(
         "EducationalBooking",

@@ -32,9 +32,9 @@ class AuthenticatedResponse(BaseModel):
 
 
 class RedactorInformation(BaseModel):
-    civility: str
-    lastname: str
-    firstname: str
+    civility: Optional[str]
+    lastname: Optional[str]
+    firstname: Optional[str]
     email: str
     uai: str
 
