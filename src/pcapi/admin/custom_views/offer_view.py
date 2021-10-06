@@ -153,7 +153,7 @@ class OfferView(BaseAdminView):
         ExtraDataFilterEqual(column=Offer.extraData["visa"], name="Visa d'exploitation"),
         ExtraDataFilterEqual(column=Offer.extraData["theater"]["allocine_movie_id"], name="Identifiant Allociné"),
     ]
-    form_columns = ["criteria", "rankingWeight", "isEducational"]
+    form_columns = ["criteria", "rankingWeight"]
     simple_list_pager = True
 
     @action("bulk_edit", "Édition multiple")
