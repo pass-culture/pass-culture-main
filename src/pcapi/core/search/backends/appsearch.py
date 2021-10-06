@@ -589,7 +589,7 @@ class AppSearchApiClient:
         while True:
             page_data = {"page": {"page": page, "size": DOCUMENTS_PER_REQUEST_LIMIT}}
             response = requests.get(list_url, headers=self.headers, json=page_data)
-            document_ids = [document["id"].split("|")[-1] for document in response.json()["results"]]
+            document_ids = [int(document["id"].split("|")[-1]) for document in response.json()["results"]]
             if not document_ids:
                 break
             self.delete_documents(document_ids)
