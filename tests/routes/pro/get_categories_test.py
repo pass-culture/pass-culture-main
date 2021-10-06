@@ -35,6 +35,7 @@ class Returns200Test:
                 "conditionalFields",
                 "canExpire",
                 "canBeDuo",
+                "canBeEducational",
                 "onlineOfflinePlatform",
                 "isDigitalDeposit",
                 "isPhysicalDeposit",
