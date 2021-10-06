@@ -838,38 +838,6 @@ class CreateOfferTest:
         assert not offer.bookingEmail
         assert Offer.query.count() == 1
 
-    def test_create_offer_from_existing_product(self):
-        product = factories.ProductFactory(
-            name="An excellent offer",
-            subcategoryId=subcategories.SEANCE_CINE.id,
-        )
-        venue = factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user_offerer = factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
-
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(venue.id),
-            productId=humanize(product.id),
-            externalTicketOfficeUrl="http://example.net",
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-        )
-        offer = api.create_offer(data, user)
-        assert offer.name == "An excellent offer"
-        assert offer.subcategoryId == subcategories.SEANCE_CINE.id
-        assert offer.type == str(offer_type.EventType.CINEMA)
-        assert offer.product == product
-        assert offer.externalTicketOfficeUrl == "http://example.net"
-        assert offer.audioDisabilityCompliant
-        assert offer.mentalDisabilityCompliant
-        assert offer.motorDisabilityCompliant
-        assert offer.visualDisabilityCompliant
-        assert offer.validation == OfferValidationStatus.DRAFT
-        assert Offer.query.count() == 1
-
     @override_features(ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION=True)
     def test_create_offer_livre_edition_from_isbn_with_existing_product(self):
         factories.ProductFactory(
@@ -1099,74 +1067,6 @@ class CreateOfferTest:
             api.create_offer(data, user)
         err = "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
         assert error.value.errors["global"] == [err]
-
-
-class CreateOfferBusinessLogicChecksTest:
-    def test_success_if_physical_product_and_physical_venue(self):
-        venue = factories.VenueFactory()
-        user_offerer = factories.UserOffererFactory(offerer=venue.managingOfferer)
-        product = factories.ProductFactory()
-
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(venue.id),
-            productId=humanize(product.id),
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-        )
-        api.create_offer(data, user_offerer.user)  # should not fail
-
-    def test_success_if_digital_product_and_virtual_venue(self):
-        venue = factories.VirtualVenueFactory()
-        user_offerer = factories.UserOffererFactory(offerer=venue.managingOfferer)
-        product = factories.DigitalProductFactory()
-
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(venue.id),
-            productId=humanize(product.id),
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-        )
-        api.create_offer(data, user_offerer.user)  # should not fail
-
-    def test_fail_if_digital_product_and_physical_venue(self):
-        venue = factories.VenueFactory()
-        user_offerer = factories.UserOffererFactory(offerer=venue.managingOfferer)
-        product = factories.DigitalProductFactory()
-
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(venue.id),
-            productId=humanize(product.id),
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-        )
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.create_offer(data, user_offerer.user)
-        err = 'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"'
-        assert error.value.errors["venue"] == [err]
-
-    def test_fail_if_physical_product_and_virtual_venue(self):
-        venue = factories.VirtualVenueFactory()
-        user_offerer = factories.UserOffererFactory(offerer=venue.managingOfferer)
-        product = factories.ProductFactory()
-
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(venue.id),
-            productId=humanize(product.id),
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-        )
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.create_offer(data, user_offerer.user)
-        err = 'Une offre physique ne peut être associée au lieu "Offre numérique"'
-        assert error.value.errors["venue"] == [err]
 
 
 class UpdateOfferTest:
