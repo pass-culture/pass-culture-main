@@ -84,12 +84,17 @@ class JsonFormatterTest:
         record = self._make_record(
             "Frobulated %d blobs",
             12,
-            extra={"decimal": decimal.Decimal("12.34"), "enum": TestingEnum.Foo, "user": user},
+            extra={
+                "decimal": decimal.Decimal("12.34"),
+                "enum": TestingEnum.Foo,
+                "user": user,
+                "bytes": b"encod\xc3\xa9",
+            },
         )
         serialized = formatter.format(record)
         deserialized = json.loads(serialized)
         assert deserialized["message"] == "Frobulated 12 blobs"
-        assert deserialized["extra"] == {"decimal": 12.34, "enum": "foo", "user": 7}
+        assert deserialized["extra"] == {"decimal": 12.34, "enum": "foo", "user": 7, "bytes": "encodé"}
 
         # gracefully handle non-serializable objects
         obj = object()

@@ -100,6 +100,8 @@ class JsonLogEncoder(json.JSONEncoder):
             return obj.value
         if hasattr(obj, "id"):
             return obj.id
+        if isinstance(obj, bytes):
+            return obj.decode("utf-8")
         return super().default(obj)
 
 
