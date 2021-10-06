@@ -18,7 +18,8 @@ const venueOption = Selector('.offer-form [name="venueId"] option')
 const categoryOption = Selector('.offer-form [name="categoryId"] option')
 const durationMinutesInput = Selector('.offer-form [name="durationMinutes"]')
 const descriptionInput = Selector('.offer-form [name="description"]')
-const isDuo = Selector('.offer-form [name="isDuo"]')
+const isDuo = Selector('.offer-form [name="offerType"]').withAttribute('value', 'DUO')
+const isNotDuo = Selector('.offer-form [name="offerType"]').withAttribute('value', 'NONE')
 const noDisabilityCompliantCheckbox = '.offer-form [name="noDisabilityCompliant"]'
 const thumbnailButton = Selector('.of-placeholder')
 const importFromUrlButton = Selector('.thumbnail-dialog .bc-step:not(.active) a')
@@ -150,7 +151,7 @@ test('une offre Event est duo par défaut', async t => {
     .typeText(nameInput, 'Offre Duo')
     .expect(isDuo.checked)
     .ok()
-    .click(isDuo)
+    .click(isNotDuo)
     .expect(isDuo.checked) // Make sure we can uncheck
     .notOk()
     .click(isDuo)

@@ -1,15 +1,16 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
 
-export const RadioInput = ({ onChange, value, name, label, checked, subLabel }) => (
+export const RadioInput = ({ onChange, value, name, label, checked, disabled, subLabel }) => (
   <label className="field-radio">
     <input
       checked={checked}
       className="field-radio-input"
+      disabled={disabled}
       name={name}
       onChange={onChange}
       type="radio"
@@ -27,11 +28,13 @@ export const RadioInput = ({ onChange, value, name, label, checked, subLabel }) 
 )
 
 RadioInput.defaultProps = {
+  disabled: false,
   subLabel: null,
 }
 
 RadioInput.propTypes = {
   checked: PropTypes.bool.isRequired,
+  disabled: PropTypes.bool,
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,

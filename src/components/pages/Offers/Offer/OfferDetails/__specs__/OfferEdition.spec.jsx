@@ -1,10 +1,10 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
@@ -131,7 +131,8 @@ describe('offerDetails - Edition', () => {
           appLabel: 'Musique SubCat 1',
           conditionalFields: ['author', 'musicType', 'performer'],
           canExpire: true,
-          canBeDuo: false,
+          canBeDuo: true,
+          canBeEducational: true,
           isSelectable: true,
         },
       ],
@@ -258,7 +259,7 @@ describe('offerDetails - Edition', () => {
             })
             expect(input).toBeChecked()
           })
-  
+
           const noDisabilityCompliantCheckBox = screen.getByLabelText(
             fieldLabels.noDisabilityCompliant.label,
             {
@@ -407,9 +408,7 @@ describe('offerDetails - Edition', () => {
         userEvent.click(await screen.findByTitle('Fermer la modale', { selector: 'button' }))
 
         // Then
-        expect(
-          screen.getByTitle('Modifier l’image', { selector: 'button' })
-        ).toBeInTheDocument()
+        expect(screen.getByTitle('Modifier l’image', { selector: 'button' })).toBeInTheDocument()
         expect(
           screen.queryByTitle('Fermer la modale', { selector: 'button' })
         ).not.toBeInTheDocument()
@@ -565,6 +564,7 @@ describe('offerDetails - Edition', () => {
               })
             ).toBeDisabled()
           }
+          expect(screen.getByLabelText('Aucune')).toBeDisabled()
           expect(screen.getByText('Enregistrer')).toBeDisabled()
           expect(screen.getByTitle('Ajouter une image')).toBeDisabled()
         })
@@ -592,6 +592,7 @@ describe('offerDetails - Edition', () => {
               })
             ).toBeDisabled()
           }
+          expect(screen.getByLabelText('Aucune')).toBeDisabled()
           expect(screen.getByText('Enregistrer')).toBeDisabled()
           expect(screen.getByTitle('Ajouter une image')).toBeDisabled()
         })
@@ -848,6 +849,7 @@ describe('offerDetails - Edition', () => {
         'durationMinutes',
         'isbn',
         'isDuo',
+        'isEducational',
         'name',
         'performer',
         'stageDirector',
@@ -867,6 +869,7 @@ describe('offerDetails - Edition', () => {
         })
         expect(input).toBeEnabled()
       })
+      expect(screen.getByLabelText('Aucune')).toBeEnabled()
     })
 
     it("should display venue's publicName instead of name if exists", async () => {
@@ -1024,6 +1027,7 @@ describe('offerDetails - Edition', () => {
           'durationMinutes',
           'isbn',
           'isDuo',
+          'isEducational',
           'name',
           'performer',
           'stageDirector',
@@ -1040,6 +1044,66 @@ describe('offerDetails - Edition', () => {
           })
           expect(input).toBeDisabled()
         })
+        expect(screen.getByLabelText('Aucune')).toBeDisabled()
+      })
+
+      it('should not allow to unset duo when offer cannot be educational', async () => {
+        // Given
+        const editedOffer = {
+          id: 'ABC12',
+          subcategoryId: 'ID',
+          name: 'My edited offer',
+          description: 'Offer description',
+          venue: editedOfferVenue,
+          venueId: editedOfferVenue.id,
+          withdrawalDetails: 'Offer withdrawal details',
+          bookingEmail: 'booking@example.net',
+          lastProvider: {
+            name: 'Leslibraires.fr',
+          },
+          status: 'ACTIVE',
+        }
+        pcapi.loadOffer.mockResolvedValue(editedOffer)
+
+        const nonEducationalCategoryResponse = {
+          ...categories,
+          subcategories: [
+            {
+              ...categories.subcategories[0],
+              isEvent: true,
+              canBeEducational: false,
+            },
+          ],
+        }
+
+        pcapi.loadCategories.mockResolvedValue(nonEducationalCategoryResponse)
+
+        // When
+        await renderOffers(props, store)
+
+        // Then
+        // Edition read only fields
+        const disabledFields = [
+          'categoryId',
+          'subcategoryId',
+          'offererId',
+          'bookingEmail',
+          'receiveNotificationEmails',
+          'description',
+          'durationMinutes',
+          'isDuo',
+          'name',
+          'venueId',
+          'withdrawalDetails',
+        ]
+
+        disabledFields.forEach(label => {
+          const input = screen.getByLabelText(fieldLabels[label].label, {
+            exact: fieldLabels[label].exact,
+          })
+          expect(input).toBeDisabled()
+        })
+        expect(screen.getByLabelText('Aucune')).toBeDisabled()
       })
 
       it('should allow edition of "isDuo" for "Allociné" offers', async () => {
@@ -1085,6 +1149,11 @@ describe('offerDetails - Edition', () => {
           exact: fieldLabels.isDuo.exact,
         })
         expect(isDuoInput).toBeEnabled()
+        const isEducationalInput = screen.getByLabelText(fieldLabels.isEducational.label, {
+          exact: fieldLabels.isEducational.exact,
+        })
+        expect(isEducationalInput).toBeEnabled()
+        expect(screen.getByLabelText('Aucune')).toBeEnabled()
       })
     })
 
@@ -1629,7 +1698,7 @@ describe('offerDetails - Edition', () => {
 
   describe('accessibility fields', () => {
     let accessibilityCheckboxes
-    
+
     beforeEach(async () => {
       editedOfferVenue = {
         id: 'AB',
@@ -1695,7 +1764,7 @@ describe('offerDetails - Edition', () => {
         expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
         expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
         expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
-      })  
+      })
 
       it('noDisabilityCompliant, should be auto-checked', async () => {
         await fireEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
@@ -1729,7 +1798,7 @@ describe('offerDetails - Edition', () => {
         expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
         expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
         expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
-  
+
         // click on noDisabilityCompliant should change other accessibility to false
         await fireEvent.click(accessibilityCheckboxes.noDisabilityCompliant)
         expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()

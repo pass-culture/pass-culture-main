@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 export const TEXT_INPUT_DEFAULT_VALUE = ''
 const SELECT_DEFAULT_VALUE = ''
@@ -12,6 +12,7 @@ export const DEFAULT_FORM_VALUES = {
   durationMinutes: null,
   isbn: TEXT_INPUT_DEFAULT_VALUE,
   isDuo: true,
+  isEducational: false,
   noDisabilityCompliant: false,
   audioDisabilityCompliant: false,
   mentalDisabilityCompliant: false,
@@ -90,3 +91,9 @@ export const PLATFORM = {
 }
 
 export const NOT_REIMBURSED = 'NOT_REIMBURSED'
+
+export const OFFER_TYPES = {
+  DUO: 'DUO',
+  EDUCATIONAL: 'EDUCATIONAL',
+  NONE: 'NONE',
+}

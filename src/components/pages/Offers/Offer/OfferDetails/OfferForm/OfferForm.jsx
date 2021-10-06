@@ -1,9 +1,9 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
@@ -15,6 +15,7 @@ import useActiveFeature from 'components/hooks/useActiveFeature'
 import InternalBanner from 'components/layout/Banner/InternalBanner'
 import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
+import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
 import Select, {
   buildSelectOptions,
   buildSelectOptionsWithOptionalFields,
@@ -30,6 +31,7 @@ import {
   TEXT_INPUT_DEFAULT_VALUE,
   PLATFORM,
   NOT_REIMBURSED,
+  OFFER_TYPES,
 } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
 import OfferRefundWarning from 'components/pages/Offers/Offer/OfferDetails/OfferForm/Messages/OfferRefundWarning'
 import WithdrawalReminder from 'components/pages/Offers/Offer/OfferDetails/OfferForm/Messages/WithdrawalReminder'
@@ -54,6 +56,10 @@ const getOfferConditionalFields = ({
   if (offerSubCategory?.isEvent) {
     offerConditionalFields.push('durationMinutes')
     offerConditionalFields.push('isDuo')
+  }
+
+  if (offerSubCategory?.canBeEducational) {
+    offerConditionalFields.push('isEducational')
   }
 
   if (offerSubCategory?.conditionalFields.includes('musicType')) {
@@ -129,7 +135,6 @@ const OfferForm = ({
   )
 
   const offererOptions = buildSelectOptions('id', 'name', offerersNames)
-
 
   useEffect(() => {
     if (isIsbnRequiredInLivreEditionEnabled) {
@@ -282,7 +287,10 @@ const OfferForm = ({
       if (venue === null) return
 
       let venueValues = {}
-      if (venue.withdrawalDetails && formValues.withdrawalDetails === DEFAULT_FORM_VALUES['withdrawalDetails']) {
+      if (
+        venue.withdrawalDetails &&
+        formValues.withdrawalDetails === DEFAULT_FORM_VALUES['withdrawalDetails']
+      ) {
         venueValues.withdrawalDetails = venue?.withdrawalDetails
       }
       handleFormUpdate(venueValues)
@@ -399,7 +407,7 @@ const OfferForm = ({
   const handleChangeVenue = useCallback(
     event => {
       let updatedValues = {
-        venueId: event.target.value
+        venueId: event.target.value,
       }
       const venue = venues.find(venue => venue.id === updatedValues.venueId)
       if (venue) {
@@ -409,17 +417,35 @@ const OfferForm = ({
           motorDisabilityCompliant: venue.motorDisabilityCompliant,
           visualDisabilityCompliant: venue.visualDisabilityCompliant,
         }
-        const haveUnsetAccessibility = Object.values(venueAccessibilities).includes(null || undefined)
+        const haveUnsetAccessibility = Object.values(venueAccessibilities).includes(
+          null || undefined
+        )
         updatedValues = {
           ...updatedValues,
-          ...Object.keys(venueAccessibilities).reduce((acc, field) => ({ ...acc, [field]: !!venueAccessibilities[field] }), {}),
-          noDisabilityCompliant: haveUnsetAccessibility ? false : !Object.values(venueAccessibilities).includes(true),
+          ...Object.keys(venueAccessibilities).reduce(
+            (acc, field) => ({ ...acc, [field]: !!venueAccessibilities[field] }),
+            {}
+          ),
+          noDisabilityCompliant: haveUnsetAccessibility
+            ? false
+            : !Object.values(venueAccessibilities).includes(true),
         }
       }
       handleFormUpdate(updatedValues)
     },
     [handleFormUpdate, venues]
   )
+
+  const handleOtherRadioInputChange = event => {
+    const offerType = {}
+    if (offerFormFields.includes('isEducational')) {
+      offerType['isEducational'] = event.target.value === OFFER_TYPES.EDUCATIONAL
+    }
+    if (offerFormFields.includes('isDuo')) {
+      offerType['isDuo'] = event.target.value === OFFER_TYPES.DUO
+    }
+    handleFormUpdate(offerType)
+  }
 
   const handleSingleFormUpdate = useCallback(
     event => {
@@ -432,7 +458,7 @@ const OfferForm = ({
   )
 
   const handleDisabilityCompliantUpdate = useCallback(
-    (disabilityCompliantValues) => {
+    disabilityCompliantValues => {
       if (
         Object.values(disabilityCompliantValues).includes(true) &&
         'disabilityCompliant' in formErrors
@@ -443,7 +469,8 @@ const OfferForm = ({
       }
 
       handleFormUpdate(disabilityCompliantValues)
-    }, [formErrors, handleFormUpdate, setFormErrors]
+    },
+    [formErrors, handleFormUpdate, setFormErrors]
   )
 
   const handleDurationChange = useCallback(value => handleFormUpdate({ durationMinutes: value }), [
@@ -496,15 +523,36 @@ const OfferForm = ({
     areAllVenuesVirtual
 
   // If one of disability fields is disabled, all of them are.
-  const isDisabilityFieldsReadOnly = readOnlyFields.filter((field) => [
-    'audioDisabilityCompliant',
-    'mentalDisabilityCompliant',
-    'motorDisabilityCompliant',
-    'visualDisabilityCompliant',
-  ].includes(field)).length > 0
+  const isDisabilityFieldsReadOnly =
+    readOnlyFields.filter(field =>
+      [
+        'audioDisabilityCompliant',
+        'mentalDisabilityCompliant',
+        'motorDisabilityCompliant',
+        'visualDisabilityCompliant',
+      ].includes(field)
+    ).length > 0
 
   if (isLoading) {
     return <Spinner />
+  }
+
+  const areAllPresentsOfferTypeUnchecked =
+    !(offerFormFields.includes('isEducational') && formValues.isEducational) &&
+    !(offerFormFields.includes('isDuo') && formValues.isDuo)
+
+  const areAllPresentsOfferTypesDisabled = () => {
+    let areAllOfferPresentsOfferTypesDisabled = true
+    if (offerFormFields.includes('isEducational')) {
+      areAllOfferPresentsOfferTypesDisabled =
+        areAllOfferPresentsOfferTypesDisabled && readOnlyFields.includes('isEducational')
+    }
+    if (offerFormFields.includes('isDuo')) {
+      areAllOfferPresentsOfferTypesDisabled =
+        areAllOfferPresentsOfferTypesDisabled && readOnlyFields.includes('isDuo')
+    }
+
+    return areAllOfferPresentsOfferTypesDisabled
   }
 
   return (
@@ -812,27 +860,60 @@ const OfferForm = ({
               />
             </section>
 
-            <section className="form-section">
-              <h3 className="section-title">
-                Autres caractéristiques
-              </h3>
+            {(offerFormFields.includes('isDuo') || offerFormFields.includes('isEducational')) && (
+              <section className="form-section">
+                <h3 className="section-title">
+                  Autres caractéristiques
+                </h3>
 
-              {offerFormFields.includes('isDuo') && (
-                <div className="form-row">
-                  <CheckboxInput
-                    checked={formValues.isDuo || false}
-                    disabled={readOnlyFields.includes('isDuo') ? 'disabled' : ''}
-                    isLabelDisable={isDisabled}
-                    label={'Accepter les réservations "duo"'}
-                    name="isDuo"
-                    onChange={handleSingleFormUpdate}
-                    subLabel={
-                      "En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur."
-                    }
-                  />
-                </div>
-              )}
-            </section>
+                {offerFormFields.includes('isDuo') && (
+                  <div className="form-row">
+                    <RadioInput
+                      checked={formValues.isDuo || false}
+                      disabled={readOnlyFields.includes('isDuo')}
+                      isLabelDisable={isDisabled}
+                      label={'Accepter les réservations "duo"'}
+                      name="offerType"
+                      onChange={handleOtherRadioInputChange}
+                      subLabel={
+                        "En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur."
+                      }
+                      value={OFFER_TYPES.DUO}
+                    />
+                  </div>
+                )}
+
+                {offerFormFields.includes('isEducational') && (
+                  <div className="form-row">
+                    <RadioInput
+                      checked={formValues.isEducational || false}
+                      disabled={readOnlyFields.includes('isEducational')}
+                      isLabelDisable={isDisabled}
+                      label="Offre collective EAC"
+                      name="offerType"
+                      onChange={handleOtherRadioInputChange}
+                      subLabel="Réservé uniquement aux offres s’inscrivants dans le cadre d’un projet d’Éducation Artistique et Culturelle des académies de Rennes et Versailles."
+                      value={OFFER_TYPES.EDUCATIONAL}
+                    />
+                  </div>
+                )}
+
+                {(offerFormFields.includes('isDuo') ||
+                  offerFormFields.includes('isEducational')) && (
+                    <div className="form-row">
+                      <RadioInput
+                        checked={areAllPresentsOfferTypeUnchecked || false}
+                        disabled={areAllPresentsOfferTypesDisabled()}
+                        isLabelDisable={isDisabled}
+                        label="Aucune"
+                        name="offerType"
+                        onChange={handleOtherRadioInputChange}
+                        value={OFFER_TYPES.NONE}
+                      />
+                    </div>
+                )}
+              </section>
+            )}
 
             <section className="form-section">
               <h3 className="section-title">

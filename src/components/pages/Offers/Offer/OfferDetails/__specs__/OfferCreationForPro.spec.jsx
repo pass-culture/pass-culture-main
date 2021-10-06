@@ -1,10 +1,10 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
@@ -181,7 +181,7 @@ describe('offerDetails - Creation - pro user', () => {
       await renderOffers(props, store)
 
       // Then
-      expect(screen.getByText("Type d’offre", { selector: '.section-title' })).toBeInTheDocument()
+      expect(screen.getByText('Type d’offre', { selector: '.section-title' })).toBeInTheDocument()
     })
 
     it('should not display a placeholder for preview', async () => {
@@ -576,7 +576,7 @@ describe('offerDetails - Creation - pro user', () => {
         })
       })
 
-      it('should display "Infos pratiques", "Infos artistiques", "Accessibilité", "Lien de réservation externe" and "Autre" section', async () => {
+      it('should display "Infos pratiques", "Infos artistiques", "Accessibilité", "Lien de réservation externe" and "Notification" section', async () => {
         // Given
         await renderOffers(props, store)
 
@@ -592,11 +592,38 @@ describe('offerDetails - Creation - pro user', () => {
           screen.getByRole('heading', { name: 'Informations pratiques', level: 3 })
         ).toBeInTheDocument()
         expect(screen.getByRole('heading', { name: 'Accessibilité', level: 3 })).toBeInTheDocument()
-        expect(screen.getByRole('heading', { name: 'Autres caractéristiques', level: 3 })).toBeInTheDocument()
         expect(
           screen.getByRole('heading', { name: 'Lien de réservation externe', level: 3 })
         ).toBeInTheDocument()
         expect(screen.getByRole('heading', { name: 'Notifications', level: 3 })).toBeInTheDocument()
+      })
+
+      it('should display "Autres caractéristiques" section if offer can be duo or educational', async () => {
+        // Given
+        await renderOffers(props, store)
+
+        // When
+        await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+        await setOfferValues({ subcategoryId: 'CONCERT' })
+
+        // Then
+        expect(
+          screen.getByRole('heading', { name: 'Autres caractéristiques', level: 3 })
+        ).toBeInTheDocument()
+      })
+
+      it('should not display "Autres caractéristiques" section if offer cannot be duo nor educational', async () => {
+        // Given
+        await renderOffers(props, store)
+
+        // When
+        await setOfferValues({ categoryId: 'MEDIA' })
+        await setOfferValues({ subcategoryId: 'ARTICLE_PRESSE' })
+
+        // Then
+        expect(
+          screen.queryByRole('heading', { name: 'Autres caractéristiques', level: 3 })
+        ).not.toBeInTheDocument()
       })
 
       it('should display email notification input when asking to receive booking emails', async () => {
@@ -1166,7 +1193,7 @@ describe('offerDetails - Creation - pro user', () => {
           // Then
           expect(
             screen.getByText(
-              "Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+              'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
             )
           ).toBeInTheDocument()
         })
@@ -1180,7 +1207,7 @@ describe('offerDetails - Creation - pro user', () => {
 
           expect(
             screen.queryByText(
-              "Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+              'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
             )
           ).toBeInTheDocument()
 
@@ -1191,7 +1218,7 @@ describe('offerDetails - Creation - pro user', () => {
           // Then
           expect(
             screen.queryByText(
-              "Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+              'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
             )
           ).not.toBeInTheDocument()
         })
@@ -1208,7 +1235,7 @@ describe('offerDetails - Creation - pro user', () => {
           // Then
           expect(
             screen.getByText(
-              "Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+              'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
             )
           ).toBeInTheDocument()
         })
@@ -1225,7 +1252,7 @@ describe('offerDetails - Creation - pro user', () => {
           // Then
           expect(
             screen.queryByText(
-              "Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+              'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
             )
           ).not.toBeInTheDocument()
         })
@@ -1242,7 +1269,7 @@ describe('offerDetails - Creation - pro user', () => {
           // Then
           expect(
             screen.queryByText(
-              "Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+              'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
             )
           ).not.toBeInTheDocument()
         })
@@ -1258,7 +1285,7 @@ describe('offerDetails - Creation - pro user', () => {
 
           // Then
           const withdrawalModalitiesReminder = screen.queryByText(
-            "La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU."
+            'La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU.'
           )
           expect(withdrawalModalitiesReminder).not.toBeInTheDocument()
         })
@@ -1294,7 +1321,7 @@ describe('offerDetails - Creation - pro user', () => {
           expect(durationInput).toBeInTheDocument()
         })
 
-        it('should display a checkbox input "Offre duo" checked by default', async () => {
+        it('should display a radio input "Offre duo" checked by default', async () => {
           // Given
           await renderOffers(props, store)
 
@@ -1318,9 +1345,48 @@ describe('offerDetails - Creation - pro user', () => {
 
           // Then
           const withdrawalModalitiesReminder = screen.queryByText(
-            "La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU."
+            'La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU.'
           )
           expect(withdrawalModalitiesReminder).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when offer can be educational', () => {
+        it('should display a radio input "Offre collective" unchecked by default', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ categoryId: 'PRATIQUE_ART' })
+          await setOfferValues({ subcategoryId: 'ABO_PRATIQUE_ART' })
+
+          // Then
+          const educationalInput = await getOfferInputForField('isEducational')
+          expect(educationalInput).toBeInTheDocument()
+          expect(educationalInput).not.toBeChecked()
+          const noTypeInput = screen.getByLabelText('Aucune')
+          expect(noTypeInput).toBeInTheDocument()
+          expect(noTypeInput).toBeChecked()
+        })
+
+        it('should display a radio input "Offre duo" checked by default when offer is event', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CONCERT' })
+
+          // Then
+          const duoInput = await getOfferInputForField('isDuo')
+          expect(duoInput).toBeInTheDocument()
+          expect(duoInput).toBeChecked()
+          const educationalInput = await getOfferInputForField('isEducational')
+          expect(educationalInput).toBeInTheDocument()
+          expect(educationalInput).not.toBeChecked()
+          const noTypeInput = screen.getByLabelText('Aucune')
+          expect(noTypeInput).toBeInTheDocument()
+          expect(noTypeInput).not.toBeChecked()
         })
       })
 
@@ -1339,7 +1405,7 @@ describe('offerDetails - Creation - pro user', () => {
             screen.getByText('Informations pratiques').closest('section')
           )
           const withdrawalModalitiesReminder = informationsPratiquesSection.getByText(
-            "La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU."
+            'La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU.'
           )
           expect(withdrawalModalitiesReminder).toBeInTheDocument()
         })
@@ -1487,6 +1553,7 @@ describe('offerDetails - Creation - pro user', () => {
         venueId: venues[0].id,
         durationMinutes: '1:30',
         isDuo: false,
+        isEducational: true,
         audioDisabilityCompliant: true,
         mentalDisabilityCompliant: true,
         motorDisabilityCompliant: true,
@@ -1817,7 +1884,7 @@ describe('offerDetails - Creation - pro user', () => {
       expect(errorNotification).toBeInTheDocument()
 
       const thumbnailUploadError = await screen.findByText(
-        "L’image n’a pas pu être ajoutée. Veuillez réessayer."
+        'L’image n’a pas pu être ajoutée. Veuillez réessayer.'
       )
       expect(thumbnailUploadError).toBeInTheDocument()
     })
@@ -1893,7 +1960,6 @@ describe('offerDetails - Creation - pro user', () => {
       // Then
       expect(screen.getByDisplayValue('Matériel arts créatifs')).toBeInTheDocument()
     })
-
 
     it('should display musicType and musicSubType dropdown when I select right category', async () => {
       // Given

@@ -1,7 +1,7 @@
 /*
-* @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import { fireEvent } from '@testing-library/dom'
 import { screen } from '@testing-library/react'
@@ -15,6 +15,7 @@ export const fieldLabels = {
   externalTicketOfficeUrl: { label: /URL de redirection externe/, exact: true },
   isbn: { label: 'ISBN', exact: false },
   isDuo: { label: 'Accepter les réservations "duo"', exact: false },
+  isEducational: { label: 'Offre collective EAC', exact: false },
   audioDisabilityCompliant: { label: 'Auditif', exact: true },
   mentalDisabilityCompliant: { label: 'Psychique ou cognitif', exact: true },
   motorDisabilityCompliant: { label: 'Moteur', exact: true },
@@ -54,13 +55,13 @@ export const queryInputErrorForField = fieldName => {
 
 export const setOfferValues = values => {
   const checkboxes = [
-    'isDuo',
     'audioDisabilityCompliant',
     'mentalDisabilityCompliant',
     'motorDisabilityCompliant',
     'visualDisabilityCompliant',
     'receiveNotificationEmails',
   ]
+  const offerTypeRadio = ['isDuo', 'isEducational']
 
   const setFormValueForField = (field, value) => {
     let input
@@ -69,6 +70,12 @@ export const setOfferValues = values => {
 
     if (checkboxes.includes(field)) {
       userEvent.click(input)
+    } else if (offerTypeRadio.includes(field)) {
+      if (value) {
+        userEvent.click(input)
+      } else {
+        userEvent.click(screen.getByLabelText('Aucune'))
+      }
     } else if (field === 'durationMinutes') {
       userEvent.type(input, value)
     } else {
