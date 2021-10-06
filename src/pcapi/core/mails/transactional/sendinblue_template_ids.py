@@ -12,12 +12,14 @@ class Template:
     # Tag your emails to find them more easily cf doc https://developers.sendinblue.com/reference/sendtransacemail
 
     @property
-    def id(self):
+    def id(self) -> int:
         return self.id_prod if settings.IS_PROD else self.id_not_prod
 
 
 class TransactionalEmail(Enum):
     EMAIL_CONFIRMATION = Template(id_prod=201, id_not_prod=15, tags=["jeunes_confirmation_mail"])
+    EMAIL_ADDRESS_CHANGE_REQUEST = Template(id_prod=142, id_not_prod=17, tags=["changement_email_demande"])
+    EMAIL_ADDRESS_CHANGE_CONFIRMATION = Template(id_prod=253, id_not_prod=18, tags=["changement_email_confirmation"])
 
 
 @dataclasses.dataclass

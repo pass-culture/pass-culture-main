@@ -26,11 +26,12 @@ from redis import Redis
 from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
 from pcapi.connectors.beneficiaries.id_check_middleware import ask_for_identity_document_verification
-from pcapi.core import mails
 from pcapi.core.bookings.conf import get_limit_configuration_for_type_and_version
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.mails.transactional.users.email_address_change import send_confirmation_email_change_email
+from pcapi.core.mails.transactional.users.email_address_change import send_information_email_change_email
 from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
@@ -57,8 +58,6 @@ from pcapi.domain import user_emails
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.user_activation import create_beneficiary_from_application
-from pcapi.emails.beneficiary_email_change import build_beneficiary_confirmation_email_change_data
-from pcapi.emails.beneficiary_email_change import build_beneficiary_information_email_change_data
 from pcapi.models import BeneficiaryImport
 from pcapi.models import Booking
 from pcapi.models import ImportStatus
@@ -511,19 +510,9 @@ def send_user_emails_for_email_change(user: User, new_email: str) -> None:
     if user_with_new_email:
         return
 
-    information_data = build_beneficiary_information_email_change_data(user.firstName)
-    information_sucessfully_sent = mails.send(recipients=[user.email], data=information_data)
-    if not information_sucessfully_sent:
-        raise MailServiceException()
-
+    send_information_email_change_email(user)
     link_for_email_change = _build_link_for_email_change(user.email, new_email)
-    confirmation_data = build_beneficiary_confirmation_email_change_data(
-        user.firstName,
-        link_for_email_change,
-    )
-    confirmation_sucessfully_sent = mails.send(recipients=[new_email], data=confirmation_data)
-    if not confirmation_sucessfully_sent:
-        raise MailServiceException()
+    send_confirmation_email_change_email(user, new_email, link_for_email_change)
 
     return
 
