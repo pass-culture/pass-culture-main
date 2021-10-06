@@ -1,5 +1,4 @@
-import os
-
+from pcapi import settings
 from pcapi.core import search
 from pcapi.models import Offer
 from pcapi.models import Stock
@@ -17,7 +16,7 @@ def deactivate_300e_thing_offers() -> None:
         out.write(",\n".join(str(offer_id) for offer_id in offer_ids))
     offer_qs.update({"isActive": False}, synchronize_session=False)
     db.session.commit()
-    batch_size = int(os.environ.get("ALGOLIA_DELETING_OFFERS_CHUNK_SIZE"))
+    batch_size = settings.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE
     print(batch_size)
     batches = [offer_ids[i : i + batch_size] for i in range(0, len(offer_ids), batch_size)]
     print(len(batches))
