@@ -181,7 +181,7 @@ def pc_send_withdrawal_terms_to_offerers_validated_yesterday() -> None:
 
 
 @blueprint.cli.command("clock")
-def clock():
+def clock() -> None:
     set_tag("pcapi.app_type", "clock")
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)
