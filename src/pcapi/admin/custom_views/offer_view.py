@@ -405,7 +405,18 @@ class ValidationView(BaseAdminView):
     can_delete = False
     list_template = "admin/offer_validation_list.html"
 
-    column_list = ["id", "name", "validation", "venue", "offerer", "score", "offer", "offers", "dateCreated"]
+    column_list = [
+        "id",
+        "name",
+        "validation",
+        "venue",
+        "offerer",
+        "score",
+        "offer",
+        "offers",
+        "dateCreated",
+        "isEducational",
+    ]
     if IS_PROD:
         column_list.append("metabase")
     column_sortable_list = ["id", "name", "validation", "dateCreated"]
@@ -420,6 +431,7 @@ class ValidationView(BaseAdminView):
         "score": "Score",
         "metabase": "Metabase",
         "dateCreated": "Date de création",
+        "isEducational": "Offre EAC",
     }
     column_filters = ["name", "venue.name", "id", "dateCreated"]
     column_default_sort = ("id", True)
