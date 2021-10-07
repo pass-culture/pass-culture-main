@@ -9,6 +9,7 @@ from flask_admin.base import expose
 from flask_admin.helpers import get_redirect_target
 from markupsafe import Markup
 from markupsafe import escape
+from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import query
 from wtforms import Form
 from wtforms.fields.core import BooleanField
@@ -90,7 +91,11 @@ class VenueView(BaseAdminView):
     ]
 
     def get_query(self) -> query:
-        return self._extend_query(super().get_query())
+        return (
+            self._extend_query(super().get_query())
+            .options(joinedload(Venue.managingOfferer))
+            .options(joinedload(Venue.venueProviders))
+        )
 
     def get_count_query(self) -> query:
         return self._extend_query(super().get_count_query())
