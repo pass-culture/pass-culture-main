@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
@@ -112,10 +112,12 @@ const EventStocks = ({
     })
   }, [])
 
-  const areValid = stocks => {
+  const areValid = (stocks, isEvent, isEducational) => {
     const stocksErrors = stocks.reduce((stocksErrors, stock) => {
       const isNewStock = stock.id === undefined
-      const stockErrors = isNewStock ? validateCreatedStock(stock, offer.isEvent, offer.isEducational) : validateUpdatedStock(stock, offer.isEvent, offer.isEducational)
+      const stockErrors = isNewStock
+        ? validateCreatedStock(stock, isEvent, isEducational)
+        : validateUpdatedStock(stock, isEvent, isEducational)
       const stockHasErrors = Object.keys(stockErrors).length > 0
       return stockHasErrors ? { ...stocksErrors, [stock.key]: stockErrors } : stocksErrors
     }, {})
@@ -137,7 +139,7 @@ const EventStocks = ({
 
   const submitStocks = useCallback(() => {
     const updatedStocks = existingStocks.filter(stock => stock.updated)
-    if (areValid([...stocksInCreation, ...updatedStocks])) {
+    if (areValid([...stocksInCreation, ...updatedStocks], offer.isEvent, offer.isEducational)) {
       setIsSendingStocksOfferCreation(true)
       const stocksToCreate = stocksInCreation.map(stockInCreation =>
         createEventStockPayload(stockInCreation, offer.venue.departementCode)
@@ -184,6 +186,8 @@ const EventStocks = ({
     location,
     stocksInCreation,
     offer.id,
+    offer.isEducational,
+    offer.isEvent,
     isOfferDraft,
     offer.venue.departementCode,
     loadStocks,
@@ -211,7 +215,9 @@ const EventStocks = ({
       </h3>
 
       <div className="cancellation-information">
-        Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’événement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente.
+        Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le
+        faire moins de 48h avant le début de l’événement. Si la date limite de réservation n’est pas
+        encore passée, la place est alors automatiquement remise en vente.
       </div>
       {hasNoStock ? (
         <button

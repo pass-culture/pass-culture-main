@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useState } from 'react'
@@ -100,8 +100,28 @@ const ThingStocks = ({
     }))
   }, [])
 
+  const checkStockIsValid = (stock, isEvent, isEducational) => {
+    const isNewStock = stock.id === undefined
+    const stockErrors = isNewStock
+      ? validateCreatedStock(stock, isEvent, isEducational)
+      : validateUpdatedStock(stock, isEvent, isEducational)
+    const stockHasErrors = Object.keys(stockErrors).length > 0
+
+    if (stockHasErrors) {
+      const formErrors = {
+        global: 'Une ou plusieurs erreurs sont présentes dans le formulaire.',
+        ...stockErrors,
+      }
+      setFormErrors(formErrors)
+    } else {
+      setFormErrors({})
+    }
+
+    return !stockHasErrors
+  }
+
   const submitStocks = useCallback(() => {
-    if (checkStockIsValid(stock)) {
+    if (checkStockIsValid(stock, offer.isEvent, offer.isEducational)) {
       setEnableSubmitButtonSpinner(true)
       const stockToCreateOrEdit = {
         ...createThingStockPayload(stock, offer.venue.departementCode),
@@ -161,6 +181,8 @@ const ThingStocks = ({
     history,
     location,
     offer.id,
+    offer.isEducational,
+    offer.isEvent,
     isOfferDraft,
     offer.venue.departementCode,
     loadStocks,
@@ -168,24 +190,6 @@ const ThingStocks = ({
     showSuccessNotification,
     showErrorNotification,
   ])
-
-  const checkStockIsValid = stock => {
-    const isNewStock = stock.id === undefined
-    const stockErrors = isNewStock ? validateCreatedStock(stock, offer.isEvent, offer.isEducational) : validateUpdatedStock(stock, offer.isEvent, offer.isEducational)
-    const stockHasErrors = Object.keys(stockErrors).length > 0
-
-    if (stockHasErrors) {
-      const formErrors = {
-        global: 'Une ou plusieurs erreurs sont présentes dans le formulaire.',
-        ...stockErrors,
-      }
-      setFormErrors(formErrors)
-    } else {
-      setFormErrors({})
-    }
-
-    return !stockHasErrors
-  }
 
   if (isLoading) {
     return null
