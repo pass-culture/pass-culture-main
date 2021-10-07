@@ -43,7 +43,7 @@ if IS_PROD or IS_INTEGRATION:
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.SendinblueBackend"
 elif IS_STAGING or IS_TESTING:
     _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
-    _default_email_backend = "pcapi.core.mails.backends.mailjet.ToDevSendinblueBackend"
+    _default_email_backend = "pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend"
     _mailjet_email_backend = "pcapi.core.mails.backends.mailjet.ToDevMailjetBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.ToDevSendinblueBackend"
