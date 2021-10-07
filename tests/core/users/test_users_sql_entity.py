@@ -6,6 +6,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
@@ -208,7 +209,8 @@ class CalculateAgeTest:
         assert users_factories.UserFactory.build(dateOfBirth=datetime(2000, 7, 1)).age == 17
         assert users_factories.UserFactory.build(dateOfBirth=datetime(1999, 5, 1)).age == 19
 
-    def test_eligibility_start_end_datetime(self):
+    @freeze_time("2018-06-01")
+    def test_eligibility_start_end_datetime_beneficiary(self):
         assert users_factories.UserFactory.build(dateOfBirth=None).eligibility_start_datetime is None
         assert users_factories.UserFactory.build(
             dateOfBirth=datetime(2000, 6, 1, 5, 1)
@@ -218,6 +220,19 @@ class CalculateAgeTest:
         assert users_factories.UserFactory.build(
             dateOfBirth=datetime(2000, 6, 1, 5, 1)
         ).eligibility_end_datetime == datetime(2019, 6, 1, 0, 0)
+
+    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
+    @freeze_time("2018-06-01")
+    def test_eligibility_start_end_datetime_underage_beneficiary(self):
+        assert users_factories.UserFactory.build(dateOfBirth=None).eligibility_start_datetime is None
+        assert users_factories.UserFactory.build(
+            dateOfBirth=datetime(2003, 6, 1, 5, 1)
+        ).eligibility_start_datetime == datetime(2018, 6, 1, 0, 0)
+
+        assert users_factories.UserFactory.build(dateOfBirth=None).eligibility_end_datetime is None
+        assert users_factories.UserFactory.build(
+            dateOfBirth=datetime(2003, 6, 1, 5, 1)
+        ).eligibility_end_datetime == datetime(2021, 6, 1, 0, 0)
 
 
 @pytest.mark.usefixtures("db_session")

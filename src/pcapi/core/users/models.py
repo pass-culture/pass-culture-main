@@ -329,7 +329,10 @@ class User(PcObject, Model, NeedsValidationMixin):
         # To avoid import loops
         from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
 
-        if self.age == constants.ELIGIBILITY_AGE_18 and _is_postal_code_eligible(self.departementCode):
+        if not _is_postal_code_eligible(self.departementCode):
+            return None
+
+        if self.age == constants.ELIGIBILITY_AGE_18:
             return EligibilityType.AGE18
 
         if self.age in constants.ELIGIBILITY_UNDERAGE_RANGE and FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
@@ -358,41 +361,25 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @property
     def eligibility_start_datetime(self) -> Optional[datetime]:
-        # To avoid import loops
-        from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
-
-        if not self.dateOfBirth:
+        if not self.dateOfBirth or not self.eligibility:
             return None
 
-        eligibility_start = datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
-            years=constants.ELIGIBILITY_AGE_18
-        )
-        eligibility_stop = datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
-            years=constants.ELIGIBILITY_AGE_18 + 1
-        )
-        now = datetime.combine(date.today(), time(0, 0))
-        if not _is_postal_code_eligible(self.departementCode) and eligibility_start <= now < eligibility_stop:
-            return None
-        return eligibility_start
+        if self.eligibility == EligibilityType.UNDERAGE:
+            return datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
+                years=constants.ELIGIBILITY_UNDERAGE_RANGE[0]
+            )
+        return datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(years=constants.ELIGIBILITY_AGE_18)
 
     @property
     def eligibility_end_datetime(self) -> Optional[datetime]:
-        # To avoid import loops
-        from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
-
-        if not self.dateOfBirth:
+        if not self.dateOfBirth or not self.eligibility:
             return None
 
-        eligibility_start = datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
-            years=constants.ELIGIBILITY_AGE_18
-        )
-        eligibility_stop = datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
-            years=constants.ELIGIBILITY_AGE_18 + 1
-        )
-        now = datetime.combine(date.today(), time(0, 0))
-        if not _is_postal_code_eligible(self.departementCode) and eligibility_start <= now < eligibility_stop:
-            return None
-        return eligibility_stop
+        if self.eligibility == EligibilityType.UNDERAGE:
+            return datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
+                years=constants.ELIGIBILITY_UNDERAGE_RANGE[-1] + 1
+            )
+        return datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(years=constants.ELIGIBILITY_AGE_18 + 1)
 
     @hybrid_property
     def is_phone_validated(self):
