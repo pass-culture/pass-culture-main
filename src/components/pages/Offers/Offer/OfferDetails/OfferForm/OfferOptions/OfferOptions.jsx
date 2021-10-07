@@ -3,9 +3,9 @@ import React from 'react'
 
 import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
 
-import { OFFER_OPTIONS } from './_constants'
+import { OFFER_OPTIONS } from '../_constants'
 
-export const OfferOptions = ({
+const OfferOptions = ({
   canOfferBeDuo,
   canOfferBeEducational,
   isDuo,
@@ -104,3 +104,5 @@ OfferOptions.propTypes = {
   isEducationalDisabled: PropTypes.bool.isRequired,
   updateForm: PropTypes.func.isRequired,
 }
+
+export default OfferOptions

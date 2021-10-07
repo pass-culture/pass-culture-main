@@ -15,7 +15,10 @@ import useActiveFeature from 'components/hooks/useActiveFeature'
 import InternalBanner from 'components/layout/Banner/InternalBanner'
 import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
-import Select, { buildSelectOptions, buildSelectOptionsWithOptionalFields, } from 'components/layout/inputs/Select'
+import Select, {
+  buildSelectOptions,
+  buildSelectOptionsWithOptionalFields,
+} from 'components/layout/inputs/Select'
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Spinner from 'components/layout/Spinner'
@@ -37,7 +40,7 @@ import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import AccessibilityCheckboxList from './AccessibilityCheckboxList'
 import OfferCategories from './OfferCategories/OfferCategories'
-import { OfferOptions } from "./OfferOptions"
+import OfferOptions from './OfferOptions'
 
 // JOCONDE React:component "Ce composant est vraiment le plus beau et le plus lisible que nous ayons côté pro. Prenez en de la graine !"
 
@@ -827,8 +830,8 @@ const OfferForm = ({
             </section>
 
             <OfferOptions
-              canOfferBeDuo={offerFormFields.includes("isDuo")}
-              canOfferBeEducational={offerFormFields.includes("isEducational")}
+              canOfferBeDuo={offerFormFields.includes('isDuo')}
+              canOfferBeEducational={offerFormFields.includes('isEducational')}
               isDuo={formValues.isDuo}
               isDuoDisabled={readOnlyFields.includes('isDuo')}
               isEducational={formValues.isEducational}
@@ -842,7 +845,7 @@ const OfferForm = ({
               </h3>
               <p className="section-description">
                 {'Ce lien sera affiché aux utilisateurs ne pouvant pas effectuer la réservation dans l’application. ' +
-                'Nous vous recommandons d’insérer le lien vers votre billetterie ou votre site internet.'}
+                  'Nous vous recommandons d’insérer le lien vers votre billetterie ou votre site internet.'}
               </p>
               <TextInput
                 disabled={readOnlyFields.includes('externalTicketOfficeUrl')}
