@@ -269,24 +269,6 @@ class BookingExpirationDateNewRulesTest:
         assert not digital_book_booking.expirationDate
 
 
-class BookingHasConfirmationLimitDatePassedTest:
-    @freeze_time("2021-08-05 15:00:00")
-    def test_when_has_confirmation_limit_date_passed(self) -> None:
-        booking: Booking = factories.EducationalBookingFactory(
-            educationalBooking__confirmationLimitDate=datetime(2021, 8, 5, 14)
-        )
-
-        assert booking.has_confirmation_limit_date_passed()
-
-    @freeze_time("2021-08-05 15:00:00")
-    def test_when_has_not_confirmation_limit_date_passed(self) -> None:
-        booking: Booking = factories.EducationalBookingFactory(
-            educationalBooking__confirmationLimitDate=datetime(2021, 8, 5, 16)
-        )
-
-        assert not booking.has_confirmation_limit_date_passed()
-
-
 class BookingMarkAsConfirmedTest:
     @freeze_time("2021-08-05 15:00:00")
     def test_confirm_when_confirmation_limit_date_has_not_passed(self) -> None:
