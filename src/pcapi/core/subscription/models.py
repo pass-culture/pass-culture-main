@@ -89,10 +89,10 @@ class SubscriptionMessage(PcObject, Model):
 
     userMessage = sqlalchemy.Column(sqlalchemy.Text, nullable=False)
 
-    callToActionTitle = sqlalchemy.Column(sqlalchemy.Text, nullable=False)
+    callToActionTitle = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
 
-    callToActionLink = sqlalchemy.Column(sqlalchemy.Text, nullable=False)
+    callToActionLink = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
 
-    callToActionIcon = sqlalchemy.Column(sqlalchemy.Enum(CallToActionIcon, create_constraint=False), nullable=False)
+    callToActionIcon = sqlalchemy.Column(sqlalchemy.Enum(CallToActionIcon, create_constraint=False), nullable=True)
 
     popOverIcon = sqlalchemy.Column(sqlalchemy.Enum(PopOverIcon, create_constraint=False), nullable=False)
