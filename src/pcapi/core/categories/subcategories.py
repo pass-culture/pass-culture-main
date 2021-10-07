@@ -380,6 +380,24 @@ SALON = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
+RENCONTRE_EN_LIGNE = Subcategory(
+    id="RENCONTRE_EN_LIGNE",
+    category_id=categories.CONFERENCE_RENCONTRE.id,
+    matching_type="EventType.CONFERENCE_DEBAT_DEDICACE",
+    pro_label="Rencontre en ligne",
+    app_label="Rencontre en ligne",
+    search_group_name=SearchGroups.CONFERENCE.name,
+    homepage_label_name=HomepageLabels.CONFERENCE.name,
+    is_event=True,
+    conditional_fields=["speaker"],
+    can_expire=False,
+    can_be_duo=False,
+    can_be_educational=True,
+    online_offline_platform=OnlineOfflinePlatformChoices.ONLINE.value,
+    is_digital_deposit=False,
+    is_physical_deposit=False,
+    reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+)
 # endregion
 # region JEU
 CONCOURS = Subcategory(
@@ -1368,6 +1386,7 @@ ALL_SUBCATEGORIES = (
     OEUVRE_ART,
     PARTITION,
     PODCAST,
+    RENCONTRE_EN_LIGNE,
     RENCONTRE_JEU,
     RENCONTRE,
     SALON,
