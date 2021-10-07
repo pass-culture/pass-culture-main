@@ -18,6 +18,7 @@ from sqlalchemy.sql.sqltypes import Numeric
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.models.db import Model
+from pcapi.models.pc_object import PcObject
 
 
 class EducationalBookingStatus(enum.Enum):
@@ -25,7 +26,7 @@ class EducationalBookingStatus(enum.Enum):
     USED_BY_INSTITUTE = "USED_BY_INSTITUTE"
 
 
-class EducationalInstitution(Model):
+class EducationalInstitution(PcObject, Model):
     __tablename__ = "educational_institution"
 
     id: int = Column(BigInteger, primary_key=True, autoincrement=True)
@@ -33,7 +34,7 @@ class EducationalInstitution(Model):
     institutionId: str = Column(String(30), nullable=False, unique=True, index=True)
 
 
-class EducationalYear(Model):
+class EducationalYear(PcObject, Model):
     __tablename__ = "educational_year"
 
     id: int = Column(BigInteger, primary_key=True, autoincrement=True)
@@ -45,7 +46,7 @@ class EducationalYear(Model):
     expirationDate: datetime = Column(DateTime, nullable=False)
 
 
-class EducationalDeposit(Model):
+class EducationalDeposit(PcObject, Model):
     __tablename__ = "educational_deposit"
 
     TEMPORARY_FUND_AVAILABLE_RATIO = 0.8
@@ -83,7 +84,7 @@ class EducationalDeposit(Model):
         return
 
 
-class EducationalRedactor(Model):
+class EducationalRedactor(PcObject, Model):
 
     __tablename__ = "educational_redactor"
 
@@ -103,7 +104,7 @@ class EducationalRedactor(Model):
     )
 
 
-class EducationalBooking(Model):
+class EducationalBooking(PcObject, Model):
     __tablename__ = "educational_booking"
 
     id: int = Column(BigInteger, primary_key=True, autoincrement=True)

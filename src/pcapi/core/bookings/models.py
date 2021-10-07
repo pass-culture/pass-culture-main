@@ -47,7 +47,7 @@ class BookingStatus(enum.Enum):
     CANCELLED = "CANCELLED"
 
 
-class IndividualBooking(Model):
+class IndividualBooking(PcObject, Model):
     __tablename__ = "individual_booking"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
