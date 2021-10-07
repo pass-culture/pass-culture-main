@@ -30,7 +30,7 @@ def _get_hours_from_timedelta(td: datetime.timedelta) -> float:
 
 
 def _compute_eighteenth_birthday(birth_date: datetime.datetime) -> datetime.datetime:
-    return birth_date + relativedelta(years=18)
+    return datetime.datetime.combine(birth_date, datetime.time(0, 0)) + relativedelta(years=18)
 
 
 BOOKING_CONFIRMATION_ERROR_CLAUSES = {
