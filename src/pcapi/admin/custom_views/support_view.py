@@ -3,6 +3,8 @@ import logging
 
 import flask
 import flask_admin
+import flask_admin.helpers
+import flask_admin.model.helpers
 import flask_login
 from markupsafe import Markup
 import sqlalchemy
@@ -170,6 +172,37 @@ class BeneficiaryView(base_configuration.BaseAdminView):
 
         query = db.session.query(sqlalchemy.func.count(users_models.User.id)).filter(filters)
         return query
+
+    @flask_admin.expose("/details/")
+    def details_view(self):
+        return_url = flask_admin.helpers.get_redirect_target() or self.get_url(".index_view")
+
+        if not self.can_view_details:
+            return flask.redirect(return_url)
+
+        object_id = flask_admin.model.helpers.get_mdict_item_or_list(flask.request.args, "id")
+        if object_id is None:
+            return flask.redirect(return_url)
+
+        user = self.get_one(object_id)
+
+        if user is None:
+            flask.flash(flask_admin.babel.gettext("Record does not exist."), "error")
+            return flask.redirect(return_url)
+
+        if self.details_modal and flask.request.args.get("modal"):
+            template = self.details_modal_template
+        else:
+            template = self.details_template
+
+        return self.render(
+            template,
+            model=user,
+            details_columns=self._details_columns,
+            get_value=self.get_detail_value,
+            return_url=return_url,
+            has_passed_id_check=fraud_api.has_user_passed_fraud_checks(user),
+        )
 
     @flask_admin.expose("/validate/beneficiary/<user_id>", methods=["POST"])
     def validate_beneficiary(self, user_id):
