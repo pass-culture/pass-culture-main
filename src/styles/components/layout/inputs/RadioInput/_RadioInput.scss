@@ -50,11 +50,11 @@ input[type="radio"] {
   }
 }
 
-.field-radio {
+.input-radio {
   align-items: center;
   display: flex;
 
-  .field-radio-label {
+  .input-radio-label {
     display: flex;
     flex-direction: column;
 
@@ -63,7 +63,7 @@ input[type="radio"] {
       fill: $grey-medium;
     }
 
-    .field-radio-sub-label {
+    .input-radio-sub-label {
       @include caption();
 
       color: $grey-dark;
@@ -75,7 +75,7 @@ input[type="radio"] {
     }
   }
 
-  .field-radio-input {
+  .input-radio-input {
     align-self: flex-start;
   }
 }

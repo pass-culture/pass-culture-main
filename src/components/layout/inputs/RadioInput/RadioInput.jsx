@@ -6,20 +6,20 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 export const RadioInput = ({ onChange, value, name, label, checked, disabled, subLabel }) => (
-  <label className="field-radio">
+  <label className="input-radio">
     <input
       checked={checked}
-      className="field-radio-input"
+      className="input-radio-input"
       disabled={disabled}
       name={name}
       onChange={onChange}
       type="radio"
       value={value}
     />
-    <span className={`field-radio-label ${disabled?'disabled':''}`}>
+    <span className={`input-radio-label ${disabled?'disabled':''}`}>
       {label}
       {subLabel && (
-        <span className={`field-radio-sub-label ${disabled ? 'disabled' : ''}`}>
+        <span className={`input-radio-sub-label ${disabled ? 'disabled' : ''}`}>
           {subLabel}
         </span>
       )}

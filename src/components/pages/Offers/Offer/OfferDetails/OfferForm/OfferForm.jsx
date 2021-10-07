@@ -7,7 +7,7 @@
 
 import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
-import React, { Fragment, useCallback, useEffect, useState, useRef, useMemo } from 'react'
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
@@ -15,11 +15,7 @@ import useActiveFeature from 'components/hooks/useActiveFeature'
 import InternalBanner from 'components/layout/Banner/InternalBanner'
 import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
-import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
-import Select, {
-  buildSelectOptions,
-  buildSelectOptionsWithOptionalFields,
-} from 'components/layout/inputs/Select'
+import Select, { buildSelectOptions, buildSelectOptionsWithOptionalFields, } from 'components/layout/inputs/Select'
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Spinner from 'components/layout/Spinner'
@@ -28,10 +24,9 @@ import {
   DEFAULT_FORM_VALUES,
   EXTRA_DATA_FIELDS,
   MANDATORY_FIELDS,
-  TEXT_INPUT_DEFAULT_VALUE,
-  PLATFORM,
   NOT_REIMBURSED,
-  OFFER_TYPES,
+  PLATFORM,
+  TEXT_INPUT_DEFAULT_VALUE,
 } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
 import OfferRefundWarning from 'components/pages/Offers/Offer/OfferDetails/OfferForm/Messages/OfferRefundWarning'
 import WithdrawalReminder from 'components/pages/Offers/Offer/OfferDetails/OfferForm/Messages/WithdrawalReminder'
@@ -42,6 +37,7 @@ import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import AccessibilityCheckboxList from './AccessibilityCheckboxList'
 import OfferCategories from './OfferCategories/OfferCategories'
+import { OfferOptions } from "./OfferOptions"
 
 // JOCONDE React:component "Ce composant est vraiment le plus beau et le plus lisible que nous ayons côté pro. Prenez en de la graine !"
 
@@ -84,7 +80,6 @@ const getOfferConditionalFields = ({
 
   return offerConditionalFields
 }
-
 const OfferForm = ({
   areAllVenuesVirtual,
   backUrl,
@@ -436,17 +431,6 @@ const OfferForm = ({
     [handleFormUpdate, venues]
   )
 
-  const handleOtherRadioInputChange = event => {
-    const offerType = {}
-    if (offerFormFields.includes('isEducational')) {
-      offerType['isEducational'] = event.target.value === OFFER_TYPES.EDUCATIONAL
-    }
-    if (offerFormFields.includes('isDuo')) {
-      offerType['isDuo'] = event.target.value === OFFER_TYPES.DUO
-    }
-    handleFormUpdate(offerType)
-  }
-
   const handleSingleFormUpdate = useCallback(
     event => {
       const field = event.target.name
@@ -535,24 +519,6 @@ const OfferForm = ({
 
   if (isLoading) {
     return <Spinner />
-  }
-
-  const areAllPresentsOfferTypeUnchecked =
-    !(offerFormFields.includes('isEducational') && formValues.isEducational) &&
-    !(offerFormFields.includes('isDuo') && formValues.isDuo)
-
-  const areAllPresentsOfferTypesDisabled = () => {
-    let areAllOfferPresentsOfferTypesDisabled = true
-    if (offerFormFields.includes('isEducational')) {
-      areAllOfferPresentsOfferTypesDisabled =
-        areAllOfferPresentsOfferTypesDisabled && readOnlyFields.includes('isEducational')
-    }
-    if (offerFormFields.includes('isDuo')) {
-      areAllOfferPresentsOfferTypesDisabled =
-        areAllOfferPresentsOfferTypesDisabled && readOnlyFields.includes('isDuo')
-    }
-
-    return areAllOfferPresentsOfferTypesDisabled
   }
 
   return (
@@ -860,60 +826,15 @@ const OfferForm = ({
               />
             </section>
 
-            {(offerFormFields.includes('isDuo') || offerFormFields.includes('isEducational')) && (
-              <section className="form-section">
-                <h3 className="section-title">
-                  Autres caractéristiques
-                </h3>
-
-                {offerFormFields.includes('isDuo') && (
-                  <div className="form-row">
-                    <RadioInput
-                      checked={formValues.isDuo || false}
-                      disabled={readOnlyFields.includes('isDuo')}
-                      isLabelDisable={isDisabled}
-                      label={'Accepter les réservations "duo"'}
-                      name="offerType"
-                      onChange={handleOtherRadioInputChange}
-                      subLabel={
-                        "En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur."
-                      }
-                      value={OFFER_TYPES.DUO}
-                    />
-                  </div>
-                )}
-
-                {offerFormFields.includes('isEducational') && (
-                  <div className="form-row">
-                    <RadioInput
-                      checked={formValues.isEducational || false}
-                      disabled={readOnlyFields.includes('isEducational')}
-                      isLabelDisable={isDisabled}
-                      label="Offre collective EAC"
-                      name="offerType"
-                      onChange={handleOtherRadioInputChange}
-                      subLabel="Réservé uniquement aux offres s’inscrivants dans le cadre d’un projet d’Éducation Artistique et Culturelle des académies de Rennes et Versailles."
-                      value={OFFER_TYPES.EDUCATIONAL}
-                    />
-                  </div>
-                )}
-
-                {(offerFormFields.includes('isDuo') ||
-                  offerFormFields.includes('isEducational')) && (
-                    <div className="form-row">
-                      <RadioInput
-                        checked={areAllPresentsOfferTypeUnchecked || false}
-                        disabled={areAllPresentsOfferTypesDisabled()}
-                        isLabelDisable={isDisabled}
-                        label="Aucune"
-                        name="offerType"
-                        onChange={handleOtherRadioInputChange}
-                        value={OFFER_TYPES.NONE}
-                      />
-                    </div>
-                )}
-              </section>
-            )}
+            <OfferOptions
+              canOfferBeDuo={offerFormFields.includes("isDuo")}
+              canOfferBeEducational={offerFormFields.includes("isEducational")}
+              isDuo={formValues.isDuo}
+              isDuoDisabled={readOnlyFields.includes('isDuo')}
+              isEducational={formValues.isEducational}
+              isEducationalDisabled={readOnlyFields.includes('isEducational')}
+              updateForm={handleFormUpdate}
+            />
 
             <section className="form-section">
               <h3 className="section-title">
@@ -921,7 +842,7 @@ const OfferForm = ({
               </h3>
               <p className="section-description">
                 {'Ce lien sera affiché aux utilisateurs ne pouvant pas effectuer la réservation dans l’application. ' +
-                  'Nous vous recommandons d’insérer le lien vers votre billetterie ou votre site internet.'}
+                'Nous vous recommandons d’insérer le lien vers votre billetterie ou votre site internet.'}
               </p>
               <TextInput
                 disabled={readOnlyFields.includes('externalTicketOfficeUrl')}

@@ -1103,7 +1103,7 @@ describe('offerDetails - Edition', () => {
         expect(screen.getByLabelText('Aucune')).toBeDisabled()
       })
 
-      it('should not allow to unset duo when offer cannot be educational', async () => {
+      it('should not allow to edit duo option when offer cannot be educational', async () => {
         // Given
         const editedOffer = {
           id: 'ABC12',
@@ -1138,27 +1138,8 @@ describe('offerDetails - Edition', () => {
         await renderOffers(props, store)
 
         // Then
-        // Edition read only fields
-        const disabledFields = [
-          'categoryId',
-          'subcategoryId',
-          'offererId',
-          'bookingEmail',
-          'receiveNotificationEmails',
-          'description',
-          'durationMinutes',
-          'isDuo',
-          'name',
-          'venueId',
-          'withdrawalDetails',
-        ]
-
-        disabledFields.forEach(label => {
-          const input = screen.getByLabelText(fieldLabels[label].label, {
-            exact: fieldLabels[label].exact,
-          })
-          expect(input).toBeDisabled()
-        })
+        const duoOption = await getOfferInputForField('isDuo')
+        expect(duoOption).toBeDisabled()
         expect(screen.getByLabelText('Aucune')).toBeDisabled()
       })
 
@@ -1201,13 +1182,9 @@ describe('offerDetails - Edition', () => {
         await renderOffers(props, store)
 
         // Then
-        const isDuoInput = screen.getByLabelText(fieldLabels.isDuo.label, {
-          exact: fieldLabels.isDuo.exact,
-        })
+        const isDuoInput = await getOfferInputForField('isDuo')
         expect(isDuoInput).toBeEnabled()
-        const isEducationalInput = screen.getByLabelText(fieldLabels.isEducational.label, {
-          exact: fieldLabels.isEducational.exact,
-        })
+        const isEducationalInput = await getOfferInputForField('isEducational')
         expect(isEducationalInput).toBeDisabled()
         expect(screen.getByLabelText('Aucune')).toBeEnabled()
       })

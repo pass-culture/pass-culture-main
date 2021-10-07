@@ -93,7 +93,7 @@ export const PLATFORM = {
 
 export const NOT_REIMBURSED = 'NOT_REIMBURSED'
 
-export const OFFER_TYPES = {
+export const OFFER_OPTIONS = {
   DUO: 'DUO',
   EDUCATIONAL: 'EDUCATIONAL',
   NONE: 'NONE',
