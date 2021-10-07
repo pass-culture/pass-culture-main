@@ -153,13 +153,14 @@ class OffersTest:
                 "offerer": {"name": offer.venue.managingOfferer.name},
                 "postalCode": "75000",
                 "publicName": "il est venu le temps des names",
+                "isPermanent": False,
             },
             "withdrawalDetails": "modalité de retrait",
         }
 
     def test_get_thing_offer(self, app):
         product = ProductFactory(thumbCount=1, subcategoryId=subcategories.ABO_MUSEE.id)
-        offer = OfferFactory(product=product, isEducational=True)
+        offer = OfferFactory(product=product, isEducational=True, venue__isPermanent=True)
         ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
@@ -176,6 +177,7 @@ class OffersTest:
         }
         assert response.json["isEducational"]
         assert not response.json["isExpired"]
+        assert response.json["venue"]["isPermanent"]
 
     def test_get_digital_offer_with_available_activation_and_no_expiration_date(self, app):
         # given
