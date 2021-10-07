@@ -832,7 +832,14 @@ describe('offerDetails - Edition', () => {
 
       // Then
       // Edition read only fields
-      const disabledFields = ['categoryId', 'musicSubType', 'musicType', 'offererId', 'venueId']
+      const disabledFields = [
+        'categoryId',
+        'isEducational',
+        'musicSubType',
+        'musicType',
+        'offererId',
+        'venueId',
+      ]
 
       disabledFields.forEach(label => {
         const input = screen.getByLabelText(fieldLabels[label].label, {
@@ -849,7 +856,6 @@ describe('offerDetails - Edition', () => {
         'durationMinutes',
         'isbn',
         'isDuo',
-        'isEducational',
         'name',
         'performer',
         'stageDirector',
@@ -870,6 +876,56 @@ describe('offerDetails - Edition', () => {
         expect(input).toBeEnabled()
       })
       expect(screen.getByLabelText('Aucune')).toBeEnabled()
+    })
+
+    it('should disable all offer type input when offer cannot be duo', async () => {
+      // Given
+      const editedOffer = {
+        id: 'ABC12',
+        subcategoryId: 'ID',
+        name: 'My edited offer',
+        description: 'Offer description',
+        venue: editedOfferVenue,
+        venueId: editedOfferVenue.id,
+        withdrawalDetails: 'Offer withdrawal details',
+        bookingEmail: 'booking@example.net',
+        status: 'ACTIVE',
+      }
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+
+      // When
+      await renderOffers(props, store)
+
+      // Then
+      // Edition read only fields
+      const disabledFields = ['categoryId', 'isEducational', 'offererId', 'venueId']
+
+      disabledFields.forEach(label => {
+        const input = screen.getByLabelText(fieldLabels[label].label, {
+          exact: fieldLabels[label].exact,
+        })
+        expect(input).toBeDisabled()
+      })
+
+      // Editable fields
+      const editableFields = [
+        'bookingEmail',
+        'description',
+        'name',
+        'externalTicketOfficeUrl',
+        'withdrawalDetails',
+        'audioDisabilityCompliant',
+        'motorDisabilityCompliant',
+        'visualDisabilityCompliant',
+      ]
+
+      editableFields.forEach(label => {
+        const input = screen.getByLabelText(fieldLabels[label].label, {
+          exact: fieldLabels[label].exact,
+        })
+        expect(input).toBeEnabled()
+      })
+      expect(screen.getByLabelText('Aucune')).toBeDisabled()
     })
 
     it("should display venue's publicName instead of name if exists", async () => {
@@ -1152,7 +1208,7 @@ describe('offerDetails - Edition', () => {
         const isEducationalInput = screen.getByLabelText(fieldLabels.isEducational.label, {
           exact: fieldLabels.isEducational.exact,
         })
-        expect(isEducationalInput).toBeEnabled()
+        expect(isEducationalInput).toBeDisabled()
         expect(screen.getByLabelText('Aucune')).toBeEnabled()
       })
     })

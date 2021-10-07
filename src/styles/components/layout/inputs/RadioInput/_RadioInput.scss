@@ -58,6 +58,11 @@ input[type="radio"] {
     display: flex;
     flex-direction: column;
 
+    &.disabled {
+      color: $grey-medium;
+      fill: $grey-medium;
+    }
+
     .field-radio-sub-label {
       @include caption();
 

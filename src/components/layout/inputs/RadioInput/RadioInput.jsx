@@ -16,10 +16,10 @@ export const RadioInput = ({ onChange, value, name, label, checked, disabled, su
       type="radio"
       value={value}
     />
-    <span className="field-radio-label">
+    <span className={`field-radio-label ${disabled?'disabled':''}`}>
       {label}
       {subLabel && (
-        <span className="field-radio-sub-label">
+        <span className={`field-radio-sub-label ${disabled ? 'disabled' : ''}`}>
           {subLabel}
         </span>
       )}
