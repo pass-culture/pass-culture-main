@@ -27,6 +27,7 @@ from pcapi.scheduled_tasks import utils
 from pcapi.scheduled_tasks.decorators import cron_context
 from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
+from pcapi.scripts.beneficiary import archive_dms_applications
 from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.beneficiary import remote_tag_has_completed
 from pcapi.scripts.booking.handle_expired_bookings import handle_expired_bookings
@@ -70,6 +71,7 @@ def pc_remote_import_beneficiaries() -> None:
     )
     remote_import.run(procedure_id)
     remote_tag_has_completed.run(import_from_date, procedure_id)
+    archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
 # FIXME (xordoquy, 2021-06-16): This clock must be removed once every application from procedure
@@ -85,6 +87,7 @@ def pc_remote_import_beneficiaries_from_old_dms() -> None:
     )
     remote_import.run(procedure_id)
     remote_tag_has_completed.run(import_from_date, procedure_id)
+    archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
 @cron_context
@@ -96,6 +99,7 @@ def pc_import_beneficiaries_from_dms_v3() -> None:
     )
     remote_import.run(procedure_id, use_graphql_api=FeatureToggle.ENABLE_DMS_GRAPHQL_API.is_active())
     remote_tag_has_completed.run(import_from_date, procedure_id)
+    archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
 @cron_context
@@ -113,6 +117,7 @@ def pc_import_beneficiaries_from_dms_v4() -> None:
         )
         remote_import.run(procedure_id, use_graphql_api=FeatureToggle.ENABLE_DMS_GRAPHQL_API.is_active())
         remote_tag_has_completed.run(import_from_date, procedure_id)
+        archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
 @cron_context
