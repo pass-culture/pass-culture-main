@@ -1,9 +1,9 @@
-import PropTypes from "prop-types"
-import React from "react"
+import PropTypes from 'prop-types'
+import React from 'react'
 
-import { RadioInput } from "components/layout/inputs/RadioInput/RadioInput"
+import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
 
-import { OFFER_OPTIONS } from "./_constants"
+import { OFFER_OPTIONS } from './_constants'
 
 export const OfferOptions = ({
   canOfferBeDuo,
@@ -25,9 +25,10 @@ export const OfferOptions = ({
     updateForm(updatedValues)
   }
 
-  const areAllPresentOfferOptionsUnchecked =
-    !(canOfferBeEducational && isEducational) &&
-    !(canOfferBeDuo && isDuo)
+  const noOptionSelected = !(canOfferBeEducational && isEducational) && !(canOfferBeDuo && isDuo)
+
+  const isSelectedOptionDisabled =
+    (isDuo && isDuoDisabled) || (isEducational && isEducationalDisabled)
 
   const areAllPresentsOfferOptionsDisabled = () => {
     let areAllOfferPresentsOfferTypesDisabled = true
@@ -36,14 +37,13 @@ export const OfferOptions = ({
         areAllOfferPresentsOfferTypesDisabled && isEducationalDisabled
     }
     if (canOfferBeDuo) {
-      areAllOfferPresentsOfferTypesDisabled =
-        areAllOfferPresentsOfferTypesDisabled && isDuoDisabled
+      areAllOfferPresentsOfferTypesDisabled = areAllOfferPresentsOfferTypesDisabled && isDuoDisabled
     }
 
     return areAllOfferPresentsOfferTypesDisabled
   }
 
-  if(!canOfferBeDuo && !canOfferBeEducational) {
+  if (!canOfferBeDuo && !canOfferBeEducational) {
     return null
   }
 
@@ -57,13 +57,11 @@ export const OfferOptions = ({
         <div className="form-row">
           <RadioInput
             checked={isDuo || false}
-            disabled={isDuoDisabled}
+            disabled={isDuoDisabled || isSelectedOptionDisabled}
             label={'Accepter les réservations "duo"'}
             name="offerOption"
             onChange={handleOtherRadioInputChange}
-            subLabel={
-              "En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l‘accompagnateur."
-            }
+            subLabel="En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l‘accompagnateur."
             value={OFFER_OPTIONS.DUO}
           />
         </div>
@@ -73,7 +71,7 @@ export const OfferOptions = ({
         <div className="form-row">
           <RadioInput
             checked={isEducational || false}
-            disabled={isEducationalDisabled}
+            disabled={isEducationalDisabled || isSelectedOptionDisabled}
             label="Offre collective EAC"
             name="offerOption"
             onChange={handleOtherRadioInputChange}
@@ -85,8 +83,8 @@ export const OfferOptions = ({
 
       <div className="form-row">
         <RadioInput
-          checked={areAllPresentOfferOptionsUnchecked || false}
-          disabled={areAllPresentsOfferOptionsDisabled()}
+          checked={noOptionSelected || false}
+          disabled={areAllPresentsOfferOptionsDisabled() || isSelectedOptionDisabled}
           label="Aucune"
           name="offerOption"
           onChange={handleOtherRadioInputChange}
@@ -96,7 +94,6 @@ export const OfferOptions = ({
     </section>
   )
 }
-
 
 OfferOptions.propTypes = {
   canOfferBeDuo: PropTypes.bool.isRequired,

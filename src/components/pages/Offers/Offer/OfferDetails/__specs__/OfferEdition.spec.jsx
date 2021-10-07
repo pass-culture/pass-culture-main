@@ -878,7 +878,7 @@ describe('offerDetails - Edition', () => {
       expect(screen.getByLabelText('Aucune')).toBeEnabled()
     })
 
-    it('should disable all offer type input when offer cannot be duo', async () => {
+    it('should disable no offer options input when offer cannot be duo and can be educational', async () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
@@ -897,34 +897,45 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // Then
-      // Edition read only fields
-      const disabledFields = ['categoryId', 'isEducational', 'offererId', 'venueId']
+      const isEducationalOption = await getOfferInputForField('isEducational')
+      expect(isEducationalOption).toBeDisabled()
+      expect(screen.getByLabelText('Aucune')).toBeDisabled()
+    })
 
-      disabledFields.forEach(label => {
-        const input = screen.getByLabelText(fieldLabels[label].label, {
-          exact: fieldLabels[label].exact,
-        })
-        expect(input).toBeDisabled()
-      })
+    it('should disable all offer options input when offer is educational', async () => {
+      // Given
+      const editedOffer = {
+        id: 'ABC12',
+        subcategoryId: 'ID',
+        name: 'My edited offer',
+        description: 'Offer description',
+        venue: editedOfferVenue,
+        venueId: editedOfferVenue.id,
+        withdrawalDetails: 'Offer withdrawal details',
+        bookingEmail: 'booking@example.net',
+        status: 'ACTIVE',
+        isEducational: true,
+      }
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+      const eventCategoryResponse = {
+        ...categories,
+        subcategories: [
+          {
+            ...categories.subcategories[0],
+            isEvent: true,
+          },
+        ],
+      }
+      pcapi.loadCategories.mockResolvedValue(eventCategoryResponse)
 
-      // Editable fields
-      const editableFields = [
-        'bookingEmail',
-        'description',
-        'name',
-        'externalTicketOfficeUrl',
-        'withdrawalDetails',
-        'audioDisabilityCompliant',
-        'motorDisabilityCompliant',
-        'visualDisabilityCompliant',
-      ]
+      // When
+      await renderOffers(props, store)
 
-      editableFields.forEach(label => {
-        const input = screen.getByLabelText(fieldLabels[label].label, {
-          exact: fieldLabels[label].exact,
-        })
-        expect(input).toBeEnabled()
-      })
+      // Then
+      const isDuoOption = await getOfferInputForField('isDuo')
+      expect(isDuoOption).toBeDisabled()
+      const isEducationalOption = await getOfferInputForField('isEducational')
+      expect(isEducationalOption).toBeDisabled()
       expect(screen.getByLabelText('Aucune')).toBeDisabled()
     })
 
