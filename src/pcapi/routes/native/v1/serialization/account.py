@@ -4,6 +4,7 @@ from typing import Optional
 from uuid import UUID
 
 from dateutil.relativedelta import relativedelta
+import flask
 from pydantic.class_validators import validator
 from pydantic.fields import Field
 from sqlalchemy.orm import joinedload
@@ -268,7 +269,7 @@ class SendPhoneValidationRequest(BaseModel):
 class UploadIdentityDocumentRequest(BaseModel):
     token: str
 
-    def get_image_as_bytes(self, request) -> bytes:
+    def get_image_as_bytes(self, request: flask.Request) -> bytes:
         """
         Get the image from the POSTed data (request) or from the form field
         (in which case it's supposed to be an URL that we are going to request.
