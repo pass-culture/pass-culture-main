@@ -5,9 +5,7 @@ import withNotRequiredLogin from '../../hocs/with-login/withNotRequiredLogin'
 import withTracking from '../../hocs/withTracking'
 import { connect } from 'react-redux'
 import { ANDROID_APPLICATION_ID } from '../../../utils/config'
-import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'
-import selectIsFeatureEnabled from '../../router/selectors/selectIsFeatureEnabled'
-import { DEFAULT_WHOLE_FRANCE_OPENING_VALUE, FEATURES } from '../../router/selectors/features'
+import { DEFAULT_WHOLE_FRANCE_OPENING_VALUE } from '../../router/selectors/features'
 
 export const mapStateToProps = state => {
   if (state.features.fetchHasFailed) {
@@ -18,8 +16,8 @@ export const mapStateToProps = state => {
   }
 
   return {
-    isNewBookingLimitsActived: !selectIsFeatureDisabled(state, FEATURES.APPLY_BOOKING_LIMITS_V2),
-    wholeFranceOpening: selectIsFeatureEnabled(state, FEATURES.WHOLE_FRANCE_OPENING),
+    isNewBookingLimitsActived: true,
+    wholeFranceOpening: true,
   }
 }
 

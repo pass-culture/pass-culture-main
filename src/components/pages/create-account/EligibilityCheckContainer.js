@@ -16,7 +16,7 @@ export const mapStateToProps = state => {
 
   return {
     isIdCheckAvailable: selectIsFeatureEnabled(state, FEATURES.ALLOW_IDCHECK_REGISTRATION),
-    wholeFranceOpening: selectIsFeatureEnabled(state, FEATURES.WHOLE_FRANCE_OPENING),
+    wholeFranceOpening: true,
   }
 }
 

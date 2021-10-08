@@ -9,18 +9,8 @@ describe('eligibility check container', () => {
           features: [
             {
               isActive: true,
-              name: 'APPLY_BOOKING_LIMITS_V2',
-              nameKey: 'APPLY_BOOKING_LIMITS_V2',
-            },
-            {
-              isActive: true,
               name: 'ALLOW_IDCHECK_REGISTRATION',
               nameKey: 'ALLOW_IDCHECK_REGISTRATION',
-            },
-            {
-              isActive: true,
-              name: 'WHOLE_FRANCE_OPENING',
-              nameKey: 'WHOLE_FRANCE_OPENING',
             },
           ],
         },
@@ -46,8 +36,8 @@ describe('eligibility check container', () => {
           features: [
             {
               isActive: true,
-              name: 'APPLY_BOOKING_LIMITS_V2',
-              nameKey: 'APPLY_BOOKING_LIMITS_V2',
+              name: 'PLACEHOLDER',
+              nameKey: 'PLACEHOLDER',
             },
             {
               isActive: false,
@@ -67,7 +57,7 @@ describe('eligibility check container', () => {
       // then
       expect(props).toStrictEqual({
         isIdCheckAvailable: false,
-        wholeFranceOpening: false,
+        wholeFranceOpening: true,
       })
     })
   })
