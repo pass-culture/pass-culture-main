@@ -1,7 +1,7 @@
 import { IMAGE_TYPE, MAX_IMAGE_SIZE, MIN_IMAGE_HEIGHT, MIN_IMAGE_WIDTH } from './_constants'
 
-const isNotAnImage = async file => !IMAGE_TYPE.includes(file.type)
-const isTooBig = async file => file.size > MAX_IMAGE_SIZE
+const isNotAnImage = file => !IMAGE_TYPE.includes(file.type)
+const isTooBig = file => file.size > MAX_IMAGE_SIZE
 const isOfPoorQuality = async file => {
   // Polyfill for Safari and IE not supporting createImageBitmap
   if (!('createImageBitmap' in window)) {
@@ -32,6 +32,6 @@ export const constraints = [
   {
     id: 'dimensions',
     description: 'La taille de l’image doit être au format 6/9, avec une largeur minimale de 400px',
-    validator: isOfPoorQuality,
+    asyncValidator: isOfPoorQuality,
   },
 ]

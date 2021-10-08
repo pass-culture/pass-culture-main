@@ -256,18 +256,20 @@ describe('thumbnail edition', () => {
         renderThumbnail()
 
         // When
-        fireEvent.click(screen.getByText('Utiliser une URL'))
+        const useUrlTabButton = screen.getByText('Utiliser une URL')
+        fireEvent.click(useUrlTabButton)
 
         // Then
-        expect(
-          await screen.findByText('Utilisez de préférence un visuel en orientation portrait', {
-            selector: 'p',
-          })
-        ).toBeInTheDocument()
+        const importFromComputerTitle = await screen.findByText(
+          'Utilisez de préférence un visuel en orientation portrait',
+          { selector: 'p' }
+        )
+        expect(importFromComputerTitle).toBeInTheDocument()
+
+        expect(screen.getByText('Valider', { selector: 'button' })).toBeDisabled()
         const urlInput = screen.getByLabelText('URL de l’image')
         expect(urlInput).toHaveAttribute('type', 'text')
         expect(urlInput).toHaveAttribute('placeholder', 'Ex : http://...')
-        expect(screen.getByText('Valider', { selector: 'button' })).toHaveAttribute('disabled')
       })
 
       it('should enable submit button if there is a string', () => {
@@ -279,7 +281,7 @@ describe('thumbnail edition', () => {
         fireEvent.change(screen.getByLabelText('URL de l’image'), { target: { value: 'MEFA' } })
 
         // Then
-        expect(screen.getByText('Valider', { selector: 'button' })).not.toHaveAttribute('disabled')
+        expect(screen.getByText('Valider', { selector: 'button' })).toBeEnabled()
       })
 
       it('should display an error if the url does not meet the requirements', async () => {
@@ -296,10 +298,8 @@ describe('thumbnail edition', () => {
         fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // Then
-        expect(screen.getByLabelText('URL de l’image')).toHaveAttribute('disabled')
-        expect(await screen.findByText('Valider', { selector: 'button' })).toHaveAttribute(
-          'disabled'
-        )
+        expect(screen.getByLabelText('URL de l’image')).toBeDisabled()
+        expect(await screen.findByText('Valider', { selector: 'button' })).toBeDisabled()
         expect(
           await screen.findByText('API error message', { selector: 'pre' })
         ).toBeInTheDocument()
@@ -319,48 +319,14 @@ describe('thumbnail edition', () => {
         fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // Then
-        expect(screen.getByLabelText('URL de l’image')).toHaveAttribute('disabled')
-        expect(await screen.findByText('Valider', { selector: 'button' })).toHaveAttribute(
-          'disabled'
-        )
+        expect(screen.getByLabelText('URL de l’image')).toBeDisabled()
+        expect(await screen.findByText('Valider', { selector: 'button' })).toBeDisabled()
         expect(
           await screen.findByText('Une erreur est survenue', { selector: 'pre' })
         ).toBeInTheDocument()
       })
 
-      it('should display a URL format error if URL format is invalid', () => {
-        // Given
-        renderThumbnail()
-        fireEvent.click(screen.getByText('Utiliser une URL'))
-        fireEvent.change(screen.getByLabelText('URL de l’image'), {
-          target: { value: 'htp://url_example.com' },
-        })
-
-        // When
-        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
-
-        // Then
-        expect(screen.getByText('Format d’URL non valide', { selector: 'pre' })).toBeInTheDocument()
-      })
-
-      it('should not display a URL format error if URL format is valid', async () => {
-        // Given
-        renderThumbnail()
-        fireEvent.click(screen.getByText('Utiliser une URL'))
-        fireEvent.change(screen.getByLabelText('URL de l’image'), {
-          target: { value: 'https://url_example.com' },
-        })
-
-        // When
-        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
-
-        // Then
-        await waitFor(() => {
-          expect(screen.queryByText('Format d’URL non valide')).not.toBeInTheDocument()
-        })
-      })
-
-      it('should remove the error if the user rewrite the URL after a first error', () => {
+      it('should add and remove error when the user change the URL value', async () => {
         // Given
         renderThumbnail()
         fireEvent.click(screen.getByText('Utiliser une URL'))
@@ -368,6 +334,9 @@ describe('thumbnail edition', () => {
           target: { value: 'htp://url_example.com' },
         })
         fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
+
+        const urlFieldError = screen.queryByText('Format d’URL non valide', { selector: 'pre' })
+        expect(urlFieldError).toBeInTheDocument()
 
         // When
         fireEvent.change(screen.getByPlaceholderText('Ex : http://...'), {
@@ -375,21 +344,20 @@ describe('thumbnail edition', () => {
         })
 
         // Then
-        expect(
-          screen.queryByText('Format d’URL non valide', { selector: 'pre' })
-        ).not.toBeInTheDocument()
+        expect(urlFieldError).not.toBeInTheDocument()
       })
 
       it('should go to the credit step if there is no validation error', async () => {
         // Given
         pcapi.validateDistantImage.mockResolvedValue({ errors: [] })
         renderThumbnail()
-        fireEvent.click(screen.getByText('Utiliser une URL'))
+        const useUrlTabButton = screen.getByText('Utiliser une URL')
+        fireEvent.click(useUrlTabButton)
+
+        // When
         fireEvent.change(screen.getByLabelText('URL de l’image'), {
           target: { value: 'http://url_example.com' },
         })
-
-        // When
         fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // Then

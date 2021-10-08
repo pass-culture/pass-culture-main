@@ -47,8 +47,8 @@ const ImportFromURL = ({ isLoading, setIsLoading, setStep, setPreviewBase64, set
             setError(result.errors[0])
           } else {
             setPreviewBase64(result.image)
-            setStep(step + 1)
             setIsButtonDisabled(false)
+            setStep(step + 1)
           }
         } catch {
           setError('Une erreur est survenue')

@@ -17,7 +17,10 @@ const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
 
   const getError = async file => {
     for (const constraint of constraints) {
-      if (await constraint.validator(file)) return Promise.resolve(constraint.id)
+      const inError = constraint.asyncValidator ? await constraint.asyncValidator(file) : constraint.validator(file)
+      if (inError) {
+        return Promise.resolve(constraint.id)
+      }
     }
     return Promise.resolve('')
   }
@@ -25,7 +28,6 @@ const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
   const submitThumbnail = useCallback(async () => {
     const currentFile = file.current.files[0]
     const error = await getError(currentFile)
-
     if (error === '') {
       setThumbnail(currentFile)
       setStep(step + 1)

@@ -9,6 +9,7 @@ import {
   createImageFile,
   renderThumbnail,
 } from 'components/pages/Offers/Offer/Thumbnail/__specs__/setup'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 // The tests files have been separated in two because this mock
 // breaks other tests
@@ -121,14 +122,14 @@ describe('when the user is on the preview step', () => {
     const closeModal = jest.fn()
     const setThumbnailInfo = jest.fn()
     renderThumbnail({ setIsModalOpened: closeModal, setThumbnailInfo: setThumbnailInfo })
-    jest.spyOn(global, 'fetch').mockResolvedValue({
-      json: () => Promise.resolve({ errors: [], image: '' }),
-      ok: true,
-      status: 201,
-    })
+    pcapi.validateDistantImage.mockResolvedValue({ errors: [], image: '' })
     fireEvent.click(screen.getByText('Utiliser une URL'))
     fireEvent.change(screen.getByLabelText('URL de l’image'), {
       target: { value: 'https://url_example.com' },
+    })
+    const sumbitButton = screen.getByText('Valider', { selector: 'button' })
+    await waitFor(() => {
+      expect(sumbitButton).toBeEnabled()
     })
     fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
     fireEvent.change(await screen.findByPlaceholderText('Photographe...'), {
