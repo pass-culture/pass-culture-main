@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
@@ -12,6 +12,12 @@ import {
   MIN_IMAGE_WIDTH,
 } from 'components/pages/Offers/Offer/Thumbnail/_constants'
 import ThumbnailDialog from 'components/pages/Offers/Offer/Thumbnail/ThumbnailDialog'
+
+jest.mock('repository/pcapi/pcapi', () => ({
+  ...jest.requireActual('repository/pcapi/pcapi'),
+  validateDistantImage: jest.fn(),
+}))
+
 
 export const createImageFile = ({
   name = 'example.png',
@@ -39,10 +45,12 @@ export const createFile = ({
 export const renderThumbnail = ({
   setIsModalOpened = jest.fn(),
   setThumbnailInfo = jest.fn(),
+  postThumbnail = jest.fn(),
 } = {}) => {
   render(
     <MemoryRouter>
       <ThumbnailDialog
+        postThumbnail={postThumbnail}
         setIsModalOpened={setIsModalOpened}
         setPreview={jest.fn()}
         setThumbnailInfo={setThumbnailInfo}
