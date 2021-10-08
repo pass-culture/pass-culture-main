@@ -109,6 +109,7 @@ postProcessingEnvVars:
   PCAPI_ROOT_PATH: /usr/src/app
   IMPORT_USERS_SCRIPT_PATH: src/pcapi/scripts/beneficiary/import_users.py
   USERS_CSV_PATH: /scripts/data_pass-culture-api-staging.csv
+  PC_SCRIPT_PATH: src/pcapi/scripts/pc.py
 
 pcapiSecrets:
   - ADMINISTRATION_EMAIL_ADDRESS
