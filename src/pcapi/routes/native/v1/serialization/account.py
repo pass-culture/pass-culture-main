@@ -117,9 +117,9 @@ class DomainsCredit(BaseModel):
 
 
 class CallToActionMessage(BaseModel):
-    callToActionTitle: str
-    callToActionLink: str
-    callToActionIcon: subscription_models.CallToActionIcon
+    callToActionTitle: Optional[str]
+    callToActionLink: Optional[str]
+    callToActionIcon: Optional[subscription_models.CallToActionIcon]
 
     class Config:
         alias_generator = to_camel
@@ -129,7 +129,7 @@ class CallToActionMessage(BaseModel):
 
 class SubscriptionMessage(BaseModel):
     userMessage: str
-    callToAction: CallToActionMessage
+    callToAction: Optional[CallToActionMessage]
     popOverIcon: subscription_models.PopOverIcon
     updatedAt: datetime.datetime
 
