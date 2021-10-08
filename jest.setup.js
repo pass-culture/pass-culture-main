@@ -9,12 +9,13 @@ global.fetch = fetch
 jest.spyOn(global, 'scrollTo').mockImplementation()
 
 fetch.mockResponse(req => {
-  console.error(`
-----------------------------------------------------------------------------
- /!\\ UNMOCKED FETCH CALL TO :  ${req.url}
-----------------------------------------------------------------------------
-`)
-  return Promise.reject(new Error('UNMOCKED FETCH CALL'))
+  const msg = `
+  ----------------------------------------------------------------------------
+   /!\\ UNMOCKED FETCH CALL TO :  ${req.url}
+  ----------------------------------------------------------------------------
+  `
+  console.error(msg)
+  return Promise.reject(new Error(msg))
 })
 
 jest.mock('tracking/mediaCampaignsTracking')
