@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import * as PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
@@ -30,7 +30,7 @@ const ImportFromURL = ({ isLoading, setIsLoading, setStep, setPreviewBase64, set
 
   const isURLFormatValid = url => /^(http|https)/.test(url)
 
-  const isThereAnError = useCallback(
+  const onSubmit = useCallback(
     async event => {
       event.preventDefault()
 
@@ -82,7 +82,7 @@ const ImportFromURL = ({ isLoading, setIsLoading, setStep, setPreviewBase64, set
         className="primary-button tnf-url-button"
         disabled={isButtonDisabled}
         isLoading={isLoading}
-        onClick={isThereAnError}
+        onClick={onSubmit}
       >
         Valider
       </SubmitButton>
