@@ -1,6 +1,7 @@
 import cloudsqlpostgresinstance
 import passculture_db_ops
 import env_vars
+import os
 
 prod = cloudsqlpostgresinstance.CloudSQLPostgresInstanceFactory.create(
     project=env_vars.SOURCE_PROJECT,
@@ -53,15 +54,23 @@ ehp.connect(
     database=env_vars.DEST_DATABASE_NAME
 )
 
-# 7 Post-process
-passculture_db_ops.post_process(
-    instance=ehp,
+database_url = passculture_db_ops.build_database_url(
     username=env_vars.DEST_NEW_USER,
     password=env_vars.DEST_NEW_USER_PASSWORD,
     database_name=env_vars.DEST_DATABASE_NAME,
     database_host=env_vars.DEST_DATABASE_HOST,
     database_port=env_vars.DEST_DATABASE_PORT,
 )
+
+# 7 Post-process
+os.environ["DATABASE_URL"] = database_url
+
+passculture_db_ops.post_process(
+    instance=ehp,
+    database_url=database_url
+)
+
+passculture_db_ops.run_pc_script("sandbox", "-n", "beneficiaries", "-c", "false")
 
 ehp.disconnect()
 
