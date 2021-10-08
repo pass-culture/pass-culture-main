@@ -831,7 +831,7 @@ def get_id_check_validation_step(user: User) -> Optional[BeneficiaryValidationSt
     from pcapi.routes.native.utils import is_client_older
 
     if not user.hasCompletedIdCheck and user.allowed_eligibility_check_methods:
-        if is_client_older("1.160.0") or not user.extraData.get("is_identity_document_uploaded"):
+        if is_client_older("1.155.1") or not user.extraData.get("is_identity_document_uploaded"):
             return BeneficiaryValidationStep.ID_CHECK
         return BeneficiaryValidationStep.BENEFICIARY_INFORMATION
     return None
