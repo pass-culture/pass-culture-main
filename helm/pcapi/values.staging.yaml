@@ -531,8 +531,6 @@ secrets:
     version: 2
   - name: PAYMENTS_REPORT_RECIPIENTS
     version: 2
-  - name: PC_GOOGLE_KEY
-    version: 2
   - name: PC_GOOGLE_KEY_64
     version: 2
   - name: PERMISSIONS
