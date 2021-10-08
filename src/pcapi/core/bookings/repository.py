@@ -21,8 +21,10 @@ from sqlalchemy.util._collections import AbstractKeyedTuple
 from pcapi.core.bookings import conf
 from pcapi.core.bookings.conf import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.categories import subcategories
+from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
@@ -163,29 +165,11 @@ def find_used_by_token(token: str) -> Booking:
     return Booking.query.filter_by(token=token.upper(), isUsed=True).one_or_none()
 
 
-# TODO(yacine) remove this fonction 20 days after activation of FF ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
-def old_find_expiring_bookings() -> Query:
+def find_expiring_individual_bookings_query() -> Query:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
     return (
-        Booking.query.join(Stock)
-        .join(Offer)
-        .filter(
-            ~Booking.isCancelled,
-            ~Booking.isUsed,
-            (Booking.dateCreated + conf.BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight,
-            Offer.canExpire,
-        )
-    )
-
-
-def find_expiring_bookings() -> Query:
-    # call old fonction if FF is disabled
-    if not FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS.is_active():
-        return old_find_expiring_bookings()
-
-    today_at_midnight = datetime.combine(date.today(), time(0, 0))
-    return (
-        Booking.query.join(Stock)
+        IndividualBooking.query.join(Booking)
+        .join(Stock)
         .join(Offer)
         .filter(
             ~Booking.isCancelled,
@@ -209,8 +193,17 @@ def find_expiring_bookings() -> Query:
     )
 
 
-def find_expiring_bookings_ids() -> Query:
-    return find_expiring_bookings().order_by(Booking.id).with_entities(Booking.id)
+def find_expiring_educational_bookings_query() -> Query:
+    today_at_midnight = datetime.combine(date.today(), time(0, 0))
+
+    return EducationalBooking.query.join(Booking).filter(
+        Booking.status == BookingStatus.PENDING,
+        EducationalBooking.confirmationLimitDate <= today_at_midnight,
+    )
+
+
+def find_expiring_booking_ids_from_query(query: Query) -> Query:
+    return query.order_by(Booking.id).with_entities(Booking.id)
 
 
 # TODO(yacine) remove this fonction 20 days after activation of FF ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS

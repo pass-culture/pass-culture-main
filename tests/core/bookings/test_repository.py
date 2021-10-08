@@ -1597,28 +1597,22 @@ class FindExpiringBookingsTest:
             book_offer = offers_factories.OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
             movie_offer = offers_factories.OfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
 
-            book_booking_before_new_delay = bookings_factories.BookingFactory(
-                stock__offer=book_offer, dateCreated=datetime.utcnow()
+            movie_booking = bookings_factories.IndividualBookingFactory(
+                stock__offer=movie_offer, dateCreated=datetime.utcnow()
             )
-            movie_booking = bookings_factories.BookingFactory(stock__offer=movie_offer, dateCreated=datetime.utcnow())
-
-            print("book_booking_before_new_delay.dateCreated", book_booking_before_new_delay.dateCreated)
 
             frozen_time.move_to("2021-08-06 15:00:00")
-            book_booking_new_expiry_delay = bookings_factories.BookingFactory(
+            book_booking_new_expiry_delay = bookings_factories.IndividualBookingFactory(
                 stock__offer=book_offer, dateCreated=datetime.utcnow()
             )
-            bookings_factories.BookingFactory(stock__offer=movie_offer, dateCreated=datetime.utcnow())
-
-            bookings = booking_repository.find_expiring_bookings().all()
-            assert bookings == []
+            bookings_factories.IndividualBookingFactory(stock__offer=movie_offer, dateCreated=datetime.utcnow())
 
             frozen_time.move_to("2021-08-17 17:00:00")
 
-            bookings = booking_repository.find_expiring_bookings().all()
-            assert bookings == [book_booking_new_expiry_delay]
+            bookings = booking_repository.find_expiring_individual_bookings_query().all()
+            assert bookings == [book_booking_new_expiry_delay.individualBooking]
 
             frozen_time.move_to("2021-09-01 17:00:00")
 
-            bookings = booking_repository.find_expiring_bookings().all()
-            assert set(bookings) == {book_booking_new_expiry_delay, movie_booking, book_booking_before_new_delay}
+            bookings = booking_repository.find_expiring_individual_bookings_query().all()
+            assert set(bookings) == {book_booking_new_expiry_delay.individualBooking, movie_booking.individualBooking}
