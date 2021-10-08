@@ -75,7 +75,7 @@ const OfferOptions = ({
             label="Offre collective EAC"
             name="offerOption"
             onChange={handleOtherRadioInputChange}
-            subLabel="Réservé uniquement aux offres s’inscrivants dans le cadre d’un projet d’Éducation Artistique et Culturelle des académies de Rennes et Versailles."
+            subLabel="Réservé uniquement aux offres s’inscrivant dans le cadre d’un projet d’Éducation Artistique et Culturelle des académies de Rennes et Versailles."
             value={OFFER_OPTIONS.EDUCATIONAL}
           />
         </div>
