@@ -80,13 +80,16 @@ export const Offers = ({
 
   return (
     <ul className="offers">
-      {offers.map((offer) => (
-        <Offer
-          canPrebookOffers={userRole == Role.redactor}
-          key={offer.id}
-          offer={offer}
-          thumbUrl={offersThumbById[offer.id]}
-        />
+      {offers.map((offer, index) => (
+        <>
+          <Offer
+            canPrebookOffers={userRole == Role.redactor}
+            key={offer.id}
+            offer={offer}
+            thumbUrl={offersThumbById[offer.id]}
+          />
+          {index < offers.length - 1 && <hr className="separator" />}
+        </>
       ))}
     </ul>
   )
