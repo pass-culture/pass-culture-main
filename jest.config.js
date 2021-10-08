@@ -16,4 +16,5 @@ module.exports = {
   verbose: false,
   clearMocks: true,
   restoreMocks: true,
+  testTimeout: 30000,
 }
