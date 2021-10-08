@@ -317,8 +317,9 @@ console:
       cpu: 200m
       memory: 512Mi
 
-###  Cloud task idcheck deployment ###
-cloudTaskIdcheck:
+# Deployment specific for uploading the identity_document
+# the route is /native/v1/identity_document
+uploadIdentityDocument:
   enabled: true
 
   containerPort : 5000
@@ -357,15 +358,65 @@ cloudTaskIdcheck:
       - host: backend.passculture-integration.beta.gouv.fr
         paths:
           - path: /native/v1/identity_document$
-          - path: /cloud-tasks/verify_identity_document$
       - host: backend.integration.passculture.app
         paths:
           - path: /native/v1/identity_document$
-          - path: /cloud-tasks/verify_identity_document$
       - host: backend.integration.passculture.pro
         paths:
           - path: /native/v1/identity_document$
-          - path: /cloud-tasks/verify_identity_document$
+    tls:
+    - secretName: pcapi-gandi-cert
+      hosts:
+      - backend.passculture-integration.beta.gouv.fr
+      - backend.integration.passculture.app
+      - backend.integration.passculture.pro
+
+# Deployment for all cloud tasks
+cloudTasks:
+  enabled: true
+
+  containerPort : 5000
+
+  probePath: /health/api
+
+  resources:
+    limits:
+      cpu: 1
+      memory: 2Gi
+    requests:
+      cpu: 700m
+      memory: 1536Mi
+
+  replicaCount: 1
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilization: 70
+    # Enable this option to scale on memory percentage
+    # targetMemoryUtilization: 70
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 10m
+    hosts:
+      - host: backend.passculture-integration.beta.gouv.fr
+        paths:
+          - path: /cloud-tasks/(.*)$
+      - host: backend.integration.passculture.app
+        paths:
+          - path: /cloud-tasks/(.*)$
+      - host: backend.integration.passculture.pro
+        paths:
+          - path: /cloud-tasks/(.*)$
     tls:
     - secretName: pcapi-gandi-cert
       hosts:
@@ -394,8 +445,11 @@ configmap:
   NATIVE_APP_MINIMAL_CLIENT_VERSION: "1.142.0"
   DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT: "1800000"
 
-configmapCloudTaskIdcheck:
+configmapCloudTasks:
   GUNICORN_THREADS : 10
+
+configmapUploadIdentityDocument:
+  GUNICORN_THREADS: 10
 
 secrets:
   - name: ADMINISTRATION_EMAIL_ADDRESS
