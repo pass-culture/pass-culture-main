@@ -764,28 +764,7 @@ class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
 
 @pytest.mark.usefixtures("db_session")
 class SendNewlyEligibleUserEmailTest:
-    @override_features(APPLY_BOOKING_LIMITS_V2=False)
-    def test_send_activation_email_before_opening(self):
-        # given
-        user = users_factories.UserFactory(
-            dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)), departementCode="93", isBeneficiary=False
-        )
-
-        # when
-        send_newly_eligible_user_email(user)
-
-        # then
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2030056
-        assert (
-            mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"][:111]
-            == "https://passcultureapptestauto.page.link/?link=https%3A%2F%2Fapp.passculture-testing.beta.gouv.fr%2Fid-check%3F"
-        )
-        assert "email" in mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
-        assert mails_testing.outbox[0].sent_data["Vars"]["depositAmount"] == 500
-
-    @override_features(APPLY_BOOKING_LIMITS_V2=True)
-    def test_send_activation_email_after_opening(self):
+    def test_send_activation_email(self):
         # given
         user = users_factories.UserFactory(
             dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)), departementCode="93", isBeneficiary=False

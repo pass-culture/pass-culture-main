@@ -5,7 +5,6 @@ from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.models.deposit import DepositType
-from pcapi.models.feature import FeatureToggle
 
 
 CONFIRM_BOOKING_AFTER_CREATION_DELAY = datetime.timedelta(hours=48)
@@ -148,5 +147,5 @@ def get_limit_configuration_for_type_and_version(deposit_type: DepositType, vers
 
 def get_current_deposit_version_for_type(deposit_type: DepositType) -> int:
     if deposit_type == DepositType.GRANT_18:
-        return 2 if FeatureToggle.APPLY_BOOKING_LIMITS_V2.is_active() else 1
+        return 2
     return 1

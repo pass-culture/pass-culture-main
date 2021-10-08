@@ -10,7 +10,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class SettingsTest:
     @override_features(
-        APPLY_BOOKING_LIMITS_V2=False,
         ALLOW_IDCHECK_REGISTRATION=True,
         ENABLE_NATIVE_APP_RECAPTCHA=True,
         AUTO_ACTIVATE_DIGITAL_BOOKINGS=False,
@@ -30,7 +29,7 @@ class SettingsTest:
         assert response.json == {
             "allowIdCheckRegistration": True,
             "autoActivateDigitalBookings": False,
-            "depositAmount": 50000,
+            "depositAmount": 30000,
             "enableNativeIdCheckVersion": False,
             "enableNativeIdCheckVerboseDebugging": False,
             "isRecaptchaEnabled": True,
@@ -47,7 +46,6 @@ class SettingsTest:
         }
 
     @override_features(
-        APPLY_BOOKING_LIMITS_V2=True,
         ALLOW_IDCHECK_REGISTRATION=False,
         ENABLE_NATIVE_APP_RECAPTCHA=False,
         ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING=True,

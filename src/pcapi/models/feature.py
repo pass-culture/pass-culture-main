@@ -31,7 +31,6 @@ class FeatureToggle(enum.Enum):
     WEBAPP_SIGNUP = "Permettre aux bénéficiaires de créer un compte"
     API_SIRENE_AVAILABLE = "Active les fonctionnalitées liées à l'API Sirene"
     WEBAPP_HOMEPAGE = "Permettre l affichage de la nouvelle page d accueil de la webapp"
-    APPLY_BOOKING_LIMITS_V2 = "Permettre l affichage des nouvelles règles de génération de portefeuille des jeunes"
     ALLOW_IDCHECK_REGISTRATION = "Autoriser les utilisateurs de 18 ans à suivre le parcours d inscription ID Check"
     ALLOW_IDCHECK_UNDERAGE_REGISTRATION = (
         "Autoriser les utilisateurs de moins de 15 à 17 ans à suivre le parcours d inscription ID Check"

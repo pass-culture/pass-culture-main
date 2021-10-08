@@ -59,7 +59,6 @@ class Returns200Test:
         assert response.status_code == 200
         mocked_beneficiary_job.assert_called_once_with(5)
 
-    @override_features(APPLY_BOOKING_LIMITS_V2=False)
     @patch("pcapi.domain.user_emails.send_accepted_as_beneficiary_email")
     @patch("pcapi.domain.user_emails.send_activation_email")
     @patch("pcapi.domain.password.random_token")
@@ -116,7 +115,7 @@ class Returns200Test:
         assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": True}
 
         deposit = Deposit.query.one()
-        assert deposit.amount == 500
+        assert deposit.amount == 300
         assert deposit.source == "dossier jouve [35]"
         assert deposit.userId == beneficiary.id
 
