@@ -4,7 +4,9 @@ from unittest.mock import patch
 
 from flask.blueprints import Blueprint
 from pydantic import BaseModel
+import pytest
 
+from pcapi.models import api_errors
 from pcapi.serialization.decorator import spectree_serialize
 
 
@@ -101,3 +103,13 @@ class SerializationDecoratorTest:
     def test_with_content_type_but_without_body(self, client):
         response = client.get("/test-blueprint/test", headers={"Content-Type": "application/json"})
         assert response.status_code == 204
+
+    def test_http_form_validation(self):
+        @spectree_serialize(response_model=TestResponseModel, on_success_status=206)
+        def mock_func(form: TestQueryModel):
+            return
+
+        with pytest.raises(api_errors.ApiErrors) as exc_info:
+            mock_func(form=None)
+
+        assert exc_info.value.errors == {"compulsory_int_query": "field required"}

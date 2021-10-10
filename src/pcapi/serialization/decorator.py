@@ -8,6 +8,7 @@ from typing import Type
 from flask import Response
 from flask import make_response
 from flask import request
+import pydantic
 from pydantic import BaseModel
 from spectree.spec import SpecTree
 from werkzeug.exceptions import BadRequest
@@ -135,7 +136,14 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
             if query_in_kwargs:
                 kwargs["query"] = query_in_kwargs(**query_params)
             if form_in_kwargs:
-                kwargs["form"] = form_in_kwargs(**form)
+                try:
+                    kwargs["form"] = form_in_kwargs(**form)
+                except pydantic.ValidationError as validation_errors:
+                    error = ApiErrors()
+                    error_dict = {}
+                    for errors in validation_errors.errors():
+                        error_dict[errors["loc"][0]] = errors["msg"]
+                    raise ApiErrors(error_dict)
 
             result = route(*args, **kwargs)
             if json_format:
