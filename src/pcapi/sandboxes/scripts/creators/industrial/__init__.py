@@ -1,7 +1,10 @@
+import datetime
+
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_activation_offers import (
     create_industrial_activation_offers,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import (
     associate_criterion_to_one_offer_with_mediation,
@@ -31,7 +34,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_product
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venue_types import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venues import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_webapp_users import *
 from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
 
 
@@ -40,9 +42,9 @@ def save_industrial_sandbox() -> None:
 
     admin_users_by_name = create_industrial_admin_users()
     pro_users_by_name = create_industrial_pro_users(offerers_by_name)
-    webapp_users_by_name = create_industrial_webapp_users()
+    app_users_by_name = create_industrial_app_users()
 
-    users_by_name = dict(dict(admin_users_by_name, **pro_users_by_name), **webapp_users_by_name)
+    users_by_name = dict(dict(admin_users_by_name, **pro_users_by_name), **app_users_by_name)
 
     venue_types = create_industrial_venue_types()
 
@@ -80,7 +82,7 @@ def save_industrial_sandbox() -> None:
     # Now that they booked, we can expire these users' deposit.
     for name, user in users_by_name.items():
         if "has-booked-some-but-deposit-expired" in name:
-            user.deposit.expirationDate = datetime.now()
+            user.deposit.expirationDate = datetime.datetime.now()
             repository.save(user.deposit)
 
     create_industrial_payments()

@@ -31,18 +31,18 @@ AGE_TAGS = ["age-more-than-18yo", "age-less-than-18yo", "age-18yo"]
 GRANT_18_DEPOSIT_VERSIONS = [1, 2]
 
 
-def create_industrial_webapp_users():
-    beneficiaries = create_industrial_webapp_beneficiaries()
-    underage_beneficiaries = create_industrial_webapp_underage_beneficiaries()
-    other_users = create_industrial_webapp_other_users()
-    general_public_users = create_industrial_webapp_general_public_users()
+def create_industrial_app_users():
+    beneficiaries = create_industrial_app_beneficiaries()
+    underage_beneficiaries = create_industrial_app_underage_beneficiaries()
+    other_users = create_industrial_app_other_users()
+    general_public_users = create_industrial_app_general_public_users()
 
-    webapp_users = dict(beneficiaries, **underage_beneficiaries, **other_users, **general_public_users)
-    return webapp_users
+    app_users = dict(beneficiaries, **underage_beneficiaries, **other_users, **general_public_users)
+    return app_users
 
 
-def create_industrial_webapp_beneficiaries():
-    logger.info("create_industrial_webapp_beneficiaries")
+def create_industrial_app_beneficiaries():
+    logger.info("create_industrial_app_beneficiaries")
 
     users_by_name = {}
 
@@ -83,8 +83,8 @@ def create_industrial_webapp_beneficiaries():
     return users_by_name
 
 
-def create_industrial_webapp_underage_beneficiaries():
-    logger.info("create_industrial_webapp_underage_beneficiaries")
+def create_industrial_app_underage_beneficiaries():
+    logger.info("create_industrial_app_underage_beneficiaries")
 
     users_by_name = {}
 
@@ -125,8 +125,8 @@ def create_industrial_webapp_underage_beneficiaries():
     return users_by_name
 
 
-def create_industrial_webapp_other_users():
-    logger.info("create_industrial_webapp_other_users")
+def create_industrial_app_other_users():
+    logger.info("create_industrial_app_other_users")
 
     users_by_name = {}
 
@@ -180,8 +180,8 @@ def create_industrial_webapp_other_users():
     return users_by_name
 
 
-def create_industrial_webapp_general_public_users():
-    logger.info("create_industrial_webapp_general_public_users")
+def create_industrial_app_general_public_users():
+    logger.info("create_industrial_app_general_public_users")
 
     users_by_name = {}
 
