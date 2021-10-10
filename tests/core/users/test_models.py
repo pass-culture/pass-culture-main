@@ -23,7 +23,7 @@ class UserTest:
             user = users_factories.UserFactory()
             user.add_beneficiary_role()
             yesterday = datetime.now() - timedelta(days=1)
-            payments_factories.DepositGrant18Factory(user=user, expirationDate=yesterday)
+            payments_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
 
             assert user.deposit.type == DepositType.GRANT_18
 
@@ -32,8 +32,10 @@ class UserTest:
             user.add_beneficiary_role()
             before_yesterday = datetime.now() - timedelta(days=2)
             yesterday = datetime.now() - timedelta(days=1)
-            payments_factories.DepositGrant17Factory(user=user, expirationDate=before_yesterday)
-            payments_factories.DepositGrant18Factory(user=user, expirationDate=yesterday)
+            payments_factories.DepositGrantFactory(
+                user=user, expirationDate=before_yesterday, type=DepositType.GRANT_17
+            )
+            payments_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
 
             assert user.deposit.type == DepositType.GRANT_18
 
@@ -41,8 +43,8 @@ class UserTest:
             user = users_factories.UserFactory()
             user.add_beneficiary_role()
             yesterday = datetime.now() - timedelta(days=1)
-            payments_factories.DepositGrant17Factory(user=user, expirationDate=yesterday)
-            payments_factories.DepositGrant18Factory(user=user)
+            payments_factories.DepositGrantFactory(user=user, expirationDate=yesterday, type=DepositType.GRANT_17)
+            payments_factories.DepositGrantFactory(user=user)
 
             assert user.deposit.type == DepositType.GRANT_18
 

@@ -73,7 +73,7 @@ def create_beneficiary_with_specific_address() -> None:
 
 
 def create_underage_beneficiary() -> None:
-    users_factories.BeneficiaryGrant15Factory(
+    users_factories.UnderageBeneficiaryFactory(
         email="pctest.underage-beneficiary@example.com",
         deposit__source="sandbox",
     )

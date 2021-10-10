@@ -7,6 +7,7 @@ import uuid
 from pcapi.core.payments import factories as payments_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import TokenType
+from pcapi.models.deposit import DepositType
 
 
 logger = logging.getLogger(__name__)
@@ -70,7 +71,9 @@ def create_industrial_webapp_beneficiaries():
             deposit__source="sandbox",
             deposit__version=deposit_version,
         )
-        payments_factories.DepositGrant17Factory(user=user, expirationDate=datetime.now(), source="sandbox")
+        payments_factories.DepositGrantFactory(
+            user=user, expirationDate=datetime.now(), source="sandbox", type=DepositType.GRANT_17
+        )
 
         user_key = f"jeune{departement_code} {tag} v{deposit_version}"
         users_by_name[user_key] = user
@@ -93,47 +96,26 @@ def create_industrial_webapp_underage_beneficiaries():
         email = f"pctest.mineur{departement_code}.{tag}@example.com"
 
         if tag == "15-years-old-underage-beneficiary":
-            user = users_factories.BeneficiaryGrant15Factory(
-                culturalSurveyId=None,
-                departementCode=str(departement_code),
-                email=email,
-                phoneNumber=f"+336{index:0>8}",
-                firstName="PC Test Mineur",
-                hasSeenTutorials=True,
-                lastName=f"{departement_code} {short_tag}",
-                needsToFillCulturalSurvey=False,
-                postalCode="{}100".format(departement_code),
-                publicName=f"PC Test Mineur {departement_code} {short_tag}",
-                deposit__source="sandbox",
-            )
+            age = 15
         elif tag == "16-years-old-underage-beneficiary":
-            user = users_factories.BeneficiaryGrant16Factory(
-                culturalSurveyId=None,
-                departementCode=str(departement_code),
-                email=email,
-                phoneNumber=f"+336{index:0>8}",
-                firstName="PC Test Mineur",
-                hasSeenTutorials=True,
-                lastName=f"{departement_code} {short_tag}",
-                needsToFillCulturalSurvey=False,
-                postalCode="{}100".format(departement_code),
-                publicName=f"PC Test Mineur {departement_code} {short_tag}",
-                deposit__source="sandbox",
-            )
+            age = 16
         else:
-            user = users_factories.BeneficiaryGrant17Factory(
-                culturalSurveyId=None,
-                departementCode=str(departement_code),
-                email=email,
-                phoneNumber=f"+336{index:0>8}",
-                firstName="PC Test Mineur",
-                hasSeenTutorials=True,
-                lastName=f"{departement_code} {short_tag}",
-                needsToFillCulturalSurvey=False,
-                postalCode="{}100".format(departement_code),
-                publicName=f"PC Test Mineur {departement_code} {short_tag}",
-                deposit__source="sandbox",
-            )
+            age = 17
+
+        user = users_factories.UnderageBeneficiaryFactory(
+            age=age,
+            culturalSurveyId=None,
+            departementCode=str(departement_code),
+            email=email,
+            phoneNumber=f"+336{index:0>8}",
+            firstName="PC Test Mineur",
+            hasSeenTutorials=True,
+            lastName=f"{departement_code} {short_tag}",
+            needsToFillCulturalSurvey=False,
+            postalCode="{}100".format(departement_code),
+            publicName=f"PC Test Mineur {departement_code} {short_tag}",
+            deposit__source="sandbox",
+        )
 
         user_key = f"jeune{departement_code} {tag}"
         users_by_name[user_key] = user

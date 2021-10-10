@@ -3,6 +3,7 @@ import uuid
 
 from dateutil.relativedelta import relativedelta
 import factory
+from factory.declarations import LazyAttribute
 
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.models
@@ -11,6 +12,7 @@ from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import user_session
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.models.deposit import DepositType
 from pcapi.utils import crypto
 
 from . import constants
@@ -18,6 +20,13 @@ from . import models
 
 
 DEFAULT_PASSWORD = "user@AZERTY123"
+
+GIVEN_DEPOSIT_BY_AGE = {
+    15: DepositType.GRANT_15,
+    16: DepositType.GRANT_16,
+    17: DepositType.GRANT_17,
+    18: DepositType.GRANT_18,
+}
 
 
 class UserFactory(BaseFactory):
@@ -125,51 +134,27 @@ class BeneficiaryGrant18Factory(BaseFactory):
 
     @factory.post_generation
     def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
-        from pcapi.core.payments.factories import DepositGrant18Factory
+        from pcapi.core.payments.factories import DepositGrantFactory
 
         if not create:
             return None
-        return DepositGrant18Factory(user=obj, **kwargs)
+        return DepositGrantFactory(user=obj, **kwargs)
 
 
 class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
+    class Params:
+        age = 15
+
     roles = [pcapi.core.users.models.UserRole.UNDERAGE_BENEFICIARY]
-
-
-class BeneficiaryGrant15Factory(UnderageBeneficiaryFactory):
-    dateOfBirth = datetime.datetime.now() - relativedelta(years=15, months=5)
+    dateOfBirth = LazyAttribute(lambda o: datetime.datetime.now() - relativedelta(years=o.age, months=5))
 
     @factory.post_generation
     def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
-        from pcapi.core.payments.factories import DepositGrant15Factory
+        from pcapi.core.payments.factories import DepositGrantFactory
 
         if not create:
             return None
-        return DepositGrant15Factory(user=obj, **kwargs)
-
-
-class BeneficiaryGrant16Factory(UnderageBeneficiaryFactory):
-    dateOfBirth = datetime.datetime.now() - relativedelta(years=16, months=5)
-
-    @factory.post_generation
-    def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
-        from pcapi.core.payments.factories import DepositGrant16Factory
-
-        if not create:
-            return None
-        return DepositGrant16Factory(user=obj, **kwargs)
-
-
-class BeneficiaryGrant17Factory(UnderageBeneficiaryFactory):
-    dateOfBirth = datetime.datetime.now() - relativedelta(years=17, months=5)
-
-    @factory.post_generation
-    def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
-        from pcapi.core.payments.factories import DepositGrant17Factory
-
-        if not create:
-            return None
-        return DepositGrant17Factory(user=obj, **kwargs)
+        return DepositGrantFactory(user=obj, **kwargs, type=GIVEN_DEPOSIT_BY_AGE.get(obj.age, DepositType.GRANT_15))
 
 
 class ProFactory(BaseFactory):
