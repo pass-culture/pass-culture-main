@@ -1,7 +1,11 @@
+from dataclasses import asdict
 from datetime import date
 from typing import Iterable
+from typing import Union
 
 from requests import Response
+
+from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
 
 from .. import testing
 from ..models import MailResult
@@ -13,7 +17,9 @@ class TestingBackend(BaseBackend):
     accessible from tests.
     """
 
-    def _send(self, recipients: Iterable[str], data: dict) -> MailResult:
+    def _send(self, recipients: Iterable[str], data: Union[SendinblueTransactionalEmailData, dict]) -> MailResult:
+        if not isinstance(data, dict):
+            data = asdict(data)
         data["To"] = ", ".join(recipients)
         result = MailResult(sent_data=data, successful=True)
         testing.outbox.append(result)

@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from datetime import date
 import logging
 from typing import Iterable
@@ -22,7 +23,7 @@ class SendinblueBackend(BaseBackend):
             recipients=recipients, template_id=data.template.id, params=data.params, tags=data.template.tags
         )
         send_transactional_email_task.delay(payload)
-        return MailResult(sent_data=data.__dict__(), successful=True)
+        return MailResult(sent_data=asdict(data), successful=True)
 
     def create_contact(self, email: str) -> Response:
         pass

@@ -8,6 +8,12 @@ from pcapi.core.bookings.conf import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.conf import BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected import (
+    send_duplicate_beneficiary_pre_subscription_rejected_data,
+)
+from pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected import (
+    send_not_eligible_beneficiary_pre_subscription_rejected_data,
+)
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
@@ -21,11 +27,7 @@ from pcapi.emails.beneficiary_expired_bookings import build_expired_bookings_rec
 from pcapi.emails.beneficiary_offer_cancellation import (
     retrieve_offerer_booking_recap_email_data_after_user_cancellation,
 )
-from pcapi.emails.beneficiary_pre_subscription_rejected import (
-    make_not_eligible_beneficiary_pre_subscription_rejected_data,
-)
 from pcapi.emails.beneficiary_pre_subscription_rejected import make_dms_wrong_values_data
-from pcapi.emails.beneficiary_pre_subscription_rejected import make_duplicate_beneficiary_pre_subscription_rejected_data
 from pcapi.emails.beneficiary_pre_subscription_rejected import make_fraud_suspicion_data
 from pcapi.emails.beneficiary_soon_to_be_expired_bookings import (
     build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary,
@@ -271,10 +273,9 @@ def send_rejection_email_to_beneficiary_pre_subscription(
     beneficiary_is_eligible: bool,
 ) -> None:
     if not beneficiary_is_eligible:
-        data = make_not_eligible_beneficiary_pre_subscription_rejected_data()
+        send_not_eligible_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription.email)
     else:
-        data = make_duplicate_beneficiary_pre_subscription_rejected_data()
-    mails.send(recipients=[beneficiary_pre_subscription.email], data=data)
+        send_duplicate_beneficiary_pre_subscription_rejected_data(beneficiary_pre_subscription.email)
 
 
 def send_fraud_suspicion_email(

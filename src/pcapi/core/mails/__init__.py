@@ -1,9 +1,11 @@
 from datetime import date
 from typing import Iterable
+from typing import Union
 
 from requests import Response
 
 from pcapi import settings
+from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils.module_loading import import_string
 
@@ -21,7 +23,9 @@ def get_email_backend(send_with_sendinblue: bool) -> str:
     return settings.MAILJET_EMAIL_BACKEND
 
 
-def send(*, recipients: Iterable[str], data: dict, send_with_sendinblue=False) -> bool:
+def send(
+    *, recipients: Iterable[str], data: Union[dict, SendinblueTransactionalEmailData], send_with_sendinblue=False
+) -> bool:
     """Try to send an e-mail and return whether it was successful."""
     if isinstance(recipients, str):
         if settings.IS_RUNNING_TESTS:

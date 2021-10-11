@@ -20,6 +20,9 @@ class TransactionalEmail(Enum):
     EMAIL_CONFIRMATION = Template(id_prod=201, id_not_prod=15, tags=["jeunes_confirmation_mail"])
     EMAIL_ADDRESS_CHANGE_REQUEST = Template(id_prod=142, id_not_prod=17, tags=["changement_email_demande"])
     EMAIL_ADDRESS_CHANGE_CONFIRMATION = Template(id_prod=253, id_not_prod=18, tags=["changement_email_confirmation"])
+    EMAIL_DUPLICATE_BENEFICIARY_PRE_SUBCRIPTION_REJECTED = Template(
+        id_prod=80, id_not_prod=19, tags=["jeunes_compterefuse_doublon"]
+    )
 
 
 @dataclasses.dataclass
