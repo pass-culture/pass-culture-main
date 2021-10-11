@@ -9,5 +9,5 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users imp
 class CreateIndustrialWebappUsersTest:
     def test_create_industrial_app_users(self):
         create_industrial_app_users()
-        assert User.query.count() == 5 * 2 * 2 + 3 * 2 + 2 * 2 + 3
-        assert Deposit.query.count() == 5 * 2 * 2 * 2 + 3 * 2
+        assert User.query.count() == 5 * 2 * 2 + 3 * 2 + 2 * 2 + 3 + 10
+        assert Deposit.query.count() == 5 * 2 * 2 * 2 + 3 * 2 + 6

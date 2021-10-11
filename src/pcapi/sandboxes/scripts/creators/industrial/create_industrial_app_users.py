@@ -1,9 +1,15 @@
+from datetime import date
 from datetime import datetime
+from datetime import time
 from datetime import timedelta
 import itertools
 import logging
 import uuid
 
+from dateutil.relativedelta import relativedelta
+from faker import Faker
+
+from pcapi.core.bookings.conf import GRANT_18_VALIDITY_IN_YEARS
 from pcapi.core.payments import factories as payments_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import TokenType
@@ -36,8 +42,11 @@ def create_industrial_app_users():
     underage_beneficiaries = create_industrial_app_underage_beneficiaries()
     other_users = create_industrial_app_other_users()
     general_public_users = create_industrial_app_general_public_users()
+    short_email_users = create_short_email_beneficiaries()
 
-    app_users = dict(beneficiaries, **underage_beneficiaries, **other_users, **general_public_users)
+    app_users = dict(
+        beneficiaries, **underage_beneficiaries, **other_users, **general_public_users, **short_email_users
+    )
     return app_users
 
 
@@ -103,7 +112,7 @@ def create_industrial_app_underage_beneficiaries():
             age = 17
 
         user = users_factories.UnderageBeneficiaryFactory(
-            age=age,
+            subscription_age=age,
             culturalSurveyId=None,
             departementCode=str(departement_code),
             email=email,
@@ -221,3 +230,72 @@ def create_industrial_app_general_public_users():
     logger.info("created %d general public users", len(users_by_name))
 
     return users_by_name
+
+
+def create_short_email_beneficiaries() -> dict:
+    fake = Faker("fr_FR")
+    users = []
+
+    for age in [15, 16, 17]:
+        users.append(
+            users_factories.UnderageBeneficiaryFactory(
+                email=f"bene_{age}@example.com",
+                subscription_age=age,
+                firstName=fake.first_name(),
+                lastName=fake.last_name(),
+                needsToFillCulturalSurvey=False,
+            )
+        )
+    for age in [15, 16, 17, 18]:
+        users.append(
+            users_factories.UserFactory(
+                email=f"eli_{age}@example.com",
+                address=None,
+                city=None,
+                dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=age, months=5),
+                departementCode=None,
+                firstName=None,
+                lastName=None,
+                postalCode=None,
+                needsToFillCulturalSurvey=False,
+            )
+        )
+
+    users.append(
+        users_factories.BeneficiaryGrant18Factory(
+            email="bene_18@example.com",
+            firstName=fake.first_name(),
+            lastName=fake.last_name(),
+            needsToFillCulturalSurvey=False,
+        )
+    )
+
+    users.append(
+        users_factories.UnderageBeneficiaryFactory(
+            email="exunderage_18@example.com",
+            dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=18, months=5),
+            dateCreated=datetime.utcnow() - relativedelta(years=3, months=3),
+            subscription_age=15,
+            firstName=fake.first_name(),
+            lastName=fake.last_name(),
+            needsToFillCulturalSurvey=False,
+        )
+    )
+
+    users.append(
+        users_factories.BeneficiaryGrant18Factory(
+            email="exbene_20@example.com",
+            dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=20, months=5),
+            dateCreated=datetime.utcnow() - relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, months=5),
+            deposit__expirationDate=datetime.utcnow() - relativedelta(months=5),
+            firstName=fake.first_name(),
+            lastName=fake.last_name(),
+            needsToFillCulturalSurvey=False,
+        )
+    )
+
+    user_by_email = {}
+    for user in users:
+        user_by_email[user.email] = user
+
+    return user_by_email

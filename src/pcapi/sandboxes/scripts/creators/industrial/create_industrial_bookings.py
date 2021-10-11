@@ -82,7 +82,6 @@ def _create_bookings_for_other_beneficiaries(
 
             booking_name = "{} / {} / {}".format(offer_name, user_name, str(token))
 
-            is_used = False
             if is_activation_offer:
                 is_used = (
                     "has-confirmed-activation" in user.email
@@ -113,9 +112,6 @@ def _create_bookings_for_other_beneficiaries(
 
             token = token + 1
 
-            if bookings_by_name[booking_name].isUsed:
-                bookings_by_name[booking_name].dateUsed = datetime.now()
-
     return token
 
 
@@ -143,15 +139,11 @@ def _create_has_booked_some_bookings(bookings_by_name, offers_by_name, user, use
 
         stock = choice(offer.stocks)
 
-        is_used = False
         if is_activation_offer:
             is_used = True
         else:
             is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
 
-        booking = BookingFactory(user=user, isUsed=is_used, stock=stock)
+        booking = BookingFactory(user=user, isUsed=is_used, stock=stock, dateUsed=datetime.now() if is_used else None)
         booking_name = "{} / {} / {}".format(offer_name, user_name, booking.token)
         bookings_by_name[booking_name] = booking
-
-        if bookings_by_name[booking_name].isUsed:
-            bookings_by_name[booking_name].dateUsed = datetime.now()

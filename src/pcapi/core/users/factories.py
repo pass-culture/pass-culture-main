@@ -1,4 +1,6 @@
-import datetime
+from datetime import date
+from datetime import datetime
+from datetime import time
 import uuid
 
 from dateutil.relativedelta import relativedelta
@@ -36,7 +38,7 @@ class UserFactory(BaseFactory):
     email = factory.Sequence("jean.neige{}@example.com".format)
     address = factory.Sequence("{} place des noces rouges".format)
     city = "La Rochelle"
-    dateOfBirth = datetime.datetime(1980, 1, 1)
+    dateOfBirth = datetime.combine(date(1980, 1, 1), time(0, 0))
     departementCode = "75"
     firstName = "Jean"
     lastName = "Neige"
@@ -105,11 +107,10 @@ class BeneficiaryGrant18Factory(BaseFactory):
     email = factory.Sequence("jeanne.doux{}@example.com".format)
     address = factory.Sequence("{} rue des machines".format)
     city = "Paris"
-    dateOfBirth = datetime.datetime.today() - relativedelta(years=18, months=1)
+    dateOfBirth = datetime.combine(date.today(), time(0, 0)) - relativedelta(years=18, months=1)
     departementCode = "75"
     firstName = "Jeanne"
     lastName = "Doux"
-    publicName = "Jeanne Doux"
     isEmailValidated = True
     isAdmin = False
     isBeneficiary = True
@@ -120,6 +121,8 @@ class BeneficiaryGrant18Factory(BaseFactory):
     def _create(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
+        if "publicName" not in kwargs and kwargs["firstName"] and kwargs["lastName"]:
+            kwargs["publicName"] = "%s %s" % (kwargs["firstName"], kwargs["lastName"])
         instance = super()._create(model_class, *args, **kwargs)
         instance.clearTextPassword = DEFAULT_PASSWORD
         return instance
@@ -128,6 +131,8 @@ class BeneficiaryGrant18Factory(BaseFactory):
     def _build(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
+        if "publicName" not in kwargs and kwargs["firstName"] and kwargs["lastName"]:
+            kwargs["publicName"] = "%s %s" % (kwargs["firstName"], kwargs["lastName"])
         instance = super()._build(model_class, *args, **kwargs)
         instance.clearTextPassword = DEFAULT_PASSWORD
         return instance
@@ -138,15 +143,22 @@ class BeneficiaryGrant18Factory(BaseFactory):
 
         if not create:
             return None
+
+        if "dateCreated" not in kwargs:
+            kwargs["dateCreated"] = obj.dateCreated
+
         return DepositGrantFactory(user=obj, **kwargs)
 
 
 class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
     class Params:
-        age = 15
+        subscription_age = 15
 
     roles = [pcapi.core.users.models.UserRole.UNDERAGE_BENEFICIARY]
-    dateOfBirth = LazyAttribute(lambda o: datetime.datetime.now() - relativedelta(years=o.age, months=5))
+    dateOfBirth = LazyAttribute(
+        lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=o.subscription_age, months=5)
+    )
+    dateCreated = LazyAttribute(lambda o: o.dateOfBirth + relativedelta(years=o.subscription_age, hours=12))
 
     @factory.post_generation
     def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
@@ -154,7 +166,15 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
 
         if not create:
             return None
-        return DepositGrantFactory(user=obj, **kwargs, type=GIVEN_DEPOSIT_BY_AGE.get(obj.age, DepositType.GRANT_15))
+
+        if "dateCreated" not in kwargs:
+            kwargs["dateCreated"] = obj.dateCreated
+
+        return DepositGrantFactory(
+            user=obj,
+            **kwargs,
+            type=GIVEN_DEPOSIT_BY_AGE.get(relativedelta(obj.dateCreated, obj.dateOfBirth).years, DepositType.GRANT_15),
+        )
 
 
 class ProFactory(BaseFactory):
@@ -200,18 +220,18 @@ class TokenFactory(BaseFactory):
 
 class ResetPasswordToken(TokenFactory):
     type = models.TokenType.RESET_PASSWORD
-    expirationDate = factory.LazyFunction(lambda: datetime.datetime.now() + constants.RESET_PASSWORD_TOKEN_LIFE_TIME)
+    expirationDate = factory.LazyFunction(lambda: datetime.now() + constants.RESET_PASSWORD_TOKEN_LIFE_TIME)
 
 
 class EmailValidationToken(TokenFactory):
     type = models.TokenType.EMAIL_VALIDATION
-    expirationDate = factory.LazyFunction(lambda: datetime.datetime.now() + constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME)
+    expirationDate = factory.LazyFunction(lambda: datetime.now() + constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME)
 
 
 class IdCheckToken(TokenFactory):
     type = models.TokenType.ID_CHECK
-    creationDate = factory.LazyFunction(datetime.datetime.now)
-    expirationDate = factory.LazyFunction(lambda: datetime.datetime.now() + constants.ID_CHECK_TOKEN_LIFE_TIME)
+    creationDate = factory.LazyFunction(datetime.now)
+    expirationDate = factory.LazyFunction(lambda: datetime.now() + constants.ID_CHECK_TOKEN_LIFE_TIME)
 
 
 class UserSessionFactory(BaseFactory):
