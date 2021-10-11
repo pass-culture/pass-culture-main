@@ -6,7 +6,6 @@
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 
 import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
 
@@ -15,16 +14,17 @@ import { DEFAULT_FORM_VALUES } from '../_constants'
 import { SubtypeSelects } from './SubtypeSelects'
 
 const OfferCategories = ({
+  categories,
+  categoriesFormValues,
   isTypeOfflineButOnlyVirtualVenues,
   readOnlyFields,
-  categoriesFormValues,
+  subCategories,
   updateCategoriesFormValues,
 }) => {
-  const categories = useSelector(state => state.offers.categories)
   const categoriesOptions = buildSelectOptions(
     'id',
     'proLabel',
-    categories.categories.filter(category => category.isSelectable)
+    categories.filter(category => category.isSelectable)
   )
   const [subCategoriesOptions, setSubCategoriesOptions] = useState(null)
   const [subCategoryConditionalFields, setSubCategoryConditionalFields] = useState([])
@@ -32,7 +32,7 @@ const OfferCategories = ({
   useEffect(
     function onCategoryChange() {
       if (categoriesFormValues.categoryId !== DEFAULT_FORM_VALUES.categoryId) {
-        const options = categories.subCategories.filter(
+        const options = subCategories.filter(
           subCategory => subCategory.categoryId === categoriesFormValues.categoryId && subCategory.isSelectable
         )
         setSubCategoriesOptions(buildSelectOptions('id', 'proLabel', options))
@@ -40,13 +40,13 @@ const OfferCategories = ({
         setSubCategoriesOptions(null)
       }
     },
-    [categoriesFormValues.categoryId, categories.subCategories, updateCategoriesFormValues]
+    [categoriesFormValues.categoryId, subCategories, updateCategoriesFormValues]
   )
 
   useEffect(
     function onSubCategoryChange() {
       if (categoriesFormValues.subcategoryId !== DEFAULT_FORM_VALUES.subcategoryId) {
-        const currentSubCategoryConditionalFields = categories.subCategories
+        const currentSubCategoryConditionalFields = subCategories
           .find(subCategory => categoriesFormValues.subcategoryId === subCategory.id)
           .conditionalFields.filter(field => field === 'musicType' || field === 'showType')
 
@@ -55,17 +55,17 @@ const OfferCategories = ({
         setSubCategoryConditionalFields([])
       }
     },
-    [categoriesFormValues.subcategoryId, categories.subCategories]
+    [categoriesFormValues.subcategoryId, subCategories]
   )
 
   const getDefaultSubCategory = useCallback(
     categoryId => {
-      const categorySubCategories = categories.subCategories.filter(
+      const categorySubCategories = subCategories.filter(
         subCategory => subCategory.categoryId === categoryId && subCategory.isSelectable
       )
       return categorySubCategories.length === 1 ? categorySubCategories[0].id : DEFAULT_FORM_VALUES.categoryId
     },
-    [categories.subCategories]
+    [subCategories]
   )
 
   const handleChange = useCallback(
@@ -183,6 +183,7 @@ OfferCategories.defaultProps = {
 }
 
 OfferCategories.propTypes = {
+  categories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   categoriesFormValues: PropTypes.shape({
     musicSubType: PropTypes.string,
     musicType: PropTypes.string,
@@ -193,6 +194,7 @@ OfferCategories.propTypes = {
   }).isRequired,
   isTypeOfflineButOnlyVirtualVenues: PropTypes.bool,
   readOnlyFields: PropTypes.arrayOf(PropTypes.string).isRequired,
+  subCategories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   updateCategoriesFormValues: PropTypes.func.isRequired,
 }
 

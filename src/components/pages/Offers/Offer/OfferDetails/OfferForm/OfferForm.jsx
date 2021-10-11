@@ -8,7 +8,6 @@
 import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -86,6 +85,7 @@ const getOfferConditionalFields = ({
 const OfferForm = ({
   areAllVenuesVirtual,
   backUrl,
+  categories,
   formValues,
   initialValues,
   isDisabled,
@@ -100,12 +100,12 @@ const OfferForm = ({
   setSelectedOfferer,
   setPreviewOfferCategory,
   showErrorNotification,
+  subCategories,
   submitErrors,
   userEmail,
   venues,
 }) => {
   const [offerSubCategory, setOfferSubCategory] = useState(null)
-  const categories = useSelector(state => state.offers.categories)
   const [receiveNotificationEmails, setReceiveNotificationEmails] = useState(false)
   const [venue, setVenue] = useState(null)
   const [venueOptions, setVenueOptions] = useState(
@@ -183,10 +183,10 @@ const OfferForm = ({
     function storeOfferSubCategoryAndVenueWhenSelected() {
       if (formValues.subcategoryId) {
         setOfferSubCategory(
-          categories.subCategories.find(type => type.id === formValues.subcategoryId)
+          subCategories.find(type => type.id === formValues.subcategoryId)
         )
         setPreviewOfferCategory(
-          categories.subCategories.find(type => type.id === formValues.subcategoryId)
+          subCategories.find(type => type.id === formValues.subcategoryId)
         )
       }
 
@@ -208,7 +208,7 @@ const OfferForm = ({
       setPreviewOfferCategory,
       venues,
       venueOptions,
-      categories,
+      subCategories,
     ]
   )
 
@@ -538,6 +538,7 @@ const OfferForm = ({
 
         <div className="form-row">
           <OfferCategories
+            categories={categories}
             categoriesFormValues={{
               categoryId: formValues.categoryId,
               subcategoryId: formValues.subcategoryId,
@@ -548,6 +549,7 @@ const OfferForm = ({
             }}
             isTypeOfflineButOnlyVirtualVenues={isTypeOfflineButOnlyVirtualVenues}
             readOnlyFields={readOnlyFields}
+            subCategories={subCategories}
             updateCategoriesFormValues={handleFormUpdate}
           />
           {isTypeOfflineButOnlyVirtualVenues && (
@@ -919,6 +921,7 @@ OfferForm.defaultProps = {
 OfferForm.propTypes = {
   areAllVenuesVirtual: PropTypes.bool,
   backUrl: PropTypes.string,
+  categories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   formValues: PropTypes.shape().isRequired,
   initialValues: PropTypes.shape(),
   isDisabled: PropTypes.bool,
@@ -938,6 +941,7 @@ OfferForm.propTypes = {
   setPreviewOfferCategory: PropTypes.func.isRequired,
   setSelectedOfferer: PropTypes.func,
   showErrorNotification: PropTypes.func.isRequired,
+  subCategories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   submitErrors: PropTypes.shape().isRequired,
   userEmail: PropTypes.string.isRequired,
   venues: PropTypes.arrayOf(PropTypes.shape()).isRequired,

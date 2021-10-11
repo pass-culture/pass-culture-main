@@ -5,7 +5,6 @@
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 
 import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
@@ -14,6 +13,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import OfferForm from './OfferForm'
 
 const OfferCreation = ({
+  categories,
   formValues,
   initialValues,
   isSubmitLoading,
@@ -23,6 +23,7 @@ const OfferCreation = ({
   showErrorNotification,
   setPreviewOfferCategory,
   setFormValues,
+  subCategories,
   submitErrors,
 }) => {
   const venues = useRef([])
@@ -31,18 +32,10 @@ const OfferCreation = ({
   const [displayedVenues, setDisplayedVenues] = useState([])
   const [selectedOfferer, setSelectedOfferer] = useState(initialValues.offererId)
 
-  const { categories } = useSelector(state => state.offers.categories)
-
   useEffect(() => setSelectedOfferer(initialValues.offererId), [initialValues.offererId])
 
   useEffect(() => {
     (async () => {
-      // On first load store.offers.categories is not set.
-      // in this case we want do display the spinner using isLoading === true.
-      if (categories === undefined) {
-        return
-      }
-
       if (isUserAdmin) {
         const offererResponse = await pcapi.getOfferer(initialValues.offererId)
 
@@ -70,7 +63,7 @@ const OfferCreation = ({
 
       setIsLoading(false)
     })()
-  }, [initialValues.offererId, isUserAdmin, initialValues, categories])
+  }, [initialValues.offererId, isUserAdmin, initialValues])
 
   const filterVenuesForPro = useCallback(() => {
     const venuesToDisplay = selectedOfferer
@@ -102,6 +95,7 @@ const OfferCreation = ({
     <OfferForm
       areAllVenuesVirtual={areAllVenuesVirtual}
       backUrl={computeOffersUrl({})}
+      categories={categories}
       formValues={formValues}
       initialValues={initialValues}
       isSubmitLoading={isSubmitLoading}
@@ -114,6 +108,7 @@ const OfferCreation = ({
       setPreviewOfferCategory={setPreviewOfferCategory}
       setSelectedOfferer={setSelectedOfferer}
       showErrorNotification={showErrorNotification}
+      subCategories={subCategories}
       submitErrors={submitErrors}
       userEmail={userEmail}
       venues={displayedVenues}
@@ -127,6 +122,7 @@ OfferCreation.defaultProps = {
 }
 
 OfferCreation.propTypes = {
+  categories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   formValues: PropTypes.shape().isRequired,
   initialValues: PropTypes.shape(),
   isSubmitLoading: PropTypes.bool.isRequired,
@@ -135,6 +131,7 @@ OfferCreation.propTypes = {
   setFormValues: PropTypes.func.isRequired,
   setPreviewOfferCategory: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
+  subCategories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   submitErrors: PropTypes.shape().isRequired,
   userEmail: PropTypes.string.isRequired,
 }

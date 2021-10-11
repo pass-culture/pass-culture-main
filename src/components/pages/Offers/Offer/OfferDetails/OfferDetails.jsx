@@ -5,10 +5,11 @@
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
+import Spinner from 'components/layout/Spinner'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { DEFAULT_FORM_VALUES } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
 import OfferCreation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/OfferCreation'
@@ -21,6 +22,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { loadCategories } from 'store/offers/thunks'
 
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
+
 
 const OfferDetails = ({
   history,
@@ -52,6 +54,8 @@ const OfferDetails = ({
   const [thumbnailInfo, setThumbnailInfo] = useState({})
   const [thumbnailError, setThumbnailError] = useState(false)
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
+  const { categories, subCategories } = useSelector(state => state.offers.categories)
+  const [isLoading, setIsLoading] = useState(!(categories && subCategories))
 
   const notification = useNotification()
   const showErrorNotification = useCallback(
@@ -65,6 +69,16 @@ const OfferDetails = ({
   useEffect(() => {
     formValues.subcategoryId && setShowThumbnailForm(formValues.subcategoryId !== DEFAULT_FORM_VALUES.subcategoryId)
   }, [setShowThumbnailForm, formValues.subcategoryId])
+
+  useEffect(() => {
+    dispatch(loadCategories())
+  }, [dispatch])
+
+  useEffect(() => {
+    if (categories && subCategories) {
+      setIsLoading(false)
+    }
+  }, [categories, subCategories])
 
   const postThumbnail = useCallback(
     async (offerId, thumbnailInfo) => {
@@ -160,9 +174,14 @@ const OfferDetails = ({
   const offerStatus = offer?.status
   const isDisabled = offerStatus ? isOfferDisabled(offerStatus) : false
 
-  useEffect(() => {
-    dispatch(loadCategories())
-  }, [dispatch])
+  if (isLoading) {
+    return (
+      <>
+        <PageTitle title="Détails de l'offre" />
+        <Spinner />
+      </>
+    )
+  }
 
   return (
     <>
@@ -174,6 +193,7 @@ const OfferDetails = ({
             <>
               {isDisabled && <OfferStatusBanner status={offerStatus} />}
               <OfferEditionContainer
+                categories={categories}
                 formValues={formValues}
                 isDisabled={isDisabled}
                 isSubmitLoading={isSubmitLoading}
@@ -183,12 +203,14 @@ const OfferDetails = ({
                 setFormValues={setFormValues}
                 setPreviewOfferCategory={setOfferSubCategory}
                 showErrorNotification={showErrorNotification}
+                subCategories={subCategories}
                 submitErrors={formErrors}
                 userEmail={userEmail}
               />
             </>
           ) : (
             <OfferCreation
+              categories={categories}
               formValues={formValues}
               initialValues={formInitialValues.current}
               isSubmitLoading={isSubmitLoading}
@@ -197,6 +219,7 @@ const OfferDetails = ({
               setFormValues={setFormValues}
               setPreviewOfferCategory={setOfferSubCategory}
               showErrorNotification={showErrorNotification}
+              subCategories={subCategories}
               submitErrors={formErrors}
               userEmail={userEmail}
             />

@@ -5,7 +5,6 @@
 
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 
 import Spinner from 'components/layout/Spinner'
 import {
@@ -39,6 +38,7 @@ const computeNoDisabilityComplianceValue = offer => {
 }
 
 const OfferEdition = ({
+  categories,
   formValues,
   isDisabled,
   isSubmitLoading,
@@ -51,10 +51,10 @@ const OfferEdition = ({
   setPreviewOfferCategory,
   showErrorNotification,
   submitErrors,
+  subCategories,
   userEmail,
 }) => {
   const [isLoading, setIsLoading] = useState(true)
-  const { subCategories } = useSelector(state => state.offers.categories)
   const [readOnlyFields, setReadOnlyFields] = useState([])
   const [initialValues, setInitialValues] = useState([])
 
@@ -101,13 +101,11 @@ const OfferEdition = ({
       }
     }
 
-    if (subCategories) {
-      const initialValues = computeInitialValues(offer)
-      const readOnlyFields = computeReadOnlyFields(offer)
-      setInitialValues(initialValues)
-      setReadOnlyFields(readOnlyFields)
-      setIsLoading(false)
-    }
+    const initialValues = computeInitialValues(offer)
+    const readOnlyFields = computeReadOnlyFields(offer)
+    setInitialValues(initialValues)
+    setReadOnlyFields(readOnlyFields)
+    setIsLoading(false)
   }, [isDisabled, offer, setIsLoading, subCategories])
 
   let providerName = null
@@ -122,6 +120,7 @@ const OfferEdition = ({
   return (
     <OfferForm
       backUrl={computeOffersUrl(offersSearchFilters, offersPageNumber)}
+      categories={categories}
       formValues={formValues}
       initialValues={initialValues}
       isDisabled={isDisabled}
@@ -137,6 +136,7 @@ const OfferEdition = ({
       setFormValues={setFormValues}
       setPreviewOfferCategory={setPreviewOfferCategory}
       showErrorNotification={showErrorNotification}
+      subCategories={subCategories}
       submitErrors={submitErrors}
       userEmail={userEmail}
       venues={[offer.venue]}
@@ -151,6 +151,7 @@ OfferEdition.defaultProps = {
 }
 
 OfferEdition.propTypes = {
+  categories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   formValues: PropTypes.shape().isRequired,
   isDisabled: PropTypes.bool,
   isSubmitLoading: PropTypes.bool.isRequired,
@@ -172,6 +173,7 @@ OfferEdition.propTypes = {
   setFormValues: PropTypes.func.isRequired,
   setPreviewOfferCategory: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
+  subCategories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   submitErrors: PropTypes.shape().isRequired,
   userEmail: PropTypes.string.isRequired,
 }
