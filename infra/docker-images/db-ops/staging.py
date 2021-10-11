@@ -70,7 +70,7 @@ passculture_db_ops.post_process(
     database_url=database_url
 )
 
-passculture_db_ops.run_pc_script("sandbox", "-n", "beneficiaries", "-c", "false")
+passculture_db_ops.run_flask_command("sandbox", "--name", "beneficiaries", "--clean", "false")
 
 ehp.disconnect()
 
