@@ -5,11 +5,9 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.users import factories as users_factories
-from pcapi.model_creators.generic_creators import create_beneficiary_import
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import ImportStatus
-from pcapi.repository import repository
 from pcapi.repository.beneficiary_import_queries import find_applications_ids_to_retry
 from pcapi.repository.beneficiary_import_queries import is_already_imported
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
@@ -161,14 +159,15 @@ class FindApplicationsIdsToRetryTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_applications_ids_with_current_status_retry(self, app):
         # given
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        imports = [
-            create_beneficiary_import(status=ImportStatus.RETRY, application_id=456),
-            create_beneficiary_import(status=ImportStatus.RETRY, application_id=123),
-            create_beneficiary_import(user=beneficiary, status=ImportStatus.CREATED, application_id=789),
-        ]
+        users_factories.BeneficiaryImportStatusFactory(beneficiaryImport__applicationId=456, status=ImportStatus.RETRY)
+        users_factories.BeneficiaryImportStatusFactory(beneficiaryImport__applicationId=123, status=ImportStatus.RETRY)
 
-        repository.save(*imports)
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__beneficiary=beneficiary,
+            beneficiaryImport__applicationId=789,
+            status=ImportStatus.CREATED,
+        )
 
         # when
         ids = find_applications_ids_to_retry()
@@ -180,13 +179,17 @@ class FindApplicationsIdsToRetryTest:
     def test_returns_an_empty_list_if_no_retry_imports_exist(self, app):
         # given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
-        imports = [
-            create_beneficiary_import(status=ImportStatus.DUPLICATE, application_id=456),
-            create_beneficiary_import(status=ImportStatus.ERROR, application_id=123),
-            create_beneficiary_import(user=beneficiary, status=ImportStatus.CREATED, application_id=789),
-        ]
-
-        repository.save(*imports)
+        users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__applicationId=456, status=ImportStatus.DUPLICATE
+        )
+        users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__applicationId=123, status=ImportStatus.CREATED
+        )
+        users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__applicationId=789,
+            beneficiaryImport__beneficiary=beneficiary,
+            status=ImportStatus.CREATED,
+        )
 
         # when
         ids = find_applications_ids_to_retry()
