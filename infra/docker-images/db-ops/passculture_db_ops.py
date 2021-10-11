@@ -67,10 +67,10 @@ def build_database_url(database_host: str, database_port: int, database_name: st
     return "postgresql://%s:%s@%s:%s/%s" % (username, password, database_host, database_port, database_name)
 
 
-def run_pc_script(*args: str):
-    print("Starting: pc script %s" % datetime.now())
-    subprocess.run(["python3", "%s/%s" % (env_vars.PCAPI_ROOT_PATH, env_vars.PC_SCRIPT_PATH)] + list(args), check=True)
-    print("Ended: pc script %s" % datetime.now())
+def run_flask_command(*args: str):
+    print("Starting: flask %s %s" % (' '.join(args), datetime.now()))
+    subprocess.run(["flask"] + list(args), check=True)
+    print("Ended: flask %s %s" % (' '.join(args), datetime.now()))
 
 
 def post_process(instance: CloudSQLPostgresInstance, database_url):
