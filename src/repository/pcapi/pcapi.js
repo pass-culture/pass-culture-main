@@ -204,10 +204,9 @@ export const validateDistantImage = url => {
   return client.post('/offers/thumbnail-url-validation', { url: url })
 }
 
-export const postThumbnail = (offerer, offer, credit, thumb, thumbUrl, x, y, height) => {
+export const postThumbnail = (offerId, credit, thumb, thumbUrl, x, y, height) => {
   const body = new FormData()
-  body.append('offerId', offer)
-  body.append('offererId', offerer)
+  body.append('offerId', offerId)
   body.append('credit', credit)
   body.append('croppingRectX', x)
   body.append('croppingRectY', y)

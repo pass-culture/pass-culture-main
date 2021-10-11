@@ -74,7 +74,6 @@ const OfferDetails = ({
 
         try {
           await pcapi.postThumbnail(
-            formValues.offererId,
             offerId,
             credit,
             thumbnail,
@@ -91,7 +90,7 @@ const OfferDetails = ({
         }
       }
     },
-    [showErrorNotification, formValues.offererId]
+    [showErrorNotification]
   )
 
   const handleSubmitOffer = useCallback(
