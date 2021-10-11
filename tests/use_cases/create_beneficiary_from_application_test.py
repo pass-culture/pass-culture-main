@@ -408,6 +408,31 @@ def test_doesnt_save_beneficiary_when_suspicious(
     assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2905960
 
 
+@override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+@patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
+def test_send_analysing_account_emails_with_sendinblue_when_suspicious(
+    mocked_get_content,
+    app,
+):
+    # Given
+    mocked_get_content.return_value = BASE_JOUVE_CONTENT | {"bodyBirthDateLevel": "20"}
+    users_factories.UserFactory(
+        firstName=BASE_JOUVE_CONTENT["firstName"],
+        lastName=BASE_JOUVE_CONTENT["lastName"],
+        email=BASE_JOUVE_CONTENT["email"],
+    )
+
+    # When
+    create_beneficiary_from_application.execute(BASE_APPLICATION_ID)
+
+    # Then
+    assert BeneficiaryImport.query.count() == 0
+
+    assert len(mails_testing.outbox) == 1
+    assert mails_testing.outbox[0].sent_data["template"].value.id_prod == 82
+    assert mails_testing.outbox[0].sent_data["params"] == {}
+
+
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
 def test_id_piece_number_no_duplicate(
     mocked_get_content,
