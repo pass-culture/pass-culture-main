@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -13,9 +13,9 @@ import Breadcrumb, {
   STEP_ID_STOCKS,
 } from 'components/pages/Offers/Offer/Breadcrumb'
 import ConfirmationContainer from 'components/pages/Offers/Offer/Confirmation/ConfirmationContainer'
-import LeavingOfferCreationDialog from 'components/pages/Offers/Offer/LeavingOfferCreationDialog/LeavingOfferCreationDialog'
 import OfferDetailsContainer from 'components/pages/Offers/Offer/OfferDetails/OfferDetailsContainer'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
+import RouteLeavingGuardOfferCreation from 'components/pages/Offers/Offer/RouteLeavingGuardOfferCreation'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
 import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -33,7 +33,6 @@ const OfferLayout = ({ location, match }) => {
 
   const loadOffer = useCallback(
     async (offerId, creationMode = false) => {
-
       const existingOffer = await pcapi.loadOffer(offerId)
       setOffer(existingOffer)
       setIsCreatingOffer(creationMode || existingOffer.status === OFFER_STATUS_DRAFT)
@@ -46,44 +45,8 @@ const OfferLayout = ({ location, match }) => {
     [loadOffer, offer?.id]
   )
 
-  const shouldBlockNavigation = useCallback(
-    nextLocation => {
-      const offerCreationPath = '/offres/creation'
-      const stocksPathRegex = /\/offres\/([A-Z0-9]+)\/stocks/g
-      const confirmationPathRegex = /\/offres\/([A-Z0-9]+)\/confirmation/g
-
-      if (
-        (location.pathname.match(stocksPathRegex) &&
-          nextLocation.pathname.startsWith(offerCreationPath)) ||
-        (location.pathname.match(offerCreationPath) &&
-          nextLocation.pathname.match(confirmationPathRegex))
-      ) {
-        nextLocation.pathname = '/offres'
-        nextLocation.search = ''
-        return true
-      }
-      if (location.pathname.match(confirmationPathRegex)) {
-        if (nextLocation.pathname.match(stocksPathRegex)) {
-          nextLocation.pathname = '/offres'
-          nextLocation.search = ''
-        }
-        return false
-      }
-      if (
-        nextLocation.pathname.match(stocksPathRegex) ||
-        nextLocation.pathname.match(confirmationPathRegex) ||
-        (location.pathname.startsWith(offerCreationPath) &&
-          nextLocation.pathname.startsWith(offerCreationPath))
-      ) {
-        return false
-      }
-      return true
-    },
-    [location]
-  )
-
   useEffect(() => {
-    async function loadOfferFromQueryParam () {
+    async function loadOfferFromQueryParam() {
       await loadOffer(match.params.offerId)
     }
     match.params.offerId && loadOfferFromQueryParam()
@@ -163,10 +126,7 @@ const OfferLayout = ({ location, match }) => {
           </Route>
         </Switch>
       </div>
-      <LeavingOfferCreationDialog
-        shouldBlockNavigation={shouldBlockNavigation}
-        when={isCreatingOffer}
-      />
+      <RouteLeavingGuardOfferCreation when={isCreatingOffer} />
     </div>
   )
 }
