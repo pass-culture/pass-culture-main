@@ -100,8 +100,8 @@ postgres_data
 private
 secret.py
 private.tar.gz
-src/pcapi/routes/saml/files/private.key
-src/pcapi/routes/saml/files/public.cert
+src/pcapi/core/users/external/educonnect/files/private.key
+src/pcapi/core/users/external/educonnect/files/public.cert
 
 # Store
 src/pcapi/static/object_store_data
