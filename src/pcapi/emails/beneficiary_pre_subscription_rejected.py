@@ -1,14 +1,6 @@
 import typing
 
 
-def make_fraud_suspicion_data() -> dict:
-    return {
-        "Mj-TemplateID": 2905960,
-        "Mj-TemplateLanguage": True,
-        "Mj-campaign": "dossier-en-analyse",
-    }
-
-
 def make_dms_wrong_values_data(
     postal_code_value: typing.Optional[str], id_piece_number_value: typing.Optional[str]
 ) -> dict:
