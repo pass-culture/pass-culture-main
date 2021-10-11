@@ -10,7 +10,7 @@ import React, { useCallback } from 'react'
 import { Field } from 'react-final-form'
 
 import HiddenField from 'components/layout/form/fields/HiddenField'
-import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
+import CheckboxInput from 'components/layout/inputs/CheckboxInput'
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 
 const WithdrawalDetailsFields = props => {

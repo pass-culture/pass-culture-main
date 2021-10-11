@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import InternalBanner from 'components/layout/Banner/InternalBanner'
-import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
+import CheckboxInput from 'components/layout/inputs/CheckboxInput'
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
 import Select, {
   buildSelectOptions,

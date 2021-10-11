@@ -4,7 +4,7 @@
 
 import React, { useCallback, useState } from 'react'
 
-import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
+import CheckboxInput from 'components/layout/inputs/CheckboxInput'
 
 const StyleguideCheckboxes = () => {
   const [checked, setChecked] = useState(false)
