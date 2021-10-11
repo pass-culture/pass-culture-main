@@ -56,7 +56,7 @@ export const autoFillNoDisabilityCompliantDecorator = createDecorator(
     updates: {
       isAccessibilityAppliedOnAllOffers: (_value, allValues) => {
         if (allValues.isAccessibilityAppliedOnAllOffers === undefined) {
-          return true
+          return false
         }
         return allValues.isAccessibilityAppliedOnAllOffers
       },
