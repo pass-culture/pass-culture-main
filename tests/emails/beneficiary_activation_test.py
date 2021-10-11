@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from datetime import datetime
 
 from freezegun import freeze_time
@@ -5,6 +6,7 @@ import pytest
 
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.email_confirmation_email import get_email_confirmation_email_data
+from pcapi.core.mails.transactional.users.user_credit_email import get_user_credit_email_data
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.emails import beneficiary_activation
@@ -100,10 +102,11 @@ class GetActivationEmailTest:
 
 
 @freeze_time("2011-05-15 09:00:00")
-class GetAcceptedAsBeneficiaryEmailTest:
+class GetAcceptedAsBeneficiaryEmailMailjetTest:
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     def test_return_correct_email_metadata(self):
         # When
-        email_data = beneficiary_activation.get_accepted_as_beneficiary_email_data()
+        email_data = get_user_credit_email_data()
 
         # Then
         assert email_data == {
@@ -115,18 +118,50 @@ class GetAcceptedAsBeneficiaryEmailTest:
             },
         }
 
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     @override_features(APPLY_BOOKING_LIMITS_V2=False)
     def test_return_deposit_amount_500_for_eligible_user_v1(self):
         # When
-        email_data = beneficiary_activation.get_accepted_as_beneficiary_email_data()
+        email_data = get_user_credit_email_data()
 
         # Then
         assert email_data["Vars"]["depositAmount"] == 500
 
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     @override_features(APPLY_BOOKING_LIMITS_V2=True)
     def test_return_deposit_amount_300_for_eligible_user_v2(self):
         # When
-        email_data = beneficiary_activation.get_accepted_as_beneficiary_email_data()
+        email_data = get_user_credit_email_data()
 
         # Then
         assert email_data["Vars"]["depositAmount"] == 300
+
+
+@freeze_time("2011-05-15 09:00:00")
+class GetAcceptedAsBeneficiaryEmailSendinblueTest:
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_return_correct_email_metadata(self):
+        # When
+        email = get_user_credit_email_data()
+
+        # Then
+        assert email.template == TransactionalEmail.GRANT_USER_CREDIT
+        assert email.params == {"CREDIT": 300}
+
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    @override_features(APPLY_BOOKING_LIMITS_V2=False)
+    def test_return_deposit_amount_500_for_eligible_user_v1(self):
+        # When
+        email_data = asdict(get_user_credit_email_data())
+
+        # Then
+        assert email_data["params"]["CREDIT"] == 500
+
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    @override_features(APPLY_BOOKING_LIMITS_V2=True)
+    def test_return_deposit_amount_300_for_eligible_user_v2(self):
+        # When
+        email_data = asdict(get_user_credit_email_data())
+
+        # Then
+        assert email_data["params"]["CREDIT"] == 300

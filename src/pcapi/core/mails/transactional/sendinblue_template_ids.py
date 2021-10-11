@@ -24,6 +24,7 @@ class TransactionalEmail(Enum):
         id_prod=80, id_not_prod=19, tags=["jeunes_compte_refuse_doublon"]
     )
     FRAUD_SUSPICION = Template(id_prod=82, id_not_prod=24, tags=["jeunes_compte_en_cours_d_analyse"])
+    GRANT_USER_CREDIT = Template(id_prod=96, id_not_prod=25, tags=["jeunes_pass_credite_18"])
 
 
 @dataclasses.dataclass
