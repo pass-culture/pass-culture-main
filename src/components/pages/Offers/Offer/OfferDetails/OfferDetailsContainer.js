@@ -1,7 +1,7 @@
 /*
-* @debt standard "Gaël: prefer hooks for routers (https://reactrouter.com/web/api/Hooks)"
-* @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
-*/
+ * @debt standard "Gaël: prefer hooks for routers (https://reactrouter.com/web/api/Hooks)"
+ * @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
+ */
 
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -10,13 +10,10 @@ import { compose } from 'redux'
 import { withTracking } from 'components/hocs'
 import { selectCurrentUser, selectIsUserAdmin } from 'store/selectors/data/usersSelectors'
 
-import { isFeatureActive } from "../../../../../store/features/selectors"
-
 import OfferDetails from './OfferDetails'
 
 const mapStateToProps = state => ({
   isUserAdmin: selectIsUserAdmin(state),
-  isWebAppV2Enabled: isFeatureActive(state, 'WEBAPP_V2_ENABLED'),
   userEmail: selectCurrentUser(state).email,
 })
 
