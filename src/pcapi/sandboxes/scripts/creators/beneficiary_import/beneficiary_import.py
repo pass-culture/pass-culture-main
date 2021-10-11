@@ -2,7 +2,6 @@ import logging
 
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-from pcapi.model_creators.generic_creators import create_beneficiary_import
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
 from pcapi.repository import repository
@@ -30,13 +29,10 @@ def create_beneficiary_imports(beneficiary_user: users_models.User) -> list[Bene
     index_of_beneficiary_imports = 1
     for status in ImportStatus:
         user = beneficiary_user if status == ImportStatus.CREATED else None
-        beneficiary_imports.append(
-            create_beneficiary_import(
-                application_id=index_of_beneficiary_imports,
-                status=status,
-                user=user,
-            )
+        beneficiary_import = users_factories.BeneficiaryImportFactory(
+            beneficiary=user, applicationId=index_of_beneficiary_imports
         )
+        users_factories.BeneficiaryImportStatusFactory(beneficiaryImport=beneficiary_import, status=status)
         index_of_beneficiary_imports += 1
 
     repository.save(*beneficiary_imports)

@@ -4,7 +4,6 @@ from hashlib import sha256
 from typing import Optional
 from typing import Union
 
-from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offerers.models import Offerer
@@ -20,13 +19,9 @@ from pcapi.domain.price_rule import PriceRule
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models import BankInformation
-from pcapi.models import BeneficiaryImport
-from pcapi.models import BeneficiaryImportSources
-from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import Booking
 from pcapi.models import Criterion
 from pcapi.models import Favorite
-from pcapi.models import ImportStatus
 from pcapi.models import Offer
 from pcapi.models import Payment
 from pcapi.models import PaymentMessage
@@ -61,32 +56,6 @@ def create_bank_information(
     bank_information.status = status
 
     return bank_information
-
-
-def create_beneficiary_import(
-    application_id: int = 99,
-    date: datetime = datetime.utcnow(),
-    detail: str = None,
-    idx: int = None,
-    source_id: int = settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID,
-    source: str = BeneficiaryImportSources.demarches_simplifiees.value,
-    status: ImportStatus = ImportStatus.CREATED,
-    user: User = None,
-) -> BeneficiaryImport:
-    import_status = BeneficiaryImportStatus()
-    import_status.date = date
-    import_status.detail = detail
-    import_status.status = status
-
-    beneficiary_import = BeneficiaryImport()
-    beneficiary_import.id = idx
-    beneficiary_import.beneficiary = user
-    beneficiary_import.applicationId = application_id
-    beneficiary_import.sourceId = source_id
-    beneficiary_import.source = source
-    beneficiary_import.statuses = [import_status]
-
-    return beneficiary_import
 
 
 def create_criterion(description: str = None, name: str = "best offer", score_delta: int = 1) -> Criterion:

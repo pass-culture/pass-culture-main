@@ -7,7 +7,6 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.model_creators.generic_creators import create_beneficiary_import
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import ImportStatus
 from pcapi.repository import repository
@@ -232,17 +231,25 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
         users_factories.BeneficiaryGrant18Factory(dateCreated=yesterday, email="user1@example.com")
         user2 = users_factories.BeneficiaryGrant18Factory(dateCreated=two_days_ago, email="user2@example.com")
         user3 = users_factories.BeneficiaryGrant18Factory(dateCreated=three_days_ago, email="user3@example.com")
-        beneficiary_import = [
-            create_beneficiary_import(
-                user=user2, status=ImportStatus.ERROR, date=two_days_ago, application_id=1, source_id=source_id
-            ),
-            create_beneficiary_import(
-                user=user3, status=ImportStatus.CREATED, date=three_days_ago, application_id=3, source_id=source_id
-            ),
-        ]
+        beneficiary_import = users_factories.BeneficiaryImportFactory(
+            beneficiary=user2,
+            applicationId=1,
+            sourceId=source_id,
+            source=BeneficiaryImportSources.demarches_simplifiees.value,
+        )
+        users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport=beneficiary_import, status=ImportStatus.ERROR, date=two_days_ago
+        )
 
-        repository.save(*beneficiary_import)
-
+        beneficiary_import = users_factories.BeneficiaryImportFactory(
+            beneficiary=user3,
+            applicationId=3,
+            sourceId=source_id,
+            source=BeneficiaryImportSources.demarches_simplifiees.value,
+        )
+        users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport=beneficiary_import, status=ImportStatus.CREATED, date=three_days_ago
+        )
         # when
         most_recent_creation_date = find_most_recent_beneficiary_creation_date_for_source(
             BeneficiaryImportSources.demarches_simplifiees, source_id
@@ -260,11 +267,15 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
         yesterday = now - timedelta(days=1)
 
         user = users_factories.BeneficiaryGrant18Factory(dateCreated=yesterday, email="user@example.com")
-        beneficiary_import = create_beneficiary_import(
-            user=user, status=ImportStatus.CREATED, date=yesterday, application_id=3, source_id=old_source_id
+        beneficiary_import = users_factories.BeneficiaryImportFactory(
+            beneficiary=user,
+            applicationId=3,
+            sourceId=old_source_id,
+            source=BeneficiaryImportSources.demarches_simplifiees.value,
         )
-
-        repository.save(beneficiary_import)
+        users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport=beneficiary_import, status=ImportStatus.CREATED, date=yesterday
+        )
 
         # when
         most_recent_creation_date = find_most_recent_beneficiary_creation_date_for_source(
