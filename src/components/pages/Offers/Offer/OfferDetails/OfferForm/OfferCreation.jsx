@@ -16,7 +16,6 @@ const OfferCreation = ({
   categories,
   formValues,
   initialValues,
-  isSubmitLoading,
   isUserAdmin,
   userEmail,
   onSubmit,
@@ -98,7 +97,6 @@ const OfferCreation = ({
       categories={categories}
       formValues={formValues}
       initialValues={initialValues}
-      isSubmitLoading={isSubmitLoading}
       isUserAdmin={isUserAdmin}
       offerersNames={offerersNames.current}
       onSubmit={onSubmit}
@@ -125,7 +123,6 @@ OfferCreation.propTypes = {
   categories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   formValues: PropTypes.shape().isRequired,
   initialValues: PropTypes.shape(),
-  isSubmitLoading: PropTypes.bool.isRequired,
   isUserAdmin: PropTypes.bool,
   onSubmit: PropTypes.func.isRequired,
   setFormValues: PropTypes.func.isRequired,

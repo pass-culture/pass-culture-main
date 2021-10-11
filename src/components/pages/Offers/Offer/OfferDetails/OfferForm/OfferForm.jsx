@@ -90,7 +90,6 @@ const OfferForm = ({
   initialValues,
   isDisabled,
   isEdition,
-  isSubmitLoading,
   isUserAdmin,
   offerersNames,
   onSubmit,
@@ -115,6 +114,7 @@ const OfferForm = ({
   const [formErrors, setFormErrors] = useState(submitErrors)
   const formRef = useRef(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
   const isIsbnRequiredInLivreEditionEnabled = useActiveFeature(
     'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION'
@@ -343,8 +343,10 @@ const OfferForm = ({
   }, [offerFormFields, mandatoryFields, formValues])
 
   const submitForm = useCallback(
-    event => {
+    async event => {
       event.preventDefault()
+      setIsSubmitLoading(true)
+
       if (isValid()) {
         const editableFields = offerFormFields.filter(field => !readOnlyFields.includes(field))
 
@@ -376,10 +378,11 @@ const OfferForm = ({
           submittedValues.bookingEmail = null
         }
 
-        onSubmit(submittedValues)
+        await onSubmit(submittedValues)
       } else {
         showErrorNotification()
       }
+      setIsSubmitLoading(false)
     },
     [
       offerFormFields,
@@ -926,7 +929,6 @@ OfferForm.propTypes = {
   initialValues: PropTypes.shape(),
   isDisabled: PropTypes.bool,
   isEdition: PropTypes.bool,
-  isSubmitLoading: PropTypes.bool.isRequired,
   isUserAdmin: PropTypes.bool,
   offerersNames: PropTypes.arrayOf(
     PropTypes.shape({
