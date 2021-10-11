@@ -3,8 +3,6 @@ import logging
 from typing import Optional
 from typing import Union
 
-from sqlalchemy.orm import load_only
-
 from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import DmsApplicationStates
 from pcapi.connectors.api_demarches_simplifiees import get_all_applications_for_procedure
@@ -12,7 +10,7 @@ from pcapi.connectors.api_demarches_simplifiees import get_application_details
 from pcapi.domain.bank_account import format_raw_iban_and_bic
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.models.bank_information import BankInformationStatus
-from pcapi.models.beneficiary_import import BeneficiaryImport
+from pcapi.repository.beneficiary_import_queries import get_existing_applications_id
 from pcapi.utils.date import DATE_ISO_FORMAT
 
 
@@ -49,16 +47,6 @@ class ApplicationDetail:
         self.siret = siret
         self.venue_name = venue_name
         self.modification_date = modification_date
-
-
-# TODO: move this to a repository
-def get_existing_applications_id(procedure_id: int) -> set[int]:
-    return {
-        user.applicationId
-        for user in BeneficiaryImport.query.options(load_only(BeneficiaryImport.applicationId))
-        .filter(BeneficiaryImport.sourceId == procedure_id)
-        .all()
-    }
 
 
 def get_all_application_ids_for_demarche_simplifiee(

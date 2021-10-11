@@ -1,8 +1,10 @@
 from sqlalchemy import asc
+from sqlalchemy.orm import load_only
 
 from pcapi.core.users.models import User
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportSources
+from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import ImportStatus
 from pcapi.models.db import db
 from pcapi.repository import repository
@@ -12,12 +14,28 @@ def is_already_imported(application_id: int) -> bool:
     # FIXME (dbaty, 2021-04-22): `BeneficiaryImport.applicationId` is
     # not unique, we should probably look for a `(applicationId,  sourceId)`
     # pair (which is unique).
-    beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.applicationId == application_id).first()
+    beneficiary_import = (
+        BeneficiaryImport.query.join(BeneficiaryImportStatus)
+        .filter(BeneficiaryImport.applicationId == application_id)
+        .filter(
+            BeneficiaryImportStatus.status.in_(
+                [ImportStatus.CREATED, ImportStatus.REJECTED, ImportStatus.DUPLICATE, ImportStatus.ERROR]
+            )
+        )
+        .first()
+    )
+    return beneficiary_import is not None
 
-    if beneficiary_import is None:
-        return False
 
-    return beneficiary_import.currentStatus != ImportStatus.RETRY
+def get_existing_applications_id(procedure_id: int) -> set[int]:
+    return {
+        beneficiary_import.applicationId
+        for beneficiary_import in BeneficiaryImport.query.join(BeneficiaryImportStatus)
+        .filter(BeneficiaryImportStatus.status.in_([ImportStatus.CREATED, ImportStatus.REJECTED]))
+        .options(load_only(BeneficiaryImport.applicationId))
+        .filter(BeneficiaryImport.sourceId == procedure_id)
+        .all()
+    }
 
 
 def save_beneficiary_import_with_status(

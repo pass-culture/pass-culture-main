@@ -15,81 +15,34 @@ from pcapi.repository.beneficiary_import_queries import is_already_imported
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
 
 
+@pytest.mark.usefixtures("db_session")
 class IsAlreadyImportedTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_true_when_a_beneficiary_import_exist_with_status_created(self, app):
+    @pytest.mark.parametrize(
+        "valid_status", [ImportStatus.CREATED, ImportStatus.REJECTED, ImportStatus.DUPLICATE, ImportStatus.ERROR]
+    )
+    def test_returns_true_when_a_beneficiary_import_exist_with_imported_status(self, valid_status):
         # given
         now = datetime.utcnow()
         beneficiary = users_factories.BeneficiaryGrant18Factory(dateCreated=now)
-        beneficiary_import = create_beneficiary_import(
-            user=beneficiary, status=ImportStatus.CREATED, application_id=123
+        users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__applicationId=123, beneficiaryImport__beneficiary=beneficiary, status=valid_status
         )
-
-        repository.save(beneficiary_import)
-
         # when
         result = is_already_imported(123)
 
         # then
         assert result is True
 
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_true_when_a_beneficiary_import_exist_with_status_duplicate(self, app):
+    @pytest.mark.parametrize(
+        "invalid_status", [ImportStatus.RETRY, ImportStatus.WITHOUT_CONTINUATION, ImportStatus.ONGOING]
+    )
+    def test_returns_true_when_a_beneficiary_import_exist_with_not_imported_status(self, invalid_status):
         # given
         now = datetime.utcnow()
         beneficiary = users_factories.BeneficiaryGrant18Factory(dateCreated=now)
-        beneficiary_import = create_beneficiary_import(
-            user=beneficiary, status=ImportStatus.DUPLICATE, application_id=123
+        users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__applicationId=123, beneficiaryImport__beneficiary=beneficiary, status=invalid_status
         )
-
-        repository.save(beneficiary_import)
-
-        # when
-        result = is_already_imported(123)
-
-        # then
-        assert result is True
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_true_when_a_beneficiary_import_exist_with_status_rejected(self, app):
-        # given
-        now = datetime.utcnow()
-        beneficiary = users_factories.BeneficiaryGrant18Factory(dateCreated=now)
-        beneficiary_import = create_beneficiary_import(
-            user=beneficiary, status=ImportStatus.REJECTED, application_id=123
-        )
-
-        repository.save(beneficiary_import)
-
-        # when
-        result = is_already_imported(123)
-
-        # then
-        assert result is True
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_true_when_a_beneficiary_import_exist_with_status_error(self, app):
-        # given
-        now = datetime.utcnow()
-        beneficiary = users_factories.BeneficiaryGrant18Factory(dateCreated=now)
-        beneficiary_import = create_beneficiary_import(user=beneficiary, status=ImportStatus.ERROR, application_id=123)
-
-        repository.save(beneficiary_import)
-
-        # when
-        result = is_already_imported(123)
-
-        # then
-        assert result is True
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_false_when_a_beneficiary_import_exist_with_status_retry(self, app):
-        # given
-        now = datetime.utcnow()
-        beneficiary = users_factories.BeneficiaryGrant18Factory(dateCreated=now)
-        beneficiary_import = create_beneficiary_import(user=beneficiary, status=ImportStatus.RETRY, application_id=123)
-
-        repository.save(beneficiary_import)
 
         # when
         result = is_already_imported(123)
@@ -97,16 +50,15 @@ class IsAlreadyImportedTest:
         # then
         assert result is False
 
-    @pytest.mark.usefixtures("db_session")
     def test_returns_false_when_no_beneficiary_import_exist_for_this_id(self, app):
         # given
         now = datetime.utcnow()
         beneficiary = users_factories.BeneficiaryGrant18Factory(dateCreated=now)
-        beneficiary_import = create_beneficiary_import(
-            user=beneficiary, status=ImportStatus.CREATED, application_id=123
+        users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__beneficiary=beneficiary,
+            beneficiaryImport__applicationId=123,
+            status=ImportStatus.CREATED,
         )
-
-        repository.save(beneficiary_import)
 
         # when
         result = is_already_imported(456)
