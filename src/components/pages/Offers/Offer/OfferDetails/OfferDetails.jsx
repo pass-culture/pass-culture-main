@@ -47,9 +47,9 @@ const OfferDetails = ({
   }
 
   const formInitialValues = useRef(initialValues)
-  const [formValues, setFormValues] = useState({})
-  const [offerSubCategory, setOfferSubCategory] = useState({})
+
   const [formErrors, setFormErrors] = useState({})
+  const [offerPreviewData, setOfferPreviewData] = useState({})
   const [showThumbnailForm, setShowThumbnailForm] = useState(false)
   const [thumbnailInfo, setThumbnailInfo] = useState({})
   const [thumbnailError, setThumbnailError] = useState(false)
@@ -66,8 +66,8 @@ const OfferDetails = ({
   }, [offer?.id, reloadOffer])
 
   useEffect(() => {
-    formValues.subcategoryId && setShowThumbnailForm(formValues.subcategoryId !== DEFAULT_FORM_VALUES.subcategoryId)
-  }, [setShowThumbnailForm, formValues.subcategoryId])
+    offerPreviewData.subcategoryId && setShowThumbnailForm(offerPreviewData.subcategoryId !== DEFAULT_FORM_VALUES.subcategoryId)
+  }, [setShowThumbnailForm, offerPreviewData.subcategoryId])
 
   useEffect(() => {
     dispatch(loadCategories())
@@ -183,20 +183,18 @@ const OfferDetails = ({
     <>
       <PageTitle title="Détails de l'offre" />
 
-      <div className={Object.entries(formValues).length !== 0 ? 'sidebar-container' : ''}>
+      <div className="sidebar-container">
         <div className="content">
           {offer ? (
             <>
               {isDisabled && <OfferStatusBanner status={offerStatus} />}
               <OfferEditionContainer
                 categories={categories}
-                formValues={formValues}
                 isDisabled={isDisabled}
                 isUserAdmin={isUserAdmin}
                 offer={offer}
                 onSubmit={handleSubmitOffer}
-                setFormValues={setFormValues}
-                setPreviewOfferCategory={setOfferSubCategory}
+                setOfferPreviewData={setOfferPreviewData}
                 showErrorNotification={showErrorNotification}
                 subCategories={subCategories}
                 submitErrors={formErrors}
@@ -206,12 +204,10 @@ const OfferDetails = ({
           ) : (
             <OfferCreation
               categories={categories}
-              formValues={formValues}
               initialValues={formInitialValues.current}
               isUserAdmin={isUserAdmin}
               onSubmit={handleSubmitOffer}
-              setFormValues={setFormValues}
-              setPreviewOfferCategory={setOfferSubCategory}
+              setOfferPreviewData={setOfferPreviewData}
               showErrorNotification={showErrorNotification}
               subCategories={subCategories}
               submitErrors={formErrors}
@@ -232,8 +228,7 @@ const OfferDetails = ({
                 url={offer?.thumbUrl}
               />
               <OfferPreview
-                formValues={formValues}
-                offerSubCategory={offerSubCategory}
+                offerPreviewData={offerPreviewData}
               />
             </div>
             {offer ? (

@@ -12,18 +12,24 @@ import { loadFakeApiVenue } from 'utils/fakeApi'
 
 import OfferPreview from '../OfferPreview'
 
+const renderOfferPreview = ({ props = {} }) => {
+  return render(<OfferPreview {...props} />)
+}
+
 describe('offer preview', () => {
   describe('render', () => {
     it('should display title, description and withdrawal details when given', () => {
       // given
-      const formValues = {
-        name: 'Offer title',
-        description: 'Offer description',
-        withdrawalDetails: 'Offer withdrawal details',
+      const props = {
+        offerPreviewData: {
+          name: 'Offer title',
+          description: 'Offer description',
+          withdrawalDetails: 'Offer withdrawal details',
+        }
       }
 
       // when
-      render(<OfferPreview formValues={formValues} />)
+      renderOfferPreview({ props })
 
       // then
       expect(screen.getByText('Offer title')).toBeInTheDocument()
@@ -34,13 +40,15 @@ describe('offer preview', () => {
 
     it('should truncate description text to maximum 300 characters', () => {
       // given
-      const formValues = {
-        description:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+      const props = {
+        offerPreviewData: {
+          description:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+        }
       }
 
       // when
-      render(<OfferPreview formValues={formValues} />)
+      renderOfferPreview({ props })
 
       // then
       const shrinkedDescriptionText = screen.getByText(
@@ -51,14 +59,16 @@ describe('offer preview', () => {
 
     it('should not display terms of withdrawal category if not given', () => {
       // given
-      const formValues = {
-        name: 'Offer title',
-        description: 'Offer description',
-        withdrawalDetails: '',
+      const props = {
+        offerPreviewData: {
+          name: 'Offer title',
+          description: 'Offer description',
+          withdrawalDetails: '',
+        }
       }
 
       // when
-      render(<OfferPreview formValues={formValues} />)
+      renderOfferPreview({ props })
 
       // then
       expect(screen.queryByText('Modalités de retrait')).toBeNull()
@@ -66,13 +76,15 @@ describe('offer preview', () => {
 
     it('should truncate withdrawal details text to maximum 300 characters', () => {
       // given
-      const formValues = {
-        withdrawalDetails:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+      const props = {
+        offerPreviewData: {
+          withdrawalDetails:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+        },
       }
 
       // when
-      render(<OfferPreview formValues={formValues} />)
+      renderOfferPreview({ props })
 
       // then
       const shrinkedWithdrawalDetailsText = screen.getByText(
@@ -83,12 +95,14 @@ describe('offer preview', () => {
 
     it('should display "isDuo", "Type" and "Price"', () => {
       // given
-      const formValues = {
-        isDuo: true,
+      const props = {
+        offerPreviewData: {
+          isDuo: true,
+        },
       }
 
       // when
-      render(<OfferPreview formValues={formValues} />)
+      renderOfferPreview({ props })
 
       // then
       const typeText = screen.getByText('Type')
@@ -104,9 +118,14 @@ describe('offer preview', () => {
         //Given
         const venue = venueFactory()
         loadFakeApiVenue(venue)
+        const props = {
+          offerPreviewData: {
+            venueId: venue.id,
+          },
+        }
 
         // When
-        render(<OfferPreview formValues={{ venueId: venue.id }} />)
+        renderOfferPreview({ props })
 
         // Then
         expect(await screen.findByText('Mon Lieu - Ma Rue - 11100 - Ma Ville')).toBeInTheDocument()
@@ -119,9 +138,14 @@ describe('offer preview', () => {
           postalCode: null,
         })
         loadFakeApiVenue(venue)
+        const props = {
+          offerPreviewData: {
+            venueId: venue.id,
+          },
+        }
 
         // When
-        render(<OfferPreview formValues={{ venueId: venue.id }} />)
+        renderOfferPreview({ props })
 
         // Then
         expect(await screen.findByText('Mon Lieu - Ma Ville')).toBeInTheDocument()
@@ -133,9 +157,14 @@ describe('offer preview', () => {
         // Given
         const venue = venueFactory({ isVirtual: true })
         const { resolvingVenuePromise } = loadFakeApiVenue(venue)
+        const props = {
+          offerPreviewData: {
+            venueId: venue.id,
+          },
+        }
 
         // When
-        render(<OfferPreview formValues={{ venueId: venue.id }} />)
+        renderOfferPreview({ props })
 
         // Then
         await act(() => resolvingVenuePromise)

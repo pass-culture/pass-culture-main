@@ -14,14 +14,12 @@ import OfferForm from './OfferForm'
 
 const OfferCreation = ({
   categories,
-  formValues,
   initialValues,
   isUserAdmin,
+  setOfferPreviewData,
   userEmail,
   onSubmit,
   showErrorNotification,
-  setPreviewOfferCategory,
-  setFormValues,
   subCategories,
   submitErrors,
 }) => {
@@ -95,15 +93,13 @@ const OfferCreation = ({
       areAllVenuesVirtual={areAllVenuesVirtual}
       backUrl={computeOffersUrl({})}
       categories={categories}
-      formValues={formValues}
       initialValues={initialValues}
       isUserAdmin={isUserAdmin}
       offerersNames={offerersNames.current}
       onSubmit={onSubmit}
       readOnlyFields={isUserAdmin ? ['offererId'] : []}
-      setFormValues={setFormValues}
       setIsLoading={setIsLoading}
-      setPreviewOfferCategory={setPreviewOfferCategory}
+      setOfferPreviewData={setOfferPreviewData}
       setSelectedOfferer={setSelectedOfferer}
       showErrorNotification={showErrorNotification}
       subCategories={subCategories}
@@ -121,12 +117,10 @@ OfferCreation.defaultProps = {
 
 OfferCreation.propTypes = {
   categories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  formValues: PropTypes.shape().isRequired,
   initialValues: PropTypes.shape(),
   isUserAdmin: PropTypes.bool,
   onSubmit: PropTypes.func.isRequired,
-  setFormValues: PropTypes.func.isRequired,
-  setPreviewOfferCategory: PropTypes.func.isRequired,
+  setOfferPreviewData: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   subCategories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   submitErrors: PropTypes.shape().isRequired,

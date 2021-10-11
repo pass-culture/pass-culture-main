@@ -39,15 +39,13 @@ const computeNoDisabilityComplianceValue = offer => {
 
 const OfferEdition = ({
   categories,
-  formValues,
   isDisabled,
   isUserAdmin,
   offer,
   offersPageNumber,
   offersSearchFilters,
   onSubmit,
-  setFormValues,
-  setPreviewOfferCategory,
+  setOfferPreviewData,
   showErrorNotification,
   submitErrors,
   subCategories,
@@ -120,7 +118,6 @@ const OfferEdition = ({
     <OfferForm
       backUrl={computeOffersUrl(offersSearchFilters, offersPageNumber)}
       categories={categories}
-      formValues={formValues}
       initialValues={initialValues}
       isDisabled={isDisabled}
       isEdition
@@ -131,8 +128,7 @@ const OfferEdition = ({
       onSubmit={onSubmit}
       providerName={providerName}
       readOnlyFields={readOnlyFields}
-      setFormValues={setFormValues}
-      setPreviewOfferCategory={setPreviewOfferCategory}
+      setOfferPreviewData={setOfferPreviewData}
       showErrorNotification={showErrorNotification}
       subCategories={subCategories}
       submitErrors={submitErrors}
@@ -150,7 +146,6 @@ OfferEdition.defaultProps = {
 
 OfferEdition.propTypes = {
   categories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  formValues: PropTypes.shape().isRequired,
   isDisabled: PropTypes.bool,
   isUserAdmin: PropTypes.bool,
   offer: PropTypes.shape(),
@@ -167,8 +162,7 @@ OfferEdition.propTypes = {
     page: PropTypes.number,
   }).isRequired,
   onSubmit: PropTypes.func.isRequired,
-  setFormValues: PropTypes.func.isRequired,
-  setPreviewOfferCategory: PropTypes.func.isRequired,
+  setOfferPreviewData: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   subCategories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   submitErrors: PropTypes.shape().isRequired,

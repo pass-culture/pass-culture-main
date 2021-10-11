@@ -86,7 +86,6 @@ const OfferForm = ({
   areAllVenuesVirtual,
   backUrl,
   categories,
-  formValues,
   initialValues,
   isDisabled,
   isEdition,
@@ -95,9 +94,8 @@ const OfferForm = ({
   onSubmit,
   providerName,
   readOnlyFields,
-  setFormValues,
   setSelectedOfferer,
-  setPreviewOfferCategory,
+  setOfferPreviewData,
   showErrorNotification,
   subCategories,
   submitErrors,
@@ -107,6 +105,7 @@ const OfferForm = ({
   const [offerSubCategory, setOfferSubCategory] = useState(null)
   const [receiveNotificationEmails, setReceiveNotificationEmails] = useState(false)
   const [venue, setVenue] = useState(null)
+  const [formValues, setFormValues] = useState({})
   const [venueOptions, setVenueOptions] = useState(
     buildSelectOptionsWithOptionalFields('id', ['publicName', 'name'], venues)
   )
@@ -185,9 +184,6 @@ const OfferForm = ({
         setOfferSubCategory(
           subCategories.find(type => type.id === formValues.subcategoryId)
         )
-        setPreviewOfferCategory(
-          subCategories.find(type => type.id === formValues.subcategoryId)
-        )
       }
 
       if (
@@ -205,7 +201,6 @@ const OfferForm = ({
       formValues.subcategoryId,
       formValues.venueId,
       handleFormUpdate,
-      setPreviewOfferCategory,
       venues,
       venueOptions,
       subCategories,
@@ -301,6 +296,30 @@ const OfferForm = ({
       }
     }
   }, [formRef, formErrors])
+
+  useEffect(
+    function setParentOfferPreviewData () {
+      setOfferPreviewData({
+        subcategoryId: formValues.subcategoryId,
+        description: formValues.description,
+        isEvent: offerSubCategory?.isEvent || false,
+        isDuo: formValues.isDuo,
+        name: formValues.name,
+        venueId: formValues.venueId,
+        withdrawalDetails: formValues.withdrawalDetails,
+      })
+    },
+    [
+      formValues.subcategoryId,
+      formValues.description,
+      formValues.isDuo,
+      formValues.name,
+      formValues.venueId,
+      formValues.withdrawalDetails,
+      offerSubCategory,
+      setOfferPreviewData,
+    ]
+  )
 
   const selectOfferer = useCallback(
     event => {
@@ -925,7 +944,6 @@ OfferForm.propTypes = {
   areAllVenuesVirtual: PropTypes.bool,
   backUrl: PropTypes.string,
   categories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  formValues: PropTypes.shape().isRequired,
   initialValues: PropTypes.shape(),
   isDisabled: PropTypes.bool,
   isEdition: PropTypes.bool,
@@ -939,8 +957,7 @@ OfferForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   providerName: PropTypes.string,
   readOnlyFields: PropTypes.arrayOf(PropTypes.string),
-  setFormValues: PropTypes.func.isRequired,
-  setPreviewOfferCategory: PropTypes.func.isRequired,
+  setOfferPreviewData: PropTypes.func.isRequired,
   setSelectedOfferer: PropTypes.func,
   showErrorNotification: PropTypes.func.isRequired,
   subCategories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
