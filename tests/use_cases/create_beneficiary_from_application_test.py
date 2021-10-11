@@ -2,10 +2,12 @@ from datetime import datetime
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
+import freezegun
 import pytest
 
 from pcapi.connectors.beneficiaries import jouve_backend
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
@@ -607,6 +609,7 @@ def test_jouve_raise_403(mocked_get_content, caplog):
 
 
 class JouveDataValidationTest:
+    @freezegun.freeze_time("2021-10-30 09:00:00")
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     @pytest.mark.parametrize(
         "jouve_field", ["birthLocationCtrl", "bodyBirthDateCtrl", "bodyNameCtrl", "bodyPieceNumberCtrl"]
@@ -624,6 +627,14 @@ class JouveDataValidationTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2905960
         assert mails_testing.outbox[0].sent_data["Mj-campaign"] == "dossier-en-analyse"
+
+        assert subscription_models.SubscriptionMessage.query.count() == 1
+        message = subscription_models.SubscriptionMessage.query.first()
+        assert message.popOverIcon == subscription_models.PopOverIcon.CLOCK
+        assert (
+            message.userMessage
+            == "Nous avons reçu ton dossier le 30/10/2021 et son analyse peut prendre jusqu'à 5 jours."
+        )
 
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     @pytest.mark.parametrize("jouve_field", ["bodyBirthDateLevel", "bodyNameLevel", "bodyPieceNumberLevel"])

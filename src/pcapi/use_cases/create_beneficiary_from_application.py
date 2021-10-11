@@ -3,6 +3,7 @@ import logging
 from pcapi.connectors.beneficiaries import jouve_backend
 from pcapi.core.fraud.api import on_jouve_result
 from pcapi.core.mails.transactional.users.fraud_suspicion_email import send_fraud_suspicion_email
+from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.domain import user_emails
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
@@ -84,6 +85,7 @@ class CreateBeneficiaryFromApplication:
 
         except SuspiciousFraudDetected:
             send_fraud_suspicion_email(beneficiary_pre_subscription)
+            subscription_messages.create_message_jouve_manual_review(preexisting_account, application_id=application_id)
         except FraudDetected as cant_register_beneficiary_exception:
             # detail column cannot contain more than 255 characters
             detail = f"Fraud controls triggered: {cant_register_beneficiary_exception}"[:255]
