@@ -178,8 +178,8 @@ def validate_distant_image(body: offers_serialize.ImageBodyModel) -> offers_seri
 @login_required
 @spectree_serialize(on_success_status=201, response_model=CreateThumbnailResponseModel)
 def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseModel:
-    check_user_has_access_to_offerer(current_user, form.offerer_id)
     offer = get_offer_by_id(form.offer_id)
+    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     image_as_bytes = form.get_image_as_bytes(request)
     thumbnail = offers_api.create_mediation(

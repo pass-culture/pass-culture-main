@@ -39,7 +39,6 @@ class CreateThumbnailWithoutImageTest:
         client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         data = {
             "offerId": humanize(offer.id),
-            "offererId": humanize(offerer.id),
         }
 
         # when
@@ -58,7 +57,6 @@ class CreateThumbnailFromUrlTest:
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         data = {
             "offerId": humanize(offer.id),
-            "offererId": humanize(offerer.id),
             "thumbUrl": "https://example.com/image.jpg",
         }
 
@@ -84,7 +82,6 @@ class CreateThumbnailFromUrlTest:
         client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         data = {
             "offerId": humanize(offer.id),
-            "offererId": humanize(offerer.id),
             "thumbUrl": "https://example.com/image.jpg",
         }
 
@@ -107,7 +104,6 @@ class CreateThumbnailFromUrlTest:
         client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         data = {
             "offerId": humanize(offer.id),
-            "offererId": humanize(offerer.id),
             "thumbUrl": "https://example.com/image.jpg",
         }
 
@@ -131,7 +127,6 @@ class CreateThumbnailFromUrlTest:
         client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         data = {
             "offerId": humanize(offer.id),
-            "offererId": humanize(offerer.id),
             "thumbUrl": "https://example.com/image.jpg",
         }
 
@@ -155,7 +150,6 @@ class CreateThumbnailFromUrlTest:
         client = TestClient(app.test_client()).with_session_auth(email="user@example.com")
         data = {
             "offerId": humanize(offer.id),
-            "offererId": humanize(offerer.id),
             "thumbUrl": "https://example.com/image.jpg",
         }
 
@@ -175,7 +169,6 @@ class CreateThumbnailFromFileTest:
         thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         data = {
             "offerId": humanize(offer.id),
-            "offererId": humanize(offerer.id),
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 
@@ -196,7 +189,6 @@ class CreateThumbnailFromFileTest:
         thumb = (IMAGES_DIR / "mouette_fake_jpg.jpg").read_bytes()
         data = {
             "offerId": humanize(offer.id),
-            "offererId": humanize(offerer.id),
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 
@@ -215,7 +207,6 @@ class CreateThumbnailFromFileTest:
         thumb = (IMAGES_DIR / "mouette_small.jpg").read_bytes()
         data = {
             "offerId": humanize(offer.id),
-            "offererId": humanize(offerer.id),
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 
@@ -235,7 +226,6 @@ class CreateThumbnailFromFileTest:
         thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         data = {
             "offerId": humanize(offer.id),
-            "offererId": humanize(offerer.id),
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 

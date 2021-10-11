@@ -10,14 +10,12 @@ from pcapi.serialization.utils import to_camel
 
 class CreateThumbnailBodyModel(BaseModel):
     thumb_url: Optional[str]
-    offerer_id: int
     offer_id: int
     credit: Optional[str]
     cropping_rect_x: Optional[float]
     cropping_rect_y: Optional[float]
     cropping_rect_height: Optional[float]
 
-    _dehumanize_offerer_id = dehumanize_field("offerer_id")
     _dehumanize_offer_id = dehumanize_field("offer_id")
 
     class Config:
