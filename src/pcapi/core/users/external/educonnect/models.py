@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import datetime
+from typing import Optional
 
 
 @dataclass
@@ -9,5 +10,6 @@ class EduconnectUser:
     educonnect_id: str
     first_name: str
     last_name: str
+    logout_url: str
     saml_request_id: str
-    student_level: str
+    student_level: Optional[str]

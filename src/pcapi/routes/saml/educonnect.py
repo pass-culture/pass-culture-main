@@ -44,6 +44,7 @@ def on_educonnect_authentication_response() -> None:
             "educonnect_id": educonnect_user.educonnect_id,
             "first_name": educonnect_user.first_name,
             "last_name": educonnect_user.last_name,
+            "logout_url": educonnect_user.logout_url,
             "saml_request_id": educonnect_user.saml_request_id,
             "student_level": educonnect_user.student_level,
         },

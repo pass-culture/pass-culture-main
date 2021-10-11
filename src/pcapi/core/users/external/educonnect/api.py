@@ -99,12 +99,22 @@ def get_educonnect_user(saml_response: str) -> models.EduconnectUser:
             educonnect_id=educonnect_identity[_get_field_oid("57")][0],
             first_name=educonnect_identity["givenName"][0],
             last_name=educonnect_identity["sn"][0],
+            logout_url=educonnect_identity[_get_field_oid("5")][0],
             saml_request_id=saml_request_id,
-            student_level=educonnect_identity[_get_field_oid("73")][0],
+            student_level=educonnect_identity.get(_get_field_oid("73"), [None])[0],
         )
+    except KeyError as exception:
+        logger.error(
+            "Key error raised when parsing educonnect saml response: %s",
+            repr(exception),
+            extra={"saml_request_id": saml_request_id},
+        )
+        raise exceptions.ParsingError()
     except Exception as exception:
         logger.error(
-            "Error when parsing educonnect saml response %s", exception, extra={"saml_request_id": saml_request_id}
+            "Error when parsing educonnect saml response: %s",
+            repr(exception),
+            extra={"saml_request_id": saml_request_id},
         )
         raise exceptions.ParsingError()
 
