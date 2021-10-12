@@ -124,8 +124,8 @@ class CloudSQLPostgresInstance:
         print(drop_role_request)
         self.execute_query(drop_role_request)
 
-    def rename_database(self, old_database_name: str, new_name: str):
-        database_rename_request = 'ALTER DATABASE "%s" RENAME TO "%s"' % (old_database_name, new_name)
+    def rename_database(self, old_database_name: str, new_database_name: str):
+        database_rename_request = 'ALTER DATABASE "%s" RENAME TO "%s"' % (old_database_name, new_database_name)
         print(database_rename_request)
         self.execute_query(database_rename_request)
 
