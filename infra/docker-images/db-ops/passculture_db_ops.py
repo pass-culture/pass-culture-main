@@ -14,7 +14,7 @@ def transform_database(
     new_owner_password
 ):
     instance.connect(username=owner, password=owner_password, database="postgres")
-    instance.rename_database(old_database_name=old_database_name, new_name=new_database_name)
+    instance.rename_database(old_database_name=old_database_name, new_database_name=new_database_name)
     instance.change_database_owner(database=new_database_name, current_owner=owner, new_owner=new_owner)
     instance.disconnect()
 
