@@ -291,4 +291,16 @@ describe('reimbursementsWithFilters', () => {
       displayRouteParams(withVenueFilterUrlParams),
     ])
   })
+
+  it('should display no refunds message when user has no associated venues', async () => {
+    // given
+    pcapi.getVenuesForOfferer.mockResolvedValue([])
+    await renderReimbursements(store, props)
+
+    // when
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    // then
+    expect(screen.getByText('Aucun remboursement à afficher')).toBeInTheDocument()
+  })
 })

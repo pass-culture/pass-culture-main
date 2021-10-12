@@ -40,7 +40,7 @@ class CsvTable extends PureComponent {
   handlePrintCurrentView = () => window.print()
 
   render() {
-    const { dataFromCsv, isLoading } = this.state
+    const { dataFromCsv = {}, isLoading } = this.state
     const { data = [], headers = [] } = dataFromCsv
     const hasAtLeastData = data.length > 0
 
