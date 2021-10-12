@@ -40,4 +40,9 @@ class Deposit(PcObject, Model):
 
     version = Column(SmallInteger, nullable=False)
 
-    type = Column("type", Enum(DepositType, native_enum=False, create_constraint=False), nullable=False)
+    type = Column(
+        "type",
+        Enum(DepositType, native_enum=False, create_constraint=False),
+        nullable=False,
+        server_default=DepositType.GRANT_18.value,
+    )
