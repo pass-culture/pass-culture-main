@@ -1,5 +1,7 @@
 from datetime import datetime
 from time import sleep
+from typing import Callable
+
 from googleapiclient import discovery
 
 from google.cloud.sql.connector import connector
@@ -77,17 +79,21 @@ class CloudSQLPostgresInstance:
     def backup(self):
         print("Backing up %s" % self.name)
 
-        backup_info = self.sqladmin_backup_runs_service.insert(
+        operation = self.sqladmin_backup_runs_service.insert(
             project=self.project,
             instance=self.name
         ).execute()
 
-        while self.sqladmin_backup_runs_service.get(
+        self.wait_for_operation(
+            check_if_operation_done_function=lambda: self.sqladmin_backup_runs_service.get(
                 project=self.project,
                 instance=self.name,
-                id=backup_info["backupContext"]["backupId"]
-        ).execute()["status"] != "SUCCESSFUL":
-            sleep(60)
+                id=operation["backupContext"]["backupId"]
+            ).execute()["status"] == "SUCCESSFUL",
+            operation_id=operation["backupContext"]["backupId"],
+            check_interval=60
+        )
+
         print("Backup done")
 
     def create_database(self, database_name: str):
@@ -179,11 +185,15 @@ class CloudSQLPostgresInstance:
                 "databaseVersion": instance_info["databaseVersion"],
                 "name": replica_name,
                 "region": instance_info["region"],
-                "settings": { "tier": instance_info["settings"]["tier"] }
+                "settings": {"tier": instance_info["settings"]["tier"]}
             }
         ).execute()
 
-        self.wait_for_operation(operation=operation, check_interval=30)
+        self.wait_for_operation(
+            check_if_operation_done_function=lambda: self.is_sqladmin_operation_done(operation=operation),
+            operation_id=operation["name"],
+            check_interval=30
+        )
 
     def delete_replica(self, replica_name: str):
         print("Deleting replica %s" % replica_name)
@@ -192,6 +202,7 @@ class CloudSQLPostgresInstance:
             instance=replica_name
         ).execute()["name"]
 
+        # not using wait_for_operation here since the operation disappears when it's done
         operation_listed_once = False
         try:
             while self.sqladmin_operations_service.get(
@@ -236,7 +247,12 @@ class CloudSQLPostgresInstance:
             body=restorebackup_body
         ).execute()
 
-        self.wait_for_operation(operation=operation, check_interval=60)
+        self.wait_for_operation(
+            check_if_operation_done_function=lambda: self.is_sqladmin_operation_done(operation=operation),
+            operation_id=operation["name"],
+            check_interval=60
+        )
+
         print("Restore done")
 
     def update_user_password(self, username: str, password: str):
@@ -284,17 +300,25 @@ class CloudSQLPostgresInstance:
             }
         ).execute()
 
-        self.wait_for_operation(operation=operation, check_interval=10)
+        self.wait_for_operation(
+            check_if_operation_done_function=lambda: self.is_sqladmin_operation_done(operation=operation),
+            operation_id=operation["name"],
+            check_interval=10
+        )
+
         print("Ended: Exporting database %s to %s" % (database_name, dump_uri))
 
-    def wait_for_operation(self, operation, check_interval: int):
-        while self.sqladmin_operations_service.get(project=self.project, operation=operation['name']).execute()[
-            "status"] != "DONE":
-            print("Operation %s still pending, sleeping %ds..." % (operation["name"], check_interval))
-            sleep(check_interval)
+    def is_sqladmin_operation_done(self, operation):
+        return self.sqladmin_operations_service.get(
+            project=self.project,
+            operation=operation['name']
+        ).execute()["status"] == "DONE"
 
-        return operation
+    @staticmethod
+    def wait_for_operation(check_if_operation_done_function: Callable, operation_id: str, check_interval: int):
+        while not check_if_operation_done_function():
+            print("Operation %s still pending, sleeping %ds..." % (operation_id, check_interval))
+            sleep(check_interval)
 
     def execute_query(self, query):
         self.connection_cursor.execute(query)
-
