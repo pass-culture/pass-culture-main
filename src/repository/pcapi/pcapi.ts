@@ -10,7 +10,7 @@ export const authenticate = async (): Promise<Role> => {
 export const getOffer = async (
   offerId: number | string
 ): Promise<OfferType> => {
-  return client.get(`/native/v1/offer/${offerId}`)
+  return client.get(`/adage-iframe/offer/${offerId}`)
 }
 
 export const getVenueBySiret = async (

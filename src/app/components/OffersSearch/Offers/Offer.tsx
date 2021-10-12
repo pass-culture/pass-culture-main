@@ -51,7 +51,7 @@ export const Offer = ({
           <h3>
             Quoi ?
           </h3>
-          {offer.category.label}
+          {offer.subcategoryLabel}
         </section>
         <section>
           <h3>

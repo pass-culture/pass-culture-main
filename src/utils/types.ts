@@ -13,9 +13,7 @@ export interface VenueType {
 export interface OfferType {
   id: number;
   name: string;
-  category: {
-    label: string;
-  };
+  subcategoryLabel: string;
   description: string;
   venue: VenueType;
   stocks: StockType[];
