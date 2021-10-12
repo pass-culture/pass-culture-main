@@ -1,5 +1,6 @@
 import logging
 
+from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
 from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
 from pcapi.core.users import models as users_models
@@ -20,13 +21,13 @@ def archive_applications(procedure_id: int, dry_run: bool = True) -> None:
         application_number = application_details["number"]
         total_applications += 1
         bi = (
-            BeneficiaryImport.query.join(BeneficiaryImportStatus)
-            .join(users_models.User)
+            BeneficiaryImport.query.join(users_models.User, users_models.User.id == BeneficiaryImport.beneficiaryId)
+            .join(BeneficiaryImportStatus, BeneficiaryImportStatus.beneficiaryImportId == BeneficiaryImport.id)
             .filter(BeneficiaryImport.applicationId == application_number, BeneficiaryImport.sourceId == procedure_id)
             .filter(BeneficiaryImportStatus.status == ImportStatus.CREATED)
         ).one_or_none()
-        if bi:
-            instructeur_techid = application_details["instructeurs"][0]["id"]
+        if bi and bi.beneficiary.isBeneficiary:
+            instructeur_techid = settings.DMS_ENROLLMENT_INSTRUCTOR
             if not dry_run:
                 client.archive_application(application_techid, instructeur_techid)
             logger.info(

@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
+from pcapi.core import testing
 from pcapi.core.users import factories as users_factories
 from pcapi.models import ImportStatus
 from pcapi.scripts.beneficiary import archive_dms_applications
@@ -51,6 +52,7 @@ class ArchiveDMSApplicationsTest:
 
     @patch.object(DMSGraphQLClient, "get_applications_with_details")
     @patch.object(DMSGraphQLClient, "archive_application")
+    @testing.override_settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
     def test_archive_applications_only_archive_beneficiary(self, dms_archive, dms_applications, caplog):
         caplog.set_level(logging.INFO)
         application_id = 42
@@ -69,7 +71,7 @@ class ArchiveDMSApplicationsTest:
         ]
         archive_dms_applications.archive_applications(self.PROCEDURE_ID, dry_run=False)
         assert dms_archive.call_count == 1
-        assert dms_archive.call_args == [(application_to_archive["id"], "SomeRandomId")]
+        assert dms_archive.call_args == [(application_to_archive["id"], "SomeInstructorId")]
 
         assert (
             caplog.messages[0]
