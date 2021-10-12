@@ -1,7 +1,7 @@
 from cloudsqlpostgresinstance import CloudSQLPostgresInstance
 from datetime import datetime
+from os import getenv
 import env_vars
-import os
 import subprocess
 
 def transform_database(
@@ -47,7 +47,7 @@ def anonymize(database_url: str):
     anonymize_sql_script = open(env_vars.ANONYMIZE_SQL_SCRIPT_PATH, mode='r').read()
     subprocess.run(
         ["psql", database_url],
-        env={"PATH": os.getenv("PATH")},
+        env={"PATH": getenv("PATH")},
         input=anonymize_sql_script,
         text=True,
         check=True
