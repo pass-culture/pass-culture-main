@@ -39,8 +39,8 @@ def on_educonnect_authentication_response() -> None:
     logger.info(
         "Received educonnect authentication response",
         extra={
-            "date_of_birth": educonnect_user.birth_date,
-            "educonnect_connection_date": educonnect_user.connection_datetime,
+            "date_of_birth": educonnect_user.birth_date.isoformat(),
+            "educonnect_connection_date": educonnect_user.connection_datetime.isoformat(),
             "educonnect_id": educonnect_user.educonnect_id,
             "first_name": educonnect_user.first_name,
             "last_name": educonnect_user.last_name,
