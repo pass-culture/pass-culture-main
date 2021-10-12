@@ -12,7 +12,10 @@ connectable = create_engine(settings.DATABASE_URL)
 
 def main():
     with connectable.connect() as connection:
-        migration_context = MigrationContext.configure(connection, opts={"include_object": include_object})
+        migration_context = MigrationContext.configure(
+            connection,
+            opts={"include_object": include_object, "compare_server_default": True},
+        )
         diff = compare_metadata(migration_context, db.metadata)
 
         if len(diff) > 0:
