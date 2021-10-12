@@ -62,6 +62,7 @@ class VenueView(BaseAdminView):
         "isPermanent",
         "provider_name",
         "managingOfferer.name",
+        "dateCreated",
     ]
     column_labels = {
         "name": "Nom",
@@ -75,6 +76,7 @@ class VenueView(BaseAdminView):
         "isPermanent": "Lieu permanent",
         "provider_name": "Provider",
         "managingOfferer.name": "Structure",
+        "dateCreated": "Date de création",
     }
     column_searchable_list = ["name", "siret", "publicName"]
     column_filters = ["postalCode", "city", "publicName", "id", "managingOfferer.name"]
