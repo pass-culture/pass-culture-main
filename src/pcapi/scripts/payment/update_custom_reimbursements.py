@@ -1,3 +1,5 @@
+# FIXME (dbaty, 2021-10-29): remove this script once we're sure that
+# the new Flask-admin-based interface is enough.
 import csv
 import datetime
 from decimal import Decimal

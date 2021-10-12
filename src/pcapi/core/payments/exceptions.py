@@ -13,3 +13,19 @@ class UserNotGrantable(Exception):
 
 class UserHasAlreadyActiveDeposit(UserNotGrantable):
     pass
+
+
+class ReimbursementRuleValidationError(Exception):
+    pass
+
+
+class ConflictingReimbursementRule(ReimbursementRuleValidationError):
+    pass
+
+
+class WrongDateForReimbursementRule(ReimbursementRuleValidationError):
+    pass
+
+
+class UnknownSubcategoryForReimbursementRule(ReimbursementRuleValidationError):
+    pass

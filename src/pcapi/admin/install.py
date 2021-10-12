@@ -17,6 +17,7 @@ from pcapi.admin.custom_views.booking_view import BookingView
 from pcapi.admin.custom_views.category_view import CategoryView
 from pcapi.admin.custom_views.category_view import SubcategoryView
 from pcapi.admin.custom_views.criteria_view import CriteriaView
+from pcapi.admin.custom_views.custom_reimbursement_rule_view import CustomReimbursementRuleView
 from pcapi.admin.custom_views.feature_view import FeatureView
 from pcapi.admin.custom_views.many_offers_operations_view import ManyOffersOperationsView
 from pcapi.admin.custom_views.offerer_view import OffererView
@@ -31,6 +32,7 @@ from pcapi.admin.custom_views.venue_view import VenueView
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import OfferValidationConfig
+from pcapi.core.payments.models import CustomReimbursementRule
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users.models import User
@@ -198,6 +200,19 @@ def install_admin_views(admin: Admin, session: Session) -> None:
             category=Category.CUSTOM_OPERATIONS,
         )
     )
+
+    admin.add_view(
+        CustomReimbursementRuleView(
+            CustomReimbursementRule,
+            session,
+            name="Règles de remboursement personnalisées",
+            category=Category.CUSTOM_OPERATIONS,
+        )
+    )
+
+
+def install_admin_autocomplete_views():
+    from pcapi.admin import autocomplete  # pylint: disable=unused-import
 
 
 def install_admin_template_filters(app: Flask) -> None:

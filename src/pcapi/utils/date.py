@@ -1,4 +1,6 @@
+from datetime import date
 from datetime import datetime
+from datetime import time
 from typing import Optional
 
 from babel.dates import format_date
@@ -132,3 +134,10 @@ def get_time_in_seconds_from_datetime(date_time: datetime) -> int:
     minute_in_seconds = datetime.time(date_time).minute * 60
     seconds = datetime.time(date_time).second
     return hour_in_seconds + minute_in_seconds + seconds
+
+
+def get_day_start(dt: date, timezone) -> datetime:
+    """Return a ``datetime`` object that is the first second of the given
+    ``date`` in the given timezone.
+    """
+    return timezone.localize(datetime.combine(dt, time(0, 0)))

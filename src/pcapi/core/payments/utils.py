@@ -3,7 +3,7 @@ import datetime
 import pytz
 
 
-LOCAL_TIMEZONE = pytz.timezone("Europe/Paris")
+ACCOUNTING_TIMEZONE = pytz.timezone("Europe/Paris")
 
 
 def get_cutoff_as_datetime(last_day: str) -> datetime.datetime:
@@ -13,4 +13,4 @@ def get_cutoff_as_datetime(last_day: str) -> datetime.datetime:
     """
     next_day = datetime.date.fromisoformat(last_day) + datetime.timedelta(days=1)
     first_second = datetime.datetime.combine(next_day, datetime.time.min)
-    return LOCAL_TIMEZONE.localize(first_second).astimezone(pytz.utc)
+    return ACCOUNTING_TIMEZONE.localize(first_second).astimezone(pytz.utc)
