@@ -7,12 +7,6 @@ parameters:
     type: string
     default: 'deps1-{{ checksum "/home/circleci/.pyenv/version" }}-{{ checksum "requirements.txt" }}'
 
-slack-fail-post-step: &slack-fail-post-step
-  post-steps:
-    - slack/notify:
-        event: fail
-        channel: shérif
-        template: basic_fail_1
 
 ###################
 #  EXECUTORS
@@ -77,6 +71,21 @@ commands:
             --namespace << parameters.kubernetes_namespace >> \
             --values << parameters.helm_values_file >> \
             --set-string image.tag=<< parameters.app_version >>
+
+
+  notify-slack:
+    description: Send notification to Slack
+    parameters:
+      channel:
+        type: string
+      template:
+        type: string
+        default: FAIL_TEMPLATE_1
+    steps:
+      - slack/notify:
+          event: fail
+          channel: << parameters.channel >>
+          template: << parameters.template >>
 
 ###################
 #  JOBS
@@ -160,13 +169,14 @@ jobs:
           condition: << parameters.is_nightly_build >>
           steps:
             - run:
-                name: Running tests
+                name: Running nightly tests
                 command: >
                   RUN_ENV=tests venv/bin/pytest tests --durations=10  --cov --cov-report html
                   --junitxml=test-results/junit.xml
 
                   venv/bin/coveralls || echo "Encountered an error while running coveralls"
-
+            - notify-slack:
+               channel: shérif
       - unless:
           condition: << parameters.is_nightly_build >>
           steps:
@@ -182,6 +192,10 @@ jobs:
           path: htmlcov
 
   quality:
+    parameters:
+      is_nightly_build:
+        type: boolean
+        default: false
     working_directory: ~/pass-culture-api-ci
     docker:
       - image: cimg/python:3.9.7
@@ -227,6 +241,11 @@ jobs:
           name: Run pylint
           when: always
           command: venv/bin/pylint src tests --jobs=8
+      - when:
+          condition: << parameters.is_nightly_build >>
+          steps:
+            - notify-slack:
+               channel: shérif
 
   build-container:
     machine:
@@ -306,6 +325,8 @@ jobs:
           kubernetes_namespace: testing
           helm_values_file: ./helm/pcapi/values.testing.yaml
           app_version: ${CIRCLE_SHA1}
+      - notify-slack:
+         channel: alertes-deploiement
 
   functional-tests-webapp:
     machine:
@@ -365,6 +386,8 @@ jobs:
             yarn test:cafe
       - store_artifacts:
           path: ~/pass-culture-main/webapp/testcafe_screenshots
+      - notify-slack:
+         channel: shérif
 
   functional-tests-pro:
     machine:
@@ -424,6 +447,8 @@ jobs:
             yarn test:cafe
       - store_artifacts:
           path: ~/pass-culture-main/pro/testcafe_screenshots
+      - notify-slack:
+         channel: shérif
 
   restart-pcapi:
     executor: gcp-sdk
@@ -436,6 +461,8 @@ jobs:
           name: Get GKE cluster credentials
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
       - run: kubectl get deploy -n testing -o name | xargs -L 1 kubectl rollout restart -n testing
+      - notify-slack:
+         channel: alertes-deploiement
 
 ###################
 #  WORKFLOWS
@@ -480,13 +507,13 @@ workflows:
             - GCP
             - GCP_EHP
             - Slack
-          <<: *slack-fail-post-step
       - restart-pcapi:
           requires:
             - deploy-pcapi
           context:
             - GCP
             - GCP_EHP
+            - Slack
 
   nightly:
     triggers:
@@ -499,18 +526,17 @@ workflows:
     jobs:
       - functional-tests-webapp:
           context: Slack
-          <<: *slack-fail-post-step
       - functional-tests-pro:
           context: Slack
-          <<: *slack-fail-post-step
       - run-tests:
           name: "Run nightly tests"
           is_nightly_build: true
           context: Slack
-          <<: *slack-fail-post-step
       - quality:
+          name: "Run nightly quality tests"
           context: Slack
-          <<: *slack-fail-post-step
+          is_nightly_build: true
+
 
   e2e:
     jobs:
@@ -521,7 +547,6 @@ workflows:
               only:
                 - master
           context: Slack
-          <<: *slack-fail-post-step
       - functional-tests-pro:
           name: "Run pro e2e tests after commit to master"
           filters:
@@ -529,4 +554,3 @@ workflows:
               only:
                 - master
           context: Slack
-          <<: *slack-fail-post-step
