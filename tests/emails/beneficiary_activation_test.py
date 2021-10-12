@@ -44,7 +44,7 @@ class GetActivationEmailTest:
         activation_email_data = get_email_confirmation_email_data(user, user.tokens[0])
 
         # Then
-        assert activation_email_data.template == TransactionalEmail.EMAIL_CONFIRMATION
+        assert activation_email_data.template == TransactionalEmail.EMAIL_CONFIRMATION.value
         assert activation_email_data.params["CONFIRMATION_LINK"]
         assert "email%3Dfabien%252Btest%2540example.net" in activation_email_data.params["CONFIRMATION_LINK"]
 

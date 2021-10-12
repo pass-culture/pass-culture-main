@@ -407,7 +407,7 @@ def test_send_analysing_account_emails_with_sendinblue_when_suspicious(
     assert BeneficiaryImport.query.count() == 0
 
     assert len(mails_testing.outbox) == 1
-    assert mails_testing.outbox[0].sent_data["template"].value.id_prod == 82
+    assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 82
     assert mails_testing.outbox[0].sent_data["params"] == {}
 
 

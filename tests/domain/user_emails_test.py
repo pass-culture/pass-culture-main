@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from datetime import datetime
 from datetime import timedelta
 from unittest.mock import call
@@ -364,9 +365,8 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
 
         # then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert (
-            mails_testing.outbox[0].sent_data["template"]
-            == TransactionalEmail.EMAIL_DUPLICATE_BENEFICIARY_PRE_SUBCRIPTION_REJECTED
+        assert mails_testing.outbox[0].sent_data["template"] == asdict(
+            TransactionalEmail.EMAIL_DUPLICATE_BENEFICIARY_PRE_SUBCRIPTION_REJECTED.value
         )
 
     @patch(

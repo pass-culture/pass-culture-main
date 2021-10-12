@@ -41,7 +41,7 @@ def get_email_confirmation_email_data(
         }
 
     return SendinblueTransactionalEmailData(
-        template=TransactionalEmail.EMAIL_CONFIRMATION,
+        template=TransactionalEmail.EMAIL_CONFIRMATION.value,
         params={
             "CONFIRMATION_LINK": email_confirmation_link,
         },

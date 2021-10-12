@@ -15,7 +15,7 @@ def make_fraud_suspicion_data() -> Union[dict, SendinblueTransactionalEmailData]
             "Mj-campaign": "dossier-en-analyse",
         }
 
-    return SendinblueTransactionalEmailData(template=TransactionalEmail.FRAUD_SUSPICION, params={})
+    return SendinblueTransactionalEmailData(template=TransactionalEmail.FRAUD_SUSPICION.value, params={})
 
 
 def send_fraud_suspicion_email(

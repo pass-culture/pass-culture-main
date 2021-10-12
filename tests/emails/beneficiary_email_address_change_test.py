@@ -39,9 +39,9 @@ class AddressEmailChangeTest:
         data2 = get_confirmation_email_change_data(first_name=user.firstName, confirmation_link="ABCD123")
 
         # Then
-        assert data.template == TransactionalEmail.EMAIL_ADDRESS_CHANGE_REQUEST
+        assert data.template == TransactionalEmail.EMAIL_ADDRESS_CHANGE_REQUEST.value
         assert data.params["FIRSTNAME"] == "Fabien"
 
-        assert data2.template == TransactionalEmail.EMAIL_ADDRESS_CHANGE_CONFIRMATION
+        assert data2.template == TransactionalEmail.EMAIL_ADDRESS_CHANGE_CONFIRMATION.value
         assert data2.params["FIRSTNAME"] == "Fabien"
         assert data2.params["CONFIRMATION_LINK"] == "ABCD123"
