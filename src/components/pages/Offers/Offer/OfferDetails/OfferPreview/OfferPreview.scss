@@ -94,6 +94,8 @@
   .title-preview {
     @include body-important();
 
+    max-width: rem(224px);
+    overflow-wrap: break-word;
     text-align: center;
   }
 }
