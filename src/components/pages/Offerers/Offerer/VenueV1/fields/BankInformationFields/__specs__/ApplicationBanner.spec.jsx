@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 import React from 'react'
@@ -20,6 +20,8 @@ describe('when offerer has no bank informations', () => {
 
     // then
     expect(wrapper.find('Banner').props()).toStrictEqual({
+      closable: false,
+      handleOnClick: null,
       type: 'attention',
       children: 'Votre dossier est en cours pour ce lieu',
       linkTitle: 'Accéder au dossier',

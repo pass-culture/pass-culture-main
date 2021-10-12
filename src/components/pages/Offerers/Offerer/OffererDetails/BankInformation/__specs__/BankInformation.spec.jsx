@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 import React from 'react'
@@ -16,10 +16,11 @@ jest.mock('utils/config', () => ({
 
 const expectReimbursementBannerToBePresent = wrapper => {
   expect(wrapper.find('Banner').last().props()).toStrictEqual({
+    closable: false,
+    handleOnClick: null,
     type: 'notification-info',
     linkTitle: 'En savoir plus sur les remboursements',
-    href:
-      'https://aide.passculture.app/fr/articles/5096833-calendrier-des-prochains-remboursements',
+    href: 'https://aide.passculture.app/fr/articles/5096833-calendrier-des-prochains-remboursements',
     icon: 'ico-external-site',
     children: null,
   })
@@ -73,6 +74,8 @@ describe('src | Offerer | BankInformation', () => {
 
     // then
     expect(wrapper.find('Banner').first().props()).toStrictEqual({
+      closable: false,
+      handleOnClick: null,
       type: 'attention',
       children: 'Votre dossier est en cours pour cette structure',
       linkTitle: 'Accéder au dossier',

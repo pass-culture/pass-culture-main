@@ -1,6 +1,6 @@
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
-import React, { Fragment } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
@@ -8,9 +8,11 @@ import HeaderContainer from 'components/layout/Header/HeaderContainer'
 import Icon from 'components/layout/Icon'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import TutorialDialogContainer from 'components/layout/Tutorial/TutorialDialogContainer'
+import DomainNameBanner from 'new_components/DomainNameBanner'
 
 const AppLayout = props => {
   const { children, layoutConfig } = props
+  const [shouldDisplayBanner, setShouldDisplayBanner] = useState(false)
 
   const defaultConfig = {
     backTo: null,
@@ -23,10 +25,19 @@ const AppLayout = props => {
     ...layoutConfig,
   }
 
+  useEffect(() => {
+    if (document.referrer.includes('beta.gouv.fr')) {
+      setShouldDisplayBanner(true)
+    }
+  }, [])
+
+  const closeBanner = useCallback(() => {
+    setShouldDisplayBanner(false)
+  }, [])
+
   return (
     <>
       {!fullscreen && <HeaderContainer />}
-
       <ReactTooltip
         className="flex-center items-center"
         delayHide={500}
@@ -51,6 +62,7 @@ const AppLayout = props => {
                 'with-padding': backTo,
               })}
             >
+              {shouldDisplayBanner && <DomainNameBanner handleOnClick={closeBanner} />}
               {backTo && (
                 <NavLink
                   className="back-button has-text-primary"

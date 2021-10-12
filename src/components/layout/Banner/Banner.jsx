@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -8,9 +8,18 @@ import React from 'react'
 import Icon from 'components/layout/Icon'
 import { requiredIfComponentHasProp } from 'utils/propTypes'
 
-const Banner = ({ icon, href, linkTitle, children, type }) => {
+const Banner = ({ icon, href, linkTitle, children, type, closable, handleOnClick }) => {
   return (
     <div className={`bi-banner ${type}`}>
+      {closable && (
+        <button
+          onClick={handleOnClick}
+          type="button"
+        >
+          x
+        </button>
+      )}
+
       <p>
         {children}
       </p>
@@ -34,6 +43,8 @@ const Banner = ({ icon, href, linkTitle, children, type }) => {
 
 Banner.defaultProps = {
   children: null,
+  closable: false,
+  handleOnClick: null,
   href: null,
   icon: 'ico-external-site',
   linkTitle: null,
@@ -42,6 +53,8 @@ Banner.defaultProps = {
 
 Banner.propTypes = {
   children: PropTypes.node,
+  closable: PropTypes.bool,
+  handleOnClick: PropTypes.func,
   href: requiredIfComponentHasProp('linkTitle', 'string'),
   icon: PropTypes.string,
   linkTitle: requiredIfComponentHasProp('href', 'string'),
