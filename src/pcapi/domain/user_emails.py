@@ -11,7 +11,6 @@ from pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejec
 from pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected import (
     send_not_eligible_beneficiary_pre_subscription_rejected_data,
 )
-from pcapi.core.mails.transactional.users.user_credit_email import send_user_credit_email
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
@@ -239,10 +238,6 @@ def send_activation_email(
 ) -> bool:
     data = beneficiary_activation.get_activation_email_data(user=user, token=token)
     return mails.send(recipients=[user.email], data=data)
-
-
-def send_accepted_as_beneficiary_email(user: User) -> bool:
-    return send_user_credit_email(user)
 
 
 def send_batch_stock_postponement_emails_to_users(bookings: list[Booking]) -> None:

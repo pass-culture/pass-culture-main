@@ -18,7 +18,7 @@ def get_information_email_change_data(first_name: str) -> Union[dict, Sendinblue
         }
 
     return SendinblueTransactionalEmailData(
-        template=TransactionalEmail.EMAIL_ADDRESS_CHANGE_REQUEST.value,
+        template=TransactionalEmail.EMAIL_CHANGE_REQUEST.value,
         params={
             "FIRSTNAME": first_name,
         },
@@ -44,7 +44,7 @@ def get_confirmation_email_change_data(
         }
 
     return SendinblueTransactionalEmailData(
-        template=TransactionalEmail.EMAIL_ADDRESS_CHANGE_CONFIRMATION.value,
+        template=TransactionalEmail.EMAIL_CHANGE_CONFIRMATION.value,
         params={"FIRSTNAME": first_name, "CONFIRMATION_LINK": confirmation_link},
     )
 

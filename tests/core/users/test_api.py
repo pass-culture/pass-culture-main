@@ -1,4 +1,3 @@
-from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
@@ -450,17 +449,17 @@ class ChangeUserEmailTest:
 
 
 class CreateBeneficiaryTest:
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+
     def test_with_eligible_user(self):
-        eligible_date = date.today() - relativedelta(years=18, days=30)
-        user = users_factories.UserFactory(roles=[], dateOfBirth=eligible_date)
+        user = users_factories.UserFactory(roles=[], dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
         user = subscription_api.activate_beneficiary(user, "test")
         assert user.has_beneficiary_role
         assert len(user.deposits) == 1
 
     def test_apps_flyer_called(self):
-        eligible_date = date.today() - relativedelta(years=18, days=30)
         apps_flyer_data = {"apps_flyer": {"user": "some-user-id", "platform": "ANDROID"}}
-        user = users_factories.UserFactory(dateOfBirth=eligible_date, externalIds=apps_flyer_data)
+        user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, externalIds=apps_flyer_data)
 
         expected = {
             "customer_user_id": str(user.id),
@@ -479,8 +478,7 @@ class CreateBeneficiaryTest:
             assert len(user.deposits) == 1
 
     def test_external_users_updated(self):
-        eligible_date = date.today() - relativedelta(years=18, days=30)
-        user = users_factories.UserFactory(roles=[], dateOfBirth=eligible_date)
+        user = users_factories.UserFactory(roles=[], dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
         subscription_api.activate_beneficiary(user, "test")
 
         assert len(batch_testing.requests) == 1
@@ -488,11 +486,13 @@ class CreateBeneficiaryTest:
 
 
 class StepsToBecomeBeneficiaryTest:
-    def eligible_user(self, validate_phone: bool):
-        eligible_date = date.today() - relativedelta(years=18, days=30)
-        phone_validation_status = PhoneValidationStatusType.VALIDATED if validate_phone else None
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
 
-        return users_factories.UserFactory(dateOfBirth=eligible_date, phoneValidationStatus=phone_validation_status)
+    def eligible_user(self, validate_phone: bool):
+        phone_validation_status = PhoneValidationStatusType.VALIDATED if validate_phone else None
+        return users_factories.UserFactory(
+            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, phoneValidationStatus=phone_validation_status
+        )
 
     def set_beneficiary_import(self, user, status: str = ImportStatus.CREATED) -> BeneficiaryImport:
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user, source=BeneficiaryImportSources.jouve)
@@ -551,10 +551,11 @@ class StepsToBecomeBeneficiaryTest:
 
 
 class FulfillBeneficiaryDataTest:
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+
     def test_fill_user_with_password_token_and_deposit(self):
         # given
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
-        user = users_factories.UserFactory(dateOfBirth=eighteen_years_in_the_past)
+        user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
 
         # when
         user = fulfill_beneficiary_data(user, "deposit_source", None)
@@ -566,8 +567,7 @@ class FulfillBeneficiaryDataTest:
 
     def test_fill_user_with_specific_deposit_version(self):
         # given
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
-        user = users_factories.UserFactory(dateOfBirth=eighteen_years_in_the_past)
+        user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
 
         # when
         user = fulfill_beneficiary_data(user, "deposit_source", 2)
@@ -742,9 +742,9 @@ class UpdateBeneficiaryMandatoryInformationTest:
         Test that the user's id check profile information are updated and that
         it becomes beneficiary (and therefore has a deposit)
         """
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
+        AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
         user = users_factories.UserFactory(
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED, dateOfBirth=eighteen_years_in_the_past
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED, dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE
         )
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)

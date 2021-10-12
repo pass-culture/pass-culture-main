@@ -17,6 +17,9 @@ import pcapi.core.users.models as users_models
 import pcapi.models
 
 
+AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+
+
 @pytest.mark.usefixtures("db_session")
 class BeneficiaryListViewTest:
     def test_list_view(self, client):
@@ -81,8 +84,13 @@ class BeneficiaryValidationViewTest:
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_from_jouve_data_staging(self, client):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
-        check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
+        user = users_factories.UserFactory(isBeneficiary=False, dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
+
+        check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.JOUVE,
+            resultContent__birthDateTxt=f"{AGE18_ELIGIBLE_BIRTH_DATE:%d/%m/%Y}",
+        )
         admin = users_factories.AdminFactory()
         client.with_session_auth(admin.email)
 
@@ -93,8 +101,10 @@ class BeneficiaryValidationViewTest:
         assert response.status_code == 302
 
         review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one()
+
         assert review.review == fraud_models.FraudReviewStatus.OK
         assert review.reason == "User is granted"
+
         user = users_models.User.query.get(user.id)
         assert user.has_beneficiary_role is True
         assert len(user.deposits) == 1

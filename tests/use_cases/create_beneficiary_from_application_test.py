@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from datetime import datetime
 from unittest.mock import patch
 
@@ -7,6 +8,7 @@ import pytest
 
 from pcapi.connectors.beneficiaries import jouve_backend
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.payments.models import Deposit
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
@@ -25,12 +27,12 @@ from pcapi.use_cases.create_beneficiary_from_application import create_beneficia
 pytestmark = pytest.mark.usefixtures("db_session")
 
 APPLICATION_ID = 35
-eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
+AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
 
 JOUVE_CONTENT = {
     "activity": "Apprenti",
     "address": "3 rue de Valois",
-    "birthDateTxt": f"{eighteen_years_in_the_past:%d/%m/%Y}",
+    "birthDateTxt": f"{AGE18_ELIGIBLE_BIRTH_DATE:%d/%m/%Y}",
     "birthLocationCtrl": "OK",
     "bodyBirthDateCtrl": "OK",
     "bodyBirthDateLevel": 100,
@@ -74,7 +76,7 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, app):
     assert beneficiary.has_beneficiary_role is True
     assert beneficiary.city == "Paris"
     assert beneficiary.civility == "Mme"
-    assert beneficiary.dateOfBirth.date() == eighteen_years_in_the_past.date()
+    assert beneficiary.dateOfBirth.date() == AGE18_ELIGIBLE_BIRTH_DATE.date()
     assert beneficiary.departementCode == "35"
     assert beneficiary.email == "rennes@example.org"
     assert beneficiary.firstName == "Thomas"
@@ -98,7 +100,6 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, app):
     assert beneficiary_import.beneficiary == beneficiary
 
     assert len(mails_testing.outbox) == 1
-
     assert len(push_testing.requests) == 1
 
 
@@ -109,7 +110,7 @@ def test_application_for_native_app_user(app):
     users_api.create_account(
         email=JOUVE_CONTENT["email"],
         password="123456789",
-        birthdate=datetime(1995, 4, 15),
+        birthdate=AGE18_ELIGIBLE_BIRTH_DATE,
         is_email_validated=True,
         send_activation_mail=False,
         marketing_email_subscription=False,
@@ -147,7 +148,7 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
     # Given
     application_id = 35
     user = UserFactory(
-        dateOfBirth=eighteen_years_in_the_past,
+        dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
         phoneNumber="0607080900",
         address="an address",
         city="Nantes",
@@ -166,7 +167,7 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
         "city": "",
         "gender": "M",
         "bodyPieceNumber": "140767100016",
-        "birthDateTxt": f"{eighteen_years_in_the_past:%d/%m/%Y}",
+        "birthDateTxt": f"{AGE18_ELIGIBLE_BIRTH_DATE:%d/%m/%Y}",
         "postalCode": "",
         "phoneNumber": "0102030405",
         "posteCodeCtrl": "OK",
@@ -235,7 +236,7 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     # Given
     first_name = "Thomas"
     last_name = "DURAND"
-    date_of_birth = eighteen_years_in_the_past.replace(hour=0, minute=0, second=0, microsecond=0)
+    date_of_birth = AGE18_ELIGIBLE_BIRTH_DATE.replace(hour=0, minute=0, second=0, microsecond=0)
 
     applicant = users_factories.UserFactory(
         firstName=JOUVE_CONTENT["firstName"], lastName=JOUVE_CONTENT["lastName"], email=JOUVE_CONTENT["email"]
@@ -327,7 +328,7 @@ BASE_JOUVE_CONTENT = {
     "city": "some city",
     "gender": "M",
     "bodyPieceNumber": "id-piece-number",
-    "birthDateTxt": (datetime.utcnow() - relativedelta(years=18, days=1)).strftime("%d/%m/%Y"),
+    "birthDateTxt": f"{AGE18_ELIGIBLE_BIRTH_DATE:%d/%m/%Y}",
     "bodyBirthDateCtrl": "OK",
     "bodyPieceNumberCtrl": "OK",
     "bodyPieceNumberLevel": "100",
@@ -408,6 +409,7 @@ def test_send_analysing_account_emails_with_sendinblue_when_suspicious(
         firstName=BASE_JOUVE_CONTENT["firstName"],
         lastName=BASE_JOUVE_CONTENT["lastName"],
         email=BASE_JOUVE_CONTENT["email"],
+        dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
     )
 
     # When
@@ -417,7 +419,7 @@ def test_send_analysing_account_emails_with_sendinblue_when_suspicious(
     assert BeneficiaryImport.query.count() == 0
 
     assert len(mails_testing.outbox) == 1
-    assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 82
+    assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.FRAUD_SUSPICION.value)
     assert mails_testing.outbox[0].sent_data["params"] == {}
 
 
@@ -429,7 +431,8 @@ def test_id_piece_number_no_duplicate(
     # Given
     ID_PIECE_NUMBER = "140767100016"
     subscribing_user = UserFactory(
-        dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
+        isBeneficiary=False,
+        dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
         email=BASE_JOUVE_CONTENT["email"],
         idPieceNumber=None,
     )
@@ -483,7 +486,8 @@ def test_id_piece_number_invalid_format_avoid_duplicate(
     # Given
     ID_PIECE_NUMBER = "140767100016"
     UserFactory(
-        dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
+        isBeneficiary=False,
+        dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
         email=BASE_JOUVE_CONTENT["email"],
     )
     UserFactory(idPieceNumber=ID_PIECE_NUMBER)
@@ -504,7 +508,8 @@ def test_id_piece_number_invalid_format_avoid_duplicate(
 @pytest.mark.parametrize("wrong_piece_number", ["NOT_APPLICABLE", "KO", ""])
 def test_id_piece_number_invalid(mocked_get_content, wrong_piece_number):
     subscribing_user = UserFactory(
-        dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
+        isBeneficiary=False,
+        dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
         email=BASE_JOUVE_CONTENT["email"],
     )
     UserFactory(idPieceNumber=wrong_piece_number)
@@ -525,7 +530,8 @@ def test_id_piece_number_invalid(mocked_get_content, wrong_piece_number):
 @pytest.mark.parametrize("wrong_piece_number", ["NOT_APPLICABLE", "KO", ""])
 def test_id_piece_number_wrong_return_control(mocked_get_content, wrong_piece_number):
     subscribing_user = UserFactory(
-        dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
+        isBeneficiary=False,
+        dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
         email=BASE_JOUVE_CONTENT["email"],
     )
     UserFactory(idPieceNumber=wrong_piece_number)
@@ -553,7 +559,8 @@ def test_id_piece_number_wrong_return_control(mocked_get_content, wrong_piece_nu
 )
 def test_id_piece_number_wrong_format(mocked_get_content, id_piece_number):
     subscribing_user = UserFactory(
-        dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
+        isBeneficiary=False,
+        dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
         email=BASE_JOUVE_CONTENT["email"],
     )
     UserFactory(idPieceNumber=id_piece_number)
@@ -578,7 +585,8 @@ def test_id_piece_number_by_pass(
     # Given
     ID_PIECE_NUMBER = "NOT_APPLICABLE"
     subscribing_user = UserFactory(
-        dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
+        isBeneficiary=False,
+        dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
         email=BASE_JOUVE_CONTENT["email"],
     )
     UserFactory(idPieceNumber=ID_PIECE_NUMBER)
@@ -618,7 +626,8 @@ class JouveDataValidationTest:
     @pytest.mark.parametrize("possible_value", ["KO", "NOT_APPLICABLE", "", "bodyPieceNumberCtrl"])
     def test_mandatory_jouve_fields_wrong_data(self, mocked_get_content, jouve_field, possible_value):
         UserFactory(
-            dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
+            isBeneficiary=False,
+            dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
             email=BASE_JOUVE_CONTENT["email"],
         )
         mocked_get_content.return_value = BASE_JOUVE_CONTENT | {jouve_field: possible_value}
@@ -641,7 +650,8 @@ class JouveDataValidationTest:
     @pytest.mark.parametrize("possible_value", ["", "NOT_APPLICABLE", "25"])
     def test_mandatory_jouve_fields_wrong_integer_data(self, mocked_get_content, jouve_field, possible_value):
         UserFactory(
-            dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
+            isBeneficiary=False,
+            dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
             email=BASE_JOUVE_CONTENT["email"],
         )
         mocked_get_content.return_value = BASE_JOUVE_CONTENT | {jouve_field: possible_value}

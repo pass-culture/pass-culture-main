@@ -11,6 +11,7 @@ from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.mails.transactional.users.accepted_as_beneficiary_email import send_accepted_as_beneficiary_email
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.messages as subscription_messages
 import pcapi.core.users.api as users_api
@@ -366,7 +367,7 @@ def process_beneficiary_application(
             )
             user_emails.send_activation_email(user, token=token)
         elif user.is_beneficiary:
-            user_emails.send_accepted_as_beneficiary_email(user)
+            send_accepted_as_beneficiary_email(user)
     except MailServiceException as mail_service_exception:
         logger.exception(
             "Email send_activation_email failure for application %s - Procedure %s : %s",

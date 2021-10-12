@@ -1,11 +1,11 @@
-from datetime import datetime
-
-from freezegun import freeze_time
 import pytest
 
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.users.accepted_as_beneficiary_email import (
+    get_accepted_as_underage_beneficiary_email_data,
+)
+from pcapi.core.mails.transactional.users.accepted_as_beneficiary_email import get_accepted_as_beneficiary_email_data
 from pcapi.core.mails.transactional.users.email_confirmation_email import get_email_confirmation_email_data
-from pcapi.core.mails.transactional.users.user_credit_email import get_user_credit_email_data
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.emails import beneficiary_activation
@@ -17,7 +17,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class GetActivationEmailTest:
     def test_should_return_dict_when_environment_is_production(self):
         # Given
-        user = users_factories.UserFactory.build(email="fabien+test@example.net", firstName="Fabien")
+        user = users_factories.UserFactory.create(email="fabien+test@example.net", firstName="Fabien")
         users_factories.ResetPasswordToken(user=user, value="ABCD123")
 
         # When
@@ -37,7 +37,7 @@ class GetActivationEmailTest:
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_should_return_sendinblue_data_when_feature_toggled(self):
         # Given
-        user = users_factories.UserFactory.build(email="fabien+test@example.net", firstName="Fabien")
+        user = users_factories.UserFactory.create(email="fabien+test@example.net", firstName="Fabien")
         users_factories.ResetPasswordToken(user=user, value="ABCD123")
 
         # When
@@ -48,10 +48,9 @@ class GetActivationEmailTest:
         assert activation_email_data.params["CONFIRMATION_LINK"]
         assert "email%3Dfabien%252Btest%2540example.net" in activation_email_data.params["CONFIRMATION_LINK"]
 
-    @freeze_time("2013-05-15 09:00:00")
     def test_return_dict_for_native_eligible_user(self):
         # Given
-        user = users_factories.UserFactory.build(email="fabien+test@example.net", dateOfBirth=datetime(1995, 2, 5))
+        user = users_factories.BeneficiaryGrant18Factory.create(email="fabien+test@example.net")
         token = users_factories.EmailValidationToken.build(user=user)
 
         # When
@@ -65,10 +64,9 @@ class GetActivationEmailTest:
         assert isinstance(activation_email_data["Vars"]["isEligible"], int)
         assert isinstance(activation_email_data["Vars"]["isMinor"], int)
 
-    @freeze_time("2011-05-15 09:00:00")
     def test_return_dict_for_native_under_age_user_v2(self):
         # Given
-        user = users_factories.UserFactory.build(email="fabien+test@example.net", dateOfBirth=datetime(1995, 2, 5))
+        user = users_factories.UnderageBeneficiaryFactory.create(email="fabien+test@example.net")
         token = users_factories.EmailValidationToken.build(user=user)
 
         # When
@@ -82,13 +80,14 @@ class GetActivationEmailTest:
         assert activation_email_data["Vars"]["depositAmount"] == 300
 
 
-@freeze_time("2011-05-15 09:00:00")
 class GetAcceptedAsBeneficiaryEmailMailjetTest:
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     def test_return_correct_email_metadata(self):
-        user = users_factories.BeneficiaryGrant18Factory()
+        # Given
+        user = users_factories.BeneficiaryGrant18Factory.create(email="fabien+test@example.net")
 
-        email_data = get_user_credit_email_data(user)
+        # When
+        email_data = get_accepted_as_beneficiary_email_data(user)
 
         assert email_data == {
             "Mj-TemplateID": 2016025,
@@ -100,13 +99,54 @@ class GetAcceptedAsBeneficiaryEmailMailjetTest:
         }
 
 
-@freeze_time("2011-05-15 09:00:00")
 class GetAcceptedAsBeneficiaryEmailSendinblueTest:
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_return_correct_email_metadata(self):
-        user = users_factories.BeneficiaryGrant18Factory()
+        # Given
+        user = users_factories.BeneficiaryGrant18Factory.create(email="fabien+test@example.net")
 
-        email = get_user_credit_email_data(user)
+        # When
+        email = get_accepted_as_beneficiary_email_data(user)
 
-        assert email.template == TransactionalEmail.GRANT_USER_CREDIT
+        # Then
+        assert email.template == TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
         assert email.params == {"CREDIT": 300}
+
+
+class GetAcceptedAsUnderageBeneficiaryEmailSendinblueTest:
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_return_correct_data_for_native_age_17_user_v2(self):
+        # Given
+        user = users_factories.UnderageBeneficiaryFactory(firstName="Fabien", subscription_age=17)
+
+        # When
+        data = get_accepted_as_underage_beneficiary_email_data(user)
+
+        # Then
+        assert data.params["FIRSTNAME"] == "Fabien"
+        assert data.params["CREDIT"] == 30
+
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_return_correct_data_for_native_age_16_user_v2(self):
+        # Given
+
+        user = users_factories.UnderageBeneficiaryFactory.create(firstName="Fabien", subscription_age=16)
+
+        # When
+        data = get_accepted_as_underage_beneficiary_email_data(user)
+
+        # Then
+        assert data.params["FIRSTNAME"] == "Fabien"
+        assert data.params["CREDIT"] == 30
+
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_return_correct_data_for_native_age_15_user_v2(self):
+        # Given
+        user = users_factories.UnderageBeneficiaryFactory.create(firstName="Fabien", subscription_age=15)
+
+        # When
+        data = get_accepted_as_underage_beneficiary_email_data(user)
+
+        # Then
+        assert data.params["FIRSTNAME"] == "Fabien"
+        assert data.params["CREDIT"] == 20

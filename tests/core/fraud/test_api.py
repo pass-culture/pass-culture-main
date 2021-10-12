@@ -17,12 +17,12 @@ from pcapi.models import db
 class JouveFraudCheckTest:
     application_id = 35
     user_email = "tour.de.passpass@example.com"
-    eighteen_years_in_the_past = datetime.datetime.now() - relativedelta(years=18, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.now() - relativedelta(years=18, months=4)
 
     JOUVE_CONTENT = {
         "activity": "Etudiant",
         "address": "",
-        "birthDateTxt": f"{eighteen_years_in_the_past:%d/%m/%Y}",
+        "birthDateTxt": f"{AGE18_ELIGIBLE_BIRTH_DATE:%d/%m/%Y}",
         "birthLocation": "STRASBOURG I67)",
         "birthLocationCtrl": "OK",
         "bodyBirthDate": "06 06 2002",
@@ -62,7 +62,7 @@ class JouveFraudCheckTest:
         user = users_factories.UserFactory(
             hasCompletedIdCheck=True,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            dateOfBirth=self.eighteen_years_in_the_past,
+            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE,
             email=self.user_email,
         )
         _get_raw_content.return_value = self.JOUVE_CONTENT
@@ -89,13 +89,13 @@ class JouveFraudCheckTest:
         existing_user = users_factories.BeneficiaryGrant18Factory(
             firstName="Christophe",
             lastName="Dupo",
-            dateOfBirth=self.eighteen_years_in_the_past,
+            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE,
             idPieceNumber="140767100016",
         )
         user = users_factories.UserFactory(
             hasCompletedIdCheck=True,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            dateOfBirth=self.eighteen_years_in_the_past,
+            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE,
             email=self.user_email,
         )
         _get_raw_content.return_value = self.JOUVE_CONTENT

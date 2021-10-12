@@ -25,6 +25,8 @@ from tests.conftest import clean_database
 
 
 class BeneficiaryUserViewTest:
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
+
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_list_beneficiaries(self, mocked_validate_csrf_token, app):
@@ -44,13 +46,12 @@ class BeneficiaryUserViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_beneficiary_user_creation(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="admin@example.com")
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
 
         data = dict(
             email="LAMA@example.com",
             firstName="Serge",
             lastName="Lama",
-            dateOfBirth=f"{eighteen_years_in_the_past:%Y-%m-%d %H:%M:%S}",
+            dateOfBirth=f"{self.AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d %H:%M:%S}",
             departementCode="93",
             postalCode="93000",
             phoneNumber="0601020304",
@@ -67,7 +68,7 @@ class BeneficiaryUserViewTest:
         assert user_created.firstName == "Serge"
         assert user_created.lastName == "Lama"
         assert user_created.publicName == "Serge Lama"
-        assert user_created.dateOfBirth.date() == eighteen_years_in_the_past.date()
+        assert user_created.dateOfBirth.date() == self.AGE18_ELIGIBLE_BIRTH_DATE.date()
         assert user_created.departementCode == "93"
         assert user_created.postalCode == "93000"
         assert user_created.phoneNumber == "0601020304"
@@ -100,13 +101,12 @@ class BeneficiaryUserViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_beneficiary_user_creation_for_deposit_v2(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="user@example.com")
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
 
         data = dict(
             email="toto@example.com",
             firstName="Serge",
             lastName="Lama",
-            dateOfBirth=f"{eighteen_years_in_the_past:%Y-%m-%d %H:%M:%S}",
+            dateOfBirth=f"{self.AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d %H:%M:%S}",
             departementCode="93",
             postalCode="93000",
             phoneNumber="0601020304",
@@ -130,12 +130,11 @@ class BeneficiaryUserViewTest:
         # Given
         beneficiary_view = BeneficiaryUserView(User, db_session)
         beneficiary_view_create_form = beneficiary_view.get_create_form()
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
         data = dict(
             email="toto@example.com",
             firstName="Serge",
             lastName="Lama",
-            dateOfBirth=f"{eighteen_years_in_the_past:%Y-%m-%d %H:%M:%S}",
+            dateOfBirth=f"{self.AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d %H:%M:%S}",
             departementCode="93",
             postalCode="93000",
             phoneNumber="0601020304",
@@ -143,7 +142,7 @@ class BeneficiaryUserViewTest:
         )
 
         form = beneficiary_view_create_form(data=data)
-        user = users_factories.UserFactory(dateOfBirth=eighteen_years_in_the_past)
+        user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
 
         # When
         beneficiary_view.on_model_change(form, user, True)
@@ -168,13 +167,12 @@ class BeneficiaryUserViewTest:
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[])
     def test_beneficiary_user_creation_is_restricted_in_prod(self, app, db_session):
         users_factories.AdminFactory(email="user@example.com")
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
 
         data = dict(
             email="toto@example.com",
             firstName="Serge",
             lastName="Lama",
-            dateOfBirth=f"{eighteen_years_in_the_past:%Y-%m-%d %H:%M:%S}",
+            dateOfBirth=f"{self.AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d %H:%M:%S}",
             departementCode="93",
             postalCode="93000",
         )

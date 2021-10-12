@@ -17,11 +17,11 @@ from pcapi.notifications.push import testing as push_testing
 from tests.conftest import TestClient
 
 
-eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
+AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
 JOUVE_CONTENT = {
     "activity": "Apprenti",
     "address": "3 rue de Valois",
-    "birthDateTxt": f"{eighteen_years_in_the_past:%d/%m/%Y}",
+    "birthDateTxt": f"{AGE18_ELIGIBLE_BIRTH_DATE:%d/%m/%Y}",
     "birthLocationCtrl": "OK",
     "bodyBirthDateCtrl": "OK",
     "bodyBirthDateLevel": 100,
@@ -59,7 +59,7 @@ class Returns200Test:
         assert response.status_code == 200
         mocked_beneficiary_job.assert_called_once_with(5)
 
-    @patch("pcapi.domain.user_emails.send_accepted_as_beneficiary_email")
+    @patch("pcapi.core.mails.transactional.users.accepted_as_beneficiary_email.send_accepted_as_beneficiary_email")
     @patch("pcapi.domain.user_emails.send_activation_email")
     @patch("pcapi.domain.password.random_token")
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
@@ -94,14 +94,13 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-
         beneficiary = User.query.one()
         assert beneficiary.activity == "Apprenti"
         assert beneficiary.address == "3 rue de Valois"
         assert beneficiary.has_beneficiary_role is True
         assert beneficiary.city == "Paris"
         assert beneficiary.civility == "Mme"
-        assert beneficiary.dateOfBirth.date() == eighteen_years_in_the_past.date()
+        assert beneficiary.dateOfBirth.date() == AGE18_ELIGIBLE_BIRTH_DATE.date()
         assert beneficiary.departementCode == "35"
         assert beneficiary.email == "rennes@example.org"
         assert beneficiary.firstName == "Thomas"
@@ -134,7 +133,7 @@ class Returns200Test:
         assert len(users_testing.sendinblue_requests) == 1
 
     @override_features(FORCE_PHONE_VALIDATION=True)
-    @patch("pcapi.domain.user_emails.send_accepted_as_beneficiary_email")
+    @patch("pcapi.core.mails.transactional.users.accepted_as_beneficiary_email.send_accepted_as_beneficiary_email")
     @patch("pcapi.domain.user_emails.send_activation_email")
     @patch("pcapi.domain.password.random_token")
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
@@ -172,7 +171,7 @@ class Returns200Test:
         assert not user.has_beneficiary_role
         assert user.city == "Paris"
         assert user.civility == "Mme"
-        assert user.dateOfBirth.date() == eighteen_years_in_the_past.date()
+        assert user.dateOfBirth.date() == AGE18_ELIGIBLE_BIRTH_DATE.date()
         assert user.departementCode == "35"
         assert user.email == "rennes@example.org"
         assert user.firstName == "Thomas"

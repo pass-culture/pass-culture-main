@@ -24,6 +24,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 @freeze_time("2021-02-05 09:00:00")
 class CreateDepositTest:
     def test_deposit_created_with_version_1(self):
+        # Given
         beneficiary = users_factories.UserFactory(
             dateOfBirth=datetime.combine(datetime.utcnow(), time(0, 0)) - relativedelta(years=18, months=2)
         )
@@ -63,7 +64,9 @@ class CreateDepositTest:
 
     @override_settings(IS_INTEGRATION=True)
     def test_deposit_on_integration(self):
-        beneficiary = users_factories.UserFactory()
+        beneficiary = users_factories.UserFactory(
+            dateOfBirth=datetime.combine(datetime.utcnow(), time(0, 0)) - relativedelta(years=18, months=4)
+        )
 
         # When
         deposit = api.create_deposit(beneficiary, "integration_signup")
@@ -87,10 +90,10 @@ class CreateDepositTest:
 
     def test_cannot_create_twice_a_deposit_of_same_type(self):
         # Given
-        eighteen_years_in_the_past = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(
+        AGE18_ELIGIBLE_BIRTH_DATE = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(
             years=18, months=2
         )
-        beneficiary = users_factories.BeneficiaryGrant18Factory(dateOfBirth=eighteen_years_in_the_past)
+        beneficiary = users_factories.BeneficiaryGrant18Factory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
 
         # When
         with pytest.raises(exceptions.DepositTypeAlreadyGrantedException) as error:

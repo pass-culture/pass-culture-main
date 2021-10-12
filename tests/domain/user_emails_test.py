@@ -348,11 +348,7 @@ class SendResetPasswordUserEmailTest:
 
         native_app_link = mails_testing.outbox[0].sent_data["params"]["NATIVE_APP_LINK"]
         assert user.tokens[0].value in native_app_link
-        assert mails_testing.outbox[0].sent_data["template"] == {
-            "id_prod": 141,
-            "id_not_prod": 26,
-            "tags": ["jeunes_nouveau_mdp"],
-        }
+        assert mails_testing.outbox[0].sent_data["template"] == asdict(TransactionalEmail.NEW_PASSWORD_REQUEST.value)
         assert mails_testing.outbox[0].sent_data["To"] == "bobby@example.com"
 
 

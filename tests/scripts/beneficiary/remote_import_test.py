@@ -1089,7 +1089,6 @@ class RunIntegrationTest:
         assert applicant.beneficiaryFraudResult.status == fraud_models.FraudStatus.SUSPICIOUS
         assert f"Duplicat de l'utilisateur {beneficiary.id}" in applicant.beneficiaryFraudResult.reason
 
-    @patch("pcapi.domain.user_emails.send_accepted_as_beneficiary_email")
     @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
     @patch(
         "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
@@ -1102,7 +1101,6 @@ class RunIntegrationTest:
         find_applications_ids_to_retryretry_ids,
         get_closed_application_ids_for_dms,
         get_applications_details,
-        send_accepted_as_beneficiary_email,
     ):
         # given
         information = fraud_factories.DMSContentFactory(
@@ -1136,7 +1134,10 @@ class RunIntegrationTest:
 
         # then
         beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
-        send_accepted_as_beneficiary_email.assert_called()
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
+
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
 
     @patch(

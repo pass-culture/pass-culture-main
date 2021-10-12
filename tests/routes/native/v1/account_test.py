@@ -1057,10 +1057,7 @@ class ValidatePhoneNumberTest:
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 2
 
     def test_validate_phone_number_and_become_beneficiary(self, app):
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
-        user = users_factories.UserFactory(
-            dateOfBirth=eighteen_years_in_the_past, phoneNumber="+33607080900", hasCompletedIdCheck=True
-        )
+        user = users_factories.UserFactory(phoneNumber="+33607080900", hasCompletedIdCheck=True)
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.CREATED)
@@ -1228,11 +1225,9 @@ class UpdateBeneficiaryInformationTest:
             * sets the user to beneficiary;
             * send a request to Batch to update the user's information
         """
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
         user = users_factories.UserFactory(
             address=None,
             city=None,
-            dateOfBirth=eighteen_years_in_the_past,
             postalCode=None,
             activity=None,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
@@ -1283,11 +1278,9 @@ class UpdateBeneficiaryInformationTest:
             * sets the user to beneficiary;
             * send a request to Batch to update the user's information
         """
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
         user = users_factories.UserFactory(
             address=None,
             city=None,
-            dateOfBirth=eighteen_years_in_the_past,
             postalCode=None,
             activity=None,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
@@ -1338,11 +1331,9 @@ class UpdateBeneficiaryInformationTest:
             * sets the user to beneficiary;
             * send a request to Batch to update the user's information
         """
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
         user = users_factories.UserFactory(
             address=None,
             city=None,
-            dateOfBirth=eighteen_years_in_the_past,
             postalCode=None,
             activity=None,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
