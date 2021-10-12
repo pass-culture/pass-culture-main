@@ -52,6 +52,8 @@
 }
 
 .of-image {
+  background-color: $white;
+
   img {
     object-fit: cover;
   }
