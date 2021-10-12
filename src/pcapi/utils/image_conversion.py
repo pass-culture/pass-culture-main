@@ -12,7 +12,12 @@ IMAGE_RATIO_V2 = 6 / 9
 
 def standardize_image(image: bytes, crop_params: tuple = None) -> bytes:
     crop_params = crop_params or DO_NOT_CROP
-    raw_image = PIL.Image.open(io.BytesIO(image)).convert("RGB")
+    raw_image = PIL.Image.open(io.BytesIO(image))
+    if raw_image.mode == "RGBA":
+        background = PIL.Image.new("RGB", raw_image.size, (255, 255, 255))
+        background.paste(raw_image, mask=raw_image.split()[3])
+        raw_image = background
+    raw_image = raw_image.convert("RGB")
     x_position, y_position, crop_size = crop_params
     cropped_image = _crop_image(x_position, y_position, crop_size, raw_image)
     resized_image = _resize_image(cropped_image)
