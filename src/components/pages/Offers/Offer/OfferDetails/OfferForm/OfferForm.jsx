@@ -7,7 +7,7 @@
 
 import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
-import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -25,6 +25,7 @@ import {
   BASE_OFFER_FIELDS,
   DEFAULT_FORM_VALUES,
   EXTRA_DATA_FIELDS,
+  CAN_CREATE_FROM_ISBN_SUBCATEGORIES,
   MANDATORY_FIELDS,
   NOT_REIMBURSED,
   PLATFORM,
@@ -34,7 +35,6 @@ import OfferRefundWarning from 'components/pages/Offers/Offer/OfferDetails/Offer
 import WithdrawalReminder from 'components/pages/Offers/Offer/OfferDetails/OfferForm/Messages/WithdrawalReminder'
 import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/SynchronizedProviderInformation'
 import { SubmitButton } from 'ui-kit'
-import { CGU_URL } from 'utils/config'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import AccessibilityCheckboxList from './AccessibilityCheckboxList'
@@ -119,7 +119,13 @@ const OfferForm = ({
     'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION'
   )
 
-  let mandatoryFields = useMemo(() => [...MANDATORY_FIELDS], [])
+  const [mandatoryFields, setMandatoryFields] = useState([...MANDATORY_FIELDS])
+
+  const resetMandatoryFields = useCallback(() => {
+    if (MANDATORY_FIELDS.sort().join(' ') !== mandatoryFields.sort().join(' ')) {
+      setMandatoryFields([...MANDATORY_FIELDS])
+    }
+  }, [mandatoryFields])
 
   const handleFormUpdate = useCallback(
     newFormValues =>
@@ -133,10 +139,11 @@ const OfferForm = ({
   const offererOptions = buildSelectOptions('id', 'name', offerersNames)
 
   useEffect(() => {
-    if (isIsbnRequiredInLivreEditionEnabled) {
+    resetMandatoryFields()
+    if (isIsbnRequiredInLivreEditionEnabled && CAN_CREATE_FROM_ISBN_SUBCATEGORIES.includes(offerSubCategory?.id)) {
       mandatoryFields.push('isbn')
     }
-  }, [isIsbnRequiredInLivreEditionEnabled, mandatoryFields])
+  }, [offerSubCategory, isIsbnRequiredInLivreEditionEnabled, mandatoryFields, resetMandatoryFields])
 
   useEffect(() => {
     setFormErrors(submitErrors)
@@ -500,14 +507,14 @@ const OfferForm = ({
         <>
           {isbnErrorMessage}
           <b>
-            {' Veuillez consulter nos'}
+            {' Vous pouvez retrouver la liste des catégories de livres qui ne sont pas éligibles au pass Culture sur le lien suivant:'}
             <a
-              href={CGU_URL}
+              href="https://aide.passculture.app/fr/articles/5394935-acteurs-culturels-pourquoi-la-remontee-de-mes-stocks-n-integre-pas-toutes-les-references"
               rel="noopener noreferrer"
               target="_blank"
-              title={"Consulter les Conditions Générales d'Utilisation"}
+              title="Consulter le FAQ"
             >
-              {' conditions générales d’utilisation'}
+              {' FAQ'}
             </a>
           </b>
         </>

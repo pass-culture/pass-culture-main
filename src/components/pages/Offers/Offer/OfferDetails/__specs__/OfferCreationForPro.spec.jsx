@@ -1808,7 +1808,7 @@ describe('offerDetails - Creation - pro user', () => {
       expect(bookingEmailInput).toHaveTextContent('Ce champ est obligatoire')
     })
 
-    it('should show error for isbn input when creating offer of type livre edition', async () => {
+    it('should show error for isbn input when creating offer of type LIVRE_PAPIER', async () => {
       // Given
       await renderOffers(props, store)
       setOfferValues({ categoryId: 'LIVRE' })
@@ -1899,7 +1899,7 @@ describe('offerDetails - Creation - pro user', () => {
       // Then
       const isbnError = queryByTextTrimHtml(
         screen,
-        'Ce produit n’est pas éligible au pass Culture. Veuillez consulter nos conditions générales d’utilisation',
+        'Ce produit n’est pas éligible au pass Culture. Vous pouvez retrouver la liste des catégories de livres qui ne sont pas éligibles au pass Culture sur le lien suivant: FAQ',
         {
           selector: 'pre',
         }
