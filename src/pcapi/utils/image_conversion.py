@@ -1,7 +1,8 @@
 import io
 
 import PIL
-from PIL.Image import Image
+from PIL import Image
+from PIL import ImageOps
 
 
 MAX_THUMB_WIDTH = 750
@@ -13,16 +14,25 @@ IMAGE_RATIO_V2 = 6 / 9
 def standardize_image(image: bytes, crop_params: tuple = None) -> bytes:
     crop_params = crop_params or DO_NOT_CROP
     raw_image = PIL.Image.open(io.BytesIO(image))
-    if raw_image.mode == "RGBA":
-        background = PIL.Image.new("RGB", raw_image.size, (255, 255, 255))
-        background.paste(raw_image, mask=raw_image.split()[3])
-        raw_image = background
-    raw_image = raw_image.convert("RGB")
+
+    # Remove exif orientation so that it doesnt rotate after upload
+    transposed_image = _transpose_image(raw_image)
+
+    if transposed_image.mode == "RGBA":
+        background = PIL.Image.new("RGB", transposed_image.size, (255, 255, 255))
+        background.paste(transposed_image, mask=transposed_image.split()[3])
+        transposed_image = background
+    transposed_image.convert("RGB")
+
     x_position, y_position, crop_size = crop_params
-    cropped_image = _crop_image(x_position, y_position, crop_size, raw_image)
+    cropped_image = _crop_image(x_position, y_position, crop_size, transposed_image)
     resized_image = _resize_image(cropped_image)
     standard_image = _convert_to_jpeg(resized_image)
     return standard_image
+
+
+def _transpose_image(raw_image):
+    return ImageOps.exif_transpose(raw_image)
 
 
 def _crop_image(crop_origin_x: int, crop_origin_y: int, crop_rect_height: int, image: Image) -> Image:

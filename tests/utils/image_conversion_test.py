@@ -1,12 +1,11 @@
 import io
 import pathlib
-from unittest import mock
 
 import PIL
 
 from pcapi.utils.image_conversion import _crop_image
 from pcapi.utils.image_conversion import _resize_image
-from pcapi.utils.image_conversion import standardize_image
+from pcapi.utils.image_conversion import _transpose_image
 
 import tests
 
@@ -34,31 +33,21 @@ class ImageConversionTest:
         difference = PIL.ImageChops.difference(cropped_image, expected_image)
         assert difference.getbbox() is None
 
-    @mock.patch("pcapi.utils.image_conversion.PIL.Image.open")
-    @mock.patch("pcapi.utils.image_conversion._crop_image")
-    @mock.patch("pcapi.utils.image_conversion._resize_image")
-    @mock.patch("pcapi.utils.image_conversion._convert_to_jpeg")
-    def when_standardize_image_is_called_with_right_arguments(
-        self, mock_convert_to_jpeg, mock_resize_image, mock_crop_image, mock_open_image
-    ):
+    def when_image_has_an_original_orientation(self):
         # given
-        crop_origin_x = 0.2
-        crop_origin_y = 0.45
-        crop_rect_height = 0.23
-        crop_params = (crop_origin_x, crop_origin_y, crop_rect_height)
-        image_bytes = b"test_image"
+        image_as_bytes = (IMAGES_DIR / "image_with_exif_orientation.jpeg").read_bytes()
+        expected_image = PIL.Image.open(io.BytesIO(image_as_bytes)).convert("RGB")
 
-        mock_open_image.return_value.convert.return_value = "A"
-        mock_crop_image.return_value = "B"
-        mock_resize_image.return_value = "C"
+        exif_info = expected_image.getexif()
+        # They exif tag 274 is the image orientation
+        assert 274 in exif_info
 
         # when
-        standardize_image(image_bytes, crop_params)
+        transposed_image = _transpose_image(expected_image)
 
         # then
-        mock_crop_image.assert_called_once_with(crop_origin_x, crop_origin_y, crop_rect_height, "A")
-        mock_resize_image.assert_called_once_with("B")
-        mock_convert_to_jpeg.assert_called_once_with("C")
+        exif_info = transposed_image.getexif()
+        assert 274 not in exif_info
 
     def when_resize_image_that_have_width_less_than_max_width(self):
         # given
