@@ -6,6 +6,7 @@ from pcapi import settings
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -235,6 +236,11 @@ class BeneficiaryValidationViewTest:
         assert review.author == admin
         assert review.review == fraud_models.FraudReviewStatus.KO
         assert user.isBeneficiary is False
+
+        assert subscription_models.SubscriptionMessage.query.count() == 1
+        message = subscription_models.SubscriptionMessage.query.first()
+        assert message.popOverIcon == subscription_models.PopOverIcon.INFO
+        assert message.userMessage == "Ton dossier a été rejeté. Tu n'es pas éligible au pass culture."
 
     def test_return_to_dms(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)

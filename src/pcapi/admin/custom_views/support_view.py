@@ -16,6 +16,7 @@ from pcapi.admin import base_configuration
 from pcapi.connectors.beneficiaries import jouve_backend
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.subscription import messages as subscription_messages
 import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
@@ -241,6 +242,8 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             review.reason += " ; Redirigé vers DMS"
             user_emails.send_document_verification_error_email(user.email, "unread-document")
             flask.flash(f"L'utilisateur {user.firstName} {user.lastName} à été redirigé vers DMS")
+        elif review.review == fraud_models.FraudReviewStatus.KO.value:
+            subscription_messages.on_fraud_review_ko(user)
         db.session.add(review)
         db.session.commit()
 

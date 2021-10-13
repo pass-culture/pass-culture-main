@@ -14,3 +14,12 @@ def create_message_jouve_manual_review(user: users_models.User, application_id: 
         popOverIcon=models.PopOverIcon.CLOCK,
     )
     repository.save(message)
+
+
+def on_fraud_review_ko(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Ton dossier a été rejeté. Tu n'es pas éligible au pass culture.",
+        popOverIcon=models.PopOverIcon.INFO,
+    )
+    repository.save(message)
