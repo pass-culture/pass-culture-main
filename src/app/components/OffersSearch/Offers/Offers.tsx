@@ -9,8 +9,7 @@ import { OfferType, ResultType, Role } from "utils/types"
 import { NoResultsPage } from "./NoResultsPage/NoResultsPage"
 import { Offer } from "./Offer"
 
-const getIdFromResultIdRaw = (resultId: string): number =>
-  parseInt(resultId.split("|")[1])
+const getIdFromResultIdRaw = (resultId: string): number => parseInt(resultId)
 
 export const Offers = ({
   userRole,

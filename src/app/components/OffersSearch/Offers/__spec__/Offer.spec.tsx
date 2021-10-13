@@ -29,7 +29,7 @@ const appSearchFakeResult: ResultType = {
     raw: ["2021-09-29T13:54:30+00:00"],
   },
   id: {
-    raw: "offers-1|479",
+    raw: "479",
   },
 }
 
@@ -42,9 +42,7 @@ describe("offer", () => {
       id: 479,
       description: "Une offre vraiment chouette",
       name: "Une chouette à la mer",
-      category: {
-        label: "Cinéma",
-      },
+      subcategoryLabel: "Cinéma",
       stocks: [
         {
           id: 825,
@@ -72,9 +70,7 @@ describe("offer", () => {
       id: 479,
       description: "Une offre vraiment chouette",
       name: "Une chouette à la mer",
-      category: {
-        label: "Cinéma",
-      },
+      subcategoryLabel: "Cinéma",
       stocks: [
         {
           id: 825,
@@ -255,7 +251,7 @@ describe("offer", () => {
           raw: ["2021-09-29T13:54:30+00:00"],
         },
         id: {
-          raw: "offers-1|479",
+          raw: "479",
         },
         ...thumbObject,
       }
