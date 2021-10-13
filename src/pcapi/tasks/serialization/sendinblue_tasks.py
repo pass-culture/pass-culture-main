@@ -1,4 +1,3 @@
-from typing import Iterable
 from typing import Optional
 
 from pydantic import BaseModel
@@ -12,7 +11,7 @@ class UpdateSendinblueContactRequest(BaseModel):
 
 
 class SendTransactionalEmailRequest(BaseModel):
-    recipients: Iterable
+    recipients: list[str]
     params: dict
     template_id: int
     tags: Optional[list[str]]

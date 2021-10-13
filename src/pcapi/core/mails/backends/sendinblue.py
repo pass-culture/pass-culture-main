@@ -24,7 +24,7 @@ class SendinblueBackend(BaseBackend):
             raise ValueError(f"Tried sending an email via sendinblue, but received incorrectly formatted data: {data}")
 
         payload = SendTransactionalEmailRequest(
-            recipients=recipients, template_id=data.template.id, params=data.params, tags=data.template.tags
+            recipients=list(recipients), template_id=data.template.id, params=data.params, tags=data.template.tags
         )
         send_transactional_email_task.delay(payload)
         return MailResult(sent_data=asdict(data), successful=True)
