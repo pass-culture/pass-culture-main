@@ -102,7 +102,11 @@ def book_offer(
             if FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS.is_active():
                 booking.mark_as_used()
 
-        individual_booking = IndividualBooking(userId=beneficiary.id, booking=booking)
+        individual_booking = IndividualBooking(
+            booking=booking,
+            depositId=beneficiary.active_deposit.id if beneficiary.active_deposit else None,
+            userId=beneficiary.id,
+        )
         stock.dnBookedQuantity += booking.quantity
 
         repository.save(individual_booking, stock)

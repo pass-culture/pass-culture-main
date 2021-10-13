@@ -10,7 +10,6 @@ from dateutil.relativedelta import relativedelta
 from faker import Faker
 
 from pcapi.core.bookings.conf import GRANT_18_VALIDITY_IN_YEARS
-from pcapi.core.payments import factories as payments_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import TokenType
 from pcapi.models.deposit import DepositType
@@ -80,7 +79,7 @@ def create_industrial_app_beneficiaries():
             deposit__source="sandbox",
             deposit__version=deposit_version,
         )
-        payments_factories.DepositGrantFactory(
+        users_factories.DepositGrantFactory(
             user=user, expirationDate=datetime.now(), source="sandbox", type=DepositType.GRANT_17
         )
 

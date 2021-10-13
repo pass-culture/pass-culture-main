@@ -3,7 +3,6 @@ from datetime import timedelta
 
 import pytest
 
-from pcapi.core.payments import factories as payments_factories
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.exceptions import InvalidUserRoleException
@@ -23,7 +22,7 @@ class UserTest:
             user = users_factories.UserFactory()
             user.add_beneficiary_role()
             yesterday = datetime.now() - timedelta(days=1)
-            payments_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
+            users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
 
             assert user.deposit.type == DepositType.GRANT_18
 
@@ -32,10 +31,8 @@ class UserTest:
             user.add_beneficiary_role()
             before_yesterday = datetime.now() - timedelta(days=2)
             yesterday = datetime.now() - timedelta(days=1)
-            payments_factories.DepositGrantFactory(
-                user=user, expirationDate=before_yesterday, type=DepositType.GRANT_17
-            )
-            payments_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
+            users_factories.DepositGrantFactory(user=user, expirationDate=before_yesterday, type=DepositType.GRANT_17)
+            users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
 
             assert user.deposit.type == DepositType.GRANT_18
 
@@ -43,8 +40,8 @@ class UserTest:
             user = users_factories.UserFactory()
             user.add_beneficiary_role()
             yesterday = datetime.now() - timedelta(days=1)
-            payments_factories.DepositGrantFactory(user=user, expirationDate=yesterday, type=DepositType.GRANT_17)
-            payments_factories.DepositGrantFactory(user=user)
+            users_factories.DepositGrantFactory(user=user, expirationDate=yesterday, type=DepositType.GRANT_17)
+            users_factories.DepositGrantFactory(user=user)
 
             assert user.deposit.type == DepositType.GRANT_18
 

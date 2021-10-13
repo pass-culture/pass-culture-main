@@ -5,42 +5,16 @@ import hashlib
 import factory
 
 from pcapi import models
-import pcapi.core.bookings.conf as bookings_conf
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import BaseFactory
-import pcapi.core.users.factories as users_factories
 from pcapi.domain import reimbursement
 from pcapi.models import payment_status
-from pcapi.models.deposit import DepositType
 
 from . import models as payments_models
 
 
 REIMBURSEMENT_RULE_DESCRIPTIONS = {t.description for t in reimbursement.REGULAR_RULES}
-
-
-class DepositGrantFactory(BaseFactory):
-    class Meta:
-        model = models.Deposit
-
-    user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
-    source = "public"
-    type = DepositType.GRANT_18
-
-    @classmethod
-    def _create(cls, model_class, *args, **kwargs):
-        if "amount" in kwargs:
-            raise ValueError("You cannot directly set deposit amount: set version instead")
-        version = kwargs.get("version", bookings_conf.get_current_deposit_version_for_type(kwargs["type"]))
-        deposit_configuration = bookings_conf.get_limit_configuration_for_type_and_version(kwargs["type"], version)
-        amount = deposit_configuration.TOTAL_CAP
-        kwargs["version"] = version
-        kwargs["amount"] = amount
-        if "expirationDate" not in kwargs:
-            beneficiary = kwargs.get("user")
-            kwargs["expirationDate"] = deposit_configuration.compute_expiration_date(beneficiary.dateOfBirth)
-        return super()._create(model_class, *args, **kwargs)
 
 
 class PaymentFactory(BaseFactory):

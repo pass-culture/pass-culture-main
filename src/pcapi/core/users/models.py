@@ -266,6 +266,10 @@ class User(PcObject, Model, NeedsValidationMixin):
         return relativedelta(date.today(), self.dateOfBirth.date()).years if self.dateOfBirth is not None else None
 
     @property
+    def active_deposit(self) -> Optional[Deposit]:
+        return self.deposit if self.deposit and self.deposit.expirationDate > datetime.utcnow() else None
+
+    @property
     def deposit(self) -> Optional[Deposit]:
         if len(self.deposits) == 0:
             return None
@@ -289,7 +293,7 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @property
     def has_active_deposit(self):
-        return self.deposit_expiration_date and self.deposit_expiration_date > datetime.now()
+        return self.active_deposit is not None
 
     @property
     def real_wallet_balance(self):

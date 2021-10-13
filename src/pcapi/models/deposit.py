@@ -32,6 +32,8 @@ class Deposit(PcObject, Model):
 
     user = relationship("User", foreign_keys=[userId], backref="deposits")
 
+    individual_bookings = relationship("IndividualBooking", back_populates="deposit")
+
     source = Column(String(300), nullable=False)
 
     dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())

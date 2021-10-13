@@ -90,6 +90,7 @@ class IndividualBookingSubFactory(BaseFactory):
         model = models.IndividualBooking
 
     user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
+    deposit = factory.SubFactory(users_factories.DepositGrantFactory, user=factory.SelfAttribute("..user"))
 
 
 class IndividualBookingFactory(BookingFactory):

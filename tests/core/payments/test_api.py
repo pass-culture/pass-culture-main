@@ -142,7 +142,7 @@ class CreateDepositTest:
             years=18, months=4
         )
         beneficiary = users_factories.UserFactory(dateOfBirth=eighteen_years_in_the_past)
-        payments_factories.DepositGrantFactory(user=beneficiary, type=DepositType.GRANT_17)
+        users_factories.DepositGrantFactory(user=beneficiary, type=DepositType.GRANT_17)
 
         # When
         deposit = api.create_deposit(beneficiary, "created by test")

@@ -5,7 +5,6 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
@@ -69,7 +68,7 @@ class WalletBalanceTest:
     def test_balance_is_the_sum_of_deposits_if_no_bookings(self):
         # given
         user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
-        payments_factories.DepositGrantFactory(user=user, version=1)
+        users_factories.DepositGrantFactory(user=user, version=1)
 
         # then
         assert user.wallet_balance == 500 + 500

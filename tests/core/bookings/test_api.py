@@ -1,7 +1,10 @@
+from datetime import date
 from datetime import datetime
+from datetime import time
 from datetime import timedelta
 from unittest import mock
 
+from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
 from sqlalchemy import create_engine
@@ -12,6 +15,7 @@ from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
 from pcapi.core.bookings import models
+from pcapi.core.bookings.conf import GRANT_18_VALIDITY_IN_YEARS
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -133,6 +137,7 @@ class BookOfferTest:
         assert booking.quantity == 1
         assert booking.individualBookingId is not None
         assert booking.individualBooking.userId == beneficiary.id
+        assert booking.individualBooking.depositId == beneficiary.deposit.id
         assert booking.amount == 10
         assert booking.stock == stock
         assert len(booking.token) == 6
@@ -149,6 +154,18 @@ class BookOfferTest:
         assert email_data1["MJ-TemplateID"] == 2843165  # to offerer
         email_data2 = mails_testing.outbox[1].sent_data
         assert email_data2["MJ-TemplateID"] == 3094927  # to beneficiary
+
+    def test_free_offer_booking_by_ex_beneficiary(self):
+        ex_beneficiary = users_factories.BeneficiaryGrant18Factory(
+            dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=20, months=5),
+            dateCreated=datetime.utcnow() - relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, months=5),
+            deposit__expirationDate=datetime.utcnow() - relativedelta(months=5),
+        )
+        stock = offers_factories.StockFactory(price=0, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
+
+        booking = api.book_offer(beneficiary=ex_beneficiary, stock_id=stock.id, quantity=1)
+
+        assert not booking.individualBooking.deposit
 
     def test_booked_categories_are_sent_to_batch_backend(self, app):
         offer1 = offers_factories.OfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)

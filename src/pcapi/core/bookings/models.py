@@ -61,6 +61,9 @@ class IndividualBooking(PcObject, Model):
         innerjoin=True,
     )
 
+    depositId = Column(BigInteger, ForeignKey("deposit.id"), index=True, nullable=True)
+    deposit = relationship("Deposit", back_populates="individual_bookings")
+
     booking = relationship(
         "Booking",
         back_populates="individualBooking",
