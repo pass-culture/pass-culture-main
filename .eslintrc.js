@@ -105,6 +105,7 @@ const comonConfig = {
       extends: ['plugin:@typescript-eslint/recommended'],
       rules: {
         'react/prop-types': 'off',
+        'react/require-default-props': 'off',
       },
     },
   ],
