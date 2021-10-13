@@ -138,41 +138,34 @@ class CloudSQLPostgresInstance:
     def get_info(self):
         return self.sqladmin_instances_service.get(project=self.project, instance=self.name).execute()
 
-    def get_backup_runs_list(self):
-        """
-        This function returns a dictionary of backup runs from an instance of a project
-        It calls the list() function from the Cloud SQL Admin API
-        https://developers.google.com/resources/api-libraries/documentation/sqladmin/v1beta4/python/latest/sqladmin_v1beta4.backupRuns.html#list
-        """
-        backup_runs_list_query_result = None
-        try:
-            backup_runs_list_query = self.sqladmin_backup_runs_service.list(
-                project=self.project, instance=self.name)
-            backup_runs_list_query_result = backup_runs_list_query.execute()
-        except HttpError as http_error:
-            print("An error occured while querying the Cloud SQL Admin API", http_error)
 
-        return backup_runs_list_query_result
 
     def get_last_successful_backup_run_id(self) -> str:
         """
         This function returns the backupRunId (that has a successful status)
         If there are no successful backupRun the function throws an exception
         """
-        backup_runs_list = self.get_backup_runs_list()['items']
-        try:
-            for item in backup_runs_list:
-                if item['status'] == "SUCCESSFUL":
-                    last_successful_backup_run_id = item
-                    print("Last successful backup id %s from %s" %
-                          (last_successful_backup_run_id["id"],
-                           datetime.strptime(last_successful_backup_run_id["endTime"],
-                                             "%Y-%m-%dT%H:%M:%S.%fZ")))
-                    return last_successful_backup_run_id["id"]
-            else:
-                raise Exception("Can't find a successful backup")
-        except Exception as error:
-            print('An exception occurred : {}'.format(error))
+        backup_runs = self.sqladmin_backup_runs_service.list(
+            project=self.project,
+            instance=self.name
+        ).execute()['items']
+
+        successful_backup_runs = list(
+            filter(lambda backup_run: backup_run['status'] == "SUCCESSFUL", backup_runs)
+        )
+
+        if not successful_backup_runs:
+            raise LookupError("Can't find a successful backup")
+
+        print(
+            "Last successful backup id %s from %s" %
+            (
+                successful_backup_runs[0]["id"],
+                datetime.strptime(successful_backup_runs[0]["endTime"], "%Y-%m-%dT%H:%M:%S.%fZ")
+            )
+        )
+
+        return successful_backup_runs[0]["id"]
 
     def create_replica(self, replica_name: str):
         instance_info = self.get_info()
