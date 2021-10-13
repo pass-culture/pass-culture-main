@@ -69,7 +69,7 @@ class DMSGraphQLClient:
             url="https://www.demarches-simplifiees.fr/api/v2/graphql",
             headers={"Authorization": f"Bearer {settings.DMS_TOKEN}"},
         )
-        self.client = gql.Client(transport=transport, fetch_schema_from_transport=True)
+        self.client = gql.Client(transport=transport, fetch_schema_from_transport=not settings.IS_RUNNING_TESTS)
 
     def build_query(self, query_name: str) -> str:
         return (GRAPHQL_DIRECTORY / f"{query_name}.graphql").read_text()
