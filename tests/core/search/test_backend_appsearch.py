@@ -173,9 +173,14 @@ def test_unindex_offer_ids(app):
     app.redis_client.sadd("search:appsearch:indexed-offer-ids", "1")
     with requests_mock.Mocker() as mock:
         deleted = mock.delete("https://appsearch.example.com/api/as/v1/engines/offers-1/documents")
+        deleted_educational = mock.delete(
+            "https://appsearch.example.com/api/as/v1/engines/offers-educational/documents"
+        )
         backend.unindex_offer_ids([1])
         deleted_json = deleted.last_request.json()
+        deleted_educational_json = deleted_educational.last_request.json()
         assert deleted_json == [1]
+        assert deleted_educational_json == [1]
 
 
 def test_unindex_all_offers(app):

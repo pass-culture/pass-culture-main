@@ -44,6 +44,7 @@ def get_engine_names():
 
 OFFERS_ENGINE_NAMES = get_engine_names()
 OFFERS_META_ENGINE_NAME = "offers-meta"
+EDUCATIONAL_OFFERS_ENGINE_NAME = "offers-educational"
 OFFERS_SEARCH_PRECISION = 3
 OFFERS_SCHEMA = {
     "artist": "text",
@@ -225,8 +226,13 @@ def get_offer_engine(document_or_offer_id: typing.Union[dict, int]) -> str:
     """Return the name of the engine to be used for the given offer."""
     if isinstance(document_or_offer_id, int):
         offer_id = document_or_offer_id
-    else:
+
+    if isinstance(document_or_offer_id, dict):
+        if document_or_offer_id["is_educational"]:
+            return EDUCATIONAL_OFFERS_ENGINE_NAME
+
         offer_id = document_or_offer_id["id"]
+
     n = offer_id % len(OFFERS_ENGINE_NAMES)
     return f"offers-{n}"
 
@@ -238,6 +244,18 @@ class AppSearchBackend(base.SearchBackend):
             host=settings.APPSEARCH_HOST,
             api_key=settings.APPSEARCH_API_KEY,
             meta_engine_name=OFFERS_META_ENGINE_NAME,
+            engine_selector=get_offer_engine,
+            synonyms=OFFERS_SYNONYM_SET,
+            field_weights=OFFERS_FIELD_WEIGHTS,
+            field_boosts=OFFERS_FIELD_BOOSTS,
+            search_precision=OFFERS_SEARCH_PRECISION,
+            schema=OFFERS_SCHEMA,
+        )
+
+        self.educational_offers_engine = AppSearchApiClient(
+            host=settings.APPSEARCH_HOST,
+            api_key=settings.APPSEARCH_API_KEY,
+            meta_engine_name=EDUCATIONAL_OFFERS_ENGINE_NAME,
             engine_selector=get_offer_engine,
             synonyms=OFFERS_SYNONYM_SET,
             field_weights=OFFERS_FIELD_WEIGHTS,
@@ -380,6 +398,7 @@ class AppSearchBackend(base.SearchBackend):
 
     def unindex_all_offers(self) -> None:
         self.offers_engine.delete_all_documents()
+        self.educational_offers_engine.delete_all_documents()
 
     def unindex_venue_ids(self, venue_ids: Iterable[int]) -> None:
         if not venue_ids:
@@ -572,6 +591,20 @@ class AppSearchApiClient:
             data = json.dumps(batch)
             response = requests.delete(self.get_documents_url(engine_name), headers=self.headers, data=data)
             response.raise_for_status()
+
+            if engine_name in OFFERS_ENGINE_NAMES:
+                # We don't know if it's an educational offer, a regular offer or a venue.
+                # If it's an educational offer, the DELETE request above will be a no-op
+                # and we want to DELETE on the educational offers engine.
+                # If it's a regular offer, the DELETE request below will be a no-op.
+                # In both cases we make extra requests, but we cannot easily avoid that since
+                # we can only have the document id and not an Offer or Venue object.
+                response = requests.delete(
+                    self.get_documents_url(EDUCATIONAL_OFFERS_ENGINE_NAME),
+                    headers=self.headers,
+                    data=data,
+                )
+                response.raise_for_status()
 
     def delete_all_documents(self) -> None:
         if settings.IS_PROD:

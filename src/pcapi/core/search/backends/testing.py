@@ -32,4 +32,5 @@ class TestingBackend(AppSearchBackend):
     def __init__(self):  # pylint: disable=super-init-not-called
         self.offers_engine = FakeClient("offers")
         self.venues_engine = FakeClient("venues")
+        self.educational_offers_engine = FakeClient("educational-offers")
         self.redis_client = current_app.redis_client

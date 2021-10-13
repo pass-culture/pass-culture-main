@@ -56,6 +56,11 @@ def setup_offers_engines():
     )
 
 
+def setup_educational_offers_engines():
+    backend = appsearch.AppSearchBackend()
+    setup_engine(backend.offers_engine, engine_names=[appsearch.EDUCATIONAL_OFFER_ENGINE_NAME])
+
+
 def setup_venues_engine():
     backend = appsearch.AppSearchBackend()
     setup_engine(backend.venues_engine, engine_names=[appsearch.VENUES_ENGINE_NAME])
@@ -109,6 +114,11 @@ def get_parser():
     offers_subparsers = offers_parser.add_subparsers()
     offers_setup = offers_subparsers.add_parser("setup", help="Setup a new engine for offers.")
     offers_setup.set_defaults(callback=setup_offers_engines)
+    educational_offers_setup = offers_subparsers.add_parser(
+        "setup_educational",
+        help="Setup a new engine for educational offers.",
+    )
+    educational_offers_setup.set_defaults(callback=setup_educational_offers_engines)
     offers_index = offers_subparsers.add_parser("index", help="Index offers.")
     offers_index.set_defaults(callback=index_offers)
 
