@@ -95,4 +95,4 @@ class SubscriptionMessage(PcObject, Model):
 
     callToActionIcon = sqlalchemy.Column(sqlalchemy.Enum(CallToActionIcon, create_constraint=False), nullable=True)
 
-    popOverIcon = sqlalchemy.Column(sqlalchemy.Enum(PopOverIcon, create_constraint=False), nullable=False)
+    popOverIcon = sqlalchemy.Column(sqlalchemy.Enum(PopOverIcon, create_constraint=False), nullable=True)
