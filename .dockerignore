@@ -15,7 +15,6 @@ pytest.ini
 
 # Dockerfiles
 Dockerfile
-Dockerfile.gcp
 
 # Docs
 *.md

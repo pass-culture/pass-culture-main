@@ -263,7 +263,7 @@ jobs:
           name: Build and push docker image if the requirements have changed
           command: |
             md5sum --status -c requirements.md5 || (
-            docker build -t passcultureapp/api-flask:latest .;
+            docker build --target api-flask -t passcultureapp/api-flask:latest .;
             docker login -u passcultureapp -p $DOCKERHUB_PASSWORD;
             docker push passcultureapp/api-flask:latest
             )
@@ -286,9 +286,7 @@ jobs:
           gcp-key-name: GCP_INFRA_KEY
       - run: gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
       - run: |
-          docker build . \
-            -f Dockerfile.gcp \
-            -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
+          docker build -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1} .
       - run: docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
 
   deploy-pcapi:
