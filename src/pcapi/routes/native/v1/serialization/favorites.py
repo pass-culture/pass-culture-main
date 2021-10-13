@@ -4,11 +4,11 @@ from typing import Optional
 
 from pydantic.class_validators import validator
 
-from pcapi.core.categories.categories import CategoryIdEnum
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.models import CategoryType
 from pcapi.core.users.models import ExpenseDomain
+from pcapi.models.offer_type import CategoryNameEnum
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.utils.date import format_into_utc_date
 
@@ -25,7 +25,7 @@ class Coordinates(BaseModel):
 class FavoriteCategoryResponse(BaseModel):
     categoryType: CategoryType
     label: str
-    name: Optional[CategoryIdEnum]
+    name: Optional[CategoryNameEnum]
 
 
 class FavoriteMediationResponse(BaseModel):

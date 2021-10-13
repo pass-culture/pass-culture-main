@@ -21,6 +21,9 @@ from pcapi.domain.music_types import MUSIC_SUB_TYPES_DICT
 from pcapi.domain.music_types import MUSIC_TYPES_DICT
 from pcapi.domain.show_types import SHOW_SUB_TYPES_DICT
 from pcapi.domain.show_types import SHOW_TYPES_DICT
+from pcapi.models.offer_type import CATEGORIES_LABEL_DICT
+from pcapi.models.offer_type import CategoryNameEnum
+from pcapi.models.offer_type import CategoryType
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.serialization.utils import to_camel
@@ -30,6 +33,12 @@ from . import BaseModel
 
 
 logger = logging.getLogger(__name__)
+
+
+class OfferCategoryResponse(BaseModel):
+    categoryType: CategoryType
+    label: str
+    name: Optional[CategoryNameEnum]
 
 
 class OfferOffererResponse(BaseModel):
@@ -166,9 +175,10 @@ class OfferImageResponse(BaseModel):
         orm_mode = True
 
 
+# TODO: remove when native app is force updated to v156+
 def get_serialized_offer_category(offer: Offer) -> dict:
     return {
-        "name": offer.subcategory.category_id,
+        "name": CATEGORIES_LABEL_DICT.get(offer.subcategory.app_label),
         "label": offer.subcategory.app_label,
         "categoryType": offer.category_type,
     }
@@ -198,6 +208,7 @@ class OfferResponse(BaseModel):
 
     id: int
     accessibility: OfferAccessibilityResponse
+    category: OfferCategoryResponse
     description: Optional[str]
     expense_domains: list[ExpenseDomain]
     externalTicketOfficeUrl: Optional[str]
