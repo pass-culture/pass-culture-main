@@ -242,6 +242,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             review.reason += " ; Redirigé vers DMS"
             user_emails.send_document_verification_error_email(user.email, "unread-document")
             flask.flash(f"L'utilisateur {user.firstName} {user.lastName} à été redirigé vers DMS")
+            subscription_messages.on_redirect_to_dms_from_idcheck(user)
         elif review.review == fraud_models.FraudReviewStatus.KO.value:
             subscription_messages.on_fraud_review_ko(user)
         db.session.add(review)

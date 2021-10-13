@@ -23,3 +23,15 @@ def on_fraud_review_ko(user: users_models.User) -> None:
         popOverIcon=models.PopOverIcon.INFO,
     )
     repository.save(message)
+
+
+def on_redirect_to_dms_from_idcheck(user: users_models.User) -> None:
+    today = datetime.date.today()
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage=f"Nous n'arrivons toujours pas à lire ton document. Consulte l'e-mail envoyé le {today:%d/%m/%Y} pour plus d'informations.",
+        callToActionTitle="Consulter mes e-mails",
+        callToActionLink="passculture://openInbox",
+        callToActionIcon=models.CallToActionIcon.EMAIL,
+    )
+    repository.save(message)

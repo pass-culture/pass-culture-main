@@ -1,5 +1,6 @@
 import logging
 
+import freezegun
 import pytest
 
 from pcapi import settings
@@ -242,6 +243,7 @@ class BeneficiaryValidationViewTest:
         assert message.popOverIcon == subscription_models.PopOverIcon.INFO
         assert message.userMessage == "Ton dossier a été rejeté. Tu n'es pas éligible au pass culture."
 
+    @freezegun.freeze_time("2021-10-30 09:00:00")
     def test_return_to_dms(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
@@ -265,6 +267,14 @@ class BeneficiaryValidationViewTest:
 
         assert sent_data["Vars"]["url"] == settings.DMS_USER_URL
         assert sent_data["MJ-TemplateID"] == 2958557
+
+        assert subscription_models.SubscriptionMessage.query.count() == 1
+        message = subscription_models.SubscriptionMessage.query.first()
+        assert not message.popOverIcon
+        assert (
+            message.userMessage
+            == "Nous n'arrivons toujours pas à lire ton document. Consulte l'e-mail envoyé le 30/10/2021 pour plus d'informations."
+        )
 
 
 @pytest.mark.usefixtures("db_session")
