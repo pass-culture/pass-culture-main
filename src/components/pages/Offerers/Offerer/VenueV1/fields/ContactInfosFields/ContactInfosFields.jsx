@@ -10,8 +10,7 @@ import React from 'react'
 
 import TextField from 'components/layout/form/fields/TextField'
 
-import { validatePhone , validateEmail, validateUrl } from './validators'
-
+import { validatePhone, validateEmail, validateUrl } from './validators'
 
 const ContactInfosFields = ({ readOnly }) => (
   <div className="section vp-content-section bank-information">
@@ -25,7 +24,6 @@ const ContactInfosFields = ({ readOnly }) => (
       className="field text-field"
       label="Téléphone"
       name="contact.phoneNumber"
-      placeholder="Ex : 06 06 06 06"
       readOnly={readOnly}
       type="phone"
       validate={validatePhone}
@@ -34,7 +32,6 @@ const ContactInfosFields = ({ readOnly }) => (
       className="field text-field"
       label="Mail"
       name="contact.email"
-      placeholder="Ex : nomprenom@nomdedomaine.fr"
       readOnly={readOnly}
       type="email"
       validate={validateEmail}
@@ -43,7 +40,6 @@ const ContactInfosFields = ({ readOnly }) => (
       className="field text-field"
       label="URL de votre site web"
       name="contact.website"
-      placeholder="https://votresite.com"
       readOnly={readOnly}
       type="url"
       validate={validateUrl}
@@ -52,7 +48,7 @@ const ContactInfosFields = ({ readOnly }) => (
 )
 
 ContactInfosFields.propTypes = {
-  readOnly: PropTypes.bool.isRequired
+  readOnly: PropTypes.bool.isRequired,
 }
 
 export default ContactInfosFields
