@@ -11,14 +11,10 @@ from rq import Queue
 from rq import Worker
 from rq.job import Job
 import sentry_sdk
-from sentry_sdk.integrations.redis import RedisIntegration
-from sentry_sdk.integrations.rq import RqIntegration
-from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
 from pcapi import settings
 from pcapi.models.db import db
 from pcapi.utils.health_checker import check_database_connection
-from pcapi.utils.health_checker import read_version_from_file
 from pcapi.workers.logger import job_extra_description
 
 
@@ -76,17 +72,6 @@ def run_worker(queues=None):
     log_redis_connection_status()
     with app.app_context():
         log_database_connection_status()
-
-    if settings.IS_DEV is False:
-        # pylint: disable=abstract-class-instantiated
-        sentry_sdk.init(
-            dsn=settings.SENTRY_DSN,
-            integrations=[RedisIntegration(), RqIntegration(), SqlalchemyIntegration()],
-            release=read_version_from_file(),
-            environment=settings.ENV,
-            traces_sample_rate=settings.SENTRY_SAMPLE_RATE,
-        )
-        logger.info("Worker : connection to sentry OK")
 
     while True:
         try:

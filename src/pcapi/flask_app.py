@@ -14,10 +14,6 @@ from flask_login import LoginManager
 from flask_login import current_user
 import redis
 import sentry_sdk
-from sentry_sdk.integrations.flask import FlaskIntegration
-from sentry_sdk.integrations.redis import RedisIntegration
-from sentry_sdk.integrations.rq import RqIntegration
-from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from sqlalchemy import orm
 from werkzeug.middleware.profiler import ProfilerMiddleware
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -27,24 +23,15 @@ from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.logging import install_logging
 from pcapi.models.db import db
 from pcapi.scripts.install import install_commands
-from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.rate_limiting import rate_limiter
+from pcapi.utils.sentry import init_sentry_sdk
 
 
 logger = logging.getLogger(__name__)
 
 install_logging()
-
-if settings.IS_DEV is False:
-    # pylint: disable=abstract-class-instantiated
-    sentry_sdk.init(
-        dsn=settings.SENTRY_DSN,
-        integrations=[FlaskIntegration(), RedisIntegration(), RqIntegration(), SqlalchemyIntegration()],
-        release=read_version_from_file(),
-        environment=settings.ENV,
-        traces_sample_rate=settings.SENTRY_SAMPLE_RATE,
-    )
+init_sentry_sdk()
 
 app = Flask(__name__, static_url_path="/static")
 
