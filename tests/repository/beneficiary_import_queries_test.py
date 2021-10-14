@@ -9,7 +9,7 @@ from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import ImportStatus
 from pcapi.repository.beneficiary_import_queries import find_applications_ids_to_retry
-from pcapi.repository.beneficiary_import_queries import get_existing_applications_id
+from pcapi.repository.beneficiary_import_queries import get_already_processed_applications_ids
 from pcapi.repository.beneficiary_import_queries import is_already_imported
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
 
@@ -200,8 +200,8 @@ class FindApplicationsIdsToRetryTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class GetExistingApplicationIdTest:
-    def test_existing_application_id(self):
+class GetAlreadyProcessedApplicationIdTest:
+    def test_already_processed_application_ids(self):
         procedure_id = 123
 
         draft = users_factories.BeneficiaryImportStatusFactory(
@@ -239,7 +239,7 @@ class GetExistingApplicationIdTest:
             status=ImportStatus.WITHOUT_CONTINUATION,
         )
 
-        application_ids = get_existing_applications_id(procedure_id)
+        application_ids = get_already_processed_applications_ids(procedure_id)
         assert draft.beneficiaryImport.applicationId not in application_ids
         assert ongoing.beneficiaryImport.applicationId not in application_ids
         assert without_continuation.beneficiaryImport.applicationId not in application_ids
@@ -249,3 +249,18 @@ class GetExistingApplicationIdTest:
         assert error.beneficiaryImport.applicationId in application_ids
         assert created.beneficiaryImport.applicationId in application_ids
         assert duplicate.beneficiaryImport.applicationId in application_ids
+
+    def test_already_processed_application_ids_right_procedure(self):
+        created = users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__sourceId=123,
+            status=ImportStatus.CREATED,
+        )
+
+        another_procedure = users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__sourceId=456,
+            status=ImportStatus.CREATED,
+        )
+
+        application_ids = get_already_processed_applications_ids(123)
+        assert created.beneficiaryImport.applicationId in application_ids
+        assert another_procedure.beneficiaryImport.applicationId not in application_ids

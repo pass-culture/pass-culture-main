@@ -10,7 +10,7 @@ from pcapi.connectors.api_demarches_simplifiees import get_application_details
 from pcapi.domain.bank_account import format_raw_iban_and_bic
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.models.bank_information import BankInformationStatus
-from pcapi.repository.beneficiary_import_queries import get_existing_applications_id
+from pcapi.repository.beneficiary_import_queries import get_already_processed_applications_ids
 from pcapi.utils.date import DATE_ISO_FORMAT
 
 
@@ -85,7 +85,7 @@ def get_closed_application_ids_for_demarche_simplifiee(procedure_id: int, token:
             procedure_id, settings.DMS_TOKEN, last_update=None, accepted_states=ACCEPTED_DMS_STATUS
         )
     )
-    existing_applications_id = get_existing_applications_id(procedure_id)
+    existing_applications_id = get_already_processed_applications_ids(procedure_id)
     return sorted(application_ids - existing_applications_id)
 
 

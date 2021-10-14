@@ -27,7 +27,7 @@ def is_already_imported(application_id: int) -> bool:
     return beneficiary_import is not None
 
 
-def get_existing_applications_id(procedure_id: int) -> set[int]:
+def get_already_processed_applications_ids(procedure_id: int) -> set[int]:
     return {
         beneficiary_import.applicationId
         for beneficiary_import in BeneficiaryImport.query.join(BeneficiaryImportStatus)

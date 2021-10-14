@@ -154,14 +154,14 @@ class GetAllApplicationIdsForBeneficiaryImportTest:
 
 
 @patch("pcapi.domain.demarches_simplifiees.get_all_applications_for_procedure")
-@patch("pcapi.domain.demarches_simplifiees.get_existing_applications_id")
+@patch("pcapi.domain.demarches_simplifiees.get_already_processed_applications_ids")
 class GetClosedApplicationIdsForBeneficiaryImportTest:
     def setup_method(self):
         self.PROCEDURE_ID = "123456789"
         self.TOKEN = "AZERTY123/@.,!é"
 
     def test_returns_applications_with_state_closed_only(
-        self, get_existing_applications_id, get_all_applications_for_procedure
+        self, get_already_processed_applications_ids, get_all_applications_for_procedure
     ):
         # Given
         get_all_applications_for_procedure.return_value = {
@@ -171,7 +171,7 @@ class GetClosedApplicationIdsForBeneficiaryImportTest:
             ],
             "pagination": {"page": 1, "resultats_par_page": 100, "nombre_de_page": 1},
         }
-        get_existing_applications_id.return_value = set()
+        get_already_processed_applications_ids.return_value = set()
 
         # When
         application_ids = get_closed_application_ids_for_demarche_simplifiee(self.PROCEDURE_ID, self.TOKEN)

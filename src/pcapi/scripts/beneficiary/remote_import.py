@@ -19,13 +19,13 @@ from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.domain import user_emails
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
-from pcapi.domain.demarches_simplifiees import get_existing_applications_id
 from pcapi.domain.user_activation import create_beneficiary_from_application
 from pcapi.models import ApiErrors
 from pcapi.models import ImportStatus
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.repository import repository
 from pcapi.repository.beneficiary_import_queries import find_applications_ids_to_retry
+from pcapi.repository.beneficiary_import_queries import get_already_processed_applications_ids
 from pcapi.repository.beneficiary_import_queries import is_already_imported
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
 from pcapi.repository.user_queries import beneficiary_by_civility_query
@@ -58,7 +58,7 @@ def run(procedure_id: int, use_graphql_api: bool = False) -> None:
         procedure_id,
     )
 
-    existing_applications_ids = get_existing_applications_id(procedure_id)
+    existing_applications_ids = get_already_processed_applications_ids(procedure_id)
     if use_graphql_api:
         client = DMSGraphQLClient()
         for application_details in client.get_applications_with_details(
