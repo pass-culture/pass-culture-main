@@ -1,1 +1,1 @@
-from .user_reset_password_email import *
+from .reset_password_email import *

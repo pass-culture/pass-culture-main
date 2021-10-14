@@ -300,7 +300,7 @@ class SendResetPasswordProEmailTest:
 @pytest.mark.usefixtures("db_session")
 class SendResetPasswordUserEmailTest:
     @patch(
-        "pcapi.core.mails.transactional.users.user_reset_password_email.retrieve_data_for_reset_password_user_email",
+        "pcapi.core.mails.transactional.users.reset_password_email.retrieve_data_for_reset_password_user_email",
         return_value={"MJ-TemplateID": 912168},
     )
     def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(
@@ -318,7 +318,7 @@ class SendResetPasswordUserEmailTest:
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 912168
 
     @patch(
-        "pcapi.core.mails.transactional.users.user_reset_password_email.retrieve_data_for_reset_password_native_app_email",
+        "pcapi.core.mails.transactional.users.reset_password_email.retrieve_data_for_reset_password_native_app_email",
         return_value={"MJ-TemplateID": 12345},
     )
     def when_feature_send_emails_enabled_sends_a_reset_password_email_to_native_app_user(
@@ -334,6 +334,26 @@ class SendResetPasswordUserEmailTest:
         retrieve_data_for_reset_password_native_app_email.assert_called_once_with(user, user.tokens[0])
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 12345
+
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_send_a_reset_password_email_to_native_app_user_via_sendinblue(self):
+        # given
+        user = users_factories.UserFactory(email="bobby@example.com")
+
+        # when
+        user_emails.send_reset_password_email_to_native_app_user(user)
+
+        # then
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
+
+        native_app_link = mails_testing.outbox[0].sent_data["params"]["NATIVE_APP_LINK"]
+        assert user.tokens[0].value in native_app_link
+        assert mails_testing.outbox[0].sent_data["template"] == {
+            "id_prod": 141,
+            "id_not_prod": 26,
+            "tags": ["jeunes_nouveau_mdp"],
+        }
+        assert mails_testing.outbox[0].sent_data["To"] == "bobby@example.com"
 
 
 @pytest.mark.usefixtures("db_session")
