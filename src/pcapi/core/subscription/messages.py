@@ -35,3 +35,13 @@ def on_redirect_to_dms_from_idcheck(user: users_models.User) -> None:
         callToActionIcon=models.CallToActionIcon.EMAIL,
     )
     repository.save(message)
+
+
+def on_dms_application_received(user: users_models.User) -> None:
+    today = datetime.date.today()
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage=f"Nous avons bien reçu ton dossier le {today:%d/%m/%Y}. Rends toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel.",
+        popOverIcon=models.PopOverIcon.FILE,
+    )
+    repository.save(message)

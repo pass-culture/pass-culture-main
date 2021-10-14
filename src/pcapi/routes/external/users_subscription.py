@@ -2,6 +2,7 @@ import logging
 
 from pcapi.connectors import api_demarches_simplifiees
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import messages as subscription_messages
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import ImportStatus
 from pcapi.repository import repository
@@ -55,6 +56,8 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
             import_status,
         )
 
+    if form.state == api_demarches_simplifiees.GraphQLApplicationStates.draft:
+        subscription_messages.on_dms_application_received(user)
     if not user.hasCompletedIdCheck:
         user.hasCompletedIdCheck = True
         repository.save(user)

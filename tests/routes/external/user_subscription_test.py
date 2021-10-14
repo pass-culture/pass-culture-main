@@ -1,9 +1,11 @@
 from unittest.mock import patch
 
+import freezegun
 import pytest
 
 from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
 from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.models.beneficiary_import import BeneficiaryImport
@@ -86,3 +88,29 @@ class DmsWebhookApplicationTest:
         assert status.author == None
 
         assert user.hasCompletedIdCheck
+
+    @freezegun.freeze_time("2021-10-30 09:00:00")
+    @patch.object(DMSGraphQLClient, "execute_query")
+    def test_dms_request_draft_application(self, execute_query, client):
+        user = users_factories.UserFactory()
+        execute_query.return_value = make_single_application(12, state="closed", email=user.email)
+
+        form_data = {
+            "procedure_id": "48860",
+            "dossier_id": "6044787",
+            "state": GraphQLApplicationStates.draft.value,
+            "updated_at": "2021-09-30 17:55:58 +0200",
+        }
+        with override_settings(DMS_WEBHOOK_TOKEN=self.TOKEN):
+            client.post(
+                f"/webhooks/dms/application_status?token={self.TOKEN}",
+                form=form_data,
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+            )
+
+        assert len(user.subscriptionMessages) == 1
+        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.FILE
+        assert (
+            user.subscriptionMessages[0].userMessage
+            == "Nous avons bien reçu ton dossier le 30/10/2021. Rends toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
+        )
