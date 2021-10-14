@@ -1,10 +1,10 @@
 from sqlalchemy import sql
 
-import pcapi.core.bookings.conf as bookings_conf
+import pcapi.core.payments.conf as bookings_conf
+from pcapi.core.payments.models import Deposit
+from pcapi.core.payments.models import DepositType
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.models.deposit import Deposit
-from pcapi.models.deposit import DepositType
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus

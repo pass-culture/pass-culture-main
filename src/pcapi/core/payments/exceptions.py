@@ -1,5 +1,5 @@
+from pcapi.core.payments.models import DepositType
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.deposit import DepositType
 
 
 class DepositTypeAlreadyGrantedException(ApiErrors):

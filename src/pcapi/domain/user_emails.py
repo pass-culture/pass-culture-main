@@ -2,10 +2,7 @@ import logging
 import typing
 
 from pcapi.core import mails
-from pcapi.core.bookings.conf import BOOKINGS_AUTO_EXPIRY_DELAY
-from pcapi.core.bookings.conf import BOOKINGS_EXPIRY_NOTIFICATION_DELAY
-from pcapi.core.bookings.conf import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
-from pcapi.core.bookings.conf import BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY
+from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected import (
@@ -149,7 +146,7 @@ def send_booking_cancellation_emails_to_user_and_offerer(
 # TODO(yacine) this function will be removed after removing FF ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
 def legacy_send_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings: list[Booking]) -> None:
     data = build_expired_bookings_recap_email_data_for_beneficiary(
-        beneficiary, bookings, BOOKINGS_AUTO_EXPIRY_DELAY.days
+        beneficiary, bookings, booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
     )
     mails.send(recipients=[beneficiary.email], data=data)
 
@@ -162,13 +159,13 @@ def send_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings
 
         if books_bookings:
             books_bookings_data = build_expired_bookings_recap_email_data_for_beneficiary(
-                beneficiary, bookings, BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
+                beneficiary, bookings, booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
             )
             mails.send(recipients=[beneficiary.email], data=books_bookings_data)
 
         if other_bookings:
             other_bookings_data = build_expired_bookings_recap_email_data_for_beneficiary(
-                beneficiary, bookings, BOOKINGS_AUTO_EXPIRY_DELAY.days
+                beneficiary, bookings, booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
             )
             mails.send(recipients=[beneficiary.email], data=other_bookings_data)
 
@@ -177,7 +174,9 @@ def send_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings
 def legacy_send_expired_individual_bookings_recap_email_to_offerer(offerer: Offerer, bookings: list[Booking]) -> None:
     offerer_booking_email = bookings[0].stock.offer.bookingEmail
     if offerer_booking_email:
-        data = build_expired_bookings_recap_email_data_for_offerer(offerer, bookings, BOOKINGS_AUTO_EXPIRY_DELAY.days)
+        data = build_expired_bookings_recap_email_data_for_offerer(
+            offerer, bookings, booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
+        )
         mails.send(recipients=[offerer_booking_email], data=data)
 
 
@@ -191,13 +190,13 @@ def send_expired_individual_bookings_recap_email_to_offerer(offerer: Offerer, bo
 
             if books_bookings:
                 books_bookings_data = build_expired_bookings_recap_email_data_for_offerer(
-                    offerer, books_bookings, BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
+                    offerer, books_bookings, booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
                 )
                 mails.send(recipients=[offerer_booking_email], data=books_bookings_data)
 
             if other_bookings:
                 other_bookings_data = build_expired_bookings_recap_email_data_for_offerer(
-                    offerer, other_bookings, BOOKINGS_AUTO_EXPIRY_DELAY.days
+                    offerer, other_bookings, booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
                 )
                 mails.send(recipients=[offerer_booking_email], data=other_bookings_data)
 
@@ -221,8 +220,9 @@ def send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
             books_bookings_data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
                 beneficiary=beneficiary,
                 bookings=books_bookings,
-                days_before_cancel=BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
-                days_from_booking=BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days - BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
+                days_before_cancel=booking_constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
+                days_from_booking=booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
+                - booking_constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
             )
             mails.send(recipients=[beneficiary.email], data=books_bookings_data)
 
@@ -230,8 +230,9 @@ def send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
             other_bookings_data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
                 beneficiary=beneficiary,
                 bookings=other_bookings,
-                days_before_cancel=BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
-                days_from_booking=BOOKINGS_AUTO_EXPIRY_DELAY.days - BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
+                days_before_cancel=booking_constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
+                days_from_booking=booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
+                - booking_constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
             )
             mails.send(recipients=[beneficiary.email], data=other_bookings_data)
 
@@ -239,8 +240,9 @@ def send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
         data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
             beneficiary=beneficiary,
             bookings=bookings,
-            days_before_cancel=BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
-            days_from_booking=BOOKINGS_AUTO_EXPIRY_DELAY.days - BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
+            days_before_cancel=booking_constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
+            days_from_booking=booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
+            - booking_constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
         )
         mails.send(recipients=[beneficiary.email], data=data)
 

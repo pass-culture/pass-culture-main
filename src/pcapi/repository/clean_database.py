@@ -17,6 +17,7 @@ from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.payments.models import CustomReimbursementRule
+from pcapi.core.payments.models import Deposit
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
@@ -30,7 +31,6 @@ from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import Booking
 from pcapi.models import Criterion
-from pcapi.models import Deposit
 from pcapi.models import Favorite
 from pcapi.models import LocalProviderEvent
 from pcapi.models import Offer

@@ -18,7 +18,6 @@ from pcapi.core import search
 from pcapi.core.bookings.api import cancel_bookings_when_offerer_deletes_stock
 from pcapi.core.bookings.api import mark_as_unused
 from pcapi.core.bookings.api import update_cancellation_limit_dates
-from pcapi.core.bookings.conf import get_limit_configuration_for_type_and_version
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories
@@ -38,6 +37,8 @@ from pcapi.core.offers.validation import check_offer_is_eligible_for_educational
 from pcapi.core.offers.validation import check_offer_not_duo_and_educational
 from pcapi.core.offers.validation import check_offer_subcategory_is_valid
 from pcapi.core.offers.validation import check_validation_config_parameters
+from pcapi.core.payments.conf import get_limit_configuration_for_type_and_version
+from pcapi.core.payments.models import DepositType
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.domain import admin_emails
@@ -51,7 +52,6 @@ from pcapi.models import Product
 from pcapi.models import Venue
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.deposit import DepositType
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import offer_queries
 from pcapi.repository import repository

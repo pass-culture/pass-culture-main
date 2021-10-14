@@ -26,7 +26,6 @@ from redis import Redis
 from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
 from pcapi.connectors.beneficiaries.id_check_middleware import ask_for_identity_document_verification
-from pcapi.core.bookings.conf import get_limit_configuration_for_type_and_version
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
@@ -34,6 +33,7 @@ from pcapi.core.mails.transactional.users.email_address_change import send_confi
 from pcapi.core.mails.transactional.users.email_address_change import send_information_email_change_email
 from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
 import pcapi.core.payments.api as payment_api
+from pcapi.core.payments.conf import get_limit_configuration_for_type_and_version
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit

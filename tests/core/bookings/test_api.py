@@ -15,7 +15,6 @@ from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
 from pcapi.core.bookings import models
-from pcapi.core.bookings.conf import GRANT_18_VALIDITY_IN_YEARS
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -24,6 +23,7 @@ from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.payments.conf import GRANT_18_VALIDITY_IN_YEARS
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features

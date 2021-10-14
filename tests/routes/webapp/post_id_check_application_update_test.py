@@ -4,6 +4,7 @@ from unittest.mock import patch
 from dateutil.relativedelta import relativedelta
 import pytest
 
+from pcapi.core.payments.models import Deposit
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
@@ -11,7 +12,6 @@ from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import User
 from pcapi.models import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.models.deposit import Deposit
 from pcapi.notifications.push import testing as push_testing
 
 from tests.conftest import TestClient

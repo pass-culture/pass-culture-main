@@ -68,10 +68,10 @@ def get_saml_client() -> Saml2Client:
 
 def get_login_redirect_url() -> str:
     saml_client = get_saml_client()
-    request_id, info = saml_client.prepare_for_authenticate()
+    saml_request_id, info = saml_client.prepare_for_authenticate()
 
     # TODO: savec request id in redis attached to usedId
-    logger.info("Sending saml login request with educonnect request_id = %s", request_id)
+    logger.info("Sending saml login request with educonnect saml_request_id = %s", saml_request_id)
 
     redirect_url = next(header[1] for header in info["headers"] if header[0] == "Location")
     return redirect_url

@@ -1,7 +1,7 @@
 import pytest
 
+from pcapi.core.payments.models import Deposit
 from pcapi.core.users.models import User
-from pcapi.models.deposit import Deposit
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import create_industrial_app_users
 
 

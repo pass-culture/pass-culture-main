@@ -20,9 +20,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
 from pcapi.core.bookings import exceptions
-from pcapi.core.bookings.conf import BOOKINGS_AUTO_EXPIRY_DELAY
-from pcapi.core.bookings.conf import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
-from pcapi.core.bookings.conf import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE
+from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
+from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
+from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.offers.models import Mediation

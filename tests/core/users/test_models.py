@@ -3,11 +3,11 @@ from datetime import timedelta
 
 import pytest
 
+from pcapi.core.payments.models import DepositType
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.core.users.models import User
-from pcapi.models.deposit import DepositType
 
 
 @pytest.mark.usefixtures("db_session")

@@ -38,12 +38,12 @@ from sqlalchemy.sql.expression import or_
 from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Stock
+from pcapi.core.payments.models import Deposit
+from pcapi.core.payments.models import DepositType
 from pcapi.core.users import constants
 from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models.db import Model
 from pcapi.models.db import db
-from pcapi.models.deposit import Deposit
-from pcapi.models.deposit import DepositType
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject

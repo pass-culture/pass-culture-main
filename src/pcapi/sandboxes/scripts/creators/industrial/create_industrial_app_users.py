@@ -9,10 +9,10 @@ import uuid
 from dateutil.relativedelta import relativedelta
 from faker import Faker
 
-from pcapi.core.bookings.conf import GRANT_18_VALIDITY_IN_YEARS
+from pcapi.core.payments.conf import GRANT_18_VALIDITY_IN_YEARS
+from pcapi.core.payments.models import DepositType
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import TokenType
-from pcapi.models.deposit import DepositType
 
 
 logger = logging.getLogger(__name__)

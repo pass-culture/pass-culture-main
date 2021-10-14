@@ -10,7 +10,7 @@ import qrcode
 import qrcode.image.svg
 
 from pcapi.core import search
-from pcapi.core.bookings import conf
+from pcapi.core.bookings import constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -353,9 +353,9 @@ def compute_cancellation_limit_date(
             tz_naive_event_beginning = tz_naive_event_beginning.replace(tzinfo=None)
         else:
             tz_naive_event_beginning = event_beginning
-        before_event_limit = tz_naive_event_beginning - conf.CONFIRM_BOOKING_BEFORE_EVENT_DELAY
+        before_event_limit = tz_naive_event_beginning - constants.CONFIRM_BOOKING_BEFORE_EVENT_DELAY
         after_booking_or_event_edition_limit = (
-            booking_creation_or_event_edition + conf.CONFIRM_BOOKING_AFTER_CREATION_DELAY
+            booking_creation_or_event_edition + constants.CONFIRM_BOOKING_AFTER_CREATION_DELAY
         )
         earliest_date_in_cancellation_period = min(before_event_limit, after_booking_or_event_edition_limit)
         latest_date_between_earliest_date_in_cancellation_period_and_booking_creation_or_event_edition = max(
@@ -408,7 +408,7 @@ def auto_mark_as_used_after_event() -> None:
         raise ValueError("This function is behind a deactivated feature flag.")
 
     now = datetime.datetime.now()
-    threshold = now - conf.AUTO_USE_AFTER_EVENT_TIME_DELAY
+    threshold = now - constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
     # fmt: off
     bookings = (
         Booking.query

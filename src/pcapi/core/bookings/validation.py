@@ -2,13 +2,14 @@ import datetime
 from decimal import Decimal
 
 from pcapi.core.bookings import api
-from pcapi.core.bookings import conf
+from pcapi.core.bookings import constants
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.payments import conf as payments_conf
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
 from pcapi.models import api_errors
@@ -70,7 +71,7 @@ def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer) -
     if not domains_credit or not deposit:
         raise exceptions.UserHasInsufficientFunds()
 
-    config: conf.BaseLimitConfiguration = conf.get_limit_configuration_for_type_and_version(
+    config: payments_conf.BaseLimitConfiguration = payments_conf.get_limit_configuration_for_type_and_version(
         deposit.type, deposit.version
     )
 
@@ -99,8 +100,8 @@ def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
         raise exceptions.BookingIsAlreadyUsed()
     if booking.isConfirmed:
         raise exceptions.CannotCancelConfirmedBooking(
-            conf.BOOKING_CONFIRMATION_ERROR_CLAUSES["after_creation_delay"],
-            conf.BOOKING_CONFIRMATION_ERROR_CLAUSES["before_event_delay"],
+            constants.BOOKING_CONFIRMATION_ERROR_CLAUSES["after_creation_delay"],
+            constants.BOOKING_CONFIRMATION_ERROR_CLAUSES["before_event_delay"],
         )
 
 

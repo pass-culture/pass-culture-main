@@ -1,8 +1,8 @@
 from urllib.parse import quote
 
-from pcapi.core.bookings import conf
+from pcapi.core.payments import conf as payments_conf
+from pcapi.core.payments.models import DepositType
 from pcapi.core.users import models as users_models
-from pcapi.models.deposit import DepositType
 from pcapi.utils.urls import generate_firebase_dynamic_link
 
 
@@ -26,7 +26,7 @@ def get_newly_eligible_user_email_data(user: users_models.User) -> dict:
         path="id-check",
         params={"email": user.email},
     )
-    limit_configuration = conf.get_current_limit_configuration_for_type(DepositType.GRANT_18)
+    limit_configuration = payments_conf.get_current_limit_configuration_for_type(DepositType.GRANT_18)
     deposit_amount = limit_configuration.TOTAL_CAP
     return {
         "Mj-TemplateID": 2030056,

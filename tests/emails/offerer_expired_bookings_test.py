@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.bookings.conf import BOOKINGS_AUTO_EXPIRY_DELAY
+from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories import subcategories

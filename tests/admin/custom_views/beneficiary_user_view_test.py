@@ -12,12 +12,12 @@ from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.payments.models import Deposit
 from pcapi.core.users import testing as sendinblue_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
-from pcapi.models import Deposit
 import pcapi.notifications.push.testing as push_testing
 
 from tests.conftest import TestClient

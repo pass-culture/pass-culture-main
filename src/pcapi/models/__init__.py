@@ -12,6 +12,7 @@ from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.payments.models import CustomReimbursementRule
+from pcapi.core.payments.models import Deposit
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
@@ -30,7 +31,6 @@ from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.criterion import Criterion
 from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
-from pcapi.models.deposit import Deposit
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.feature import Feature
 from pcapi.models.has_address_mixin import HasAddressMixin

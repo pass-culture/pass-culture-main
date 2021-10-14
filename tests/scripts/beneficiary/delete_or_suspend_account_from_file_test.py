@@ -1,8 +1,8 @@
 import pytest
 
 import pcapi.core.fraud.factories as fraud_factories
+from pcapi.core.payments.models import Deposit
 import pcapi.core.users.factories as users_factories
-from pcapi.models import Deposit
 from pcapi.models import User
 from pcapi.repository import repository
 from pcapi.scripts.beneficiary.delete_or_suspend_account_from_file import suspend_or_delete_from_file

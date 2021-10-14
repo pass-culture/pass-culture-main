@@ -18,8 +18,7 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.util._collections import AbstractKeyedTuple
 
-from pcapi.core.bookings import conf
-from pcapi.core.bookings.conf import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE
+from pcapi.core.bookings import constants
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
@@ -182,12 +181,12 @@ def find_expiring_individual_bookings_query() -> Query:
                             Offer.subcategoryId == subcategories.LIVRE_PAPIER.id,
                             # TODO(yacine) remove this condition 20 days after activation of FF
                             #  ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
-                            Booking.dateCreated >= BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE,
+                            Booking.dateCreated >= constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE,
                         ),
-                        (Booking.dateCreated + conf.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight,
+                        (Booking.dateCreated + constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight,
                     ),
                 ],
-                else_=((Booking.dateCreated + conf.BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight),
+                else_=((Booking.dateCreated + constants.BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight),
             ),
         )
     )
@@ -209,7 +208,7 @@ def find_expiring_booking_ids_from_query(query: Query) -> Query:
 # TODO(yacine) remove this fonction 20 days after activation of FF ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
 def old_find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: date = None) -> Query:
     given_date = given_date or date.today()
-    given_date = datetime.combine(given_date, time(0, 0)) + conf.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
+    given_date = datetime.combine(given_date, time(0, 0)) + constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
     window = (datetime.combine(given_date, time(0, 0)), datetime.combine(given_date, time(23, 59, 59)))
 
     return (
@@ -219,7 +218,7 @@ def old_find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date:
         .filter(
             ~Booking.isCancelled,
             ~Booking.isUsed,
-            (Booking.dateCreated + conf.BOOKINGS_AUTO_EXPIRY_DELAY).between(*window),
+            (Booking.dateCreated + constants.BOOKINGS_AUTO_EXPIRY_DELAY).between(*window),
             Offer.canExpire,
         )
         .order_by(Booking.userId)
@@ -232,8 +231,8 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
         return old_find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date)
 
     given_date = given_date or date.today()
-    books_expiring_date = datetime.combine(given_date, time(0, 0)) + conf.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY
-    other_expiring_date = datetime.combine(given_date, time(0, 0)) + conf.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
+    books_expiring_date = datetime.combine(given_date, time(0, 0)) + constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY
+    other_expiring_date = datetime.combine(given_date, time(0, 0)) + constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
     books_window = (
         datetime.combine(books_expiring_date, time(0, 0)),
         datetime.combine(books_expiring_date, time(23, 59, 59)),
@@ -258,12 +257,12 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
                             Offer.subcategoryId == subcategories.LIVRE_PAPIER.id,
                             # TODO(yacine) remove this condition 20 days after activation of FF
                             #  ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
-                            Booking.dateCreated >= BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE,
+                            Booking.dateCreated >= constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE,
                         ),
-                        ((Booking.dateCreated + conf.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY).between(*books_window)),
+                        ((Booking.dateCreated + constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY).between(*books_window)),
                     )
                 ],
-                else_=(Booking.dateCreated + conf.BOOKINGS_AUTO_EXPIRY_DELAY).between(*rest_window),
+                else_=(Booking.dateCreated + constants.BOOKINGS_AUTO_EXPIRY_DELAY).between(*rest_window),
             ),
         )
         .order_by(Booking.userId)

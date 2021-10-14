@@ -13,6 +13,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.offers import validation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.payments.models import DepositType
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import constants as users_constants
@@ -26,7 +27,6 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
-from pcapi.models.deposit import DepositType
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date

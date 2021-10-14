@@ -23,7 +23,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class CancelExpiredBookingsTest:
     @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
     @patch(
-        "pcapi.core.bookings.repository.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE",
+        "pcapi.core.bookings.constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE",
         date.today() - timedelta(days=20),
     )
     def test_should_cancel_old_thing_that_can_expire_booking(self, app) -> None:

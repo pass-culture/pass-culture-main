@@ -1271,7 +1271,7 @@ class FindSoonToBeExpiredBookingsTest:
 
     @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
     @patch(
-        "pcapi.core.bookings.repository.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE",
+        "pcapi.core.bookings.constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE",
         date.today() - timedelta(days=10),
     )
     @pytest.mark.usefixtures("db_session")
@@ -1304,7 +1304,7 @@ class FindSoonToBeExpiredBookingsTest:
     # TODO(yacine) this test should be removed 20 days after enabling FF ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
     @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
     @patch(
-        "pcapi.core.bookings.repository.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE",
+        "pcapi.core.bookings.constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE",
         date.today() - timedelta(days=10),
     )
     @pytest.mark.usefixtures("db_session")
@@ -1589,7 +1589,7 @@ class FindBookingsByFraudulentUsersTest:
 
 
 class FindExpiringBookingsTest:
-    @patch("pcapi.core.bookings.repository.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE", datetime(2021, 8, 5))
+    @patch("pcapi.core.bookings.constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE", datetime(2021, 8, 5))
     @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
     @pytest.mark.usefixtures("db_session")
     def test_find_expired_bookings_before_and_after_enabling_feature_flag(self):

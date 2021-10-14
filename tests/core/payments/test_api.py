@@ -4,14 +4,14 @@ from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
 
-from pcapi.core.bookings import conf
 from pcapi.core.payments import api
+from pcapi.core.payments import conf as payments_conf
 from pcapi.core.payments import exceptions
 from pcapi.core.payments import factories as payments_factories
+from pcapi.core.payments.models import Deposit
+from pcapi.core.payments.models import DepositType
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
-from pcapi.models.deposit import Deposit
-from pcapi.models.deposit import DepositType
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
@@ -48,8 +48,8 @@ class CreateDepositTest:
 
         # Then
         assert deposit.type == DepositType.GRANT_18
-        assert deposit.version == conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
-        assert deposit.amount == conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
+        assert deposit.version == payments_conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
+        assert deposit.amount == payments_conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
         assert deposit.user.id == beneficiary.id
         assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
 
@@ -65,8 +65,8 @@ class CreateDepositTest:
 
         # Then
         assert deposit.type == DepositType.GRANT_18
-        assert deposit.version == conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
-        assert deposit.amount == conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
+        assert deposit.version == payments_conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
+        assert deposit.amount == payments_conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
         assert deposit.user.id == beneficiary.id
         assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
 
@@ -82,8 +82,8 @@ class CreateDepositTest:
 
         # Then
         assert deposit.type == DepositType.GRANT_18
-        assert deposit.version == conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
-        assert deposit.amount == conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
+        assert deposit.version == payments_conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
+        assert deposit.amount == payments_conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
         assert deposit.user.id == beneficiary.id
         assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
 
@@ -99,8 +99,8 @@ class CreateDepositTest:
 
         # Then
         assert deposit.type == DepositType.GRANT_18
-        assert deposit.version == conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
-        assert deposit.amount == conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
+        assert deposit.version == payments_conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
+        assert deposit.amount == payments_conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
         assert deposit.user.id == beneficiary.id
         assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
 
@@ -116,8 +116,8 @@ class CreateDepositTest:
 
         # Then
         assert deposit.type == DepositType.GRANT_18
-        assert deposit.version == conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
-        assert deposit.amount == conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
+        assert deposit.version == payments_conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
+        assert deposit.amount == payments_conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
         assert deposit.user.id == beneficiary.id
         assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
 
@@ -131,8 +131,8 @@ class CreateDepositTest:
 
         # Then
         assert deposit.type == DepositType.GRANT_18
-        assert deposit.version == conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
-        assert deposit.amount == conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
+        assert deposit.version == payments_conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
+        assert deposit.amount == payments_conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
         assert deposit.user.id == beneficiary.id
         assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
 

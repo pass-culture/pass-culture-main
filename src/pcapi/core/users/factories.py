@@ -7,7 +7,8 @@ from dateutil.relativedelta import relativedelta
 import factory
 from factory.declarations import LazyAttribute
 
-import pcapi.core.bookings.conf as bookings_conf
+import pcapi.core.payments.conf as payment_conf
+from pcapi.core.payments.models import DepositType
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.models
 from pcapi.models import BeneficiaryImport
@@ -15,7 +16,6 @@ from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import user_session
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.models.deposit import DepositType
 from pcapi.utils import crypto
 
 from . import constants
@@ -288,8 +288,8 @@ class DepositGrantFactory(BaseFactory):
     def _create(cls, model_class, *args, **kwargs):
         if "amount" in kwargs:
             raise ValueError("You cannot directly set deposit amount: set version instead")
-        version = kwargs.get("version", bookings_conf.get_current_deposit_version_for_type(kwargs["type"]))
-        deposit_configuration = bookings_conf.get_limit_configuration_for_type_and_version(kwargs["type"], version)
+        version = kwargs.get("version", payment_conf.get_current_deposit_version_for_type(kwargs["type"]))
+        deposit_configuration = payment_conf.get_limit_configuration_for_type_and_version(kwargs["type"], version)
         amount = deposit_configuration.TOTAL_CAP
         kwargs["version"] = version
         kwargs["amount"] = amount

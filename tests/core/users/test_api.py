@@ -13,13 +13,13 @@ import requests_mock
 
 from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.bookings.conf import GRANT_18_VALIDITY_IN_YEARS
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.payments.conf import GRANT_18_VALIDITY_IN_YEARS
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api

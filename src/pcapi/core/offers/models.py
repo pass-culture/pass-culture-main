@@ -33,7 +33,7 @@ from sqlalchemy.event import listens_for
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
-import pcapi.core.bookings.conf as bookings_conf
+import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import subcategories
 from pcapi.models.db import Model
 from pcapi.models.db import db
@@ -134,7 +134,7 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
     def isEventDeletable(self):
         if not self.beginningDatetime:
             return True
-        limit_date_for_stock_deletion = self.beginningDatetime + bookings_conf.AUTO_USE_AFTER_EVENT_TIME_DELAY
+        limit_date_for_stock_deletion = self.beginningDatetime + bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
         return limit_date_for_stock_deletion >= datetime.utcnow()
 
     @property

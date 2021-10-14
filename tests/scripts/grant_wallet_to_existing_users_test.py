@@ -2,9 +2,9 @@ from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 
+from pcapi.core.payments.models import Deposit
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-from pcapi.models import Deposit
 from pcapi.repository import repository
 from pcapi.scripts.grant_wallet_to_existing_users import grant_wallet_to_existing_users
 

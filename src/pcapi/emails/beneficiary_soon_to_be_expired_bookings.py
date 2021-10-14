@@ -1,7 +1,7 @@
 from typing import List
 from typing import Tuple
 
-from pcapi.core.bookings.conf import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE
+from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE
 from pcapi.core.categories import subcategories
 from pcapi.core.users.models import User
 from pcapi.models import Booking

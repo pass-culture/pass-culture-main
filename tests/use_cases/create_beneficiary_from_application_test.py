@@ -7,6 +7,7 @@ import pytest
 
 from pcapi.connectors.beneficiaries import jouve_backend
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.payments.models import Deposit
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
@@ -17,7 +18,6 @@ from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsAD
 from pcapi.models import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.db import db
-from pcapi.models.deposit import Deposit
 from pcapi.notifications.push import testing as push_testing
 from pcapi.use_cases.create_beneficiary_from_application import create_beneficiary_from_application
 

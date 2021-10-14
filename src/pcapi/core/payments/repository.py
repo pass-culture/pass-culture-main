@@ -1,7 +1,7 @@
-from pcapi.models import Deposit
+from pcapi.core.payments.models import Deposit
+from pcapi.core.payments.models import DepositType
 from pcapi.models import User
 from pcapi.models import db
-from pcapi.models.deposit import DepositType
 
 
 def does_deposit_exists_for_beneficiary_and_type(beneficiary: User, deposit_type: DepositType):

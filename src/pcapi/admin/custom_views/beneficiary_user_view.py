@@ -16,13 +16,13 @@ from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.admin.custom_views.mixins.resend_validation_email_mixin import ResendValidationEmailMixin
 from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
+from pcapi.core.payments.models import Deposit
+from pcapi.core.payments.models import DepositType
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.user_emails import send_activation_email
-from pcapi.models import Deposit
-from pcapi.models.deposit import DepositType
 from pcapi.utils.mailing import build_pc_webapp_reset_password_link
 
 
