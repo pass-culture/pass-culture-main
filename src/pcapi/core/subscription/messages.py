@@ -45,3 +45,12 @@ def on_dms_application_received(user: users_models.User) -> None:
         popOverIcon=models.PopOverIcon.FILE,
     )
     repository.save(message)
+
+
+def on_dms_application_refused(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Ton dossier déposé sur le site Démarches-Simplifiées a été rejeté. Tu n’es malheureusement pas éligible au pass culture.",
+        popOverIcon=models.PopOverIcon.WARNING,
+    )
+    repository.save(message)

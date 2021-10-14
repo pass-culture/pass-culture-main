@@ -58,6 +58,8 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
 
     if form.state == api_demarches_simplifiees.GraphQLApplicationStates.draft:
         subscription_messages.on_dms_application_received(user)
+    if form.state == api_demarches_simplifiees.GraphQLApplicationStates.refused:
+        subscription_messages.on_dms_application_refused(user)
     if not user.hasCompletedIdCheck:
         user.hasCompletedIdCheck = True
         repository.save(user)
