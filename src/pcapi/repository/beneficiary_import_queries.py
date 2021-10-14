@@ -31,7 +31,11 @@ def get_existing_applications_id(procedure_id: int) -> set[int]:
     return {
         beneficiary_import.applicationId
         for beneficiary_import in BeneficiaryImport.query.join(BeneficiaryImportStatus)
-        .filter(BeneficiaryImportStatus.status.in_([ImportStatus.CREATED, ImportStatus.REJECTED]))
+        .filter(
+            BeneficiaryImportStatus.status.in_(
+                [ImportStatus.CREATED, ImportStatus.REJECTED, ImportStatus.DUPLICATE, ImportStatus.ERROR]
+            )
+        )
         .options(load_only(BeneficiaryImport.applicationId))
         .filter(BeneficiaryImport.sourceId == procedure_id)
         .all()

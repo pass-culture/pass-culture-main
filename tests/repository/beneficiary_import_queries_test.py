@@ -9,6 +9,7 @@ from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import ImportStatus
 from pcapi.repository.beneficiary_import_queries import find_applications_ids_to_retry
+from pcapi.repository.beneficiary_import_queries import get_existing_applications_id
 from pcapi.repository.beneficiary_import_queries import is_already_imported
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
 
@@ -196,3 +197,55 @@ class FindApplicationsIdsToRetryTest:
 
         # then
         assert not ids
+
+
+@pytest.mark.usefixtures("db_session")
+class GetExistingApplicationIdTest:
+    def test_existing_application_id(self):
+        procedure_id = 123
+
+        draft = users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__sourceId=procedure_id,
+            status=ImportStatus.DRAFT,
+        )
+
+        ongoing = users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__sourceId=procedure_id,
+            status=ImportStatus.ONGOING,
+        )
+        duplicate = users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__sourceId=procedure_id,
+            status=ImportStatus.DUPLICATE,
+        )
+        error = users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__sourceId=procedure_id,
+            status=ImportStatus.ERROR,
+        )
+        created = users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__sourceId=procedure_id,
+            status=ImportStatus.CREATED,
+        )
+
+        rejected = users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__sourceId=procedure_id,
+            status=ImportStatus.REJECTED,
+        )
+        retry = users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__sourceId=procedure_id,
+            status=ImportStatus.RETRY,
+        )
+        without_continuation = users_factories.BeneficiaryImportStatusFactory(
+            beneficiaryImport__sourceId=procedure_id,
+            status=ImportStatus.WITHOUT_CONTINUATION,
+        )
+
+        application_ids = get_existing_applications_id(procedure_id)
+        assert draft.beneficiaryImport.applicationId not in application_ids
+        assert ongoing.beneficiaryImport.applicationId not in application_ids
+        assert without_continuation.beneficiaryImport.applicationId not in application_ids
+        assert retry.beneficiaryImport.applicationId not in application_ids
+
+        assert rejected.beneficiaryImport.applicationId in application_ids
+        assert error.beneficiaryImport.applicationId in application_ids
+        assert created.beneficiaryImport.applicationId in application_ids
+        assert duplicate.beneficiaryImport.applicationId in application_ids
