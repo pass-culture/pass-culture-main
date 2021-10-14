@@ -14,8 +14,10 @@ from pcapi.utils.date import format_into_utc_date
 
 from . import BaseModel
 
-
 # TODO(xordoquy): move common models with offers API
+from .offers import get_serialized_offer_category
+
+
 class Coordinates(BaseModel):
     latitude: Optional[Decimal]
     longitude: Optional[Decimal]
@@ -61,11 +63,7 @@ class FavoriteOfferResponse(BaseModel):
 
     @classmethod
     def from_orm(cls, offer):  # type: ignore
-        offer.category = {
-            "name": offer.subcategory.category_id,
-            "label": offer.subcategory.app_label,
-            "categoryType": offer.category_type,
-        }
+        offer.category = get_serialized_offer_category(offer)
         offer.coordinates = {"latitude": offer.venue.latitude, "longitude": offer.venue.longitude}
         offer.expenseDomains = get_expense_domains(offer)
         return super().from_orm(offer)
