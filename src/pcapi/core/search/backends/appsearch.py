@@ -48,6 +48,7 @@ EDUCATIONAL_OFFERS_ENGINE_NAME = "offers-educational"
 OFFERS_SEARCH_PRECISION = 3
 OFFERS_SCHEMA = {
     "artist": "text",
+    "category": "text",
     "date_created": "date",
     "dates": "date",
     "description": "text",
@@ -57,6 +58,7 @@ OFFERS_SCHEMA = {
     "is_educational": "number",
     "is_event": "number",
     "is_thing": "number",
+    "label": "text",
     "name": "text",
     # "id": "number",  must not be provided when creating the schema.
     "prices": "number",
@@ -432,6 +434,7 @@ class AppSearchBackend(base.SearchBackend):
         return omit_empty_values(
             {
                 "artist": artist.strip() or None,
+                "category": offer.offer_category_name_for_app,
                 "date_created": offer.dateCreated,  # used only to rank results
                 "dates": dates,
                 "description": remove_stopwords(offer.description or ""),
@@ -443,6 +446,7 @@ class AppSearchBackend(base.SearchBackend):
                 "is_thing": to_app_search_bool(offer.isThing),
                 "name": offer.name,
                 "id": offer.id,
+                "label": offer.subcategory.app_label,
                 "prices": [int(stock.price * 100) for stock in stocks],
                 "ranking_weight": offer.rankingWeight or 0,
                 "search_group_name": offer.subcategory.search_group_name,

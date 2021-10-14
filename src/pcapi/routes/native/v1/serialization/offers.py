@@ -21,7 +21,6 @@ from pcapi.domain.music_types import MUSIC_SUB_TYPES_DICT
 from pcapi.domain.music_types import MUSIC_TYPES_DICT
 from pcapi.domain.show_types import SHOW_SUB_TYPES_DICT
 from pcapi.domain.show_types import SHOW_TYPES_DICT
-from pcapi.models.offer_type import CATEGORIES_LABEL_DICT
 from pcapi.models.offer_type import CategoryNameEnum
 from pcapi.models.offer_type import CategoryType
 from pcapi.routes.native.utils import convert_to_cent
@@ -178,7 +177,7 @@ class OfferImageResponse(BaseModel):
 # TODO: remove when native app is force updated to v156+
 def get_serialized_offer_category(offer: Offer) -> dict:
     return {
-        "name": CATEGORIES_LABEL_DICT.get(offer.subcategory.app_label),
+        "name": offer.offer_category_name_for_app,
         "label": offer.subcategory.app_label,
         "categoryType": offer.category_type,
     }

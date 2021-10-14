@@ -40,6 +40,7 @@ from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
+from pcapi.models.offer_type import CATEGORIES_LABEL_DICT
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
@@ -474,6 +475,11 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
     @property
     def bookableStocks(self) -> list[Stock]:
         return [stock for stock in self.stocks if stock.isBookable]
+
+    # TODO(fseguin, 2021-10-14: remove after force updating native app to 156+)
+    @property
+    def offer_category_name_for_app(self) -> str:
+        return CATEGORIES_LABEL_DICT.get(self.subcategory.app_label)
 
     @property
     def subcategory(self) -> subcategories.Subcategory:
