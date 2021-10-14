@@ -127,6 +127,8 @@ def process_parsing_error(exception: DMSParsingError, procedure_id: int, applica
     user_emails.send_dms_wrong_values_emails(
         exception.user_email, exception.errors.get("postal_code"), exception.errors.get("id_piece_number")
     )
+    if user:
+        subscription_messages.on_dms_application_parsing_errors(user, list(exception.errors.keys()))
     errors = ",".join([f"'{key}' ({value})" for key, value in sorted(exception.errors.items())])
     error_detail = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
     # keep a compatibility with BeneficiaryImport table

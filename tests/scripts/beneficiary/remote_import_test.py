@@ -12,7 +12,7 @@ from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.subscription import models as subscription_models
+import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
@@ -1239,6 +1239,13 @@ class GraphQLSourceProcessApplicationTest:
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3124925
+        assert len(user.subscriptionMessages) == 1
+        assert user.subscriptionMessages[0]
+        assert (
+            user.subscriptionMessages[0].userMessage
+            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car ‘ta pièce d'identité, ton code postal’ ne sont pas valides."
+        )
+        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
 
     @patch.object(DMSGraphQLClient, "get_applications_with_details")
     def test_avoid_reimporting_already_imported_user(self, get_applications_with_details):

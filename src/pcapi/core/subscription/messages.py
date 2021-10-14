@@ -117,3 +117,47 @@ def on_duplicate_user(user: users_models.User) -> None:
         callToActionIcon=models.CallToActionIcon.EMAIL,
     )
     repository.save(message)
+
+
+def _generate_form_field_error(error_text_singular: str, error_text_plural: str, error_fields: list[str]) -> str:
+    french_field_name = {
+        "id_piece_number": "ta pièce d'identité",
+        "postal_code": "ton code postal",
+    }
+
+    user_message = error_text_singular.format(
+        formatted_error_fields=french_field_name.get(error_fields[0], error_fields[0])
+    )
+    if len(error_fields) > 1:
+        field_text = ", ".join(french_field_name.get(field, field) for field in error_fields)
+        user_message = error_text_plural.format(formatted_error_fields=field_text)
+
+    return user_message
+
+
+def on_dms_application_parsing_errors_but_updatables_values(user: users_models.User, error_fields: list[str]) -> None:
+    user_message = _generate_form_field_error(
+        "Il semblerait que ‘{formatted_error_fields}’ soit erroné. Tu peux te rendre sur le site Démarche-simplifiées pour le rectifier.",
+        "Il semblerait que ‘{formatted_error_fields}’ soient erronés. Tu peux te rendre sur le site Démarche-simplifiées pour les rectifier.",
+        error_fields,
+    )
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage=user_message,
+        popOverIcon=models.PopOverIcon.WARNING,
+    )
+    repository.save(message)
+
+
+def on_dms_application_parsing_errors(user: users_models.User, error_fields: list[str]) -> None:
+    user_message = _generate_form_field_error(
+        "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car ‘{formatted_error_fields}’ n’est pas valide.",
+        "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car ‘{formatted_error_fields}’ ne sont pas valides.",
+        error_fields,
+    )
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage=user_message,
+        popOverIcon=models.PopOverIcon.WARNING,
+    )
+    repository.save(message)
