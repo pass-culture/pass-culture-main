@@ -149,7 +149,7 @@ def test_request_reset_password_for_existing_email(client):
     assert mails_testing.outbox[0].sent_data["Vars"]["native_app_link"]
 
 
-@patch("pcapi.domain.user_emails.send_reset_password_email_to_native_app_user")
+@patch("pcapi.core.mails.transactional.users.send_reset_password_email_to_native_app_user")
 def test_request_reset_password_for_inactive_account(mock_send_reset_password_email_to_native_app_user, client):
     email = "existing_user@example.com"
     data = {"email": email}
@@ -161,7 +161,7 @@ def test_request_reset_password_for_inactive_account(mock_send_reset_password_em
     mock_send_reset_password_email_to_native_app_user.assert_not_called()
 
 
-@patch("pcapi.domain.user_emails.send_reset_password_email_to_native_app_user")
+@patch("pcapi.core.mails.transactional.users.send_reset_password_email_to_native_app_user")
 def test_request_reset_password_with_mail_service_exception(mock_send_reset_password_email_to_native_app_user, client):
     email = "existing_user@example.com"
     data = {"email": email}

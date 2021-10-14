@@ -11,6 +11,7 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional import users as user_emails
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
 from pcapi.core.offers.factories import OfferFactory
@@ -35,9 +36,7 @@ from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_off
 from pcapi.domain.user_emails import send_offerer_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_pro_user_validation_email
 from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_subscription
-from pcapi.domain.user_emails import send_reset_password_email_to_native_app_user
 from pcapi.domain.user_emails import send_reset_password_email_to_pro
-from pcapi.domain.user_emails import send_reset_password_email_to_user
 from pcapi.domain.user_emails import send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_warning_to_user_after_pro_booking_cancellation
@@ -301,7 +300,8 @@ class SendResetPasswordProEmailTest:
 @pytest.mark.usefixtures("db_session")
 class SendResetPasswordUserEmailTest:
     @patch(
-        "pcapi.domain.user_emails.retrieve_data_for_reset_password_user_email", return_value={"MJ-TemplateID": 912168}
+        "pcapi.core.mails.transactional.users.user_reset_password_email.retrieve_data_for_reset_password_user_email",
+        return_value={"MJ-TemplateID": 912168},
     )
     def when_feature_send_emails_enabled_sends_a_reset_password_email_to_user(
         self, mock_retrieve_data_for_reset_password_user_email, app
@@ -310,7 +310,7 @@ class SendResetPasswordUserEmailTest:
         user = users_factories.UserFactory(email="bobby@example.com")
 
         # when
-        send_reset_password_email_to_user(user)
+        user_emails.send_reset_password_email_to_user(user)
 
         # then
         mock_retrieve_data_for_reset_password_user_email.assert_called_once_with(user, user.tokens[0])
@@ -318,7 +318,7 @@ class SendResetPasswordUserEmailTest:
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 912168
 
     @patch(
-        "pcapi.domain.user_emails.retrieve_data_for_reset_password_native_app_email",
+        "pcapi.core.mails.transactional.users.user_reset_password_email.retrieve_data_for_reset_password_native_app_email",
         return_value={"MJ-TemplateID": 12345},
     )
     def when_feature_send_emails_enabled_sends_a_reset_password_email_to_native_app_user(
@@ -328,7 +328,7 @@ class SendResetPasswordUserEmailTest:
         user = users_factories.UserFactory(email="bobby@example.com")
 
         # when
-        send_reset_password_email_to_native_app_user(user)
+        user_emails.send_reset_password_email_to_native_app_user(user)
 
         # then
         retrieve_data_for_reset_password_native_app_email.assert_called_once_with(user, user.tokens[0])

@@ -29,6 +29,7 @@ from pcapi.connectors.beneficiaries.id_check_middleware import ask_for_identity_
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.mails.transactional import users as user_emails
 from pcapi.core.mails.transactional.users.email_address_change import send_confirmation_email_change_email
 from pcapi.core.mails.transactional.users.email_address_change import send_information_email_change_email
 from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
@@ -54,7 +55,7 @@ from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.core.users.utils import get_object
 from pcapi.core.users.utils import sanitize_email
 from pcapi.core.users.utils import store_object
-from pcapi.domain import user_emails
+from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.user_activation import create_beneficiary_from_application
@@ -655,7 +656,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:
     repository.save(*objects_to_save)
 
     try:
-        user_emails.send_pro_user_validation_email(new_pro_user)
+        old_user_emails.send_pro_user_validation_email(new_pro_user)
     except MailServiceException:
         logger.exception("Could not send validation email when creating pro user=%s", new_pro_user.id)
 
@@ -899,7 +900,7 @@ def verify_identity_document_informations(image_storage_path: str) -> None:
     email, image = _get_identity_document_informations(image_storage_path)
     valid, code = ask_for_identity_document_verification(email, image)
     if not valid:
-        user_emails.send_document_verification_error_email(email, code)
+        old_user_emails.send_document_verification_error_email(email, code)
         fraud_api.handle_document_validation_error(email, code)
     delete_object(image_storage_path)
 

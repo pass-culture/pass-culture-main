@@ -47,8 +47,6 @@ from pcapi.emails.user_document_validation import build_data_for_document_verifi
 from pcapi.emails.user_notification_after_stock_update import (
     retrieve_data_to_warn_user_after_stock_update_affecting_booking,
 )
-from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_native_app_email
-from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_user_email
 from pcapi.emails.user_warning_after_pro_booking_cancellation import (
     retrieve_data_to_warn_user_after_pro_booking_cancellation,
 )
@@ -102,18 +100,6 @@ def send_offerer_driven_cancellation_email_to_offerer(booking: Booking) -> None:
 def send_warning_to_user_after_pro_booking_cancellation(booking: Booking) -> None:
     data = retrieve_data_to_warn_user_after_pro_booking_cancellation(booking)
     mails.send(recipients=[booking.email], data=data)
-
-
-def send_reset_password_email_to_user(user: User) -> bool:
-    token = users_api.create_reset_password_token(user)
-    data = retrieve_data_for_reset_password_user_email(user, token)
-    return mails.send(recipients=[user.email], data=data)
-
-
-def send_reset_password_email_to_native_app_user(user: User) -> bool:
-    token = users_api.create_reset_password_token(user)
-    data = retrieve_data_for_reset_password_native_app_email(user, token)
-    return mails.send(recipients=[user.email], data=data)
 
 
 def send_reset_password_email_to_pro(user: User) -> None:

@@ -2,9 +2,8 @@ from datetime import datetime
 
 import pytest
 
+from pcapi.core.mails.transactional import users as user_emails
 from pcapi.core.users import factories as users_factories
-from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_native_app_email
-from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_user_email
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.repository import repository
@@ -22,7 +21,9 @@ class MakeUserResetPasswordEmailDataTest:
         repository.save(user_offerer)
 
         # When
-        reset_password_email_data = retrieve_data_for_reset_password_user_email(user=user, token=user.tokens[0])
+        reset_password_email_data = user_emails.retrieve_data_for_reset_password_user_email(
+            user=user, token=user.tokens[0]
+        )
 
         # Then
         assert reset_password_email_data == {
@@ -41,7 +42,7 @@ class NativeAppUserResetPasswordEmailDataTest:
         )
         users_factories.ResetPasswordToken.build(user=user, value="abc", expirationDate=datetime(2020, 1, 1))
         # When
-        reset_password_email_data = retrieve_data_for_reset_password_native_app_email(user, user.tokens[0])
+        reset_password_email_data = user_emails.retrieve_data_for_reset_password_native_app_email(user, user.tokens[0])
 
         # Then
         assert reset_password_email_data == {
