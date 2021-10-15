@@ -135,6 +135,22 @@ describe('offerDetails - Edition', () => {
           canBeEducational: true,
           isSelectable: true,
         },
+        {
+          id: 'ID2',
+          name: 'Musique SubCat 1',
+          categoryId: 'ID',
+          isEvent: false,
+          isDigital: false,
+          isDigitalDeposit: false,
+          isPhysicalDeposit: true,
+          proLabel: 'Musique SubCat 1',
+          appLabel: 'Musique SubCat 1',
+          conditionalFields: ['author', 'musicType', 'performer'],
+          canExpire: true,
+          canBeDuo: false,
+          canBeEducational: true,
+          isSelectable: true,
+        },
       ],
     }
 
@@ -882,7 +898,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
-        subcategoryId: 'ID',
+        subcategoryId: 'ID2',
         name: 'My edited offer',
         description: 'Offer description',
         venue: editedOfferVenue,

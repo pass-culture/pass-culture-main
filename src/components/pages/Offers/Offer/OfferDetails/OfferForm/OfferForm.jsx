@@ -53,6 +53,9 @@ const getOfferConditionalFields = ({
 
   if (offerSubCategory?.isEvent) {
     offerConditionalFields.push('durationMinutes')
+  }
+
+  if (offerSubCategory?.canBeDuo) {
     offerConditionalFields.push('isDuo')
   }
 

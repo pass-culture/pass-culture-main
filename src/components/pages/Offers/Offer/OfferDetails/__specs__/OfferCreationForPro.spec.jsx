@@ -1359,20 +1359,6 @@ describe('offerDetails - Creation - pro user', () => {
           expect(durationInput).toBeInTheDocument()
         })
 
-        it('should display a radio input "Offre duo" checked by default', async () => {
-          // Given
-          await renderOffers(props, store)
-
-          // When
-          setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          setOfferValues({ subcategoryId: 'CONCERT' })
-
-          // Then
-          const duoInput = await getOfferInputForField('isDuo')
-          expect(duoInput).toBeInTheDocument()
-          expect(duoInput).toBeChecked()
-        })
-
         it('should not remind withdrawal modalities', async () => {
           // Given
           await renderOffers(props, store)
@@ -1407,7 +1393,7 @@ describe('offerDetails - Creation - pro user', () => {
           expect(noTypeInput).toBeChecked()
         })
 
-        it('should display a radio input "Offre duo" checked by default when offer is event', async () => {
+        it('should display a radio input "Offre duo" checked by default when subcategory can be duo', async () => {
           // Given
           await renderOffers(props, store)
 
@@ -1425,6 +1411,19 @@ describe('offerDetails - Creation - pro user', () => {
           const noTypeInput = screen.getByLabelText('Aucune')
           expect(noTypeInput).toBeInTheDocument()
           expect(noTypeInput).not.toBeChecked()
+        })
+
+        it('should not display a radio input "Offre duo" when subcategory cannot be duo', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+          await setOfferValues({ subcategoryId: 'CINE_VENTE_DISTANCE' })
+
+          // Then
+          const duoInput = screen.queryByLabelText('Accepter les réservations "duo"', { exact: false })
+          expect(duoInput).not.toBeInTheDocument()
         })
       })
 
