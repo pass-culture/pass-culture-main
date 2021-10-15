@@ -3,10 +3,10 @@ from unittest.mock import patch
 import freezegun
 import pytest
 
+from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
 from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
 from pcapi.core.subscription import models as subscription_models
-from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
@@ -17,16 +17,12 @@ from tests.scripts.beneficiary.fixture import make_single_application
 
 @pytest.mark.usefixtures("db_session")
 class DmsWebhookApplicationTest:
-
-    TOKEN = "a-simple-token"
-
     def test_dms_request_no_token(self, client):
         response = client.post("/webhooks/dms/application_status")
         assert response.status_code == 403
 
     def test_dms_request_no_params_with_token(self, client):
-        with override_settings(DMS_WEBHOOK_TOKEN=self.TOKEN):
-            response = client.post(f"/webhooks/dms/application_status?token={self.TOKEN}")
+        response = client.post(f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}")
 
         assert response.status_code == 400
 
@@ -39,12 +35,11 @@ class DmsWebhookApplicationTest:
             "state": "en_construction",
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
-        with override_settings(DMS_WEBHOOK_TOKEN=self.TOKEN):
-            response = client.post(
-                f"/webhooks/dms/application_status?token={self.TOKEN}",
-                form=form_data,
-                headers={"Content-Type": "application/x-www-form-urlencoded"},
-            )
+        response = client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
 
         assert response.status_code == 204
         assert execute_query.call_count == 1
@@ -67,12 +62,11 @@ class DmsWebhookApplicationTest:
             "state": dms_status.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
-        with override_settings(DMS_WEBHOOK_TOKEN=self.TOKEN):
-            response = client.post(
-                f"/webhooks/dms/application_status?token={self.TOKEN}",
-                form=form_data,
-                headers={"Content-Type": "application/x-www-form-urlencoded"},
-            )
+        response = client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
 
         assert response.status_code == 204
         assert execute_query.call_count == 1
@@ -101,12 +95,11 @@ class DmsWebhookApplicationTest:
             "state": GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
-        with override_settings(DMS_WEBHOOK_TOKEN=self.TOKEN):
-            client.post(
-                f"/webhooks/dms/application_status?token={self.TOKEN}",
-                form=form_data,
-                headers={"Content-Type": "application/x-www-form-urlencoded"},
-            )
+        client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
 
         assert len(user.subscriptionMessages) == 1
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.FILE
@@ -126,12 +119,11 @@ class DmsWebhookApplicationTest:
             "state": GraphQLApplicationStates.refused.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
-        with override_settings(DMS_WEBHOOK_TOKEN=self.TOKEN):
-            client.post(
-                f"/webhooks/dms/application_status?token={self.TOKEN}",
-                form=form_data,
-                headers={"Content-Type": "application/x-www-form-urlencoded"},
-            )
+        client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
 
         assert len(user.subscriptionMessages) == 1
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
