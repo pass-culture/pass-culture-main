@@ -27,5 +27,6 @@ class DummyBackend(AlgoliaBackend):
     """
 
     def __init__(self):  # pylint: disable=super-init-not-called
-        self.algolia_client = FakeClient()
+        self.algolia_offers_client = FakeClient()
+        self.algolia_venues_client = FakeClient()
         self.redis_client = current_app.redis_client

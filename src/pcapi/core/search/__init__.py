@@ -174,10 +174,7 @@ def _index_venues_in_queue(backend: base.SearchBackend, from_error_queue: bool =
     non permanent ones.
     """
     chunk_size = settings.REDIS_VENUE_IDS_CHUNK_SIZE
-    if from_error_queue:
-        venue_ids = backend.pop_venue_ids_from_error_queue(count=chunk_size)
-    else:
-        venue_ids = backend.pop_venue_ids_from_queue(count=chunk_size)
+    venue_ids = backend.pop_venue_ids_from_queue(count=chunk_size, from_error_queue=from_error_queue)
 
     if not venue_ids:
         return

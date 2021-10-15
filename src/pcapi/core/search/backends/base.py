@@ -58,10 +58,7 @@ class SearchBackend:
     def unindex_all_venues(self) -> None:
         raise NotImplementedError()
 
-    def pop_venue_ids_from_error_queue(self, count: int) -> set[int]:
-        raise NotImplementedError()
-
-    def pop_venue_ids_from_queue(self, count: int) -> set[int]:
+    def pop_venue_ids_from_queue(self, count: int, from_queue: bool = False) -> set[int]:
         raise NotImplementedError()
 
     @classmethod

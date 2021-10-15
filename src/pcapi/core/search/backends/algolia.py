@@ -15,15 +15,19 @@ from pcapi.utils.human_ids import humanize
 
 logger = logging.getLogger(__name__)
 
+# FIXME (dbaty, 2021-10-15): these are all lists, which are less
+# usable for us than sets. See also `redis_lpop()` below, which we
+# would not have to implement if we were using sets (because `SPOP`
+# does allow to pop multiple items at once with our Redis version).
 REDIS_LIST_OFFER_IDS_NAME = "offer_ids"
 REDIS_LIST_OFFER_IDS_IN_ERROR_NAME = "offer_ids_in_error"
 REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME = "venue_ids_for_offers"
-REDIS_LIST_VENUE_IDS_NAME = "venue_ids_new"
-REDIS_LIST_VENUE_IDS_IN_ERROR_NAME = "venue_ids_in_error"
+REDIS_VENUE_IDS_TO_INDEX = "search:algolia:venue-ids-to-index"
+REDIS_VENUE_IDS_IN_ERROR_TO_INDEX = "search:algolia:venue-ids-in-error-to-index"
 REDIS_HASHMAP_INDEXED_OFFERS_NAME = "indexed_offers"
 
-DEFAULT_LONGITUDE_FOR_NUMERIC_OFFER = 2.409289
-DEFAULT_LATITUDE_FOR_NUMERIC_OFFER = 47.158459
+DEFAULT_LONGITUDE = 2.409289
+DEFAULT_LATITUDE = 47.158459
 
 
 class AlgoliaBackend(base.SearchBackend):
@@ -32,7 +36,8 @@ class AlgoliaBackend(base.SearchBackend):
         client = algoliasearch.search_client.SearchClient.create(
             app_id=settings.ALGOLIA_APPLICATION_ID, api_key=settings.ALGOLIA_API_KEY
         )
-        self.algolia_client = client.init_index(settings.ALGOLIA_OFFERS_INDEX_NAME)
+        self.algolia_offers_client = client.init_index(settings.ALGOLIA_OFFERS_INDEX_NAME)
+        self.algolia_venues_client = client.init_index(settings.ALGOLIA_VENUES_INDEX_NAME)
         self.redis_client = current_app.redis_client
 
     def enqueue_offer_ids(self, offer_ids: Iterable[int]) -> None:
@@ -55,18 +60,26 @@ class AlgoliaBackend(base.SearchBackend):
                 raise
             logger.exception("Could not add offers to error queue", extra={"offers": offer_ids})
 
-    def enqueue_venue_ids_in_error(self, venue_ids: Iterable[int]) -> None:
-        # Algolia won't be used for venues
-        pass
-
     def enqueue_venue_ids(self, venue_ids: Iterable[int]) -> None:
-        # Algolia won't be used for venues
-        pass
+        return self._enqueue_venue_ids(venue_ids, REDIS_VENUE_IDS_TO_INDEX)
+
+    def enqueue_venue_ids_in_error(self, venue_ids: Iterable[int]) -> None:
+        return self._enqueue_venue_ids(venue_ids, REDIS_VENUE_IDS_IN_ERROR_TO_INDEX)
 
     def enqueue_venue_ids_for_offers(self, venue_ids: Iterable[int]) -> None:
-        return self._enqueue_venue_ids(venue_ids, REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME)
+        return self._enqueue_venue_ids_legacy_for_list(venue_ids, REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME)
 
     def _enqueue_venue_ids(self, venue_ids: Iterable[int], queue_name: str) -> None:
+        if not venue_ids:
+            return
+        try:
+            self.redis_client.sadd(queue_name, *venue_ids)
+        except redis.exceptions.RedisError:
+            logger.exception(
+                "Could not add venues to indexation queue", extra={"venues": venue_ids, "queue": queue_name}
+            )
+
+    def _enqueue_venue_ids_legacy_for_list(self, venue_ids: Iterable[int], queue_name: str) -> None:
         if not venue_ids:
             return
         try:
@@ -86,11 +99,17 @@ class AlgoliaBackend(base.SearchBackend):
 
         return self.redis_lpop(redis_list_name, count)
 
-    def pop_venue_ids_from_error_queue(self, count: int) -> set[int]:
-        return self.redis_lpop(REDIS_LIST_VENUE_IDS_IN_ERROR_NAME, count)
-
-    def pop_venue_ids_from_queue(self, count: int) -> set[int]:
-        return self.redis_lpop(REDIS_LIST_VENUE_IDS_NAME, count)
+    def pop_venue_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
+        if from_error_queue:
+            redis_set_name = REDIS_VENUE_IDS_IN_ERROR_TO_INDEX
+        else:
+            redis_set_name = REDIS_VENUE_IDS_TO_INDEX
+        try:
+            offer_ids = self.redis_client.spop(redis_set_name, count)
+            return {int(offer_id) for offer_id in offer_ids}  # str -> int
+        except redis.exceptions.RedisError:
+            logger.exception("Could not pop offer ids to index from queue", extra={"queue": redis_set_name})
+            return set()
 
     def pop_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
         return self.redis_lpop(REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME, count)
@@ -125,7 +144,7 @@ class AlgoliaBackend(base.SearchBackend):
         if not offers:
             return
         objects = [self.serialize_offer(offer) for offer in offers]
-        self.algolia_client.save_objects(objects)
+        self.algolia_offers_client.save_objects(objects)
         try:
             # We used to store a summary of each offer, which is why
             # we used hashmap and not a set. But since we don't need
@@ -144,14 +163,15 @@ class AlgoliaBackend(base.SearchBackend):
             pipeline.reset()
 
     def index_venues(self, venues: Iterable[offerers_models.Venue]) -> None:
-        # No need to implement venue indexing now since the Algolia backend
-        # will be removed soon.
-        pass
+        if not venues:
+            return
+        objects = [self.serialize_venue(venue) for venue in venues]
+        self.algolia_venues_client.save_objects(objects)
 
     def unindex_offer_ids(self, offer_ids: Iterable[int]) -> None:
         if not offer_ids:
             return
-        self.algolia_client.delete_objects(offer_ids)
+        self.algolia_offers_client.delete_objects(offer_ids)
         try:
             self.redis_client.hdel(REDIS_HASHMAP_INDEXED_OFFERS_NAME, *offer_ids)
         except redis.exceptions.RedisError:
@@ -160,7 +180,7 @@ class AlgoliaBackend(base.SearchBackend):
             logger.exception("Could not remove offers from indexed offers set", extra={"offers": offer_ids})
 
     def unindex_all_offers(self) -> None:
-        self.algolia_client.clear_objects()
+        self.algolia_offers_client.clear_objects()
         try:
             self.redis_client.delete(REDIS_HASHMAP_INDEXED_OFFERS_NAME)
         except redis.exceptions.RedisError:
@@ -170,22 +190,19 @@ class AlgoliaBackend(base.SearchBackend):
                 "Could not clear indexed offers cache",
             )
 
-    def unindex_venue_ids(self, venues: Iterable[int]) -> None:
-        # No need to implement venue indexing now since the Algolia backend
-        # will be removed soon.
-        pass
+    def unindex_venue_ids(self, venue_ids: Iterable[int]) -> None:
+        if not venue_ids:
+            return
+        self.algolia_venues_client.delete_objects(venue_ids)
 
     def unindex_all_venues(self) -> None:
-        # No need to implement venue indexing now since the Algolia backend
-        # will be removed soon.
-        pass
+        self.algolia_venues_client.clear_objects()
 
     @classmethod
     def serialize_offer(cls, offer: offers_models.Offer) -> dict:
         venue = offer.venue
         offerer = venue.managingOfferer
         humanize_offer_id = humanize(offer.id)
-        has_coordinates = venue.latitude is not None and venue.longitude is not None
         author = offer.extraData and offer.extraData.get("author")
         stage_director = offer.extraData and offer.extraData.get("stageDirector")
         visa = offer.extraData and offer.extraData.get("visa")
@@ -264,22 +281,33 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": venue.name,
                 "publicName": venue.publicName,
             },
+            "_geoloc": position(venue),
         }
-
-        if has_coordinates:
-            object_to_index.update({"_geoloc": {"lat": float(venue.latitude), "lng": float(venue.longitude)}})
-        else:
-            object_to_index.update(
-                {"_geoloc": {"lat": DEFAULT_LATITUDE_FOR_NUMERIC_OFFER, "lng": DEFAULT_LONGITUDE_FOR_NUMERIC_OFFER}}
-            )
 
         return object_to_index
 
     @classmethod
     def serialize_venue(cls, venue: offerers_models.Venue) -> dict:
-        # No need to implement venue indexing now since the Algolia backend
-        # will be removed soon.
-        return {}
+        social_medias = getattr(venue.contact, "social_medias", {})
+        return {
+            "objectID": venue.id,
+            "name": venue.publicName or venue.name,
+            "offerer_name": venue.managingOfferer.name,
+            "venue_type": venue.venueTypeCode.name,
+            "description": venue.description,
+            "audio_disability": venue.audioDisabilityCompliant,
+            "mental_disability": venue.mentalDisabilityCompliant,
+            "motor_disability": venue.motorDisabilityCompliant,
+            "visual_disability": venue.visualDisabilityCompliant,
+            "email": getattr(venue.contact, "email", None),
+            "phone_number": getattr(venue.contact, "phone_number", None),
+            "website": getattr(venue.contact, "website", None),
+            "facebook": social_medias.get("facebook"),
+            "twitter": social_medias.get("twitter"),
+            "instagram": social_medias.get("instagram"),
+            "snapchat": social_medias.get("snapchat"),
+            "_geoloc": position(venue),
+        }
 
     def redis_lpop(self, queue_name: str, count: int) -> set[int]:
         """
@@ -313,3 +341,9 @@ class AlgoliaBackend(base.SearchBackend):
             pipeline.reset()
 
         return obj_ids
+
+
+def position(venue):
+    latitude = venue.latitude or DEFAULT_LATITUDE
+    longitude = venue.longitude or DEFAULT_LONGITUDE
+    return {"lat": float(latitude), "lng": float(longitude)}

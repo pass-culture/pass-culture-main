@@ -325,14 +325,15 @@ class AppSearchBackend(base.SearchBackend):
             offer_ids = self.redis_client.spop(redis_set_name, count)
             return {int(offer_id) for offer_id in offer_ids}  # str -> int
         except redis.exceptions.RedisError:
-            logger.exception("Could not pop offer ids to index from queue")
+            logger.exception("Could not pop offer ids to index from queue", extra={"queue": redis_set_name})
             return set()
 
-    def pop_venue_ids_from_error_queue(self, count: int) -> set[int]:
-        return self._pop_venue_ids_from_queue(count, REDIS_VENUE_IDS_IN_ERROR_TO_INDEX)
-
-    def pop_venue_ids_from_queue(self, count: int) -> set[int]:
-        return self._pop_venue_ids_from_queue(count, REDIS_VENUE_IDS_TO_INDEX)
+    def pop_venue_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
+        if from_error_queue:
+            redis_set_name = REDIS_VENUE_IDS_IN_ERROR_TO_INDEX
+        else:
+            redis_set_name = REDIS_VENUE_IDS_TO_INDEX
+        return self._pop_venue_ids_from_queue(count, redis_set_name)
 
     def pop_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
         return self._pop_venue_ids_from_queue(count, REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX)

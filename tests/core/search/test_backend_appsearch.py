@@ -88,7 +88,7 @@ def test_pop_offer_ids_from_error_queue(app):
     assert offer_ids == set()
 
 
-def test_get_venue_ids_for_offers_from_queue(app):
+def test_pop_venue_ids_for_offers_from_queue(app):
     backend = get_backend()
     app.redis_client.sadd("search:appsearch:venue-ids-for-offers-to-index", 1, 2, 3)
 
@@ -96,7 +96,7 @@ def test_get_venue_ids_for_offers_from_queue(app):
     assert len(venue_ids) == 2
     assert venue_ids <= {1, 2, 3}
 
-    # Make sure we did not pop values off the list.
+    # Make sure we did not pop all values off the list.
     in_queue = app.redis_client.smembers("search:appsearch:venue-ids-for-offers-to-index")
     assert len(in_queue) == 1
     assert in_queue <= {"1", "2", "3"}

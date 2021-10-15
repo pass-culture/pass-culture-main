@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.core import search
 import pcapi.core.bookings.api as bookings_api
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.search.testing as search_testing
 import pcapi.core.users.factories as users_factories
@@ -42,3 +43,14 @@ def test_offer_indexation_on_venue_cycle(app):
 
     search.index_offers_of_venues_in_queue()
     assert offer.id in search_testing.search_store["offers"]
+
+
+def test_venue_indexation_cycle(app):
+    venue = offerers_factories.VenueFactory(isPermanent=True)
+    assert search_testing.search_store["venues"] == {}
+
+    search.async_index_venue_ids([venue.id])
+    assert search_testing.search_store["venues"] == {}
+
+    search.index_venues_in_queue()
+    assert venue.id in search_testing.search_store["venues"]

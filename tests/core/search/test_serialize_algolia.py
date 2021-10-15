@@ -6,6 +6,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.categories import subcategories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.search.backends.algolia import AlgoliaBackend
 from pcapi.model_creators.generic_creators import create_criterion
 from pcapi.model_creators.generic_creators import create_offerer
@@ -325,7 +326,7 @@ class BuildObjectTest:
     def test_should_return_default_coordinates_when_one_coordinate_is_missing(self, app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, latitude=None, longitude=12.13)
+        venue = create_venue(offerer=offerer, latitude=None, longitude=None)
         offer = create_offer_with_thing_product(venue=venue)
         stock = create_stock(offer=offer)
         repository.save(stock)
@@ -600,3 +601,41 @@ class BuildObjectTest:
             },
             "_geoloc": {"lat": 48.86387, "lng": 2.33802},
         }
+
+
+@pytest.mark.usefixtures("db_session")
+def test_serialize_venue():
+    venue = offerers_factories.VenueFactory(
+        venueTypeCode="VISUAL_ARTS",
+        audioDisabilityCompliant=True,
+        contact__email="venue@example.com",
+        contact__website="http://venue.example.com",
+        contact__phone_number="+33.123456",
+        contact__social_medias={
+            "facebook": None,
+            "instagram": None,
+            "snapchat": None,
+            "twitter": "https://twitter.com/my.venue",
+        },
+    )
+
+    serialized = AlgoliaBackend().serialize_venue(venue)
+    assert serialized == {
+        "objectID": venue.id,
+        "name": venue.name,
+        "offerer_name": venue.managingOfferer.name,
+        "venue_type": venue.venueTypeCode.name,
+        "description": venue.description,
+        "audio_disability": True,
+        "mental_disability": False,
+        "motor_disability": False,
+        "visual_disability": False,
+        "email": "venue@example.com",
+        "phone_number": "+33.123456",
+        "website": "http://venue.example.com",
+        "facebook": None,
+        "instagram": None,
+        "snapchat": None,
+        "twitter": "https://twitter.com/my.venue",
+        "_geoloc": {"lng": float(venue.longitude), "lat": float(venue.latitude)},
+    }
