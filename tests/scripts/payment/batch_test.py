@@ -7,6 +7,7 @@ import pytest
 from sqlalchemy import func
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
@@ -57,6 +58,16 @@ def test_generate_and_send_payments():
     offers_factories.BankInformationFactory(offerer=venue6.managingOfferer)
     bookings_factories.UsedBookingFactory(dateUsed=cutoff, stock__offer__venue=venue2)
 
+    # 1 new payment for digital venue
+    virtual_venue = offers_factories.VirtualVenueFactory()
+    offers_factories.BankInformationFactory(offerer=virtual_venue.managingOfferer)
+    digital_reimbursable_offer = offers_factories.DigitalOfferFactory(
+        venue=virtual_venue, subcategoryId=subcategories.CINE_VENTE_DISTANCE.id
+    )
+    digital_booking = bookings_factories.UsedBookingFactory(
+        dateUsed=before_cutoff, stock__offer=digital_reimbursable_offer
+    )
+
     last_payment_id = Payment.query.with_entities(func.max(Payment.id)).scalar()
     last_status_id = PaymentStatus.query.with_entities(func.max(PaymentStatus.id)).scalar()
 
@@ -64,7 +75,7 @@ def test_generate_and_send_payments():
 
     # Check new payments and statuses
     new_payments = Payment.query.filter(Payment.id > last_payment_id).all()
-    assert set(p.booking for p in new_payments) == {booking11, booking2, booking4}
+    assert set(p.booking for p in new_payments) == {booking11, booking2, booking4, digital_booking}
 
     new_statuses = (
         PaymentStatus.query.filter(PaymentStatus.id > last_status_id)
@@ -78,6 +89,8 @@ def test_generate_and_send_payments():
         (booking2, TransactionStatus.PENDING),
         (booking2, TransactionStatus.UNDER_REVIEW),
         (booking4, TransactionStatus.NOT_PROCESSABLE),
+        (digital_booking, TransactionStatus.PENDING),
+        (digital_booking, TransactionStatus.UNDER_REVIEW),
     }
 
     # Check "transaction" e-mail
@@ -85,18 +98,18 @@ def test_generate_and_send_payments():
     subject = email.sent_data["Subject"].split("-")[0].strip()  # ignore date
     assert subject == "Virements XML pass Culture Pro"
     xml = base64.b64decode(email.sent_data["Attachments"][0]["Content"]).decode("utf-8")
-    assert "<NbOfTxs>3</NbOfTxs>" in xml
-    assert "<CtrlSum>30.00</CtrlSum>" in xml
-    assert xml.count("<EndToEndId>") == 3
+    assert "<NbOfTxs>4</NbOfTxs>" in xml
+    assert "<CtrlSum>40.00</CtrlSum>" in xml
+    assert xml.count("<EndToEndId>") == 4
 
     # Check "report" e-mail
     email = mails_testing.outbox[1]
     subject = email.sent_data["Subject"].split("-")[0].strip()  # ignore date
     assert subject == "Récapitulatif des paiements pass Culture Pro"
     html = email.sent_data["Html-part"]
-    assert "Nombre total de paiements : 4" in html
+    assert "Nombre total de paiements : 5" in html
     assert "NOT_PROCESSABLE : 1" in html
-    assert "UNDER_REVIEW : 3" in html
+    assert "UNDER_REVIEW : 4" in html
 
     # Check "details" e-mail
     email = mails_testing.outbox[2]
@@ -106,7 +119,7 @@ def test_generate_and_send_payments():
     with zipfile.ZipFile(io.BytesIO(zip_data)) as zf:
         csv = zf.open(zf.namelist()[0]).read().decode("utf-8")
     rows = csv.splitlines()
-    assert len(rows) == 4  # header + 3 payments
+    assert len(rows) == 5  # header + 4 payments
 
     # Check "wallet balance" e-mail
     email = mails_testing.outbox[3]
