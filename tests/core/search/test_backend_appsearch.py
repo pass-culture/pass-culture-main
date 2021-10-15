@@ -194,7 +194,6 @@ def test_index_venues(app):
 
 def test_unindex_venue_ids(app):
     backend = get_backend()
-    app.redis_client.sadd("search:appsearch:indexed-venue-ids", "1")
     with requests_mock.Mocker() as mock:
         deleted = mock.delete("https://appsearch.example.com/api/as/v1/engines/venues/documents")
         backend.unindex_venue_ids([1])
