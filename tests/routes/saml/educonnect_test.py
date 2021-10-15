@@ -13,18 +13,27 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class EduconnectTest:
     email = "lucy.ellingson@example.com"
+    request_id = "id-XXMmsDBrJGm1N0761"
 
-    def test_get_educonnect_login(self, client):
-        users_factories.UserFactory(email=self.email)
+    def test_get_educonnect_login(self, client, app):
+        user = users_factories.UserFactory(email=self.email)
         access_token = create_access_token(identity=self.email)
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
         response = client.get("/saml/educonnect/login")
         assert response.status_code == 302
         assert response.location.startswith("https://pr4.educonnect.phm.education.gouv.fr/idp")
+        assert len(app.redis_client.keys("id-*")) == 1
+
+        request_id = app.redis_client.keys("id-*")[0]
+        assert int(app.redis_client.get(request_id)) == user.id
 
     @patch("pcapi.core.users.external.educonnect.api.get_saml_client")
-    def test_on_educonnect_authentication_response(self, mock_get_educonnect_saml_client, client, caplog):
+    def test_on_educonnect_authentication_response(self, mock_get_educonnect_saml_client, client, caplog, app):
+        # set user_id in redis as if /saml/educonnect/login was called
+        user = users_factories.UserFactory(email=self.email)
+        app.redis_client.set(self.request_id, user.id)
+
         mock_saml_client = MagicMock()
         mock_saml_response = MagicMock()
         mock_get_educonnect_saml_client.return_value = mock_saml_client
@@ -40,7 +49,7 @@ class EduconnectTest:
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.73": ["2212"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.6": ["2021-10-08 11:51:33.437"],
         }
-        mock_saml_response.in_response_to = "id-XXMmsDBrJGm1N0761"
+        mock_saml_response.in_response_to = self.request_id
 
         with caplog.at_level(logging.INFO):
             response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
@@ -53,6 +62,7 @@ class EduconnectTest:
             "first_name": "Max",
             "last_name": "SENS",
             "logout_url": "https://educonnect.education.gouv.fr/Logout",
-            "saml_request_id": "id-XXMmsDBrJGm1N0761",
+            "saml_request_id": self.request_id,
             "student_level": "2212",
+            "user_email": self.email,
         }

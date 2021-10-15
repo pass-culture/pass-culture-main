@@ -1,12 +1,13 @@
 import logging
 
+from flask import current_app as app
 from flask import redirect
 from flask import request
 
 from pcapi import settings
+from pcapi.core.users import models as user_models
 from pcapi.core.users.external.educonnect import api as educonnect_api
 from pcapi.core.users.external.educonnect import exceptions as educonnect_exceptions
-from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.native.security import authenticated_user_required
 
@@ -18,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 @blueprint.saml_blueprint.route("educonnect/login", methods=["GET"])
 @authenticated_user_required
-def login_educonnect(user: User) -> None:
-    redirect_url = educonnect_api.get_login_redirect_url()
+def login_educonnect(user: user_models.User) -> None:
+    redirect_url = educonnect_api.get_login_redirect_url(user)
 
     response = redirect(redirect_url, code=302)
 
@@ -38,9 +39,15 @@ def on_educonnect_authentication_response() -> None:
     except educonnect_exceptions.EduconnectAuthenticationException:
         raise ApiErrors()  # TODO: redirect user to error page
 
+    user_id = app.redis_client.get(educonnect_user.saml_request_id)
+    if user_id is None:
+        raise ApiErrors({"saml_request_id": "user associated to saml_request_id not found"})
+    user = user_models.User.query.get(user_id)
+
     logger.info(
         "Received educonnect authentication response",
         extra={
+            "user_email": user.email,
             "date_of_birth": educonnect_user.birth_date.isoformat(),
             "educonnect_connection_date": educonnect_user.connection_datetime.isoformat(),
             "educonnect_id": educonnect_user.educonnect_id,

@@ -2,6 +2,7 @@ from datetime import datetime
 import logging
 from os import path
 
+from flask import current_app as app
 from saml2 import BINDING_HTTP_POST
 from saml2 import xmldsig
 from saml2.client import Saml2Client
@@ -9,6 +10,8 @@ from saml2.config import Config as Saml2Config
 from saml2.validate import ResponseLifetimeExceed
 
 from pcapi import settings
+from pcapi.core.users import constants
+from pcapi.core.users import models as user_models
 
 from . import exceptions
 from . import models
@@ -66,12 +69,14 @@ def get_saml_client() -> Saml2Client:
     return saml2_client
 
 
-def get_login_redirect_url() -> str:
+def get_login_redirect_url(user: user_models.User) -> str:
     saml_client = get_saml_client()
     saml_request_id, info = saml_client.prepare_for_authenticate()
 
-    # TODO: savec request id in redis attached to usedId
-    logger.info("Sending saml login request with educonnect saml_request_id = %s", saml_request_id)
+    logger.info(
+        "Sending saml login request with educonnect request_id = %s", saml_request_id, extra={"user_id": user.id}
+    )
+    app.redis_client.set(name=saml_request_id, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
 
     redirect_url = next(header[1] for header in info["headers"] if header[0] == "Location")
     return redirect_url

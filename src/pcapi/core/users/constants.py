@@ -31,6 +31,8 @@ WHITELISTED_COUNTRY_PHONE_CODES = {
     687,  # Nouvelle-Calédonie
 }
 
+EDUCONNECT_SAML_REQUEST_ID_TTL = 24 * 60 * 60  # 1 day in seconds
+
 
 class SuspensionReason(Enum):
     def __str__(self) -> str:
