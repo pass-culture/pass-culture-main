@@ -229,6 +229,7 @@ class ListOffersOfferResponseModel(BaseModel):
     isEditable: bool
     isEvent: bool
     isThing: bool
+    isEducational: bool
     name: str
     stocks: list[ListOffersStockResponseModel]
     thumbUrl: Optional[str]

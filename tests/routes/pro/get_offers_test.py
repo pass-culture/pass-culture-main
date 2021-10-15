@@ -48,6 +48,7 @@ class Returns200Test:
                 "isEditable": True,
                 "isEvent": False,
                 "isThing": True,
+                "isEducational": False,
                 "productIsbn": "123456789",
                 "name": "My Offer",
                 "status": "ACTIVE",
