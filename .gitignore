@@ -100,8 +100,10 @@ postgres_data
 private
 secret.py
 private.tar.gz
-src/pcapi/core/users/external/educonnect/files/private.key
-src/pcapi/core/users/external/educonnect/files/public.cert
+
+# Key and certificate for Educonnect tests
+private.key
+public.cert
 
 # Store
 src/pcapi/static/object_store_data
