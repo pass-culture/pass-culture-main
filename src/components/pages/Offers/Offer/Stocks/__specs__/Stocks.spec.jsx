@@ -448,6 +448,21 @@ describe('stocks page', () => {
         pcapi.loadStocks.mockResolvedValue({ stocks: [{ ...defaultStock }] })
       })
 
+      it('should display an information message regarding booking cancellation with 10 days auto expiry when subcategory is LIVRE_PAPIER', async () => {
+        // given
+        thingOffer.subcategoryId = 'LIVRE_PAPIER'
+        pcapi.loadOffer.mockResolvedValue(thingOffer)
+
+        // when
+        await renderOffers(props, store)
+
+        // then
+        const informationMessage = screen.getByText(
+          'Les utilisateurs ont 10 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
+        )
+        expect(informationMessage).toBeInTheDocument()
+      })
+
       it('should display an information message regarding booking cancellation', async () => {
         // when
         await renderOffers(props, store)

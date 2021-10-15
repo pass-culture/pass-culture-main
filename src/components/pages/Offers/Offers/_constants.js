@@ -47,3 +47,5 @@ const CREATION_MODES_OPTIONS = [
 export const [DEFAULT_CREATION_MODE, ...CREATION_MODES_FILTERS] = CREATION_MODES_OPTIONS
 export const ADMINS_DISABLED_FILTERS_MESSAGE =
   'Sélectionnez une structure et/ou un lieu pour activer les filtres'
+
+export const LIVRE_PAPIER_SUBCATEGORY_ID = 'LIVRE_PAPIER'

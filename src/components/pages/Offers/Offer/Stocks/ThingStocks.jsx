@@ -18,7 +18,7 @@ import {
   validateUpdatedStock,
 } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
 import StockItemContainer from 'components/pages/Offers/Offer/Stocks/StockItem/StockItemContainer'
-import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
+import { LIVRE_PAPIER_SUBCATEGORY_ID, OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { SubmitButton } from 'ui-kit'
@@ -199,7 +199,6 @@ const ThingStocks = ({
   const hasNoStock = !stock
   const hasAStock = !hasNoStock
   const inCreateMode = hasNoStock || !stock.id
-
   return (
     <div className="stocks-page">
       <PageTitle title="Vos stocks" />
@@ -212,7 +211,7 @@ const ThingStocks = ({
 
       <div className="cancellation-information">
         {(!offer.isDigital || !autoActivateDigitalBookings) &&
-          'Les utilisateurs ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'}
+         `Les utilisateurs ont ${offer.subcategoryId === LIVRE_PAPIER_SUBCATEGORY_ID ? '10' : '30'} jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.`}
         {offer.isDigital &&
           autoActivateDigitalBookings &&
           'Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée.'}
