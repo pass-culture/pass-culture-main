@@ -92,14 +92,6 @@ def test_get_venue_ids_for_offers_from_queue(app):
     assert not set(app.redis_client.lrange("venue_ids_for_offers", 0, 5))
 
 
-def test_delete_venue_ids_for_offers_from_queue(app):
-    backend = get_backend()
-    app.redis_client.lpush("venue_ids_for_offers", 1, 2, 3)
-
-    backend.delete_venue_ids_for_offers_from_queue({1, 2})
-    assert set(app.redis_client.lrange("venue_ids_for_offers", 0, 5)) == {"3"}
-
-
 def test_count_offers_to_index_from_queue(app):
     backend = get_backend()
     assert backend.count_offers_to_index_from_queue() == 0

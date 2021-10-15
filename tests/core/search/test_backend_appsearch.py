@@ -102,15 +102,6 @@ def test_get_venue_ids_for_offers_from_queue(app):
     assert in_queue <= {"1", "2", "3"}
 
 
-def test_delete_venue_ids_for_offers_from_queue(app):
-    backend = get_backend()
-    app.redis_client.sadd("search:appsearch:venue-ids-for-offers-to-index", 1, 2, 3)
-
-    backend.delete_venue_ids_for_offers_from_queue({1, 2})
-    in_queue = app.redis_client.smembers("search:appsearch:venue-ids-for-offers-to-index")
-    assert in_queue == {"3"}
-
-
 def test_count_offers_to_index_from_queue(app):
     backend = get_backend()
     assert backend.count_offers_to_index_from_queue() == 0

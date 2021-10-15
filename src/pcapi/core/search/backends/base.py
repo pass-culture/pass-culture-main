@@ -34,12 +34,6 @@ class SearchBackend:
     def pop_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
         raise NotImplementedError()
 
-    def delete_venue_ids_from_queue(self, venue_ids: Iterable[int]) -> None:
-        raise NotImplementedError()
-
-    def delete_venue_ids_for_offers_from_queue(self, venue_ids: Iterable[int]) -> None:
-        raise NotImplementedError()
-
     def count_offers_to_index_from_queue(self, from_error_queue: bool = False) -> int:
         raise NotImplementedError()
 

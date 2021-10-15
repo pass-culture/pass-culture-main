@@ -95,24 +95,6 @@ class AlgoliaBackend(base.SearchBackend):
     def pop_venue_ids_for_offers_from_queue(self, count: int) -> set[int]:
         return self.redis_lpop(REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME, count)
 
-    def delete_venue_ids_from_queue(self, venue_ids: Iterable[int]) -> None:
-        return self._delete_venue_ids_from_queue(venue_ids, REDIS_LIST_VENUE_IDS_NAME)
-
-    def delete_venue_ids_for_offers_from_queue(self, venue_ids: Iterable[int]) -> None:
-        return self._delete_venue_ids_from_queue(venue_ids, REDIS_LIST_VENUE_IDS_FOR_OFFERS_NAME)
-
-    def _delete_venue_ids_from_queue(self, venue_ids: Iterable[int], queue_name: str) -> None:
-        if not venue_ids:
-            return
-        try:
-            for venue_id in venue_ids:
-                # count=0 means "remove all occurrences of this value"
-                self.redis_client.lrem(queue_name, count=0, value=venue_id)
-        except redis.exceptions.RedisError:
-            if settings.IS_RUNNING_TESTS:
-                raise
-            logger.exception("Could not delete indexed venue ids from queue", extra={"queue": queue_name})
-
     def count_offers_to_index_from_queue(self, from_error_queue: bool = False) -> int:
         if from_error_queue:
             redis_list_name = REDIS_LIST_OFFER_IDS_IN_ERROR_NAME

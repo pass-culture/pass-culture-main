@@ -345,20 +345,6 @@ class AppSearchBackend(base.SearchBackend):
             logger.exception("Could not pop venue ids for offers to index from queue", extra={"queue": queue_name})
             return set()
 
-    def delete_venue_ids_from_queue(self, venue_ids: Iterable[int]) -> None:
-        return self._delete_venue_ids_from_queue(venue_ids, REDIS_VENUE_IDS_TO_INDEX)
-
-    def delete_venue_ids_for_offers_from_queue(self, venue_ids: Iterable[int]) -> None:
-        return self._delete_venue_ids_from_queue(venue_ids, REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX)
-
-    def _delete_venue_ids_from_queue(self, venue_ids: Iterable[int], queue_name: str) -> None:
-        if not venue_ids:
-            return
-        try:
-            self.redis_client.srem(queue_name, *venue_ids)
-        except redis.exceptions.RedisError:
-            logger.exception("Could not delete indexed venue ids from queue", extra={"queue": queue_name})
-
     def count_offers_to_index_from_queue(self, from_error_queue: bool = False) -> int:
         if from_error_queue:
             redis_set_name = REDIS_OFFER_IDS_IN_ERROR_TO_INDEX
