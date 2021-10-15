@@ -20,6 +20,7 @@ class FraudCheckType(enum.Enum):
     USER_PROFILING = "user_profiling"
     DMS = "dms"
     INTERNAL_REVIEW = "internal_review"
+    EDUCONNECT = "educonnect"
 
 
 class FraudStatus(enum.Enum):
@@ -57,6 +58,13 @@ def _parse_date(date: typing.Optional[str]) -> typing.Optional[datetime.datetime
         return datetime.datetime.strptime(date, "%d/%m/%Y")
     except ValueError:
         return None
+
+
+class EduconnectContent(pydantic.BaseModel):
+    first_name: str
+    last_name: str
+    educonnect_id: str
+    birth_date: datetime.date
 
 
 class JouveContent(pydantic.BaseModel):
@@ -162,6 +170,7 @@ FRAUD_CHECK_MAPPING = {
     FraudCheckType.USER_PROFILING: UserProfilingFraudData,
     FraudCheckType.JOUVE: JouveContent,
     FraudCheckType.INTERNAL_REVIEW: InternalReviewFraudData,
+    FraudCheckType.EDUCONNECT: EduconnectContent,
 }
 
 
@@ -182,7 +191,7 @@ class BeneficiaryFraudCheck(PcObject, Model):
 
     resultContent = sqlalchemy.Column(sqlalchemy.dialects.postgresql.JSONB)
 
-    def source_data(self) -> typing.Union[JouveContent, DMSContent, UserProfilingFraudData]:
+    def source_data(self) -> typing.Union[JouveContent, DMSContent, UserProfilingFraudData, EduconnectContent]:
         if self.type not in FRAUD_CHECK_MAPPING:
             raise NotImplementedError(f"Cannot unserialize type {self.type}")
         return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)

@@ -1,3 +1,4 @@
+import datetime
 import logging
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -5,7 +6,9 @@ from unittest.mock import patch
 from flask_jwt_extended.utils import create_access_token
 import pytest
 
+import pcapi.core.fraud.models as fraud_models
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.external.educonnect.models import EduconnectUser
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -66,3 +69,50 @@ class EduconnectTest:
             "student_level": "2212",
             "user_email": self.email,
         }
+
+        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one_or_none() is not None
+
+    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    def test_complete_educonnect_login(self, mock_get_educonnect_user, client, app, caplog):
+        user = users_factories.UserFactory(email=self.email)
+        access_token = create_access_token(identity=self.email)
+        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        # Calling /saml/educonnect/login redirects to educonnect login
+        response = client.get("/saml/educonnect/login")
+        assert response.status_code == 302
+        assert response.location.startswith("https://pr4.educonnect.phm.education.gouv.fr/idp")
+        assert len(app.redis_client.keys("id-*")) == 1
+
+        request_id = app.redis_client.keys("id-*")[0]
+        assert int(app.redis_client.get(request_id)) == user.id
+
+        # Then Educonnect will call /saml/acs
+        mock_get_educonnect_user.return_value = EduconnectUser(
+            connection_datetime=datetime.datetime.strptime("2021-10-08 11:51:33.437000", "%Y-%m-%d %H:%M:%S.%f"),
+            birth_date=datetime.datetime.strptime("2006-08-18", "%Y-%m-%d").date(),
+            educonnect_id="e6759833fb379e0340322889f2a367a5a5150f1533f80dfe963d21e43e33f7164b76cc802766cdd33c6645e1abfd1875",
+            first_name="Max",
+            last_name="SENS",
+            logout_url="https://educonnect.education.gouv.fr/Logout",
+            saml_request_id=request_id,
+            student_level="2212",
+        )
+
+        with caplog.at_level(logging.INFO):
+            response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+
+        assert response.status_code == 302
+        assert caplog.records[0].extra == {
+            "date_of_birth": "2006-08-18",
+            "educonnect_connection_date": "2021-10-08T11:51:33.437000",
+            "educonnect_id": "e6759833fb379e0340322889f2a367a5a5150f1533f80dfe963d21e43e33f7164b76cc802766cdd33c6645e1abfd1875",
+            "first_name": "Max",
+            "last_name": "SENS",
+            "logout_url": "https://educonnect.education.gouv.fr/Logout",
+            "saml_request_id": request_id,
+            "student_level": "2212",
+            "user_email": self.email,
+        }
+
+        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one_or_none() is not None

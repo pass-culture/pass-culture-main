@@ -5,6 +5,8 @@ from flask import redirect
 from flask import request
 
 from pcapi import settings
+from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as user_models
 from pcapi.core.users.external.educonnect import api as educonnect_api
 from pcapi.core.users.external.educonnect import exceptions as educonnect_exceptions
@@ -57,6 +59,16 @@ def on_educonnect_authentication_response() -> None:
             "saml_request_id": educonnect_user.saml_request_id,
             "student_level": educonnect_user.student_level,
         },
+    )
+
+    fraud_api.on_educonnect_result(
+        user,
+        fraud_models.EduconnectContent(
+            first_name=educonnect_user.first_name,
+            last_name=educonnect_user.last_name,
+            educonnect_id=educonnect_user.educonnect_id,
+            birth_date=educonnect_user.birth_date,
+        ),
     )
 
     # TODO: redirect user to the right page

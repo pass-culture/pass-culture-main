@@ -381,3 +381,28 @@ class UserFraudsterTest:
     def test_is_user_fraudster(self, fraud_status, is_fraudster):
         fraud_result = fraud_factories.BeneficiaryFraudResultFactory(status=fraud_status)
         assert is_fraudster == fraud_api.is_user_fraudster(fraud_result.user)
+
+
+@pytest.mark.usefixtures("db_session")
+class EduconnectFraudTest:
+    def test_on_educonnect_result_creates_a_fraud_check(self):
+        user = users_factories.UserFactory()
+        fraud_api.on_educonnect_result(
+            user,
+            fraud_models.EduconnectContent(
+                educonnect_id="id-1", first_name="Lucy", last_name="Ellingson", birth_date=datetime.date(2021, 10, 15)
+            ),
+        )
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            user=user, type=fraud_models.FraudCheckType.EDUCONNECT
+        ).one_or_none()
+        assert fraud_check is not None
+        assert fraud_check.userId == user.id
+        assert fraud_check.type == fraud_models.FraudCheckType.EDUCONNECT
+        assert fraud_check.source_data().__dict__ == {
+            "first_name": "Lucy",
+            "last_name": "Ellingson",
+            "educonnect_id": "id-1",
+            "birth_date": datetime.date(2021, 10, 15),
+        }

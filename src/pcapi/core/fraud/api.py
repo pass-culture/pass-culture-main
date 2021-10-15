@@ -21,6 +21,27 @@ logger = logging.getLogger(__name__)
 FRAUD_RESULT_REASON_SEPARATOR = ";"
 
 
+def on_educonnect_result(user: User, educonnect_content: models.EduconnectContent):
+    if (
+        models.BeneficiaryFraudCheck.query.filter(
+            models.BeneficiaryFraudCheck.user == user,
+            models.BeneficiaryFraudCheck.type == models.FraudCheckType.EDUCONNECT,
+        ).count()
+        > 0
+    ):
+        # TODO: figure out if we update the current fraud check, keep the original or allow multiple fraud checks
+        # Currently keeping the first one and ignoring any new one
+        return
+
+    fraud_check = models.BeneficiaryFraudCheck(
+        user=user,
+        type=models.FraudCheckType.EDUCONNECT,
+        thirdPartyId=str(educonnect_content.educonnect_id),
+        resultContent=educonnect_content.dict(),
+    )
+    repository.save(fraud_check)
+
+
 def on_jouve_result(user: User, jouve_content: models.JouveContent):
     if (
         models.BeneficiaryFraudCheck.query.filter(
