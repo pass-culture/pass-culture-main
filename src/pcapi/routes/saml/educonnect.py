@@ -6,7 +6,9 @@ from flask import request
 from pcapi import settings
 from pcapi.core.users.external.educonnect import api as educonnect_api
 from pcapi.core.users.external.educonnect import exceptions as educonnect_exceptions
+from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
+from pcapi.routes.native.security import authenticated_user_required
 
 from . import blueprint
 
@@ -15,8 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.saml_blueprint.route("educonnect/login", methods=["GET"])
-# TODO (viconnex): add @authenticated_user_required decorator
-def login_educonnect() -> None:
+@authenticated_user_required
+def login_educonnect(user: User) -> None:
     redirect_url = educonnect_api.get_login_redirect_url()
 
     response = redirect(redirect_url, code=302)
