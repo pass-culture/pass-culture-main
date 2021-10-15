@@ -610,7 +610,7 @@ def update_offer_and_stock_id_at_providers(venue: Venue, old_siret: str) -> None
 
 
 def get_expense_domains(offer: Offer) -> list[ExpenseDomain]:
-    # TODO(venaud, 08-09-2021): Deposits type GRANT_15, GRANT_16 and GRANT_17 does not have caps, so this hack works.
+    # TODO(venaud, 08-09-2021): Deposits type GRANT_15_18 does not have caps, so this hack works.
     #  It will need to be adapted (and the frontend updated) if others types or versions change that (or for a better implementation)
     domains = {ExpenseDomain.ALL.value}
 

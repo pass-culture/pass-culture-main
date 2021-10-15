@@ -74,9 +74,7 @@ class FilterByDepositTypeNotEqual(BaseSQLAFilter):
 
 def beneficiary_deposit_type_formatter(view, context, model, name) -> Markup:
     deposit_type_mapping_class = {
-        DepositType.GRANT_15: "#C7CEEA",
-        DepositType.GRANT_16: "#B5EAD7",
-        DepositType.GRANT_17: "#FFDAC1",
+        DepositType.GRANT_15_17: "#C7CEEA",
         DepositType.GRANT_18: "#FF9AA2",
     }
     return Markup(

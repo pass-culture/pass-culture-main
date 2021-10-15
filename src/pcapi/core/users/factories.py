@@ -24,13 +24,6 @@ from . import models
 
 DEFAULT_PASSWORD = "user@AZERTY123"
 
-GIVEN_DEPOSIT_BY_AGE = {
-    15: DepositType.GRANT_15,
-    16: DepositType.GRANT_16,
-    17: DepositType.GRANT_17,
-    18: DepositType.GRANT_18,
-}
-
 
 class UserFactory(BaseFactory):
     class Meta:
@@ -167,11 +160,7 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
         if "dateCreated" not in kwargs:
             kwargs["dateCreated"] = obj.dateCreated
 
-        return DepositGrantFactory(
-            user=obj,
-            **kwargs,
-            type=GIVEN_DEPOSIT_BY_AGE.get(relativedelta(obj.dateCreated, obj.dateOfBirth).years, DepositType.GRANT_15),
-        )
+        return DepositGrantFactory(user=obj, **kwargs, type=DepositType.GRANT_15_17)
 
 
 class ProFactory(BaseFactory):

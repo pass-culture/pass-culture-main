@@ -36,7 +36,7 @@ class CreateDepositTest:
         assert deposit.version == 1
         assert deposit.source == "created by test"
 
-    def test_deposit_created_with_a_grant_15_which_expire_on_next_birthday_when_beneficiary_is_15_years_old(self):
+    def test_deposit_created_with_a_grant_15_17_which_expire_on_next_birthday_when_beneficiary_is_15_years_old(self):
         # Given
         fifteen_years_in_the_past = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(
             years=15, months=2
@@ -47,40 +47,7 @@ class CreateDepositTest:
         deposit = api.create_deposit(beneficiary, "created by test")
 
         # Then
-        assert deposit.type == DepositType.GRANT_18
-        assert deposit.version == payments_conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
-        assert deposit.amount == payments_conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
-        assert deposit.user.id == beneficiary.id
-        assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
-
-    def test_deposit_created_with_a_grant_16_which_expire_on_next_birthday_when_beneficiary_is_16_years_old(self):
-        # Given
-        sixteen_years_in_the_past = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(
-            years=16, months=1
-        )
-        beneficiary = users_factories.UserFactory(dateOfBirth=sixteen_years_in_the_past)
-
-        # When
-        deposit = api.create_deposit(beneficiary, "created by test")
-
-        # Then
-        assert deposit.type == DepositType.GRANT_18
-        assert deposit.version == payments_conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
-        assert deposit.amount == payments_conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
-        assert deposit.user.id == beneficiary.id
-        assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
-
-    def test_deposit_created_with_a_grant_17_which_expire_on_next_birthday_when_beneficiary_is_17_years_old(self):
-        # Given
-        seventeen_years_in_the_past = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - relativedelta(
-            years=17, months=2
-        )
-        beneficiary = users_factories.UserFactory(dateOfBirth=seventeen_years_in_the_past)
-
-        # When
-        deposit = api.create_deposit(beneficiary, "created by test")
-
-        # Then
+        # FIXME we should assert a DepositType.GRANT_15_17
         assert deposit.type == DepositType.GRANT_18
         assert deposit.version == payments_conf.get_current_deposit_version_for_type(DepositType.GRANT_18)
         assert deposit.amount == payments_conf.get_current_limit_configuration_for_type(DepositType.GRANT_18).TOTAL_CAP
@@ -142,7 +109,7 @@ class CreateDepositTest:
             years=18, months=4
         )
         beneficiary = users_factories.UserFactory(dateOfBirth=eighteen_years_in_the_past)
-        users_factories.DepositGrantFactory(user=beneficiary, type=DepositType.GRANT_17)
+        users_factories.DepositGrantFactory(user=beneficiary, type=DepositType.GRANT_15_17)
 
         # When
         deposit = api.create_deposit(beneficiary, "created by test")

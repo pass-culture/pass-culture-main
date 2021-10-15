@@ -13,16 +13,6 @@ from . import exceptions
 from . import repository
 
 
-def _get_grant_by_age(age: int) -> DepositType:
-    if age == 15:
-        return DepositType.GRANT_15
-    if age == 16:
-        return DepositType.GRANT_16
-    if age == 17:
-        return DepositType.GRANT_17
-    return DepositType.GRANT_18
-
-
 def create_deposit(beneficiary: User, deposit_source: str, version: int = None) -> Deposit:
     """Create a new deposit for the user if there is no deposit yet.
 

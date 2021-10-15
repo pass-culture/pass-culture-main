@@ -127,9 +127,7 @@ class CustomReimbursementRule(ReimbursementRule, Model):
 
 
 class DepositType(enum.Enum):
-    GRANT_15 = "GRANT_15"
-    GRANT_16 = "GRANT_16"
-    GRANT_17 = "GRANT_17"
+    GRANT_15_17 = "GRANT_15_17"
     GRANT_18 = "GRANT_18"
 
 

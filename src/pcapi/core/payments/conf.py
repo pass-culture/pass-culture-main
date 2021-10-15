@@ -40,26 +40,8 @@ class BaseLimitConfiguration:
         pass
 
 
-class Grant15LimitConfiguration(BaseLimitConfiguration):
+class Grant1517LimitConfiguration(BaseLimitConfiguration):
     TOTAL_CAP = Decimal(20)
-    DIGITAL_CAP = None
-    PHYSICAL_CAP = None
-
-    def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
-        return _compute_eighteenth_birthday(birth_date)
-
-
-class Grant16LimitConfiguration(BaseLimitConfiguration):
-    TOTAL_CAP = Decimal(30)
-    DIGITAL_CAP = None
-    PHYSICAL_CAP = None
-
-    def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
-        return _compute_eighteenth_birthday(birth_date)
-
-
-class Grant17LimitConfiguration(BaseLimitConfiguration):
-    TOTAL_CAP = Decimal(30)
     DIGITAL_CAP = None
     PHYSICAL_CAP = None
 
@@ -88,14 +70,8 @@ class Grant18LimitConfigurationV2(BaseLimitConfiguration):
 
 
 LIMIT_CONFIGURATIONS = {
-    DepositType.GRANT_15: {
-        1: Grant15LimitConfiguration(),
-    },
-    DepositType.GRANT_16: {
-        1: Grant16LimitConfiguration(),
-    },
-    DepositType.GRANT_17: {
-        1: Grant17LimitConfiguration(),
+    DepositType.GRANT_15_17: {
+        1: Grant1517LimitConfiguration(),
     },
     DepositType.GRANT_18: {
         1: Grant18LimitConfigurationV1(),

@@ -80,7 +80,7 @@ def create_industrial_app_beneficiaries():
             deposit__version=deposit_version,
         )
         users_factories.DepositGrantFactory(
-            user=user, expirationDate=datetime.now(), source="sandbox", type=DepositType.GRANT_17
+            user=user, expirationDate=datetime.now(), source="sandbox", type=DepositType.GRANT_15_17
         )
 
         user_key = f"jeune{departement_code} {tag} v{deposit_version}"
