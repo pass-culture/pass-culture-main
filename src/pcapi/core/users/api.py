@@ -35,6 +35,7 @@ from pcapi.core.mails.transactional.users.email_address_change import send_infor
 from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
 import pcapi.core.payments.api as payment_api
 from pcapi.core.payments.conf import get_limit_configuration_for_type_and_version
+from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
@@ -902,6 +903,9 @@ def verify_identity_document_informations(image_storage_path: str) -> None:
     if not valid:
         old_user_emails.send_document_verification_error_email(email, code)
         fraud_api.handle_document_validation_error(email, code)
+        if code == "invalid-age":
+            user = find_user_by_email(email)
+            subscription_messages.on_idcheck_invalid_age(user)
     delete_object(image_storage_path)
 
 

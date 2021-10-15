@@ -6,6 +6,9 @@ from pcapi.repository import repository
 from . import models
 
 
+INBOX_URL = "passculture://openInbox"
+
+
 def create_message_jouve_manual_review(user: users_models.User, application_id: int) -> None:
     today = datetime.date.today()
     message = models.SubscriptionMessage(
@@ -31,7 +34,19 @@ def on_redirect_to_dms_from_idcheck(user: users_models.User) -> None:
         user=user,
         userMessage=f"Nous n'arrivons toujours pas à lire ton document. Consulte l'e-mail envoyé le {today:%d/%m/%Y} pour plus d'informations.",
         callToActionTitle="Consulter mes e-mails",
-        callToActionLink="passculture://openInbox",
+        callToActionLink=INBOX_URL,
+        callToActionIcon=models.CallToActionIcon.EMAIL,
+    )
+    repository.save(message)
+
+
+def on_idcheck_invalid_age(user: users_models.User) -> None:
+    today = datetime.date.today()
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage=f"Ton dossier a été refusé : ton document indique que tu n’as pas 18 ans. Consulte l’e-mail envoyé le {today:%d/%m/%Y} pour plus d’informations.",
+        callToActionTitle="Consulter mes e-mails",
+        callToActionLink=INBOX_URL,
         callToActionIcon=models.CallToActionIcon.EMAIL,
     )
     repository.save(message)

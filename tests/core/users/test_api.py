@@ -20,6 +20,7 @@ import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.payments.conf import GRANT_18_VALIDITY_IN_YEARS
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
@@ -958,6 +959,28 @@ class VerifyIdentityDocumentInformationsTest:
         assert sent_data["Vars"]["url"] == settings.DMS_USER_URL
         assert sent_data["MJ-TemplateID"] == 2958563
         assert caplog.records[0].message == "fraud internal validation : Cannot find user with email py@test.com"
+
+    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.api.ask_for_identity_document_verification")
+    @patch("pcapi.core.users.api._get_identity_document_informations")
+    @freeze_time("2021-10-30 09:00:00")
+    def test_messages_when_age_is_invalid(
+        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app, caplog
+    ):
+        # Given
+        user = users_factories.UserFactory()
+        mocked_get_identity_informations.return_value = (user.email, b"")
+        mocked_ask_for_identity.return_value = (False, "invalid-age")
+
+        users_api.verify_identity_document_informations("some_path")
+
+        assert subscription_models.SubscriptionMessage.query.count() == 1
+        message = subscription_models.SubscriptionMessage.query.first()
+        assert not message.popOverIcon
+        assert (
+            message.userMessage
+            == "Ton dossier a été refusé : ton document indique que tu n’as pas 18 ans. Consulte l’e-mail envoyé le 30/10/2021 pour plus d’informations."
+        )
 
     @patch("pcapi.core.users.api.delete_object")
     @patch("pcapi.core.users.api.ask_for_identity_document_verification")
