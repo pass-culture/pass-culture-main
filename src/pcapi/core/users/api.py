@@ -34,7 +34,6 @@ from pcapi.core.mails.transactional.users.email_address_change import send_confi
 from pcapi.core.mails.transactional.users.email_address_change import send_information_email_change_email
 from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
 import pcapi.core.payments.api as payment_api
-from pcapi.core.payments.conf import get_limit_configuration_for_type_and_version
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users.external import update_external_user
@@ -296,6 +295,7 @@ def update_user_information_from_external_source(
     user: User, data: Union[fraud_models.DMSContent, fraud_models.JouveContent]
 ) -> User:
     if isinstance(data, fraud_models.DMSContent):
+        # FIXME: the following function does not override user.dateOfBirth, we should do it
         user = create_beneficiary_from_application(data, user)
 
     elif isinstance(data, fraud_models.JouveContent):
@@ -598,36 +598,41 @@ def get_domains_credit(user: User, bookings: list[Booking] = None) -> Optional[D
     if bookings == None:
         bookings = user.get_not_cancelled_bookings()
 
-    config = get_limit_configuration_for_type_and_version(user.deposit_type, user.deposit_version)
-
     domains_credit = DomainsCredit(
         all=Credit(
-            initial=config.TOTAL_CAP,
-            remaining=max(config.TOTAL_CAP - sum(booking.total_amount for booking in bookings), Decimal("0"))
+            initial=user.deposit.amount,
+            remaining=max(user.deposit.amount - sum(booking.total_amount for booking in bookings), Decimal("0"))
             if user.has_active_deposit
             else Decimal("0"),
         )
     )
+    specific_caps = user.deposit.specific_caps
 
-    if config.DIGITAL_CAP:
+    if specific_caps.DIGITAL_CAP:
         digital_bookings_total = sum(
-            [booking.total_amount for booking in bookings if config.digital_cap_applies(booking.stock.offer)]
+            [booking.total_amount for booking in bookings if specific_caps.digital_cap_applies(booking.stock.offer)]
         )
         domains_credit.digital = Credit(
-            initial=config.DIGITAL_CAP,
+            initial=specific_caps.DIGITAL_CAP,
             remaining=(
-                min(max(config.DIGITAL_CAP - digital_bookings_total, Decimal("0")), domains_credit.all.remaining)
+                min(
+                    max(specific_caps.DIGITAL_CAP - digital_bookings_total, Decimal("0")),
+                    domains_credit.all.remaining,
+                )
             ),
         )
 
-    if config.PHYSICAL_CAP:
+    if specific_caps.PHYSICAL_CAP:
         physical_bookings_total = sum(
-            [booking.total_amount for booking in bookings if config.physical_cap_applies(booking.stock.offer)]
+            [booking.total_amount for booking in bookings if specific_caps.physical_cap_applies(booking.stock.offer)]
         )
         domains_credit.physical = Credit(
-            initial=config.PHYSICAL_CAP,
+            initial=specific_caps.PHYSICAL_CAP,
             remaining=(
-                min(max(config.PHYSICAL_CAP - physical_bookings_total, Decimal("0")), domains_credit.all.remaining)
+                min(
+                    max(specific_caps.PHYSICAL_CAP - physical_bookings_total, Decimal("0")),
+                    domains_credit.all.remaining,
+                )
             ),
         )
 

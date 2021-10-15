@@ -305,6 +305,7 @@ class CommonFraudCheckTest:
         "age",
         [15, 16, 17],
     )
+    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_underage_user_validation_is_beneficiary(self, age):
         user = users_factories.UnderageBeneficiaryFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -459,8 +460,7 @@ class EduconnectFraudTest:
         ],
     )
     def test_educonnect_age_fraud_check(self, age, expected_fraud_check_status):
-        subscription_age = age
-        user = users_factories.UnderageBeneficiaryFactory(subscription_age=subscription_age)
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age))
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
             user=user,

@@ -7,9 +7,10 @@ from dateutil.relativedelta import relativedelta
 import factory
 from factory.declarations import LazyAttribute
 
-import pcapi.core.payments.conf as payment_conf
+import pcapi.core.payments.api as payments_api
 from pcapi.core.payments.models import DepositType
 from pcapi.core.testing import BaseFactory
+import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportStatus
@@ -101,7 +102,11 @@ class BeneficiaryGrant18Factory(BaseFactory):
     email = factory.Sequence("jeanne.doux{}@example.com".format)
     address = factory.Sequence("{} rue des machines".format)
     city = "Paris"
-    dateOfBirth = datetime.combine(date.today(), time(0, 0)) - relativedelta(years=18, months=1)
+    dateCreated = LazyAttribute(lambda _: datetime.utcnow())
+    dateOfBirth = LazyAttribute(  # LazyAttribute to allow freez_time overrides
+        lambda _: datetime.combine(date.today(), time(0, 0))
+        - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, months=1)
+    )
     departementCode = "75"
     firstName = "Jeanne"
     lastName = "Doux"
@@ -264,25 +269,25 @@ class BeneficiaryImportStatusFactory(BaseFactory):
     author = factory.SubFactory("pcapi.core.users.factories.UserFactory")
 
 
-# DepositFactory in core module to avoid import loops
+# DepositFactory in users module to avoid import loops
 class DepositGrantFactory(BaseFactory):
     class Meta:
         model = models.Deposit
 
+    dateCreated = LazyAttribute(lambda _: datetime.utcnow())
     user = factory.SubFactory(BeneficiaryGrant18Factory)
     source = "public"
-    type = DepositType.GRANT_18
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         if "amount" in kwargs:
             raise ValueError("You cannot directly set deposit amount: set version instead")
-        version = kwargs.get("version", payment_conf.get_current_deposit_version_for_type(kwargs["type"]))
-        deposit_configuration = payment_conf.get_limit_configuration_for_type_and_version(kwargs["type"], version)
-        amount = deposit_configuration.TOTAL_CAP
-        kwargs["version"] = version
-        kwargs["amount"] = amount
+        granted_deposit = payments_api.get_granted_deposit(kwargs["user"], kwargs.get("version"))
+        if "version" not in kwargs:
+            kwargs["version"] = granted_deposit.version
+        kwargs["amount"] = granted_deposit.amount
         if "expirationDate" not in kwargs:
-            beneficiary = kwargs.get("user")
-            kwargs["expirationDate"] = deposit_configuration.compute_expiration_date(beneficiary.dateOfBirth)
+            kwargs["expirationDate"] = granted_deposit.expiration_date
+        if "type" not in kwargs:
+            kwargs["type"] = granted_deposit.type
         return super()._create(model_class, *args, **kwargs)

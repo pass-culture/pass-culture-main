@@ -328,7 +328,7 @@ BASE_JOUVE_CONTENT = {
     "city": "some city",
     "gender": "M",
     "bodyPieceNumber": "id-piece-number",
-    "birthDateTxt": "25/10/2003",
+    "birthDateTxt": (datetime.utcnow() - relativedelta(years=18, days=1)).strftime("%d/%m/%Y"),
     "bodyBirthDateCtrl": "OK",
     "bodyPieceNumberCtrl": "OK",
     "bodyPieceNumberLevel": "100",

@@ -9,7 +9,6 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.payments import conf as payments_conf
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
 from pcapi.models import api_errors
@@ -71,23 +70,19 @@ def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer) -
     if not domains_credit or not deposit:
         raise exceptions.UserHasInsufficientFunds()
 
-    config: payments_conf.BaseLimitConfiguration = payments_conf.get_limit_configuration_for_type_and_version(
-        deposit.type, deposit.version
-    )
-
     if requested_amount > domains_credit.all.remaining:
         raise exceptions.UserHasInsufficientFunds()
 
     if (
         domains_credit.digital
-        and config.digital_cap_applies(offer)
+        and deposit.specific_caps.digital_cap_applies(offer)
         and requested_amount > domains_credit.digital.remaining
     ):
         raise exceptions.DigitalExpenseLimitHasBeenReached(domains_credit.digital.initial)
 
     if (
         domains_credit.physical
-        and config.physical_cap_applies(offer)
+        and deposit.specific_caps.physical_cap_applies(offer)
         and requested_amount > domains_credit.physical.remaining
     ):
         raise exceptions.PhysicalExpenseLimitHasBeenReached(domains_credit.physical.initial)

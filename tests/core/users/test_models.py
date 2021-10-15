@@ -1,9 +1,12 @@
 from datetime import datetime
 from datetime import timedelta
 
+from dateutil.relativedelta import relativedelta
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.payments.models import DepositType
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.exceptions import InvalidUserRoleException
@@ -19,30 +22,18 @@ class UserTest:
             assert user.deposit == None
 
         def test_return_expired_deposit_if_only_expired_deposits_exists(self):
-            user = users_factories.UserFactory()
+            user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
             user.add_beneficiary_role()
             yesterday = datetime.now() - timedelta(days=1)
             users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
 
             assert user.deposit.type == DepositType.GRANT_18
 
+        @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
         def test_return_last_expired_deposit_if_only_expired_deposits_exists(self):
-            user = users_factories.UserFactory()
-            user.add_beneficiary_role()
-            before_yesterday = datetime.now() - timedelta(days=2)
-            yesterday = datetime.now() - timedelta(days=1)
-            users_factories.DepositGrantFactory(
-                user=user, expirationDate=before_yesterday, type=DepositType.GRANT_15_17
-            )
-            users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
+            with freeze_time(datetime.utcnow() - relativedelta(years=3)):
+                user = users_factories.UnderageBeneficiaryFactory()
 
-            assert user.deposit.type == DepositType.GRANT_18
-
-        def test_return_non_expired_deposit_only_if_expired_and_non_expired_deposit_exists(self):
-            user = users_factories.UserFactory()
-            user.add_beneficiary_role()
-            yesterday = datetime.now() - timedelta(days=1)
-            users_factories.DepositGrantFactory(user=user, expirationDate=yesterday, type=DepositType.GRANT_15_17)
             users_factories.DepositGrantFactory(user=user)
 
             assert user.deposit.type == DepositType.GRANT_18

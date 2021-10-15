@@ -1,6 +1,4 @@
-from datetime import date
 from datetime import datetime
-from datetime import time
 from datetime import timedelta
 from unittest import mock
 
@@ -23,7 +21,6 @@ from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
-from pcapi.core.payments.conf import GRANT_18_VALIDITY_IN_YEARS
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
@@ -156,11 +153,8 @@ class BookOfferTest:
         assert email_data2["MJ-TemplateID"] == 3094927  # to beneficiary
 
     def test_free_offer_booking_by_ex_beneficiary(self):
-        ex_beneficiary = users_factories.BeneficiaryGrant18Factory(
-            dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=20, months=5),
-            dateCreated=datetime.utcnow() - relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, months=5),
-            deposit__expirationDate=datetime.utcnow() - relativedelta(months=5),
-        )
+        with freeze_time(datetime.utcnow() - relativedelta(years=2, months=5)):
+            ex_beneficiary = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.StockFactory(price=0, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
 
         booking = api.book_offer(beneficiary=ex_beneficiary, stock_id=stock.id, quantity=1)

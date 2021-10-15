@@ -1,24 +1,27 @@
-import datetime
 from decimal import Decimal
-
-from dateutil.relativedelta import relativedelta
 
 from pcapi.core.payments.models import DepositType
 
 
-def _compute_eighteenth_birthday(birth_date: datetime.datetime) -> datetime.datetime:
-    return datetime.datetime.combine(birth_date, datetime.time(0, 0)) + relativedelta(years=18)
-
-
 GRANT_18_VALIDITY_IN_YEARS = 2
 
+GRANTED_DEPOSIT_AMOUNT_15 = Decimal(20)
+GRANTED_DEPOSIT_AMOUNT_16 = Decimal(30)
+GRANTED_DEPOSIT_AMOUNT_17 = Decimal(30)
+GRANTED_DEPOSIT_AMOUNT_18_v1 = Decimal(500)
+GRANTED_DEPOSIT_AMOUNT_18_v2 = Decimal(300)
 
-class BaseLimitConfiguration:
-    TOTAL_CAP = None
+GRANTED_DEPOSIT_AMOUNT_BY_AGE_AND_VERSION = {
+    15: {1: GRANTED_DEPOSIT_AMOUNT_15},
+    16: {1: GRANTED_DEPOSIT_AMOUNT_16},
+    17: {1: GRANTED_DEPOSIT_AMOUNT_17},
+    18: {1: GRANTED_DEPOSIT_AMOUNT_18_v1, 2: GRANTED_DEPOSIT_AMOUNT_18_v2},
+}
+
+
+class BaseSpecificCaps:
     DIGITAL_CAP = None
-    DIGITAL_CAPPED_TYPES = {}
     PHYSICAL_CAP = None
-    PHYSICAL_CAPPED_TYPES = {}
 
     # fmt: off
     def digital_cap_applies(self, offer):
@@ -36,64 +39,28 @@ class BaseLimitConfiguration:
         )
     # fmt: on
 
-    def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
-        pass
 
-
-class Grant1517LimitConfiguration(BaseLimitConfiguration):
-    TOTAL_CAP = Decimal(20)
+class GrantUnderageSpecificCaps(BaseSpecificCaps):
     DIGITAL_CAP = None
     PHYSICAL_CAP = None
 
-    def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
-        return _compute_eighteenth_birthday(birth_date)
 
-
-class Grant18LimitConfigurationV1(BaseLimitConfiguration):
-    # For now this total cap duplicates what we store in `Deposit.amount`.
-    TOTAL_CAP = Decimal(500)
+class Grant18SpecificCapsV1(BaseSpecificCaps):
     DIGITAL_CAP = Decimal(200)
-    PHYSICAL_CAP = 200
-
-    def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
-        return datetime.datetime.utcnow() + relativedelta(years=GRANT_18_VALIDITY_IN_YEARS)
+    PHYSICAL_CAP = Decimal(200)
 
 
-class Grant18LimitConfigurationV2(BaseLimitConfiguration):
-    # For now this total cap duplicates what we store in `Deposit.amount`.
-    TOTAL_CAP = Decimal(300)
+class Grant18SpecificCapsV2(BaseSpecificCaps):
     DIGITAL_CAP = Decimal(100)
     PHYSICAL_CAP = None
 
-    def compute_expiration_date(self, birth_date: datetime.datetime) -> datetime.datetime:
-        return datetime.datetime.utcnow() + relativedelta(years=GRANT_18_VALIDITY_IN_YEARS)
 
-
-LIMIT_CONFIGURATIONS = {
+SPECIFIC_CAPS = {
     DepositType.GRANT_15_17: {
-        1: Grant1517LimitConfiguration(),
+        1: GrantUnderageSpecificCaps(),
     },
     DepositType.GRANT_18: {
-        1: Grant18LimitConfigurationV1(),
-        2: Grant18LimitConfigurationV2(),
+        1: Grant18SpecificCapsV1(),
+        2: Grant18SpecificCapsV2(),
     },
 }
-
-
-def get_current_limit_configuration_for_type(deposit_type: DepositType) -> BaseLimitConfiguration:
-    version = get_current_deposit_version_for_type(deposit_type)
-
-    return LIMIT_CONFIGURATIONS[deposit_type][version]
-
-
-def get_limit_configuration_for_type_and_version(deposit_type: DepositType, version: int) -> BaseLimitConfiguration:
-    if version is None:
-        version = get_current_deposit_version_for_type(deposit_type)
-
-    return LIMIT_CONFIGURATIONS[deposit_type][version]
-
-
-def get_current_deposit_version_for_type(deposit_type: DepositType) -> int:
-    if deposit_type == DepositType.GRANT_18:
-        return 2
-    return 1

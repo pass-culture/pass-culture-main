@@ -37,8 +37,7 @@ from pcapi.core.offers.validation import check_offer_is_eligible_for_educational
 from pcapi.core.offers.validation import check_offer_not_duo_and_educational
 from pcapi.core.offers.validation import check_offer_subcategory_is_valid
 from pcapi.core.offers.validation import check_validation_config_parameters
-from pcapi.core.payments.conf import get_limit_configuration_for_type_and_version
-from pcapi.core.payments.models import DepositType
+from pcapi.core.payments import conf as deposit_conf
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.domain import admin_emails
@@ -610,17 +609,15 @@ def update_offer_and_stock_id_at_providers(venue: Venue, old_siret: str) -> None
 
 
 def get_expense_domains(offer: Offer) -> list[ExpenseDomain]:
-    # TODO(venaud, 08-09-2021): Deposits type GRANT_15_18 does not have caps, so this hack works.
-    #  It will need to be adapted (and the frontend updated) if others types or versions change that (or for a better implementation)
     domains = {ExpenseDomain.ALL.value}
 
-    grant_18_versions = [1, 2]
-    for grant_18_version in grant_18_versions:
-        configuration = get_limit_configuration_for_type_and_version(DepositType.GRANT_18, grant_18_version)
-        if configuration.digital_cap_applies(offer):
-            domains.add(ExpenseDomain.DIGITAL.value)
-        if configuration.physical_cap_applies(offer):
-            domains.add(ExpenseDomain.PHYSICAL.value)
+    for deposit_type in deposit_conf.SPECIFIC_CAPS:
+        for version in deposit_conf.SPECIFIC_CAPS[deposit_type]:
+            specific_caps = deposit_conf.SPECIFIC_CAPS[deposit_type][version]
+            if specific_caps.digital_cap_applies(offer):
+                domains.add(ExpenseDomain.DIGITAL.value)
+            if specific_caps.physical_cap_applies(offer):
+                domains.add(ExpenseDomain.PHYSICAL.value)
 
     return list(domains)
 

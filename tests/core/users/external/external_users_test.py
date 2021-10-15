@@ -17,6 +17,7 @@ from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
+from pcapi.core.users.models import EligibilityType
 from pcapi.notifications.push import testing as batch_testing
 
 
@@ -58,7 +59,7 @@ def test_update_external_pro_user():
 
 
 def test_get_user_attributes():
-    user = BeneficiaryGrant18Factory(deposit__version=1, dateOfBirth=datetime(2000, 1, 1))
+    user = BeneficiaryGrant18Factory(deposit__version=1)
     offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
     b1 = BookingFactory(user=user, amount=10, stock__offer=offer)
     b2 = BookingFactory(user=user, amount=10, dateUsed=datetime(2021, 5, 6), stock__offer=offer)
@@ -85,10 +86,10 @@ def test_get_user_attributes():
         ),
         booking_categories=["FILM"],
         date_created=user.dateCreated,
-        date_of_birth=datetime(2000, 1, 1, 0, 0),
+        date_of_birth=user.dateOfBirth,
         departement_code="75",
         deposit_expiration_date=user.deposit_expiration_date,
-        eligibility=None,
+        eligibility=EligibilityType.AGE18,
         first_name="Jeanne",
         is_beneficiary=True,
         is_pro=False,
@@ -102,7 +103,7 @@ def test_get_user_attributes():
         deposit_activation_date=user.deposit_activation_date,
         has_completed_id_check=None,
         user_id=user.id,
-        is_eligible=False,
+        is_eligible=True,
         is_email_validated=True,
         last_favorite_creation_date=None,
         last_visit_date=None,
@@ -111,7 +112,7 @@ def test_get_user_attributes():
 
 
 def test_get_bookings_categories_and_subcategories():
-    user = BeneficiaryGrant18Factory(dateOfBirth=datetime(2000, 1, 1))
+    user = BeneficiaryGrant18Factory()
     offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
 
     assert _get_bookings_categories_and_subcategories(_get_user_bookings(user)) == ([], [])

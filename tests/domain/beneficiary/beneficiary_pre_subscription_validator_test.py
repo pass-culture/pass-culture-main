@@ -70,13 +70,10 @@ def test_raises_if_duplicate(app):
     # Given
     first_name = "John"
     last_name = "Doe"
-    date_of_birth = datetime(1993, 2, 2)
-    existing_user = users_factories.BeneficiaryGrant18Factory(
-        firstName=first_name, lastName=last_name, dateOfBirth=date_of_birth
-    )
+    existing_user = users_factories.BeneficiaryGrant18Factory(firstName=first_name, lastName=last_name)
 
     beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(
-        first_name=first_name, last_name=last_name, date_of_birth=date_of_birth
+        first_name=first_name, last_name=last_name, date_of_birth=existing_user.dateOfBirth
     )
 
     # When

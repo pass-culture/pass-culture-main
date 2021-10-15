@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import datetime
 from decimal import Decimal
 import enum
@@ -156,3 +157,17 @@ class Deposit(PcObject, Model):
         nullable=False,
         server_default=DepositType.GRANT_18.value,
     )
+
+    @property
+    def specific_caps(self):
+        from . import conf
+
+        return conf.SPECIFIC_CAPS[self.type][self.version]
+
+
+@dataclass
+class GrantedDeposit:
+    amount: Decimal
+    expiration_date: datetime.datetime
+    type: DepositType
+    version: int = 1

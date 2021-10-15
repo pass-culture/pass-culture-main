@@ -8,11 +8,14 @@ import uuid
 
 from dateutil.relativedelta import relativedelta
 from faker import Faker
+from freezegun import freeze_time
 
 from pcapi.core.payments.conf import GRANT_18_VALIDITY_IN_YEARS
 from pcapi.core.payments.models import DepositType
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.models import TokenType
+from pcapi.models.feature import FeatureToggle
 
 
 logger = logging.getLogger(__name__)
@@ -92,6 +95,9 @@ def create_industrial_app_beneficiaries():
 
 
 def create_industrial_app_underage_beneficiaries():
+    if not FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
+        raise Exception("The flag ENABLE_NATIVE_EAC_INDIVIDUAL should be active")
+
     logger.info("create_industrial_app_underage_beneficiaries")
 
     users_by_name = {}
@@ -189,6 +195,9 @@ def create_industrial_app_other_users():
 
 
 def create_industrial_app_general_public_users():
+    if not FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
+        raise Exception("The flag ENABLE_NATIVE_EAC_INDIVIDUAL should be active")
+
     logger.info("create_industrial_app_general_public_users")
 
     users_by_name = {}
@@ -268,30 +277,28 @@ def create_short_email_beneficiaries() -> dict:
             needsToFillCulturalSurvey=False,
         )
     )
-
-    users.append(
-        users_factories.UnderageBeneficiaryFactory(
-            email="exunderage_18@example.com",
-            dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=18, months=5),
-            dateCreated=datetime.utcnow() - relativedelta(years=3, months=3),
-            subscription_age=15,
-            firstName=fake.first_name(),
-            lastName=fake.last_name(),
-            needsToFillCulturalSurvey=False,
+    with freeze_time(datetime.utcnow() - relativedelta(years=3)):
+        users.append(
+            users_factories.UnderageBeneficiaryFactory(
+                email="exunderage_18@example.com",
+                dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=15, months=5),
+                subscription_age=15,
+                firstName=fake.first_name(),
+                lastName=fake.last_name(),
+                needsToFillCulturalSurvey=False,
+            )
         )
-    )
-
-    users.append(
-        users_factories.BeneficiaryGrant18Factory(
-            email="exbene_20@example.com",
-            dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=20, months=5),
-            dateCreated=datetime.utcnow() - relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, months=5),
-            deposit__expirationDate=datetime.utcnow() - relativedelta(months=5),
-            firstName=fake.first_name(),
-            lastName=fake.last_name(),
-            needsToFillCulturalSurvey=False,
+    with freeze_time(datetime.utcnow() - relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, months=5)):
+        users.append(
+            users_factories.BeneficiaryGrant18Factory(
+                email="exbene_20@example.com",
+                dateOfBirth=datetime.combine(date.today(), time(0, 0))
+                - relativedelta(years=ELIGIBILITY_AGE_18, months=5),
+                firstName=fake.first_name(),
+                lastName=fake.last_name(),
+                needsToFillCulturalSurvey=False,
+            )
         )
-    )
 
     user_by_email = {}
     for user in users:

@@ -1,8 +1,9 @@
-import datetime
+from datetime import datetime
 import random
 
 from dateutil.relativedelta import relativedelta
 import factory
+from factory.declarations import LazyAttribute
 
 from pcapi.core import testing
 import pcapi.core.users.factories as users_factories
@@ -19,7 +20,7 @@ class JouveContentFactory(factory.Factory):
 
     activity = random.choice(["Etudiant"])
     address = "25 rue du moulin vert"
-    birthDateTxt = factory.Faker("date", pattern="%d/%m/%Y")
+    birthDateTxt = LazyAttribute(lambda _: (datetime.utcnow() - relativedelta(years=18)).strftime("%d/%m/%Y"))
     birthLocationCtrl = random.choice(JOUVE_CTRL_VALUES)
     bodyBirthDateCtrl = random.choice(JOUVE_CTRL_VALUES)
     bodyBirthDateLevel = factory.Faker("pyint", max_value=100)
@@ -94,7 +95,7 @@ class DMSContentFactory(factory.Factory):
     application_id = factory.Faker("pyint")
     procedure_id = factory.Faker("pyint")
     departement = factory.Sequence("{}".format)
-    birth_date = factory.Faker("date")
+    birth_date = LazyAttribute(lambda _: (datetime.today() - relativedelta(years=18)).date())
     phone = factory.Sequence("+3361212121{}".format)
     postal_code = "75008"
     activity = "Étudiant"
@@ -159,4 +160,4 @@ class EduconnectContentFactory(factory.Factory):
     last_name = factory.Faker("last_name")
     first_name = factory.Faker("first_name")
     educonnect_id = factory.Faker("lexify", text="id-?????????????????")
-    birth_date = factory.LazyAttribute(lambda o: datetime.datetime.now() - relativedelta(years=o.age, months=4))
+    birth_date = factory.LazyAttribute(lambda o: datetime.now() - relativedelta(years=o.age, months=4))

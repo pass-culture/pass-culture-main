@@ -86,10 +86,10 @@ class GetActivationEmailTest:
 class GetAcceptedAsBeneficiaryEmailMailjetTest:
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     def test_return_correct_email_metadata(self):
-        # When
-        email_data = get_user_credit_email_data()
+        user = users_factories.BeneficiaryGrant18Factory()
 
-        # Then
+        email_data = get_user_credit_email_data(user)
+
         assert email_data == {
             "Mj-TemplateID": 2016025,
             "Mj-TemplateLanguage": True,
@@ -104,9 +104,9 @@ class GetAcceptedAsBeneficiaryEmailMailjetTest:
 class GetAcceptedAsBeneficiaryEmailSendinblueTest:
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
     def test_return_correct_email_metadata(self):
-        # When
-        email = get_user_credit_email_data()
+        user = users_factories.BeneficiaryGrant18Factory()
 
-        # Then
+        email = get_user_credit_email_data(user)
+
         assert email.template == TransactionalEmail.GRANT_USER_CREDIT
         assert email.params == {"CREDIT": 300}

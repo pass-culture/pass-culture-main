@@ -17,6 +17,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.models import ApiErrors
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportStatus
@@ -33,6 +34,8 @@ from tests.scripts.beneficiary.fixture_dms_with_selfie import APPLICATION_DETAIL
 
 
 NOW = datetime.utcnow()
+
+AGE18_ELIGIBLE_BIRTH_DATE = dateOfBirth = datetime.utcnow() - relativedelta(years=ELIGIBILITY_AGE_18)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -274,12 +277,11 @@ class ProcessBeneficiaryApplicationTest:
     @pytest.mark.usefixtures("db_session")
     def test_new_beneficiaries_are_recorded_with_deposit(self, app):
         # given
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
         information = fraud_models.DMSContent(
             department="93",
             last_name="Doe",
             first_name="Jane",
-            birth_date=eighteen_years_in_the_past,
+            birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
             email="jane.doe@example.com",
             phone="0612345678",
             postal_code="93130",
@@ -305,12 +307,11 @@ class ProcessBeneficiaryApplicationTest:
     @pytest.mark.usefixtures("db_session")
     def test_an_import_status_is_saved_if_beneficiary_is_created(self, app):
         # given
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
         information = fraud_models.DMSContent(
             department="93",
             last_name="Doe",
             first_name="Jane",
-            birth_date=eighteen_years_in_the_past,
+            birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
             email="jane.doe@example.com",
             phone="0612345678",
             postal_code="93130",
@@ -642,7 +643,12 @@ class RunIntegrationTest:
         # when
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
         get_application_details.side_effect = self._get_details
-        user = users_factories.UserFactory(firstName="john", lastName="doe", email="john.doe@example.com")
+        user = users_factories.UserFactory(
+            firstName="john",
+            lastName="doe",
+            email="john.doe@example.com",
+            dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
+        )
 
         remote_import.run(
             procedure_id=6712558,
@@ -1021,13 +1027,11 @@ class RunIntegrationTest:
         get_applications_details,
         send_activation_email,
     ):
-        # given
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
         information = fraud_factories.DMSContentFactory(
             department="93",
             last_name="Doe",
             first_name="Jane",
-            birth_date=eighteen_years_in_the_past,
+            birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
             email="jane.doe@example.com",
             phone="0612345678",
             postal_code="93130",
@@ -1050,12 +1054,10 @@ class RunIntegrationTest:
             lastName=information.last_name,
         )
 
-        # when
         remote_import.run(
             procedure_id=6712558,
         )
 
-        # then
         send_activation_email.assert_not_called()
         assert len(push_testing.requests) == 0
 
@@ -1081,12 +1083,11 @@ class RunIntegrationTest:
         send_accepted_as_beneficiary_email,
     ):
         # given
-        eighteen_years_in_the_past = datetime.now() - relativedelta(years=18, months=4)
         information = fraud_factories.DMSContentFactory(
             department="93",
             last_name="Doe",
             first_name="Jane",
-            birth_date=eighteen_years_in_the_past,
+            birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
             email="jane.doe@example.com",
             phone="0612345678",
             postal_code="93130",
@@ -1096,9 +1097,11 @@ class RunIntegrationTest:
             activity="Étudiant",
         )
         users_factories.UserFactory(
-            email="unexistant@example.com", dateOfBirth=eighteen_years_in_the_past, firstName="Jane", lastName="Doe"
+            email="unexistant@example.com", dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE, firstName="Jane", lastName="Doe"
         )
-        users_factories.UserFactory(firstName="Jane", lastName="Doe", email="jane.doe@example.com")
+        users_factories.UserFactory(
+            firstName="Jane", lastName="Doe", dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE, email="jane.doe@example.com"
+        )
         find_applications_ids_to_retryretry_ids.return_value = [123]
         parse_beneficiary_info.return_value = information
         # beware to not add this application twice
@@ -1191,7 +1194,7 @@ class GraphQLSourceProcessApplicationTest:
         assert beneficiary_information.id_piece_number == "123123123"
 
     def test_process_application_user_already_created(self):
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
         application_id = 123123
         application_details = make_graphql_application(application_id, "closed", email=user.email)
         # fixture
@@ -1205,7 +1208,7 @@ class GraphQLSourceProcessApplicationTest:
 
     @patch.object(DMSGraphQLClient, "get_applications_with_details")
     def test_run(self, get_applications_with_details):
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
         application_id = 123123
 
         get_applications_with_details.return_value = [
@@ -1244,7 +1247,7 @@ class GraphQLSourceProcessApplicationTest:
     @patch.object(DMSGraphQLClient, "get_applications_with_details")
     def test_avoid_reimporting_already_imported_user(self, get_applications_with_details):
         procedure_id = 42
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
         already_imported_user = users_factories.BeneficiaryGrant18Factory()
         users_factories.BeneficiaryImportFactory(
             beneficiary=already_imported_user, applicationId=2, sourceId=procedure_id

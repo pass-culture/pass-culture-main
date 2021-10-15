@@ -1,5 +1,4 @@
-from pcapi.core.payments import conf as payments_conf
-from pcapi.core.payments.models import DepositType
+from pcapi.core.payments import conf as deposits_conf
 from pcapi.core.users import constants
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
@@ -22,7 +21,6 @@ def _get_features(*requested_features: FeatureToggle):
 @blueprint.native_v1.route("/settings", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.SettingsResponse)
 def get_settings() -> serializers.SettingsResponse:
-    booking_configuration = payments_conf.get_current_limit_configuration_for_type(DepositType.GRANT_18)
 
     features = _get_features(
         FeatureToggle.ALLOW_IDCHECK_REGISTRATION,
@@ -40,7 +38,7 @@ def get_settings() -> serializers.SettingsResponse:
     )
 
     return serializers.SettingsResponse(
-        deposit_amount=booking_configuration.TOTAL_CAP,
+        deposit_amount=deposits_conf.GRANTED_DEPOSIT_AMOUNT_18_v2,
         is_recaptcha_enabled=features[FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA],
         allow_id_check_registration=features[FeatureToggle.ALLOW_IDCHECK_REGISTRATION],
         auto_activate_digital_bookings=features[FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS],

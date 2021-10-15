@@ -1,5 +1,7 @@
+from datetime import datetime
 import logging
 
+from dateutil.relativedelta import relativedelta
 import freezegun
 import pytest
 
@@ -79,7 +81,9 @@ class BeneficiaryValidationViewTest:
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_from_jouve_data_staging(self, client):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory(
+            isBeneficiary=False, dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2)
+        )
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         admin = users_factories.AdminFactory()
         client.with_session_auth(admin.email)
@@ -104,7 +108,9 @@ class BeneficiaryValidationViewTest:
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_from_dms_data_staging(self, client):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory(
+            isBeneficiary=False, dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2)
+        )
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
         admin = users_factories.AdminFactory()
         client.with_session_auth(admin.email)

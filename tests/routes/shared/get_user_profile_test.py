@@ -1,5 +1,7 @@
 import datetime
 
+from dateutil.relativedelta import relativedelta
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.categories import subcategories
@@ -18,22 +20,22 @@ from tests.conftest import TestClient
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_and_has_no_deposit(self, app):
-        # Given
-        user = users_factories.BeneficiaryGrant18Factory(
-            civility="M.",
-            address=None,
-            city=None,
-            needsToFillCulturalSurvey=False,
-            departementCode="93",
-            email="toto@example.com",
-            firstName="Jean",
-            lastName="Smisse",
-            dateOfBirth=datetime.datetime(2000, 1, 1),
-            phoneNumber="0612345678",
-            postalCode="93020",
-            publicName="Toto",
-            isEmailValidated=True,
-        )
+        with freeze_time(datetime.datetime.utcnow() - relativedelta(years=3)):
+            user = users_factories.BeneficiaryGrant18Factory(
+                civility="M.",
+                address=None,
+                city=None,
+                needsToFillCulturalSurvey=False,
+                departementCode="93",
+                email="toto@example.com",
+                firstName="Jean",
+                lastName="Smisse",
+                dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18),
+                phoneNumber="0612345678",
+                postalCode="93020",
+                publicName="Toto",
+                isEmailValidated=True,
+            )
 
         # When
         response = TestClient(app.test_client()).with_session_auth(email="toto@example.com").get("/users/current")

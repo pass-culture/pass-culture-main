@@ -102,95 +102,65 @@ class FindProUsersByEmailProviderTest:
 class FindByCivilityTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_case(self, app):
-        # given
-        users_factories.BeneficiaryGrant18Factory(
-            dateOfBirth=datetime(2000, 5, 1), email="john@example.com", firstName="john", lastName="DOe"
-        )
-        users_factories.BeneficiaryGrant18Factory(
-            dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
-        )
+        john = users_factories.BeneficiaryGrant18Factory(email="john@example.com", firstName="john", lastName="DOe")
+        users_factories.BeneficiaryGrant18Factory(email="jane@example.com", firstName="jaNE", lastName="DOe")
 
-        # when
-        users = find_beneficiary_by_civility("john", "doe", datetime(2000, 5, 1))
+        users = find_beneficiary_by_civility("john", "doe", john.dateOfBirth)
 
-        # then
         assert len(users) == 1
         assert users[0].email == "john@example.com"
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_dash(self, app):
-        # given
-        users_factories.BeneficiaryGrant18Factory(
-            dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
-        )
-        users_factories.BeneficiaryGrant18Factory(
-            dateOfBirth=datetime(2000, 5, 1), email="john.b@example.com", firstName="john-bob", lastName="doe"
+        users_factories.BeneficiaryGrant18Factory(email="jane@example.com", firstName="jaNE", lastName="DOe")
+        john = users_factories.BeneficiaryGrant18Factory(
+            email="john.b@example.com", firstName="john-bob", lastName="doe"
         )
 
-        # when
-        users = find_beneficiary_by_civility("johnbob", "doe", datetime(2000, 5, 1))
+        users = find_beneficiary_by_civility("johnbob", "doe", john.dateOfBirth)
 
-        # then
         assert len(users) == 1
         assert users[0].email == "john.b@example.com"
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_spaces(self, app):
-        # given
-        users_factories.BeneficiaryGrant18Factory(
-            dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
-        )
-        users_factories.BeneficiaryGrant18Factory(
-            dateOfBirth=datetime(2000, 5, 1), email="john.b@example.com", firstName="john bob", lastName="doe"
+        users_factories.BeneficiaryGrant18Factory(email="jane@example.com", firstName="jaNE", lastName="DOe")
+        john = users_factories.BeneficiaryGrant18Factory(
+            email="john.b@example.com", firstName="john bob", lastName="doe"
         )
 
-        # when
-        users = find_beneficiary_by_civility("johnbob", "doe", datetime(2000, 5, 1))
+        users = find_beneficiary_by_civility("johnbob", "doe", john.dateOfBirth)
 
-        # then
         assert len(users) == 1
         assert users[0].email == "john.b@example.com"
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_ignoring_accents(self, app):
-        # given
-        users_factories.BeneficiaryGrant18Factory(
-            dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
-        )
-        users_factories.BeneficiaryGrant18Factory(
-            dateOfBirth=datetime(2000, 5, 1), email="john.b@example.com", firstName="john bob", lastName="doe"
+        users_factories.BeneficiaryGrant18Factory(email="jane@example.com", firstName="jaNE", lastName="DOe")
+        john = users_factories.BeneficiaryGrant18Factory(
+            email="john.b@example.com", firstName="john bob", lastName="doe"
         )
 
-        # when
-        users = find_beneficiary_by_civility("jöhn bób", "doe", datetime(2000, 5, 1))
+        users = find_beneficiary_by_civility("jöhn bób", "doe", john.dateOfBirth)
 
-        # then
         assert len(users) == 1
         assert users[0].email == "john.b@example.com"
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_if_one_criteria_does_not_match(self, app):
-        # given
-        users_factories.BeneficiaryGrant18Factory(dateOfBirth=datetime(2000, 5, 1), firstName="Jean", lastName="DOe")
+        john = users_factories.BeneficiaryGrant18Factory(firstName="Jean", lastName="DOe")
 
-        # when
-        users = find_beneficiary_by_civility("john", "doe", datetime(2000, 5, 1))
+        users = find_beneficiary_by_civility("john", "doe", john.dateOfBirth)
 
-        # then
         assert not users
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_users_with_matching_criteria_first_and_last_names_and_birthdate_and_invalid_email(self, app):
-        # given
-        users_factories.BeneficiaryGrant18Factory(
-            dateOfBirth=datetime(2000, 5, 1), email="john@example.com", firstName="john", lastName="DOe"
-        )
-        users_factories.BeneficiaryGrant18Factory(
-            dateOfBirth=datetime(2000, 3, 20), email="jane@example.com", firstName="jaNE", lastName="DOe"
-        )
+        john = users_factories.BeneficiaryGrant18Factory(email="john@example.com", firstName="john", lastName="DOe")
+        users_factories.BeneficiaryGrant18Factory(email="jane@example.com", firstName="jaNE", lastName="DOe")
 
         # when
-        users = find_beneficiary_by_civility("john", "doe", datetime(2000, 5, 1))
+        users = find_beneficiary_by_civility("john", "doe", john.dateOfBirth)
 
         # then
         assert len(users) == 1
@@ -202,14 +172,12 @@ class BeneficiaryByCivilityQueryTest:
     def test_exclude_oneself(self, app):
         # given
         email = "john@example.com"
-        users_factories.BeneficiaryGrant18Factory(
-            dateOfBirth=datetime(2000, 5, 1), email=email, firstName="john", lastName="doe"
-        )
+        john = users_factories.BeneficiaryGrant18Factory(email=email, firstName="john", lastName="doe")
 
         # when
-        user_found = beneficiary_by_civility_query("john", "doe", datetime(2000, 5, 1)).all()
+        user_found = beneficiary_by_civility_query("john", "doe", john.dateOfBirth).all()
         user_not_found = beneficiary_by_civility_query(
-            "john", "doe", datetime(2000, 5, 1), exclude_email=email
+            "john", "doe", john.dateOfBirth, exclude_email=email
         ).one_or_none()
 
         # then

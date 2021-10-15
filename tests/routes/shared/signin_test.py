@@ -24,7 +24,6 @@ class Returns200Test:
             email="user@example.com",
             firstName="Jean",
             lastName="Smisse",
-            dateOfBirth=datetime.datetime(2000, 1, 1),
             phoneNumber="0612345678",
             postalCode="93020",
             publicName="Toto",
