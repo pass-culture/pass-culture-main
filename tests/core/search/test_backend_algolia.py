@@ -8,7 +8,7 @@ from pcapi.core.search.backends import algolia
 from pcapi.core.testing import override_settings
 
 
-@override_settings(ALGOLIA_APPLICATION_ID="fake-id", ALGOLIA_API_KEY="fake-key", ALGOLIA_INDEX_NAME="fake-index")
+@override_settings(ALGOLIA_APPLICATION_ID="fake-id", ALGOLIA_API_KEY="fake-key", ALGOLIA_OFFERS_INDEX_NAME="fake-index")
 def get_backend():
     return algolia.AlgoliaBackend()
 

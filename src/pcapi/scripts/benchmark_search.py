@@ -44,7 +44,7 @@ from pcapi.utils import human_ids
 
 ALGOLIA_API_KEY = os.environ["ALGOLIA_API_KEY"]
 ALGOLIA_APPLICATION_ID = os.environ["ALGOLIA_APPLICATION_ID"]
-ALGOLIA_INDEX_NAME = os.environ["ALGOLIA_INDEX_NAME"]
+ALGOLIA_INDEX_NAME = os.environ["ALGOLIA_OFFERS_INDEX_NAME"]
 APPSEARCH_API_KEY = os.environ["APPSEARCH_API_KEY"]
 APPSEARCH_HOST = os.environ["APPSEARCH_HOST"].rstrip("/")
 APPSEARCH_ENGINE_NAME = "offers-meta"

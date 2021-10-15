@@ -32,7 +32,7 @@ class AlgoliaBackend(base.SearchBackend):
         client = algoliasearch.search_client.SearchClient.create(
             app_id=settings.ALGOLIA_APPLICATION_ID, api_key=settings.ALGOLIA_API_KEY
         )
-        self.algolia_client = client.init_index(settings.ALGOLIA_INDEX_NAME)
+        self.algolia_client = client.init_index(settings.ALGOLIA_OFFERS_INDEX_NAME)
         self.redis_client = current_app.redis_client
 
     def enqueue_offer_ids(self, offer_ids: Iterable[int]) -> None:
