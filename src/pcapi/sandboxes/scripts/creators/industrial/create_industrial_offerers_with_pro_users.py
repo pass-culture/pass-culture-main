@@ -11,8 +11,6 @@ from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_DOMAINS
 from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES
 from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_LAST_NAMES
 from pcapi.sandboxes.scripts.utils.helpers import get_email
-from pcapi.sandboxes.scripts.utils.locations import OFFERER_PLACES
-from pcapi.sandboxes.scripts.utils.locations import create_locations_from_places
 from pcapi.sandboxes.scripts.utils.select import pick_every
 
 
@@ -27,11 +25,72 @@ OFFERERS_WITH_IBAN_REMOVE_MODULO = 2
 USERS_WITH_SEVERAL_OFFERERS_PICK_MODULO = 2
 OFFERERS_WITH_THREE_ATTACHED_USERS_PICK_MODULO = 2
 
+OFFERER_LOCATIONS = [
+    {
+        "address": "Rue des Poilus",
+        "city": "Drancy",
+        "latitude": 48.928099,
+        "longitude": 2.460249,
+        "postalCode": "93700",
+    },
+    {
+        "address": "Rue de Nieuport",
+        "city": "Drancy",
+        "latitude": 48.91683,
+        "longitude": 2.438839,
+        "postalCode": "93700",
+    },
+    {
+        "address": "Rue Francois Rude",
+        "city": "Drancy",
+        "latitude": 48.926432,
+        "longitude": 2.432279,
+        "postalCode": "93700",
+    },
+    {
+        "address": "Rue Pollet",
+        "city": "Aulnay-sous-Bois",
+        "latitude": 48.945379,
+        "longitude": 2.502902,
+        "postalCode": "93600",
+    },
+    {
+        "address": "Rue de Pimodan",
+        "city": "Aulnay-sous-Bois",
+        "latitude": 48.926299,
+        "longitude": 2.490079,
+        "postalCode": "93600",
+    },
+    {
+        "address": "Rue de Pologne",
+        "city": "Aulnay-sous-Bois",
+        "latitude": 48.940826,
+        "longitude": 2.479869,
+        "postalCode": "93600",
+    },
+    {"address": "Rue Pasteur", "city": "Kourou", "latitude": 5.170549, "longitude": -52.649077, "postalCode": "97310"},
+    {"address": "Rue de Cali", "city": "Kourou", "latitude": 5.158387, "longitude": -52.637413, "postalCode": "97310"},
+    {"address": "Rue de Paris", "city": "Kourou", "latitude": 5.161934, "longitude": -52.639804, "postalCode": "97310"},
+    {
+        "address": "Rue Panacoco",
+        "city": "Cayenne",
+        "latitude": 4.916571,
+        "longitude": -52.319168,
+        "postalCode": "97300",
+    },
+    {
+        "address": "Rue Aristote",
+        "city": "Cayenne",
+        "latitude": 4.934074,
+        "longitude": -52.297176,
+        "postalCode": "97300",
+    },
+    {"address": "Cayenne", "city": "Cayenne", "latitude": 4.925246, "longitude": -52.311586, "postalCode": "97300"},
+]
+
 
 def create_industrial_offerers_with_pro_users():
     logger.info("create_industrial_offerers_with_pro_users")
-
-    locations = create_locations_from_places(OFFERER_PLACES, max_location_per_place=3)
 
     offerers_by_name = {}
     users_by_name = {}
@@ -87,7 +146,7 @@ def create_industrial_offerers_with_pro_users():
     user_offerer_validation_prefix, user_offerer_validation_suffix = "AZERTY", 123
     application_id_prefix = "23"
 
-    for (location_index, location) in enumerate(locations):
+    for (location_index, location) in enumerate(OFFERER_LOCATIONS):
 
         mock_index = location_index % len(MOCK_NAMES) + starting_index
 
