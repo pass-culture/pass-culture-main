@@ -985,7 +985,8 @@ class VerifyIdentityDocumentInformationsTest:
     @patch("pcapi.core.users.api.delete_object")
     @patch("pcapi.core.users.api.ask_for_identity_document_verification")
     @patch("pcapi.core.users.api._get_identity_document_informations")
-    def test_known_user_email_sent_when_document_is_invalid(
+    @freeze_time("2021-10-30 09:00:00")
+    def test_known_user_email_sent_when_document_has_invalid_date(
         self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
     ):
         # Given
@@ -1006,6 +1007,47 @@ class VerifyIdentityDocumentInformationsTest:
         assert fraud_check.type == fraud_models.FraudCheckType.INTERNAL_REVIEW
         assert fraud_check.resultContent["message"] == "Erreur de lecture du document : invalid-document-date"
         assert fraud_check.resultContent["source"] == fraud_models.InternalReviewSource.DOCUMENT_VALIDATION_ERROR.value
+
+        assert subscription_models.SubscriptionMessage.query.count() == 1
+        message = subscription_models.SubscriptionMessage.query.first()
+        assert not message.popOverIcon
+        assert (
+            message.userMessage
+            == "Ton dossier a été refusé : le document que tu as transmis est expiré. Consulte l’e-mail envoyé le 30/10/2021 pour plus d’informations."
+        )
+
+    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.api.ask_for_identity_document_verification")
+    @patch("pcapi.core.users.api._get_identity_document_informations")
+    @freeze_time("2021-10-30 09:00:00")
+    def test_known_user_email_sent_when_document_is_invalid(
+        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
+    ):
+        # Given
+        existing_user = users_factories.UserFactory()
+        mocked_get_identity_informations.return_value = (existing_user.email, b"")
+        mocked_ask_for_identity.return_value = (False, "invalid-document")
+
+        users_api.verify_identity_document_informations("some_path")
+
+        assert len(mails_testing.outbox) == 1
+        sent_data = mails_testing.outbox[0].sent_data
+
+        assert sent_data["MJ-TemplateID"] == 2958584
+
+        assert len(existing_user.beneficiaryFraudChecks) == 1
+        fraud_check = existing_user.beneficiaryFraudChecks[0]
+        assert fraud_check.type == fraud_models.FraudCheckType.INTERNAL_REVIEW
+        assert fraud_check.resultContent["message"] == "Erreur de lecture du document : invalid-document"
+        assert fraud_check.resultContent["source"] == fraud_models.InternalReviewSource.DOCUMENT_VALIDATION_ERROR.value
+
+        assert subscription_models.SubscriptionMessage.query.count() == 1
+        message = subscription_models.SubscriptionMessage.query.first()
+        assert not message.popOverIcon
+        assert (
+            message.userMessage
+            == "Ton dossier a été refusé : le document transmis est invalide. Consulte l’e-mail envoyé le 30/10/2021 pour plus d’informations."
+        )
 
     @patch("pcapi.core.users.api.delete_object")
     @patch("pcapi.core.users.api.ask_for_identity_document_verification")

@@ -52,6 +52,30 @@ def on_idcheck_invalid_age(user: users_models.User) -> None:
     repository.save(message)
 
 
+def on_idcheck_invalid_document(user: users_models.User) -> None:
+    today = datetime.date.today()
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage=f"Ton dossier a été refusé : le document transmis est invalide. Consulte l’e-mail envoyé le {today:%d/%m/%Y} pour plus d’informations.",
+        callToActionTitle="Consulter mes e-mails",
+        callToActionLink=INBOX_URL,
+        callToActionIcon=models.CallToActionIcon.EMAIL,
+    )
+    repository.save(message)
+
+
+def on_idcheck_invalid_document_date(user: users_models.User) -> None:
+    today = datetime.date.today()
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage=f"Ton dossier a été refusé : le document que tu as transmis est expiré. Consulte l’e-mail envoyé le {today:%d/%m/%Y} pour plus d’informations.",
+        callToActionTitle="Consulter mes e-mails",
+        callToActionLink=INBOX_URL,
+        callToActionIcon=models.CallToActionIcon.EMAIL,
+    )
+    repository.save(message)
+
+
 def on_dms_application_received(user: users_models.User) -> None:
     today = datetime.date.today()
     message = models.SubscriptionMessage(

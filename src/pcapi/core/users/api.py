@@ -903,9 +903,14 @@ def verify_identity_document_informations(image_storage_path: str) -> None:
     if not valid:
         old_user_emails.send_document_verification_error_email(email, code)
         fraud_api.handle_document_validation_error(email, code)
-        if code == "invalid-age":
-            user = find_user_by_email(email)
-            subscription_messages.on_idcheck_invalid_age(user)
+        user = find_user_by_email(email)
+        if user:
+            message_function = {
+                "invalid-age": subscription_messages.on_idcheck_invalid_age,
+                "invalid-document": subscription_messages.on_idcheck_invalid_document,
+                "invalid-document-date": subscription_messages.on_idcheck_invalid_document_date,
+            }.get(code, lambda x: None)
+            message_function(user)
     delete_object(image_storage_path)
 
 
