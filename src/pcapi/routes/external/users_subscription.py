@@ -33,7 +33,14 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
     client = api_demarches_simplifiees.DMSGraphQLClient()
     raw_data = client.get_single_application_details(form.dossier_id)
     # todo(bcalvez) Use new IdcheckBackend to correctly convert this data
-    application = remote_import.parse_beneficiary_information_graphql(raw_data["dossier"], form.procedure_id)
+    try:
+        application = remote_import.parse_beneficiary_information_graphql(raw_data["dossier"], form.procedure_id)
+    except remote_import.DMSParsingError:
+        logger.info(
+            "Cannot parse DMS application %d in webhook. Errors will be handled in the remote_import cron",
+            form.dossier_id,
+        )
+        return
 
     user = find_user_by_email(application.email)
     if not user:
