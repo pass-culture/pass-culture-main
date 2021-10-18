@@ -509,7 +509,7 @@ const OfferForm = ({
           <b>
             {' Vous pouvez retrouver la liste des catégories de livres qui ne sont pas éligibles au pass Culture sur le lien suivant:'}
             <a
-              href="https://aide.passculture.app/fr/articles/5394935-acteurs-culturels-pourquoi-la-remontee-de-mes-stocks-n-integre-pas-toutes-les-references"
+              href="https://aide.passculture.app/fr/articles/5394354-acteurs-culturels-quels-sont-les-livres-eligibles-au-pass-culture"
               rel="noopener noreferrer"
               target="_blank"
               title="Consulter le FAQ"
