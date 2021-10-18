@@ -54,3 +54,14 @@ def on_dms_application_refused(user: users_models.User) -> None:
         popOverIcon=models.PopOverIcon.WARNING,
     )
     repository.save(message)
+
+
+def on_duplicate_user(user: users_models.User) -> None:
+    today = datetime.date.today()
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage=f"Ce document a déjà été analysé. Vérifie que tu n’as pas créé de compte avec une autre adresse e-mail. Consulte l’e-mail envoyé le {today:%d/%m/%Y} pour plus d’informations.",
+        callToActionLink="passculture://openInbox",
+        callToActionIcon=models.CallToActionIcon.EMAIL,
+    )
+    repository.save(message)

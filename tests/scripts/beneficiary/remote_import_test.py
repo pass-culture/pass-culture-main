@@ -11,6 +11,7 @@ from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
@@ -862,6 +863,13 @@ class RunIntegrationTest:
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.beneficiary == user
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
+
+        sub_msg = user.subscriptionMessages[0]
+        assert (
+            sub_msg.userMessage
+            == "Ce document a déjà été analysé. Vérifie que tu n’as pas créé de compte avec une autre adresse e-mail. Consulte l’e-mail envoyé le 18/10/2021 pour plus d’informations."
+        )
+        assert sub_msg.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
 
     @override_features(FORCE_PHONE_VALIDATION=False)
     @patch(

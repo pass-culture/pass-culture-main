@@ -11,6 +11,7 @@ from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.subscription.messages as subscription_messages
 from pcapi.core.users.api import activate_beneficiary
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.api import steps_to_become_beneficiary
@@ -176,6 +177,7 @@ def process_application(
     if information.id_piece_number:
         _duplicated_user = User.query.filter(User.idPieceNumber == information.id_piece_number).first()
         if _duplicated_user:
+            subscription_messages.on_duplicate_user(user)
             _process_rejection(
                 information,
                 procedure_id=procedure_id,
