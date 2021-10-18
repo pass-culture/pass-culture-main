@@ -3,9 +3,15 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
+import requests_mock
 
+import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers.factories import APIProviderFactory
 from pcapi.core.offerers.factories import AllocineProviderFactory
+from pcapi.core.offerers.factories import VenueProviderFactory
+import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.models import Offer
 from pcapi.local_providers.provider_manager import do_update
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
@@ -55,6 +61,57 @@ class DoUpdateTest:
 
 
 class SynchronizeVenueProviderTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_synchronize_venue_provider(self, app):
+        api_url = "https://example.com/provider/api"
+        old_provider = APIProviderFactory(id=1)
+        provider = APIProviderFactory(id=2, apiUrl=api_url)
+        venue_provider = VenueProviderFactory(provider=provider)
+        venue = venue_provider.venue
+
+        existing_product = offers_factories.ProductFactory(
+            idAtProviders="4321",
+            extraData={"prix_livre": 10},
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+        offer_id_at_providers = f"{existing_product.idAtProviders}@{venue.siret}"
+        existing_stock = offers_factories.StockFactory(
+            quantity=10,
+            offer__venue=venue,
+            offer__product=existing_product,
+            lastProviderId=old_provider.id,
+            offer__idAtProviders=offer_id_at_providers,
+            idAtProviders=offer_id_at_providers,
+        )
+        bookings_factories.BookingFactory(stock=existing_stock)
+
+        product_to_synchronized = offers_factories.ProductFactory(
+            idAtProviders="1234",
+            extraData={"prix_livre": 10},
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+
+        with requests_mock.Mocker() as mock:
+            response = {
+                "total": 1,
+                "stocks": [
+                    {"ref": "1234", "available": 5},
+                    {"ref": "4321", "available": 12},
+                ],
+            }
+            mock.get(
+                f"{api_url}/{venue_provider.venueIdAtOfferProvider}", [{"json": response}, {"json": {"stocks": []}}]
+            )
+            synchronize_venue_provider(venue_provider)
+
+        # Check that previously synchronized stock have been updated.
+        assert existing_stock.offer.lastProviderId == provider.id
+        assert existing_stock.quantity == 12 + existing_stock.dnBookedQuantity
+
+        # Check that offers and stocks have been created.
+        created_offer = Offer.query.filter_by(product=product_to_synchronized).one()
+        assert created_offer.stocks[0].quantity == 5
+
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.provider_manager.get_local_provider_class_by_name")
     @patch("pcapi.local_providers.provider_manager.do_update")

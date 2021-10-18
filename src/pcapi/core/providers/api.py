@@ -61,6 +61,7 @@ def create_venue_provider(
 
 def reset_stock_quantity(venue: Venue) -> None:
     """Reset all stock quantity with the number of non-cancelled bookings."""
+    logger.info("Resetting all stock quantity for changed sync", extra={"venue": venue.id})
     stocks = Stock.query.filter(Stock.offerId == Offer.id, Offer.venue == venue, Offer.idAtProviders.isnot(None))
     stocks.update({"quantity": Stock.dnBookedQuantity}, synchronize_session=False)
     db.session.commit()
@@ -68,6 +69,7 @@ def reset_stock_quantity(venue: Venue) -> None:
 
 def update_last_provider_id(venue: Venue, provider_id: int) -> None:
     """Update all offers' lastProviderId with the new provider_id."""
+    logger.info("Updating offer.last_provider_id for changed sync", extra={"venue": venue.id, "provider": provider_id})
     offers = Offer.query.filter(Offer.venue == venue, Offer.idAtProviders.isnot(None))
     offers.update({"lastProviderId": provider_id}, synchronize_session=False)
     db.session.commit()
@@ -84,10 +86,19 @@ def change_venue_provider(
 
     _check_provider_can_be_connected(new_provider, id_at_provider)
 
+    reset_stock_quantity(venue_provider.venue)
+
+    venue_provider.lastSyncDate = None
     venue_provider.provider = new_provider
     venue_provider.venueIdAtOfferProvider = id_at_provider
 
+    logger.info(
+        "Changing venue_provider.provider_id", extra={"venue_provider": venue_provider.id, "provider": new_provider_id}
+    )
     repository.save(venue_provider)
+
+    update_last_provider_id(venue_provider.venue, new_provider_id)
+
     return venue_provider
 
 
@@ -155,6 +166,7 @@ def synchronize_stocks(
     stock_details: Iterable[StockDetail], venue: Venue, provider_id: Optional[int] = None
 ) -> dict[str, int]:
     products_provider_references = [stock_detail.products_provider_reference for stock_detail in stock_details]
+    # here product.id_at_providers is the "ref" field that provider api give use.
     products_by_provider_reference = get_products_map_by_provider_reference(products_provider_references)
 
     stock_details = [
@@ -162,6 +174,7 @@ def synchronize_stocks(
     ]
 
     offers_provider_references = [stock_detail.offers_provider_reference for stock_detail in stock_details]
+    # here offers.id_at_providers is: ref@venue.siret
     offers_by_provider_reference = get_offers_map_by_id_at_providers(offers_provider_references)
 
     products_references = [stock_detail.products_provider_reference for stock_detail in stock_details]

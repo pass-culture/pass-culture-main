@@ -1,11 +1,13 @@
 from unittest.mock import patch
 
 from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.offerers.factories import AllocineProviderFactory
 from pcapi.core.offerers.factories import AllocineVenueProviderFactory
 from pcapi.core.offerers.factories import AllocineVenueProviderPriceRuleFactory
 from pcapi.core.offerers.factories import ProviderFactory
 from pcapi.core.offerers.factories import VenueProviderFactory
+from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.factories import AdminFactory
@@ -40,7 +42,7 @@ class EditModelTest:
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
     def test_edit_venue_provider(
-        self, mock_siret_can_be_synchronized, synchronize_venue_provider, validate_csrf_token, client, app
+        self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, validate_csrf_token, client, app
     ):
         # Given
         AdminFactory(email="user@example.com")
@@ -52,6 +54,9 @@ class EditModelTest:
             name="new provider", enabledForPro=True, localClass=None, apiUrl="https://example2.com"
         )
         venue_provider = VenueProviderFactory(provider=old_provider, venue=venue)
+
+        existing_stock = StockFactory(quantity=10, offer__venue=venue, offer__idAtProviders="1")
+        BookingFactory(stock=existing_stock)
 
         mock_siret_can_be_synchronized.return_value = True
 
@@ -68,10 +73,17 @@ class EditModelTest:
 
         # Then
         venue_provider = VenueProvider.query.one()
+
+        # Check that venue_provider model have been updated
         assert venue_provider.venue == venue
         assert venue_provider.provider == new_provider
         assert venue_provider.venueIdAtOfferProvider == "hsf4uiagèy12386dq"
-        synchronize_venue_provider.assert_called_once_with(venue_provider)
+
+        # Check that the quantity of existing stocks have been updated and quantity reset to booked_quantity.
+        assert existing_stock.quantity == 1
+        assert existing_stock.offer.lastProviderId == new_provider.id
+
+        mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
