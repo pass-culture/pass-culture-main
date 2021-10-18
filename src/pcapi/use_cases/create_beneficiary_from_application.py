@@ -94,6 +94,24 @@ class CreateBeneficiaryFromApplication:
                 detail=detail,
                 user=preexisting_account,
             )
+        except BeneficiaryIsADuplicate as exception:
+            exception_reason = str(exception)
+
+            logger.info(
+                "User is a duplicate : cannot register user from application",
+                extra={
+                    "applicationId": application_id,
+                    "reason": exception_reason,
+                },
+            )
+            subscription_messages.on_duplicate_user(preexisting_account)
+            self.beneficiary_repository.reject(
+                beneficiary_pre_subscription, detail=exception_reason, user=preexisting_account
+            )
+
+            user_emails.send_rejection_email_to_beneficiary_pre_subscription(
+                beneficiary_pre_subscription=beneficiary_pre_subscription, beneficiary_is_eligible=True
+            )
         except CantRegisterBeneficiary as cant_register_beneficiary_exception:
             exception_reason = str(cant_register_beneficiary_exception)
             logger.warning(
@@ -107,8 +125,7 @@ class CreateBeneficiaryFromApplication:
                 beneficiary_pre_subscription, detail=exception_reason, user=preexisting_account
             )
             user_emails.send_rejection_email_to_beneficiary_pre_subscription(
-                beneficiary_pre_subscription=beneficiary_pre_subscription,
-                beneficiary_is_eligible=isinstance(cant_register_beneficiary_exception, BeneficiaryIsADuplicate),
+                beneficiary_pre_subscription=beneficiary_pre_subscription, beneficiary_is_eligible=False
             )
         else:
             user = self.beneficiary_repository.save(beneficiary_pre_subscription, user=preexisting_account)

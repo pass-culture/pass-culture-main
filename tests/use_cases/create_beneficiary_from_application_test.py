@@ -255,6 +255,14 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     assert beneficiary_import.detail == f"User with id {existing_user.id} is a duplicate."
     assert beneficiary_import.beneficiary is applicant
 
+    assert len(applicant.subscriptionMessages) == 1
+    sub_msg = applicant.subscriptionMessages[0]
+    assert (
+        sub_msg.userMessage
+        == "Ce document a déjà été analysé. Vérifie que tu n’as pas créé de compte avec une autre adresse e-mail. Consulte l’e-mail envoyé le 18/10/2021 pour plus d’informations."
+    )
+    assert sub_msg.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
+
 
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
 def test_cannot_save_beneficiary_if_department_is_not_eligible(get_application_content, app):
