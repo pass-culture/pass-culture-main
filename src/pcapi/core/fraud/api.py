@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 FRAUD_RESULT_REASON_SEPARATOR = ";"
 
 
-def on_educonnect_result(user: User, educonnect_content: models.EduconnectContent):
+def on_educonnect_result(user: User, educonnect_content: models.EduconnectContent) -> None:
     if (
         models.BeneficiaryFraudCheck.query.filter(
             models.BeneficiaryFraudCheck.user == user,
@@ -46,7 +46,7 @@ def on_educonnect_result(user: User, educonnect_content: models.EduconnectConten
     on_identity_fraud_check_result(user, fraud_check)
 
 
-def on_jouve_result(user: User, jouve_content: models.JouveContent):
+def on_jouve_result(user: User, jouve_content: models.JouveContent) -> None:
     if (
         models.BeneficiaryFraudCheck.query.filter(
             models.BeneficiaryFraudCheck.user == user,
@@ -447,7 +447,7 @@ def validate_frauds(user: User, fraud_items: list[models.FraudItem]) -> models.B
     return fraud_result
 
 
-def has_user_passed_fraud_checks(user: User):
+def has_user_passed_fraud_checks(user: User) -> bool:
     return bool(user.beneficiaryFraudResult)
 
 
