@@ -135,6 +135,7 @@ class BuildObjectTest:
                 "name": "Offerer name",
             },
             "venue": {
+                "id": 2,
                 "city": "Paris",
                 "departementCode": "93",
                 "name": "Venue name",
@@ -500,6 +501,7 @@ class BuildObjectTest:
                 "name": "Offerer name",
             },
             "venue": {
+                "id": 2,
                 "city": "Paris",
                 "departementCode": "93",
                 "name": "Venue name",
@@ -594,6 +596,7 @@ class BuildObjectTest:
                 "name": "Offerer name",
             },
             "venue": {
+                "id": 2,
                 "city": "Paris",
                 "departementCode": "93",
                 "name": "Venue name",
