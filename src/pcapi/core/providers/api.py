@@ -59,6 +59,20 @@ def create_venue_provider(
     return new_venue_provider
 
 
+def reset_stock_quantity(venue: Venue) -> None:
+    """Reset all stock quantity with the number of non-cancelled bookings."""
+    stocks = Stock.query.filter(Stock.offerId == Offer.id, Offer.venue == venue, Offer.idAtProviders.isnot(None))
+    stocks.update({"quantity": Stock.dnBookedQuantity}, synchronize_session=False)
+    db.session.commit()
+
+
+def update_last_provider_id(venue: Venue, provider_id: int) -> None:
+    """Update all offers' lastProviderId with the new provider_id."""
+    offers = Offer.query.filter(Offer.venue == venue, Offer.idAtProviders.isnot(None))
+    offers.update({"lastProviderId": provider_id}, synchronize_session=False)
+    db.session.commit()
+
+
 def change_venue_provider(
     venue_provider: VenueProvider, new_provider_id: int, venueIdAtOfferProvider: str = None
 ) -> VenueProvider:

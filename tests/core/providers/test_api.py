@@ -5,10 +5,12 @@ from freezegun.api import freeze_time
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers.factories import OfferFactory
+from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.providers import api
@@ -49,6 +51,45 @@ def create_offer(isbn, siret):
 
 def create_stock(isbn, siret, **kwargs):
     return factories.StockFactory(offer=create_offer(isbn, siret), idAtProviders=f"{isbn}@{siret}", **kwargs)
+
+
+@pytest.mark.usefixtures("db_session")
+def test_reset_stock_quantity():
+    offer = OfferFactory(idAtProviders="1")
+    venue = offer.venue
+    stock1_no_bookings = StockFactory(offer=offer, quantity=10)
+    stock2_only_cancelled_bookings = StockFactory(offer=offer, quantity=10)
+    CancelledBookingFactory(stock=stock2_only_cancelled_bookings)
+    stock3_mix_of_bookings = StockFactory(offer=offer, quantity=10)
+    BookingFactory(stock=stock3_mix_of_bookings)
+    CancelledBookingFactory(stock=stock3_mix_of_bookings)
+    manually_added_offer = OfferFactory(venue=venue)
+    stock4_manually_added = StockFactory(offer=manually_added_offer, quantity=10)
+    stock5_other_venue = StockFactory(quantity=10)
+
+    api.reset_stock_quantity(venue)
+
+    assert stock1_no_bookings.quantity == 0
+    assert stock2_only_cancelled_bookings.quantity == 0
+    assert stock3_mix_of_bookings.quantity == 1
+    assert stock4_manually_added.quantity == 10
+    assert stock5_other_venue.quantity == 10
+
+
+@pytest.mark.usefixtures("db_session")
+def test_update_last_provider_id():
+    provider1 = offerers_factories.ProviderFactory()
+    provider2 = offerers_factories.ProviderFactory()
+    venue = VenueFactory()
+    offer1_synced = OfferFactory(venue=venue, idAtProviders=1, lastProvider=provider1)
+    offer2_manual = OfferFactory(venue=venue, idAtProviders=None)
+    offer3_other_venue = OfferFactory(idAtProviders=2, lastProvider=provider1)
+
+    api.update_last_provider_id(venue, provider2.id)
+
+    assert offer1_synced.lastProvider == provider2
+    assert offer2_manual.idAtProviders is None
+    assert offer3_other_venue.lastProvider == provider1
 
 
 class SynchronizeStocksTest:

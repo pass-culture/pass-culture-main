@@ -71,26 +71,3 @@ def test_fully_sync_venue_with_new_provider():
     offer2 = offers_models.Offer.query.filter_by(product=product2).one()
     assert offer2.stocks[0].quantity == 5
     assert offer2.lastProviderId == new_provider.id
-
-
-@pytest.mark.usefixtures("db_session")
-def test_reset_stock_quantity():
-    offer = offers_factories.OfferFactory(idAtProviders="1")
-    venue = offer.venue
-    stock1_no_bookings = offers_factories.StockFactory(offer=offer, quantity=10)
-    stock2_only_cancelled_bookings = offers_factories.StockFactory(offer=offer, quantity=10)
-    bookings_factories.CancelledBookingFactory(stock=stock2_only_cancelled_bookings)
-    stock3_mix_of_bookings = offers_factories.StockFactory(offer=offer, quantity=10)
-    bookings_factories.BookingFactory(stock=stock3_mix_of_bookings)
-    bookings_factories.CancelledBookingFactory(stock=stock3_mix_of_bookings)
-    manually_added_offer = offers_factories.OfferFactory(venue=venue)
-    stock4_manually_added = offers_factories.StockFactory(offer=manually_added_offer, quantity=10)
-    stock5_other_venue = offers_factories.StockFactory(quantity=10)
-
-    fully_sync_venue._reset_stock_quantity(venue)
-
-    assert stock1_no_bookings.quantity == 0
-    assert stock2_only_cancelled_bookings.quantity == 0
-    assert stock3_mix_of_bookings.quantity == 1
-    assert stock4_manually_added.quantity == 10
-    assert stock5_other_venue.quantity == 10
