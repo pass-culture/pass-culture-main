@@ -10,7 +10,7 @@ def create_message_jouve_manual_review(user: users_models.User, application_id: 
     today = datetime.date.today()
     message = models.SubscriptionMessage(
         user=user,
-        userMessage=f"Nous avons reçu ton dossier le {today:%d/%m/%Y} et son analyse peut prendre jusqu'à 5 jours.",
+        userMessage=f"Nous avons reçu ton dossier le {today:%d/%m/%Y} et son analyse est en cours. Cela peut prendre jusqu'à 5 jours.",
         popOverIcon=models.PopOverIcon.CLOCK,
     )
     repository.save(message)

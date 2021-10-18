@@ -633,7 +633,7 @@ class JouveDataValidationTest:
         assert message.popOverIcon == subscription_models.PopOverIcon.CLOCK
         assert (
             message.userMessage
-            == "Nous avons reçu ton dossier le 30/10/2021 et son analyse peut prendre jusqu'à 5 jours."
+            == "Nous avons reçu ton dossier le 30/10/2021 et son analyse est en cours. Cela peut prendre jusqu'à 5 jours."
         )
 
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
