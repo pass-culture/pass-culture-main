@@ -452,6 +452,8 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
                 return True
         return False
 
+    is_eligible_for_search = isBookable
+
     @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
         if self.activeStocks:

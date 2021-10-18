@@ -116,6 +116,22 @@ class ReindexOfferIdsTest:
         assert app.redis_client.smembers("search:appsearch:offer-ids-in-error-to-index") == {str(offer.id)}
 
 
+class ReindexVenueIdsTest:
+    def test_index_new_venue(self):
+        venue = offers_factories.VenueFactory(isPermanent=True)
+        assert search_testing.search_store["venues"] == {}
+        search.reindex_venue_ids([venue.id])
+        assert venue.id in search_testing.search_store["venues"]
+
+    def test_unindex_ineligible_venues(self):
+        venue1 = offers_factories.VenueFactory(isPermanent=False)
+        venue2 = offers_factories.VenueFactory(isPermanent=True, managingOfferer__isActive=False)
+        search_testing.search_store["venues"][venue1.id] = "dummy"
+        search_testing.search_store["venues"][venue2.id] = "dummy"
+        search.reindex_venue_ids([venue1.id, venue2.id])
+        assert search_testing.search_store["venues"] == {}
+
+
 @override_settings(REDIS_OFFER_IDS_CHUNK_SIZE=3)
 @mock.patch("pcapi.core.search._reindex_offer_ids")
 class IndexOffersInQueueTest:

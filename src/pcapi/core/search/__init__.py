@@ -1,6 +1,8 @@
 import logging
 from typing import Iterable
 
+from sqlalchemy.orm import joinedload
+
 from pcapi import settings
 from pcapi.core.search.backends import base
 from pcapi.models import Offer
@@ -184,10 +186,11 @@ def _index_venues_in_queue(backend: base.SearchBackend, from_error_queue: bool =
 
 def _reindex_venue_ids(backend: base.SearchBackend, venue_ids: Iterable[int]) -> None:
     logger.info("Starting to index venues", extra={"count": len(venue_ids), "backend": str(backend)})
-    venues = Venue.query.filter(Venue.id.in_(venue_ids))
+    venues = Venue.query.filter(Venue.id.in_(venue_ids)).options(joinedload(Venue.managingOfferer))
 
-    to_add = [venue for venue in venues if venue.isPermanent]
+    to_add = [venue for venue in venues if venue.is_eligible_for_search]
     to_add_ids = [venue.id for venue in to_add]
+    to_delete_ids = [venue.id for venue in venues if not venue.is_eligible_for_search]
 
     try:
         backend.index_venues(to_add)
@@ -201,7 +204,6 @@ def _reindex_venue_ids(backend: base.SearchBackend, venue_ids: Iterable[int]) ->
     else:
         logger.info("Finished indexing venues", extra={"count": len(to_add), "backend": str(backend)})
 
-    to_delete_ids = [venue.id for venue in venues if not venue.isPermanent]
     if to_delete_ids:
         unindex_venue_ids(to_delete_ids)
         logger.info("Finished unindexing venues", extra={"count": len(to_delete_ids), "backend": str(backend)})
@@ -262,7 +264,7 @@ def _reindex_offer_ids(backend: base.SearchBackend, offer_ids: Iterable[int]) ->
     # test_serialize_appsearch:test_check_number_of_sql_queries
     offers = Offer.query.filter(Offer.id.in_(offer_ids))
     for offer in offers:
-        if offer and offer.isBookable:
+        if offer and offer.is_eligible_for_search:
             to_add.append(offer)
         elif backend.check_offer_is_indexed(offer):
             to_delete.append(offer)
