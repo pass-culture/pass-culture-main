@@ -7,6 +7,8 @@ from pcapi.admin.base_configuration import BaseCustomAdminView
 from pcapi.core.categories.categories import ALL_CATEGORIES
 from pcapi.core.categories.categories import Category
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
+from pcapi.core.categories.subcategories import HomepageLabels
+from pcapi.core.categories.subcategories import SearchGroups
 from pcapi.core.categories.subcategories import Subcategory
 
 
@@ -36,6 +38,8 @@ class SubcategoryView(BaseCustomAdminView):
         return self.render(
             "admin/subcategories_list.html",
             subcategories=ALL_SUBCATEGORIES,
+            search_groups=SearchGroups,
+            homepage_labels=HomepageLabels,
             column_names=column_names,
             column_labels=column_labels,
         )

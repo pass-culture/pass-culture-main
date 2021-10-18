@@ -31,7 +31,13 @@
             {% elif subcategory[column_name] == False %}
             <span class="fa fa-minus-circle glyphicon glyphicon-minus-sign icon-minus-sign" style="color:red;"></span>
             {% else %}
-            {{ subcategory[column_name] }}
+                {% if column_name == 'search_group_name' %}
+                    {{ search_groups[subcategory[column_name]].value }}
+                {% elif column_name == 'homepage_label_name' %}
+                    {{ homepage_labels[subcategory[column_name]].value }}
+                {% else %}
+                    {{ subcategory[column_name] }}
+                {% endif %}
             {% endif %}
         </td>
         {% endfor %}
