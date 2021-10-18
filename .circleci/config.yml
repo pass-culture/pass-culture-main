@@ -364,7 +364,7 @@ jobs:
           source ${BASH_ENV}
           gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
           docker build ./api \
-            -f ./api/Dockerfile.gcp \
+            -f ./api/Dockerfile \
             -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${APP_VERSION}
           docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${APP_VERSION}
       - run:
