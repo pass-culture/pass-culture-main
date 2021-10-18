@@ -19,7 +19,7 @@ from pcapi.core.providers import exceptions
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import VenueProvider
-from pcapi.core.providers.repository import get_enabled_providers_for_pro_query
+from pcapi.core.providers.repository import get_active_providers_query
 from pcapi.repository import repository
 from pcapi.workers.venue_provider_job import venue_provider_job
 
@@ -133,7 +133,7 @@ class VenueProviderView(BaseAdminView):
 
     def scaffold_form(self) -> BaseForm:
         form_class = super().scaffold_form()
-        form_class.provider = QuerySelectField(query_factory=get_enabled_providers_for_pro_query, get_label="name")
+        form_class.provider = QuerySelectField(query_factory=get_active_providers_query, get_label="name")
 
         return form_class
 

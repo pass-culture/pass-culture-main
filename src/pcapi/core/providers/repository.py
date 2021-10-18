@@ -23,6 +23,10 @@ def get_provider_by_local_class(local_class: str) -> Provider:
     return Provider.query.filter_by(localClass=local_class).one_or_none()
 
 
+def get_active_providers_query() -> query:
+    return Provider.query.filter_by(isActive=True).order_by(Provider.name)
+
+
 def get_enabled_providers_for_pro() -> list[Provider]:
     return get_enabled_providers_for_pro_query().all()
 
