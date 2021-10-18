@@ -348,7 +348,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     isEducational = Column(Boolean, server_default=false(), default=False, nullable=False)
 
-    subcategoryId = Column(Text, nullable=True, index=True)
+    subcategoryId = Column(Text, nullable=False, index=True)
 
     dateUpdated: datetime = Column(DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
 
