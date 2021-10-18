@@ -25,6 +25,8 @@ OFFERERS_WITH_IBAN_REMOVE_MODULO = 2
 USERS_WITH_SEVERAL_OFFERERS_PICK_MODULO = 2
 OFFERERS_WITH_THREE_ATTACHED_USERS_PICK_MODULO = 2
 
+# Declare locations in various timezones: metropolitan France
+# (UTC+1/+2), Guyane (UTC-3) and Wallis-et-Futuna (UTC+12).
 OFFERER_LOCATIONS = [
     {
         "address": "Rue des Poilus",
@@ -86,6 +88,13 @@ OFFERER_LOCATIONS = [
         "postalCode": "97300",
     },
     {"address": "Cayenne", "city": "Cayenne", "latitude": 4.925246, "longitude": -52.311586, "postalCode": "97300"},
+    {
+        "address": "RT3",
+        "city": "Matāʻutu",
+        "latitude": -13.282339262455315,
+        "longitude": -176.1771062948854,
+        "postalCode": "98600",
+    },
 ]
 
 
