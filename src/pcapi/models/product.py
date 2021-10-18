@@ -57,7 +57,7 @@ class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
 
     owningOfferer = relationship("Offerer", foreign_keys=[owningOffererId], backref="events")
 
-    subcategoryId = Column(Text, nullable=True, index=True)
+    subcategoryId = Column(Text, nullable=False, index=True)
 
     thumb_path_component = "products"
 
