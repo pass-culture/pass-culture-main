@@ -15,8 +15,7 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
-from pcapi.core.users.models import PhoneValidationStatusType
-from pcapi.core.users.models import User
+from pcapi.core.users import models as users_models
 from pcapi.models import ApiErrors
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportStatus
@@ -294,7 +293,7 @@ class ProcessBeneficiaryApplicationTest:
         remote_import.process_beneficiary_application(information=information, procedure_id=123456)
 
         # then
-        first = User.query.first()
+        first = users_models.User.query.first()
         assert first.email == "jane.doe@example.com"
         assert first.wallet_balance == 300
         assert first.civility == "Mme"
@@ -357,7 +356,7 @@ class ProcessBeneficiaryApplicationTest:
     ):
         # given
         information = fraud_factories.DMSContentFactory(application_id=123)
-        create_beneficiary_from_application.side_effect = [User()]
+        create_beneficiary_from_application.side_effect = [users_models.User()]
         mock_repository.save.side_effect = [ApiErrors({"postalCode": ["baaaaad value"]})]
 
         # when
@@ -649,8 +648,8 @@ class RunIntegrationTest:
         )
 
         # then
-        assert User.query.count() == 1
-        user = User.query.first()
+        assert users_models.User.query.count() == 1
+        user = users_models.User.query.first()
         assert user.firstName == "john"
         assert user.postalCode == "93450"
         assert user.address == "11 Rue du Test"
@@ -718,8 +717,8 @@ class RunIntegrationTest:
         )
 
         # then
-        assert User.query.count() == 1
-        user = User.query.first()
+        assert users_models.User.query.count() == 1
+        user = users_models.User.query.first()
 
         assert user.firstName == "john"
         assert user.postalCode == "93450"
@@ -767,7 +766,7 @@ class RunIntegrationTest:
             isBeneficiary=False,
             isEmailValidated=True,
             dateOfBirth=date_of_birth,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
         get_application_details.side_effect = self._get_details
@@ -778,8 +777,8 @@ class RunIntegrationTest:
         )
 
         # then
-        assert User.query.count() == 1
-        user = User.query.first()
+        assert users_models.User.query.count() == 1
+        user = users_models.User.query.first()
 
         assert user.firstName == "john"
         assert user.postalCode == "93450"
@@ -846,9 +845,9 @@ class RunIntegrationTest:
         )
 
         # then
-        assert User.query.count() == 2
+        assert users_models.User.query.count() == 2
         assert BeneficiaryImport.query.count() == 1
-        user = User.query.get(user.id)
+        user = users_models.User.query.get(user.id)
         assert len(user.beneficiaryFraudChecks) == 1
         assert user.beneficiaryFraudChecks[0].type == fraud_models.FraudCheckType.DMS
 
@@ -884,7 +883,7 @@ class RunIntegrationTest:
             isBeneficiary=False,
             isEmailValidated=True,
             dateOfBirth=self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S"),
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             idPieceNumber="1234123412",
         )
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
@@ -898,9 +897,9 @@ class RunIntegrationTest:
 
         # then
         assert process_mock.call_count == 0
-        assert User.query.count() == 1
+        assert users_models.User.query.count() == 1
         assert BeneficiaryImport.query.count() == 1
-        user = User.query.first()
+        user = users_models.User.query.first()
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
         fraud_content = fraud_models.DMSContent(**fraud_check.resultContent)
@@ -928,7 +927,7 @@ class RunIntegrationTest:
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             isEmailValidated=True,
             dateOfBirth=self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S"),
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             idPieceNumber="1234123412",
         )
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
@@ -983,9 +982,9 @@ class RunIntegrationTest:
         )
 
         # then
-        assert User.query.count() == 1
+        assert users_models.User.query.count() == 1
 
-        user = User.query.first()
+        user = users_models.User.query.first()
         assert user.firstName == "john"
         assert user.postalCode == "93450"
 

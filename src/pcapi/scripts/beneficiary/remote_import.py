@@ -12,12 +12,10 @@ from pcapi.connectors.api_demarches_simplifiees import get_application_details
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.subscription.messages as subscription_messages
-from pcapi.core.users.api import activate_beneficiary
-from pcapi.core.users.api import create_reset_password_token
-from pcapi.core.users.api import steps_to_become_beneficiary
-from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
-from pcapi.core.users.external import update_external_user
-from pcapi.core.users.models import User
+import pcapi.core.users.api as users_api
+import pcapi.core.users.constants as users_constants
+import pcapi.core.users.external as users_external
+import pcapi.core.users.models as users_models
 from pcapi.domain import user_emails
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from pcapi.domain.user_activation import create_beneficiary_from_application
@@ -175,7 +173,9 @@ def process_application(
         return
 
     if information.id_piece_number:
-        _duplicated_user = User.query.filter(User.idPieceNumber == information.id_piece_number).first()
+        _duplicated_user = users_models.User.query.filter(
+            users_models.User.idPieceNumber == information.id_piece_number
+        ).first()
         if _duplicated_user:
             subscription_messages.on_duplicate_user(user)
             _process_rejection(
@@ -316,7 +316,7 @@ def parse_beneficiary_information_graphql(application_detail: dict, procedure_id
 def process_beneficiary_application(
     information: fraud_models.DMSContent,
     procedure_id: int,
-    preexisting_account: Optional[User] = None,
+    preexisting_account: Optional[users_models.User] = None,
 ) -> None:
     """
     Create/update a user account and complete the import process.
@@ -349,15 +349,17 @@ def process_beneficiary_application(
         user=user,
     )
 
-    if not steps_to_become_beneficiary(user):
+    if not users_api.steps_to_become_beneficiary(user):
         deposit_source = beneficiary_import.get_detailed_source()
-        activate_beneficiary(user, deposit_source)
+        users_api.activate_beneficiary(user, deposit_source)
     else:
-        update_external_user(user)
+        users_external.update_external_user(user)
 
     try:
         if preexisting_account is None:
-            token = create_reset_password_token(user, token_life_time=RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED)
+            token = users_api.create_reset_password_token(
+                user, token_life_time=users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
+            )
             user_emails.send_activation_email(user, token=token)
         else:
             user_emails.send_accepted_as_beneficiary_email(user)
@@ -370,7 +372,9 @@ def process_beneficiary_application(
         )
 
 
-def _process_duplication(duplicate_users: list[User], information: fraud_models.DMSContent, procedure_id: int) -> None:
+def _process_duplication(
+    duplicate_users: list[users_models.User], information: fraud_models.DMSContent, procedure_id: int
+) -> None:
     number_of_beneficiaries = len(duplicate_users)
     duplicate_ids = ", ".join([str(u.id) for u in duplicate_users])
     message = f"{number_of_beneficiaries} utilisateur(s) en doublon {duplicate_ids} pour le dossier {information.application_id} - Procedure {procedure_id}"
@@ -384,7 +388,9 @@ def _process_duplication(duplicate_users: list[User], information: fraud_models.
     )
 
 
-def _process_rejection(information: fraud_models.DMSContent, procedure_id: int, reason: str, user: User = None) -> None:
+def _process_rejection(
+    information: fraud_models.DMSContent, procedure_id: int, reason: str, user: users_models.User = None
+) -> None:
     save_beneficiary_import_with_status(
         ImportStatus.REJECTED,
         information.application_id,
