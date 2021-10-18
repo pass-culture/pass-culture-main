@@ -49,3 +49,6 @@ webapp.iml
 # licenses
 licenses
 licenses.json
+
+# Snyk extension
+.dccache
