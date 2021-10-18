@@ -812,13 +812,19 @@ class RunIntegrationTest:
     @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
     def test_import_duplicated_user(self, get_application_details, get_closed_application_ids_for_demarche_simplifiee):
         # given
-        user = users_factories.BeneficiaryGrant18Factory(
+        existing_user = users_factories.BeneficiaryGrant18Factory(
+            firstName="johnny",
+            lastName="doe",
+            email="john.doe.beneficiary@example.com",
+            idPieceNumber="1234123412",
+            isEmailValidated=True,
+            isActive=True,
+        )
+
+        user = users_factories.UserFactory(
             firstName="john",
             lastName="doe",
             email="john.doe@example.com",
-            postalCode="93450",
-            phoneNumber="0102030405",
-            idPieceNumber="121316",
             isEmailValidated=True,
             isActive=True,
         )
@@ -833,21 +839,23 @@ class RunIntegrationTest:
         )
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
         get_application_details.side_effect = self._get_details
-
         # when
         remote_import.run(
             procedure_id=6712558,
         )
 
         # then
-        assert User.query.count() == 1
+        assert User.query.count() == 2
         assert BeneficiaryImport.query.count() == 1
         user = User.query.get(user.id)
         assert len(user.beneficiaryFraudChecks) == 1
         assert user.beneficiaryFraudChecks[0].type == fraud_models.FraudCheckType.DMS
 
-        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.KO
-        assert "L'utilisateur est déjà bénéficiaire" in user.beneficiaryFraudResult.reason
+        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.SUSPICIOUS
+        assert (
+            f"Le n° de cni 1234123412 est déjà pris par l'utilisateur {existing_user.id}"
+            in user.beneficiaryFraudResult.reason
+        )
 
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.source == "demarches_simplifiees"
