@@ -122,6 +122,9 @@ const Reimbursements = ({ currentUser }) => {
   const requireVenueFilterForAdmin = currentUser.isAdmin && filters.venue === 'allVenues'
   const shouldDisableButtons = !isPeriodFilterSelected || requireVenueFilterForAdmin
 
+  const hasNoResults = !isLoading && !venuesOptions.length
+  const hasResults = !isLoading && venuesOptions.length > 0
+
   return (
     <AppLayout
       layoutConfig={{
@@ -130,109 +133,107 @@ const Reimbursements = ({ currentUser }) => {
     >
       <PageTitle title="Vos remboursements" />
       <Titles title="Remboursements" />
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        venuesOptions.length ? (
-          <>
-            <p>
-              Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation
-              d’une contremarque dans le guichet ou à la validation automatique des contremarques
-              d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.
-            </p>
-            <Banner type="notification-info">
-              En savoir plus sur
-              <a
-                className="bi-link tertiary-link"
-                href="https://aide.passculture.app/fr/articles/5096833-acteurs-culturels-quel-est-le-calendrier-des-prochains-remboursements"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <Icon svg="ico-external-site" />
-                Les prochains remboursements
-              </a>
-              <a
-                className="bi-link tertiary-link"
-                href="https://aide.passculture.app/fr/articles/5096171-acteurs-culturels-comment-determiner-ses-modalites-de-remboursement"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <Icon svg="ico-external-site" />
-                Les modalités de remboursement
-              </a>
-            </Banner>
+      {isLoading && <Spinner />}
+      {hasNoResults && (
+        <div className="no-refunds">
+          <Icon
+            alt=""
+            svg="ico-no-bookings"
+          />
+          <span>
+            Aucun remboursement à afficher
+          </span>
+        </div>
+      )}
+      {hasResults && (
+        <>
+          <p>
+            Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation
+            d’une contremarque dans le guichet ou à la validation automatique des contremarques
+            d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.
+          </p>
+          <Banner type="notification-info">
+            En savoir plus sur
+            <a
+              className="bi-link tertiary-link"
+              href="https://aide.passculture.app/fr/articles/5096833-acteurs-culturels-quel-est-le-calendrier-des-prochains-remboursements"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <Icon svg="ico-external-site" />
+              Les prochains remboursements
+            </a>
+            <a
+              className="bi-link tertiary-link"
+              href="https://aide.passculture.app/fr/articles/5096171-acteurs-culturels-comment-determiner-ses-modalites-de-remboursement"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <Icon svg="ico-external-site" />
+              Les modalités de remboursement
+            </a>
+          </Banner>
 
-            <div className="header">
-              <h2 className="header-title">
-                Affichage des remboursements
-              </h2>
-              <button
-                className="tertiary-button reset-filters"
-                disabled={isEqual(filters, INITIAL_FILTERS)}
-                onClick={resetFilters}
-                type="button"
-              >
-                Réinitialiser les filtres
-              </button>
-            </div>
-
-            <div className="filters">
-              <Select
-                defaultOption={{ displayName: 'Tous les lieux', id: ALL_VENUES_OPTION_ID }}
-                handleSelection={setVenueFilter}
-                label="Lieu"
-                name="lieu"
-                options={venuesOptions}
-                selectedValue={filters.venue}
-                size="20"
-              />
-              <PeriodSelector
-                changePeriodBeginningDateValue={setStartDateFilter}
-                changePeriodEndingDateValue={setEndDateFilter}
-                isDisabled={false}
-                label="Période"
-                maxDateEnding={getToday()}
-                periodBeginningDate={filters.periodStart}
-                periodEndingDate={filters.periodEnd}
-                todayDate={getToday()}
-              />
-            </div>
-
-            <div className="button-group">
-              <span className="button-group-separator" />
-              <div className="button-group-buttons">
-                <DownloadButtonContainer
-                  filename="remboursements_pass_culture"
-                  href={csvUrl}
-                  isDisabled={shouldDisableButtons}
-                  mimeType="text/csv"
-                >
-                  Télécharger
-                </DownloadButtonContainer>
-                <CsvTableButtonContainer
-                  href={csvUrl}
-                  isDisabled={shouldDisableButtons}
-                >
-                  Afficher
-                </CsvTableButtonContainer>
-              </div>
-            </div>
-
-            <p className="format-mention">
-              Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
-            </p>
-          </>
-        ) : (
-          <div className="no-refunds">
-            <Icon
-              alt=""
-              svg="ico-no-bookings"
-            />
-            <span>
-              Aucun remboursement à afficher
-            </span>
+          <div className="header">
+            <h2 className="header-title">
+              Affichage des remboursements
+            </h2>
+            <button
+              className="tertiary-button reset-filters"
+              disabled={isEqual(filters, INITIAL_FILTERS)}
+              onClick={resetFilters}
+              type="button"
+            >
+              Réinitialiser les filtres
+            </button>
           </div>
-        )
+
+          <div className="filters">
+            <Select
+              defaultOption={{ displayName: 'Tous les lieux', id: ALL_VENUES_OPTION_ID }}
+              handleSelection={setVenueFilter}
+              label="Lieu"
+              name="lieu"
+              options={venuesOptions}
+              selectedValue={filters.venue}
+              size="20"
+            />
+            <PeriodSelector
+              changePeriodBeginningDateValue={setStartDateFilter}
+              changePeriodEndingDateValue={setEndDateFilter}
+              isDisabled={false}
+              label="Période"
+              maxDateEnding={getToday()}
+              periodBeginningDate={filters.periodStart}
+              periodEndingDate={filters.periodEnd}
+              todayDate={getToday()}
+            />
+          </div>
+
+          <div className="button-group">
+            <span className="button-group-separator" />
+            <div className="button-group-buttons">
+              <DownloadButtonContainer
+                filename="remboursements_pass_culture"
+                href={csvUrl}
+                isDisabled={shouldDisableButtons}
+                mimeType="text/csv"
+              >
+                Télécharger
+              </DownloadButtonContainer>
+              <CsvTableButtonContainer
+                href={csvUrl}
+                isDisabled={shouldDisableButtons}
+              >
+                Afficher
+              </CsvTableButtonContainer>
+            </div>
+          </div>
+
+          <p className="format-mention">
+            Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
+          </p>
+        </>
       )}
     </AppLayout>
   )
