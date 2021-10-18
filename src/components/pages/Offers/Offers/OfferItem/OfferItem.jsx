@@ -80,6 +80,11 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
         </Link>
       </td>
       <td className="title-column">
+        {offer.isEducational && (
+          <div className="tag">
+            Offre collective
+          </div>
+        )}
         <Link
           className="name"
           title="Afficher les détails de l'offre"
@@ -174,6 +179,7 @@ OfferItem.propTypes = {
     name: PropTypes.string,
     isEvent: PropTypes.bool,
     productIsbn: PropTypes.string,
+    isEducational: PropTypes.bool,
   }).isRequired,
   selectOffer: PropTypes.func.isRequired,
 }

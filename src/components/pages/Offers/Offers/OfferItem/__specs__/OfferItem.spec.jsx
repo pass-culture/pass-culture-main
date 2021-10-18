@@ -194,6 +194,17 @@ describe('src | components | pages | Offers | OfferItem', () => {
       expect(screen.queryByText('123456789')).toBeInTheDocument()
     })
 
+    it('should display educational tag when offer is educational', () => {
+      // given
+      eventOffer.isEducational = true
+
+      // when
+      renderOfferItem(props)
+
+      // then
+      expect(screen.getByText('Offre collective')).toBeInTheDocument()
+    })
+
     describe('offer remaining quantity', () => {
       it('should be 0 when offer has no stock', () => {
         // when

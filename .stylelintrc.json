@@ -23,6 +23,7 @@
           "#eb0055": "$primary",
           "#c10046": "$primary-dark",
           "#320096": "$secondary",
+          "#6123df": "$tertiary",
           "#06f": "$accent",
           "#0066ff": "$accent",
           "#ff99be": "$primary-disabled",
