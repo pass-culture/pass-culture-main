@@ -1,4 +1,4 @@
-import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
+import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'components/pages/Offers/Offer/OfferDetails/_constants'
 
 const doesLastProviderExist = offer => Boolean(offer !== null && offer.lastProvider)
 

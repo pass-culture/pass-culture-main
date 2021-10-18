@@ -21,6 +21,9 @@ import Select, {
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Spinner from 'components/layout/Spinner'
+import { SubmitButton } from 'ui-kit'
+import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
+
 import {
   BASE_OFFER_FIELDS,
   DEFAULT_FORM_VALUES,
@@ -30,16 +33,14 @@ import {
   NOT_REIMBURSED,
   PLATFORM,
   TEXT_INPUT_DEFAULT_VALUE,
-} from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
-import OfferRefundWarning from 'components/pages/Offers/Offer/OfferDetails/OfferForm/Messages/OfferRefundWarning'
-import WithdrawalReminder from 'components/pages/Offers/Offer/OfferDetails/OfferForm/Messages/WithdrawalReminder'
-import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/SynchronizedProviderInformation'
-import { SubmitButton } from 'ui-kit'
-import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
+} from '../_constants'
 
 import AccessibilityCheckboxList from './AccessibilityCheckboxList'
-import OfferCategories from './OfferCategories/OfferCategories'
+import OfferRefundWarning from './Messages/OfferRefundWarning'
+import WithdrawalReminder from './Messages/WithdrawalReminder'
+import OfferCategories from './OfferCategories'
 import OfferOptions from './OfferOptions'
+import SynchronizedProviderInformation from './SynchronisedProviderInfos'
 
 // JOCONDE React:component "Ce composant est vraiment le plus beau et le plus lisible que nous ayons côté pro. Prenez en de la graine !"
 
@@ -472,7 +473,7 @@ const OfferForm = ({
         'disabilityCompliant' in formErrors
       ) {
         let newFormErrors = { ...formErrors }
-        delete newFormErrors['disabilityCompliant']
+        delete newFormErrors.disabilityCompliant
         setFormErrors(newFormErrors)
       }
 

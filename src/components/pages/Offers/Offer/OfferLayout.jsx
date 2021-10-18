@@ -13,12 +13,13 @@ import Breadcrumb, {
   STEP_ID_STOCKS,
 } from 'components/pages/Offers/Offer/Breadcrumb'
 import ConfirmationContainer from 'components/pages/Offers/Offer/Confirmation/ConfirmationContainer'
-import OfferDetailsContainer from 'components/pages/Offers/Offer/OfferDetails/OfferDetailsContainer'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
 import RouteLeavingGuardOfferCreation from 'components/pages/Offers/Offer/RouteLeavingGuardOfferCreation'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
 import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
 import * as pcapi from 'repository/pcapi/pcapi'
+
+import OfferDetails from './OfferDetails'
 
 const mapPathToStep = {
   creation: STEP_ID_DETAILS,
@@ -92,13 +93,13 @@ const OfferLayout = ({ location, match }) => {
             exact
             path="/offres/creation"
           >
-            <OfferDetailsContainer offer={offer} />
+            <OfferDetails offer={offer} />
           </Route>
           <Route
             exact
             path={`${match.url}/edition`}
           >
-            <OfferDetailsContainer
+            <OfferDetails
               offer={offer}
               reloadOffer={reloadOffer}
             />

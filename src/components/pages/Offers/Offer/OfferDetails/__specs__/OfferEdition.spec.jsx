@@ -15,17 +15,19 @@ import { MemoryRouter, Route } from 'react-router'
 
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
+import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
+import * as computeUrl from 'components/pages/Offers/utils/computeOffersUrl'
+import * as pcapi from 'repository/pcapi/pcapi'
+import { configureTestStore } from 'store/testUtils'
+
+import { DEFAULT_FORM_VALUES } from '../_constants'
+
 import {
   fieldLabels,
   findInputErrorForField,
   getOfferInputForField,
   setOfferValues,
-} from 'components/pages/Offers/Offer/OfferDetails/__specs__/helpers'
-import { DEFAULT_FORM_VALUES } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
-import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
-import * as computeUrl from 'components/pages/Offers/utils/computeOffersUrl'
-import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
+} from './helpers'
 
 Element.prototype.scrollIntoView = () => {}
 

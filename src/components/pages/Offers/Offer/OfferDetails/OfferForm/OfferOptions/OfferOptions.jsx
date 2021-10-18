@@ -3,7 +3,7 @@ import React from 'react'
 
 import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
 
-import { OFFER_OPTIONS } from '../_constants'
+import { OFFER_OPTIONS } from '../../_constants'
 
 const OfferOptions = ({
   canOfferBeDuo,

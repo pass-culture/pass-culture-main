@@ -8,8 +8,9 @@ import React, { useEffect, useState } from 'react'
 
 import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
 
-import { musicOptionsTree, showOptionsTree } from '../../subTypes'
-import { DEFAULT_FORM_VALUES } from '../_constants'
+import { DEFAULT_FORM_VALUES } from '../../_constants'
+
+import { musicOptionsTree, showOptionsTree } from './subTypes'
 
 const initialSubTypesOptions = {
   musicType: buildSelectOptions('code', 'label', musicOptionsTree),

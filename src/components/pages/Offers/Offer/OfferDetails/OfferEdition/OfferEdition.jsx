@@ -11,14 +11,15 @@ import {
   isFieldReadOnlyForSynchronizedOffer,
   isSynchronizedOffer,
 } from 'components/pages/Offers/domain/localProvider'
-import {
-  DEFAULT_FORM_VALUES,
-  EDITED_OFFER_READ_ONLY_FIELDS,
-} from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
 import { getDisabilityComplianceValues } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/AccessibilityCheckboxList'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 
-import OfferForm from './OfferForm'
+import {
+  DEFAULT_FORM_VALUES,
+  EDITED_OFFER_READ_ONLY_FIELDS,
+} from '../_constants'
+import OfferForm from '../OfferForm'
+
 
 const computeNoDisabilityComplianceValue = offer => {
   const disabilityCompliantValues = [

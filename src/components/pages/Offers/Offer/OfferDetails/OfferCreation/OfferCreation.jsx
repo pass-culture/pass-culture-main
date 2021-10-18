@@ -10,7 +10,7 @@ import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import OfferForm from './OfferForm'
+import OfferForm from '../OfferForm'
 
 const OfferCreation = ({
   categories,
