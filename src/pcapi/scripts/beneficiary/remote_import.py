@@ -361,7 +361,7 @@ def process_beneficiary_application(
                 user, token_life_time=users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
             )
             user_emails.send_activation_email(user, token=token)
-        else:
+        elif user.isBeneficiary:
             user_emails.send_accepted_as_beneficiary_email(user)
     except MailServiceException as mail_service_exception:
         logger.exception(
