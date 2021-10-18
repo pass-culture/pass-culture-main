@@ -343,6 +343,10 @@ uploadIdentityDocument:
       nginx.ingress.kubernetes.io/use-regex: "true"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
       nginx.ingress.kubernetes.io/proxy-body-size: 10m
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        more_set_headers -s 503 'Access-Control-Allow-Headers: AppName,AppVersion,X-Request-ID,Content-Type';
+        more_set_headers -s 503 'Access-Control-Allow-Origin: $http_origin';
+        more_set_headers -s 503 'Access-Control-Allow-Credentials: true';
       cert-manager.io/cluster-issuer: letsencrypt-production
     hosts:
       - host: backend.passculture-testing.beta.gouv.fr
@@ -394,6 +398,10 @@ cloudTasks:
       nginx.ingress.kubernetes.io/use-regex: "true"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
       nginx.ingress.kubernetes.io/proxy-body-size: 10m
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        more_set_headers -s 503 'Access-Control-Allow-Headers: AppName,AppVersion,X-Request-ID,Content-Type';
+        more_set_headers -s 503 'Access-Control-Allow-Origin: $http_origin';
+        more_set_headers -s 503 'Access-Control-Allow-Credentials: true';
       cert-manager.io/cluster-issuer: letsencrypt-production
     hosts:
       - host: backend.passculture-testing.beta.gouv.fr

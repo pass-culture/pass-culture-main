@@ -355,6 +355,10 @@ uploadIdentityDocument:
       nginx.ingress.kubernetes.io/use-regex: "true"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
       nginx.ingress.kubernetes.io/proxy-body-size: 10m
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        more_set_headers -s 503 'Access-Control-Allow-Headers: AppName,AppVersion,X-Request-ID,Content-Type';
+        more_set_headers -s 503 'Access-Control-Allow-Origin: $http_origin';
+        more_set_headers -s 503 'Access-Control-Allow-Credentials: true';
     hosts:
       - host: backend.passculture.beta.gouv.fr
         paths:
@@ -408,6 +412,10 @@ cloudTasks:
       nginx.ingress.kubernetes.io/use-regex: "true"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
       nginx.ingress.kubernetes.io/proxy-body-size: 10m
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        more_set_headers -s 503 'Access-Control-Allow-Headers: AppName,AppVersion,X-Request-ID,Content-Type';
+        more_set_headers -s 503 'Access-Control-Allow-Origin: $http_origin';
+        more_set_headers -s 503 'Access-Control-Allow-Credentials: true';
     hosts:
       - host: backend.passculture.beta.gouv.fr
         paths:
