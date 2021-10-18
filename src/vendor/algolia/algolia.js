@@ -130,9 +130,8 @@ const buildNumericFilters = ({
   return numericFilters.length > 0 ? { numericFilters } : {}
 }
 
-const buildOfferCategoriesPredicate = offerCategories => {
-  return offerCategories.map(category => `${FACETS.OFFER_CATEGORY}:${category}`)
-}
+const buildOfferCategoriesPredicate = searchGroups =>
+  searchGroups.map(searchGroup => `${FACETS.OFFER_SEARCH_GROUP_NAME}:${searchGroup}`)
 
 const buildOfferIsDuoPredicate = offerIsDuo => {
   if (offerIsDuo) {
@@ -141,15 +140,15 @@ const buildOfferIsDuoPredicate = offerIsDuo => {
 }
 
 const buildOfferPriceRangePredicate = (offerIsFree, offerPriceRange) => {
-  if (offerIsFree) return `${FACETS.OFFER_PRICE} = 0`
+  if (offerIsFree) return `${FACETS.OFFER_PRICES} = 0`
   if (offerPriceRange.length === 2) {
-    return `${FACETS.OFFER_PRICE}: ${offerPriceRange.join(' TO ')}`
+    return `${FACETS.OFFER_PRICES}: ${offerPriceRange.join(' TO ')}`
   }
 }
 
 const buildTimeOnlyPredicate = timeRange => {
   const timeRangeInSeconds = computeTimeRangeFromHoursToSeconds(timeRange)
-  return `${FACETS.OFFER_TIME}: ${timeRangeInSeconds.join(' TO ')}`
+  return `${FACETS.OFFER_TIMES}: ${timeRangeInSeconds.join(' TO ')}`
 }
 
 const buildDatePredicate = (date, timeRange) => {
@@ -174,18 +173,18 @@ const buildHomepageDatePredicate = (beginningDatetime, endingDatetime) => {
   }
 
   if (fromDatePredicate) {
-    return `${FACETS.OFFER_DATE} >= ${beginningTimestamp}`
+    return `${FACETS.OFFER_DATES} >= ${beginningTimestamp}`
   }
 
   if (untilDatePredicate) {
-    return `${FACETS.OFFER_DATE} <= ${endingTimestamp}`
+    return `${FACETS.OFFER_DATES} <= ${endingTimestamp}`
   }
 
   return getDatePredicate(beginningTimestamp, endingTimestamp)
 }
 
 const getDatePredicate = (lowerDate, higherDate) =>
-  `${FACETS.OFFER_DATE}: ${lowerDate} TO ${higherDate}`
+  `${FACETS.OFFER_DATES}: ${lowerDate} TO ${higherDate}`
 
 const buildDateAndTimePredicate = (date, timeRange) => {
   let dateFilter, rangeTimestamps
