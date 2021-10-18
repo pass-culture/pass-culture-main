@@ -286,19 +286,54 @@ class CommonFraudCheckTest:
 
         assert fraud_item.status == fraud_models.FraudStatus.SUSPICIOUS
 
-    @pytest.mark.parametrize("fraud_check_type", [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.JOUVE])
+    @pytest.mark.parametrize(
+        "fraud_check_type",
+        [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.JOUVE],
+    )
     def test_user_validation_is_beneficiary(self, fraud_check_type):
         user = users_factories.BeneficiaryGrant18Factory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
         fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
-        assert "L'utilisateur est déjà bénéficiaire" in fraud_result.reason
+        assert "L'utilisateur a déjà un portefeuille actif" in fraud_result.reason
         assert fraud_result.status == fraud_models.FraudStatus.KO
 
-    @pytest.mark.parametrize("fraud_check_type", [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.JOUVE])
+    @pytest.mark.parametrize(
+        "age",
+        [15, 16, 17],
+    )
+    def test_underage_user_validation_is_beneficiary(self, age):
+        user = users_factories.UnderageBeneficiaryFactory()
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            user=user,
+            resultContent=fraud_factories.EduconnectContentFactory(age=age),
+        )
+        fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
+
+        assert "L'utilisateur a déjà un portefeuille actif" in fraud_result.reason
+        assert fraud_result.status == fraud_models.FraudStatus.KO
+
+    @pytest.mark.parametrize(
+        "fraud_check_type",
+        [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.JOUVE],
+    )
     def test_user_validation_has_email_validated(self, fraud_check_type):
         user = users_factories.UserFactory(isBeneficiary=False, isEmailValidated=False)
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
+        fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
+
+        assert "L'email de l'utilisateur n'est pas validé" in fraud_result.reason
+        assert fraud_result.status == fraud_models.FraudStatus.KO
+
+    @pytest.mark.parametrize("age", [15, 16, 17])
+    def test_underage_user_validation_has_email_validated(self, age):
+        user = users_factories.UserFactory(isEmailValidated=False)
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            user=user,
+            resultContent=fraud_factories.EduconnectContentFactory(age=age),
+        )
         fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
         assert "L'email de l'utilisateur n'est pas validé" in fraud_result.reason
@@ -406,3 +441,32 @@ class EduconnectFraudTest:
             "educonnect_id": "id-1",
             "birth_date": datetime.date(2021, 10, 15),
         }
+
+    @pytest.mark.parametrize(
+        "age,expected_fraud_check_status",
+        [
+            (14, fraud_models.FraudStatus.KO),
+            (18, fraud_models.FraudStatus.KO),
+            (15, fraud_models.FraudStatus.OK),
+            (16, fraud_models.FraudStatus.OK),
+            (17, fraud_models.FraudStatus.OK),
+        ],
+    )
+    def test_educonnect_age_fraud_check(self, age, expected_fraud_check_status):
+        subscription_age = age
+        user = users_factories.UnderageBeneficiaryFactory(subscription_age=subscription_age)
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            user=user,
+            resultContent=fraud_factories.EduconnectContentFactory(age=age),
+        )
+        result = fraud_api.educonnect_fraud_checks(beneficiary_fraud_check=fraud_check)
+        assert len(result) == 2
+        assert result[1].status == expected_fraud_check_status
+        if expected_fraud_check_status == fraud_models.FraudStatus.KO:
+            assert (
+                result[1].detail
+                == f"L'age de l'utilisateur est invalide ({age} ans). Il devrait être parmi [15, 16, 17]"
+            )
+        else:
+            assert result[1].detail == f"L'age de l'utilisateur est valide ({age} ans)."

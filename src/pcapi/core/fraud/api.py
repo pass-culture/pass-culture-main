@@ -4,9 +4,12 @@ import re
 from typing import Optional
 from typing import Union
 
+from dateutil.relativedelta import relativedelta
 import sqlalchemy
 
 from pcapi.connectors.beneficiaries import jouve_backend
+from pcapi.core.users import constants
+from pcapi.core.users import models as user_models
 from pcapi.core.users.models import User
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
@@ -40,6 +43,7 @@ def on_educonnect_result(user: User, educonnect_content: models.EduconnectConten
         resultContent=educonnect_content.dict(),
     )
     repository.save(fraud_check)
+    on_identity_fraud_check_result(user, fraud_check)
 
 
 def on_jouve_result(user: User, jouve_content: models.JouveContent):
@@ -112,10 +116,27 @@ def admin_update_identity_fraud_check_result(
     return fraud_check
 
 
-def jouve_fraud_checks(beneficiary_fraud_check: models.BeneficiaryFraudCheck) -> list[models.FraudItem]:
+def educonnect_fraud_checks(beneficiary_fraud_check: models.BeneficiaryFraudCheck) -> list[models.FraudItem]:
+    educonnect_content = beneficiary_fraud_check.source_data()
+    fraud_items = []
+    # TODO: factorise in on_identity_fraud_check_result for the 3 *_fraud_checks
+    fraud_items.append(
+        _duplicate_user_fraud_item(
+            first_name=educonnect_content.first_name,
+            last_name=educonnect_content.last_name,
+            birth_date=educonnect_content.birth_date,
+        )
+    )
+    fraud_items.append(_underage_user_fraud_item(educonnect_content.birth_date))
+    return fraud_items
+
+
+def jouve_fraud_checks(user: User, beneficiary_fraud_check: models.BeneficiaryFraudCheck) -> list[models.FraudItem]:
     jouve_content = models.JouveContent(**beneficiary_fraud_check.resultContent)
 
     fraud_items = []
+    fraud_items.append(_check_user_phone_is_validated(user))
+    # TODO: factorise in on_identity_fraud_check_result for the 3 *_fraud_checks
     fraud_items.append(
         _duplicate_user_fraud_item(
             first_name=jouve_content.firstName,
@@ -130,10 +151,12 @@ def jouve_fraud_checks(beneficiary_fraud_check: models.BeneficiaryFraudCheck) ->
     return fraud_items
 
 
-def dms_fraud_checks(beneficiary_fraud_check: models.BeneficiaryFraudCheck) -> list[models.FraudItem]:
+def dms_fraud_checks(user: User, beneficiary_fraud_check: models.BeneficiaryFraudCheck) -> list[models.FraudItem]:
     dms_content = models.DMSContent(**beneficiary_fraud_check.resultContent)
 
     fraud_items = []
+    fraud_items.append(_check_user_phone_is_validated(user))
+    # TODO: factorise in on_identity_fraud_check_result for the 3 *_fraud_checks
     fraud_items.append(
         _duplicate_user_fraud_item(
             first_name=dms_content.first_name,
@@ -153,12 +176,15 @@ def on_identity_fraud_check_result(
 
     fraud_items.append(_check_user_already_beneficiary(user))
     fraud_items.append(_check_user_email_is_validated(user))
-    fraud_items.append(_check_user_phone_is_validated(user))
 
     if beneficiary_fraud_check.type == models.FraudCheckType.JOUVE:
-        fraud_items += jouve_fraud_checks(beneficiary_fraud_check)
+        fraud_items += jouve_fraud_checks(user, beneficiary_fraud_check)
+
     elif beneficiary_fraud_check.type == models.FraudCheckType.DMS:
-        fraud_items += dms_fraud_checks(beneficiary_fraud_check)
+        fraud_items += dms_fraud_checks(user, beneficiary_fraud_check)
+
+    elif beneficiary_fraud_check.type == models.FraudCheckType.EDUCONNECT:
+        fraud_items += educonnect_fraud_checks(beneficiary_fraud_check)
 
     fraud_result = validate_frauds(user, fraud_items)
     repository.save(fraud_result)
@@ -202,8 +228,10 @@ def _duplicate_id_piece_number_fraud_item(document_id_number: str) -> models.Fra
 
 
 def _check_user_already_beneficiary(user: User) -> models.FraudItem:
-    if user.isBeneficiary:
-        return models.FraudItem(status=models.FraudStatus.KO, detail="L'utilisateur est déjà bénéficiaire")
+    if user_models.UserRole.BENEFICIARY in user.roles:
+        return models.FraudItem(status=models.FraudStatus.KO, detail="L'utilisateur est déjà bénéficiaire (18+)")
+    if user_models.UserRole.UNDERAGE_BENEFICIARY in user.roles and user.age < 18:
+        return models.FraudItem(status=models.FraudStatus.KO, detail="L'utilisateur est déjà bénéficiaire (15-17)")
     return models.FraudItem(status=models.FraudStatus.OK, detail=None)
 
 
@@ -265,6 +293,16 @@ def _get_threshold_id_fraud_item(
         status = models.FraudStatus.SUSPICIOUS
 
     return models.FraudItem(status=status, detail=f"Le champ {key} a le score {value} (minimum {threshold})")
+
+
+def _underage_user_fraud_item(birth_date: datetime.date):
+    age = relativedelta(datetime.date.today(), birth_date).years
+    if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
+        return models.FraudItem(status=models.FraudStatus.OK, detail=f"L'age de l'utilisateur est valide ({age} ans).")
+    return models.FraudItem(
+        status=models.FraudStatus.KO,
+        detail=f"L'age de l'utilisateur est invalide ({age} ans). Il devrait être parmi {constants.ELIGIBILITY_UNDERAGE_RANGE}",
+    )
 
 
 def create_user_profiling_check(

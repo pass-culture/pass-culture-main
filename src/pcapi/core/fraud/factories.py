@@ -1,5 +1,7 @@
+import datetime
 import random
 
+from dateutil.relativedelta import relativedelta
 import factory
 
 from pcapi.core import testing
@@ -145,3 +147,16 @@ class BeneficiaryFraudReviewFactory(testing.BaseFactory):
     user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
     author = factory.SubFactory(users_factories.AdminFactory)
     reason = factory.Sequence("Fraud validation reason #{0}".format)
+
+
+class EduconnectContentFactory(factory.Factory):
+    class Meta:
+        model = models.EduconnectContent
+
+    class Params:
+        age = 15
+
+    last_name = factory.Faker("last_name")
+    first_name = factory.Faker("first_name")
+    educonnect_id = factory.Faker("lexify", text="id-?????????????????")
+    birth_date = factory.LazyAttribute(lambda o: datetime.datetime.now() - relativedelta(years=o.age, months=4))
