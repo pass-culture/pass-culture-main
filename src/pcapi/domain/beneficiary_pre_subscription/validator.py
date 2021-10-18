@@ -12,23 +12,6 @@ from pcapi.repository.user_queries import beneficiary_by_civility_query
 from pcapi.repository.user_queries import find_user_by_email
 
 
-ELIGIBLE_DEPARTMENTS = {
-    "08",
-    "22",
-    "25",
-    "29",
-    "34",
-    "35",
-    "56",
-    "58",
-    "67",
-    "71",
-    "84",
-    "93",
-    "94",
-    "973",
-}
-
 EXCLUDED_DEPARTMENTS = {
     "984",  # Terres australes et antarctiques françaises
     "987",  # Polynésie Française
