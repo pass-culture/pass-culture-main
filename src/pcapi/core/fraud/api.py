@@ -177,7 +177,7 @@ def on_identity_fraud_check_result(
 ) -> models.BeneficiaryFraudResult:
     fraud_items: list[models.FraudItem] = []
 
-    fraud_items.append(_check_user_already_beneficiary(user))
+    fraud_items.append(_check_user_has_no_active_deposit(user))
     fraud_items.append(_check_user_email_is_validated(user))
 
     if beneficiary_fraud_check.type == models.FraudCheckType.JOUVE:
@@ -230,11 +230,16 @@ def _duplicate_id_piece_number_fraud_item(document_id_number: str) -> models.Fra
     )
 
 
-def _check_user_already_beneficiary(user: user_models.User) -> models.FraudItem:
-    if user_models.UserRole.BENEFICIARY in user.roles:
-        return models.FraudItem(status=models.FraudStatus.KO, detail="L'utilisateur est déjà bénéficiaire (18+)")
-    if user_models.UserRole.UNDERAGE_BENEFICIARY in user.roles and user.age < 18:
-        return models.FraudItem(status=models.FraudStatus.KO, detail="L'utilisateur est déjà bénéficiaire (15-17)")
+def _check_user_has_no_active_deposit(user: user_models.User) -> models.FraudItem:
+    if user.has_active_deposit:
+        is_underage = user.age in constants.ELIGIBILITY_UNDERAGE_RANGE
+        return models.FraudItem(
+            status=models.FraudStatus.KO,
+            detail=(
+                "L’utilisateur est déjà bénéfiaire, avec un portefeuille non expiré. "
+                f"Il ne peut pas prétendre au pass culture {'15-17 ans' if is_underage else '18 ans'}"
+            ),
+        )
     return models.FraudItem(status=models.FraudStatus.OK, detail=None)
 
 

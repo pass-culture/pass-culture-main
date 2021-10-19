@@ -295,7 +295,10 @@ class CommonFraudCheckTest:
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
         fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
-        assert "L'utilisateur a déjà un portefeuille actif" in fraud_result.reason
+        assert (
+            "L’utilisateur est déjà bénéfiaire, avec un portefeuille non expiré. Il ne peut pas prétendre au pass culture 18 ans"
+            in fraud_result.reason
+        )
         assert fraud_result.status == fraud_models.FraudStatus.KO
 
     @pytest.mark.parametrize(
@@ -311,7 +314,10 @@ class CommonFraudCheckTest:
         )
         fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
-        assert "L'utilisateur a déjà un portefeuille actif" in fraud_result.reason
+        assert (
+            "L’utilisateur est déjà bénéfiaire, avec un portefeuille non expiré. Il ne peut pas prétendre au pass culture 15-17 ans"
+            in fraud_result.reason
+        )
         assert fraud_result.status == fraud_models.FraudStatus.KO
 
     @pytest.mark.parametrize(
