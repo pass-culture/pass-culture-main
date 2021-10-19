@@ -5,6 +5,7 @@ from unittest.mock import ANY
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
+import freezegun
 import pytest
 
 from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
@@ -806,6 +807,7 @@ class RunIntegrationTest:
         assert len(push_testing.requests) == 1
 
     @override_features(FORCE_PHONE_VALIDATION=False)
+    @freezegun.freeze_time("2021-10-30 09:00:00")
     @patch(
         "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
     )
@@ -866,7 +868,7 @@ class RunIntegrationTest:
         sub_msg = user.subscriptionMessages[0]
         assert (
             sub_msg.userMessage
-            == "Ce document a déjà été analysé. Vérifie que tu n’as pas créé de compte avec une autre adresse e-mail. Consulte l’e-mail envoyé le 18/10/2021 pour plus d’informations."
+            == "Ce document a déjà été analysé. Vérifie que tu n’as pas créé de compte avec une autre adresse e-mail. Consulte l’e-mail envoyé le 30/10/2021 pour plus d’informations."
         )
         assert sub_msg.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
 
