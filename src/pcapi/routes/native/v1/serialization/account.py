@@ -131,7 +131,7 @@ class CallToActionMessage(BaseModel):
 class SubscriptionMessage(BaseModel):
     userMessage: str
     callToAction: Optional[CallToActionMessage]
-    popOverIcon: subscription_models.PopOverIcon
+    popOverIcon: Optional[subscription_models.PopOverIcon]
     updatedAt: datetime.datetime
 
     class Config:
