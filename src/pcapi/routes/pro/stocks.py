@@ -6,6 +6,7 @@ from flask_login import login_required
 from pcapi.core.offerers.models import Offerer
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.repository import get_stocks_for_offer
+from pcapi.core.providers.models import StockDetail
 from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.models import Venue
@@ -19,6 +20,7 @@ from pcapi.routes.serialization.stock_serialize import StocksUpsertBodyModel
 from pcapi.routes.serialization.stock_serialize import UpdateVenueStockBodyModel
 from pcapi.routes.serialization.stock_serialize import UpdateVenueStocksBodyModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.custom_keys import compute_venue_reference
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -103,11 +105,13 @@ def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:
 def _build_stock_details_from_body(raw_stocks: List[UpdateVenueStockBodyModel], venue_id: int):
     stock_details = {}
     for stock in raw_stocks:
-        stock_details[stock.ref] = {
-            "products_provider_reference": stock.ref,
-            "offers_provider_reference": f"{stock.ref}@{str(venue_id)}",
-            "stocks_provider_reference": f"{stock.ref}@{str(venue_id)}",
-            "available_quantity": stock.available,
-            "price": stock.price,
-        }
+        stock_details[stock.ref] = StockDetail(
+            products_provider_reference=stock.ref,
+            offers_provider_reference=compute_venue_reference(stock.ref, venue_id),
+            stocks_provider_reference=compute_venue_reference(stock.ref, venue_id),
+            venue_reference=compute_venue_reference(stock.ref, venue_id),
+            available_quantity=stock.available,
+            price=stock.price,
+        )
+
     return list(stock_details.values())

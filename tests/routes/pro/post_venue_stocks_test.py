@@ -14,80 +14,63 @@ from tests.conftest import TestClient
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@patch("pcapi.core.providers.api.synchronize_stocks")
-def test_accepts_request(mock_synchronize_stocks, app):
-    api_stocks_provider = ProviderFactory(name="Pass Culture API Stocks", localClass="PCAPIStocks")
+def test_accepts_request(app):
+    ProviderFactory(name="Pass Culture API Stocks", localClass="PCAPIStocks")
     offerer = offers_factories.OffererFactory(siren=123456789)
     venue = offers_factories.VenueFactory(managingOfferer=offerer, id=3)
+    offer_to_update = offers_factories.OfferFactory(
+        product__idAtProviders="123456789",
+        product__subcategoryId="LIVRE_PAPIER",
+        idAtProviders=f"123456789@{venue.id}",
+        venue=venue,
+    )
     ApiKeyFactory(offerer=offerer)
-
-    mock_synchronize_stocks.return_value = {}
 
     test_client = TestClient(app.test_client())
     test_client.auth_header = {"Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}"}
 
     response = test_client.post(
-        "/v2/venue/3/stocks",
-        json={"stocks": [{"ref": "123456789", "available": 4}, {"ref": "1234567890", "available": 0}]},
+        f"/v2/venue/{venue.id}/stocks",
+        json={
+            "stocks": [
+                {"ref": "123456789", "available": 4, "price": 30},
+                {"ref": "1234567890", "available": 0, "price": 10},
+            ]
+        },
     )
 
     assert response.status_code == 204
-    mock_synchronize_stocks.assert_called_once_with(
-        [
-            {
-                "products_provider_reference": "123456789",
-                "offers_provider_reference": "123456789@3",
-                "stocks_provider_reference": "123456789@3",
-                "available_quantity": 4,
-                "price": None,
-            },
-            {
-                "products_provider_reference": "1234567890",
-                "offers_provider_reference": "1234567890@3",
-                "stocks_provider_reference": "1234567890@3",
-                "available_quantity": 0,
-                "price": None,
-            },
-        ],
-        venue,
-        provider_id=api_stocks_provider.id,
-    )
+    assert len(offer_to_update.stocks) == 1
+    assert offer_to_update.stocks[0].quantity == 4
+    assert offer_to_update.stocks[0].price == 30
 
 
 @pytest.mark.parametrize(
     "price,expected_price",
-    [(None, None), ("", None), ("0", None), (0, None), (1.23, Decimal("1.23")), ("1.23", Decimal("1.23"))],
+    [(None, 10), ("", 0), ("0", 0), (0, 0), (1.23, Decimal("1.23")), ("1.23", Decimal("1.23"))],
 )
-@patch("pcapi.core.providers.api.synchronize_stocks")
-def test_accepts_request_with_price(mock_synchronize_stocks, price, expected_price, app):
-    api_stocks_provider = ProviderFactory(name="Pass Culture API Stocks", localClass="PCAPIStocks")
+def test_accepts_request_with_price(price, expected_price, app):
+    ProviderFactory(name="Pass Culture API Stocks", localClass="PCAPIStocks")
     offerer = offers_factories.OffererFactory(siren=123456789)
-    venue = offers_factories.VenueFactory(managingOfferer=offerer, id=3)
+    venue = offers_factories.VenueFactory(managingOfferer=offerer)
+    offer_to_update = offers_factories.OfferFactory(
+        product__idAtProviders="123456789",
+        product__subcategoryId="LIVRE_PAPIER",
+        idAtProviders=f"123456789@{venue.id}",
+        product__extraData={"prix_livre": expected_price},
+        venue=venue,
+    )
     ApiKeyFactory(offerer=offerer)
-
-    mock_synchronize_stocks.return_value = {}
 
     test_client = TestClient(app.test_client())
     test_client.auth_header = {"Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}"}
 
     response = test_client.post(
-        "/v2/venue/3/stocks", json={"stocks": [{"ref": "123456789", "available": 4, "price": price}]}
+        f"/v2/venue/{venue.id}/stocks", json={"stocks": [{"ref": "123456789", "available": 4, "price": price}]}
     )
 
     assert response.status_code == 204
-    mock_synchronize_stocks.assert_called_once_with(
-        [
-            {
-                "products_provider_reference": "123456789",
-                "offers_provider_reference": "123456789@3",
-                "stocks_provider_reference": "123456789@3",
-                "available_quantity": 4,
-                "price": expected_price,
-            }
-        ],
-        venue,
-        provider_id=api_stocks_provider.id,
-    )
+    assert offer_to_update.stocks[0].price == expected_price
 
 
 @patch("pcapi.core.providers.api.synchronize_stocks")
