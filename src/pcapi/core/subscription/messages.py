@@ -76,6 +76,18 @@ def on_idcheck_invalid_document_date(user: users_models.User) -> None:
     repository.save(message)
 
 
+def on_idcheck_unread_mrz(user: users_models.User) -> None:
+    today = datetime.date.today()
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage=f"Nous n'arrivons pas à traiter ton document. Consulte l'e-mail envoyé le {today:%d/%m/%Y} pour plus d'informations.",
+        callToActionTitle="Consulter mes e-mails",
+        callToActionLink=INBOX_URL,
+        callToActionIcon=models.CallToActionIcon.EMAIL,
+    )
+    repository.save(message)
+
+
 def on_dms_application_received(user: users_models.User) -> None:
     today = datetime.date.today()
     message = models.SubscriptionMessage(
