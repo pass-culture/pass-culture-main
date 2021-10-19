@@ -1,5 +1,6 @@
 import logging
 from typing import Iterable
+import urllib.parse
 
 import algoliasearch.search_client
 from flask import current_app
@@ -28,6 +29,25 @@ REDIS_HASHMAP_INDEXED_OFFERS_NAME = "indexed_offers"
 
 DEFAULT_LONGITUDE = 2.409289
 DEFAULT_LATITUDE = 47.158459
+
+
+def url_path(url):
+    """Return the path component of a URL.
+
+    Example::
+
+        >>> url_path("https://example.com/foo/bar/baz?a=1")
+        "/foo/bar/baz?a=1"
+    """
+    if not url:
+        return None
+    parts = urllib.parse.urlparse(url)
+    path = parts.path
+    if parts.query:
+        path += f"?{parts.query}"
+    if parts.fragment:
+        path += f"#{parts.fragment}"
+    return path
 
 
 class AlgoliaBackend(base.SearchBackend):
@@ -263,10 +283,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "stageDirector": stage_director,
                 "stocksDateCreated": sorted(stocks_date_created),
                 "subcategoryId": offer.subcategory.id,
-                # PC-8526: Warning: we should not store the full url of the image but only the path.
-                # Currrently we store `OBJECT_STORAGE_URL/path`, but we should store `path` and build the
-                # full url in the frontend.
-                "thumbUrl": offer.thumbUrl,
+                "thumbUrl": url_path(offer.thumbUrl),
                 "tags": tags,
                 "times": list(set(times)),
                 "visa": visa,
