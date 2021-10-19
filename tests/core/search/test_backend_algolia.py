@@ -223,3 +223,9 @@ def test_unindex_venue_ids(app):
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "deleteObject"
         assert posted_json["requests"][0]["body"]["objectID"] == 1
+
+
+def test_remove_stopwords():
+    description = "Il était une fois, dans la ville de Foix. Voilà Foix !"
+    expected = "fois ville foix voilà foix"
+    assert algolia.remove_stopwords(description) == expected

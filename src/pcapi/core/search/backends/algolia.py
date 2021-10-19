@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Iterable
 import urllib.parse
 
@@ -12,6 +13,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import base
 import pcapi.utils.date as date_utils
 from pcapi.utils.human_ids import humanize
+from pcapi.utils.stopwords import STOPWORDS
 
 
 logger = logging.getLogger(__name__)
@@ -29,6 +31,8 @@ REDIS_HASHMAP_INDEXED_OFFERS_NAME = "indexed_offers"
 
 DEFAULT_LONGITUDE = 2.409289
 DEFAULT_LATITUDE = 47.158459
+
+WORD_SPLITTER = re.compile(r"\W+")
 
 
 def url_path(url):
@@ -48,6 +52,20 @@ def url_path(url):
     if parts.fragment:
         path += f"#{parts.fragment}"
     return path
+
+
+def remove_stopwords(s: str) -> str:
+    """Remove French stopwords from the given string and return what's
+    left, lowercased.
+
+    We are not interested in being thorough. Algolia takes care of
+    ignoring stopwords and does it better than we do. Here we are
+    mostly interested in storing less data in Algolia. But we want
+    to keep the order in which words appear (because it matters in
+    Algolia).
+    """
+    words = [word for word in WORD_SPLITTER.split(s.lower()) if word and word not in STOPWORDS]
+    return " ".join(words)
 
 
 class AlgoliaBackend(base.SearchBackend):
@@ -258,7 +276,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "rankingWeight": offer.rankingWeight,
                 "dateCreated": date_created,
                 "dates": sorted(dates),
-                "description": offer.description,
+                "description": remove_stopwords(offer.description or ""),
                 "id": humanize_offer_id,
                 "pk": offer.id,
                 "isbn": isbn,
