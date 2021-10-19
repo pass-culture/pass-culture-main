@@ -17,6 +17,7 @@ import BusinessPane from './domain/ValueObjects/BusinessPane'
 import User from '../../profile/ValueObjects/User'
 import RecommendationPane from './domain/ValueObjects/RecommendationPane'
 import RecommendationModule from './Module/RecommendationModule'
+import { SearchHit } from '../../search/Results/utils'
 
 const MainView = props => {
   const {
@@ -161,7 +162,7 @@ MainView.defaultProps = {
 MainView.propTypes = {
   algoliaMapping: PropTypes.objectOf(
     PropTypes.shape({
-      hits: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+      hits: PropTypes.arrayOf(PropTypes.shape(SearchHit)).isRequired,
       nbHits: PropTypes.number.isRequired,
       parsedParameters: PropTypes.shape(),
     })

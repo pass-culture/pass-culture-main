@@ -18,8 +18,7 @@ const algolia = {
   isGeolocated: false,
   isThing: true,
   newestOnly: true,
-  priceMax: 10,
-  priceMin: 1,
+  prices: [1, 10],
   title: 'Mes paramètres Algolia',
 }
 let display = {
@@ -36,8 +35,7 @@ const offerOne = {
     id: 'NE',
     label: 'Cinéma',
     name: "Dansons jusqu'en 2030",
-    priceMax: 33,
-    priceMin: 33,
+    prices: [33],
     thumbUrl: 'http://localhost/storage/thumbs/mediations/KQ',
   },
   venue: {
@@ -51,8 +49,7 @@ const offerTwo = {
     id: 'AE',
     label: 'Presse',
     name: 'Naruto',
-    priceMax: 1,
-    priceMin: 12,
+    prices: [1, 12],
     thumbUrl: 'http://localhost/storage/thumbs/mediations/PP',
   },
   venue: {

@@ -3,7 +3,7 @@ import Cover from '../Cover/Cover'
 import React from 'react'
 import OfferTile from '../OfferTile/OfferTile'
 import SeeMore from '../SeeMore/SeeMore'
-import { SearchHit } from '../../../../search/Results/ResultsList/ResultsList'
+import { SearchHit } from '../../../../search/Results/utils'
 
 const TwoItems = ({
   historyPush,

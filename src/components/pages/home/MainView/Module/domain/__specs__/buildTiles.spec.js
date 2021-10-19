@@ -23,8 +23,7 @@ describe('src | buildTiles', () => {
           isDuo: false,
           isEvent: false,
           name: 'Avengers - Age of Ultron',
-          priceMin: 1,
-          priceMax: 1,
+          prices: [1],
           thumbUrl: 'my-thumb',
         },
         venue: {
@@ -179,7 +178,10 @@ describe('src | buildTiles', () => {
         const result = buildPairedTiles({ hits, nbHits })
 
         // Then
-        expect(result).toStrictEqual([[hit1, hit2], [hit3, true]])
+        expect(result).toStrictEqual([
+          [hit1, hit2],
+          [hit3, true],
+        ])
       })
     })
   })
@@ -207,8 +209,7 @@ describe('src | buildTiles', () => {
           isDuo: false,
           isEvent: false,
           name: 'Avengers - Age of Ultron',
-          priceMin: 1,
-          priceMax: 1,
+          prices: [1],
           thumbUrl: 'my-thumb',
         },
         venue: {
@@ -235,8 +236,7 @@ describe('src | buildTiles', () => {
           isDuo: false,
           isEvent: false,
           name: 'Avengers - Age of Ultron',
-          priceMin: 1,
-          priceMax: 1,
+          prices: [1],
           thumbUrl: 'my-thumb',
         },
         venue: {

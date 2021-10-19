@@ -8,7 +8,7 @@ import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
 import getThumbUrl from '../../../../../../utils/getThumbUrl'
 import { PANE_LAYOUT } from '../../domain/layout'
 import { formatToReadableString } from '../../../../../../utils/strings/formatToReadableString'
-import { SearchHit } from '../../../../search/Results/ResultsList/ResultsList'
+import { SearchHit } from '../../../../search/Results/utils'
 
 export const noOp = () => false
 
@@ -23,7 +23,11 @@ const OfferTile = ({ historyPush, hit, isSwitching, layout, trackConsultOffer, m
         layout === PANE_LAYOUT['ONE-ITEM-MEDIUM'] ? ' - ' : ''
       }`
     : ''
-  const formattedPrice = formatResultPrice(offer.priceMin, offer.priceMax, offer.isDuo)
+
+  const prices = offer.prices || []
+  const priceMax = Math.max(...prices)
+  const priceMin = Math.min(...prices)
+  const formattedPrice = formatResultPrice(priceMin, priceMax, offer.isDuo)
 
   function goToOffer(event) {
     if (!isSwitching) {

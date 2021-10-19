@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { SearchHit } from '../../../../search/Results/ResultsList/ResultsList'
 
 import Cover from '../Cover/Cover'
 import OfferTile from '../OfferTile/OfferTile'
 import SeeMore from '../SeeMore/SeeMore'
+import { SearchHit } from '../../../../search/Results/utils'
 
 const OneItem = ({
   historyPush,

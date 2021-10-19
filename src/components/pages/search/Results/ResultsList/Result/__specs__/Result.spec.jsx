@@ -35,8 +35,7 @@ describe('components | Result', () => {
           isDigital: false,
           subcategoryLabel: 'Livre',
           name: 'Les fleurs du mal',
-          priceMin: 8,
-          priceMax: 12,
+          prices: [8, 12],
           thumbUrl: '/thumbs/lien-vers-mon-image',
         },
         venue: {
@@ -72,7 +71,7 @@ describe('components | Result', () => {
 
   it('should render a Link component containing free offer when offer is free', () => {
     // given
-    props.result.offer.priceMin = 0
+    props.result.offer.prices = [0]
 
     // when
     const wrapper = shallow(<Result {...props} />)
@@ -84,8 +83,7 @@ describe('components | Result', () => {
 
   it('should render a Link component containing offer price when offer has an unique price', () => {
     // given
-    props.result.offer.priceMin = 5
-    props.result.offer.priceMax = 5
+    props.result.offer.prices = [5]
 
     // when
     const wrapper = shallow(<Result {...props} />)
@@ -97,8 +95,7 @@ describe('components | Result', () => {
 
   it('should render a Link component  not containing offer price when price is undefined', () => {
     // given
-    props.result.offer.priceMin = undefined
-    props.result.offer.priceMax = undefined
+    props.result.offer.prices = []
 
     // when
     const wrapper = shallow(<Result {...props} />)

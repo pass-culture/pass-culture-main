@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
+
 import { LOCALE_FRANCE } from '../../../../../utils/date/date'
+import { SearchHit } from '../utils'
 import ResultContainer from './Result/ResultContainer'
 
 const getNumberOfResultsToDisplay = resultsCount => {
@@ -44,30 +46,6 @@ export const ResultsList = ({
       </InfiniteScroll>
     </Fragment>
   )
-}
-
-export const SearchHit = {
-  offer: PropTypes.shape({
-    dates: PropTypes.arrayOf(PropTypes.number),
-    isDigital: PropTypes.bool,
-    isDuo: PropTypes.bool,
-    isEvent: PropTypes.bool,
-    label: PropTypes.string,
-    name: PropTypes.string,
-    priceMin: PropTypes.number,
-    priceMax: PropTypes.number,
-    thumbUrl: PropTypes.string,
-  }),
-  _geoloc: PropTypes.shape({
-    lat: PropTypes.number,
-    lng: PropTypes.number,
-  }),
-  venue: PropTypes.shape({
-    departmentCode: PropTypes.string,
-    name: PropTypes.string,
-    publicName: PropTypes.string,
-  }),
-  objectID: PropTypes.string.isRequired,
 }
 
 ResultsList.defaultProps = {

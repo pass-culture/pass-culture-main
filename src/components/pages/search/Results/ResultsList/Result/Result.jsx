@@ -8,15 +8,18 @@ import { getHumanizeRelativeDistance } from '../../../../../../utils/geolocation
 import getThumbUrl from '../../../../../../utils/getThumbUrl'
 import { formatResultPrice } from '../../../../../../utils/price'
 import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
+import { SearchHit } from '../../utils'
 
 const Result = ({ result, geolocation, search, searchGroupLabel }) => {
   const { _geoloc = {}, objectID, offer, venue } = result
-  const { dates, isDigital, isDuo, name, priceMin, priceMax, thumbUrl } = offer
+  const { dates, isDigital, isDuo, name, prices = [], thumbUrl } = offer
   const { latitude: userLatitude, longitude: userLongitude } = geolocation
   const { lat: venueLatitude, lng: venueLongitude } = _geoloc
   const { departementCode } = venue || {}
   const thumbSrc = thumbUrl !== null ? getThumbUrl(thumbUrl) : DEFAULT_THUMB_URL
   const formattedDate = formatSearchResultDate(departementCode, dates)
+  const priceMin = Math.min(...prices)
+  const priceMax = Math.max(...prices)
   const formattedPrice = formatResultPrice(priceMin, priceMax, isDuo)
   const canDisplayPrice = (priceMin && priceMax) || priceMin === 0
   const humanizedDistance = getHumanizeRelativeDistance(
@@ -85,29 +88,7 @@ Result.propTypes = {
     latitude: PropTypes.number,
     longitude: PropTypes.number,
   }),
-  result: PropTypes.shape({
-    offer: PropTypes.shape({
-      dates: PropTypes.arrayOf(PropTypes.number),
-      isDigital: PropTypes.bool,
-      isDuo: PropTypes.bool,
-      isEvent: PropTypes.bool,
-      label: PropTypes.string,
-      name: PropTypes.string,
-      priceMin: PropTypes.number,
-      priceMax: PropTypes.number,
-      thumbUrl: PropTypes.string,
-    }),
-    _geoloc: PropTypes.shape({
-      lat: PropTypes.number,
-      lng: PropTypes.number,
-    }),
-    venue: PropTypes.shape({
-      departmentCode: PropTypes.string,
-      name: PropTypes.string,
-      publicName: PropTypes.string,
-    }),
-    objectID: PropTypes.string.isRequired,
-  }),
+  result: PropTypes.shape(SearchHit),
   search: PropTypes.string,
   searchGroupLabel: PropTypes.string,
 }

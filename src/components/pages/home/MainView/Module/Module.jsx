@@ -4,6 +4,7 @@ import SwipeableViews from 'react-swipeable-views'
 
 import { PANE_LAYOUT } from '../domain/layout'
 import Offers from '../domain/ValueObjects/Offers'
+import { SearchHit } from '../../../search/Results/utils'
 import OffersWithCover from '../domain/ValueObjects/OffersWithCover'
 import { buildPairedTiles, buildTiles } from './domain/buildTiles'
 import OneItem from './OneItem/OneItem'
@@ -103,7 +104,7 @@ Module.propTypes = {
   historyPush: PropTypes.func.isRequired,
   module: PropTypes.instanceOf(Offers, OffersWithCover).isRequired,
   results: PropTypes.shape({
-    hits: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+    hits: PropTypes.arrayOf(PropTypes.shape(SearchHit)).isRequired,
     nbHits: PropTypes.number.isRequired,
     parsedParameters: PropTypes.shape(),
   }).isRequired,

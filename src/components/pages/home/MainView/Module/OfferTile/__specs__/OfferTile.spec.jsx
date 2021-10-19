@@ -29,8 +29,7 @@ describe('src | components | OfferTile', () => {
           isDuo: false,
           isEvent: false,
           name: 'Avengers - Age of Ultron',
-          priceMin: 1.2,
-          priceMax: 1.2,
+          prices: [1.2],
           thumbUrl: '/thumbs/path_to_image',
         },
         venue: {

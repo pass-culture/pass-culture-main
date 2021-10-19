@@ -83,8 +83,7 @@ describe('src | components | home', () => {
             id: 'NE',
             label: 'Cinéma',
             name: "Dansons jusqu'en 2030",
-            priceMax: 33,
-            priceMin: 33,
+            prices: [33],
             thumbUrl: 'http://localhost/storage/thumbs/mediations/KQ',
           },
           venue: {

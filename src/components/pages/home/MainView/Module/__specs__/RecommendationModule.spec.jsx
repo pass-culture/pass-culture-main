@@ -38,8 +38,7 @@ describe('src | components | RecommendationModule', () => {
         id: 'NE',
         label: 'Cinéma',
         name: "Dansons jusqu'en 2030",
-        priceMax: 33,
-        priceMin: 33,
+        prices: [33],
         thumbUrl: 'http://localhost/storage/thumbs/mediations/KQ',
       },
       venue: {
@@ -53,8 +52,7 @@ describe('src | components | RecommendationModule', () => {
         id: 'AE',
         label: 'Presse',
         name: 'Naruto',
-        priceMax: 1,
-        priceMin: 12,
+        prices: [1, 12],
         thumbUrl: 'http://localhost/storage/thumbs/mediations/PP',
       },
       venue: {
@@ -170,8 +168,7 @@ describe('src | components | RecommendationModule', () => {
             id: 'BF',
             label: 'Presse',
             name: 'Naruto',
-            priceMax: 1,
-            priceMin: 12,
+            prices: [1, 12],
             thumbUrl: 'http://localhost/storage/thumbs/mediations/PP',
           },
           venue: {
