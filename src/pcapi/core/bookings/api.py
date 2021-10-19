@@ -2,6 +2,7 @@ import base64
 import datetime
 import io
 import logging
+from operator import or_
 import typing
 
 from PIL import Image
@@ -425,7 +426,7 @@ def auto_mark_as_used_after_event() -> None:
     educational_bookings = (
         bookings
         .filter(EducationalBooking.id == Booking.educationalBookingId)
-        .filter(EducationalBooking.status == EducationalBookingStatus.USED_BY_INSTITUTE)
+        .filter(or_(EducationalBooking.status != EducationalBookingStatus.REFUSED, EducationalBooking.status.is_(None)))
     )
     # fmt: on
     n_individual_updated = individual_bookings.update(

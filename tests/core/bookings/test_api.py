@@ -875,9 +875,9 @@ class AutoMarkAsUsedAfterEventTest:
 
         api.auto_mark_as_used_after_event()
 
-        validated_educational_booking = Booking.query.first()
-        assert not validated_educational_booking.isUsed
-        assert validated_educational_booking.status is not BookingStatus.USED
+        non_validated_by_ce_educational_booking = Booking.query.first()
+        assert non_validated_by_ce_educational_booking.isUsed
+        assert non_validated_by_ce_educational_booking.status is BookingStatus.USED
 
     @pytest.mark.usefixtures("db_session")
     @override_features(UPDATE_BOOKING_USED=False)
