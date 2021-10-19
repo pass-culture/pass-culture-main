@@ -64,7 +64,7 @@ const Preview = ({ preview, setStep, step }) => {
             src={preview}
           />
           <div>
-            Détail de l’offre
+            Détails de l’offre
           </div>
         </div>
       </div>

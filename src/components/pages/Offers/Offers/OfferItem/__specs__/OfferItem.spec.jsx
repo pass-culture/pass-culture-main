@@ -134,7 +134,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         const offerTitle = screen.queryByText(props.offer.name, 'a')
         expect(offerTitle).toBeInTheDocument()
         expect(offerTitle).toHaveAttribute('href', `/offres/${props.offer.id}/edition`)
-        expect(offerTitle).toHaveAttribute('title', "Afficher le détail de l'offre")
+        expect(offerTitle).toHaveAttribute('title', "Afficher les détails de l'offre")
       })
     })
 

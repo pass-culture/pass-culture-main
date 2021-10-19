@@ -1274,7 +1274,7 @@ describe('offerDetails - Edition', () => {
       pcapi.loadOffer.mockResolvedValue(newEditedOffer)
       fireEvent.click(screen.getByText('Enregistrer'))
       fireEvent.click(screen.getByText('Stock et prix'))
-      fireEvent.click(await screen.findByText("Détail de l'offre"))
+      fireEvent.click(await screen.findByText("Détails de l'offre"))
 
       // Then
       expect(await getOfferInputForField('name')).toHaveValue(editValues.name)

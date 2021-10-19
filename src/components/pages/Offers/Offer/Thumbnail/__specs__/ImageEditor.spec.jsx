@@ -54,7 +54,7 @@ describe('when the user is on the preview step', () => {
       screen.getByText('Prévisualisation de votre image dans l’application pass Culture')
     ).toBeInTheDocument()
     expect(screen.getByText('Page d’accueil')).toBeInTheDocument()
-    expect(screen.getByText('Détail de l’offre')).toBeInTheDocument()
+    expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
     expect(screen.getByText('Retour', { selector: 'button' })).toBeInTheDocument()
     expect(screen.getByText('Valider', { selector: 'button' })).toBeInTheDocument()
   })

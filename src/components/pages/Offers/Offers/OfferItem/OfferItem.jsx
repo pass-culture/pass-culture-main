@@ -70,7 +70,7 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
       <td className="thumb-column">
         <Link
           className="name"
-          title="Afficher le détail de l'offre"
+          title="Afficher les détails de l'offre"
           to={`/offres/${offer.id}/edition`}
         >
           <Thumb
@@ -82,7 +82,7 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
       <td className="title-column">
         <Link
           className="name"
-          title="Afficher le détail de l'offre"
+          title="Afficher les détails de l'offre"
           to={`/offres/${offer.id}/edition`}
         >
           {offer.name}

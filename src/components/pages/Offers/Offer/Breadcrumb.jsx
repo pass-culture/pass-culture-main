@@ -18,7 +18,7 @@ const OfferBreadcrumb = ({ activeStep, isCreatingOffer, offerId }) => {
     steps = [
       {
         id: STEP_ID_DETAILS,
-        label: "Détail de l'offre",
+        label: "Détails de l'offre",
         url: `/offres/${offerId}/edition`,
       },
       {
@@ -31,7 +31,7 @@ const OfferBreadcrumb = ({ activeStep, isCreatingOffer, offerId }) => {
     steps = [
       {
         id: STEP_ID_DETAILS,
-        label: "Détail de l'offre",
+        label: "Détails de l'offre",
       },
       {
         id: STEP_ID_STOCKS,

@@ -31,7 +31,7 @@ describe('offer step', () => {
       await renderOffer({ pathname: '/offres/creation' })
 
       // Then
-      const detailTab = await screen.findByText("Détail de l'offre")
+      const detailTab = await screen.findByText("Détails de l'offre")
       expect(detailTab).toBeInTheDocument()
       expect(detailTab).not.toHaveAttribute('href')
       expect(detailTab.closest('.bc-step')).toHaveClass('active')
@@ -57,7 +57,7 @@ describe('offer step', () => {
       await renderOffer({ pathname: `/offres/${offer.id}/edition` })
 
       // Then
-      const detailTab = await screen.findByText("Détail de l'offre", { selector: 'a' })
+      const detailTab = await screen.findByText("Détails de l'offre", { selector: 'a' })
       expect(detailTab).toBeInTheDocument()
       expect(detailTab.closest('.bc-step')).toHaveClass('active')
       expect(screen.getByText('Stock et prix', { selector: 'a' })).toBeInTheDocument()
@@ -78,7 +78,7 @@ describe('stocks step', () => {
       await renderOffer({ pathname: `/offres/${offer.id}/stocks` })
 
       // Then
-      const detailTab = await screen.findByText("Détail de l'offre")
+      const detailTab = await screen.findByText("Détails de l'offre")
       expect(detailTab).toBeInTheDocument()
       expect(detailTab).not.toHaveAttribute('href')
       const stockTab = queryByTextTrimHtml(screen, 'Stock et prix', {
@@ -106,7 +106,7 @@ describe('stocks step', () => {
       await renderOffer({ pathname: `/offres/${offer.id}/stocks` })
 
       // Then
-      const detailTab = await screen.findByText("Détail de l'offre", { selector: 'a' })
+      const detailTab = await screen.findByText("Détails de l'offre", { selector: 'a' })
       expect(detailTab).toBeInTheDocument()
       const stockTab = screen.getByText('Stock et prix', { selector: 'a' })
       expect(stockTab).toBeInTheDocument()
@@ -131,7 +131,7 @@ describe('confirmation step', () => {
       await renderOffer({ pathname: `/offres/${offer.id}/confirmation` })
 
       // Then
-      const detailTab = await screen.findByText("Détail de l'offre")
+      const detailTab = await screen.findByText("Détails de l'offre")
       expect(detailTab).toBeInTheDocument()
       expect(detailTab).not.toHaveAttribute('href')
       const stockTab = screen.getByText('Stock et prix')
