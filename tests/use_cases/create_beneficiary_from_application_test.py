@@ -230,6 +230,7 @@ def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     assert push_testing.requests == []
 
 
+@freezegun.freeze_time("2021-10-30 09:00:00")
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
 def test_cannot_save_beneficiary_if_duplicate(app):
     # Given
@@ -259,7 +260,7 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     sub_msg = applicant.subscriptionMessages[0]
     assert (
         sub_msg.userMessage
-        == "Ce document a déjà été analysé. Vérifie que tu n’as pas créé de compte avec une autre adresse e-mail. Consulte l’e-mail envoyé le 18/10/2021 pour plus d’informations."
+        == "Ce document a déjà été analysé. Vérifie que tu n’as pas créé de compte avec une autre adresse e-mail. Consulte l’e-mail envoyé le 30/10/2021 pour plus d’informations."
     )
     assert sub_msg.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
 
