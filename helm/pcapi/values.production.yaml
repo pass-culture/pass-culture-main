@@ -571,7 +571,7 @@ secrets:
   - name: PASS_CULTURE_REMITTANCE_CODE
     version: 2
   - name: PAYMENTS_DETAILS_RECIPIENTS
-    version: 2
+    version: 3
   - name: PAYMENTS_REPORT_RECIPIENTS
     version: 3
   - name: PC_GOOGLE_KEY
