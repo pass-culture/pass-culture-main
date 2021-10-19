@@ -241,14 +241,11 @@ class AlgoliaBackend(base.SearchBackend):
         venue = offer.venue
         offerer = venue.managingOfferer
         humanize_offer_id = humanize(offer.id)
-        author = offer.extraData and offer.extraData.get("author")
-        stage_director = offer.extraData and offer.extraData.get("stageDirector")
-        visa = offer.extraData and offer.extraData.get("visa")
+        extra_data = offer.extraData or {}
+        visa = extra_data.get("visa")
         # FIXME (cgaunet, 2021-05-10): this is to prevent duplicates in Algolia.
         # When it's possible to remove duplicates on many attributes, remove the visa part from the isbn field.
-        isbn = offer.extraData and (offer.extraData.get("isbn") or offer.extraData.get("visa"))
-        speaker = offer.extraData and offer.extraData.get("speaker")
-        performer = offer.extraData and offer.extraData.get("performer")
+        isbn = extra_data.get("isbn") or visa
         prices = map(lambda stock: stock.price, offer.bookableStocks)
         prices_sorted = sorted(prices, key=float)
         dates = []
@@ -261,12 +258,12 @@ class AlgoliaBackend(base.SearchBackend):
         date_created = offer.dateCreated.timestamp()
         stocks_date_created = [stock.dateCreated.timestamp() for stock in offer.bookableStocks]
         tags = [criterion.name for criterion in offer.criteria]
+        artist = " ".join(extra_data.get(key, "") for key in ("author", "performer", "speaker", "stageDirector"))
 
         object_to_index = {
             "objectID": offer.id,
             "offer": {
-                # TODO(antoinewg): regroup under artist
-                "author": author,
+                "artist": artist.strip() or None,
                 "category": offer.offer_category_name_for_app,
                 "rankingWeight": offer.rankingWeight,
                 "dateCreated": date_created,
@@ -284,14 +281,8 @@ class AlgoliaBackend(base.SearchBackend):
                 # FIXME remove once subcategory logic is fully implemented
                 "label": offer.subcategory.app_label,
                 "name": offer.name,
-                # TODO(antoinewg): regroup under artist
-                "performer": performer,
                 "prices": prices_sorted,
                 "searchGroupName": offer.subcategory.search_group_name,
-                # TODO(antoinewg): regroup under artist
-                "speaker": speaker,
-                # TODO(antoinewg): regroup under artist
-                "stageDirector": stage_director,
                 "stocksDateCreated": sorted(stocks_date_created),
                 "subcategoryId": offer.subcategory.id,
                 "thumbUrl": url_path(offer.thumbUrl),

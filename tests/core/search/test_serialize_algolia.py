@@ -96,7 +96,7 @@ class BuildObjectTest:
         assert result == {
             "objectID": 3,
             "offer": {
-                "author": None,
+                "artist": None,
                 "category": "MUSIQUE",
                 "dateCreated": 1577872800.0,
                 "dates": [1603098000.0, 1603098000.0, 1603098000.0],
@@ -110,12 +110,9 @@ class BuildObjectTest:
                 "isThing": False,
                 "label": "Autre type d'événement musical",
                 "name": "Event name",
-                "performer": None,
                 "prices": [Decimal("0.00"), Decimal("10.00"), Decimal("20.00")],
                 "rankingWeight": 3,
                 "searchGroupName": subcategories.SearchGroups.MUSIQUE.name,
-                "speaker": None,
-                "stageDirector": None,
                 "stocksDateCreated": [1606820400.0, 1607166000.0, 1607673600.0],
                 "subcategoryId": subcategories.EVENEMENT_MUSIQUE.id,
                 "thumbUrl": f"/storage/thumbs/products/{humanized_product_id}",
@@ -149,7 +146,7 @@ class BuildObjectTest:
         result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
-        assert result["offer"]["author"] == "MEFA"
+        assert result["offer"]["artist"] == "MEFA"
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_a_stage_director_when_exists(self, app):
@@ -165,7 +162,7 @@ class BuildObjectTest:
         result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
-        assert result["offer"]["stageDirector"] == "MEFA"
+        assert result["offer"]["artist"] == "MEFA"
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_a_visa_when_exists(self, app):
@@ -215,7 +212,7 @@ class BuildObjectTest:
         result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
-        assert result["offer"]["speaker"] == "MEFA"
+        assert result["offer"]["artist"] == "MEFA"
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_a_performer_when_exists(self, app):
@@ -231,7 +228,7 @@ class BuildObjectTest:
         result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
-        assert result["offer"]["performer"] == "MEFA"
+        assert result["offer"]["artist"] == "MEFA"
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_the_first_stock_price(self, app):
@@ -389,7 +386,7 @@ class BuildObjectTest:
         assert result == {
             "objectID": 3,
             "offer": {
-                "author": None,
+                "artist": None,
                 "category": "MUSIQUE",
                 "dateCreated": 1577872800.0,
                 "dates": [1603098000.0],
@@ -403,12 +400,9 @@ class BuildObjectTest:
                 "isThing": False,
                 "label": "Autre type d'événement musical",
                 "name": "Event name",
-                "performer": None,
                 "prices": [Decimal("10.00")],
                 "rankingWeight": None,
                 "searchGroupName": subcategories.SearchGroups.MUSIQUE.name,
-                "speaker": None,
-                "stageDirector": None,
                 "stocksDateCreated": [1607166000.0],
                 "subcategoryId": subcategories.EVENEMENT_MUSIQUE.id,
                 "thumbUrl": f"/storage/thumbs/products/{humanized_product_id}",
@@ -475,7 +469,7 @@ class BuildObjectTest:
         assert result == {
             "objectID": 3,
             "offer": {
-                "author": None,
+                "artist": None,
                 "category": "MUSIQUE",
                 "dateCreated": 1577872800.0,
                 "dates": [1603098000.0],
@@ -489,12 +483,9 @@ class BuildObjectTest:
                 "isThing": False,
                 "label": "Autre type d'événement musical",
                 "name": "Event name",
-                "performer": None,
                 "prices": [Decimal("10.00")],
                 "rankingWeight": None,
                 "searchGroupName": subcategories.SearchGroups.MUSIQUE.name,
-                "speaker": None,
-                "stageDirector": None,
                 "stocksDateCreated": [1607166000.0],
                 "subcategoryId": subcategories.EVENEMENT_MUSIQUE.id,
                 "thumbUrl": f"/storage/thumbs/products/{humanized_product_id}",
