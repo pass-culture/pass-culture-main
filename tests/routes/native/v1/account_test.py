@@ -19,6 +19,7 @@ from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.subscription.factories as subscription_factories
+import pcapi.core.subscription.messages as subscription_messages
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
@@ -310,6 +311,50 @@ class AccountTest:
         assert response.status_code == 200
         assert not response.json["allowedEligibilityCheckMethods"]
         assert not response.json["nextBeneficiaryValidationStep"]
+
+    def test_user_messages_passes_pydantic_serialization(self, client):
+        user = users_factories.UserFactory()
+        client.with_token(user.email)
+
+        subscription_messages.create_message_jouve_manual_review(user, 1)
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+
+        subscription_messages.on_fraud_review_ko(user)
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+
+        subscription_messages.on_redirect_to_dms_from_idcheck(user)
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+
+        subscription_messages.on_idcheck_invalid_age(user)
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+
+        subscription_messages.on_idcheck_invalid_document(user)
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+
+        subscription_messages.on_idcheck_invalid_document_date(user)
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+
+        subscription_messages.on_idcheck_unread_mrz(user)
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+
+        subscription_messages.on_dms_application_received(user)
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+
+        subscription_messages.on_dms_application_refused(user)
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+
+        subscription_messages.on_duplicate_user(user)
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
 
 
 def build_test_client(app, identity):
