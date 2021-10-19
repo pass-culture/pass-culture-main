@@ -1,15 +1,11 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
-import { CSVLink } from 'react-csv'
-
-import Icon from 'components/layout/Icon'
 
 import { pluralize } from '../../../../../utils/pluralize'
-import generateBookingsCsvFile from '../utils/generateBookingsCsvFile'
 
 const Header = ({ bookingsRecapFiltered, isLoading }) => {
   if (isLoading) {
@@ -23,19 +19,6 @@ const Header = ({ bookingsRecapFiltered, isLoading }) => {
       <div className="bookings-header">
         <span className="bookings-header-number">
           {pluralize(bookingsRecapFiltered.length, 'réservation')}
-        </span>
-        <span className="bookings-header-csv-download">
-          <CSVLink
-            data={generateBookingsCsvFile(bookingsRecapFiltered)}
-            filename="Réservations Pass Culture.csv"
-            separator=";"
-          >
-            <Icon
-              alt="Télécharger le CSV"
-              svg="ico-download"
-            />
-            Télécharger le CSV
-          </CSVLink>
         </span>
       </div>
     )
