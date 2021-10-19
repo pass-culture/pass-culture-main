@@ -249,14 +249,8 @@ class AlgoliaBackend(base.SearchBackend):
         isbn = offer.extraData and (offer.extraData.get("isbn") or offer.extraData.get("visa"))
         speaker = offer.extraData and offer.extraData.get("speaker")
         performer = offer.extraData and offer.extraData.get("performer")
-        show_type = offer.extraData and offer.extraData.get("showType")
-        show_sub_type = offer.extraData and offer.extraData.get("showSubType")
-        music_type = offer.extraData and offer.extraData.get("musicType")
-        music_sub_type = offer.extraData and offer.extraData.get("musicSubType")
         prices = map(lambda stock: stock.price, offer.bookableStocks)
         prices_sorted = sorted(prices, key=float)
-        price_min = prices_sorted[0]
-        price_max = prices_sorted[-1]
         dates = []
         times = []
         if offer.isEvent:
@@ -271,14 +265,16 @@ class AlgoliaBackend(base.SearchBackend):
         object_to_index = {
             "objectID": offer.id,
             "offer": {
+                # TODO(antoinewg): regroup under artist
                 "author": author,
                 "category": offer.offer_category_name_for_app,
                 "rankingWeight": offer.rankingWeight,
                 "dateCreated": date_created,
                 "dates": sorted(dates),
                 "description": remove_stopwords(offer.description or ""),
+                # TODO(antoinewg): still used for webapp: delete when migration to decliweb complete
                 "id": humanize_offer_id,
-                "pk": offer.id,
+                # TODO(antoinewg): regroup under group
                 "isbn": isbn,
                 "isDigital": offer.isDigital,
                 "isDuo": offer.isDuo,
@@ -287,31 +283,27 @@ class AlgoliaBackend(base.SearchBackend):
                 "isThing": offer.isThing,
                 # FIXME remove once subcategory logic is fully implemented
                 "label": offer.subcategory.app_label,
-                "musicSubType": music_sub_type,
-                "musicType": music_type,
                 "name": offer.name,
+                # TODO(antoinewg): regroup under artist
                 "performer": performer,
                 "prices": prices_sorted,
-                "priceMin": price_min,
-                "priceMax": price_max,
                 "searchGroupName": offer.subcategory.search_group_name,
-                "showSubType": show_sub_type,
-                "showType": show_type,
+                # TODO(antoinewg): regroup under artist
                 "speaker": speaker,
+                # TODO(antoinewg): regroup under artist
                 "stageDirector": stage_director,
                 "stocksDateCreated": sorted(stocks_date_created),
                 "subcategoryId": offer.subcategory.id,
                 "thumbUrl": url_path(offer.thumbUrl),
                 "tags": tags,
                 "times": list(set(times)),
+                # TODO(antoinewg): regroup under group
                 "visa": visa,
-                "withdrawalDetails": offer.withdrawalDetails,
             },
             "offerer": {
                 "name": offerer.name,
             },
             "venue": {
-                "city": venue.city,
                 "departementCode": venue.departementCode,
                 "id": venue.id,
                 "name": venue.name,

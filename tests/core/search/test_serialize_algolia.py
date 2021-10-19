@@ -101,9 +101,7 @@ class BuildObjectTest:
                 "dateCreated": 1577872800.0,
                 "dates": [1603098000.0, 1603098000.0, 1603098000.0],
                 "description": "lit sous rivière",
-                "withdrawalDetails": "A emporter sur place",
                 "id": "AM",
-                "pk": 3,
                 "isbn": None,
                 "isDuo": False,
                 "isEducational": False,
@@ -112,16 +110,10 @@ class BuildObjectTest:
                 "isThing": False,
                 "label": "Autre type d'événement musical",
                 "name": "Event name",
-                "musicSubType": None,
-                "musicType": None,
                 "performer": None,
                 "prices": [Decimal("0.00"), Decimal("10.00"), Decimal("20.00")],
-                "priceMin": Decimal("0.00"),
-                "priceMax": Decimal("20.00"),
                 "rankingWeight": 3,
                 "searchGroupName": subcategories.SearchGroups.MUSIQUE.name,
-                "showSubType": None,
-                "showType": None,
                 "speaker": None,
                 "stageDirector": None,
                 "stocksDateCreated": [1606820400.0, 1607166000.0, 1607673600.0],
@@ -136,7 +128,6 @@ class BuildObjectTest:
             },
             "venue": {
                 "id": 2,
-                "city": "Paris",
                 "departementCode": "93",
                 "name": "Venue name",
                 "publicName": "Venue public name",
@@ -241,70 +232,6 @@ class BuildObjectTest:
 
         # Then
         assert result["offer"]["performer"] == "MEFA"
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_a_show_type_when_exists(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer = create_offer_with_thing_product(venue=venue)
-        offer.extraData = {"showType": "dance"}
-        stock = create_stock(offer=offer)
-        repository.save(stock)
-
-        # When
-        result = AlgoliaBackend.serialize_offer(offer)
-
-        # Then
-        assert result["offer"]["showType"] == "dance"
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_a_show_sub_type_when_exists(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer = create_offer_with_thing_product(venue=venue)
-        offer.extraData = {"showSubType": "urbaine"}
-        stock = create_stock(offer=offer)
-        repository.save(stock)
-
-        # When
-        result = AlgoliaBackend.serialize_offer(offer)
-
-        # Then
-        assert result["offer"]["showSubType"] == "urbaine"
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_a_music_type_when_exists(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer = create_offer_with_thing_product(venue=venue)
-        offer.extraData = {"musicType": "jazz"}
-        stock = create_stock(offer=offer)
-        repository.save(stock)
-
-        # When
-        result = AlgoliaBackend.serialize_offer(offer)
-
-        # Then
-        assert result["offer"]["musicType"] == "jazz"
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_a_music_sub_type_when_exists(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer = create_offer_with_thing_product(venue=venue)
-        offer.extraData = {"musicSubType": "fusion"}
-        stock = create_stock(offer=offer)
-        repository.save(stock)
-
-        # When
-        result = AlgoliaBackend.serialize_offer(offer)
-
-        # Then
-        assert result["offer"]["musicSubType"] == "fusion"
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_the_first_stock_price(self, app):
@@ -467,9 +394,7 @@ class BuildObjectTest:
                 "dateCreated": 1577872800.0,
                 "dates": [1603098000.0],
                 "description": "lit sous rivière",
-                "withdrawalDetails": "A emporter sur place",
                 "id": "AM",
-                "pk": 3,
                 "isbn": None,
                 "isDuo": False,
                 "isEducational": False,
@@ -478,16 +403,10 @@ class BuildObjectTest:
                 "isThing": False,
                 "label": "Autre type d'événement musical",
                 "name": "Event name",
-                "musicSubType": None,
-                "musicType": None,
                 "performer": None,
                 "prices": [Decimal("10.00")],
-                "priceMin": Decimal("10.00"),
-                "priceMax": Decimal("10.00"),
                 "rankingWeight": None,
                 "searchGroupName": subcategories.SearchGroups.MUSIQUE.name,
-                "showSubType": None,
-                "showType": None,
                 "speaker": None,
                 "stageDirector": None,
                 "stocksDateCreated": [1607166000.0],
@@ -502,7 +421,6 @@ class BuildObjectTest:
             },
             "venue": {
                 "id": 2,
-                "city": "Paris",
                 "departementCode": "93",
                 "name": "Venue name",
                 "publicName": "Venue public name",
@@ -562,9 +480,7 @@ class BuildObjectTest:
                 "dateCreated": 1577872800.0,
                 "dates": [1603098000.0],
                 "description": "lit sous rivière",
-                "withdrawalDetails": "A emporter sur place",
                 "id": "AM",
-                "pk": 3,
                 "isbn": None,
                 "isDuo": False,
                 "isEducational": False,
@@ -573,16 +489,10 @@ class BuildObjectTest:
                 "isThing": False,
                 "label": "Autre type d'événement musical",
                 "name": "Event name",
-                "musicSubType": None,
-                "musicType": None,
                 "performer": None,
                 "prices": [Decimal("10.00")],
-                "priceMin": Decimal("10.00"),
-                "priceMax": Decimal("10.00"),
                 "rankingWeight": None,
                 "searchGroupName": subcategories.SearchGroups.MUSIQUE.name,
-                "showSubType": None,
-                "showType": None,
                 "speaker": None,
                 "stageDirector": None,
                 "stocksDateCreated": [1607166000.0],
@@ -597,7 +507,6 @@ class BuildObjectTest:
             },
             "venue": {
                 "id": 2,
-                "city": "Paris",
                 "departementCode": "93",
                 "name": "Venue name",
                 "publicName": "Venue public name",
