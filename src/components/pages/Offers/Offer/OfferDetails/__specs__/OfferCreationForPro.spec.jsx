@@ -1775,6 +1775,25 @@ describe('offerDetails - Creation - pro user', () => {
       expect(bookingEmailInput).toBeNull()
     })
 
+    it('should show errors for category and subcategory fields', async () => {
+      await renderOffers(props, store)
+
+      userEvent.click(screen.getByText('Étape suivante'))
+      expect(pcapi.createOffer).not.toHaveBeenCalled()
+
+      const categoryIdError = await findInputErrorForField('categoryId')
+      expect(categoryIdError).toHaveTextContent('Ce champ est obligatoire')
+
+      setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+      setOfferValues({ subcategoryId: null })
+
+      userEvent.click(screen.getByText('Étape suivante'))
+      expect(pcapi.createOffer).not.toHaveBeenCalled()
+
+      const subcategoryIdError = await findInputErrorForField('subcategoryId')
+      expect(subcategoryIdError).toHaveTextContent('Ce champ est obligatoire')
+    })
+
     it('should show an error notification when form is not valid', async () => {
       // Given
       await renderOffers(props, store)

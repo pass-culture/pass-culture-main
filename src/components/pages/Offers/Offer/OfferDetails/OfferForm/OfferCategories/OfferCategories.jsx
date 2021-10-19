@@ -15,6 +15,7 @@ import { SubtypeSelects } from './SubtypeSelects'
 
 const OfferCategories = ({
   categories,
+  getErrorMessage,
   categoriesFormValues,
   isTypeOfflineButOnlyVirtualVenues,
   readOnlyFields,
@@ -138,6 +139,7 @@ const OfferCategories = ({
             displayName: `Choisir une catégorie`,
             id: DEFAULT_FORM_VALUES.categoryId,
           }}
+          error={getErrorMessage('categoryId')}
           handleSelection={handleChange}
           isDisabled={readOnlyFields.includes('categoryId')}
           label="Catégorie"
@@ -155,6 +157,7 @@ const OfferCategories = ({
               displayName: `Choisir une sous-catégorie`,
               id: DEFAULT_FORM_VALUES.subcategoryId,
             }}
+            error={getErrorMessage('subcategoryId')}
             handleSelection={handleChange}
             isDisabled={readOnlyFields.includes('subcategoryId')}
             label="Sous-catégorie"
@@ -192,6 +195,7 @@ OfferCategories.propTypes = {
     categoryId: PropTypes.string,
     subcategoryId: PropTypes.string,
   }).isRequired,
+  getErrorMessage: PropTypes.func.isRequired,
   isTypeOfflineButOnlyVirtualVenues: PropTypes.bool,
   readOnlyFields: PropTypes.arrayOf(PropTypes.string).isRequired,
   subCategories: PropTypes.arrayOf(PropTypes.shape()).isRequired,

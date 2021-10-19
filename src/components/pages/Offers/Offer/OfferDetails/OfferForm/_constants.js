@@ -47,6 +47,7 @@ export const BASE_OFFER_FIELDS = [
   'name',
   'externalTicketOfficeUrl',
   'subcategoryId',
+  'categoryId',
   'venueId',
   'withdrawalDetails',
 ]
@@ -73,7 +74,7 @@ export const EXTRA_DATA_FIELDS = [
   'stageDirector',
   'visa',
 ]
-export const MANDATORY_FIELDS = ['name', 'venueId', 'offererId', 'url', 'bookingEmail']
+export const MANDATORY_FIELDS = ['name', 'venueId', 'offererId', 'url', 'bookingEmail', 'categoryId', 'subcategoryId']
 
 export const SYNCHRONIZED_OFFER_EDITABLE_FIELDS = {
   ALL_PROVIDERS: [
