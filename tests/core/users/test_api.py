@@ -1033,7 +1033,7 @@ class VerifyIdentityDocumentInformationsTest:
         assert len(mails_testing.outbox) == 1
         sent_data = mails_testing.outbox[0].sent_data
 
-        assert sent_data["MJ-TemplateID"] == 2958584
+        assert sent_data["MJ-TemplateID"] == 3188025
 
         assert len(existing_user.beneficiaryFraudChecks) == 1
         fraud_check = existing_user.beneficiaryFraudChecks[0]

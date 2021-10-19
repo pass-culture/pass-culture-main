@@ -8,7 +8,7 @@ class DocumentValidationUnknownError(Exception):
 def build_data_for_document_verification_error(code: str) -> dict:
     error_codes_switch = {
         "unread-document": _build_unread_document_data,
-        "unread-mrz-document": _build_invalid_document_data,
+        "unread-mrz-document": _build_invalid_mrz_data,
         "invalid-document-date": _build_invalid_document_date_data,
         "invalid-document": _build_invalid_document_data,
         "invalid-age": _build_invalid_age_data,
@@ -37,6 +37,15 @@ def _build_invalid_document_date_data() -> dict:
         "Vars": {
             "url": settings.DMS_USER_URL,
         },
+    }
+
+
+def _build_invalid_mrz_data() -> dict:
+    return {
+        "MJ-TemplateID": 3188025,
+        "MJ-TemplateLanguage": True,
+        "Mj-campaign": "jouve-error-invalid-document",
+        "Vars": {},
     }
 
 
