@@ -44,6 +44,7 @@ PyJWT[crypto]==2.1.0
 pylint==2.8.3
 pylint-strict-informational
 pysaml2
+pytest==6.2.5
 pytest-cov==2.10.1
 pytest-flask==1.0.0
 pytest-flask-sqlalchemy==1.0.2
@@ -53,6 +54,7 @@ pytest-dotenv==0.5.2
 python-dotenv==0.14.0
 python-swiftclient==3.10.1
 qrcode==6.1
+requests==2.26.0
 # FIXME (dbaty, 2021-04-28): as of version 1.9 [1], requests_mock
 # quotes URLs passed to Mocker. If we send a request on a URL that is
 # not quoted, requests_mock does not find a match anymore and the test
