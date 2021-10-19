@@ -241,11 +241,6 @@ class AlgoliaBackend(base.SearchBackend):
         venue = offer.venue
         offerer = venue.managingOfferer
         humanize_offer_id = humanize(offer.id)
-        extra_data = offer.extraData or {}
-        visa = extra_data.get("visa")
-        # FIXME (cgaunet, 2021-05-10): this is to prevent duplicates in Algolia.
-        # When it's possible to remove duplicates on many attributes, remove the visa part from the isbn field.
-        isbn = extra_data.get("isbn") or visa
         prices = map(lambda stock: stock.price, offer.bookableStocks)
         prices_sorted = sorted(prices, key=float)
         dates = []
@@ -258,9 +253,17 @@ class AlgoliaBackend(base.SearchBackend):
         date_created = offer.dateCreated.timestamp()
         stocks_date_created = [stock.dateCreated.timestamp() for stock in offer.bookableStocks]
         tags = [criterion.name for criterion in offer.criteria]
+        extra_data = offer.extraData or {}
         artist = " ".join(extra_data.get(key, "") for key in ("author", "performer", "speaker", "stageDirector"))
 
+        isbn = extra_data.get("isbn")
+        visa = extra_data.get("visa")
+        # Field used by Algolia (not the frontend) to deduplicate results
+        # https://www.algolia.com/doc/api-reference/api-parameters/distinct/
+        distinct = isbn or visa or str(offer.id)
+
         object_to_index = {
+            "distinct": distinct,
             "objectID": offer.id,
             "offer": {
                 "artist": artist.strip() or None,
@@ -271,7 +274,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "description": remove_stopwords(offer.description or ""),
                 # TODO(antoinewg): still used for webapp: delete when migration to decliweb complete
                 "id": humanize_offer_id,
-                # TODO(antoinewg): regroup under group
+                # TODO(antoinewg): delete after re-indexation (once we have `distinct` on all docs)
                 "isbn": isbn,
                 "isDigital": offer.isDigital,
                 "isDuo": offer.isDuo,
@@ -288,7 +291,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "thumbUrl": url_path(offer.thumbUrl),
                 "tags": tags,
                 "times": list(set(times)),
-                # TODO(antoinewg): regroup under group
+                # TODO(antoinewg): delete after re-indexation (once we have `distinct` on all docs)
                 "visa": visa,
             },
             "offerer": {
