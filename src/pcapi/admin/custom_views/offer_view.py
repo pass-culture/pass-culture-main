@@ -115,7 +115,6 @@ class OfferView(BaseAdminView):
     column_list = [
         "id",
         "name",
-        "type",
         "categoryId",
         "subcategoryId",
         "criteria",
@@ -124,10 +123,9 @@ class OfferView(BaseAdminView):
         "lastValidationDate",
         "isEducational",
     ]
-    column_sortable_list = ["name", "type", "criteria", "rankingWeight", "validation", "lastValidationDate"]
+    column_sortable_list = ["name", "criteria", "rankingWeight", "validation", "lastValidationDate"]
     column_labels = {
         "name": "Nom",
-        "type": "Type",
         "subcategoryId": "Sous-catégorie",
         "categoryId": "Catégorie",
         "criteria": "Tag",
@@ -141,7 +139,6 @@ class OfferView(BaseAdminView):
     column_filters = [
         "id",
         "name",
-        "type",
         CategoryFilterEqual(column=Offer.subcategoryId, name="Catégorie"),
         SubcategoryFilterEqual(column=Offer.subcategoryId, name="Sous-catégories"),
         "criteria.name",
@@ -422,7 +419,6 @@ class ValidationView(BaseAdminView):
     column_sortable_list = ["id", "name", "validation", "dateCreated"]
     column_labels = {
         "name": "Nom",
-        "type": "Type",
         "validation": "Validation",
         "venue": "Lieu",
         "offerer": "Structure",

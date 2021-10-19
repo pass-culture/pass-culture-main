@@ -134,12 +134,10 @@ def _is_able_to_create_book_offer_from_isbn(subcategory: subcategories.Subcatego
 
 def _initialize_book_offer_from_template(offer_data: PostOfferBodyModel) -> Offer:
     product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(offer_data.extra_data["isbn"])
-    product_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[product.subcategoryId]
     extra_data = product.extraData
     extra_data.update(offer_data.extra_data)
     offer = Offer(
         product=product,
-        type=product_subcategory.matching_type,  # FIXME: fseguin(2021-07-22): deprecated
         subcategoryId=product.subcategoryId,
         name=offer_data.name,
         description=offer_data.description if offer_data.description else product.description,
@@ -158,7 +156,6 @@ def _initialize_offer_with_new_data(
     offer_data: PostOfferBodyModel, subcategory: subcategories.Subcategory, venue: Venue
 ) -> Offer:
     data = offer_data.dict(by_alias=True)
-    data["type"] = subcategory.matching_type  # FIXME: fseguin(2021-07-22): deprecated
     product = Product()
     if data.get("url"):
         data["isNational"] = True
@@ -167,7 +164,6 @@ def _initialize_offer_with_new_data(
     offer.populate_from_dict(data)
     offer.product = product
     offer.subcategoryId = subcategory.id if subcategory else None
-    offer.type = subcategory.matching_type
     offer.product.owningOfferer = venue.managingOfferer
     return offer
 

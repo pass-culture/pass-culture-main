@@ -131,7 +131,6 @@ class SynchronizeStocksTest:
         assert created_offer.name == product.name
         assert created_offer.productId == product.id
         assert created_offer.venueId == venue.id
-        assert created_offer.type == product.type
         assert created_offer.idAtProviders == f"{spec[2]['ref']}@{siret}"
         assert created_offer.lastProviderId == provider.id
 
@@ -179,7 +178,6 @@ class SynchronizeStocksTest:
             name="product_name",
             description="product_desc",
             extraData="extra",
-            type="ThingType.LIVRE_EDITION",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         products_by_provider_reference = {"isbn_product_ref": product}
@@ -205,7 +203,6 @@ class SynchronizeStocksTest:
                 name="product_name",
                 productId=456,
                 venueId=venue.id,
-                type="ThingType.LIVRE_EDITION",
                 subcategoryId=subcategories.LIVRE_PAPIER.id,
                 withdrawalDetails=venue.withdrawalDetails,
             ),

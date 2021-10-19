@@ -32,8 +32,6 @@ class BookFormat(enum.Enum):
 
 class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
 
-    type = Column(String(50), nullable=True)
-
     name = Column(String(140), nullable=False)
 
     description = Column(Text, nullable=True)

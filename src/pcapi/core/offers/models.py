@@ -281,8 +281,6 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     bookingEmail = Column(String(120), nullable=True)
 
-    type = Column(String(50), index=True, nullable=True)
-
     name = Column(String(140), nullable=False)
     Index("idx_offer_trgm_name", name, postgresql_using="gin")
 
