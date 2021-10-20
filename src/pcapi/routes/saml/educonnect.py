@@ -1,8 +1,10 @@
 import logging
+from urllib.parse import urlencode
 
 from flask import current_app as app
 from flask import redirect
 from flask import request
+from werkzeug.wrappers import Response
 
 from pcapi import settings
 from pcapi.core.fraud import api as fraud_api
@@ -21,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 @blueprint.saml_blueprint.route("educonnect/login", methods=["GET"])
 @authenticated_user_required
-def login_educonnect(user: user_models.User) -> None:
+def login_educonnect(user: user_models.User) -> Response:
     redirect_url = educonnect_api.get_login_redirect_url(user)
 
     response = redirect(redirect_url, code=302)
@@ -33,7 +35,7 @@ def login_educonnect(user: user_models.User) -> None:
 
 
 @blueprint.saml_blueprint.route("acs", methods=["POST"])
-def on_educonnect_authentication_response() -> None:
+def on_educonnect_authentication_response() -> Response:
     try:
         educonnect_user = educonnect_api.get_educonnect_user(request.form["SAMLResponse"])
     except educonnect_exceptions.ResponseTooOld:
@@ -71,5 +73,12 @@ def on_educonnect_authentication_response() -> None:
         ),
     )
 
-    # TODO: redirect user to the right page
-    return redirect(settings.WEBAPP_V2_URL, code=302)
+    user_information_validation_base_url = f"{settings.WEBAPP_V2_URL}/idcheck/validation?"
+    query_params = {
+        "firstName": educonnect_user.first_name,
+        "lastName": educonnect_user.last_name,
+        "dateOfBirth": educonnect_user.birth_date,
+        "logoutUrl": educonnect_user.logout_url,
+    }
+
+    return redirect(user_information_validation_base_url + urlencode(query_params), code=302)

@@ -58,6 +58,11 @@ class EduconnectTest:
             response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
+        assert (
+            response.location
+            == "https://webapp-v2.example.com/idcheck/validation?firstName=Max&lastName=SENS&dateOfBirth=2006-08-18&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+        )
+
         assert caplog.records[0].extra == {
             "date_of_birth": "2006-08-18",
             "educonnect_connection_date": "2021-10-08T11:51:33.437000",
