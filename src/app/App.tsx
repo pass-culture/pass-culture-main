@@ -1,5 +1,6 @@
 import * as React from "react"
 import { useCallback, useEffect, useState } from "react"
+import { QueryCache, QueryClient, QueryClientProvider } from "react-query"
 
 import "@fontsource/barlow"
 import { UnauthenticatedError } from "app/components/UnauthenticatedError/UnauthenticatedError"
@@ -13,6 +14,16 @@ import {
   NotificationType,
 } from "./components/Layout/Notification/Notification"
 import { LoaderPage } from "./components/LoaderPage/LoaderPage"
+
+export const queryCache = new QueryCache()
+export const queryClient = new QueryClient({
+  queryCache,
+  defaultOptions: {
+    queries: {
+      retry: 0,
+    },
+  },
+})
 
 export const App = (): JSX.Element => {
   const [userRole, setUserRole] = useState<Role>(Role.unauthenticated)
@@ -52,7 +63,7 @@ export const App = (): JSX.Element => {
   }
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       {notification && <NotificationComponent notification={notification} />}
       {[Role.readonly, Role.redactor].includes(userRole) && (
         <AppLayout
@@ -62,6 +73,6 @@ export const App = (): JSX.Element => {
         />
       )}
       {userRole === Role.unauthenticated && <UnauthenticatedError />}
-    </>
+    </QueryClientProvider>
   )
 }
