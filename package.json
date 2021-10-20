@@ -49,8 +49,6 @@
     ]
   },
   "dependencies": {
-    "@elastic/react-search-ui": "^1.7.0",
-    "@elastic/search-ui-app-search-connector": "^1.7.0",
     "@fontsource/barlow": "^4.5.0",
     "@sentry/react": "^6.11.0",
     "@sentry/tracing": "^6.11.0",

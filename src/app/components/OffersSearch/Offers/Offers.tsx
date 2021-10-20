@@ -1,6 +1,7 @@
 import "./Offers.scss"
 import { captureException } from "@sentry/react"
 import React from "react"
+import { connectHits } from "react-instantsearch-core"
 import { useQueries } from "react-query"
 
 import { Spinner } from "app/components/Layout/Spinner/Spinner"
@@ -10,48 +11,37 @@ import { OfferType, ResultType, Role } from "utils/types"
 import { NoResultsPage } from "./NoResultsPage/NoResultsPage"
 import { Offer } from "./Offer"
 
-const getIdFromResultIdRaw = (resultId: string): number => parseInt(resultId)
 const offerIsBookable = (offer: OfferType): boolean =>
   !offer.isSoldOut && !offer.isExpired
 
-export const Offers = ({
+export const OffersComponent = ({
   userRole,
-  results,
-  isAppSearchLoading,
-  wasFirstSearchLaunched,
+  hits,
 }: {
   userRole: Role;
-  results: ResultType[];
-  isAppSearchLoading: boolean;
-  wasFirstSearchLaunched: boolean;
+  hits: ResultType[];
 }): JSX.Element => {
   const offersThumbById = {}
-  results.forEach((result) => {
-    const offerId = getIdFromResultIdRaw(result.id.raw)
-    offersThumbById[offerId] = result.thumb_url?.raw
+  hits.forEach((hit) => {
+    offersThumbById[hit.objectID] = hit.offer.thumbUrl
   })
 
   const queries = useQueries(
-    results.map((result) => {
-      const offerId = getIdFromResultIdRaw(result.id.raw)
-
-      return {
-        queryKey: ["offer", offerId],
-        queryFn: async () => {
-          try {
-            const offer = await pcapi.getOffer(offerId)
-            if (offer && offerIsBookable(offer)) return offer
-          } catch (e) {
-            captureException(e)
-          }
-        },
-        staleTime: 1 * 60 * 1000, // We consider an offer valid for 1 min
-      }
-    })
+    hits.map((hit) => ({
+      queryKey: ["offer", hit.objectID],
+      queryFn: async () => {
+        try {
+          const offer = await pcapi.getOffer(hit.objectID)
+          if (offer && offerIsBookable(offer)) return offer
+        } catch (e) {
+          captureException(e)
+        }
+      },
+      staleTime: 1 * 60 * 1000, // We consider an offer valid for 1 min
+    }))
   )
 
-  const isLoading = queries.some((query) => query.isLoading)
-  if (isLoading || isAppSearchLoading || !wasFirstSearchLaunched) {
+  if (queries.some((query) => query.isLoading)) {
     return (
       <div className="offers-loader">
         <Spinner message="Recherche en cours" />
@@ -63,7 +53,7 @@ export const Offers = ({
     .map(({ data }) => data as OfferType | undefined)
     .filter((offer) => typeof offer !== "undefined") as OfferType[]
 
-  if (results.length === 0 || offers.length === 0) {
+  if (hits.length === 0 || offers.length === 0) {
     return <NoResultsPage />
   }
 
@@ -83,3 +73,5 @@ export const Offers = ({
     </ul>
   )
 }
+
+export const Offers = connectHits(OffersComponent)

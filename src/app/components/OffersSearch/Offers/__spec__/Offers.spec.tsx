@@ -5,7 +5,7 @@ import { QueryCache, QueryClient, QueryClientProvider } from "react-query"
 import * as pcapi from "repository/pcapi/pcapi"
 import { OfferType, ResultType, Role } from "utils/types"
 
-import { Offers } from "../Offers"
+import { OffersComponent as Offers } from "../Offers"
 
 jest.mock("repository/pcapi/pcapi", () => ({
   getOffer: jest.fn(),
@@ -23,43 +23,27 @@ const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
 const appSearchFakeResults: ResultType[] = [
   {
-    venue_name: {
-      raw: "Le Petit Rintintin 25",
+    objectID: "479",
+    offer: {
+      dates: [new Date("2021-09-29T13:54:30+00:00").valueOf()],
+      name: "Une chouette à la mer",
+      thumbUrl: "/storage/thumbs/mediations/AFXA",
     },
-    thumb_url: {
-      raw: "/storage/thumbs/mediations/AFXA",
-    },
-    name: {
-      raw: "Une chouette à la mer",
-    },
-    venue_public_name: {
-      raw: "Le Petit Rintintin 25",
-    },
-    dates: {
-      raw: ["2021-09-29T13:54:30+00:00"],
-    },
-    id: {
-      raw: "offers-1|479",
+    venue: {
+      name: "Le Petit Rintintin 25",
+      publicName: "Le Petit Rintintin 25",
     },
   },
   {
-    venue_name: {
-      raw: "Le Petit Coco",
+    objectID: "480",
+    offer: {
+      dates: [new Date("2021-09-29T13:54:30+00:00").valueOf()],
+      name: "Coco channel",
+      thumbUrl: "",
     },
-    thumb_url: {
-      raw: "",
-    },
-    name: {
-      raw: "Coco channel",
-    },
-    venue_public_name: {
-      raw: "Le Petit Coco",
-    },
-    dates: {
-      raw: ["2021-09-29T13:54:30+00:00"],
-    },
-    id: {
-      raw: "480",
+    venue: {
+      name: "Le Petit Coco",
+      publicName: "Le Petit Coco",
     },
   },
 ]
@@ -162,15 +146,11 @@ describe("offers", () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(
-      <Offers
-        isAppSearchLoading={false}
-        results={appSearchFakeResults}
-        userRole={Role.redactor}
-        wasFirstSearchLaunched
-      />,
-      { wrapper }
-    )
+    render(<Offers
+      hits={appSearchFakeResults}
+      userRole={Role.redactor}
+           />, { wrapper })
+
     // Then
     const listItemsInOffer = await screen.findAllByRole("listitem")
     expect(listItemsInOffer).toHaveLength(4)
@@ -184,44 +164,30 @@ describe("offers", () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
     const { rerender } = render(
       <Offers
-        isAppSearchLoading={false}
-        results={appSearchFakeResults}
+        hits={appSearchFakeResults}
         userRole={Role.redactor}
-        wasFirstSearchLaunched
       />,
       { wrapper }
     )
     mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
     const otherAppSearchResult: ResultType = {
-      venue_name: {
-        raw: "Un autre lieu",
+      objectID: "481",
+      offer: {
+        dates: [new Date("2021-09-29T13:54:30+00:00").valueOf()],
+        name: "Un autre titre",
+        thumbUrl: "",
       },
-      thumb_url: {
-        raw: "",
-      },
-      name: {
-        raw: "Un autre titre",
-      },
-      venue_public_name: {
-        raw: "Un autre lieu public",
-      },
-      dates: {
-        raw: ["2021-09-29T13:54:30+00:00"],
-      },
-      id: {
-        raw: "481",
+      venue: {
+        name: "Un autre lieu",
+        publicName: "Un autre lieu public",
       },
     }
 
     // When
-    rerender(
-      <Offers
-        isAppSearchLoading={false}
-        results={[otherAppSearchResult]}
-        userRole={Role.redactor}
-        wasFirstSearchLaunched
-      />
-    )
+    rerender(<Offers
+      hits={[otherAppSearchResult]}
+      userRole={Role.redactor}
+             />)
 
     // Then
     const otherOfferName = await screen.findByText(otherOffer.name)
@@ -239,44 +205,30 @@ describe("offers", () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
     const { rerender } = render(
       <Offers
-        isAppSearchLoading={false}
-        results={appSearchFakeResults}
+        hits={appSearchFakeResults}
         userRole={Role.redactor}
-        wasFirstSearchLaunched
       />,
       { wrapper }
     )
     mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
     const otherAppSearchResult: ResultType = {
-      venue_name: {
-        raw: "Un autre lieu",
+      objectID: "481",
+      offer: {
+        dates: [new Date("2021-09-29T13:54:30+00:00").valueOf()],
+        name: "Un autre titre",
+        thumbUrl: "",
       },
-      thumb_url: {
-        raw: "",
-      },
-      name: {
-        raw: "Un autre titre",
-      },
-      venue_public_name: {
-        raw: "Un autre lieu public",
-      },
-      dates: {
-        raw: ["2021-09-29T13:54:30+00:00"],
-      },
-      id: {
-        raw: "481",
+      venue: {
+        name: "Un autre lieu",
+        publicName: "Un autre lieu public",
       },
     }
 
     // When
-    rerender(
-      <Offers
-        isAppSearchLoading={false}
-        results={[otherAppSearchResult]}
-        userRole={Role.redactor}
-        wasFirstSearchLaunched
-      />
-    )
+    rerender(<Offers
+      hits={[otherAppSearchResult]}
+      userRole={Role.redactor}
+             />)
 
     // Then
     const otherOfferName = await screen.findByText(otherOffer.name)
@@ -298,59 +250,16 @@ describe("offers", () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(
-      <Offers
-        isAppSearchLoading={false}
-        results={appSearchFakeResults}
-        userRole={Role.redactor}
-        wasFirstSearchLaunched
-      />,
-      { wrapper }
-    )
+    render(<Offers
+      hits={appSearchFakeResults}
+      userRole={Role.redactor}
+           />, { wrapper })
 
     // Then
     const loader = await screen.findByText("Recherche en cours")
     expect(loader).toBeInTheDocument()
     const offerInParisName = await screen.findByText(offerInParis.name)
     expect(offerInParisName).toBeInTheDocument()
-  })
-
-  it("should show a loader when first query wasn't sent", async () => {
-    // When
-    render(
-      <Offers
-        isAppSearchLoading={false}
-        results={[]}
-        userRole={Role.redactor}
-        wasFirstSearchLaunched={false}
-      />,
-      { wrapper }
-    )
-
-    // Then
-    const loader = await screen.findByText("Recherche en cours")
-    expect(loader).toBeInTheDocument()
-  })
-
-  it("should show a loader when app search is loading", async () => {
-    // Given
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis)
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
-
-    // When
-    render(
-      <Offers
-        isAppSearchLoading
-        results={appSearchFakeResults}
-        userRole={Role.redactor}
-        wasFirstSearchLaunched
-      />,
-      { wrapper }
-    )
-
-    // Then
-    const loader = await screen.findByText("Recherche en cours")
-    expect(loader).toBeInTheDocument()
   })
 
   it("should display only non sold-out offers", async () => {
@@ -360,15 +269,10 @@ describe("offers", () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(
-      <Offers
-        isAppSearchLoading={false}
-        results={appSearchFakeResults}
-        userRole={Role.redactor}
-        wasFirstSearchLaunched
-      />,
-      { wrapper }
-    )
+    render(<Offers
+      hits={appSearchFakeResults}
+      userRole={Role.redactor}
+           />, { wrapper })
 
     // Then
     const listItemsInOffer = await screen.findAllByRole("listitem")
@@ -383,15 +287,10 @@ describe("offers", () => {
     mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
     // When
-    render(
-      <Offers
-        isAppSearchLoading={false}
-        results={appSearchFakeResults}
-        userRole={Role.redactor}
-        wasFirstSearchLaunched
-      />,
-      { wrapper }
-    )
+    render(<Offers
+      hits={appSearchFakeResults}
+      userRole={Role.redactor}
+           />, { wrapper })
 
     // Then
     const listItemsInOffer = await screen.findAllByRole("listitem")
@@ -402,15 +301,10 @@ describe("offers", () => {
   describe("should display no results page", () => {
     it("when there are no results", async () => {
       // When
-      render(
-        <Offers
-          isAppSearchLoading={false}
-          results={[]}
-          userRole={Role.redactor}
-          wasFirstSearchLaunched
-        />,
-        { wrapper }
-      )
+      render(<Offers
+        hits={[]}
+        userRole={Role.redactor}
+             />, { wrapper })
 
       // Then
       const errorMessage = await screen.findByText(
@@ -429,15 +323,10 @@ describe("offers", () => {
       mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
 
       // When
-      render(
-        <Offers
-          isAppSearchLoading={false}
-          results={appSearchFakeResults}
-          userRole={Role.redactor}
-          wasFirstSearchLaunched
-        />,
-        { wrapper }
-      )
+      render(<Offers
+        hits={appSearchFakeResults}
+        userRole={Role.redactor}
+             />, { wrapper })
 
       // Then
       const errorMessage = await screen.findByText(
@@ -454,15 +343,10 @@ describe("offers", () => {
       mockedPcapi.getOffer.mockRejectedValue("Offre inconnue")
 
       // When
-      render(
-        <Offers
-          isAppSearchLoading={false}
-          results={appSearchFakeResults}
-          userRole={Role.redactor}
-          wasFirstSearchLaunched
-        />,
-        { wrapper }
-      )
+      render(<Offers
+        hits={appSearchFakeResults}
+        userRole={Role.redactor}
+             />, { wrapper })
 
       // Then
       const errorMessage = await screen.findByText(

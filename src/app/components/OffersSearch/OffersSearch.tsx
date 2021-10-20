@@ -1,31 +1,29 @@
 import "./OffersSearch.scss"
-import "@elastic/react-search-ui-views/lib/styles/styles.css"
-import {
-  SearchBox,
-  SearchProvider,
-  WithSearch,
-} from "@elastic/react-search-ui"
-import AppSearchAPIConnector from "@elastic/search-ui-app-search-connector"
+import algoliasearch from "algoliasearch/lite"
 import * as React from "react"
-import { useCallback, useEffect, useState } from "react"
+import { Configure, InstantSearch } from "react-instantsearch-dom"
 
 import { VenueFilterStatus } from "app/components/OffersSearch/VenueFilterStatus/VenueFilterStatus"
-import { APP_SEARCH_ENDPOINT, APP_SEARCH_KEY } from "utils/config"
-import { RESULT_FIELDS } from "utils/search"
+import {
+  ALGOLIA_API_KEY,
+  ALGOLIA_APP_ID,
+  ALGOLIA_OFFERS_INDEX,
+} from "utils/config"
 import { Role, VenueFilterType } from "utils/types"
 
 import { Offers } from "./Offers/Offers"
+import { SearchBox } from "./SearchBox"
 
-const connector = new AppSearchAPIConnector({
-  searchKey: APP_SEARCH_KEY,
-  engineName: "offers-educational",
-  endpointBase: APP_SEARCH_ENDPOINT,
-})
+const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
 
-const configurationOptions = {
-  trackUrlState: false,
-  alwaysSearchOnInitialLoad: true,
-}
+const attributesToRetrieve = [
+  "objectID",
+  "offer.dates",
+  "offer.name",
+  "offer.thumbUrl",
+  "venue.name",
+  "venue.publicName",
+]
 
 export const OffersSearch = ({
   userRole,
@@ -36,130 +34,36 @@ export const OffersSearch = ({
   removeVenueFilter: () => void;
   venueFilter: VenueFilterType | null;
 }): JSX.Element => {
-  const baseSearchQuery = {
-    result_fields: RESULT_FIELDS,
-    filters: [{ field: "is_educational", values: [1] }],
-  }
-  if (venueFilter) {
-    baseSearchQuery.filters.push({
-      field: "venue_id",
-      values: [venueFilter.id],
-    })
-  }
-  const [searchQuery, setSearchQuery] = useState({ ...baseSearchQuery })
-
-  useEffect(() => {
-    if (
-      !venueFilter &&
-      searchQuery.filters.find((filter) => filter.field === "venue_id")
-    ) {
-      setSearchQuery((currentSearchQuery) => ({
-        ...currentSearchQuery,
-        filters: currentSearchQuery.filters.filter(
-          (filter) => filter.field !== "venue_id"
-        ),
-      }))
-    }
-  }, [searchQuery.filters, venueFilter])
-
-  const mapContextToProps = useCallback(
-    ({
-      autocompletedResults,
-      autocompletedSuggestions,
-      trackAutocompleteClickThrough,
-      searchTerm,
-      setSearchTerm,
-      results,
-      isLoading,
-      wasSearched,
-    }) => ({
-      autocompletedResults,
-      autocompletedSuggestions,
-      trackAutocompleteClickThrough,
-      searchTerm,
-      setSearchTerm,
-      results,
-      isLoading,
-      wasSearched,
-    }),
-    []
-  )
-
-  const inputView = useCallback(
-    ({ getAutocomplete, getInputProps, getButtonProps }) => (
-      <>
-        <div className="sui-search-box__wrapper">
-          <input
-            {...getInputProps({
-              placeholder:
-                "Nom de l'offre, du lieu ou de la catégorie (films, visites, conférences, spectacles, cours, musique)",
-            })}
-          />
-          {getAutocomplete()}
-        </div>
-        <input
-          {...getButtonProps({
-            value: "Rechercher",
-            className: "search-button",
-          })}
-        />
-      </>
-    ),
-    []
-  )
+  const facetFilters = ["offer.isEducational:true"]
+  if (venueFilter && venueFilter.id)
+    facetFilters.push(`venue.id:${venueFilter.id}`)
 
   return (
     <>
       <h2>
         Rechercher une offre
       </h2>
-      <SearchProvider
-        config={{
-          apiConnector: connector,
-          searchQuery,
-          ...configurationOptions,
-        }}
+      <InstantSearch
+        indexName={ALGOLIA_OFFERS_INDEX}
+        searchClient={searchClient}
       >
-        <WithSearch mapContextToProps={mapContextToProps}>
-          {({
-            autocompletedResults,
-            autocompletedSuggestions,
-            trackAutocompleteClickThrough,
-            searchTerm,
-            setSearchTerm,
-            results,
-            isLoading,
-            wasSearched,
-          }) => {
-            return (
-              <>
-                <SearchBox
-                  autocompletedResults={autocompletedResults}
-                  autocompletedSuggestions={autocompletedSuggestions}
-                  inputView={inputView}
-                  searchTerm={searchTerm}
-                  setSearchTerm={setSearchTerm}
-                  trackAutocompleteClickThrough={trackAutocompleteClickThrough}
-                />
-                <div className="search-results">
-                  {venueFilter && (
-                    <VenueFilterStatus
-                      removeFilter={removeVenueFilter}
-                      venueFilter={venueFilter}
-                    />
-                  )}
-                  <Offers
-                    isAppSearchLoading={isLoading}
-                    results={results}
-                    userRole={userRole}
-                    wasFirstSearchLaunched={wasSearched}
-                  />
-                </div>
-              </>
-            )
-          }}
-        </WithSearch>
-      </SearchProvider>
+        <Configure
+          attributesToHighlight={[]}
+          attributesToRetrieve={attributesToRetrieve}
+          facetFilters={facetFilters}
+        />
+
+        <SearchBox />
+        <div className="search-results">
+          {venueFilter && (
+            <VenueFilterStatus
+              removeFilter={removeVenueFilter}
+              venueFilter={venueFilter}
+            />
+          )}
+          <Offers userRole={userRole} />
+        </div>
+      </InstantSearch>
     </>
   )
 }

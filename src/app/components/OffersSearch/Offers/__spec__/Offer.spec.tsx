@@ -5,7 +5,7 @@ import { QueryCache, QueryClient, QueryClientProvider } from "react-query"
 import * as pcapi from "repository/pcapi/pcapi"
 import { OfferType, ResultType, Role } from "utils/types"
 
-import { Offers } from "../Offers"
+import { OffersComponent as Offers } from "../Offers"
 
 jest.mock("repository/pcapi/pcapi", () => ({
   getOffer: jest.fn(),
@@ -21,24 +21,16 @@ const wrapper = ({ children }) => (
 
 const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
-const appSearchFakeResult: ResultType = {
-  venue_name: {
-    raw: "Le Petit Rintintin 25",
+const searchFakeResult: ResultType = {
+  objectID: "479",
+  offer: {
+    dates: [new Date("2021-09-29T13:54:30+00:00").valueOf()],
+    name: "Une chouette à la mer",
+    thumbUrl: "/storage/thumbs/mediations/AFXA",
   },
-  thumb_url: {
-    raw: "/storage/thumbs/mediations/AFXA",
-  },
-  name: {
-    raw: "Une chouette à la mer",
-  },
-  venue_public_name: {
-    raw: "Le Petit Rintintin 25",
-  },
-  dates: {
-    raw: ["2021-09-29T13:54:30+00:00"],
-  },
-  id: {
-    raw: "479",
+  venue: {
+    name: "Le Petit Rintintin 25",
+    publicName: "Le Petit Rintintin 25",
   },
 }
 
@@ -111,15 +103,10 @@ describe("offer", () => {
       mockedPcapi.getOffer.mockResolvedValue(offerInParis)
 
       // When
-      render(
-        <Offers
-          isAppSearchLoading={false}
-          results={[appSearchFakeResult]}
-          userRole={Role.redactor}
-          wasFirstSearchLaunched
-        />,
-        { wrapper }
-      )
+      render(<Offers
+        hits={[searchFakeResult]}
+        userRole={Role.redactor}
+             />, { wrapper })
 
       // Then
       const offerName = await screen.findByText(offerInParis.name)
@@ -136,15 +123,10 @@ describe("offer", () => {
       mockedPcapi.getOffer.mockResolvedValue(offerInCayenne)
 
       // When
-      render(
-        <Offers
-          isAppSearchLoading={false}
-          results={[appSearchFakeResult]}
-          userRole={Role.redactor}
-          wasFirstSearchLaunched
-        />,
-        { wrapper }
-      )
+      render(<Offers
+        hits={[searchFakeResult]}
+        userRole={Role.redactor}
+             />, { wrapper })
 
       // Then
       const stockInformation = await screen.findByText(
@@ -169,15 +151,10 @@ describe("offer", () => {
       mockedPcapi.getOffer.mockResolvedValue(offerInParis)
 
       // When
-      render(
-        <Offers
-          isAppSearchLoading={false}
-          results={[appSearchFakeResult]}
-          userRole={Role.redactor}
-          wasFirstSearchLaunched
-        />,
-        { wrapper }
-      )
+      render(<Offers
+        hits={[searchFakeResult]}
+        userRole={Role.redactor}
+             />, { wrapper })
 
       // Then
       const listItemsInOffer = await screen.findAllByRole("listitem")
@@ -199,15 +176,10 @@ describe("offer", () => {
       mockedPcapi.getOffer.mockResolvedValue(offerInParis)
 
       // When
-      render(
-        <Offers
-          isAppSearchLoading={false}
-          results={[appSearchFakeResult]}
-          userRole={Role.redactor}
-          wasFirstSearchLaunched
-        />,
-        { wrapper }
-      )
+      render(<Offers
+        hits={[searchFakeResult]}
+        userRole={Role.redactor}
+             />, { wrapper })
 
       // Then
       const listItemsInOffer = await screen.findAllByRole("listitem")
@@ -223,68 +195,48 @@ describe("offer", () => {
     mockedPcapi.getOffer.mockResolvedValue(offerInParis)
 
     // When
-    render(
-      <Offers
-        isAppSearchLoading={false}
-        results={[appSearchFakeResult]}
-        userRole={Role.redactor}
-        wasFirstSearchLaunched
-      />,
-      { wrapper }
-    )
+    render(<Offers
+      hits={[searchFakeResult]}
+      userRole={Role.redactor}
+           />, { wrapper })
 
     // Then
     const offerThumb = await screen.findByRole("img")
     expect(offerThumb).toHaveAttribute(
       "src",
-      expect.stringContaining(appSearchFakeResult.thumb_url.raw as string)
+      expect.stringContaining(searchFakeResult.offer.thumbUrl as string)
     )
   })
 
   it.each`
-    name                 | thumbObject
-    ${"does not exist"}  | ${{}}
-    ${"is null"}         | ${{ thumb_url: { raw: null } }}
-    ${"is empty string"} | ${{ thumb_url: { raw: "" } }}
-    ${"is undefined"}    | ${{ thumb_url: { raw: undefined } }}
-  `(
-    "should show thumb placeholder when thumb $name",
-    async ({ thumbObject }) => {
-      // Given
-      mockedPcapi.getOffer.mockResolvedValue(offerInParis)
-      const appSearchResult = {
-        venue_name: {
-          raw: "Le Petit Rintintin 25",
-        },
-        name: {
-          raw: "Une chouette à la mer",
-        },
-        venue_public_name: {
-          raw: "Le Petit Rintintin 25",
-        },
-        dates: {
-          raw: ["2021-09-29T13:54:30+00:00"],
-        },
-        id: {
-          raw: "479",
-        },
-        ...thumbObject,
-      }
-
-      // When
-      render(
-        <Offers
-          isAppSearchLoading={false}
-          results={[appSearchResult]}
-          userRole={Role.redactor}
-          wasFirstSearchLaunched
-        />,
-        { wrapper }
-      )
-
-      // Then
-      const thumbPlaceholder = await screen.findByTestId("thumb-placeholder")
-      expect(thumbPlaceholder).toBeInTheDocument()
+    name                 | thumbUrl
+    ${"is null"}         | ${null}
+    ${"is empty string"} | ${""}
+    ${"is undefined"}    | ${undefined}
+  `("should show thumb placeholder when thumb $name", async ({ thumbUrl }) => {
+    // Given
+    mockedPcapi.getOffer.mockResolvedValue(offerInParis)
+    const appSearchResult: ResultType = {
+      objectID: "479",
+      offer: {
+        dates: [new Date("2021-09-29T13:54:30+00:00").valueOf()],
+        name: "Une chouette à la mer",
+        thumbUrl,
+      },
+      venue: {
+        name: "Le Petit Rintintin 25",
+        publicName: "Le Petit Rintintin 25",
+      },
     }
-  )
+
+    // When
+    render(<Offers
+      hits={[appSearchResult]}
+      userRole={Role.redactor}
+           />, { wrapper })
+
+    // Then
+    const thumbPlaceholder = await screen.findByTestId("thumb-placeholder")
+    expect(thumbPlaceholder).toBeInTheDocument()
+  })
 })

@@ -1,6 +1,6 @@
-import { SearchProvider } from "@elastic/react-search-ui"
 import { fireEvent, render, screen, within } from "@testing-library/react"
 import React from "react"
+import { Configure } from "react-instantsearch-dom"
 
 import * as pcapi from "repository/pcapi/pcapi"
 import { Role, VenueFilterType } from "utils/types"
@@ -8,16 +8,15 @@ import { Role, VenueFilterType } from "utils/types"
 import { App } from "../App"
 
 jest.mock("utils/config", () => ({
-  APP_SEARCH_ENDPOINT: "app-search-endpoint",
-  APP_SEARCH_KEY: "app-search-key",
+  ALGOLIA_APP_ID: "algolia-app-id",
+  ALGOLIA_API_KEY: "algolia-api-key",
+  ALGOLIA_OFFERS_INDEX: "algolia-index-name",
 }))
 
-jest.mock("@elastic/react-search-ui", () => {
+jest.mock("react-instantsearch-dom", () => {
   return {
-    ...jest.requireActual("@elastic/react-search-ui"),
-    SearchProvider: jest.fn(({ children }) => children),
-    WithSearch: jest.fn(({ children }) => children({ results: [] })),
-    SearchBox: jest.fn().mockReturnValue(null),
+    ...jest.requireActual("react-instantsearch-dom"),
+    Configure: jest.fn(() => <div />),
   }
 })
 
@@ -45,10 +44,6 @@ describe("app", () => {
       mockedPcapi.getVenueBySiret.mockResolvedValue(venue)
     })
 
-    afterEach(() => {
-      SearchProvider.mockClear()
-    })
-
     it("should show search offers input with no filter on venue when no siret is provided", async () => {
       // When
       render(<App />)
@@ -58,11 +53,11 @@ describe("app", () => {
         selector: "h2",
       })
       expect(contentTitle).toBeInTheDocument()
-      const searchConfiguration = SearchProvider.mock.calls[0][0]
-      expect(searchConfiguration.config.searchQuery.filters).toStrictEqual([
-        { field: "is_educational", values: [1] },
+      const searchConfiguration = Configure.mock.calls[0][0]
+      expect(searchConfiguration.facetFilters).toStrictEqual([
+        "offer.isEducational:true",
       ])
-      expect(SearchProvider).toHaveBeenCalledTimes(1)
+      expect(Configure).toHaveBeenCalledTimes(1)
       expect(screen.queryByText("Lieu filtré :")).not.toBeInTheDocument()
       expect(mockedPcapi.getVenueBySiret).not.toHaveBeenCalled()
     })
@@ -81,21 +76,21 @@ describe("app", () => {
         selector: "h2",
       })
       expect(contentTitle).toBeInTheDocument()
-      const searchConfiguration = SearchProvider.mock.calls[0][0]
-      expect(searchConfiguration.config.searchQuery.filters).toStrictEqual([
-        { field: "is_educational", values: [1] },
-        { field: "venue_id", values: [venue.id] },
+      const searchConfiguration = Configure.mock.calls[0][0]
+      expect(searchConfiguration.facetFilters).toStrictEqual([
+        "offer.isEducational:true",
+        `venue.id:${venue.id}`,
       ])
-      expect(SearchProvider).toHaveBeenCalledTimes(1)
+      expect(Configure).toHaveBeenCalledTimes(1)
       expect(screen.getByText("Lieu filtré :")).toBeInTheDocument()
-      expect(screen.getByText(venue.publicName)).toBeInTheDocument()
+      expect(screen.getByText(venue.publicName as string)).toBeInTheDocument()
       expect(mockedPcapi.getVenueBySiret).toHaveBeenCalledWith(siret)
     })
 
     it("should show venue filter on venue name when siret is provided and public name does not exist", async () => {
       // Given
       const siret = "123456789"
-      venue.publicName = null
+      venue.publicName = undefined
       Reflect.deleteProperty(global.window, "location")
       window.location = new URL(`https://www.example.com?siret=${siret}`)
 
@@ -122,11 +117,11 @@ describe("app", () => {
         selector: "h2",
       })
       expect(contentTitle).toBeInTheDocument()
-      const searchConfiguration = SearchProvider.mock.calls[0][0]
-      expect(searchConfiguration.config.searchQuery.filters).toStrictEqual([
-        { field: "is_educational", values: [1] },
+      const searchConfiguration = Configure.mock.calls[0][0]
+      expect(searchConfiguration.facetFilters).toStrictEqual([
+        "offer.isEducational:true",
       ])
-      expect(SearchProvider).toHaveBeenCalledTimes(1)
+      expect(Configure).toHaveBeenCalledTimes(1)
       expect(screen.queryByText("Lieu filtré :")).not.toBeInTheDocument()
       expect(
         screen.getByText("Lieu inconnu. Tous les résultats sont affichés.")
@@ -149,18 +144,17 @@ describe("app", () => {
       fireEvent.click(removeFilterButton)
 
       // Then
-      const searchConfigurationFirstCall = SearchProvider.mock.calls[0][0]
-      expect(
-        searchConfigurationFirstCall.config.searchQuery.filters
-      ).toStrictEqual([
-        { field: "is_educational", values: [1] },
-        { field: "venue_id", values: [venue.id] },
+      const searchConfigurationFirstCall = Configure.mock.calls[0][0]
+      expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
+        "offer.isEducational:true",
+        `venue.id:${venue.id}`,
       ])
-      const searchConfigurationLastCall = SearchProvider.mock.calls[2][0]
-      expect(
-        searchConfigurationLastCall.config.searchQuery.filters
-      ).toStrictEqual([{ field: "is_educational", values: [1] }])
-      expect(SearchProvider).toHaveBeenCalledTimes(3)
+
+      const searchConfigurationLastCall = Configure.mock.calls[1][0]
+      expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
+        "offer.isEducational:true",
+      ])
+      expect(Configure).toHaveBeenCalledTimes(2)
       expect(screen.queryByText("Lieu filtré :")).not.toBeInTheDocument()
       expect(screen.queryByText(venue.name)).not.toBeInTheDocument()
     })

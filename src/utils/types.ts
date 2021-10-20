@@ -34,13 +34,18 @@ export interface StockType {
   price: number;
 }
 
+// See attributesToRetrieve
 export interface ResultType {
-  dates: { raw: string[] | null };
-  id: { raw: string };
-  name: { raw: string };
-  thumb_url: { raw: string | null };
-  venue_name: { raw: string | null };
-  venue_public_name: { raw: string | null };
+  objectID: string;
+  offer: {
+    dates: number[];
+    name: string;
+    thumbUrl: string;
+  };
+  venue: {
+    name: string;
+    publicName: string;
+  };
 }
 
 export enum Role {
