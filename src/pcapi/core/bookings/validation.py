@@ -56,8 +56,8 @@ def check_quantity(offer: Offer, quantity: int) -> None:
         raise exceptions.QuantityIsInvalid("Vous ne pouvez réserver qu'une place pour cette offre.")
 
 
-def check_stock_is_bookable(stock: Stock) -> None:
-    if not stock.isBookable:
+def check_stock_is_bookable(stock: Stock, quantity: int) -> None:
+    if not stock.isBookable or stock.remainingQuantity < quantity:
         raise exceptions.StockIsNotBookable()
 
 

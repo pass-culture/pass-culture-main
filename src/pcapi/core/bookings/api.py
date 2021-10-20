@@ -63,7 +63,7 @@ def book_offer(
         validation.check_can_book_free_offer(beneficiary, stock)
         validation.check_offer_already_booked(beneficiary, stock.offer)
         validation.check_quantity(stock.offer, quantity)
-        validation.check_stock_is_bookable(stock)
+        validation.check_stock_is_bookable(stock, quantity)
         total_amount = quantity * stock.price
         validation.check_expenses_limits(beneficiary, total_amount, stock.offer)
 

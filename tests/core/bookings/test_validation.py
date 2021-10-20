@@ -103,16 +103,28 @@ class CheckQuantityTest:
 
 @pytest.mark.usefixtures("db_session")
 class CheckStockIsBookableTest:
+    booking_quantity = 1
+
     def test_dont_raise_if_bookable(self):
         stock = offers_factories.StockFactory()
-        validation.check_stock_is_bookable(stock)  # should not raise
+        validation.check_stock_is_bookable(stock, self.booking_quantity)  # should not raise
 
     def test_raise_if_not_bookable(self):
         yesterday = datetime.now() - timedelta(days=1)
         stock = offers_factories.StockFactory(bookingLimitDatetime=yesterday)
 
         with pytest.raises(exceptions.StockIsNotBookable) as error:
-            validation.check_stock_is_bookable(stock)
+            validation.check_stock_is_bookable(stock, self.booking_quantity)
+        assert error.value.errors == {"stock": ["Ce stock n'est pas réservable"]}
+
+    def test_raise_if_duo_not_bookable(self):
+        stock_quantity = 1
+        booking_quantity = 2
+        offer = offers_factories.OfferFactory(isDuo=True)
+        stock = offers_factories.StockFactory(offer=offer, quantity=stock_quantity)
+
+        with pytest.raises(exceptions.StockIsNotBookable) as error:
+            validation.check_stock_is_bookable(stock, booking_quantity)
         assert error.value.errors == {"stock": ["Ce stock n'est pas réservable"]}
 
 
