@@ -2,6 +2,8 @@ from datetime import datetime
 import logging
 
 from flask import request
+from jwt import InvalidTokenError
+import pydantic
 
 from pcapi import settings
 from pcapi.connectors import api_recaptcha
@@ -12,6 +14,7 @@ from pcapi.core.offers.exceptions import FileSizeExceeded
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import api
 from pcapi.core.users import constants
+from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
@@ -21,6 +24,7 @@ from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.native.security import authenticated_user_required
+from pcapi.routes.serialization import beneficiaries as beneficiaries_serialization
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
@@ -51,7 +55,6 @@ def get_user_profile(user: User) -> serializers.UserProfileResponse:
 def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) -> serializers.UserProfileResponse:
     api.update_notification_subscription(user, body.subscriptions)
     update_external_user(user)
-
     return serializers.UserProfileResponse.from_orm(user)
 
 
@@ -65,6 +68,63 @@ def reset_recredit_amount_to_show(user: User) -> None:
     api.reset_recredit_amount_to_show(user)
 
     return serializers.UserProfileResponse.from_orm(user)
+
+
+@blueprint.native_v1.route("/profile/update_email", methods=["POST"])
+@spectree_serialize(
+    on_success_status=204,
+    api=blueprint.api,
+)  # type: ignore
+@authenticated_user_required
+def update_user_email(user: User, body: serializers.UserProfileEmailUpdate) -> None:
+    try:
+        email_api.request_email_update(user, body.email, body.password)
+    except exceptions.EmailUpdateTokenExists:
+        raise ApiErrors(
+            {"code": "TOKEN_EXISTS", "message": "Une demande de modification d'adresse e-mail est déjà en cours"},
+            status_code=400,
+        )
+    except exceptions.EmailUpdateInvalidPassword:
+        raise ApiErrors(
+            {"code": "INVALID_PASSWORD", "message": "Mot de passe invalide"},
+            status_code=400,
+        )
+    except exceptions.InvalidEmailError:
+        raise ApiErrors(
+            {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
+            status_code=400,
+        )
+    except exceptions.EmailUpdateLimitReached:
+        raise ApiErrors(
+            {"code": "EMAIL_UPDATE_ATTEMPTS_LIMIT", "message": "Trop de tentatives"},
+            status_code=400,
+        )
+    except exceptions.EmailExistsError:
+        # Returning an error message might help the end client find
+        # existing email addresses.
+        pass
+
+
+@blueprint.native_v1.route("/profile/validate_email", methods=["PUT"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+def validate_user_email(body: beneficiaries_serialization.ChangeBeneficiaryEmailBody) -> None:
+    try:
+        payload = beneficiaries_serialization.ChangeEmailTokenContent.from_token(body.token)
+        api.change_user_email(current_email=payload.current_email, new_email=payload.new_email)
+    except pydantic.ValidationError:
+        raise ApiErrors(
+            {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
+            status_code=400,
+        )
+    except InvalidTokenError:
+        raise ApiErrors(
+            {"code": "INVALID_TOKEN", "message": "Token invalide"},
+            status_code=400,
+        )
+    except exceptions.EmailExistsError:
+        # Returning an error message might help the end client find
+        # existing email addresses.
+        pass
 
 
 @blueprint.native_v1.route("/beneficiary_information", methods=["PATCH"])

@@ -11,6 +11,7 @@ from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
 from freezegun.api import freeze_time
 from google.cloud import tasks_v2
+import jwt
 import pytest
 
 from pcapi import settings
@@ -38,6 +39,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import get_id_check_token
+from pcapi.core.users.utils import ALGORITHM_HS_256
 from pcapi.models import db
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.feature import FeatureToggle
@@ -585,23 +587,24 @@ class AccountCreationTest:
 class UserProfileUpdateTest:
     identifier = "email@example.com"
 
-    def test_update_user_profile(self, app):
-        users_factories.UserFactory(email=self.identifier)
+    def test_update_user_profile(self, app, client):
+        password = "some_random_string"
+        user = users_factories.UserFactory(email=self.identifier, password=password)
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post(
-            "/native/v1/profile", json={"subscriptions": {"marketingPush": True, "marketingEmail": False}}
+        client.with_token(user.email)
+        response = client.post(
+            "/native/v1/profile",
+            json={
+                "subscriptions": {"marketingPush": True, "marketingEmail": False},
+            },
         )
 
         assert response.status_code == 200
 
         user = User.query.filter_by(email=self.identifier).first()
+
         assert user.get_notification_subscriptions().marketing_push
         assert not user.get_notification_subscriptions().marketing_email
-
         assert len(push_testing.requests) == 1
 
     def test_unsubscribe_push_notifications(self, app):
@@ -668,6 +671,204 @@ class UserProfileUpdateTest:
 
         assert response.status_code == 200
         assert user.recreditAmountToShow is None
+
+
+class UpdateUserEmailTest:
+    identifier = "email@example.com"
+
+    def test_update_user_email(self, app, client):
+        password = "some_random_string"
+        user = users_factories.UserFactory(email=self.identifier, password=password)
+
+        client.with_token(user.email)
+        response = client.post(
+            "/native/v1/profile/update_email",
+            json={
+                "email": "updated_" + self.identifier,
+                "password": password,
+            },
+        )
+
+        assert response.status_code == 204
+
+        user = User.query.filter_by(email=self.identifier).first()
+        assert user.email == self.identifier  # email not updated until validation link is used
+        assert len(mails_testing.outbox) == 2  # one email to the current address, another to the new
+
+    def test_update_email_missing_password(self, app, client):
+        user = users_factories.UserFactory(email=self.identifier)
+
+        client.with_token(user.email)
+        response = client.post(
+            "/native/v1/profile/update_email",
+            json={
+                "email": "updated_" + self.identifier,
+            },
+        )
+
+        assert response.status_code == 400
+        assert "password" in response.json
+
+        assert user.email == self.identifier
+        assert not mails_testing.outbox  # missing password => no update, no email sent
+
+    @pytest.mark.parametrize(
+        "email,password",
+        [
+            ("new@example.com", "not_the_users_password"),
+            ("invalid.password@format.com", "short"),
+            ("not_an_email", "some_random_string"),
+        ],
+    )
+    def test_update_email_errors(self, app, client, email, password):
+        user = users_factories.UserFactory(email=self.identifier)
+
+        client.with_token(user.email)
+        response = client.post(
+            "/native/v1/profile/update_email",
+            json={
+                "email": email,
+                "password": password,
+            },
+        )
+
+        assert response.status_code == 400
+
+        user = User.query.filter_by(email=self.identifier).first()
+        assert user.email == self.identifier
+        assert not mails_testing.outbox
+
+    def test_update_email_existing_email(self, app, client):
+        """
+        Test that if the email already exists, an OK response is sent
+        but nothing is sent (avoid user enumeration).
+        """
+        user = users_factories.UserFactory(email=self.identifier)
+        other_user = users_factories.UserFactory(email="other_" + self.identifier)
+
+        client.with_token(user.email)
+        response = client.post(
+            "/native/v1/profile/update_email",
+            json={
+                "email": other_user.email,
+                "password": "does_not_matter",
+            },
+        )
+
+        assert response.status_code == 204
+
+        user = User.query.filter_by(email=self.identifier).first()
+        assert user.email == self.identifier
+        assert not mails_testing.outbox
+
+    @override_settings(MAX_EMAIL_UPDATE_ATTEMPTS=1)
+    def test_update_email_too_many_attempts(self, app, client):
+        """
+        Test that a user cannot request more than
+        MAX_EMAIL_UPDATE_ATTEMPTS email update change within the last
+        N days.
+        """
+        self.send_two_requests(client, "EMAIL_UPDATE_ATTEMPTS_LIMIT")
+
+    @override_settings(MAX_EMAIL_UPDATE_ATTEMPTS=2)
+    def test_token_exists(self, app, client):
+        """
+        Test that the expected error code is sent back when a token
+        already exists.
+
+        Note: override MAX_EMAIL_UPDATE_ATTEMPTS to avoid any
+        EMAIL_UPDATE_ATTEMPTS_LIMIT error.
+        """
+        self.send_two_requests(client, "TOKEN_EXISTS")
+
+    def send_two_requests(self, client, error_code):
+        password = "some_random_string"
+        user = users_factories.UserFactory(email=self.identifier, password=password)
+
+        client.with_token(user.email)
+        response = client.post(
+            "/native/v1/profile/update_email",
+            json={
+                "email": "updated_" + user.email,
+                "password": password,
+            },
+        )
+
+        assert response.status_code == 204
+
+        client.with_token(user.email)
+        response = client.post(
+            "/native/v1/profile/update_email",
+            json={
+                "email": "updated_twice_" + user.email,
+                "password": "does_not_matter",
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == error_code
+
+
+class ValidateEmailTest:
+    old_email = "old@email.com"
+    new_email = "new@email.com"
+
+    def test_validate_email(self, app, client):
+        user = users_factories.UserFactory(email=self.old_email)
+
+        response = self.send_request_with_token(client, user.email)
+        assert response.status_code == 204
+
+        user = User.query.get(user.id)
+        assert user.email == self.new_email
+
+    def test_email_exists(self, app, client):
+        """
+        Test that if the email already exists, an OK response is sent
+        but nothing is changed (avoid user enumeration).
+        """
+        user = users_factories.UserFactory(email=self.old_email)
+        users_factories.UserFactory(email=self.new_email, isEmailValidated=True)
+
+        response = self.send_request_with_token(client, user.email)
+
+        assert response.status_code == 204
+
+        user = User.query.get(user.id)
+        assert user.email == self.old_email
+
+    def test_email_invalid(self, app, client):
+        response = self.send_request_with_token(client, "not_an_email")
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INVALID_EMAIL"
+
+    def test_expired_token(self, app, client):
+        user = users_factories.UserFactory(email=self.old_email)
+        users_factories.UserFactory(email=self.new_email, isEmailValidated=True)
+
+        response = self.send_request_with_token(client, user.email, expiration_delta=-timedelta(hours=1))
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INVALID_TOKEN"
+
+        user = User.query.get(user.id)
+        assert user.email == self.old_email
+
+    def send_request_with_token(self, client, email, expiration_delta=None):
+        if not expiration_delta:
+            expiration_delta = timedelta(hours=1)
+
+        expiration = int((datetime.now() + expiration_delta).timestamp())
+        token_payload = {"exp": expiration, "current_email": email, "new_email": self.new_email}
+
+        token = jwt.encode(
+            token_payload,
+            settings.JWT_SECRET_KEY,  # type: ignore # known as str in build assertion
+            algorithm=ALGORITHM_HS_256,
+        )
+
+        return client.with_token(email).put("/native/v1/profile/validate_email", json={"token": token})
 
 
 class CulturalSurveyTest:

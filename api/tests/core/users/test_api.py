@@ -8,7 +8,6 @@ from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
-import jwt
 import pytest
 import requests_mock
 
@@ -27,6 +26,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
+from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.api import BeneficiaryValidationStep
@@ -336,116 +336,45 @@ class UnsuspendAccountTest:
 
 @pytest.mark.usefixtures("db_session")
 class ChangeUserEmailTest:
-    @freeze_time("2020-10-15 09:00:00")
     def test_change_user_email(self):
         # Given
         user = users_factories.UserFactory(email="oldemail@mail.com", firstName="UniqueNameForEmailChangeTest")
         users_factories.UserSessionFactory(user=user)
-        expiration_date = datetime.now() + timedelta(hours=1)
-        token_payload = dict(current_email="oldemail@mail.com", new_email="newemail@mail.com")
-        token = encode_jwt_payload(token_payload, expiration_date)
 
         # When
-        users_api.change_user_email(token)
+        users_api.change_user_email("oldemail@mail.com", "newemail@mail.com")
 
         # Then
+        user = User.query.get(user.id)
         assert user.email == "newemail@mail.com"
-        new_user = User.query.filter_by(email="newemail@mail.com").first()
-        assert new_user is not None
-        assert new_user.firstName == "UniqueNameForEmailChangeTest"
-        old_user = User.query.filter_by(email="oldemail@mail.com").first()
-        assert old_user is None
+        assert User.query.filter_by(email="oldemail@mail.com").first() is None
         assert UserSession.query.filter_by(userId=user.id).first() is None
 
-    def test_change_user_email_undecodable_token(self):
-        # Given
-        users_factories.UserFactory(email="oldemail@mail.com", firstName="UniqueNameForEmailChangeTest")
-        token = "wtftokenwhatareyoutryingtodo"
-
-        # When
-        with pytest.raises(jwt.exceptions.InvalidTokenError):
-            users_api.change_user_email(token)
-
-        # Then
-        old_user = User.query.filter_by(email="oldemail@mail.com").first()
-        assert old_user is not None
-        new_user = User.query.filter_by(email="newemail@mail.com").first()
-        assert new_user is None
-
-    @freeze_time("2020-10-15 09:00:00")
-    def test_change_user_email_expired_token(self):
-        # Given
-        users_factories.UserFactory(email="oldemail@mail.com", firstName="UniqueNameForEmailChangeTest")
-        expiration_date = datetime.now() - timedelta(hours=1)
-        token_payload = dict(current_email="oldemail@mail.com", new_email="newemail@mail.com")
-        token = encode_jwt_payload(token_payload, expiration_date)
-
-        # When
-        with pytest.raises(jwt.exceptions.InvalidTokenError):
-            users_api.change_user_email(token)
-
-        # Then
-        old_user = User.query.filter_by(email="oldemail@mail.com").first()
-        assert old_user is not None
-        new_user = User.query.filter_by(email="newemail@mail.com").first()
-        assert new_user is None
-
-    @freeze_time("2020-10-15 09:00:00")
-    def test_change_user_email_missing_argument_in_token(self):
-        # Given
-        users_factories.UserFactory(email="oldemail@mail.com", firstName="UniqueNameForEmailChangeTest")
-        expiration_date = datetime.now() + timedelta(hours=1)
-        missing_current_email_token_payload = dict(new_email="newemail@mail.com")
-        missing_current_email_token = encode_jwt_payload(missing_current_email_token_payload, expiration_date)
-
-        missing_new_email_token_payload = dict(current_email="oldemail@mail.com")
-        missing_new_email_token = encode_jwt_payload(missing_new_email_token_payload, expiration_date)
-
-        missing_exp_token_payload = dict(new_email="newemail@mail.com")
-        missing_exp_token = encode_jwt_payload(missing_exp_token_payload)
-
-        # When
-        with pytest.raises(jwt.exceptions.InvalidTokenError):
-            users_api.change_user_email(missing_current_email_token)
-            users_api.change_user_email(missing_new_email_token)
-            users_api.change_user_email(missing_exp_token)
-
-        # Then
-        old_user = User.query.filter_by(email="oldemail@mail.com").first()
-        assert old_user is not None
-        new_user = User.query.filter_by(email="newemail@mail.com").first()
-        assert new_user is None
-
-    @freeze_time("2020-10-15 09:00:00")
     def test_change_user_email_new_email_already_existing(self):
         # Given
-        users_factories.UserFactory(email="newemail@mail.com", firstName="UniqueNameForEmailChangeTest")
-        expiration_date = datetime.now() + timedelta(hours=1)
-        token_payload = dict(current_email="oldemail@mail.com", new_email="newemail@mail.com")
-        token = encode_jwt_payload(token_payload, expiration_date)
+        user = users_factories.UserFactory(email="oldemail@mail.com", firstName="UniqueNameForEmailChangeTest")
+        other_user = users_factories.UserFactory(email="newemail@mail.com")
 
         # When
-        users_api.change_user_email(token)
+        with pytest.raises(users_exceptions.EmailExistsError):
+            users_api.change_user_email(user.email, other_user.email)
+
+        # Then
+        user = User.query.get(user.id)
+        assert user.email == "oldemail@mail.com"
+
+        other_user = User.query.get(other_user.id)
+        assert other_user.email == "newemail@mail.com"
+
+    def test_change_email_user_not_existing(self):
+        # When
+        with pytest.raises(users_exceptions.UserDoesNotExist):
+            users_api.change_user_email("oldemail@mail.com", "newemail@mail.com")
 
         # Then
         old_user = User.query.filter_by(email="oldemail@mail.com").first()
         assert old_user is None
-        new_user = User.query.filter_by(email="newemail@mail.com").first()
-        assert new_user is not None
 
-    @freeze_time("2020-10-15 09:00:00")
-    def test_change_user_email_current_email_not_existing_anymore(self):
-        # Given
-        expiration_date = datetime.now() + timedelta(hours=1)
-        token_payload = dict(current_email="oldemail@mail.com", new_email="newemail@mail.com")
-        token = encode_jwt_payload(token_payload, expiration_date)
-
-        # When
-        users_api.change_user_email(token)
-
-        # Then
-        old_user = User.query.filter_by(email="oldemail@mail.com").first()
-        assert old_user is None
         new_user = User.query.filter_by(email="newemail@mail.com").first()
         assert new_user is None
 
