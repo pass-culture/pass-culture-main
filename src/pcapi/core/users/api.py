@@ -26,6 +26,7 @@ from redis import Redis
 from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
 from pcapi.connectors.beneficiaries.id_check_middleware import ask_for_identity_document_verification
+import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
@@ -33,6 +34,7 @@ from pcapi.core.mails.transactional import users as user_emails
 from pcapi.core.mails.transactional.users.email_address_change import send_confirmation_email_change_email
 from pcapi.core.mails.transactional.users.email_address_change import send_information_email_change_email
 from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
+from pcapi.core.offers import models as offers_models
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
@@ -61,7 +63,6 @@ from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.user_activation import create_beneficiary_from_application
 from pcapi.models import BeneficiaryImport
-from pcapi.models import Booking
 from pcapi.models import ImportStatus
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
@@ -599,17 +600,25 @@ def _build_link_for_email_change(current_email: str, new_email: str) -> str:
     return f"{get_webapp_url()}/changement-email?token={token}&expiration_timestamp={int(expiration_date.timestamp())}"
 
 
-def get_domains_credit(user: User, bookings: list[Booking] = None) -> Optional[DomainsCredit]:
+def get_domains_credit(user: User, user_bookings: list[bookings_models.Booking] = None) -> Optional[DomainsCredit]:
     if not user.deposit:
         return None
 
-    if bookings == None:
-        bookings = user.get_not_cancelled_bookings()
+    if user_bookings is None:
+        deposit_bookings = bookings_repository.get_bookings_from_deposit(user.deposit.id)
+    else:
+        deposit_bookings = [
+            booking
+            for booking in user_bookings
+            if booking.individualBooking is not None
+            and booking.individualBooking.depositId == user.deposit.id
+            and booking.status != bookings_models.BookingStatus.CANCELLED
+        ]
 
     domains_credit = DomainsCredit(
         all=Credit(
             initial=user.deposit.amount,
-            remaining=max(user.deposit.amount - sum(booking.total_amount for booking in bookings), Decimal("0"))
+            remaining=max(user.deposit.amount - sum(booking.total_amount for booking in deposit_bookings), Decimal("0"))
             if user.has_active_deposit
             else Decimal("0"),
         )
@@ -618,7 +627,11 @@ def get_domains_credit(user: User, bookings: list[Booking] = None) -> Optional[D
 
     if specific_caps.DIGITAL_CAP:
         digital_bookings_total = sum(
-            [booking.total_amount for booking in bookings if specific_caps.digital_cap_applies(booking.stock.offer)]
+            [
+                booking.total_amount
+                for booking in deposit_bookings
+                if specific_caps.digital_cap_applies(booking.stock.offer)
+            ]
         )
         domains_credit.digital = Credit(
             initial=specific_caps.DIGITAL_CAP,
@@ -632,7 +645,11 @@ def get_domains_credit(user: User, bookings: list[Booking] = None) -> Optional[D
 
     if specific_caps.PHYSICAL_CAP:
         physical_bookings_total = sum(
-            [booking.total_amount for booking in bookings if specific_caps.physical_cap_applies(booking.stock.offer)]
+            [
+                booking.total_amount
+                for booking in deposit_bookings
+                if specific_caps.physical_cap_applies(booking.stock.offer)
+            ]
         )
         domains_credit.physical = Credit(
             initial=specific_caps.PHYSICAL_CAP,

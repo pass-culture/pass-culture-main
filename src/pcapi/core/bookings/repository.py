@@ -378,6 +378,15 @@ def find_cancellable_bookings_by_offerer(offerer_id: int) -> list[Booking]:
     ).all()
 
 
+def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
+    return (
+        Booking.query.join(Booking.individualBooking)
+        .filter(IndividualBooking.depositId == deposit_id, Booking.status != BookingStatus.CANCELLED)
+        .options(joinedload(Booking.stock).joinedload(Stock.offer))
+        .all()
+    )
+
+
 def _filter_bookings_recap_query(
     bookings_recap_query: Query,
     user_id: int,

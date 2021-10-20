@@ -8,7 +8,9 @@ from pcapi.models.feature import FeatureToggle
 
 
 def get_user_credit_email_data(user: User) -> Union[dict, SendinblueTransactionalEmailData]:
-    deposit_amount = user.active_deposit.amount
+    if not user.has_active_deposit:
+        raise Exception("The user has no active deposit")
+    deposit_amount = user.deposit.amount
 
     if not FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
         return {

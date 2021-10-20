@@ -658,35 +658,35 @@ class DomainsCreditTest:
         user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
 
         # booking only in all domains
-        bookings_factories.BookingFactory(
-            user=user,
+        bookings_factories.IndividualBookingFactory(
+            individualBooking__user=user,
             amount=50,
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )
-        bookings_factories.BookingFactory(
-            user=user,
+        bookings_factories.IndividualBookingFactory(
+            individualBooking__user=user,
             amount=5,
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )
 
         # booking in digital domain
-        bookings_factories.BookingFactory(
-            user=user,
+        bookings_factories.IndividualBookingFactory(
+            individualBooking__user=user,
             amount=80,
             stock__offer__subcategoryId=subcategories.JEU_EN_LIGNE.id,
             stock__offer__url="http://on.line",
         )
 
         # booking in physical domain
-        bookings_factories.BookingFactory(
-            user=user,
+        bookings_factories.IndividualBookingFactory(
+            individualBooking__user=user,
             amount=150,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
         # cancelled booking
-        bookings_factories.CancelledBookingFactory(
-            user=user,
+        bookings_factories.CancelledIndividualBookingFactory(
+            individualBooking__user=user,
             amount=150,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
@@ -697,12 +697,12 @@ class DomainsCreditTest:
             physical=Credit(initial=Decimal(200), remaining=Decimal(50)),
         )
 
-    def test_get_domains_credit_v2(self):
-        user = users_factories.BeneficiaryGrant18Factory(deposit__version=2)
+    def test_get_domains_credit(self):
+        user = users_factories.BeneficiaryGrant18Factory()
 
         # booking in physical domain
-        bookings_factories.BookingFactory(
-            user=user,
+        bookings_factories.IndividualBookingFactory(
+            individualBooking__user=user,
             amount=250,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
@@ -715,8 +715,8 @@ class DomainsCreditTest:
 
     def test_get_domains_credit_deposit_expired(self):
         user = users_factories.BeneficiaryGrant18Factory(deposit__version=2)
-        bookings_factories.BookingFactory(
-            user=user,
+        bookings_factories.IndividualBookingFactory(
+            individualBooking__user=user,
             amount=250,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )

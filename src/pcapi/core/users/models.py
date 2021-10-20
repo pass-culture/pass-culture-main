@@ -29,15 +29,12 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import backref
-from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 from sqlalchemy.sql.expression import false
 from sqlalchemy.sql.expression import or_
 
 from pcapi import settings
-from pcapi.core.bookings.models import Booking
-from pcapi.core.offers.models import Stock
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
 from pcapi.core.users import constants
@@ -255,22 +252,9 @@ class User(PcObject, Model, NeedsValidationMixin):
         self.clearTextPassword = newpass
         self.password = crypto.hash_password(newpass)
 
-    def get_not_cancelled_bookings(self) -> list[Booking]:
-        return (
-            db.session.query(Booking)
-            .with_parent(self)
-            .filter_by(isCancelled=False)
-            .options(joinedload(Booking.stock).joinedload(Stock.offer))
-            .all()
-        )
-
     @property
     def age(self) -> Optional[int]:
         return relativedelta(date.today(), self.dateOfBirth.date()).years if self.dateOfBirth is not None else None
-
-    @property
-    def active_deposit(self) -> Optional[Deposit]:
-        return self.deposit if self.deposit and self.deposit.expirationDate > datetime.utcnow() else None
 
     @property
     def deposit(self) -> Optional[Deposit]:
@@ -296,7 +280,7 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @property
     def has_active_deposit(self):
-        return self.active_deposit is not None
+        return self.deposit.expirationDate > datetime.utcnow() if self.deposit else False
 
     @property
     def real_wallet_balance(self):

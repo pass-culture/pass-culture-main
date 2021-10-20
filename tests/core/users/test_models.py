@@ -1,15 +1,20 @@
 from datetime import datetime
 from datetime import timedelta
+from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
+from sqlalchemy import func
 
+from pcapi.core.bookings import factories as booking_factories
+from pcapi.core.payments import api as payments_api
 from pcapi.core.payments.models import DepositType
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
 from pcapi.core.users.exceptions import InvalidUserRoleException
+from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
@@ -235,3 +240,20 @@ class SuperAdminTest:
     def test_super_user_not_prod_is_admin_is_super_admin(self):
         user = users_factories.AdminFactory()
         assert user.is_super_admin()
+
+
+@pytest.mark.usefixtures("db_session")
+def test_wallet_balance():
+    user = users_factories.BeneficiaryGrant18Factory()
+
+    with freeze_time(datetime.utcnow() - relativedelta(years=2)):
+        previous_deposit = payments_api.create_deposit(user, "test")
+
+    booking_factories.IndividualBookingFactory(
+        individualBooking__user=user, individualBooking__attached_deposit=previous_deposit, amount=20
+    )
+    booking_factories.IndividualBookingFactory(
+        individualBooking__user=user, individualBooking__attached_deposit=previous_deposit, amount=10
+    )
+
+    assert db.session.query(func.get_wallet_balance(user.id, False)).first()[0] == Decimal(290)

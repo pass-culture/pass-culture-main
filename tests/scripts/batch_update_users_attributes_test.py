@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.users.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import UserFactory
@@ -71,7 +71,7 @@ def test_run_sendinblue_only(mock_import_contacts):
 @pytest.mark.usefixtures("db_session")
 def test_format_batch_user():
     user = BeneficiaryGrant18Factory(deposit__version=1)
-    booking = BookingFactory(user=user)
+    booking = IndividualBookingFactory(individualBooking__user=user)
 
     res = format_batch_users([user])
 
@@ -93,7 +93,7 @@ def test_format_batch_user():
 @pytest.mark.usefixtures("db_session")
 def test_format_sendinblue_user():
     user = BeneficiaryGrant18Factory(deposit__version=1)
-    booking = BookingFactory(user=user)
+    booking = IndividualBookingFactory(individualBooking__user=user)
 
     res = format_sendinblue_users([user])
 

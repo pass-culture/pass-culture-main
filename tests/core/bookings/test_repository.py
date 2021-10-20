@@ -5,6 +5,7 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from dateutil import tz
+from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
 from pytest import fixture
@@ -12,10 +13,13 @@ from pytest import fixture
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import find_by_pro_user_id
+from pcapi.core.bookings.repository import get_bookings_from_deposit
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.payments.api import create_deposit
 from pcapi.core.payments.factories import PaymentFactory
 from pcapi.core.payments.factories import PaymentStatusFactory
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
@@ -1616,3 +1620,32 @@ class FindExpiringBookingsTest:
 
             bookings = booking_repository.find_expiring_individual_bookings_query().all()
             assert set(bookings) == {book_booking_new_expiry_delay.individualBooking, movie_booking.individualBooking}
+
+
+@pytest.mark.usefixtures("db_session")
+def test_get_deposit_booking():
+    user = users_factories.BeneficiaryGrant18Factory()
+    with freeze_time(datetime.utcnow() - relativedelta(years=2)):
+        previous_deposit = create_deposit(user, "test")
+
+    previous_deposit_booking = bookings_factories.IndividualBookingFactory(
+        individualBooking__user=user, individualBooking__attached_deposit=previous_deposit
+    )
+    current_deposit_booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
+    current_deposit_booking_2 = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
+    bookings_factories.IndividualBookingFactory(
+        individualBooking__user=user, individualBooking__attached_deposit="forced_none", amount=0
+    )
+
+    previous_deposit_id = previous_deposit.id
+    current_deposit_id = user.deposit.id
+
+    with assert_num_queries(1):
+        previous_deposit_bookings = get_bookings_from_deposit(previous_deposit_id)
+
+    assert previous_deposit_bookings == [previous_deposit_booking]
+
+    with assert_num_queries(1):
+        current_deposit_bookings = get_bookings_from_deposit(current_deposit_id)
+
+    assert current_deposit_bookings == [current_deposit_booking, current_deposit_booking_2]

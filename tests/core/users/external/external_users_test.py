@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import testing as sendinblue_testing
@@ -28,7 +28,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 def test_update_external_user():
     user = BeneficiaryGrant18Factory()
-    BookingFactory(user=user)
+    IndividualBookingFactory(individualBooking__user=user)
 
     n_query_get_user = 1
     n_query_get_bookings = 1
@@ -61,9 +61,11 @@ def test_update_external_pro_user():
 def test_get_user_attributes():
     user = BeneficiaryGrant18Factory(deposit__version=1)
     offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
-    b1 = BookingFactory(user=user, amount=10, stock__offer=offer)
-    b2 = BookingFactory(user=user, amount=10, dateUsed=datetime(2021, 5, 6), stock__offer=offer)
-    BookingFactory(user=user, amount=100, isCancelled=True)  # should be ignored
+    b1 = IndividualBookingFactory(individualBooking__user=user, amount=10, stock__offer=offer)
+    b2 = IndividualBookingFactory(
+        individualBooking__user=user, amount=10, dateUsed=datetime(2021, 5, 6), stock__offer=offer
+    )
+    IndividualBookingFactory(individualBooking__user=user, amount=100, isCancelled=True)  # should be ignored
 
     last_date_created = max(booking.dateCreated for booking in [b1, b2])
 
@@ -117,8 +119,8 @@ def test_get_bookings_categories_and_subcategories():
 
     assert _get_bookings_categories_and_subcategories(_get_user_bookings(user)) == ([], [])
 
-    BookingFactory(user=user, stock__offer=offer)
-    BookingFactory(user=user, stock__offer=offer)
-    BookingFactory(user=user, isCancelled=True)
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer)
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer)
+    IndividualBookingFactory(individualBooking__user=user, isCancelled=True)
 
     assert _get_bookings_categories_and_subcategories(_get_user_bookings(user)) == (["FILM"], ["SUPPORT_PHYSIQUE_FILM"])

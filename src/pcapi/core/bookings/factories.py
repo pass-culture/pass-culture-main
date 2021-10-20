@@ -1,6 +1,7 @@
 import datetime
 
 import factory
+from factory.declarations import LazyAttribute
 
 from pcapi.core.educational.factories import EducationalBookingFactory as EducationalBookingSubFactory
 from pcapi.core.educational.factories import PendingEducationalBookingFactory as PendingEducationalBookingSubFactory
@@ -99,16 +100,29 @@ class IndividualBookingSubFactory(BaseFactory):
         model = models.IndividualBooking
 
     user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
-    deposit = factory.SubFactory(users_factories.DepositGrantFactory, user=factory.SelfAttribute("..user"))
+
+    @factory.post_generation
+    def attached_deposit(self, create, extracted, **kwargs):
+        if extracted == "forced_none":
+            self.deposit = None
+            return
+        if extracted is not None:
+            self.deposit = extracted
+            return
+
+        self.deposit = self.user.deposit if self.user.has_active_deposit else None
 
 
 class IndividualBookingFactory(BookingFactory):
     individualBooking = factory.SubFactory(IndividualBookingSubFactory)
+    user = LazyAttribute(lambda booking: booking.individualBooking.user)
 
 
 class CancelledIndividualBookingFactory(CancelledBookingFactory):
     individualBooking = factory.SubFactory(IndividualBookingSubFactory)
+    user = LazyAttribute(lambda booking: booking.individualBooking.user)
 
 
 class UsedIndividualBookingFactory(UsedBookingFactory):
     individualBooking = factory.SubFactory(IndividualBookingSubFactory)
+    user = LazyAttribute(lambda booking: booking.individualBooking.user)

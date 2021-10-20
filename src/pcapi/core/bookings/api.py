@@ -105,7 +105,7 @@ def book_offer(
 
         individual_booking = IndividualBooking(
             booking=booking,
-            depositId=beneficiary.active_deposit.id if beneficiary.active_deposit else None,
+            depositId=beneficiary.deposit.id if beneficiary.has_active_deposit else None,
             userId=beneficiary.id,
         )
         stock.dnBookedQuantity += booking.quantity

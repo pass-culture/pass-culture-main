@@ -83,6 +83,7 @@ def _get_bookings_categories_and_subcategories(user_bookings: list[Booking]) -> 
 def _get_user_bookings(user: User) -> List[Booking]:
     return (
         Booking.query.options(joinedload(Booking.venue).load_only(Venue.isVirtual))
+        .options(joinedload(Booking.individualBooking))
         .options(
             joinedload(Booking.stock)
             .joinedload(Stock.offer)

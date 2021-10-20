@@ -14,7 +14,8 @@ import pytest
 
 from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.bookings.factories import CancelledBookingFactory
+from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
+from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
@@ -110,8 +111,8 @@ class AccountTest:
         )
         subscription_factories.SubscriptionMessageFactory(user=user)
         subscription_message = subscription_factories.SubscriptionMessageFactory(user=user, dateCreated=datetime.now())
-        booking = BookingFactory(user=user, amount=Decimal("123.45"))
-        CancelledBookingFactory(user=user, amount=Decimal("123.45"))
+        booking = IndividualBookingFactory(individualBooking__user=user, amount=Decimal("123.45"))
+        CancelledIndividualBookingFactory(individualBooking__user=user, amount=Decimal("123.45"))
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())

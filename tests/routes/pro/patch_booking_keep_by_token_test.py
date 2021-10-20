@@ -14,7 +14,7 @@ from pcapi.models import Booking
 class Returns204Test:
     class WithApiKeyAuthTest:
         def test_when_api_key_provided_is_related_to_regular_offer_with_rights(self, client):
-            booking = bookings_factories.UsedBookingFactory()
+            booking = bookings_factories.UsedIndividualBookingFactory()
             ApiKeyFactory(offerer=booking.offerer)
 
             url = f"/v2/bookings/keep/token/{booking.token}"
@@ -33,7 +33,7 @@ class Returns204Test:
 
     class WithBasicAuthTest:
         def test_when_user_is_logged_in_and_regular_offer(self, client):
-            booking = bookings_factories.UsedBookingFactory()
+            booking = bookings_factories.UsedIndividualBookingFactory()
             pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
 
             url = f"/v2/bookings/keep/token/{booking.token}"
@@ -46,7 +46,7 @@ class Returns204Test:
             assert booking.dateUsed is None
 
         def test_when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, client):
-            booking = bookings_factories.UsedBookingFactory()
+            booking = bookings_factories.UsedIndividualBookingFactory()
             pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
 
             url = f"/v2/bookings/keep/token/{booking.token.lower()}"
@@ -60,7 +60,7 @@ class Returns204Test:
 
         # FIXME: I don't understand what we're trying to test, here.
         def test_when_there_is_no_remaining_quantity_after_validating(self, client):
-            booking = bookings_factories.UsedBookingFactory(stock__quantity=1)
+            booking = bookings_factories.UsedIndividualBookingFactory(stock__quantity=1)
             pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
 
             url = f"/v2/bookings/keep/token/{booking.token.lower()}"

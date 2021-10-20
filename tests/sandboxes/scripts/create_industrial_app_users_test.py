@@ -19,9 +19,9 @@ class CreateIndustrialWebappUsersTest:
         assert ex_underage.age == 18
         assert ex_underage.roles == [UserRole.UNDERAGE_BENEFICIARY]
         assert ex_underage.deposit
-        assert not ex_underage.active_deposit
+        assert not ex_underage.has_active_deposit
 
         assert ex_beneficiary.age == 20
         assert ex_beneficiary.roles == [UserRole.BENEFICIARY]
         assert ex_beneficiary.deposit
-        assert not ex_beneficiary.active_deposit
+        assert not ex_beneficiary.has_active_deposit

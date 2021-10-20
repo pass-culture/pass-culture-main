@@ -92,7 +92,7 @@ class CreateDepositTest:
 
         api.create_deposit(beneficiary, "created by test")
 
-        assert beneficiary.active_deposit.type == DepositType.GRANT_18
+        assert beneficiary.deposit.type == DepositType.GRANT_18
         assert len(beneficiary.deposits) == 2
 
     def test_cannot_create_twice_a_deposit_of_same_type(self):

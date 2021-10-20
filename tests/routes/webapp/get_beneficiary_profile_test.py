@@ -3,15 +3,10 @@ from datetime import datetime
 import pytest
 
 from pcapi.core.bookings.factories import CancelledBookingFactory
-from pcapi.core.categories import subcategories
+from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import ProFactory
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
@@ -92,17 +87,7 @@ class Returns200Test:
         # Given
         user = BeneficiaryGrant18Factory(email="wallet_test@email.com", postalCode="93020", deposit__version=1)
 
-        offerer = create_offerer(
-            siren="999199987", address="2 Test adress", city="Test city", postal_code="93000", name="Test offerer"
-        )
-        venue = create_venue(offerer)
-        thing_offer = create_offer_with_thing_product(
-            venue=None, thing_subcategory_id=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id
-        )
-        stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=5)
-        booking = create_booking(user=user, stock=stock, venue=venue, quantity=1)
-
-        repository.save(venue, booking)
+        IndividualBookingFactory(individualBooking__user=user, amount=5)
 
         # When
         response = (
