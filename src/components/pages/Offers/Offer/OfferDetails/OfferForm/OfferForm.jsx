@@ -279,16 +279,14 @@ const OfferForm = ({
     function setVenueValues() {
       if (venue === null) return
 
-      let venueValues = {}
       if (
         venue.withdrawalDetails &&
         formValues.withdrawalDetails === DEFAULT_FORM_VALUES['withdrawalDetails']
       ) {
-        venueValues.withdrawalDetails = venue?.withdrawalDetails
+        handleFormUpdate({ withdrawalDetails: venue.withdrawalDetails })
       }
-      handleFormUpdate(venueValues)
     },
-    [formValues, initialValues, venue, handleFormUpdate]
+    [formValues.withdrawalDetails, venue, handleFormUpdate]
   )
 
   useEffect(() => {
@@ -460,7 +458,6 @@ const OfferForm = ({
     event => {
       const field = event.target.name
       const value = event.target.type === 'checkbox' ? !formValues[field] : event.target.value
-
       handleFormUpdate({ [field]: value })
     },
     [formValues, handleFormUpdate]

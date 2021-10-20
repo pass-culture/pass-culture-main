@@ -34,7 +34,8 @@ export const DEFAULT_FORM_VALUES = {
   externalTicketOfficeUrl: TEXT_INPUT_DEFAULT_VALUE,
   venueId: SELECT_DEFAULT_VALUE,
   visa: TEXT_INPUT_DEFAULT_VALUE,
-  withdrawalDetails: TEXT_INPUT_DEFAULT_VALUE,
+  // set to null to set default value from venue
+  withdrawalDetails: null,
 }
 
 export const BASE_OFFER_FIELDS = [
