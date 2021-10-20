@@ -20,16 +20,18 @@ from pcapi.models.db import db
 from pcapi.models.wallet_balance import WalletBalance
 
 
+def _find_user_by_email_query(email: str):
+    # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
+    # all emails have been sanitized in the database.
+    return User.query.filter(func.lower(User.email) == sanitize_email(email))
+
+
 def count_users_by_email(email: str) -> int:
-    # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
-    # all emails have been sanitized in the database.
-    return User.query.filter(func.lower(User.email) == sanitize_email(email)).count()
+    return _find_user_by_email_query(email).count()
 
 
-def find_user_by_email(email: str) -> User:
-    # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
-    # all emails have been sanitized in the database.
-    return User.query.filter(func.lower(User.email) == sanitize_email(email)).one_or_none()
+def find_user_by_email(email: str) -> Optional[User]:
+    return _find_user_by_email_query(email).one_or_none()
 
 
 def find_beneficiary_users_by_email_provider(email_provider: str) -> list[User]:

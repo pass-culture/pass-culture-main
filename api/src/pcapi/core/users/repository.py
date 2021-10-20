@@ -171,7 +171,7 @@ def find_favorites_domain_by_beneficiary(beneficiary_identifier: int) -> list[Fa
     ]
 
 
-def does_validated_phone_exist(phone_number: str):
+def does_validated_phone_exist(phone_number: str) -> bool:
     return bool(User.query.filter(User.phoneNumber == phone_number, User.is_phone_validated).count())
 
 

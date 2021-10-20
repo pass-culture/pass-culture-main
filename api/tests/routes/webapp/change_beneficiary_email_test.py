@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from urllib.parse import quote_plus
 
 from freezegun import freeze_time
 import jwt
@@ -46,9 +47,15 @@ class Returns204Test:
             "leHAiOjE2MDI4Mzg4MDB9.Q2-583JqPSfDjuMD6ZMhMnb07Rr47iBZFRwlFC"
             "ymSf0"
         )
-        confirmation_link = (
-            f"{settings.WEBAPP_URL}/changement-email?token={confirmation_data_token}&expiration_timestamp=1602838800"
+        confirmation_link = f"{settings.WEBAPP_URL}/changement-email?"
+
+        app_link = (
+            f"{settings.WEBAPP_FOR_NATIVE_REDIRECTION}/changement-email?"
+            f"token={confirmation_data_token}&expiration_timestamp=1602838800"
         )
+
+        confirmation_link = f"{settings.FIREBASE_DYNAMIC_LINKS_URL}/?link={quote_plus(app_link)}"
+
         confirmation_data = {
             "FromEmail": "support@example.com",
             "MJ-TemplateID": 2066065,
