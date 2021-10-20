@@ -246,7 +246,7 @@ class BeneficiaryValidationViewTest:
 
         assert subscription_models.SubscriptionMessage.query.count() == 1
         message = subscription_models.SubscriptionMessage.query.first()
-        assert message.popOverIcon == subscription_models.PopOverIcon.WARNING
+        assert message.popOverIcon == subscription_models.PopOverIcon.ERROR
         assert message.userMessage == "Ton dossier a été rejeté. Tu n'es malheureusement pas éligible au pass culture."
 
     @freezegun.freeze_time("2021-10-30 09:00:00")

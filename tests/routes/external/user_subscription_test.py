@@ -126,7 +126,7 @@ class DmsWebhookApplicationTest:
         )
 
         assert len(user.subscriptionMessages) == 1
-        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
+        assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.ERROR
         assert (
             user.subscriptionMessages[0].userMessage
             == "Ton dossier déposé sur le site Démarches-Simplifiées a été rejeté. Tu n’es malheureusement pas éligible au pass culture."

@@ -23,7 +23,7 @@ def on_fraud_review_ko(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
         userMessage="Ton dossier a été rejeté. Tu n'es malheureusement pas éligible au pass culture.",
-        popOverIcon=models.PopOverIcon.WARNING,
+        popOverIcon=models.PopOverIcon.ERROR,
     )
     repository.save(message)
 
@@ -102,7 +102,7 @@ def on_dms_application_refused(user: users_models.User) -> None:
     message = models.SubscriptionMessage(
         user=user,
         userMessage="Ton dossier déposé sur le site Démarches-Simplifiées a été rejeté. Tu n’es malheureusement pas éligible au pass culture.",
-        popOverIcon=models.PopOverIcon.WARNING,
+        popOverIcon=models.PopOverIcon.ERROR,
     )
     repository.save(message)
 

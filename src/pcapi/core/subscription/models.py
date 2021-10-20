@@ -70,6 +70,7 @@ class CallToActionIcon(enum.Enum):
 
 class PopOverIcon(enum.Enum):
     INFO = "INFO"
+    ERROR = "ERROR"
     WARNING = "WARNING"
     CLOCK = "CLOCK"
     FILE = "FILE"
