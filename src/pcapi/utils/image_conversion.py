@@ -22,7 +22,7 @@ def standardize_image(image: bytes, crop_params: tuple = None) -> bytes:
         background = PIL.Image.new("RGB", transposed_image.size, (255, 255, 255))
         background.paste(transposed_image, mask=transposed_image.split()[3])
         transposed_image = background
-    transposed_image.convert("RGB")
+    transposed_image = transposed_image.convert("RGB")
 
     x_position, y_position, crop_size = crop_params
     cropped_image = _crop_image(x_position, y_position, crop_size, transposed_image)
