@@ -78,7 +78,7 @@ export const SubtypeSelects = ({
             options={subTypesOptions.musicType}
             required
             selectedValue={categoriesFormValues.musicType || DEFAULT_FORM_VALUES.musicType}
-            sublabel="Optionnel"
+            subLabel="Optionnel"
           />
         </div>
       )}
@@ -116,7 +116,7 @@ export const SubtypeSelects = ({
             options={subTypesOptions.showType}
             required
             selectedValue={categoriesFormValues.showType || DEFAULT_FORM_VALUES.showType}
-            sublabel="Optionnel"
+            subLabel="Optionnel"
           />
         </div>
       )}

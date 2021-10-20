@@ -261,7 +261,7 @@ describe('offerDetails - Creation - pro user', () => {
             )
           ).not.toBeInTheDocument()
           expect(screen.queryByRole('link', { name: '+ Ajouter un lieu' })).not.toBeInTheDocument()
-          expect(screen.getByLabelText('Genre musical')).toBeInTheDocument()
+          expect(await screen.findByLabelText('Genre musical', { exact: false })).toBeInTheDocument()
         })
       })
 
