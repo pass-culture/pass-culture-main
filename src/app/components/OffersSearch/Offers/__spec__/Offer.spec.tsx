@@ -1,5 +1,6 @@
 import { render, screen, within } from "@testing-library/react"
 import React from "react"
+import { QueryCache, QueryClient, QueryClientProvider } from "react-query"
 
 import * as pcapi from "repository/pcapi/pcapi"
 import { OfferType, ResultType, Role } from "utils/types"
@@ -9,6 +10,14 @@ import { Offers } from "../Offers"
 jest.mock("repository/pcapi/pcapi", () => ({
   getOffer: jest.fn(),
 }))
+
+const queryCache = new QueryCache()
+const queryClient = new QueryClient({ queryCache })
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    {children}
+  </QueryClientProvider>
+)
 
 const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
@@ -38,6 +47,7 @@ describe("offer", () => {
   let offerInCayenne: OfferType
 
   beforeEach(() => {
+    queryCache.clear()
     offerInParis = {
       id: 479,
       description: "Une offre vraiment chouette",
@@ -107,7 +117,8 @@ describe("offer", () => {
           results={[appSearchFakeResult]}
           userRole={Role.redactor}
           wasFirstSearchLaunched
-        />
+        />,
+        { wrapper }
       )
 
       // Then
@@ -131,7 +142,8 @@ describe("offer", () => {
           results={[appSearchFakeResult]}
           userRole={Role.redactor}
           wasFirstSearchLaunched
-        />
+        />,
+        { wrapper }
       )
 
       // Then
@@ -163,7 +175,8 @@ describe("offer", () => {
           results={[appSearchFakeResult]}
           userRole={Role.redactor}
           wasFirstSearchLaunched
-        />
+        />,
+        { wrapper }
       )
 
       // Then
@@ -192,7 +205,8 @@ describe("offer", () => {
           results={[appSearchFakeResult]}
           userRole={Role.redactor}
           wasFirstSearchLaunched
-        />
+        />,
+        { wrapper }
       )
 
       // Then
@@ -215,7 +229,8 @@ describe("offer", () => {
         results={[appSearchFakeResult]}
         userRole={Role.redactor}
         wasFirstSearchLaunched
-      />
+      />,
+      { wrapper }
     )
 
     // Then
@@ -263,7 +278,8 @@ describe("offer", () => {
           results={[appSearchResult]}
           userRole={Role.redactor}
           wasFirstSearchLaunched
-        />
+        />,
+        { wrapper }
       )
 
       // Then

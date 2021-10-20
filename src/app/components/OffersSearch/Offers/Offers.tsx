@@ -1,6 +1,7 @@
 import "./Offers.scss"
 import { captureException } from "@sentry/react"
-import React, { useEffect, useState } from "react"
+import React from "react"
+import { useQueries } from "react-query"
 
 import { Spinner } from "app/components/Layout/Spinner/Spinner"
 import * as pcapi from "repository/pcapi/pcapi"
@@ -10,6 +11,8 @@ import { NoResultsPage } from "./NoResultsPage/NoResultsPage"
 import { Offer } from "./Offer"
 
 const getIdFromResultIdRaw = (resultId: string): number => parseInt(resultId)
+const offerIsBookable = (offer: OfferType): boolean =>
+  !offer.isSoldOut && !offer.isExpired
 
 export const Offers = ({
   userRole,
@@ -23,48 +26,31 @@ export const Offers = ({
   wasFirstSearchLaunched: boolean;
 }): JSX.Element => {
   const offersThumbById = {}
-  results.forEach(
-    (result) =>
-      (offersThumbById[getIdFromResultIdRaw(result.id.raw)] =
-        result.thumb_url?.raw)
+  results.forEach((result) => {
+    const offerId = getIdFromResultIdRaw(result.id.raw)
+    offersThumbById[offerId] = result.thumb_url?.raw
+  })
+
+  const queries = useQueries(
+    results.map((result) => {
+      const offerId = getIdFromResultIdRaw(result.id.raw)
+
+      return {
+        queryKey: ["offer", offerId],
+        queryFn: async () => {
+          try {
+            const offer = await pcapi.getOffer(offerId)
+            if (offer && offerIsBookable(offer)) return offer
+          } catch (e) {
+            captureException(e)
+          }
+        },
+        staleTime: 1 * 60 * 1000, // We consider an offer valid for 1 min
+      }
+    })
   )
 
-  const [offers, setOffers] = useState<OfferType[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-
-  const offerIsBookable = (offer: OfferType): boolean =>
-    !offer.isSoldOut && !offer.isExpired
-
-  useEffect(() => {
-    setIsLoading(true)
-    let isSubscribed = true
-    const offersFetchPromises = results.map((result) => {
-      return pcapi
-        .getOffer(getIdFromResultIdRaw(result.id.raw))
-        .then((offer) => {
-          if (offerIsBookable(offer)) {
-            return offer
-          }
-        })
-        .catch((e) => {
-          captureException(e)
-        })
-    })
-
-    Promise.all(offersFetchPromises)
-      .then((maybeOffers) => maybeOffers.filter((offer) => offer !== undefined))
-      .then((offers: OfferType[]) => {
-        if (isSubscribed) {
-          setOffers(offers)
-          setIsLoading(false)
-        }
-      })
-
-    return () => {
-      isSubscribed = false
-    }
-  }, [results])
-
+  const isLoading = queries.some((query) => query.isLoading)
   if (isLoading || isAppSearchLoading || !wasFirstSearchLaunched) {
     return (
       <div className="offers-loader">
@@ -73,6 +59,10 @@ export const Offers = ({
     )
   }
 
+  const offers = queries
+    .map(({ data }) => data as OfferType | undefined)
+    .filter((offer) => typeof offer !== "undefined") as OfferType[]
+
   if (results.length === 0 || offers.length === 0) {
     return <NoResultsPage />
   }
@@ -80,7 +70,7 @@ export const Offers = ({
   return (
     <ul className="offers">
       {offers.map((offer, index) => (
-        <>
+        <div key={offer.id}>
           <Offer
             canPrebookOffers={userRole == Role.redactor}
             key={offer.id}
@@ -88,7 +78,7 @@ export const Offers = ({
             thumbUrl={offersThumbById[offer.id]}
           />
           {index < offers.length - 1 && <hr className="separator" />}
-        </>
+        </div>
       ))}
     </ul>
   )

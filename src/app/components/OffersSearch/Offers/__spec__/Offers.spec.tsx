@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react"
 import React from "react"
+import { QueryCache, QueryClient, QueryClientProvider } from "react-query"
 
 import * as pcapi from "repository/pcapi/pcapi"
 import { OfferType, ResultType, Role } from "utils/types"
@@ -9,6 +10,14 @@ import { Offers } from "../Offers"
 jest.mock("repository/pcapi/pcapi", () => ({
   getOffer: jest.fn(),
 }))
+
+const queryCache = new QueryCache()
+const queryClient = new QueryClient({ queryCache })
+const wrapper = ({ children }) => (
+  <QueryClientProvider client={queryClient}>
+    {children}
+  </QueryClientProvider>
+)
 
 const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
@@ -61,13 +70,12 @@ describe("offers", () => {
   let otherOffer: OfferType
 
   beforeEach(() => {
+    queryCache.clear()
     offerInParis = {
       id: 479,
       name: "Une chouette à la mer",
       description: "Une offre vraiment chouette",
-      category: {
-        label: "Cinéma",
-      },
+      subcategoryLabel: "Cinéma",
       stocks: [
         {
           id: 825,
@@ -95,9 +103,7 @@ describe("offers", () => {
       id: 480,
       description: "Une offre vraiment coco",
       name: "Coco channel",
-      category: {
-        label: "Cinéma",
-      },
+      subcategoryLabel: "Cinéma",
       stocks: [
         {
           id: 826,
@@ -125,9 +131,7 @@ describe("offers", () => {
       id: 481,
       description: "Une autre offre",
       name: "Un autre titre",
-      category: {
-        label: "Cinéma",
-      },
+      subcategoryLabel: "Cinéma",
       stocks: [
         {
           id: 827,
@@ -164,7 +168,8 @@ describe("offers", () => {
         results={appSearchFakeResults}
         userRole={Role.redactor}
         wasFirstSearchLaunched
-      />
+      />,
+      { wrapper }
     )
     // Then
     const listItemsInOffer = await screen.findAllByRole("listitem")
@@ -183,7 +188,8 @@ describe("offers", () => {
         results={appSearchFakeResults}
         userRole={Role.redactor}
         wasFirstSearchLaunched
-      />
+      />,
+      { wrapper }
     )
     mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
     const otherAppSearchResult: ResultType = {
@@ -237,7 +243,8 @@ describe("offers", () => {
         results={appSearchFakeResults}
         userRole={Role.redactor}
         wasFirstSearchLaunched
-      />
+      />,
+      { wrapper }
     )
     mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
     const otherAppSearchResult: ResultType = {
@@ -297,7 +304,8 @@ describe("offers", () => {
         results={appSearchFakeResults}
         userRole={Role.redactor}
         wasFirstSearchLaunched
-      />
+      />,
+      { wrapper }
     )
 
     // Then
@@ -315,7 +323,8 @@ describe("offers", () => {
         results={[]}
         userRole={Role.redactor}
         wasFirstSearchLaunched={false}
-      />
+      />,
+      { wrapper }
     )
 
     // Then
@@ -335,7 +344,8 @@ describe("offers", () => {
         results={appSearchFakeResults}
         userRole={Role.redactor}
         wasFirstSearchLaunched
-      />
+      />,
+      { wrapper }
     )
 
     // Then
@@ -356,7 +366,8 @@ describe("offers", () => {
         results={appSearchFakeResults}
         userRole={Role.redactor}
         wasFirstSearchLaunched
-      />
+      />,
+      { wrapper }
     )
 
     // Then
@@ -378,7 +389,8 @@ describe("offers", () => {
         results={appSearchFakeResults}
         userRole={Role.redactor}
         wasFirstSearchLaunched
-      />
+      />,
+      { wrapper }
     )
 
     // Then
@@ -396,7 +408,8 @@ describe("offers", () => {
           results={[]}
           userRole={Role.redactor}
           wasFirstSearchLaunched
-        />
+        />,
+        { wrapper }
       )
 
       // Then
@@ -422,7 +435,8 @@ describe("offers", () => {
           results={appSearchFakeResults}
           userRole={Role.redactor}
           wasFirstSearchLaunched
-        />
+        />,
+        { wrapper }
       )
 
       // Then
@@ -446,7 +460,8 @@ describe("offers", () => {
           results={appSearchFakeResults}
           userRole={Role.redactor}
           wasFirstSearchLaunched
-        />
+        />,
+        { wrapper }
       )
 
       // Then
