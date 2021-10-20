@@ -118,3 +118,23 @@ class InvalidUserRoleException(Exception):
 
 class InvalidEligibilityTypeException(Exception):
     pass
+
+
+class EmailUpdateLimitReached(Exception):
+    pass
+
+
+class EmailUpdateInvalidPassword(Exception):
+    pass
+
+
+class EmailExistsError(Exception):
+    pass
+
+
+class InvalidEmailError(Exception):
+    pass
+
+
+class EmailUpdateTokenExists(Exception):
+    pass

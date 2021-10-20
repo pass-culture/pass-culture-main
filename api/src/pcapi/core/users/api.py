@@ -17,10 +17,6 @@ from typing import Union
 from flask import current_app as app
 from flask_jwt_extended import create_access_token
 from google.cloud.storage.blob import Blob
-from jwt import DecodeError
-from jwt import ExpiredSignatureError
-from jwt import InvalidSignatureError
-from jwt import InvalidTokenError
 from redis import Redis
 
 # TODO (viconnex): fix circular import of pcapi/models/__init__.py
@@ -32,15 +28,13 @@ import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails.transactional import users as user_emails
-from pcapi.core.mails.transactional.users.email_address_change import send_confirmation_email_change_email
-from pcapi.core.mails.transactional.users.email_address_change import send_information_email_change_email
 from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
 import pcapi.core.subscription.repository as subscription_repository
-from pcapi.core.users import models as users_models
+from pcapi.core.users import exceptions
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -53,9 +47,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import does_validated_phone_exist
-from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import delete_object
-from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.core.users.utils import get_object
 from pcapi.core.users.utils import sanitize_email
 from pcapi.core.users.utils import store_object
@@ -63,6 +55,7 @@ from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.user_activation import create_beneficiary_from_application
+from pcapi.models import ApiErrors
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_offerer import UserOfferer
@@ -73,13 +66,13 @@ from pcapi.notifications.sms.sending_limit import is_SMS_sending_allowed
 from pcapi.notifications.sms.sending_limit import update_sent_SMS_counter
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.repository import user_queries
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks.account import VerifyIdentityDocumentRequest
 from pcapi.tasks.account import verify_identity_document
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.token import random_token
-from pcapi.utils.urls import get_webapp_url
 
 
 logger = logging.getLogger(__name__)
@@ -90,6 +83,10 @@ from . import constants
 from . import exceptions
 from ..offerers.api import create_digital_venue
 from ..offerers.models import Offerer
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.routes.native.v1.serialization import account as account_serialization
 
 
 UNCHANGED = object()
@@ -482,48 +479,27 @@ def bulk_unsuspend_account(user_ids: list[int], actor: User) -> None:
     )
 
 
-def send_user_emails_for_email_change(user: User, new_email: str) -> None:
-    user_with_new_email = find_user_by_email(new_email)
-    if user_with_new_email:
-        return
-
-    send_information_email_change_email(user)
-    link_for_email_change = _build_link_for_email_change(user.email, new_email)
-    send_confirmation_email_change_email(user, new_email, link_for_email_change)
-
-    return
-
-
-def change_user_email(token: str) -> None:
-    try:
-        jwt_payload = decode_jwt_token(token)
-    except (
-        ExpiredSignatureError,
-        InvalidSignatureError,
-        DecodeError,
-        InvalidTokenError,
-    ) as error:
-        raise InvalidTokenError() from error
-
-    if not {"exp", "new_email", "current_email"} <= set(jwt_payload):
-        raise InvalidTokenError()
-
-    new_email = sanitize_email(jwt_payload["new_email"])
-    if find_user_by_email(new_email):
-        return
-
-    current_user = find_user_by_email(jwt_payload["current_email"])
+def change_user_email(current_email: str, new_email: str) -> None:
+    current_user = user_queries.find_user_by_email(current_email)
     if not current_user:
-        return
+        raise exceptions.UserDoesNotExist()
 
-    current_user.email = new_email
+    try:
+        current_user.email = new_email
+        repository.save(current_user)
+    except ApiErrors as error:
+        # The caller might not want to inform the end client that the
+        # email address exists. To do so, raise a specific error and
+        # let the caller handle this specific case as needed.
+        # Note: email addresses are unique (db constraint)
+        if "email" in error.errors:
+            raise exceptions.EmailExistsError() from error
+        raise
+
     sessions = UserSession.query.filter_by(userId=current_user.id)
     repository.delete(*sessions)
-    repository.save(current_user)
 
     logger.info("User has changed their email", extra={"user": current_user.id})
-
-    return
 
 
 def update_user_info(
@@ -557,13 +533,6 @@ def update_user_info(
     if public_name is not UNCHANGED:
         user.publicName = public_name
     repository.save(user)
-
-
-def _build_link_for_email_change(current_email: str, new_email: str) -> str:
-    expiration_date = datetime.now() + constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
-    token = encode_jwt_payload(dict(current_email=current_email, new_email=new_email), expiration_date)
-
-    return f"{get_webapp_url()}/changement-email?token={token}&expiration_timestamp={int(expiration_date.timestamp())}"
 
 
 def get_domains_credit(user: User, user_bookings: list[bookings_models.Booking] = None) -> Optional[DomainsCredit]:
@@ -958,7 +927,7 @@ def create_user_access_token(user: User) -> str:
 
 
 def update_notification_subscription(
-    user: User, subscriptions: typing.Optional[users_models.NotificationSubscriptions]
+    user: User, subscriptions: "typing.Optional[account_serialization.NotificationSubscriptions]"
 ) -> None:
     if subscriptions is None:
         return
