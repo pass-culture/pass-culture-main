@@ -8,6 +8,7 @@ from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy.sql import text
 
+from pcapi import settings
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -112,12 +113,14 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.PERF_VENUE_STATS,
     FeatureToggle.WEBAPP_V2_ENABLED,
     FeatureToggle.PRO_REIMBURSEMENTS_FILTERS,
-    FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL,
     FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS,
     FeatureToggle.ENABLE_DMS_GRAPHQL_API,
     FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION,
     FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS,
 )
+
+if not settings.IS_DEV:
+    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL,)
 
 
 def add_feature_to_database(feature: FeatureToggle) -> None:

@@ -6,7 +6,6 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.payments.models import DepositType
-from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.exceptions import InvalidUserRoleException
@@ -29,7 +28,6 @@ class UserTest:
 
             assert user.deposit.type == DepositType.GRANT_18
 
-        @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
         def test_return_last_expired_deposit_if_only_expired_deposits_exists(self):
             with freeze_time(datetime.utcnow() - relativedelta(years=3)):
                 user = users_factories.UnderageBeneficiaryFactory()

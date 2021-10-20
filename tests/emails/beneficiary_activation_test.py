@@ -77,7 +77,7 @@ class GetActivationEmailTest:
         # Then
         assert activation_email_data["Vars"]["nativeAppLink"]
         assert "email%3Dfabien%252Btest%2540example.net" in activation_email_data["Vars"]["nativeAppLink"]
-        assert not activation_email_data["Vars"]["isEligible"]
+        assert activation_email_data["Vars"]["isEligible"]
         assert activation_email_data["Vars"]["isMinor"]
         assert activation_email_data["Vars"]["depositAmount"] == 300
 

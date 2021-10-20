@@ -268,7 +268,6 @@ class AccountTest:
         assert response.status_code == 200
         assert not response.json["nextBeneficiaryValidationStep"]
 
-    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     @freeze_time("2021-06-01")
     def test_next_beneficiary_validation_step_underage(self, client):
         users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2006, 1, 1))
@@ -299,7 +298,6 @@ class AccountTest:
         assert not response.json["allowedEligibilityCheckMethods"]
         assert not response.json["nextBeneficiaryValidationStep"]
 
-    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=False)
     @freeze_time("2021-06-01")
     def test_next_beneficiary_validation_step_underage_not_eligible(self, client):
         users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2006, 1, 1))

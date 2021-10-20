@@ -305,7 +305,6 @@ class CommonFraudCheckTest:
         "age",
         [15, 16, 17],
     )
-    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_underage_user_validation_is_beneficiary(self, age):
         user = users_factories.UnderageBeneficiaryFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(

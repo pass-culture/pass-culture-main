@@ -5,7 +5,6 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
@@ -220,7 +219,6 @@ class CalculateAgeTest:
             dateOfBirth=datetime(2000, 6, 1, 5, 1)
         ).eligibility_end_datetime == datetime(2019, 6, 1, 0, 0)
 
-    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     @freeze_time("2018-06-01")
     def test_eligibility_start_end_datetime_underage_beneficiary(self):
         assert users_factories.UserFactory.build(dateOfBirth=None).eligibility_start_datetime is None

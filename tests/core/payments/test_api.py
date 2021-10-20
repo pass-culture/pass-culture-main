@@ -11,7 +11,6 @@ from pcapi.core.payments import exceptions
 from pcapi.core.payments import factories as payments_factories
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
-from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.models.payment import Payment
@@ -35,7 +34,6 @@ class CreateDepositTest:
         assert deposit.amount == Decimal(500)
         assert deposit.source == "created by test"
 
-    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     @pytest.mark.parametrize("age,expected_amount", [(15, Decimal(20)), (16, Decimal(30)), (17, Decimal(30))])
     def test_create_underage_deposit(self, age, expected_amount):
         beneficiary = users_factories.UserFactory(
@@ -87,7 +85,6 @@ class CreateDepositTest:
         assert deposit.user.id == beneficiary.id
         assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
 
-    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_deposit_created_when_another_type_already_exist_for_user(self):
         birth_date = datetime.combine(datetime.utcnow(), time(0, 0)) - relativedelta(years=18, months=4)
         with freeze_time(datetime.utcnow() - relativedelta(years=3)):
