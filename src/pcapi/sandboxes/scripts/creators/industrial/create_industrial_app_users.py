@@ -225,7 +225,6 @@ def create_industrial_app_general_public_users():
             firstName="PC Test Grand Public",
             dateOfBirth=date_of_birth,
             hasSeenTutorials=False,
-            isBeneficiary=False,
             roles=[],
             lastName=f"{short_age}",
             needsToFillCulturalSurvey=True,

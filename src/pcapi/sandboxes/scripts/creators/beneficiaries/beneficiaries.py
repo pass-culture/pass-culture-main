@@ -17,14 +17,12 @@ def create_future_beneficiaries() -> None:
     users_factories.UserFactory(
         email="pctest.non-beneficiary.17-going-on-18.v1@example.com",
         dateOfBirth=eighteen_on_saturday,
-        isBeneficiary=False,
         needsToFillCulturalSurvey=False,
         hasSeenTutorials=True,
     )
     users_factories.UserFactory(
         email="pctest.non-beneficiary.17-going-on-18.v2@example.com",
         dateOfBirth=eighteen_on_saturday,
-        isBeneficiary=False,
         needsToFillCulturalSurvey=False,
         hasSeenTutorials=True,
     )
