@@ -26,7 +26,6 @@ class SendMailAfterIdcheckOutageTest:
         # User just 18 but in an ineligible area
         factories.UserFactory(
             dateOfBirth=datetime(2000, 1, 1),
-            isBeneficiary=False,
             dateCreated=datetime.now(),
             postalCode="98712",
         )

@@ -760,11 +760,10 @@ class ShowEligibleCardTest:
     def test_against_beneficiary(self, beneficiary, expected):
         date_of_birth = datetime.now() - relativedelta(years=18, days=5)
         date_of_creation = datetime.now() - relativedelta(years=4)
-        roles = [UserRole.BENEFICIARY] if beneficiary else None
+        roles = [UserRole.BENEFICIARY] if beneficiary else []
         user = users_factories.UserFactory.build(
             dateOfBirth=date_of_birth,
             dateCreated=date_of_creation,
-            isBeneficiary=beneficiary,
             departementCode="93",
             roles=roles,
         )

@@ -94,7 +94,6 @@ class JouveFraudCheckTest:
         )
         user = users_factories.UserFactory(
             hasCompletedIdCheck=True,
-            isBeneficiary=False,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             dateOfBirth=self.eighteen_years_in_the_past,
             email=self.user_email,
@@ -154,7 +153,7 @@ class JouveFraudCheckTest:
         assert item.status == fraud_models.FraudStatus.OK
 
     def test_on_identity_fraud_check_result_retry(self):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory()
         content = fraud_factories.JouveContentFactory(
             birthLocationCtrl="OK",
             bodyBirthDateCtrl="OK",
@@ -181,7 +180,7 @@ class JouveFraudCheckTest:
         assert fraud_result.status == fraud_models.FraudStatus.OK
 
     def test_admin_update_identity_fraud_check_result(self):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory()
 
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.JOUVE,
@@ -200,7 +199,6 @@ class JouveFraudCheckTest:
 
     #     user = users_factories.users_factories.UserFactory(
     #         hasCompletedIdCheck=True,
-    #         isBeneficiary=False,
     #         phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
     #         dateOfBirth=datetime(2002, 6, 8),
     #         email=self.user_email,
@@ -325,7 +323,7 @@ class CommonFraudCheckTest:
         [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.JOUVE],
     )
     def test_user_validation_has_email_validated(self, fraud_check_type):
-        user = users_factories.UserFactory(isBeneficiary=False, isEmailValidated=False)
+        user = users_factories.UserFactory(isEmailValidated=False)
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
         fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
@@ -356,7 +354,6 @@ class CommonFraudCheckTest:
     @pytest.mark.parametrize("fraud_check_type", [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.JOUVE])
     def test_user_validation_has_phone_validated(self, phone_status, fraud_check_type):
         user = users_factories.UserFactory(
-            isBeneficiary=False,
             isEmailValidated=True,
             phoneValidationStatus=phone_status,
         )
@@ -382,7 +379,7 @@ class CommonFraudCheckTest:
 @pytest.mark.usefixtures("db_session")
 class DMSFraudCheckTest:
     def test_dms_fraud_check(self):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory()
         content = fraud_factories.DMSContentFactory()
         fraud_api.on_dms_fraud_check(user, content)
 
@@ -397,7 +394,7 @@ class DMSFraudCheckTest:
         assert fraud_result.status == fraud_models.FraudStatus.OK
 
     def test_admin_update_identity_fraud_check_result(self):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory()
 
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.DMS,

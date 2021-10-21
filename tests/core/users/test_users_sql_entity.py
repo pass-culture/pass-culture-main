@@ -6,6 +6,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as user_models
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
@@ -16,7 +17,9 @@ from pcapi.repository import repository
 @pytest.mark.usefixtures("db_session")
 def test_cannot_create_admin_that_can_book(app):
     # Given
-    user = users_factories.UserFactory.build(isBeneficiary=True, isAdmin=True)
+    user = users_factories.UserFactory.build(
+        roles=[user_models.UserRole.BENEFICIARY, user_models.UserRole.ADMIN], isAdmin=True
+    )
 
     # When
     with pytest.raises(ApiErrors):

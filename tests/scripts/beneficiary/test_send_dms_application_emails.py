@@ -17,7 +17,7 @@ class SendDMSApplicationEMailsTest:
         ensure that only those related are the one that are used and receiving
         an email.
         """
-        users_factories.UserFactory(isBeneficiary=False)
+        users_factories.UserFactory()
         users_factories.BeneficiaryImportFactory(source="some source")
         beneficiary_imports = users_factories.BeneficiaryImportFactory.create_batch(3, source="source")
 

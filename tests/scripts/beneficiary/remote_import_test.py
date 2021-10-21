@@ -710,7 +710,6 @@ class RunIntegrationTest:
         # should become beneficiary.
         user = users_factories.UserFactory(
             email=self.EMAIL,
-            isBeneficiary=False,
             isEmailValidated=True,
             dateOfBirth=date_of_birth,
             phoneValidationStatus=None,
@@ -770,7 +769,6 @@ class RunIntegrationTest:
         # should become beneficiary.
         user = users_factories.UserFactory(
             email=self.EMAIL,
-            isBeneficiary=False,
             isEmailValidated=True,
             dateOfBirth=date_of_birth,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -888,7 +886,6 @@ class RunIntegrationTest:
     ):
         user = users_factories.UserFactory(
             email=self.EMAIL,
-            isBeneficiary=False,
             isEmailValidated=True,
             dateOfBirth=self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S"),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -931,7 +928,7 @@ class RunIntegrationTest:
     def test_import_with_existing_id_card_with_existing_applicant(
         self, get_application_details, get_closed_application_ids_for_demarche_simplifiee, mocker
     ):
-        applicant = users_factories.UserFactory(email=self.EMAIL, isBeneficiary=False)
+        applicant = users_factories.UserFactory(email=self.EMAIL)
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             isEmailValidated=True,
             dateOfBirth=self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -1042,7 +1039,6 @@ class RunIntegrationTest:
         parse_beneficiary_info.return_value = information
         get_closed_application_ids_for_dms.return_value = [information.application_id]
         applicant = users_factories.UserFactory(
-            isBeneficiary=False,
             dateOfBirth=information.birth_date,
             firstName=information.first_name,
             lastName=information.last_name,

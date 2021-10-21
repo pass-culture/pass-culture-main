@@ -43,7 +43,7 @@ def test_raises_if_email_already_taken_by_beneficiary(app):
 @pytest.mark.usefixtures("db_session")
 def test_validates_for_non_beneficiary_with_same_mail(app):
     email = "email@example.org"
-    existing_user = users_factories.UserFactory(email=email, isBeneficiary=False, isEmailValidated=True)
+    existing_user = users_factories.UserFactory(email=email, isEmailValidated=True)
 
     beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(email=email)
 

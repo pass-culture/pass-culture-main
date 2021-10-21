@@ -68,33 +68,27 @@ class GetNewlyEligibleUsersTest:
     @freeze_time("2018-01-01")
     def test_eligible_user(self):
         user_already_18 = users_factories.UserFactory(
-            isBeneficiary=False, dateOfBirth=datetime(1999, 12, 31), dateCreated=datetime(2017, 12, 1)
+            dateOfBirth=datetime(1999, 12, 31), dateCreated=datetime(2017, 12, 1)
         )
         user_just_18_in_eligible_area = users_factories.UserFactory(
-            isBeneficiary=False,
             dateOfBirth=datetime(2000, 1, 1),
             dateCreated=datetime(2017, 12, 31),
             departementCode="93",
         )
         user_just_18_in_ineligible_area = users_factories.UserFactory(
-            isBeneficiary=False,
             dateOfBirth=datetime(2000, 1, 1),
             dateCreated=datetime(2017, 12, 1),
             departementCode="92",
         )
         # Possible beneficiary that registered too late
-        users_factories.UserFactory(
-            isBeneficiary=False, dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1)
-        )
+        users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
         # Admin
         users_factories.AdminFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
         # Pro
         pro_user = users_factories.ProFactory(dateOfBirth=datetime(2000, 1, 1), dateCreated=datetime(2018, 1, 1))
         offers_factories.UserOffererFactory(user=pro_user)
         # User not yet 18
-        users_factories.UserFactory(
-            isBeneficiary=False, dateOfBirth=datetime(2000, 1, 2), dateCreated=datetime(2017, 12, 1)
-        )
+        users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 2), dateCreated=datetime(2017, 12, 1))
 
         # Users 18 on the day `since` should not appear, nor those that are not 18 yet
         users = repository.get_newly_eligible_users(since=date(2017, 12, 31))

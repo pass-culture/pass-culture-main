@@ -19,9 +19,9 @@ ONE_WEEK_AGO = NOW - timedelta(days=7)
 @pytest.mark.usefixtures("db_session")
 def test_tag_user_had_completed_id_check():
     # given
-    recieved_beneficiary = UserFactory(hasCompletedIdCheck=False, isBeneficiary=False)
+    recieved_beneficiary = UserFactory(hasCompletedIdCheck=False)
     already_beneficiary = BeneficiaryGrant18Factory(hasCompletedIdCheck=True)
-    initiated_beneficiary = UserFactory(hasCompletedIdCheck=False, isBeneficiary=False)
+    initiated_beneficiary = UserFactory(hasCompletedIdCheck=False)
 
     get_all_application_ids = Mock(return_value=[123, 456, 789])
 

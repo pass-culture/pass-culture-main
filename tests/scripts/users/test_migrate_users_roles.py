@@ -13,7 +13,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 def test_migrate_beneficiary_with_no_roles():
     # Given
-    user = users_factories.UserFactory(isBeneficiary=True)
+    user = users_factories.UserFactory()
 
     # When
     migrate_users_roles()
@@ -37,7 +37,7 @@ def test_migrate_beneficiary_with_beneficiary_role():
 
 def test_migrate_beneficiary_with_pro_role():
     # Given
-    user = users_factories.ProFactory(isBeneficiary=True)
+    user = users_factories.ProFactory()
     offers_factories.UserOffererFactory(user=user)
 
     # When

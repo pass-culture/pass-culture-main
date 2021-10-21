@@ -787,7 +787,7 @@ class SendNewlyEligibleUserEmailTest:
     def test_send_activation_email(self):
         # given
         user = users_factories.UserFactory(
-            dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)), departementCode="93", isBeneficiary=False
+            dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)), departementCode="93"
         )
 
         # when

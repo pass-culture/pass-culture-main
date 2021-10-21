@@ -91,7 +91,7 @@ class FindProUsersByEmailProviderTest:
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro_user_with_matching_email, offerer=offerer)
 
-        users_factories.UserFactory(email="not_pro_with_matching_email@suspect.com", isBeneficiary=False, isActive=True)
+        users_factories.UserFactory(email="not_pro_with_matching_email@suspect.com", isActive=True)
 
         users = find_pro_users_by_email_provider("suspect.com")
 

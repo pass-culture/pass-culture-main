@@ -81,9 +81,7 @@ class BeneficiaryValidationViewTest:
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_from_jouve_data_staging(self, client):
-        user = users_factories.UserFactory(
-            isBeneficiary=False, dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2)
-        )
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         admin = users_factories.AdminFactory()
         client.with_session_auth(admin.email)
@@ -108,9 +106,7 @@ class BeneficiaryValidationViewTest:
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_from_dms_data_staging(self, client):
-        user = users_factories.UserFactory(
-            isBeneficiary=False, dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2)
-        )
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
         admin = users_factories.AdminFactory()
         client.with_session_auth(admin.email)
@@ -135,7 +131,7 @@ class BeneficiaryValidationViewTest:
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_wrong_args(self, client):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory()
         admin = users_factories.AdminFactory()
 
         client.with_session_auth(admin.email)
@@ -154,7 +150,7 @@ class BeneficiaryValidationViewTest:
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_already_reviewed(self, client):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory()
         admin = users_factories.AdminFactory()
         expected_review = fraud_factories.BeneficiaryFraudReviewFactory(user=user, author=admin)
         client.with_session_auth(admin.email)
@@ -169,7 +165,7 @@ class BeneficiaryValidationViewTest:
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_not_super_user_fails(self, client):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory()
         admin = users_factories.AdminFactory()
         client.with_session_auth(admin.email)
 
@@ -185,7 +181,7 @@ class BeneficiaryValidationViewTest:
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_prod_requires_super_admin(self, client):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory()
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         admin = users_factories.AdminFactory()
         client.with_session_auth(admin.email)
@@ -207,7 +203,7 @@ class BeneficiaryValidationViewTest:
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_from_jouve_admin(self, client):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory()
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         jouve_admin = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
         client.with_session_auth(jouve_admin.email)
@@ -227,7 +223,7 @@ class BeneficiaryValidationViewTest:
         assert user.lastName == jouve_content.lastName
 
     def test_review_ko_does_not_activate_the_beneficiary(self, client):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         admin = users_factories.AdminFactory()
         client.with_session_auth(admin.email)
@@ -251,7 +247,7 @@ class BeneficiaryValidationViewTest:
 
     @freezegun.freeze_time("2021-10-30 09:00:00")
     def test_return_to_dms(self, client):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         jouve_admin = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
         client.with_session_auth(jouve_admin.email)
@@ -382,7 +378,7 @@ class UpdateIDPieceNumberTest:
 
     def test_admin_can_update_id_piece_number(self, client):
         admin = users_factories.AdminFactory()
-        user = users_factories.UserFactory(isAdmin=False, isBeneficiary=False, idPieceNumber=None)
+        user = users_factories.UserFactory(isAdmin=False, idPieceNumber=None)
         content = fraud_factories.JouveContentFactory(
             birthLocationCtrl="OK",
             bodyBirthDateCtrl="OK",
@@ -451,12 +447,9 @@ class JouveAccessTest:
 class ValidatePhoneNumberTest:
     def test_jouve_has_no_access(self, client):
         user = users_factories.UserFactory(
-            isBeneficiary=False,
             phoneValidationStatus=users_models.PhoneValidationStatusType.BLOCKED_TOO_MANY_CODE_SENDINGS,
         )
-        jouve_admin = users_factories.UserFactory(
-            isAdmin=False, isBeneficiary=False, roles=[users_models.UserRole.JOUVE]
-        )
+        jouve_admin = users_factories.UserFactory(isAdmin=False, roles=[users_models.UserRole.JOUVE])
         client.with_session_auth(jouve_admin.email)
 
         response = client.get("/pc/back-office/support_beneficiary/?id={user.id}")
@@ -469,7 +462,6 @@ class ValidatePhoneNumberTest:
     def test_phone_validation(self, client, caplog):
         admin = users_factories.AdminFactory()
         user = users_factories.UserFactory(
-            isBeneficiary=False,
             phoneValidationStatus=users_models.PhoneValidationStatusType.BLOCKED_TOO_MANY_CODE_SENDINGS,
         )
         client.with_session_auth(admin.email)

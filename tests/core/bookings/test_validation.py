@@ -29,7 +29,7 @@ class CheckCanBookFreeOfferTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_should_raise_exception_when_user_cannot_book_a_free_offer(self, app):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory()
         stock = offers_factories.StockFactory(price=0)
 
         with pytest.raises(exceptions.CannotBookFreeOffers) as error:

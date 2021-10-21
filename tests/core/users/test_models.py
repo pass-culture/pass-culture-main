@@ -59,7 +59,7 @@ class UserTest:
             assert user_models.User.query.filter(user_models.User.has_admin_role.is_(True)).all() == [user]
 
         def test_has_beneficiary_role_with_legacy_property(self):
-            user = users_factories.UserFactory(isBeneficiary=True, roles=[])
+            user = users_factories.UserFactory(roles=[user_models.UserRole.BENEFICIARY])
 
             assert user.has_beneficiary_role
             assert user_models.User.query.filter(user_models.User.has_beneficiary_role.is_(False)).all() == []
@@ -159,7 +159,7 @@ class UserTest:
                 assert user.isAdmin
 
         def test_cannot_add_admin_role_to_a_beneficiary_with_legacy_property(self):
-            user = users_factories.UserFactory.build(isBeneficiary=True, roles=[])
+            user = users_factories.UserFactory.build(roles=[user_models.UserRole.BENEFICIARY])
 
             with pytest.raises(InvalidUserRoleException):
                 user.add_admin_role()
