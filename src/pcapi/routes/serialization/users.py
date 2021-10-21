@@ -1,11 +1,12 @@
 from datetime import datetime
+import typing
 from typing import Optional
 
 from pydantic import BaseModel
 from pydantic import EmailStr
 from pydantic.class_validators import validator
 
-from pcapi.core.users.models import UserRole
+from pcapi.core.users import models as user_models
 from pcapi.domain.password import check_password_strength
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
@@ -103,7 +104,7 @@ class SharedLoginUserResponseModel(BaseModel):
     phoneNumber: Optional[str]
     postalCode: Optional[str]
     publicName: Optional[str]
-    roles: list[UserRole]
+    roles: list[user_models.UserRole]
 
     _normalize_id = humanize_field("id")
 
@@ -114,6 +115,50 @@ class SharedLoginUserResponseModel(BaseModel):
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         use_enum_values = True
+
+    @classmethod
+    def from_orm(cls, user):
+        result = super().from_orm(user)
+        result.isBeneficiary = user.is_beneficiary
+        return result
+
+
+class SharedCurrentUserResponseModel(BaseModel):
+
+    activity: Optional[str]
+    address: Optional[str]
+    city: Optional[str]
+    civility: Optional[str]
+    dateCreated: datetime
+    dateOfBirth: Optional[datetime]
+    departementCode: Optional[str]
+    email: str
+    externalIds: Optional[typing.Dict]
+    firstName: Optional[str]
+    hasCompletedIdCheck: Optional[bool]
+    hasPhysicalVenues: Optional[bool]
+    hasSeenProTutorials: Optional[bool]
+    id: str
+    idPieceNumber: Optional[str]
+    isAdmin: bool
+    isBeneficiary: bool
+    isEmailValidated: bool
+    lastConnectionDate: Optional[datetime]
+    lastName: Optional[str]
+    needsToFillCulturalSurvey: Optional[bool]
+    notificationSubscriptions: Optional[typing.Dict]
+    phoneNumber: Optional[str]
+    phoneValidationStatus: Optional[user_models.PhoneValidationStatusType]
+    postalCode: Optional[str]
+    publicName: Optional[str]
+    roles: list[user_models.UserRole]
+
+    _normalize_id = humanize_field("id")
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
+        alias_generator = to_camel
+        orm_mode = True
 
     @classmethod
     def from_orm(cls, user):

@@ -9,23 +9,20 @@ from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import TokenType
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization import as_dict
-from pcapi.routes.serialization.users import LoginUserBodyModel
-from pcapi.routes.serialization.users import SharedLoginUserResponseModel
+from pcapi.routes.serialization import users as serializers
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.includes import USER_INCLUDES
 from pcapi.utils.login_manager import discard_session
 from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.rate_limiting import email_rate_limiter
 from pcapi.utils.rate_limiting import ip_rate_limiter
 
 
-# @debt api-migration
 @private_api.route("/users/current", methods=["GET"])
 @login_required
+@spectree_serialize(response_model=serializers.SharedCurrentUserResponseModel)
 def get_profile():
     user = current_user._get_current_object()  # get underlying User object from proxy
-    return jsonify(as_dict(user, includes=USER_INCLUDES)), 200
+    return serializers.SharedCurrentUserResponseModel.from_orm(user)
 
 
 # @debt api-migration
@@ -39,10 +36,10 @@ def check_activation_token_exists(token):
 
 
 @private_api.route("/users/signin", methods=["POST"])
-@spectree_serialize(response_model=SharedLoginUserResponseModel)
+@spectree_serialize(response_model=serializers.SharedLoginUserResponseModel)
 @ip_rate_limiter()
 @email_rate_limiter()
-def signin(body: LoginUserBodyModel) -> SharedLoginUserResponseModel:
+def signin(body: serializers.LoginUserBodyModel) -> serializers.SharedLoginUserResponseModel:
     errors = ApiErrors()
     errors.status_code = 401
     try:
@@ -57,7 +54,7 @@ def signin(body: LoginUserBodyModel) -> SharedLoginUserResponseModel:
     login_user(user)
     stamp_session(user)
 
-    return SharedLoginUserResponseModel.from_orm(user)
+    return serializers.SharedLoginUserResponseModel.from_orm(user)
 
 
 @private_api.route("/users/signout", methods=["GET"])
