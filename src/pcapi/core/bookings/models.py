@@ -45,6 +45,7 @@ class BookingStatus(enum.Enum):
     CONFIRMED = "CONFIRMED"
     USED = "USED"
     CANCELLED = "CANCELLED"
+    REIMBURSED = "REIMBURSED"
 
 
 class IndividualBooking(PcObject, Model):
@@ -126,6 +127,8 @@ class Booking(PcObject, Model):
     )
 
     status = Column("status", Enum(BookingStatus), nullable=True, default=BookingStatus.CONFIRMED)
+
+    reimbursementDate = Column(DateTime, nullable=True)
 
     educationalBookingId = Column(
         BigInteger,

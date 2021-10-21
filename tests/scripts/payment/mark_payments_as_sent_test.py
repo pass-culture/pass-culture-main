@@ -1,3 +1,4 @@
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.payments import factories as payment_factories
 from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
@@ -14,8 +15,11 @@ class MarkPaymentsAsSentTest:
         no_status_under_review_payment = payment_factories.PaymentFactory(
             statuses=[], transactionLabel="transaction_label"
         )
-        payment_factories.PaymentFactory(statuses=[], transactionLabel="wrong_transaction_label")
+        wrong_transaction_label_payment = payment_factories.PaymentFactory(
+            statuses=[], transactionLabel="wrong_transaction_label"
+        )
         expected_payments_to_be_marked_as_sent = [payment1, payment2, payment3, payment4]
+        expected_payments_not_to_be_marked_as_sent = [no_status_under_review_payment, wrong_transaction_label_payment]
         payment_factories.PaymentStatusFactory(payment=payment1, status=TransactionStatus.UNDER_REVIEW)
         payment_factories.PaymentStatusFactory(payment=payment1, status=TransactionStatus.PENDING)
         payment_factories.PaymentStatusFactory(payment=payment2, status=TransactionStatus.UNDER_REVIEW)
@@ -31,6 +35,12 @@ class MarkPaymentsAsSentTest:
         payments_statuses_sent = PaymentStatus.query.filter(PaymentStatus.status == TransactionStatus.SENT).all()
         assert len(payments_statuses_sent) == 4
         assert set(status.payment for status in payments_statuses_sent) == set(expected_payments_to_be_marked_as_sent)
+        for payment in expected_payments_to_be_marked_as_sent:
+            assert payment.booking.status == BookingStatus.REIMBURSED
+            assert payment.booking.reimbursementDate == payment.currentStatus.date
+        for payment in expected_payments_not_to_be_marked_as_sent:
+            assert payment.booking.status != BookingStatus.REIMBURSED
+            assert payment.booking.reimbursementDate is None
 
     def test_mark_payments_as_sent_does_not_fail_when_no_data(self, app, db_session):
         # Given

@@ -1,6 +1,7 @@
 import base64
 import datetime
 import io
+import itertools
 import logging
 from operator import or_
 import typing
@@ -25,6 +26,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.domain import user_emails
+from pcapi.models import Payment
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
@@ -446,3 +448,14 @@ def auto_mark_as_used_after_event() -> None:
             "educationalBookingsUpdatedCount": n_educational_updated,
         },
     )
+
+
+def mark_bookings_as_reimbursed_from_payment_ids(payment_ids: list[int], date: datetime) -> None:
+    batch_size = 100
+    iterator = iter(payment_ids)
+    while batch := list(itertools.islice(iterator, batch_size)):
+        reimbursed_ids = Payment.query.filter(Payment.id.in_(batch)).with_entities(Payment.bookingId)
+        Booking.query.filter(Booking.id.in_(reimbursed_ids)).update(
+            {Booking.status: BookingStatus.REIMBURSED, Booking.reimbursementDate: date},
+            synchronize_session=False,
+        )

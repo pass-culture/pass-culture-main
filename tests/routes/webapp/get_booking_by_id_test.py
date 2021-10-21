@@ -57,6 +57,7 @@ class Returns200Test:
             "mediation": None,
             "offererId": humanize(offer.venue.managingOffererId),
             "quantity": 1,
+            "reimbursementDate": None,
             "stock": {
                 "beginningDatetime": None,
                 "bookingLimitDatetime": None,
