@@ -229,6 +229,7 @@ class UserProfileResponse(BaseModel):
         result.subscriptionMessage = SubscriptionMessage.from_model(
             subscription_api.get_latest_subscription_message(user)
         )
+        result.isBeneficiary = user.is_beneficiary
         return result
 
 

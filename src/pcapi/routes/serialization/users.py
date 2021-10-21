@@ -114,3 +114,9 @@ class SharedLoginUserResponseModel(BaseModel):
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         use_enum_values = True
+
+    @classmethod
+    def from_orm(cls, user):
+        result = super().from_orm(user)
+        result.isBeneficiary = user.is_beneficiary
+        return result

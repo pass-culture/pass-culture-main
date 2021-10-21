@@ -109,7 +109,9 @@ class BeneficiaryAccountResponse(BaseModel):
     def from_orm(cls, user: User):  # type: ignore
         user.pk = user.id
         user.domainsCredit = get_domains_credit(user)
-        return super().from_orm(user)
+        result = super().from_orm(user)
+        result.isBeneficiary = user.is_beneficiary
+        return result
 
     class Config:
         orm_mode = True

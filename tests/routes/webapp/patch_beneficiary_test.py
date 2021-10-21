@@ -115,7 +115,7 @@ def test_forbid_some_attributes(app):
     forbidden_attributes = {
         "email": "new@example.com",
         "isAdmin": True,
-        "isBeneficiary": False,
+        "roles": [],
         "firstName": "Jean",
         "lastName": "Martin",
         "dateCreated": "2018-08-01 12:00:00",
