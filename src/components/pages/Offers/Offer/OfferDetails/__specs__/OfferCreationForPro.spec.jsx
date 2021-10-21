@@ -239,9 +239,9 @@ describe('offerDetails - Creation - pro user', () => {
               'Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de vos structures.'
             )
           ).toBeInTheDocument()
-          expect(screen.getByRole('link', { name: '+ Ajouter un lieu' })).toHaveAttribute(
+          expect(screen.getByRole('link',{ name: '+ Ajouter un lieu' })).toHaveAttribute(
             'href',
-            '/accueil'
+            '/structures//lieux/creation'
           )
           expect(screen.queryByLabelText('Type de spectacle')).not.toBeInTheDocument()
         })

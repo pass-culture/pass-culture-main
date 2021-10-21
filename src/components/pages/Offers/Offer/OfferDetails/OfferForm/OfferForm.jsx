@@ -587,7 +587,7 @@ const OfferForm = ({
           {isTypeOfflineButOnlyVirtualVenues && (
             <InternalBanner
               extraClassName="no-physical-venue"
-              href="/accueil"
+              href={`/structures/${formValues.offererId}/lieux/creation`}
               linkTitle="+ Ajouter un lieu"
               subtitle="Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de vos structures."
               type="notification-info"
