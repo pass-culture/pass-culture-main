@@ -2,14 +2,9 @@
 
 function logs {
     if [[ "$ENV" == "development" ]]; then
-        docker-compose -f "$ROOT_PATH"/docker-compose-app.yml logs
-        exit
+        export RUN="docker-compose -f \"$ROOT_PATH\"/docker-compose-app.yml logs"
     else
-        if [[ $# -gt 0 ]]; then
-            scalingo -a "$SCALINGO_APP" logs "$@"
-        else
-            scalingo -a "$SCALINGO_APP" logs -n 100
-        fi
-        exit
+      echo "Use GCP console or kubectl CLI to access k8s logs"
+      exit
     fi
 }
