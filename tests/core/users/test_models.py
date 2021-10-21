@@ -8,8 +8,8 @@ import pytest
 from pcapi.core.payments.models import DepositType
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as user_models
 from pcapi.core.users.exceptions import InvalidUserRoleException
-from pcapi.core.users.models import User
 
 
 @pytest.mark.usefixtures("db_session")
@@ -41,39 +41,39 @@ class UserTest:
             user = users_factories.AdminFactory()
 
             assert user.has_admin_role
-            assert User.query.filter(User.has_admin_role.is_(False)).all() == []
-            assert User.query.filter(User.has_admin_role.is_(True)).all() == [user]
+            assert user_models.User.query.filter(user_models.User.has_admin_role.is_(False)).all() == []
+            assert user_models.User.query.filter(user_models.User.has_admin_role.is_(True)).all() == [user]
 
         def test_has_beneficiary_role(self):
             user = users_factories.BeneficiaryGrant18Factory()
 
             assert user.has_beneficiary_role
-            assert User.query.filter(User.has_beneficiary_role.is_(False)).all() == []
-            assert User.query.filter(User.has_beneficiary_role.is_(True)).all() == [user]
+            assert user_models.User.query.filter(user_models.User.has_beneficiary_role.is_(False)).all() == []
+            assert user_models.User.query.filter(user_models.User.has_beneficiary_role.is_(True)).all() == [user]
 
         def test_has_admin_role_with_legacy_property(self):
             user = users_factories.UserFactory(isAdmin=True, roles=[])
 
             assert user.has_admin_role
-            assert User.query.filter(User.has_admin_role.is_(False)).all() == []
-            assert User.query.filter(User.has_admin_role.is_(True)).all() == [user]
+            assert user_models.User.query.filter(user_models.User.has_admin_role.is_(False)).all() == []
+            assert user_models.User.query.filter(user_models.User.has_admin_role.is_(True)).all() == [user]
 
         def test_has_beneficiary_role_with_legacy_property(self):
             user = users_factories.UserFactory(isBeneficiary=True, roles=[])
 
             assert user.has_beneficiary_role
-            assert User.query.filter(User.has_beneficiary_role.is_(False)).all() == []
-            assert User.query.filter(User.has_beneficiary_role.is_(True)).all() == [user]
+            assert user_models.User.query.filter(user_models.User.has_beneficiary_role.is_(False)).all() == []
+            assert user_models.User.query.filter(user_models.User.has_beneficiary_role.is_(True)).all() == [user]
 
         def test_has_pro_role(self):
             user = users_factories.ProFactory()
 
             assert user.has_pro_role
-            assert User.query.filter(User.has_pro_role.is_(False)).all() == []
-            assert User.query.filter(User.has_pro_role.is_(True)).all() == [user]
+            assert user_models.User.query.filter(user_models.User.has_pro_role.is_(False)).all() == []
+            assert user_models.User.query.filter(user_models.User.has_pro_role.is_(True)).all() == [user]
 
         def test_add_role_on_new_user(self):
-            user = User()
+            user = user_models.User()
 
             user.add_pro_role()
 
