@@ -167,7 +167,7 @@ class FillUserFromTest:
         assert user.publicName == "Philip Mortimer"
         assert user.email == "pmortimer@bletchley.co.uk"
         assert user.departementCode == "29"
-        assert user.isBeneficiary == False
+        assert user.has_beneficiary_role == False  # pylint: disable=comparison-with-callable
         assert user.has_pro_role
 
     def test_returns_an_user_with_computed_password(self):
@@ -194,7 +194,7 @@ class FillUserFromTest:
         user = fill_user_from(self.csv_row, User())
 
         # then
-        assert user.isBeneficiary == False
+        assert user.has_beneficiary_role == False  # pylint: disable=comparison-with-callable
         assert user.password
 
     def test_returns_the_given_user_with_modified_data_from_the_csv(self):
@@ -210,7 +210,7 @@ class FillUserFromTest:
         assert user.firstName == "Philip"
         assert user.email == "pmortimer@bletchley.co.uk"
         assert user.departementCode == "29"
-        assert user.isBeneficiary == False
+        assert user.has_beneficiary_role == False
         assert user.has_pro_role
         assert user.password != ""
 

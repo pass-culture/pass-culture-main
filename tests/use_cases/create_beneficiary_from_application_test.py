@@ -71,7 +71,7 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, app):
     beneficiary = User.query.one()
     assert beneficiary.activity == "Apprenti"
     assert beneficiary.address == "3 rue de Valois"
-    assert beneficiary.isBeneficiary is True
+    assert beneficiary.has_beneficiary_role is True
     assert beneficiary.city == "Paris"
     assert beneficiary.civility == "Mme"
     assert beneficiary.dateOfBirth.date() == eighteen_years_in_the_past.date()
@@ -470,7 +470,7 @@ def test_id_piece_number_duplicate(
     beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.beneficiary == subscribing_user).first()
     assert beneficiary_import.currentStatus == ImportStatus.REJECTED
     assert beneficiary_import.detail == f"Fraud controls triggered: id piece number n°{ID_PIECE_NUMBER} already taken"
-    assert not subscribing_user.isBeneficiary
+    assert not subscribing_user.has_beneficiary_role
 
     assert len(mails_testing.outbox) == 0
 
@@ -592,7 +592,7 @@ def test_id_piece_number_by_pass(
     beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.beneficiary == subscribing_user).first()
 
     assert beneficiary_import.currentStatus == ImportStatus.CREATED
-    assert subscribing_user.isBeneficiary
+    assert subscribing_user.has_beneficiary_role
     assert not subscribing_user.idPieceNumber
 
     assert len(mails_testing.outbox) == 1

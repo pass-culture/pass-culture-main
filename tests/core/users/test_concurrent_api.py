@@ -42,5 +42,5 @@ class ConcurrencyUpdateBeneficiaryMandatoryInformationTest:
         user = users_models.User.query.get(user.id)
 
         assert not user.hasCompletedIdCheck
-        assert not user.isBeneficiary
+        assert not user.is_beneficiary
         assert not user.deposit

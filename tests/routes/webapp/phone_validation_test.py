@@ -41,7 +41,7 @@ def test_send_phone_validation(app):
 
     user = User.query.get(user.id)
     assert user.is_phone_validated
-    assert not user.isBeneficiary
+    assert not user.has_beneficiary_role
 
 
 @pytest.mark.usefixtures("db_session")
@@ -75,7 +75,7 @@ def test_send_phone_validation_and_become_beneficiary(app):
 
     user = User.query.get(user.id)
     assert user.is_phone_validated
-    assert user.isBeneficiary
+    assert user.has_beneficiary_role
 
 
 @pytest.mark.usefixtures("db_session")

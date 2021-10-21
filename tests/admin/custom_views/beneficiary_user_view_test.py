@@ -74,7 +74,6 @@ class BeneficiaryUserViewTest:
         assert len(user_created.deposits) == 1
         assert user_created.deposit.source == "pass-culture-admin"
         assert user_created.deposit.amount == 500
-        assert user_created.isBeneficiary
         assert user_created.has_beneficiary_role
 
         token = Token.query.filter_by(userId=user_created.id).first()

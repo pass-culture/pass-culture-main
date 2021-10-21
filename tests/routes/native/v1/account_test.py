@@ -1042,7 +1042,6 @@ class ValidatePhoneNumberTest:
         assert response.status_code == 204
         user = User.query.get(user.id)
         assert user.is_phone_validated
-        assert not user.isBeneficiary
         assert not user.has_beneficiary_role
 
         token = Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
@@ -1071,7 +1070,6 @@ class ValidatePhoneNumberTest:
         assert response.status_code == 204
         user = User.query.get(user.id)
         assert user.is_phone_validated
-        assert user.isBeneficiary
         assert user.has_beneficiary_role
 
     @override_settings(MAX_PHONE_VALIDATION_ATTEMPTS=1)
@@ -1261,7 +1259,6 @@ class UpdateBeneficiaryInformationTest:
         assert user.activity == "Lycéen"
         assert user.phoneNumber == "+33609080706"
 
-        assert user.isBeneficiary
         assert user.has_beneficiary_role
         assert user.deposit
 
@@ -1317,7 +1314,6 @@ class UpdateBeneficiaryInformationTest:
         assert user.activity == "Lycéen"
         assert user.phoneNumber == "0601020304"
 
-        assert user.isBeneficiary
         assert user.has_beneficiary_role
         assert user.deposit
 
@@ -1373,7 +1369,6 @@ class UpdateBeneficiaryInformationTest:
         assert user.activity == "Lycéen"
         assert user.phoneNumber is None
 
-        assert user.isBeneficiary
         assert user.has_beneficiary_role
         assert user.deposit
 

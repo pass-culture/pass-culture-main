@@ -81,7 +81,7 @@ class Returns201Test:
         assert "validationToken" not in response.json
         created_user = User.query.filter_by(email="toto@example.com").first()
         assert created_user.validationToken is None
-        assert not created_user.isBeneficiary
+        assert not created_user.has_beneficiary_role
         assert len(push_testing.requests) == 1
         assert not push_testing.requests[0]["attribute_values"]["u.is_beneficiary"]
 

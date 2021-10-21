@@ -37,7 +37,6 @@ class ReadFileTest:
         assert jeanne.phoneNumber == "0102030405"
         assert jeanne.departementCode == "86"
         assert jeanne.postalCode == "86140"
-        assert jeanne.isBeneficiary
         assert jeanne.has_beneficiary_role
         assert len(jeanne.deposits) == 1
 

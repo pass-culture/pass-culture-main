@@ -46,7 +46,6 @@ class PartnerUserViewTest:
         view.on_model_change(Form(), model=user, is_created=False)
 
         # then
-        assert user.isBeneficiary == False
         assert not user.has_beneficiary_role
 
     def test_a_partner_should_never_be_an_admin(self, app, db_session):

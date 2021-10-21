@@ -729,7 +729,7 @@ class RunIntegrationTest:
         assert user.firstName == "john"
         assert user.postalCode == "93450"
         assert user.address == "11 Rue du Test"
-        assert not user.isBeneficiary
+        assert not user.has_beneficiary_role
 
         assert len(user.beneficiaryFraudChecks) == 1
         fraud_check = user.beneficiaryFraudChecks[0]
@@ -788,7 +788,7 @@ class RunIntegrationTest:
         assert user.firstName == "john"
         assert user.postalCode == "93450"
         assert user.address == "11 Rue du Test"
-        assert user.isBeneficiary
+        assert user.has_beneficiary_role
         assert user.phoneNumber == "0102030405"
         assert user.idPieceNumber == "1234123412"
 

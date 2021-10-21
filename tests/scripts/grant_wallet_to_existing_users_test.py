@@ -26,15 +26,13 @@ def test_should_grant_wallet_to_existing_users(app, db_session):
     # then
     users = (
         users_models.User.query.join(Deposit)
-        .with_entities(Deposit.amount, users_models.User.isBeneficiary, users_models.User.has_beneficiary_role)
+        .with_entities(Deposit.amount, users_models.User.has_beneficiary_role, users_models.User.has_beneficiary_role)
         .all()
     )
     user_1 = users[0]
     user_2 = users[1]
 
     assert user_1.amount == 300
-    assert user_1.isBeneficiary
     assert user_1.has_beneficiary_role
     assert user_2.amount == 300
-    assert user_2.isBeneficiary
     assert user_2.has_beneficiary_role

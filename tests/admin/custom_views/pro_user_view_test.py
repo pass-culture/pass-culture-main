@@ -58,7 +58,6 @@ class ProUserViewTest:
         assert user_created.dateOfBirth == datetime(2020, 12, 9, 9, 45)
         assert user_created.departementCode == "93"
         assert user_created.postalCode == "93000"
-        assert user_created.isBeneficiary is False
         assert not user_created.has_beneficiary_role
         assert user_created.has_pro_role
         assert len(user_created.deposits) == 0

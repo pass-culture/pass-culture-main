@@ -460,7 +460,6 @@ class CreateBeneficiaryTest:
         eligible_date = date.today() - relativedelta(years=18, days=30)
         user = users_factories.UserFactory(roles=[], dateOfBirth=eligible_date)
         user = users_api.activate_beneficiary(user, "test")
-        assert user.isBeneficiary
         assert user.has_beneficiary_role
         assert len(user.deposits) == 1
 
@@ -482,7 +481,7 @@ class CreateBeneficiaryTest:
 
             assert posted.last_request.json() == expected
 
-            assert user.isBeneficiary
+            assert user.has_beneficiary_role
             assert len(user.deposits) == 1
 
     def test_external_users_updated(self):
@@ -527,7 +526,7 @@ class StepsToBecomeBeneficiaryTest:
         user.hasCompletedIdCheck = True
 
         assert steps_to_become_beneficiary(user) == [BeneficiaryValidationStep.PHONE_VALIDATION]
-        assert not user.isBeneficiary
+        assert not user.has_beneficiary_role
 
     @override_features(FORCE_PHONE_VALIDATION=True)
     def test_rejected_import(self):
@@ -542,7 +541,7 @@ class StepsToBecomeBeneficiaryTest:
             BeneficiaryValidationStep.BENEFICIARY_INFORMATION,
         ]
         assert steps_to_become_beneficiary(user) == expected
-        assert not user.isBeneficiary
+        assert not user.has_beneficiary_role
 
     @override_features(FORCE_PHONE_VALIDATION=True)
     def test_missing_all(self):
@@ -554,7 +553,7 @@ class StepsToBecomeBeneficiaryTest:
             BeneficiaryValidationStep.BENEFICIARY_INFORMATION,
         ]
         assert steps_to_become_beneficiary(user) == expected
-        assert not user.isBeneficiary
+        assert not user.has_beneficiary_role
 
 
 class FulfillBeneficiaryDataTest:
@@ -773,7 +772,7 @@ class UpdateBeneficiaryMandatoryInformationTest:
         assert user.city == new_city
 
         assert user.hasCompletedIdCheck
-        assert user.isBeneficiary
+        assert user.has_beneficiary_role
         assert user.deposit
 
     @override_features(FORCE_PHONE_VALIDATION=True)
@@ -805,7 +804,7 @@ class UpdateBeneficiaryMandatoryInformationTest:
         assert user.city == new_city
 
         assert user.hasCompletedIdCheck
-        assert not user.isBeneficiary
+        assert not user.has_beneficiary_role
         assert not user.deposit
 
     def test_user_has_not_passed_fraud_checks(self):
@@ -817,7 +816,7 @@ class UpdateBeneficiaryMandatoryInformationTest:
             postal_code="93000",
             activity=user.activity,
         )
-        assert not user.isBeneficiary
+        assert not user.has_beneficiary_role
         assert not user.deposit
 
     def test_user_is_fraudster(self):
@@ -830,7 +829,7 @@ class UpdateBeneficiaryMandatoryInformationTest:
             postal_code="93000",
             activity=user.activity,
         )
-        assert not user.isBeneficiary
+        assert not user.has_beneficiary_role
         assert not user.deposit
 
 
@@ -843,7 +842,6 @@ class CreateProUserTest:
         pro_user = create_pro_user(pro_user_creation_body)
 
         assert pro_user.email == "prouser@example.com"
-        assert not pro_user.isBeneficiary
         assert not pro_user.isAdmin
         assert not pro_user.needsToFillCulturalSurvey
         assert not pro_user.has_pro_role
@@ -860,7 +858,6 @@ class CreateProUserTest:
         pro_user = create_pro_user(pro_user_creation_body)
 
         assert pro_user.email == "prouser@example.com"
-        assert pro_user.isBeneficiary
         assert not pro_user.isAdmin
         assert not pro_user.needsToFillCulturalSurvey
         assert not pro_user.has_pro_role

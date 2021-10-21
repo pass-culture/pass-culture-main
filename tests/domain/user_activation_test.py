@@ -81,7 +81,7 @@ class CreateBeneficiaryFromApplicationTest:
         assert beneficiary.postalCode == "67200"
         assert beneficiary.address == "11 Rue du Test"
         assert beneficiary.dateOfBirth == datetime.date(2000, 5, 1)
-        assert not beneficiary.isBeneficiary
+        assert not beneficiary.has_beneficiary_role
         assert not beneficiary.isAdmin
         assert beneficiary.password is not None
         assert beneficiary.activity == "Lycéen"
@@ -131,7 +131,7 @@ class CreateBeneficiaryFromApplicationTest:
         assert beneficiary.postalCode == "67200"
         assert beneficiary.address == "11 Rue du Test"
         assert beneficiary.dateOfBirth == datetime.datetime(2000, 5, 1)
-        assert not beneficiary.isBeneficiary
+        assert not beneficiary.has_beneficiary_role
         assert not beneficiary.isAdmin
         assert beneficiary.password is not None
         assert beneficiary.activity == "Lycéen"

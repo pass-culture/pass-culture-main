@@ -102,7 +102,6 @@ class UserTest:
             user.add_beneficiary_role()
 
             assert user.has_beneficiary_role
-            assert user.isBeneficiary
 
         def test_add_beneficiary_role_only_once(self):
             user = users_factories.UserFactory.build()
@@ -154,7 +153,6 @@ class UserTest:
                 user.add_beneficiary_role()
 
                 assert not user.has_beneficiary_role
-                assert not user.isBeneficiary
                 assert user.has_admin_role
                 assert user.isAdmin
 
@@ -165,7 +163,6 @@ class UserTest:
                 user.add_admin_role()
 
                 assert user.has_beneficiary_role
-                assert user.isBeneficiary
                 assert not user.has_admin_role
                 assert not user.isAdmin
 
@@ -192,7 +189,6 @@ class UserTest:
             user.remove_beneficiary_role()
 
             assert not user.has_beneficiary_role
-            assert not user.isBeneficiary
 
         def test_remove_beneficiary_role_when_user_is_not_beneficiary(self):
             user = users_factories.ProFactory.build()
@@ -201,7 +197,6 @@ class UserTest:
 
             assert user.has_pro_role
             assert not user.has_beneficiary_role
-            assert not user.isBeneficiary
 
         def test_remove_pro_role(self):
             user = users_factories.ProFactory.build()

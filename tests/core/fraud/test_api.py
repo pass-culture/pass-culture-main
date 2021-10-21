@@ -82,7 +82,7 @@ class JouveFraudCheckTest:
         assert fraud_result.status == fraud_models.FraudStatus.OK
 
         db.session.refresh(user)
-        assert user.isBeneficiary
+        assert user.has_beneficiary_role
 
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     def test_jouve_update_duplicate_user(self, _get_raw_content, client):
@@ -112,7 +112,7 @@ class JouveFraudCheckTest:
         )
 
         db.session.refresh(user)
-        assert not user.isBeneficiary
+        assert not user.has_beneficiary_role
 
     @pytest.mark.parametrize("jouve_field", ["birthLocationCtrl", "bodyBirthDateCtrl", "bodyNameCtrl"])
     @pytest.mark.parametrize("wrong_possible_value", ["NOT_APPLICABLE", "KO"])
@@ -217,7 +217,7 @@ class JouveFraudCheckTest:
     #     )
 
     #     db.session.refresh(user)
-    #     assert not user.isBeneficiary
+    #     assert not user.has_beneficiary_role
 
 
 @pytest.mark.usefixtures("db_session")

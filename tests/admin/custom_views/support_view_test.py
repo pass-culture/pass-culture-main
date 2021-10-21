@@ -96,7 +96,7 @@ class BeneficiaryValidationViewTest:
         assert review.review == fraud_models.FraudReviewStatus.OK
         assert review.reason == "User is granted"
         user = users_models.User.query.get(user.id)
-        assert user.isBeneficiary is True
+        assert user.has_beneficiary_role is True
         assert len(user.deposits) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
 
@@ -121,7 +121,7 @@ class BeneficiaryValidationViewTest:
         assert review.review == fraud_models.FraudReviewStatus.OK
         assert review.reason == "User is granted"
         user = users_models.User.query.get(user.id)
-        assert user.isBeneficiary is True
+        assert user.has_beneficiary_role is True
         assert len(user.deposits) == 1
 
         dms_content = fraud_models.DMSContent(**check.resultContent)
@@ -145,7 +145,7 @@ class BeneficiaryValidationViewTest:
         assert review is None
 
         user = users_models.User.query.get(user.id)
-        assert user.isBeneficiary is False
+        assert user.has_beneficiary_role is False
         assert user.deposits == []
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
@@ -177,7 +177,7 @@ class BeneficiaryValidationViewTest:
         assert response.status_code == 302
         review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one_or_none()
         assert review is None
-        assert user.isBeneficiary is False
+        assert user.has_beneficiary_role is False
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_prod_requires_super_admin(self, client):
@@ -195,7 +195,7 @@ class BeneficiaryValidationViewTest:
         review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one_or_none()
         assert review is not None
         assert review.author == admin
-        assert user.isBeneficiary is True
+        assert user.has_beneficiary_role is True
 
         jouve_content = fraud_models.JouveContent(**check.resultContent)
         assert user.firstName == jouve_content.firstName
@@ -216,7 +216,7 @@ class BeneficiaryValidationViewTest:
         review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=jouve_admin).one_or_none()
         assert review is not None
         assert review.author == jouve_admin
-        assert user.isBeneficiary is True
+        assert user.has_beneficiary_role is True
 
         jouve_content = fraud_models.JouveContent(**check.resultContent)
         assert user.firstName == jouve_content.firstName
@@ -238,7 +238,7 @@ class BeneficiaryValidationViewTest:
         assert review is not None
         assert review.author == admin
         assert review.review == fraud_models.FraudReviewStatus.KO
-        assert user.isBeneficiary is False
+        assert user.has_beneficiary_role is False
 
         assert subscription_models.SubscriptionMessage.query.count() == 1
         message = subscription_models.SubscriptionMessage.query.first()
@@ -262,7 +262,7 @@ class BeneficiaryValidationViewTest:
         assert review.author == jouve_admin
         assert review.review == fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS
         assert "; Redirigé vers DMS" in review.reason
-        assert user.isBeneficiary is False
+        assert user.has_beneficiary_role is False
 
         assert len(mails_testing.outbox) == 1
         sent_data = mails_testing.outbox[0].sent_data
@@ -318,7 +318,7 @@ class UpdateIDPieceNumberTest:
         assert fraud_check.resultContent["bodyPieceNumberCtrl"] == "OK"
         assert fraud_check.resultContent["bodyPieceNumber"] == id_piece_number
         assert user.idPieceNumber == id_piece_number
-        assert user.isBeneficiary
+        assert user.has_beneficiary_role
         assert len(user.beneficiaryImports) == 1
         assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
 
@@ -337,7 +337,7 @@ class UpdateIDPieceNumberTest:
         assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
         assert fraud_check.resultContent["id_piece_number"] == id_piece_number
         assert user.idPieceNumber == id_piece_number
-        assert user.isBeneficiary
+        assert user.has_beneficiary_role
         assert len(user.beneficiaryImports) == 1
         assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
 
@@ -364,7 +364,7 @@ class UpdateIDPieceNumberTest:
         assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
         assert fraud_check.resultContent["id_piece_number"] == id_piece_number
         assert user.idPieceNumber == id_piece_number
-        assert user.isBeneficiary
+        assert user.has_beneficiary_role
         assert len(user.beneficiaryImports) == 1
         assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
 
@@ -406,7 +406,7 @@ class UpdateIDPieceNumberTest:
 
         assert fraud_check.resultContent["bodyPieceNumberCtrl"] == "OK"
         assert fraud_check.resultContent["bodyPieceNumber"] == "123123123123"
-        assert user.isBeneficiary
+        assert user.has_beneficiary_role
         assert len(user.beneficiaryImports) == 1
         assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
 

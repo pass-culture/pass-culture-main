@@ -98,7 +98,7 @@ class Returns200Test:
         beneficiary = User.query.one()
         assert beneficiary.activity == "Apprenti"
         assert beneficiary.address == "3 rue de Valois"
-        assert beneficiary.isBeneficiary is True
+        assert beneficiary.has_beneficiary_role is True
         assert beneficiary.city == "Paris"
         assert beneficiary.civility == "Mme"
         assert beneficiary.dateOfBirth.date() == eighteen_years_in_the_past.date()
@@ -169,7 +169,7 @@ class Returns200Test:
         user = User.query.one()
         assert user.activity == "Apprenti"
         assert user.address == "3 rue de Valois"
-        assert not user.isBeneficiary
+        assert not user.has_beneficiary_role
         assert user.city == "Paris"
         assert user.civility == "Mme"
         assert user.dateOfBirth.date() == eighteen_years_in_the_past.date()

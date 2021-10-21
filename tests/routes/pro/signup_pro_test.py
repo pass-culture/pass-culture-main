@@ -42,7 +42,7 @@ class Returns204Test:
 
         user = User.query.filter_by(email="toto_pro@example.com").first()
         assert user is not None
-        assert user.isBeneficiary is False
+        assert user.has_beneficiary_role is False
         assert user.departementCode == "92"
         assert user.email == "toto_pro@example.com"
         assert user.firstName == "Toto"
