@@ -282,7 +282,7 @@ def _create_response_to_get_booking_by_token(booking: Booking) -> dict:
         "isUsed": booking.isUsed,
         "offerName": offer_name,
         "userName": booking.user.publicName,
-        "venueDepartementCode": venue_departement_code,
+        "venueDepartmentCode": venue_departement_code,
     }
 
     if offer.subcategoryId in subcategories.ACTIVATION_SUBCATEGORIES:

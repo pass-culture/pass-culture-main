@@ -41,7 +41,7 @@ class GetBookingResponse(BaseModel):
     theater: dict
     userName: str
     venueAddress: Optional[str]
-    venueDepartementCode: Optional[str]
+    venueDepartmentCode: Optional[str]
     venueName: str
 
 
@@ -88,7 +88,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         if is_educational_booking
         else booking.user.publicName,
         venueAddress=booking.venue.address,
-        venueDepartementCode=booking.venue.departementCode,
+        venueDepartmentCode=booking.venue.departementCode,
         venueName=booking.venue.name,
     )
 

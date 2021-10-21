@@ -56,7 +56,7 @@ class Returns200Test:
             "isUsed": False,
             "offerName": "Event Name",
             "userName": "John Doe",
-            "venueDepartementCode": "93",
+            "venueDepartmentCode": "93",
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -90,7 +90,7 @@ class Returns200Test:
             "isUsed": False,
             "offerName": "Event Name",
             "userName": "John Doe",
-            "venueDepartementCode": "93",
+            "venueDepartmentCode": "93",
         }
 
     @pytest.mark.usefixtures("db_session")

@@ -68,7 +68,7 @@ class Returns200Test:
             },
             "userName": "Jeanne Doux",
             "venueAddress": "1 boulevard Poissonnière",
-            "venueDepartementCode": "75",
+            "venueDepartmentCode": "75",
             "venueName": "Le Petit Rintintin",
         }
 
@@ -113,7 +113,7 @@ class Returns200Test:
             "theater": {},
             "userName": f"{redactor.firstName} {redactor.lastName}",
             "venueAddress": validated_eac_booking.venue.address,
-            "venueDepartementCode": validated_eac_booking.venue.departementCode,
+            "venueDepartmentCode": validated_eac_booking.venue.departementCode,
             "venueName": validated_eac_booking.venue.name,
         }
 

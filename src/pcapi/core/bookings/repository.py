@@ -504,7 +504,7 @@ def _get_filtered_booking_report(
         )
         .with_entities(
             func.coalesce(Venue.publicName, Venue.name).label("venueName"),
-            Venue.departementCode.label("venueDepartementCode"),
+            Venue.departementCode.label("venueDepartmentCode"),
             Offerer.postalCode.label("offererPostalCode"),
             Offer.name.label("offerName"),
             Stock.beginningDatetime.label("stockBeginningDatetime"),
@@ -563,7 +563,7 @@ def _get_filtered_booking_pro(
             User.email.label("beneficiaryEmail"),
             User.phoneNumber.label("beneficiaryPhoneNumber"),
             Stock.beginningDatetime.label("stockBeginningDatetime"),
-            Venue.departementCode.label("venueDepartementCode"),
+            Venue.departementCode.label("venueDepartmentCode"),
             Offerer.postalCode.label("offererPostalCode"),
         )
         .distinct(Booking.id)
@@ -642,7 +642,7 @@ def _build_bookings_recap_query(bookings_recap_query: Query) -> Query:
         EducationalRedactor.lastName.label("redactorLastname"),
         EducationalRedactor.email.label("redactorEmail"),
         Stock.beginningDatetime.label("stockBeginningDatetime"),
-        Venue.departementCode.label("venueDepartementCode"),
+        Venue.departementCode.label("venueDepartmentCode"),
         Offerer.name.label("offererName"),
         Offerer.postalCode.label("offererPostalCode"),
         Venue.id.label("venueId"),
@@ -678,7 +678,7 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
         cancellation_date=_serialize_date_with_timezone(booking.canceledAt, booking=booking),
         cancellation_limit_date=_serialize_date_with_timezone(booking.cancellationLimitDate, booking),
         event_beginning_datetime=(
-            _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartementCode)
+            _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode)
             if booking.stockBeginningDatetime
             else None
         ),
@@ -713,9 +713,9 @@ def _apply_departement_timezone(naive_datetime: datetime, departement_code: str)
 
 
 def _serialize_date_with_timezone(date_without_timezone: datetime, booking: AbstractKeyedTuple) -> datetime:
-    if booking.venueDepartementCode:
+    if booking.venueDepartmentCode:
         return _apply_departement_timezone(
-            naive_datetime=date_without_timezone, departement_code=booking.venueDepartementCode
+            naive_datetime=date_without_timezone, departement_code=booking.venueDepartmentCode
         )
     offerer_department_code = PostalCode(booking.offererPostalCode).get_departement_code()
     return _apply_departement_timezone(naive_datetime=date_without_timezone, departement_code=offerer_department_code)
@@ -746,7 +746,7 @@ def _serialize_booking_recap_legacy(booking: AbstractKeyedTuple) -> BookingRecap
         venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName,
         venue_is_virtual=booking.venueIsVirtual,
         event_beginning_datetime=_apply_departement_timezone(
-            booking.stockBeginningDatetime, booking.venueDepartementCode
+            booking.stockBeginningDatetime, booking.venueDepartmentCode
         )
         if booking.stockBeginningDatetime
         else None,
