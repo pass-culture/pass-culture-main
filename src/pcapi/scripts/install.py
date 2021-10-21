@@ -8,6 +8,7 @@ def install_commands(app):
         "pcapi.scheduled_tasks.titelive_clock",
         "pcapi.scripts.algolia_indexing.commands",
         "pcapi.scripts.clean_database",
+        "pcapi.scripts.full_index_offers",
         "pcapi.scripts.install_data",
         "pcapi.scripts.offerer.commands",
         "pcapi.scripts.payment.banishment_command",

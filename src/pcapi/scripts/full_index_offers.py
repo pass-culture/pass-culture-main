@@ -1,53 +1,24 @@
-"""Reindex all bookable offers.
-
-The script iterates over all active offers. For each offer, it indexes
-it on App Search if the offer is bookable. Otherwise, the offer is NOT
-unindexed, as we suppose that the offer has already been unindexed
-through the normally-run code. (That way, this script skips a lot of
-unnecessary unindexation requests.)
-
-This script processes batches of 1.000 offers (note that HTTP requests
-to App Search cannot have include more than 100 offers) and reports
-back every 10.000 offers.
-
-Errors are logged and are not blocking. You can see the batch that
-failed in the logs and should re-run any batch that failed.
-
-Obviously, the script takes a lot of time. You should run multiple
-instances of it at the same time.
-
-Usage:
-
-    $ python full_index_offers.py 10 10_000_000
-    $ python full_index_offers.py 10_000_000 20_000_000
-
-Using "_" as thousands separator is supported.
-"""
-# isort:skip_file
-from pcapi.flask_app import app
-
-app.app_context().push()
-
-import argparse
 import datetime
 import logging
 import statistics
 import time
 
+import click
+from flask import Blueprint
 import pytz
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.search.backends import appsearch
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
+from pcapi.core.search.backends import algolia
+from pcapi.core.search.backends import appsearch
 
-
-appsearch.AppSearchBackend.unindex_offer_ids = lambda *args, **kwargs: 1
 
 BATCH_SIZE = 1_000
 REPORT_EVERY = 10_000
 
 logger = logging.getLogger(__name__)
+blueprint = Blueprint(__name__, __name__)
 
 
 def _get_eta(end, current, elapsed_per_batch):
@@ -59,8 +30,42 @@ def _get_eta(end, current, elapsed_per_batch):
     return eta
 
 
-def full_index_offers(start, end):
-    backend = appsearch.AppSearchBackend()
+@blueprint.cli.command("full_index_offers")
+@click.argument("backend", required=True, type=click.Choice(("algolia", "appsearch")))
+@click.argument("start", type=int, required=True)
+@click.argument("end", type=int, required=True)
+def full_index_offers(backend, start, end):
+    """Reindex all bookable offers.
+
+    The script iterates over all active offers. For each offer, it
+    indexes it on the selected backend Algolia or App Search) if the
+    offer is bookable. Otherwise, the offer is NOT unindexed, as we
+    suppose that the offer has already been unindexed through the
+    normally-run code. That way, this script skips a lot of
+    unnecessary unindexation requests.
+
+    This script processes batches of 1.000 offers (note that HTTP
+    requests to App Search cannot have include more than 100 offers)
+    and reports back every 10.000 offers.
+
+    Errors are logged and are not blocking. You MUST check the logs
+    for batches that failed and MUST re-run all these batches.
+
+    Obviously, the script takes a lot of time. You should run multiple
+    instances of it at the same time. 4 concurrent instances looks
+    like a good compromise.
+
+    Usage:
+
+        $ flask full_index_offers.py algolia 10_000_000 20_000_000
+
+    Using "_" as thousands separator is supported (and encouraged for
+    clarity).
+
+    """
+    if start > end:
+        raise ValueError('"start" must be less than "end"')
+    backend = {"algolia": algolia.AlgoliaBackend(), "appsearch": appsearch.AppSearchBackend()}[backend]
 
     queue = []
 
@@ -89,35 +94,18 @@ def full_index_offers(start, end):
             .options(joinedload(offers_models.Offer.mediations))
             .options(joinedload(offers_models.Offer.product))
             .options(joinedload(offers_models.Offer.stocks))
-            .filter(offers_models.Offer.isActive == True, offers_models.Offer.id.between(start, start + BATCH_SIZE))
+            .filter(offers_models.Offer.isActive.is_(True), offers_models.Offer.id.between(start, start + BATCH_SIZE))
             .order_by(offers_models.Offer.id)
         )
         for offer in offers:
-            if offer.isBookable:
+            if offer.is_eligible_for_search:
                 enqueue_or_index(queue, offer)
         elapsed_per_batch.append(int(time.perf_counter() - start_time))
         start = start + BATCH_SIZE
         eta = _get_eta(end, start, elapsed_per_batch)
         to_report += BATCH_SIZE
-        if to_report > REPORT_EVERY:
+        if to_report >= REPORT_EVERY:
             to_report = 0
             print(f"  => OK: {start} | eta = {eta}")
     enqueue_or_index(queue, offer=None, force_index=True)
-
-
-def get_parser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("start", type=int, help="Offer id to start from (included)")
-    parser.add_argument("end", type=int, help="Offer id to end to (included)")
-    return parser
-
-
-def main():
-    parser = get_parser()
-    args = parser.parse_args()
-    assert args.start <= args.end
-    full_index_offers(args.start, args.end)
-
-
-if __name__ == "__main__":
-    main()
+    print("Done")
