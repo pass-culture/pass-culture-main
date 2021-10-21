@@ -39,7 +39,6 @@ class UserFactory(BaseFactory):
     lastName = "Neige"
     publicName = "Jean Neige"
     isEmailValidated = True
-    isBeneficiary = False
     isAdmin = False
     roles = []
     hasSeenProTutorials = True
@@ -74,7 +73,6 @@ class AdminFactory(BaseFactory):
     publicName = "Frank Columbo"
     isEmailValidated = True
     isAdmin = True
-    isBeneficiary = False
     roles = [pcapi.core.users.models.UserRole.ADMIN]
     hasSeenProTutorials = True
 
@@ -112,7 +110,6 @@ class BeneficiaryGrant18Factory(BaseFactory):
     lastName = "Doux"
     isEmailValidated = True
     isAdmin = False
-    isBeneficiary = True
     roles = [pcapi.core.users.models.UserRole.BENEFICIARY]
     hasSeenProTutorials = True
 
@@ -181,7 +178,6 @@ class ProFactory(BaseFactory):
     publicName = "René Coty"
     isEmailValidated = True
     isAdmin = False
-    isBeneficiary = False
     roles = [pcapi.core.users.models.UserRole.PRO]
     hasSeenProTutorials = True
 
