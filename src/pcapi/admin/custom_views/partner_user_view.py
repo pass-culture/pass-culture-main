@@ -104,7 +104,7 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
         return (
             User.query.outerjoin(UserOfferer)
             .filter(UserOfferer.userId.is_(None))
-            .filter(User.isBeneficiary.is_(False))
+            .filter(User.is_beneficiary.is_(False))
             .filter(User.isAdmin.is_(False))
         )
 
@@ -114,6 +114,6 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
             .select_from(self.model)
             .outerjoin(UserOfferer)
             .filter(UserOfferer.userId.is_(None))
-            .filter(User.isBeneficiary.is_(False))
+            .filter(User.is_beneficiary.is_(False))
             .filter(User.isAdmin.is_(False))
         )

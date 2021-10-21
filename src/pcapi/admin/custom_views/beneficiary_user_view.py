@@ -110,7 +110,8 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
     column_labels = dict(
         email="Email",
         isActive="Est activé",
-        isBeneficiary="Est bénéficiaire ?",
+        has_beneficiary_role="Bénéficiaire 18 ans ?",
+        has_underage_beneficiary_role="Bénéficiaire 15-17 ?",
         firstName="Prénom",
         lastName="Nom",
         publicName="Nom d'utilisateur",
@@ -127,7 +128,8 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters = [
         "postalCode",
-        "isBeneficiary",
+        "has_beneficiary_role",
+        "has_underage_beneficiary_role",
         "isEmailValidated",
         FilterByDepositTypeEqual(column=None, name="Type du portefeuille"),
         FilterByDepositTypeNotEqual(column=None, name="Type du portefeuille"),

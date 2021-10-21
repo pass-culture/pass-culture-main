@@ -267,7 +267,8 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         if not user:
             flask.flash("Cet utilisateur n'existe pas", "error")
             return flask.redirect(flask.url_for(".index_view"))
-        if user.isBeneficiary:
+        # TODO: Handle switch from underage_beneficiary to beneficiary
+        if user.is_beneficiary:
             flask.flash(f"L'utilisateur {user.id} {user.firstName} {user.lastName} est déjà bénéficiaire")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
         fraud_check = fraud_api.admin_update_identity_fraud_check_result(user, form.data["id_piece_number"])

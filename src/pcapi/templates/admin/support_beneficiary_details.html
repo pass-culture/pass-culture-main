@@ -166,7 +166,11 @@
       </tr>
       <tr>
         <th scope="row">Bénéficiaire</th>
-        <td>{{ model.isBeneficiary|yesno }}</td>
+        <td>{{ model.has_beneficiary_role|yesno }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Bénéficiaire 15-17</th>
+        <td>{{ model.has_underage_beneficiary_role|yesno }}</td>
       </tr>
       {% if model.suspensionReason %}
       <tr>
