@@ -109,6 +109,30 @@ def get_all_bookings(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     )
 
 
+@private_api.route("/bookings/csv", methods=["GET"])
+@login_required
+@spectree_serialize(
+    json_format=False,
+    response_headers={
+        "Content-Type": "text/csv; charset=utf-8;",
+        "Content-Disposition": "attachment; filename=reservations_pass_culture.csv",
+    },
+)
+def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
+    venue_id = query.venue_id
+    event_date = query.event_date
+    booking_period = (query.booking_period_beginning_date, query.booking_period_ending_date)
+
+    bookings = booking_repository.get_csv_report(
+        user=current_user,
+        booking_period=booking_period,
+        event_date=event_date,
+        venue_id=venue_id,
+    )
+
+    return bookings.encode("utf-8-sig")
+
+
 @pro_api_v2.route("/bookings/token/<token>", methods=["GET"])
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()

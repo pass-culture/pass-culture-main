@@ -1,10 +1,14 @@
+import csv
 from datetime import date
 from datetime import datetime
 from datetime import time
+from io import StringIO
 import math
+from typing import Iterable
 from typing import Optional
 
 from dateutil import tz
+from sqlalchemy import Column
 from sqlalchemy import Date
 from sqlalchemy import and_
 from sqlalchemy import case
@@ -15,6 +19,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Query
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.util._collections import AbstractKeyedTuple
 
@@ -42,10 +47,20 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.utils.date import get_department_timezone
+from pcapi.utils.db import get_batches
 from pcapi.utils.token import random_token
 
 
 DUO_QUANTITY = 2
+
+
+BOOKING_STATUS_LABELS = {
+    BookingStatus.PENDING: "réservé",
+    BookingStatus.CONFIRMED: "réservé",
+    BookingStatus.CANCELLED: "réservé",
+    BookingStatus.USED: "validé",
+    BookingStatus.REIMBURSED: "remboursé",
+}
 
 
 def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
@@ -388,6 +403,115 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
     )
 
 
+def get_csv_report(
+    user: User, booking_period: tuple[date, date], event_date: Optional[datetime] = None, venue_id: Optional[int] = None
+) -> str:
+    bookings_query = _get_filtered_booking_report(
+        pro_user=user,
+        period=booking_period,
+        event_date=event_date,
+        venue_id=venue_id,
+    )
+    bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
+    return _serialize_csv_report(bookings_query)
+
+
+def _field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
+    return cast(func.timezone(Venue.timezone, func.timezone("UTC", field)), Date)
+
+
+def _get_filtered_bookings_query(
+    pro_user: User,
+    period: tuple[date, date],
+    event_date: Optional[date] = None,
+    venue_id: Optional[int] = None,
+    extra_joins: Optional[Iterable[Column]] = None,
+) -> Query:
+    extra_joins = extra_joins or tuple()
+
+    bookings_query = (
+        Booking.query.join(Booking.offerer)
+        .join(Offerer.UserOfferers)
+        .join(Booking.stock)
+        .join(Booking.venue, isouter=True)
+    )
+    for join_key in extra_joins:
+        bookings_query = bookings_query.join(join_key, isouter=True)
+
+    if not pro_user.has_admin_role:
+        bookings_query = bookings_query.filter(UserOfferer.user == pro_user)
+
+    bookings_query = bookings_query.filter(UserOfferer.validationToken.is_(None)).filter(
+        _field_to_venue_timezone(Booking.dateCreated).between(*period, symmetric=True)
+    )
+
+    if venue_id is not None:
+        bookings_query = bookings_query.filter(Booking.venueId == venue_id)
+
+    if event_date:
+        bookings_query = bookings_query.filter(_field_to_venue_timezone(Stock.beginningDatetime) == event_date)
+
+    return bookings_query
+
+
+def _get_filtered_bookings_count(
+    pro_user: User,
+    period: tuple[date, date],
+    event_date: Optional[date] = None,
+    venue_id: Optional[int] = None,
+) -> int:
+    bookings = (
+        _get_filtered_bookings_query(pro_user, period, event_date, venue_id)
+        .with_entities(Booking.id, Booking.quantity)
+        .distinct(Booking.id)
+    ).cte()
+    bookings_count = db.session.query(func.coalesce(func.sum(bookings.c.quantity), 0))
+    return bookings_count.scalar()
+
+
+def _get_filtered_booking_report(
+    pro_user: User, period: tuple[date, date], event_date: Optional[datetime] = None, venue_id: Optional[int] = None
+) -> str:
+    bookings_query = (
+        _get_filtered_bookings_query(
+            pro_user,
+            period,
+            event_date,
+            venue_id,
+            extra_joins=(Stock.offer, Booking.user),
+        )
+        .with_entities(
+            func.coalesce(Venue.publicName, Venue.name).label("venueName"),
+            Venue.departementCode.label("venueDepartementCode"),
+            Offerer.postalCode.label("offererPostalCode"),
+            Offer.name.label("offerName"),
+            Stock.beginningDatetime.label("stockBeginningDatetime"),
+            Stock.offerId,
+            Offer.extraData["isbn"].label("isbn"),
+            User.firstName.label("beneficiaryFirstName"),
+            User.lastName.label("beneficiaryLastName"),
+            User.email.label("beneficiaryEmail"),
+            User.phoneNumber.label("beneficiaryPhoneNumber"),
+            Booking.id,
+            Booking.token,
+            Booking.amount,
+            Booking.quantity,
+            Booking.status,
+            Booking.dateCreated.label("bookedAt"),
+            Booking.dateUsed.label("usedAt"),
+            Booking.reimbursementDate.label("reimbursedAt"),
+            Booking.cancellationDate.label("canceleddAt"),
+            # `get_batch` function needs a field called exactly `id` to work,
+            # the label prevents SA from using a bad (prefixed) label for this field
+            Booking.id.label("id"),
+            Booking.userId,
+        )
+        .distinct(Booking.id)
+    )
+
+    return bookings_query
+
+
 def _filter_bookings_recap_query(
     bookings_recap_query: Query,
     user_id: int,
@@ -541,3 +665,47 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
         if booking.offerExtraData and "isbn" in booking.offerExtraData
         else None,
     )
+
+
+def _serialize_csv_report(query: Query) -> str:
+    output = StringIO()
+    writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+    writer.writerow(
+        (
+            "Lieu",
+            "Nom de l’offre",
+            "Date de l'évènement",
+            "ISBN",
+            "Nom et prénom du bénéficiaire",
+            "Email du bénéficiaire",
+            "Téléphone du bénéficiaire",
+            "Date et heure de réservation",
+            "Date et heure de validation",
+            "Contremarque",
+            "Prix de la réservation",
+            "Statut de la contremarque",
+            "Date et heure de remboursement",
+        )
+    )
+    for batch in get_batches(query, Booking.id, 1000):
+        rows = [
+            (
+                booking.venueName,
+                booking.offerName,
+                _serialize_date_with_timezone(booking.stockBeginningDatetime, booking),
+                booking.isbn,
+                f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}",
+                booking.beneficiaryEmail,
+                booking.beneficiaryPhoneNumber,
+                _serialize_date_with_timezone(booking.bookedAt, booking),
+                _serialize_date_with_timezone(booking.usedAt, booking),
+                booking.token,
+                booking.amount,
+                BOOKING_STATUS_LABELS[booking.status],
+                _serialize_date_with_timezone(booking.reimbursedAt, booking),
+            )
+            for booking in batch
+        ]
+        writer.writerows(rows)
+
+    return output.getvalue()

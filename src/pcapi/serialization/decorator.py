@@ -27,6 +27,7 @@ def _make_json_response(
     status_code: int,
     by_alias: bool,
     exclude_none: bool = False,
+    headers: dict = None,
 ) -> Response:
     """serializes model, creates JSON response with given status code"""
     if status_code == 204:
@@ -37,12 +38,12 @@ def _make_json_response(
 
     json_content = content.json(exclude_none=exclude_none, by_alias=by_alias)
 
-    response = make_response(json_content, status_code)
+    response = make_response(json_content, status_code, headers or {})
     response.mimetype = "application/json"
     return response
 
 
-def _make_string_response(content: Optional[BaseModel], status_code: int) -> Response:
+def _make_string_response(content: Optional[BaseModel], status_code: int, headers: dict = None) -> Response:
     """serializes model, creates JSON response with given status code"""
     if status_code == 204:
         return make_response("", 204)
@@ -50,7 +51,7 @@ def _make_string_response(content: Optional[BaseModel], status_code: int) -> Res
     if not content:
         raise ApiErrors({"configuration": "You need to provide a response body model if the status code is not 204"})
 
-    response = make_response(content, status_code)
+    response = make_response(content, status_code, headers or {})
     return response
 
 
@@ -67,6 +68,7 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
     on_error_statuses: list[int] = [],
     api: SpecTree = default_api,
     json_format: bool = True,
+    response_headers: Optional[dict[str, str]] = None,
     code_descriptions: dict = {},
 ) -> Callable[[Any], Any]:
     """A decorator that serialize/deserialize and validate input/output
@@ -83,11 +85,14 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
         on_error_statuses: list of possible error statuses. Defaults to [].
         api: [description]. Defaults to default_api.
         json_format: JSON format response if true, else text format response. Defaults to True.
+        response_headers: a dict of headers to be added to the response. defaults to {}.
         code_descriptions (dict): specific descriptions shown in swagger (ex: { "HTTP_419": "I'm a coffee pot" })
 
     Returns:
         Callable[[Any], Any]: [description]
     """
+
+    response_headers: dict = response_headers or {}
 
     def decorate_validation(route: Callable[..., Any]) -> Callable[[Any], Any]:
         body_in_kwargs = route.__annotations__.get("body")
@@ -148,10 +153,14 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
             result = route(*args, **kwargs)
             if json_format:
                 return _make_json_response(
-                    content=result, status_code=on_success_status, by_alias=response_by_alias, exclude_none=exclude_none
+                    content=result,
+                    status_code=on_success_status,
+                    by_alias=response_by_alias,
+                    exclude_none=exclude_none,
+                    headers=response_headers,
                 )
 
-            return _make_string_response(content=result, status_code=on_success_status)
+            return _make_string_response(content=result, status_code=on_success_status, headers=response_headers)
 
         return sync_validate
 

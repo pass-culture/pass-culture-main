@@ -1,7 +1,9 @@
+import csv
 from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+from io import StringIO
 from unittest.mock import patch
 
 from dateutil import tz
@@ -11,7 +13,9 @@ import pytest
 from pytest import fixture
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.bookings.repository as booking_repository
+from pcapi.core.bookings.repository import BOOKING_STATUS_LABELS
 from pcapi.core.bookings.repository import find_by_pro_user_id
 from pcapi.core.bookings.repository import get_bookings_from_deposit
 from pcapi.core.categories import subcategories
@@ -1237,6 +1241,693 @@ class FindByProUserIdTest:
         bookings_tokens = [booking_recap.booking_token for booking_recap in bookings_recap_paginated.bookings_recap]
         assert cayenne_booking.token in bookings_tokens
         assert mayotte_booking.token in bookings_tokens
+
+
+class GetCsvReportTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_only_expected_booking_attributes(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        booking = bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+            amount=12,
+        )
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv))
+        assert headers == [
+            "Lieu",
+            "Nom de l’offre",
+            "Date de l'évènement",
+            "ISBN",
+            "Nom et prénom du bénéficiaire",
+            "Email du bénéficiaire",
+            "Téléphone du bénéficiaire",
+            "Date et heure de réservation",
+            "Date et heure de validation",
+            "Contremarque",
+            "Prix de la réservation",
+            "Statut de la contremarque",
+            "Date et heure de remboursement",
+        ]
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Lieu"] == venue.name
+        assert data_dict["Nom de l’offre"] == offer.name
+        assert data_dict["Date de l'évènement"] == ""
+        assert data_dict["ISBN"] == ((offer.extraData or {}).get("isbn") or "")
+        assert data_dict["Nom et prénom du bénéficiaire"] == " ".join((beneficiary.lastName, beneficiary.firstName))
+        assert data_dict["Email du bénéficiaire"] == beneficiary.email
+        assert data_dict["Téléphone du bénéficiaire"] == (beneficiary.phoneNumber or "")
+        assert data_dict["Date et heure de réservation"] == str(
+            booking.dateCreated.astimezone(tz.gettz("Europe/Paris"))
+        )
+        assert data_dict["Date et heure de validation"] == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
+        assert data_dict["Contremarque"] == booking.token
+        assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
+        assert data_dict["Statut de la contremarque"] == BOOKING_STATUS_LABELS[booking.status]
+        assert data_dict["Date et heure de remboursement"] == ""
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        _, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 2
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
+        self, app: fixture
+    ):
+        # Given
+        admin = users_factories.AdminFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(offerer=offerer)
+        offers_factories.UserOffererFactory(offerer=offerer)
+        offers_factories.UserOffererFactory(offerer=offerer)
+
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=admin, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        _, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 2
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(
+            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+        )
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        booking = bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCDEF", status=BookingStatus.PENDING
+        )
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv))
+        assert headers == [
+            "Lieu",
+            "Nom de l’offre",
+            "Date de l'évènement",
+            "ISBN",
+            "Nom et prénom du bénéficiaire",
+            "Email du bénéficiaire",
+            "Téléphone du bénéficiaire",
+            "Date et heure de réservation",
+            "Date et heure de validation",
+            "Contremarque",
+            "Prix de la réservation",
+            "Statut de la contremarque",
+            "Date et heure de remboursement",
+        ]
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Lieu"] == venue.name
+        assert data_dict["Nom de l’offre"] == offer.name
+        assert data_dict["Date de l'évènement"] == str(stock.beginningDatetime.astimezone(tz.gettz("Europe/Paris")))
+        assert data_dict["ISBN"] == ((offer.extraData or {}).get("isbn") or "")
+        assert data_dict["Nom et prénom du bénéficiaire"] == " ".join((beneficiary.lastName, beneficiary.firstName))
+        assert data_dict["Email du bénéficiaire"] == beneficiary.email
+        assert data_dict["Téléphone du bénéficiaire"] == (beneficiary.phoneNumber or "")
+        assert data_dict["Date et heure de réservation"] == str(
+            booking.dateCreated.astimezone(tz.gettz("Europe/Paris"))
+        )
+        assert data_dict["Date et heure de validation"] == ""
+        assert data_dict["Contremarque"] == booking.token
+        assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
+        assert data_dict["Statut de la contremarque"] == BOOKING_STATUS_LABELS[booking.status]
+        assert data_dict["Date et heure de remboursement"] == ""
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_event_confirmed_booking_when_booking_is_on_an_event_in_confirmation_period(
+        self, app: fixture
+    ):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(
+            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+        )
+        more_than_two_days_ago = datetime.utcnow() - timedelta(days=3)
+        bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, dateCreated=more_than_two_days_ago, token="ABCDEF"
+        )
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Statut de la contremarque"] == BOOKING_STATUS_LABELS[BookingStatus.CONFIRMED]
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_cancelled_status_when_booking_has_been_cancelled(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=5)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        bookings_factories.CancelledBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=yesterday,
+            token="ABCDEF",
+            amount=5,
+        )
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Statut de la contremarque"] == BOOKING_STATUS_LABELS[BookingStatus.CANCELLED]
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(
+        self, app: fixture
+    ):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.EventProductFactory()
+        offer = offers_factories.EventOfferFactory(venue=venue, product=product)
+        stock = offers_factories.EventStockFactory(offer=offer, price=5)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        booking = bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=yesterday,
+            token="ABCDEF",
+            amount=5,
+        )
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Statut de la contremarque"] == BOOKING_STATUS_LABELS[BookingStatus.USED]
+        assert data_dict["Date et heure de validation"] == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        today = datetime.utcnow()
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
+
+        offerer2 = offers_factories.OffererFactory(siren="8765432")
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer2)
+
+        venue2 = offers_factories.VenueFactory(managingOfferer=offerer, siret="8765432098765")
+        offer2 = offers_factories.ThingOfferFactory(venue=venue2)
+        stock2 = offers_factories.ThingStockFactory(offer=offer2, price=0)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        _, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 2
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer, validationToken="token")
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock)
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        _, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 0
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+        )
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Date et heure de réservation"] == str(booking_date.astimezone(tz.gettz("America/Cayenne")))
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_booking_isbn_when_information_is_available(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+        )
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["ISBN"] == "9876543234"
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_booking_with_venue_name_when_public_name_is_not_provided(self, app):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue_for_event = offers_factories.VenueFactory(
+            managingOfferer=offerer, name="Lieu pour un événement", siret="11816909600069"
+        )
+        product = offers_factories.EventProductFactory(name="Shutter Island")
+        offer_for_event = offers_factories.EventOfferFactory(venue=venue_for_event, product=product)
+        stock_for_event = offers_factories.EventStockFactory(offer=offer_for_event, price=0)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock_for_event,
+            dateCreated=(default_booking_date + timedelta(days=1)),
+            token="BBBBBB",
+        )
+
+        venue_for_book = offers_factories.VenueFactory(
+            managingOfferer=offerer, name="Lieu pour un livre", siret="41816609600069"
+        )
+        product_book = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer_for_book = offers_factories.ThingOfferFactory(
+            venue=venue_for_book, product=product_book, extraData=dict({"isbn": "9876543234"})
+        )
+        stock_for_book = offers_factories.ThingStockFactory(offer=offer_for_book, price=0)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock_for_book,
+            dateCreated=default_booking_date,
+            token="AAAAAA",
+        )
+
+        venue_for_thing = offers_factories.VenueFactory(
+            managingOfferer=offerer, name="Lieu pour un bien qui n'est pas un livre", siret="83994784300018"
+        )
+        product_thing = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer_for_thing = offers_factories.ThingOfferFactory(venue=venue_for_thing, product=product_thing)
+        stock_for_thing = offers_factories.ThingStockFactory(offer=offer_for_thing, price=0)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock_for_thing,
+            dateCreated=(default_booking_date - timedelta(days=1)),
+            token="ABCDEF",
+        )
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 3
+        data_dicts = [dict(zip(headers, line)) for line in data]
+        assert data_dicts[0]["Lieu"] == venue_for_event.name
+        assert data_dicts[1]["Lieu"] == venue_for_book.name
+        assert data_dicts[2]["Lieu"] == venue_for_thing.name
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_booking_with_venue_public_name_when_public_name_is_provided(self, app):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue_for_event = offers_factories.VenueFactory(
+            managingOfferer=offerer, name="Opéra paris", publicName="Super Opéra de Paris", siret="11816909600069"
+        )
+        product = offers_factories.EventProductFactory(name="Shutter Island")
+        offer_for_event = offers_factories.EventOfferFactory(venue=venue_for_event, product=product)
+        stock_for_event = offers_factories.EventStockFactory(offer=offer_for_event, price=0)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock_for_event,
+            dateCreated=(default_booking_date + timedelta(days=1)),
+            token="BBBBBB",
+        )
+
+        venue_for_book = offers_factories.VenueFactory(
+            managingOfferer=offerer, name="Lieu pour un livre", publicName="Librairie Châtelet", siret="41816609600069"
+        )
+        product_book = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer_for_book = offers_factories.ThingOfferFactory(
+            venue=venue_for_book, product=product_book, extraData=dict({"isbn": "9876543234"})
+        )
+        stock_for_book = offers_factories.ThingStockFactory(offer=offer_for_book, price=0)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock_for_book,
+            dateCreated=default_booking_date,
+            token="AAAAAA",
+        )
+
+        venue_for_thing = offers_factories.VenueFactory(
+            managingOfferer=offerer,
+            name="Lieu pour un bien qui n'est pas un livre",
+            publicName="Guitar Center",
+            siret="83994784300018",
+        )
+        product_thing = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer_for_thing = offers_factories.ThingOfferFactory(venue=venue_for_thing, product=product_thing)
+        stock_for_thing = offers_factories.ThingStockFactory(offer=offer_for_thing, price=0)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock_for_thing,
+            dateCreated=(default_booking_date - timedelta(days=1)),
+            token="ABCDEF",
+        )
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 3
+        data_dicts = [dict(zip(headers, line)) for line in data]
+        assert data_dicts[0]["Lieu"] == venue_for_event.publicName
+        assert data_dicts[1]["Lieu"] == venue_for_book.publicName
+        assert data_dicts[2]["Lieu"] == venue_for_thing.publicName
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_only_booking_for_requested_venue(self, app: fixture):
+        # Given
+        pro_user = users_factories.ProFactory()
+        user_offerer = offers_factories.UserOffererFactory(user=pro_user)
+
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
+        booking_two = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=pro_user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            venue_id=booking_two.venue.id,
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Nom de l’offre"] == booking_two.stock.offer.name
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_only_booking_for_requested_event_date(self, app: fixture):
+        # Given
+        user_offerer = offers_factories.UserOffererFactory()
+        event_date = datetime(2020, 12, 24, 10, 30)
+        expected_booking = bookings_factories.BookingFactory(
+            stock=offers_factories.EventStockFactory(
+                beginningDatetime=event_date, offer__venue__managingOfferer=user_offerer.offerer
+            )
+        )
+        bookings_factories.BookingFactory(
+            stock=offers_factories.EventStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
+        )
+        bookings_factories.BookingFactory(
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
+        )
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=user_offerer.user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            event_date=event_date.date(),
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Contremarque"] == expected_booking.token
+
+    @pytest.mark.usefixtures("db_session")
+    def should_consider_venue_locale_datetime_when_filtering_by_event_date(self, app: fixture):
+        # Given
+        user_offerer = offers_factories.UserOffererFactory()
+        event_datetime = datetime(2020, 4, 21, 20, 00)
+
+        offer_in_cayenne = offers_factories.OfferFactory(
+            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+        )
+        cayenne_event_datetime = datetime(2020, 4, 22, 2, 0)
+        stock_in_cayenne = offers_factories.EventStockFactory(
+            offer=offer_in_cayenne, beginningDatetime=cayenne_event_datetime
+        )
+        cayenne_booking = bookings_factories.BookingFactory(stock=stock_in_cayenne)
+
+        offer_in_mayotte = offers_factories.OfferFactory(
+            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+        )
+        mayotte_event_datetime = datetime(2020, 4, 20, 22, 0)
+        stock_in_mayotte = offers_factories.EventStockFactory(
+            offer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime
+        )
+        mayotte_booking = bookings_factories.BookingFactory(stock=stock_in_mayotte)
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=user_offerer.user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            event_date=event_datetime.date(),
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 2
+        data_dicts = [dict(zip(headers, line)) for line in data]
+        tokens = [booking["Contremarque"] for booking in data_dicts]
+        assert sorted(tokens) == sorted([cayenne_booking.token, mayotte_booking.token])
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_only_bookings_for_requested_booking_period(self, app: fixture):
+        # Given
+        user_offerer = offers_factories.UserOffererFactory()
+        booking_beginning_period = datetime(2020, 12, 24, 10, 30).date()
+        booking_ending_period = datetime(2020, 12, 26, 15, 00).date()
+        expected_booking = bookings_factories.BookingFactory(
+            dateCreated=datetime(2020, 12, 26, 15, 30),
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
+        )
+        bookings_factories.BookingFactory(
+            dateCreated=datetime(2020, 12, 29, 15, 30),
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
+        )
+        bookings_factories.BookingFactory(
+            dateCreated=datetime(2020, 12, 22, 15, 30),
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
+        )
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=user_offerer.user,
+            booking_period=(booking_beginning_period, booking_ending_period),
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Date et heure de réservation"] == str(
+            expected_booking.dateCreated.astimezone(tz.gettz("Europe/Paris"))
+        )
+
+    @pytest.mark.usefixtures("db_session")
+    def should_consider_venue_locale_datetime_when_filtering_by_booking_period(self, app: fixture):
+        # Given
+        user_offerer = offers_factories.UserOffererFactory()
+        requested_booking_period_beginning = datetime(2020, 4, 21, 20, 00).date()
+        requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
+
+        offer_in_cayenne = offers_factories.OfferFactory(
+            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+        )
+        cayenne_booking_datetime = datetime(2020, 4, 22, 2, 0)
+        stock_in_cayenne = offers_factories.EventStockFactory(
+            offer=offer_in_cayenne,
+        )
+        cayenne_booking = bookings_factories.BookingFactory(
+            stock=stock_in_cayenne, dateCreated=cayenne_booking_datetime
+        )
+
+        offer_in_mayotte = offers_factories.OfferFactory(
+            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+        )
+        mayotte_booking_datetime = datetime(2020, 4, 20, 23, 0)
+        stock_in_mayotte = offers_factories.EventStockFactory(
+            offer=offer_in_mayotte,
+        )
+        mayotte_booking = bookings_factories.BookingFactory(
+            stock=stock_in_mayotte, dateCreated=mayotte_booking_datetime
+        )
+
+        # When
+        bookings_csv = booking_repository.get_csv_report(
+            user=user_offerer.user,
+            booking_period=(requested_booking_period_beginning, requested_booking_period_ending),
+        )
+
+        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv))
+        assert len(data) == 2
+        data_dicts = [dict(zip(headers, line)) for line in data]
+        tokens = [booking["Contremarque"] for booking in data_dicts]
+        assert sorted(tokens) == sorted([cayenne_booking.token, mayotte_booking.token])
 
 
 class FindSoonToBeExpiredBookingsTest:
