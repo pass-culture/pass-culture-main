@@ -4,6 +4,7 @@ from datetime import datetime
 from datetime import time
 from io import StringIO
 import math
+from typing import Callable
 from typing import Iterable
 from typing import Optional
 
@@ -34,6 +35,7 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
+from pcapi.domain.booking_recap.booking_recap import BookingRecapLegacy
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import Booking
@@ -84,41 +86,61 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
     return booking
 
 
-def find_by_pro_user_id(
-    user_id: int,
+def find_by_pro_user(
+    user: User,
     booking_period: tuple[date, date],
     event_date: Optional[date] = None,
     venue_id: Optional[int] = None,
     page: int = 1,
     per_page_limit: int = 1000,
-    is_user_admin: bool = False,
 ) -> BookingsRecapPaginated:
-    if page == 1:
-        total_bookings_recap_count_query = _filter_bookings_recap_query(
-            db.session.query(func.coalesce(func.sum(Booking.quantity), 0)).select_from(Booking),
-            user_id,
-            booking_period,
-            event_date,
-            venue_id,
-        )
-        total_bookings_recap = total_bookings_recap_count_query.scalar()
-    else:
-        total_bookings_recap = 0
+    # TODO: remove this block when IMPROVE_BOOKINGS_PERF is definitely adopted
+    if not FeatureToggle.IMPROVE_BOOKINGS_PERF.is_active():
+        if page == 1:
+            total_bookings_recap_count_query = _filter_bookings_recap_query(
+                db.session.query(func.coalesce(func.sum(Booking.quantity), 0)).select_from(Booking),
+                user,
+                booking_period,
+                event_date,
+                venue_id,
+            )
+            total_bookings_recap = total_bookings_recap_count_query.scalar()
+        else:
+            total_bookings_recap = 0
 
-    bookings_recap_query = _filter_bookings_recap_query(
-        Booking.query, user_id, booking_period, event_date, venue_id, is_user_admin
+        bookings_recap_query = _filter_bookings_recap_query(Booking.query, user, booking_period, event_date, venue_id)
+        bookings_recap_query = _build_bookings_recap_query(bookings_recap_query)
+        bookings_recap_query_with_duplicates = _duplicate_booking_when_quantity_is_two(bookings_recap_query)
+        paginated_bookings = (
+            bookings_recap_query_with_duplicates.order_by(text('"bookingDate" DESC'))
+            .offset((page - 1) * per_page_limit)
+            .limit(per_page_limit)
+            .all()
+        )
+
+        return _paginated_bookings_sql_entities_to_bookings_recap(
+            paginated_bookings=paginated_bookings,
+            page=page,
+            per_page_limit=per_page_limit,
+            total_bookings_recap=total_bookings_recap,
+            serializer=_serialize_booking_recap_legacy,
+        )
+
+    total_bookings_recap = _get_filtered_bookings_count(user, booking_period, event_date, venue_id)
+
+    bookings_query = _get_filtered_booking_pro(
+        pro_user=user,
+        period=booking_period,
+        event_date=event_date,
+        venue_id=venue_id,
     )
-    bookings_recap_query = _build_bookings_recap_query(bookings_recap_query)
-    bookings_recap_query_with_duplicates = _duplicate_booking_when_quantity_is_two(bookings_recap_query)
-    paginated_bookings = (
-        bookings_recap_query_with_duplicates.order_by(text('"bookingDate" DESC'))
-        .offset((page - 1) * per_page_limit)
-        .limit(per_page_limit)
-        .all()
+    bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
+    bookings_page = (
+        bookings_query.order_by(text('"bookedAt" DESC')).offset((page - 1) * per_page_limit).limit(per_page_limit).all()
     )
 
     return _paginated_bookings_sql_entities_to_bookings_recap(
-        paginated_bookings=paginated_bookings,
+        paginated_bookings=bookings_page,
         page=page,
         per_page_limit=per_page_limit,
         total_bookings_recap=total_bookings_recap,
@@ -512,15 +534,53 @@ def _get_filtered_booking_report(
     return bookings_query
 
 
+def _get_filtered_booking_pro(
+    pro_user: User, period: tuple[date, date], event_date: Optional[datetime] = None, venue_id: Optional[int] = None
+) -> Query:
+    bookings_query = (
+        _get_filtered_bookings_query(
+            pro_user,
+            period,
+            event_date,
+            venue_id,
+            extra_joins=(Stock.offer, Booking.user),
+        )
+        .with_entities(
+            Booking.token.label("bookingToken"),
+            Booking.dateCreated.label("bookedAt"),
+            Booking.quantity,
+            Booking.amount.label("bookingAmount"),
+            Booking.dateUsed.label("usedAt"),
+            Booking.cancellationDate.label("canceledAt"),
+            Booking.cancellationLimitDate.label("cancellationLimitDate"),
+            Booking.status,
+            Booking.reimbursementDate.label("reimbursedAt"),
+            Offer.name.label("offerName"),
+            Offer.id.label("offerId"),
+            Offer.extraData["isbn"].label("offerIsbn"),
+            User.firstName.label("beneficiaryFirstname"),
+            User.lastName.label("beneficiaryLastname"),
+            User.email.label("beneficiaryEmail"),
+            User.phoneNumber.label("beneficiaryPhoneNumber"),
+            Stock.beginningDatetime.label("stockBeginningDatetime"),
+            Venue.departementCode.label("venueDepartementCode"),
+            Offerer.postalCode.label("offererPostalCode"),
+        )
+        .distinct(Booking.id)
+    )
+
+    return bookings_query
+
+
+# TODO: to be removed when IMPROVE_BOOKINGS_PERF feature flag is definitely adopted
 def _filter_bookings_recap_query(
     bookings_recap_query: Query,
-    user_id: int,
+    user: User,
     booking_period: tuple[date, date],
     event_date: Optional[date],
     venue_id: Optional[int],
-    is_user_admin: bool = False,
 ) -> Query:
-    booking_date = cast(func.timezone(Venue.timezone, func.timezone("UTC", Booking.dateCreated)), Date)
+    booking_date = _field_to_venue_timezone(Booking.dateCreated)
     query = (
         bookings_recap_query.outerjoin(Payment)
         .reset_joinpoint()
@@ -535,8 +595,8 @@ def _filter_bookings_recap_query(
         .join(UserOfferer)
     )
 
-    if not is_user_admin:
-        query = query.filter(UserOfferer.userId == user_id)
+    if not user.has_admin_role:
+        query = query.filter(UserOfferer.userId == user.id)
 
     query = query.filter(UserOfferer.validationToken.is_(None)).filter(
         booking_date.between(*booking_period, symmetric=True)
@@ -546,16 +606,7 @@ def _filter_bookings_recap_query(
         query = query.filter(Booking.venueId == venue_id)
 
     if event_date:
-        query = query.filter(
-            cast(
-                func.timezone(
-                    Venue.timezone,
-                    func.timezone("UTC", Stock.beginningDatetime),
-                ),
-                Date,
-            )
-            == event_date
-        )
+        query = query.filter(_field_to_venue_timezone(Stock.beginningDatetime) == event_date)
 
     return query
 
@@ -564,6 +615,7 @@ def _duplicate_booking_when_quantity_is_two(bookings_recap_query: Query) -> Quer
     return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == 2))
 
 
+# TODO: to be removed when IMPROVE_BOOKINGS_PERF feature flag is definitely adopted
 def _build_bookings_recap_query(bookings_recap_query: Query) -> Query:
     return bookings_recap_query.distinct(Booking.token).with_entities(
         Booking.token.label("bookingToken"),
@@ -600,11 +652,52 @@ def _build_bookings_recap_query(bookings_recap_query: Query) -> Query:
     )
 
 
+def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
+    return BookingRecap(
+        offer_identifier=booking.offerId,
+        offer_name=booking.offerName,
+        beneficiary_email=booking.beneficiaryEmail,
+        beneficiary_phonenumber=booking.beneficiaryPhoneNumber,
+        beneficiary_firstname=booking.beneficiaryFirstname,
+        beneficiary_lastname=booking.beneficiaryLastname,
+        booking_amount=booking.bookingAmount,
+        booking_token=booking.bookingToken,
+        booking_date=_serialize_date_with_timezone(booking.bookedAt, booking),
+        booking_is_used=booking.status in (BookingStatus.USED, BookingStatus.REIMBURSED),
+        booking_is_cancelled=booking.status == BookingStatus.CANCELLED,
+        booking_is_reimbursed=booking.status == BookingStatus.REIMBURSED,
+        booking_is_confirmed=booking.status
+        in (
+            BookingStatus.CONFIRMED,
+            BookingStatus.USED,
+            BookingStatus.REIMBURSED,
+        ),
+        booking_is_duo=booking.quantity == DUO_QUANTITY,
+        date_used=_serialize_date_with_timezone(booking.usedAt, booking),
+        payment_date=_serialize_date_with_timezone(booking.reimbursedAt, booking),
+        cancellation_date=_serialize_date_with_timezone(booking.canceledAt, booking=booking),
+        cancellation_limit_date=_serialize_date_with_timezone(booking.cancellationLimitDate, booking),
+        event_beginning_datetime=(
+            _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartementCode)
+            if booking.stockBeginningDatetime
+            else None
+        ),
+        offer_isbn=booking.offerIsbn,
+    )
+
+
+# TODO: serializer parameter can be removed
+#  and its usage replaced by _serialize_booking_recap function
+#  when IMPROVE_BOOKINGS_PERF is definitely adopted
 def _paginated_bookings_sql_entities_to_bookings_recap(
-    paginated_bookings: list[object], page: int, per_page_limit: int, total_bookings_recap: int
+    paginated_bookings: list[object],
+    page: int,
+    per_page_limit: int,
+    total_bookings_recap: int,
+    serializer: Callable = _serialize_booking_recap,
 ) -> BookingsRecapPaginated:
     return BookingsRecapPaginated(
-        bookings_recap=[_serialize_booking_recap(booking) for booking in paginated_bookings],
+        bookings_recap=[serializer(booking) for booking in paginated_bookings],
         page=page,
         pages=int(math.ceil(total_bookings_recap / per_page_limit)),
         total=total_bookings_recap,
@@ -628,8 +721,8 @@ def _serialize_date_with_timezone(date_without_timezone: datetime, booking: Abst
     return _apply_departement_timezone(naive_datetime=date_without_timezone, departement_code=offerer_department_code)
 
 
-def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
-    return BookingRecap(
+def _serialize_booking_recap_legacy(booking: AbstractKeyedTuple) -> BookingRecapLegacy:
+    return BookingRecapLegacy(
         offer_identifier=booking.offerId,
         offer_name=booking.offerName,
         offerer_name=booking.offererName,
@@ -645,10 +738,6 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
         booking_is_confirmed=booking.isConfirmed,
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
-        booking_is_educational=booking.educationalBookingId is not None,
-        redactor_email=booking.redactorEmail,
-        redactor_firstname=booking.redactorFirstname,
-        redactor_lastname=booking.redactorLastname,
         venue_identifier=booking.venueId,
         date_used=_serialize_date_with_timezone(booking.dateUsed, booking),
         payment_date=_serialize_date_with_timezone(booking.paymentDate, booking),

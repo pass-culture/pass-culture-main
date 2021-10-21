@@ -80,7 +80,7 @@ def patch_booking_by_token(token: str):
 @private_api.route("/bookings/pro", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=ListBookingsResponseModel)
-def get_all_bookings(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
+def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
     page = query.page
     venue_id = query.venue_id
     event_date = query.event_date
@@ -90,13 +90,12 @@ def get_all_bookings(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     # a bare SQLAlchemy query, and the route should handle the
     # serialization so that we can get rid of BookingsRecapPaginated
     # that is only used here.
-    bookings_recap_paginated = booking_repository.find_by_pro_user_id(
-        user_id=current_user.id,
+    bookings_recap_paginated = booking_repository.find_by_pro_user(
+        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
         booking_period=booking_period,
         event_date=event_date,
         venue_id=venue_id,
         page=int(page),
-        is_user_admin=current_user.isAdmin,
     )
 
     return ListBookingsResponseModel(
@@ -124,7 +123,7 @@ def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
     booking_period = (query.booking_period_beginning_date, query.booking_period_ending_date)
 
     bookings = booking_repository.get_csv_report(
-        user=current_user,
+        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
         booking_period=booking_period,
         event_date=event_date,
         venue_id=venue_id,

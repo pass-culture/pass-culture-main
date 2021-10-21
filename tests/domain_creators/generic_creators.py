@@ -3,7 +3,7 @@ from typing import Optional
 
 from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.offers.models import Mediation
-from pcapi.domain.booking_recap.booking_recap import BookingRecap
+from pcapi.domain.booking_recap.booking_recap import BookingRecapLegacy
 from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.models import Offer
 
@@ -36,8 +36,8 @@ def create_domain_booking_recap(
     venue_name="Librairie Kléber",
     venue_is_virtual=False,
     event_beginning_datetime: Optional[datetime] = None,
-) -> BookingRecap:
-    return BookingRecap(
+) -> BookingRecapLegacy:
+    return BookingRecapLegacy(
         offer_identifier=offer_identifier,
         offer_name=offer_name,
         offerer_name=offerer_name,

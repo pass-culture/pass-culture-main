@@ -6,6 +6,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
+from pcapi.domain.booking_recap.booking_recap import BookingRecapLegacy
 from pcapi.domain.booking_recap.booking_recap import BookingRecapStatus
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapCancelledHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory
@@ -90,13 +91,19 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> dict[str, Any]:
         "booking_is_duo": booking_recap.booking_is_duo,
         "booking_amount": booking_recap.booking_amount,
         "booking_status_history": _serialize_booking_status_history(booking_recap.booking_status_history),
-        "offerer": {"name": booking_recap.offerer_name},
-        "venue": {
-            "identifier": humanize(booking_recap.venue_identifier),
-            "is_virtual": booking_recap.venue_is_virtual,
-            "name": booking_recap.venue_name,
-        },
     }
+
+    if isinstance(booking_recap, BookingRecapLegacy):
+        serialized_booking_recap.update(
+            {
+                "offerer": {"name": booking_recap.offerer_name},
+                "venue": {
+                    "identifier": humanize(booking_recap.venue_identifier),
+                    "is_virtual": booking_recap.venue_is_virtual,
+                    "name": booking_recap.venue_name,
+                },
+            }
+        )
 
     return serialized_booking_recap
 

@@ -15,8 +15,6 @@ from pytest import fixture
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.bookings.repository as booking_repository
-from pcapi.core.bookings.repository import BOOKING_STATUS_LABELS
-from pcapi.core.bookings.repository import find_by_pro_user_id
 from pcapi.core.bookings.repository import get_bookings_from_deposit
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
@@ -33,6 +31,7 @@ from pcapi.models import Booking
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -409,7 +408,8 @@ one_year_before_booking = default_booking_date - timedelta(weeks=52)
 one_year_after_booking = default_booking_date + timedelta(weeks=52)
 
 
-class FindByProUserIdTest:
+class FindByProUserLegacyTest:
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
         # Given
@@ -434,8 +434,8 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
 
         # Then
@@ -460,6 +460,7 @@ class FindByProUserIdTest:
         )
         assert expected_booking_recap.venue_is_virtual == venue.isVirtual
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
         # Given
@@ -477,8 +478,8 @@ class FindByProUserIdTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
         # Then
@@ -486,6 +487,7 @@ class FindByProUserIdTest:
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_is_duo is True
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
         self, app: fixture
@@ -499,8 +501,8 @@ class FindByProUserIdTest:
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=admin.id, booking_period=(one_year_before_booking, one_year_after_booking), is_user_admin=True
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=admin, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
         # Then
@@ -508,6 +510,7 @@ class FindByProUserIdTest:
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_is_duo is True
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_reimbursed_when_a_payment_was_sent(self, app: fixture):
         # Given
@@ -530,8 +533,8 @@ class FindByProUserIdTest:
         PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT)
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
         # Then
@@ -540,6 +543,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_used
         assert expected_booking_recap.booking_is_reimbursed
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture):
         # Given
@@ -565,8 +569,8 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
         # Then
@@ -589,6 +593,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.venue_identifier == venue.id
         assert isinstance(expected_booking_recap.booking_status_history, BookingRecapHistory)
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_event_confirmed_booking_when_booking_is_on_an_event_in_confirmation_period(
         self, app: fixture
@@ -613,8 +618,8 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
         # Then
@@ -622,6 +627,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_confirmed is True
         assert isinstance(expected_booking_recap.booking_status_history, BookingRecapHistory)
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_payment_date_when_booking_has_been_reimbursed(self, app: fixture):
         # Given
@@ -649,8 +655,8 @@ class FindByProUserIdTest:
         repository.save(payment, payment)
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
         # Then
@@ -661,6 +667,7 @@ class FindByProUserIdTest:
             tz.gettz("Europe/Paris")
         )
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app: fixture):
         # Given
@@ -685,8 +692,8 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
         # Then
@@ -695,6 +702,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_cancelled is True
         assert expected_booking_recap.booking_status_history.cancellation_date is not None
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(
         self, app: fixture
@@ -719,8 +727,8 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
         # Then
@@ -732,6 +740,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_status_history.date_confirmed is not None
         assert expected_booking_recap.booking_status_history.date_used is not None
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app: fixture):
         # Given
@@ -758,13 +767,14 @@ class FindByProUserIdTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 2
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_from_first_page(self, app: fixture):
         # Given
@@ -782,8 +792,8 @@ class FindByProUserIdTest:
         booking2 = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=1
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=1
         )
 
         # Then
@@ -793,6 +803,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.pages == 2
         assert bookings_recap_paginated.total == 2
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_from_second_page_without_page_count(self, app: fixture):
         # Given
@@ -811,8 +822,8 @@ class FindByProUserIdTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, token="FGHI", dateCreated=today)
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking), page=2, per_page_limit=1
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=2, per_page_limit=1
         )
 
         # Then
@@ -822,6 +833,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.pages == 0
         assert bookings_recap_paginated.total == 0
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
         # Given
@@ -837,13 +849,14 @@ class FindByProUserIdTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
         # Then
         assert bookings_recap_paginated.bookings_recap == []
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app: fixture):
         # Given
@@ -859,8 +872,8 @@ class FindByProUserIdTest:
         booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
         )
 
         # Then
@@ -870,6 +883,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.pages == 1
         assert bookings_recap_paginated.total == 1
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app: fixture):
         # Given
@@ -887,8 +901,8 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
         )
 
         # Then
@@ -899,6 +913,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.pages == 1
         assert bookings_recap_paginated.total == 2
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
         # Given
@@ -920,8 +935,8 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
 
         # Then
@@ -929,6 +944,7 @@ class FindByProUserIdTest:
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz("America/Cayenne"))
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_isbn_when_information_is_available(self, app: fixture):
         # Given
@@ -950,14 +966,15 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
 
         # Then
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.offer_isbn == "9876543234"
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_venue_name_when_public_name_is_not_provided(self, app):
         # Given
@@ -1008,8 +1025,8 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
         # Then
@@ -1017,6 +1034,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.bookings_recap[1].venue_name == venue_for_book.name
         assert bookings_recap_paginated.bookings_recap[2].venue_name == venue_for_thing.name
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_venue_public_name_when_public_name_is_provided(self, app):
         # Given
@@ -1070,8 +1088,8 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
         # Then
@@ -1079,6 +1097,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.bookings_recap[1].venue_name == venue_for_book.publicName
         assert bookings_recap_paginated.bookings_recap[2].venue_name == venue_for_thing.publicName
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_only_booking_for_requested_venue(self, app: fixture):
         # Given
@@ -1089,8 +1108,8 @@ class FindByProUserIdTest:
         booking_two = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=pro_user.id,
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro_user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             venue_id=booking_two.venue.id,
         )
@@ -1103,6 +1122,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.venue_identifier == booking_two.venue.id
         assert expected_booking_recap.booking_amount == booking_two.amount
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_only_booking_for_requested_event_date(self, app: fixture):
         # Given
@@ -1121,8 +1141,8 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=user_offerer.user.id,
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             event_date=event_date.date(),
         )
@@ -1132,6 +1152,7 @@ class FindByProUserIdTest:
         resulting_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert resulting_booking_recap.booking_token == expected_booking.token
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def should_consider_venue_locale_datetime_when_filtering_by_event_date(self, app: fixture):
         # Given
@@ -1157,8 +1178,8 @@ class FindByProUserIdTest:
         mayotte_booking = bookings_factories.BookingFactory(stock=stock_in_mayotte)
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=user_offerer.user.id,
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             event_date=event_datetime.date(),
         )
@@ -1169,6 +1190,7 @@ class FindByProUserIdTest:
         assert cayenne_booking.token in bookings_tokens
         assert mayotte_booking.token in bookings_tokens
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def test_should_return_only_bookings_for_requested_booking_period(self, app: fixture):
         # Given
@@ -1189,8 +1211,8 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=user_offerer.user.id,
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=user_offerer.user,
             booking_period=(booking_beginning_period, booking_ending_period),
         )
 
@@ -1201,6 +1223,7 @@ class FindByProUserIdTest:
             expected_booking.dateCreated, expected_booking.venue.departementCode
         )
 
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     @pytest.mark.usefixtures("db_session")
     def should_consider_venue_locale_datetime_when_filtering_by_booking_period(self, app: fixture):
         # Given
@@ -1231,8 +1254,633 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(
-            user_id=user_offerer.user.id,
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=user_offerer.user,
+            booking_period=(requested_booking_period_beginning, requested_booking_period_ending),
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 2
+        bookings_tokens = [booking_recap.booking_token for booking_recap in bookings_recap_paginated.bookings_recap]
+        assert cayenne_booking.token in bookings_tokens
+        assert mayotte_booking.token in bookings_tokens
+
+
+class FindByProUserTest:
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_only_expected_booking_attributes(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+            amount=12,
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.offer_identifier == stock.offer.id
+        assert expected_booking_recap.offer_name == "Harry Potter"
+        assert expected_booking_recap.beneficiary_firstname == "Ron"
+        assert expected_booking_recap.beneficiary_lastname == "Weasley"
+        assert expected_booking_recap.beneficiary_email == "beneficiary@example.com"
+        assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz("Europe/Paris"))
+        assert expected_booking_recap.booking_token == "ABCDEF"
+        assert expected_booking_recap.booking_is_used is True
+        assert expected_booking_recap.booking_is_cancelled is False
+        assert expected_booking_recap.booking_is_reimbursed is False
+        assert expected_booking_recap.booking_is_duo is False
+        assert expected_booking_recap.booking_amount == 12
+        assert expected_booking_recap.booking_status_history.booking_date == booking_date.astimezone(
+            tz.gettz("Europe/Paris")
+        )
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 2
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.booking_is_duo is True
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
+        self, app: fixture
+    ):
+        # Given
+        admin = users_factories.AdminFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(offerer=offerer)
+        offers_factories.UserOffererFactory(offerer=offerer)
+        offers_factories.UserOffererFactory(offerer=offerer)
+
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=admin, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 2
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.booking_is_duo is True
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(
+            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+        )
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCDEF", status=BookingStatus.PENDING
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.offer_identifier == stock.offer.id
+        assert expected_booking_recap.offer_name == stock.offer.name
+        assert expected_booking_recap.beneficiary_firstname == "Ron"
+        assert expected_booking_recap.beneficiary_lastname == "Weasley"
+        assert expected_booking_recap.beneficiary_email == "beneficiary@example.com"
+        assert expected_booking_recap.booking_date == yesterday.astimezone(tz.gettz("Europe/Paris"))
+        assert expected_booking_recap.booking_token == "ABCDEF"
+        assert expected_booking_recap.booking_is_used is False
+        assert expected_booking_recap.booking_is_cancelled is False
+        assert expected_booking_recap.booking_is_reimbursed is False
+        assert expected_booking_recap.booking_is_confirmed is False
+        assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime.astimezone(
+            tz.gettz("Europe/Paris")
+        )
+        assert isinstance(expected_booking_recap.booking_status_history, BookingRecapHistory)
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_event_confirmed_booking_when_booking_is_on_an_event_in_confirmation_period(
+        self, app: fixture
+    ):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(
+            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+        )
+        more_than_two_days_ago = datetime.utcnow() - timedelta(days=3)
+        bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, dateCreated=more_than_two_days_ago, token="ABCDEF"
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.booking_is_confirmed is True
+        assert isinstance(expected_booking_recap.booking_status_history, BookingRecapHistory)
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=5)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        bookings_factories.CancelledBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=yesterday,
+            token="ABCDEF",
+            amount=5,
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.booking_is_cancelled is True
+        assert expected_booking_recap.booking_status_history.cancellation_date is not None
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(
+        self, app: fixture
+    ):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.EventProductFactory()
+        offer = offers_factories.EventOfferFactory(venue=venue, product=product)
+        stock = offers_factories.EventStockFactory(offer=offer, price=5)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=yesterday,
+            token="ABCDEF",
+            amount=5,
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.booking_is_used is True
+        assert expected_booking_recap.booking_is_cancelled is False
+        assert expected_booking_recap.booking_is_reimbursed is False
+        assert expected_booking_recap.booking_status_history.date_confirmed is not None
+        assert expected_booking_recap.booking_status_history.date_used is not None
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        today = datetime.utcnow()
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
+
+        offerer2 = offers_factories.OffererFactory(siren="8765432")
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer2)
+
+        venue2 = offers_factories.VenueFactory(managingOfferer=offerer, siret="8765432098765")
+        offer2 = offers_factories.ThingOfferFactory(venue=venue2)
+        stock2 = offers_factories.ThingStockFactory(offer=offer2, price=0)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 2
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_bookings_from_first_page(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.EventOfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(offer=offer, price=0)
+        today = datetime.utcnow()
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCD")
+        booking2 = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=1
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        assert bookings_recap_paginated.bookings_recap[0].booking_token == booking2.token
+        assert bookings_recap_paginated.page == 1
+        assert bookings_recap_paginated.pages == 2
+        assert bookings_recap_paginated.total == 2
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer, validationToken="token")
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock)
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        assert bookings_recap_paginated.bookings_recap == []
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.EventOfferFactory(venue=venue, isDuo=True)
+        stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.utcnow())
+        today = datetime.utcnow()
+        booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        assert bookings_recap_paginated.bookings_recap[0].booking_token == booking.token
+        assert bookings_recap_paginated.page == 1
+        assert bookings_recap_paginated.pages == 1
+        assert bookings_recap_paginated.total == 1
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.EventOfferFactory(venue=venue, isDuo=True)
+        stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.utcnow())
+        today = datetime.utcnow()
+        booking = bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, dateCreated=today, token="FGHI", quantity=2
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 2
+        assert bookings_recap_paginated.bookings_recap[0].booking_token == booking.token
+        assert bookings_recap_paginated.bookings_recap[1].booking_token == booking.token
+        assert bookings_recap_paginated.page == 1
+        assert bookings_recap_paginated.pages == 1
+        assert bookings_recap_paginated.total == 2
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz("America/Cayenne"))
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_booking_isbn_when_information_is_available(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
+
+        # Then
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.offer_isbn == "9876543234"
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_only_booking_for_requested_venue(self, app: fixture):
+        # Given
+        pro_user = users_factories.ProFactory()
+        user_offerer = offers_factories.UserOffererFactory(user=pro_user)
+
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
+        booking_two = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro_user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            venue_id=booking_two.venue.id,
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.offer_identifier == booking_two.stock.offer.id
+        assert expected_booking_recap.offer_name == booking_two.stock.offer.name
+        assert expected_booking_recap.booking_amount == booking_two.amount
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_only_booking_for_requested_event_date(self, app: fixture):
+        # Given
+        user_offerer = offers_factories.UserOffererFactory()
+        event_date = datetime(2020, 12, 24, 10, 30)
+        expected_booking = bookings_factories.BookingFactory(
+            stock=offers_factories.EventStockFactory(
+                beginningDatetime=event_date, offer__venue__managingOfferer=user_offerer.offerer
+            )
+        )
+        bookings_factories.BookingFactory(
+            stock=offers_factories.EventStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
+        )
+        bookings_factories.BookingFactory(
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=user_offerer.user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            event_date=event_date.date(),
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        resulting_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert resulting_booking_recap.booking_token == expected_booking.token
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def should_consider_venue_locale_datetime_when_filtering_by_event_date(self, app: fixture):
+        # Given
+        user_offerer = offers_factories.UserOffererFactory()
+        event_datetime = datetime(2020, 4, 21, 20, 00)
+
+        offer_in_cayenne = offers_factories.OfferFactory(
+            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+        )
+        cayenne_event_datetime = datetime(2020, 4, 22, 2, 0)
+        stock_in_cayenne = offers_factories.EventStockFactory(
+            offer=offer_in_cayenne, beginningDatetime=cayenne_event_datetime
+        )
+        cayenne_booking = bookings_factories.BookingFactory(stock=stock_in_cayenne)
+
+        offer_in_mayotte = offers_factories.OfferFactory(
+            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+        )
+        mayotte_event_datetime = datetime(2020, 4, 20, 22, 0)
+        stock_in_mayotte = offers_factories.EventStockFactory(
+            offer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime
+        )
+        mayotte_booking = bookings_factories.BookingFactory(stock=stock_in_mayotte)
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=user_offerer.user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            event_date=event_datetime.date(),
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 2
+        bookings_tokens = [booking_recap.booking_token for booking_recap in bookings_recap_paginated.bookings_recap]
+        assert cayenne_booking.token in bookings_tokens
+        assert mayotte_booking.token in bookings_tokens
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_only_bookings_for_requested_booking_period(self, app: fixture):
+        # Given
+        user_offerer = offers_factories.UserOffererFactory()
+        booking_beginning_period = datetime(2020, 12, 24, 10, 30).date()
+        booking_ending_period = datetime(2020, 12, 26, 15, 00).date()
+        expected_booking = bookings_factories.BookingFactory(
+            dateCreated=datetime(2020, 12, 26, 15, 30),
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
+        )
+        bookings_factories.BookingFactory(
+            dateCreated=datetime(2020, 12, 29, 15, 30),
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
+        )
+        bookings_factories.BookingFactory(
+            dateCreated=datetime(2020, 12, 22, 15, 30),
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=user_offerer.user,
+            booking_period=(booking_beginning_period, booking_ending_period),
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        resulting_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert resulting_booking_recap.booking_date == utc_datetime_to_department_timezone(
+            expected_booking.dateCreated, expected_booking.venue.departementCode
+        )
+
+    @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    @pytest.mark.usefixtures("db_session")
+    def should_consider_venue_locale_datetime_when_filtering_by_booking_period(self, app: fixture):
+        # Given
+        user_offerer = offers_factories.UserOffererFactory()
+        requested_booking_period_beginning = datetime(2020, 4, 21, 20, 00).date()
+        requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
+
+        offer_in_cayenne = offers_factories.OfferFactory(
+            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+        )
+        cayenne_booking_datetime = datetime(2020, 4, 22, 2, 0)
+        stock_in_cayenne = offers_factories.EventStockFactory(
+            offer=offer_in_cayenne,
+        )
+        cayenne_booking = bookings_factories.BookingFactory(
+            stock=stock_in_cayenne, dateCreated=cayenne_booking_datetime
+        )
+
+        offer_in_mayotte = offers_factories.OfferFactory(
+            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+        )
+        mayotte_booking_datetime = datetime(2020, 4, 20, 23, 0)
+        stock_in_mayotte = offers_factories.EventStockFactory(
+            offer=offer_in_mayotte,
+        )
+        mayotte_booking = bookings_factories.BookingFactory(
+            stock=stock_in_mayotte, dateCreated=mayotte_booking_datetime
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=user_offerer.user,
             booking_period=(requested_booking_period_beginning, requested_booking_period_ending),
         )
 
@@ -1304,7 +1952,7 @@ class GetCsvReportTest:
         assert data_dict["Date et heure de validation"] == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
         assert data_dict["Contremarque"] == booking.token
         assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
-        assert data_dict["Statut de la contremarque"] == BOOKING_STATUS_LABELS[booking.status]
+        assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         assert data_dict["Date et heure de remboursement"] == ""
 
     @pytest.mark.usefixtures("db_session")
@@ -1412,7 +2060,7 @@ class GetCsvReportTest:
         assert data_dict["Date et heure de validation"] == ""
         assert data_dict["Contremarque"] == booking.token
         assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
-        assert data_dict["Statut de la contremarque"] == BOOKING_STATUS_LABELS[booking.status]
+        assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         assert data_dict["Date et heure de remboursement"] == ""
 
     @pytest.mark.usefixtures("db_session")
@@ -1447,7 +2095,9 @@ class GetCsvReportTest:
         headers, *data = csv.reader(StringIO(bookings_csv))
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
-        assert data_dict["Statut de la contremarque"] == BOOKING_STATUS_LABELS[BookingStatus.CONFIRMED]
+        assert (
+            data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[BookingStatus.CONFIRMED]
+        )
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_cancelled_status_when_booking_has_been_cancelled(self, app: fixture):
@@ -1481,7 +2131,9 @@ class GetCsvReportTest:
         headers, *data = csv.reader(StringIO(bookings_csv))
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
-        assert data_dict["Statut de la contremarque"] == BOOKING_STATUS_LABELS[BookingStatus.CANCELLED]
+        assert (
+            data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[BookingStatus.CANCELLED]
+        )
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(
@@ -1515,7 +2167,7 @@ class GetCsvReportTest:
         headers, *data = csv.reader(StringIO(bookings_csv))
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
-        assert data_dict["Statut de la contremarque"] == BOOKING_STATUS_LABELS[BookingStatus.USED]
+        assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[BookingStatus.USED]
         assert data_dict["Date et heure de validation"] == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
 
     @pytest.mark.usefixtures("db_session")
