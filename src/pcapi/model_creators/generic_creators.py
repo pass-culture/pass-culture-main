@@ -12,8 +12,6 @@ from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
-from pcapi.core.users import factories as user_factories
-from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.domain.price_rule import PriceRule
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
@@ -27,7 +25,6 @@ from pcapi.models import Payment
 from pcapi.models import PaymentMessage
 from pcapi.models import PaymentStatus
 from pcapi.models import Stock
-from pcapi.models import Token
 from pcapi.models import UserOfferer
 from pcapi.models import Venue
 from pcapi.models.bank_information import BankInformationStatus
@@ -299,73 +296,6 @@ def create_stock(
     stock.price = price
 
     return stock
-
-
-def create_user(
-    activity: str = None,
-    civility: str = None,
-    cultural_survey_id: str = None,
-    cultural_survey_filled_date: datetime = None,
-    date_created: datetime = datetime.utcnow(),
-    date_of_birth: datetime = None,
-    departement_code: str = "93",
-    email: str = "john.doe@example.com",
-    first_name: str = None,
-    has_seen_tutorials: bool = None,
-    has_seen_pro_tutorials: bool = True,
-    idx: int = None,
-    is_admin: bool = False,
-    is_beneficiary: bool = True,
-    is_email_validated: bool = True,
-    last_connection_date: datetime = None,
-    last_name: str = None,
-    needs_to_fill_cultural_survey: bool = False,
-    password: str = None,
-    phone_number: str = None,
-    postal_code: str = None,
-    public_name: str = "John Doe",
-    reset_password_token: str = None,
-    reset_password_token_validity_limit: datetime = None,
-    validation_token: str = None,
-) -> User:
-    user = User()
-    user.activity = activity
-    user.civility = civility
-    user.culturalSurveyId = cultural_survey_id
-    user.culturalSurveyFilledDate = cultural_survey_filled_date
-    user.dateCreated = date_created
-    user.dateOfBirth = date_of_birth
-    user.departementCode = departement_code
-    user.email = email
-    user.firstName = first_name
-    user.hasSeenTutorials = has_seen_tutorials
-    user.hasSeenProTutorials = has_seen_pro_tutorials
-    user.id = idx
-    user.isAdmin = is_admin
-    user.isBeneficiary = is_beneficiary
-    user.isEmailValidated = is_email_validated
-    user.lastConnectionDate = last_connection_date
-    user.lastName = last_name
-    user.needsToFillCulturalSurvey = needs_to_fill_cultural_survey
-    user.phoneNumber = phone_number
-    user.publicName = public_name
-    user.postalCode = postal_code
-    user.validationToken = validation_token
-
-    if password:
-        user.setPassword(password)
-    else:
-        user.setPassword(user_factories.DEFAULT_PASSWORD)
-
-    if reset_password_token:
-        Token(
-            user=user,
-            value=reset_password_token,
-            expirationDate=reset_password_token_validity_limit,
-            type=TokenType.RESET_PASSWORD,
-        )
-
-    return user
 
 
 def create_user_offerer(user: User, offerer: Offerer, idx: int = None, validation_token: str = None) -> UserOfferer:
