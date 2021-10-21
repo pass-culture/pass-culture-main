@@ -1,3 +1,5 @@
+from typing import Optional
+
 from flask import jsonify
 from flask import request
 from flask_login import current_user
@@ -44,8 +46,8 @@ BASE_CODE_DESCRIPTIONS = {
 
 # @debt api-migration
 @public_api.route("/bookings/token/<token>", methods=["GET"])
-def get_booking_by_token(token: str):
-    email = request.args.get("email", None)
+def get_booking_by_token(token: str) -> tuple[str, int]:
+    email: Optional[str] = request.args.get("email", None)
     offer_id = dehumanize(request.args.get("offer_id", None))
 
     check_user_is_logged_in_or_email_is_provided(current_user, email)
@@ -62,9 +64,10 @@ def get_booking_by_token(token: str):
 
 # @debt api-migration
 @public_api.route("/bookings/token/<token>", methods=["PATCH"])
-def patch_booking_by_token(token: str):
-    email = request.args.get("email", None)
-    offer_id = dehumanize(request.args.get("offer_id", None))
+def patch_booking_by_token(token: str) -> tuple[str, int]:
+    email: Optional[str] = request.args.get("email", None)
+    humanized_offer_id: Optional[str] = request.args.get("offer_id")
+    offer_id: Optional[int] = dehumanize(humanized_offer_id)
     booking = booking_repository.find_by(token, email, offer_id)
 
     if current_user.is_authenticated:
@@ -156,7 +159,10 @@ def get_booking_by_token_v2(token: str) -> GetBookingResponse:
         check_user_can_validate_bookings_v2(current_user, booking.offererId)
 
     if current_api_key:
-        check_api_key_allows_to_validate_booking(current_api_key, booking.offererId)
+        check_api_key_allows_to_validate_booking(
+            current_api_key,  # type: ignore[arg-type]
+            booking.offererId,
+        )
 
     bookings_validation.check_is_usable(booking)
 
@@ -173,7 +179,7 @@ def get_booking_by_token_v2(token: str) -> GetBookingResponse:
     code_descriptions=BASE_CODE_DESCRIPTIONS | {"HTTP_204": "La contremarque a bien été validée"},
 )
 @login_or_api_key_required
-def patch_booking_use_by_token(token: str):
+def patch_booking_use_by_token(token: str) -> None:
     # in French, to be used by Swagger for the API documentation
     """Validation d'une réservation.
 
@@ -185,7 +191,10 @@ def patch_booking_use_by_token(token: str):
         check_user_can_validate_bookings_v2(current_user, booking.offererId)
 
     if current_api_key:
-        check_api_key_allows_to_validate_booking(current_api_key, booking.offererId)
+        check_api_key_allows_to_validate_booking(
+            current_api_key,  # type: ignore[arg-type]
+            booking.offererId,
+        )
 
     bookings_api.mark_as_used(booking)
 
@@ -205,7 +214,7 @@ def patch_booking_use_by_token(token: str):
         "HTTP_410": "La contremarque a déjà été annulée",
     },
 )
-def patch_cancel_booking_by_token(token: str):
+def patch_cancel_booking_by_token(token: str) -> None:
     # in French, to be used by Swagger for the API documentation
     """Annulation d'une réservation.
 
@@ -219,7 +228,10 @@ def patch_cancel_booking_by_token(token: str):
         check_user_has_access_to_offerer(current_user, booking.offererId)
 
     if current_api_key:
-        check_api_key_allows_to_cancel_booking(current_api_key, booking.offererId)
+        check_api_key_allows_to_cancel_booking(
+            current_api_key,  # type: ignore[arg-type]
+            booking.offererId,
+        )
 
     bookings_api.cancel_booking_by_offerer(booking)
 
@@ -238,7 +250,7 @@ def patch_cancel_booking_by_token(token: str):
         "HTTP_410": "La contremarque n’est plus valide car elle a déjà été validée, annulée ou bien le remboursement a été initié",
     },
 )
-def patch_booking_keep_by_token(token: str):
+def patch_booking_keep_by_token(token: str) -> None:
     # in French, to be used by Swagger for the API documentation
     """Annulation de la validation d'une réservation."""
     booking = booking_repository.find_by(token=token)
@@ -247,7 +259,10 @@ def patch_booking_keep_by_token(token: str):
         check_user_can_validate_bookings_v2(current_user, booking.offererId)
 
     if current_api_key:
-        check_api_key_allows_to_validate_booking(current_api_key, booking.offererId)
+        check_api_key_allows_to_validate_booking(
+            current_api_key,  # type: ignore[arg-type]
+            booking.offererId,
+        )
 
     bookings_api.mark_as_unused(booking)
 

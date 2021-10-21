@@ -2,6 +2,7 @@ from functools import wraps
 import logging
 from typing import Any
 from typing import Callable
+from typing import Iterable
 from typing import Optional
 from typing import Type
 
@@ -55,21 +56,21 @@ def _make_string_response(content: Optional[BaseModel], status_code: int, header
     return response
 
 
-def spectree_serialize(  # pylint: disable=dangerous-default-value
+def spectree_serialize(
     headers: Type[BaseModel] = None,
     cookies: Type[BaseModel] = None,
     response_model: Type[BaseModel] = None,
-    tags: tuple = (),
+    tags: Iterable = (),
     before: Callable = None,
     after: Callable = None,
     response_by_alias: bool = True,
     exclude_none: bool = False,
     on_success_status: int = 200,
-    on_error_statuses: list[int] = [],
+    on_error_statuses: Optional[list[int]] = None,
     api: SpecTree = default_api,
     json_format: bool = True,
     response_headers: Optional[dict[str, str]] = None,
-    code_descriptions: dict = {},
+    code_descriptions: Optional[dict] = None,
 ) -> Callable[[Any], Any]:
     """A decorator that serialize/deserialize and validate input/output
 
@@ -92,6 +93,8 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
         Callable[[Any], Any]: [description]
     """
 
+    on_error_statuses: list = on_error_statuses or []
+    code_descriptions: dict = code_descriptions or {}
     response_headers: dict = response_headers or {}
 
     def decorate_validation(route: Callable[..., Any]) -> Callable[[Any], Any]:

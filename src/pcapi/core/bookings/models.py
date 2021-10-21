@@ -274,7 +274,7 @@ class Booking(PcObject, Model):
         return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()
 
     @isConfirmed.expression
-    def isConfirmed(cls):  # pylint: disable=no-self-argument
+    def isConfirmed(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
         return and_(cls.cancellationLimitDate.isnot(None), cls.cancellationLimitDate <= datetime.utcnow())
 
     @property

@@ -2,6 +2,7 @@
 from base64 import b32decode
 from base64 import b32encode
 import binascii
+from typing import Optional
 
 
 # This library creates IDs for use in our URLs,
@@ -15,7 +16,7 @@ class NonDehumanizableId(Exception):
     pass
 
 
-def dehumanize(public_id: str) -> int:
+def dehumanize(public_id: Optional[str]) -> Optional[int]:
     if public_id is None:
         return None
     missing_padding = len(public_id) % 8
@@ -36,7 +37,7 @@ def humanize(integer: int) -> str:
     return b32.decode("ascii").replace("O", "8").replace("I", "9").rstrip("=")
 
 
-def dehumanize_ids_list(humanized_list: list[str]) -> list[int]:
+def dehumanize_ids_list(humanized_list: list[Optional[str]]) -> list[Optional[int]]:
     return list(map(dehumanize, humanized_list)) if humanized_list else []
 
 

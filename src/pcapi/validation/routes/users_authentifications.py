@@ -1,5 +1,7 @@
 from functools import wraps
 import logging
+from typing import Callable
+from typing import Optional
 
 from flask import _request_ctx_stack
 from flask import g
@@ -8,6 +10,7 @@ from flask_login import current_user
 from werkzeug.local import LocalProxy
 
 from pcapi.core.offerers.api import find_api_key
+from pcapi.core.offerers.models import ApiKey
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import User
@@ -20,16 +23,16 @@ from pcapi.serialization.spec_tree import add_security_scheme
 logger = logging.getLogger(__name__)
 
 
-def check_user_is_logged_in_or_email_is_provided(user: User, email: str):
+def check_user_is_logged_in_or_email_is_provided(user: User, email: Optional[str]) -> None:
     if not (user.is_authenticated or email):
         api_errors = ApiErrors()
         api_errors.add_error("email", "Vous devez préciser l'email de l'utilisateur quand vous n'êtes pas connecté(e)")
         raise api_errors
 
 
-def login_or_api_key_required(function):
+def login_or_api_key_required(function: Callable) -> Callable:
     @wraps(function)
-    def wrapper(*args, **kwds):
+    def wrapper(*args, **kwds):  # type: ignore[no-untyped-def]
         _fill_current_api_key()
         basic_authentication()
 
@@ -40,11 +43,11 @@ def login_or_api_key_required(function):
     return wrapper
 
 
-def api_key_required(route_function):
+def api_key_required(route_function: Callable) -> Callable:
     add_security_scheme(route_function, API_KEY_AUTH)
 
     @wraps(route_function)
-    def wrapper(*args, **kwds):
+    def wrapper(*args, **kwds):  # type: ignore[no-untyped-def]
         _fill_current_api_key()
 
         if not g.current_api_key:
@@ -54,7 +57,7 @@ def api_key_required(route_function):
     return wrapper
 
 
-def _fill_current_api_key():
+def _fill_current_api_key() -> None:
     mandatory_authorization_type = "Bearer "
     authorization_header = request.headers.get("Authorization")
     g.current_api_key = None
@@ -64,7 +67,7 @@ def _fill_current_api_key():
         g.current_api_key = find_api_key(app_authorization_credentials)
 
 
-def _get_current_api_key():
+def _get_current_api_key() -> Optional[ApiKey]:
     assert "current_api_key" in g, "Can only be used in a route wrapped with api_key_required"
     return g.current_api_key
 
@@ -72,7 +75,7 @@ def _get_current_api_key():
 current_api_key = LocalProxy(_get_current_api_key)
 
 
-def basic_authentication(realm=None):
+def basic_authentication() -> Optional[User]:
     # `pcapi.utis.login_manager` cannot be imported at module-scope,
     # because the application context may not be available and that
     # module needs it.
@@ -83,7 +86,7 @@ def basic_authentication(realm=None):
     # for any auth that is not basic auth.
     if not auth or not auth.password:
         return None
-    errors = UnauthorizedError(www_authenticate="Basic", realm=realm)
+    errors = UnauthorizedError(www_authenticate="Basic")
     try:
         user = users_repo.get_user_with_credentials(auth.username, auth.password)
     except users_exceptions.InvalidIdentifier as exc:

@@ -105,10 +105,10 @@ class BookingRecap:
     def build_status_history(
         self,
         booking_date: datetime,
-        cancellation_date: datetime,
-        cancellation_limit_date: datetime,
-        payment_date: datetime,
-        date_used: datetime,
+        cancellation_date: Optional[datetime],
+        cancellation_limit_date: Optional[datetime],
+        payment_date: Optional[datetime],
+        date_used: Optional[datetime],
     ) -> BookingRecapHistory:
         if self.booking_is_reimbursed:
             return BookingRecapReimbursedHistory(

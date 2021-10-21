@@ -89,7 +89,7 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
 def find_by_pro_user(
     user: User,
     booking_period: tuple[date, date],
-    event_date: Optional[date] = None,
+    event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
     page: int = 1,
     per_page_limit: int = 1000,
@@ -155,7 +155,7 @@ def find_not_cancelled_bookings_by_stock(stock: Stock) -> list[Booking]:
     return Booking.query.filter_by(stockId=stock.id, isCancelled=False).all()
 
 
-def find_bookings_eligible_for_payment_for_venue(venue_id: int, cutoff_date) -> list[Booking]:
+def find_bookings_eligible_for_payment_for_venue(venue_id: int, cutoff_date: datetime) -> list[Booking]:
     bookings = Booking.query
     # There should not be any booking that is both cancelled and used,
     # but here we want to be extra cautious.
@@ -307,7 +307,7 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
     )
 
 
-def generate_booking_token():
+def generate_booking_token() -> str:
     for _i in range(100):
         token = random_token()
         if not token_exists(token):

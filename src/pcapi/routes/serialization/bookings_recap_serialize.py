@@ -31,7 +31,9 @@ def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPa
     }
 
 
-def _serialize_booking_status_info(booking_status: BookingRecapStatus, booking_status_date: datetime) -> dict[str, str]:
+def _serialize_booking_status_info(
+    booking_status: BookingRecapStatus, booking_status_date: datetime
+) -> dict[str, Optional[str]]:
 
     serialized_booking_status_date = format_into_timezoned_date(booking_status_date) if booking_status_date else None
 
