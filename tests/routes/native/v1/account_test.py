@@ -339,6 +339,10 @@ class AccountTest:
         response = client.get("/native/v1/me")
         assert response.status_code == 200
 
+        subscription_messages.on_id_check_unread_document(user)
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+
         subscription_messages.on_dms_application_received(user)
         response = client.get("/native/v1/me")
         assert response.status_code == 200
