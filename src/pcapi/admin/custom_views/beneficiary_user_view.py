@@ -122,6 +122,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         has_active_deposit="Dépôt valable ?",
         deposit_type="Type du portefeuille",
         deposit_version="Version du portefeuille",
+        needsToFillCulturalSurvey="Doit remplir le questionnaire de pratiques culturelles",
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters = [
@@ -147,6 +148,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
             "departementCode",
             "postalCode",
             "phoneNumber",
+            "needsToFillCulturalSurvey",
         )
         if self.check_super_admins():
             fields += ("firstName", "lastName")
