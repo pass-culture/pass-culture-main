@@ -84,6 +84,7 @@ def beneficiary_deposit_type_formatter(view, context, model, name) -> Markup:
 
 class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView):
     can_edit = True
+    can_view_details = True
 
     @property
     def can_create(self) -> bool:
