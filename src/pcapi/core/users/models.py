@@ -144,7 +144,10 @@ class User(PcObject, Model, NeedsValidationMixin):
     isAdmin = Column(
         Boolean,
         CheckConstraint(
-            '"isBeneficiary" IS FALSE OR "isAdmin" IS FALSE',
+            (
+                f'NOT (({ UserRole.BENEFICIARY }=ANY("roles") OR { UserRole.UNDERAGE_BENEFICIARY }=ANY("roles")) '
+                f'AND { UserRole.ADMIN }=ANY("roles"))'
+            ),
             name="check_admin_is_not_beneficiary",
         ),
         nullable=False,
@@ -322,7 +325,7 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @property
     def needsToSeeTutorials(self):
-        return self.isBeneficiary and not self.hasSeenTutorials
+        return self.is_beneficiary and not self.hasSeenTutorials
 
     @property
     def is_eligible(self) -> bool:
@@ -393,7 +396,17 @@ class User(PcObject, Model, NeedsValidationMixin):
     def is_phone_validated(cls):  # pylint: disable=no-self-argument
         return cls.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
+    @hybrid_property
+    def is_beneficiary(self):
+        return self.has_beneficiary_role or self.has_underage_beneficiary_role
+
+    @is_beneficiary.expression
+    def is_beneficiary(cls):  # pylint: disable=no-self-argument
+        return or_(cls.roles.contains([UserRole.BENEFICIARY]), cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY]))
+
     def _add_role(self, role: UserRole) -> None:
+        if self.roles is None:
+            self.roles = []
         if self.roles and role in self.roles:
             return
 
@@ -406,7 +419,7 @@ class User(PcObject, Model, NeedsValidationMixin):
         self.roles = updated_roles
 
     def add_admin_role(self) -> None:
-        if self.isBeneficiary:
+        if self.is_beneficiary:  # pylint: disable=using-constant-test
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
 
         self._add_role(UserRole.ADMIN)
@@ -415,9 +428,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     def add_beneficiary_role(self) -> None:
         if self.isAdmin:
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
-
         self._add_role(UserRole.BENEFICIARY)
-        self.isBeneficiary = True
 
     def add_pro_role(self) -> None:
         self._add_role(UserRole.PRO)
@@ -428,7 +439,6 @@ class User(PcObject, Model, NeedsValidationMixin):
             self.roles.remove(UserRole.ADMIN)
 
     def remove_beneficiary_role(self) -> None:
-        self.isBeneficiary = False
         if self.has_beneficiary_role:  # pylint: disable=using-constant-test
             self.roles.remove(UserRole.BENEFICIARY)
 
@@ -446,11 +456,19 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @hybrid_property
     def has_beneficiary_role(self) -> bool:
-        return UserRole.BENEFICIARY in self.roles or self.isBeneficiary if self.roles else self.isBeneficiary
+        return UserRole.BENEFICIARY in self.roles if self.roles else False
 
     @has_beneficiary_role.expression
     def has_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
-        return or_(cls.roles.contains([UserRole.BENEFICIARY]), cls.isBeneficiary.is_(True))
+        return cls.roles.contains([UserRole.BENEFICIARY])
+
+    @hybrid_property
+    def has_underage_beneficiary_role(self) -> bool:
+        return UserRole.UNDERAGE_BENEFICIARY in self.roles if self.roles else False
+
+    @has_underage_beneficiary_role.expression
+    def has_underage_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
 
     @hybrid_property
     def has_pro_role(self) -> bool:

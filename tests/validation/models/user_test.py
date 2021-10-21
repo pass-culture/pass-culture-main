@@ -3,6 +3,7 @@ from unittest.mock import patch
 from sqlalchemy.exc import IntegrityError
 
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as user_models
 from pcapi.models import ApiErrors
 from pcapi.validation.models.user import validate
 
@@ -124,14 +125,17 @@ class EmailTest:
 class AdminTest:
     def test_should_return_error_message_when_admin_user_is_beneficiary(self, app):
         # Given
-        user = users_factories.UserFactory.build(isAdmin=True, isBeneficiary=True)
+        user = users_factories.UserFactory(
+            isAdmin=True,
+            roles=[user_models.UserRole.BENEFICIARY],
+        )
         api_errors = ApiErrors()
 
         # When
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors["isBeneficiary"] == ["Admin ne peut pas être bénéficiaire"]
+        assert api_error.errors["is_beneficiary"] == ["Admin ne peut pas être bénéficiaire"]
 
 
 class PasswordTest:

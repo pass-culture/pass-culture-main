@@ -24,8 +24,8 @@ def validate(user: User, api_errors: ApiErrors) -> ApiErrors:
         api_errors.check_min_length("publicName", user.publicName, 1)
     if user.email:
         api_errors.check_email("email", user.email)
-    if user.isAdmin and user.isBeneficiary:
-        api_errors.add_error("isBeneficiary", "Admin ne peut pas être bénéficiaire")
+    if user.isAdmin and user.is_beneficiary:
+        api_errors.add_error("is_beneficiary", "Admin ne peut pas être bénéficiaire")
     if user.clearTextPassword:
         api_errors.check_min_length("password", user.clearTextPassword, 8)
 
