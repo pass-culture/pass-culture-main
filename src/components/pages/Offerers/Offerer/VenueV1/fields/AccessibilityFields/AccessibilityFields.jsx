@@ -93,7 +93,7 @@ const AccessibilityFields = ({ formValues, readOnly, venue }) => {
         pourrez modifier cette information à l’échelle de l’offre.
       </p>
 
-      <p className="bi-subtitle">
+      <p className="vp-subtitle">
         Ce lieu est accessible aux publics en situation de handicaps :
       </p>
       <div>

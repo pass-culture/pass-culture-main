@@ -59,5 +59,9 @@
 
   .vp-content-section {
     margin-bottom: rem(48px);
+
+    .field-label {
+      @include body();
+    }
   }
 }
