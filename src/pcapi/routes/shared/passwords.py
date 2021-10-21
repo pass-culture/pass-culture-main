@@ -64,7 +64,7 @@ def post_for_password_token(body: ResetPasswordBodyModel) -> None:
         # Here we also return a 204 to prevent attacker from discovering which email exists in db
         return
 
-    if user.isBeneficiary:
+    if user.is_beneficiary:
         send_email = user_emails.send_reset_password_email_to_user
     else:
         send_email = send_reset_password_email_to_pro

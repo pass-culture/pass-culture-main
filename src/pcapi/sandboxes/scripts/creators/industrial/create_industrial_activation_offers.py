@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 def create_industrial_activation_offers():
     logger.info("create_industrial_activation_offers")
 
-    activated_user = User.query.filter_by(isBeneficiary=True).first()
+    activated_user = User.query.filter_by(has_beneficiary_role=True).first()
     offerer = create_offerer()
     venue = create_venue(offerer, is_virtual=True, siret=None)
     offer = create_offer_with_thing_product(venue, thing_subcategory_id=subcategories.ACTIVATION_THING.id)

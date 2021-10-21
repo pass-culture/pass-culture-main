@@ -33,7 +33,8 @@ def run(
         user = already_existing_user(details["dossier"]["email"])
 
         if user:
-            if user.isBeneficiary:
+            # TODO: Handle switch from underage_beneficiary to beneficiary
+            if user.is_beneficiary:
                 logger.warning(
                     "[BATCH][REMOTE TAG HAS COMPLETED] User is already beneficiary",
                     extra={"user": user.id, "procedure": procedure_id},

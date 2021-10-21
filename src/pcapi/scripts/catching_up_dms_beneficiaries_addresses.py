@@ -28,7 +28,7 @@ def _update_beneficiaries_addresses(iterable: Iterable[dict]) -> None:
         ]
 
         beneficiaries_to_update = User.query.filter(
-            User.email.in_(beneficiaries_emails_batch), User.isBeneficiary.is_(True)
+            User.email.in_(beneficiaries_emails_batch), User.is_beneficiary.is_(True)
         ).all()
         updated_beneficiaries = []
         for beneficiary in beneficiaries_to_update:

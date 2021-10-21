@@ -36,7 +36,7 @@ def find_user_by_email(email: str) -> User:
 def find_beneficiary_users_by_email_provider(email_provider: str) -> list[User]:
     formatted_email_provider = f"%@{email_provider}"
     return (
-        User.query.filter_by(isBeneficiary=True, isActive=True)
+        User.query.filter_by(is_beneficiary=True, isActive=True)
         .filter(func.lower(User.email).like(func.lower(formatted_email_provider)))
         .all()
     )
@@ -45,7 +45,7 @@ def find_beneficiary_users_by_email_provider(email_provider: str) -> list[User]:
 def find_pro_users_by_email_provider(email_provider: str) -> list[User]:
     formatted_email_provider = f"%@{email_provider}"
     return (
-        User.query.filter_by(isBeneficiary=False, isActive=True)
+        User.query.filter_by(is_beneficiary=False, isActive=True)
         .join(UserOfferer)
         .filter(User.offerers.any())
         .filter(func.lower(User.email).like(func.lower(formatted_email_provider)))
@@ -60,8 +60,9 @@ def beneficiary_by_civility_query(
     interval: timedelta = None,
     exclude_email: Optional[str] = None,
 ) -> Query:
+    # TODO: Handle switch from underage_beneficiary to beneficiary
     civility_predicate = (
-        (matching(User.firstName, first_name)) & (matching(User.lastName, last_name)) & (User.isBeneficiary == True)
+        (matching(User.firstName, first_name)) & (matching(User.lastName, last_name)) & (User.is_beneficiary == True)
     )
     if interval:
         civility_predicate = civility_predicate & (User.dateCreated >= (datetime.now() - interval))

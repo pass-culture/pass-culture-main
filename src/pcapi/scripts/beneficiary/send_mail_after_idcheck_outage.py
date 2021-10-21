@@ -29,7 +29,7 @@ def _get_eligible_users_created_between(
     today = datetime.combine(datetime.today(), datetime.min.time())
     query = User.query.outerjoin(UserOfferer).filter(
         User.dateCreated.between(start_date, end_date),
-        User.isBeneficiary == False,  # not already beneficiary
+        User.has_beneficiary_role == False,  # not already beneficiary
         User.isAdmin == False,  # not an admin
         UserOfferer.userId.is_(None),  # not a pro
         User.dateOfBirth > today - relativedelta(years=(constants.ELIGIBILITY_AGE_18 + 1)),  # less than 19yo

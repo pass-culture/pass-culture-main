@@ -14,6 +14,7 @@ from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
+from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repo
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
@@ -51,10 +52,10 @@ def get_beneficiary_profile() -> BeneficiaryAccountResponse:
 @login_required
 @spectree_serialize(response_model=BeneficiaryAccountResponse)
 def patch_beneficiary(body: PatchBeneficiaryBodyModel) -> BeneficiaryAccountResponse:
-    user = current_user._get_current_object()
+    user: user_models.User = current_user._get_current_object()
     # This route should ony be used by "beneficiary" users because it
     # allows to update different infos from `/users/current`.
-    if not user.isBeneficiary and not user.isAdmin:
+    if not user.has_beneficiary_role and not user.isAdmin:
         abort(403)
     users_api.update_user_info(user, **body.dict(exclude_unset=True))
     return BeneficiaryAccountResponse.from_orm(user)

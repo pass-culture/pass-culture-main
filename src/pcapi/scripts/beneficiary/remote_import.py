@@ -168,7 +168,8 @@ def process_application(
         fraud_api.on_dms_fraud_check(user, information)
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception("Error on dms fraud check result: %s", exc)
-    if user.isBeneficiary is True:
+    # TODO: Handle switch from underage_beneficiary to beneficiary
+    if user.is_beneficiary is True:
         _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
         return
 
@@ -361,7 +362,7 @@ def process_beneficiary_application(
                 user, token_life_time=users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
             )
             user_emails.send_activation_email(user, token=token)
-        elif user.isBeneficiary:
+        elif user.is_beneficiary:
             user_emails.send_accepted_as_beneficiary_email(user)
     except MailServiceException as mail_service_exception:
         logger.exception(

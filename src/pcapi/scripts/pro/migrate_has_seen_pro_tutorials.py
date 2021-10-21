@@ -9,7 +9,7 @@ today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
 def get_base_query(min_id):
     return User.query.filter(
-        User.isBeneficiary == False,
+        User.is_beneficiary == False,
         User.hasSeenProTutorials == False,
         User.dateCreated < today,
         User.id > min_id,
@@ -31,7 +31,11 @@ def migrate_has_seen_pro_tutorials(batch_size=1000):
     item_ids = get_ids_query(min_id).limit(batch_size).all()
     max_id = item_ids[-1][0]
     while item_ids:
-        modified_count = get_base_query(min_id).filter(User.id <= max_id).update({"hasSeenProTutorials": True})
+        modified_count = (
+            get_base_query(min_id)
+            .filter(User.id <= max_id)
+            .update({"hasSeenProTutorials": True}, synchronize_session=False)
+        )
         db.session.commit()
         modified_sum += modified_count
         print(f"{modified_count} users modified out of {batch_size}")

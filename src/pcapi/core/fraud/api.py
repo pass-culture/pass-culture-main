@@ -211,7 +211,7 @@ def _duplicate_user_fraud_item(first_name: str, last_name: str, birth_date: date
         matching(user_models.User.firstName, first_name)
         & (matching(user_models.User.lastName, last_name))
         & (sqlalchemy.func.DATE(user_models.User.dateOfBirth) == birth_date)
-        & (user_models.User.isBeneficiary == True)
+        & (user_models.User.is_beneficiary == True)
     ).first()
 
     return models.FraudItem(

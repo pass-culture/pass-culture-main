@@ -108,7 +108,7 @@ def get_newly_eligible_users(since: date) -> list[User]:
     eligible_users = (
         User.query.outerjoin(UserOfferer)
         .filter(
-            User.isBeneficiary == False,  # not already beneficiary
+            User.is_beneficiary == False,  # not already beneficiary
             User.isAdmin == False,  # not an admin
             UserOfferer.userId.is_(None),  # not a pro
             User.dateOfBirth > today - relativedelta(years=(constants.ELIGIBILITY_AGE_18 + 1)),  # less than 19yo

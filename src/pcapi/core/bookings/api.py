@@ -198,7 +198,7 @@ def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons
 
 
 def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
-    if not user.isBeneficiary:
+    if not user.is_beneficiary:
         raise RuntimeError("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s" % user)
     validation.check_beneficiary_can_cancel_booking(user, booking)
     _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)

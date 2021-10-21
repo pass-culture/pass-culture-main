@@ -45,6 +45,7 @@ from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
+from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import does_validated_phone_exist
 from pcapi.core.users.repository import get_and_lock_user
@@ -123,7 +124,7 @@ def count_existing_id_check_tokens(user: User) -> int:
 
 
 def create_id_check_token(user: User) -> Optional[Token]:
-    if user.eligibility != EligibilityType.AGE18 or user.isBeneficiary:
+    if user.eligibility != EligibilityType.AGE18 or user.has_beneficiary_role:
         return None
 
     alive_token_count = count_existing_id_check_tokens(user)
@@ -260,6 +261,7 @@ def validate_phone_number_and_activate_user(user: User, code: str) -> User:
 def update_beneficiary_mandatory_information(
     user: User, address: str, city: str, postal_code: str, activity: str, phone_number: Optional[str] = None
 ) -> None:
+    user_initial_roles = user.roles
 
     update_payload = {
         "address": address,
@@ -285,9 +287,14 @@ def update_beneficiary_mandatory_information(
     else:
         update_external_user(user)
 
+    new_user_roles = user.roles
+    underage_user_has_been_activated = (
+        UserRole.UNDERAGE_BENEFICIARY in new_user_roles and UserRole.UNDERAGE_BENEFICIARY not in user_initial_roles
+    )
+
     logger.info(
         "User id check profile updated",
-        extra={"user": user.id, "has_been_activated": user.isBeneficiary},
+        extra={"user": user.id, "has_been_activated": user.has_beneficiary_role or underage_user_has_been_activated},
     )
 
 
@@ -365,7 +372,8 @@ def activate_beneficiary(user: User, deposit_source: str = None) -> User:
 def check_and_activate_beneficiary(userId: int, deposit_source: str = None) -> User:
     with transaction():
         user = get_and_lock_user(userId)
-        if user.isBeneficiary or not user.hasCompletedIdCheck:
+        # TODO: Handle switch from underage_beneficiary to beneficiary
+        if user.is_beneficiary or not user.hasCompletedIdCheck:
             db.session.rollback()
             return user
         user = activate_beneficiary(user, deposit_source)
@@ -792,7 +800,7 @@ def _check_phone_number_validation_is_authorized(user: User) -> None:
     if not user.isEmailValidated:
         raise exceptions.UnvalidatedEmail()
 
-    if user.isBeneficiary:
+    if user.has_beneficiary_role:
         raise exceptions.UserAlreadyBeneficiary()
 
 
@@ -834,8 +842,8 @@ def get_id_check_validation_step(user: User) -> Optional[BeneficiaryValidationSt
 
 
 def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryValidationStep]:
-
-    if user.isBeneficiary or user.eligibility is None:
+    # TODO: Handle switch from underage_beneficiary to beneficiary
+    if user.is_beneficiary or user.eligibility is None:
         return None
 
     if user.eligibility == EligibilityType.AGE18:

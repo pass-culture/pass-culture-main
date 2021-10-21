@@ -26,7 +26,7 @@ def archive_applications(procedure_id: int, dry_run: bool = True) -> None:
             .filter(BeneficiaryImport.applicationId == application_number, BeneficiaryImport.sourceId == procedure_id)
             .filter(BeneficiaryImportStatus.status == ImportStatus.CREATED)
         ).one_or_none()
-        if bi and bi.beneficiary.isBeneficiary:
+        if bi and bi.beneficiary.has_beneficiary_role:
             instructeur_techid = settings.DMS_ENROLLMENT_INSTRUCTOR
             if not dry_run:
                 client.archive_application(application_techid, instructeur_techid)
