@@ -8,6 +8,7 @@ from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import false
 from sqlalchemy.sql.expression import true
@@ -49,6 +50,8 @@ class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
 
     isGcuCompatible = Column(Boolean, default=True, server_default=true(), nullable=False)
 
+    isSynchronizationCompatible = Column(Boolean, default=True, server_default=true(), nullable=False)
+
     isNational = Column(Boolean, server_default=false(), default=False, nullable=False)
 
     owningOffererId = Column(BigInteger, ForeignKey("offerer.id"), nullable=True)
@@ -76,3 +79,7 @@ class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
     @property
     def is_online_only(self):
         return self.subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.ONLINE.value
+
+    @hybrid_property
+    def can_be_synchronized(self):
+        return self.isGcuCompatible & self.isSynchronizationCompatible

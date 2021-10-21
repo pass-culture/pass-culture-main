@@ -204,6 +204,7 @@ def create_product_with_thing_subcategory(
     idx: int = None,
     is_digital: bool = False,
     is_gcu_compatible: bool = True,
+    is_synchronization_compatible: bool = True,
     is_offline_only: bool = False,
     date_modified_at_last_provider: datetime = None,
     last_provider_id: int = None,
@@ -230,6 +231,7 @@ def create_product_with_thing_subcategory(
     product.lastProviderId = last_provider_id
     product.idAtProviders = id_at_providers
     product.isGcuCompatible = is_gcu_compatible
+    product.isSynchronizationCompatible = is_synchronization_compatible
     product.mediaUrls = media_urls
     product.thumbCount = thumb_count
     product.url = url
