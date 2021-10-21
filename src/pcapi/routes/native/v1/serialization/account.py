@@ -226,7 +226,6 @@ class UserProfileResponse(BaseModel):
         user.booked_offers = cls._get_booked_offers(user)
         user.next_beneficiary_validation_step = get_next_beneficiary_validation_step(user)
         result = super().from_orm(user)
-        result.needsToFillCulturalSurvey = False
         result.subscriptionMessage = SubscriptionMessage.from_model(
             subscription_api.get_latest_subscription_message(user)
         )
