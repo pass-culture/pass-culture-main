@@ -472,3 +472,23 @@ class EduconnectFraudTest:
             )
         else:
             assert result[1].detail == f"L'age de l'utilisateur est valide ({age} ans)."
+
+    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
+    def test_educonnect_duplicates_fraud_checks(self):
+        already_existing_user = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            user=already_existing_user,
+            resultContent=fraud_factories.EduconnectContentFactory(
+                first_name=already_existing_user.firstName,
+                last_name=already_existing_user.lastName,
+                birth_date=already_existing_user.dateOfBirth,
+            ),
+        )
+        result = fraud_api.educonnect_fraud_checks(fraud_check)
+
+        assert len(result) == 2
+        assert result[0].status == fraud_models.FraudStatus.SUSPICIOUS
+        assert result[0].detail == f"Duplicat de l'utilisateur {already_existing_user.id}"
+        assert result[1].status == fraud_models.FraudStatus.OK
+        assert result[1].detail == "L'age de l'utilisateur est valide (15 ans)."
