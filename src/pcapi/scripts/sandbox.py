@@ -14,16 +14,16 @@ blueprint = Blueprint(__name__, __name__)
 
 
 @blueprint.cli.command("sandbox")
-@click.option("--name", help="Sandbox name", default="classic")
-@click.option("--clean", help="Clean database first", default="true")
+@click.option("-n", "--name", help="Sandbox name", default="classic")
+@click.option("-c", "--clean", help="Clean database first", default="true")
 def sandbox(name, clean):
     with_clean = clean == "true"
     save_sandbox(name, with_clean)
 
 
 @blueprint.cli.command("sandbox_to_testcafe")
-@click.option("--name", help="Sandboxes getters module name", default=None)
-@click.option("--getter", help="Sandboxes getters function name", default=None)
+@click.option("-n", "--name", help="Sandboxes getters module name", default=None)
+@click.option("-g", "--getter", help="Sandboxes getters function name", default=None)
 def sandbox_to_testcafe(name, getter):
     try:
         if name is None:
