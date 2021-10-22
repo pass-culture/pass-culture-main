@@ -113,6 +113,7 @@ def on_duplicate_user(user: users_models.User) -> None:
         user=user,
         userMessage=f"Ce document a déjà été analysé. Vérifie que tu n’as pas créé de compte avec une autre adresse e-mail. Consulte l’e-mail envoyé le {today:%d/%m/%Y} pour plus d’informations.",
         callToActionLink="passculture://openInbox",
+        callToActionTitle="Consulter mes e-mails",
         callToActionIcon=models.CallToActionIcon.EMAIL,
     )
     repository.save(message)
