@@ -32,7 +32,7 @@ def on_redirect_to_dms_from_idcheck(user: users_models.User) -> None:
     today = datetime.date.today()
     message = models.SubscriptionMessage(
         user=user,
-        userMessage=f"Nous n'arrivons toujours pas à lire ton document. Consulte l'e-mail envoyé le {today:%d/%m/%Y} pour plus d'informations.",
+        userMessage=f"Nous n'arrivons pas à lire ton document. Consulte l'e-mail envoyé le {today:%d/%m/%Y} pour plus d'informations.",
         callToActionTitle="Consulter mes e-mails",
         callToActionLink=INBOX_URL,
         callToActionIcon=models.CallToActionIcon.EMAIL,

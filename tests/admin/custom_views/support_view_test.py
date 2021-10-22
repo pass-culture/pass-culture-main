@@ -275,7 +275,7 @@ class BeneficiaryValidationViewTest:
         assert not message.popOverIcon
         assert (
             message.userMessage
-            == "Nous n'arrivons toujours pas à lire ton document. Consulte l'e-mail envoyé le 30/10/2021 pour plus d'informations."
+            == "Nous n'arrivons pas à lire ton document. Consulte l'e-mail envoyé le 30/10/2021 pour plus d'informations."
         )
 
 
