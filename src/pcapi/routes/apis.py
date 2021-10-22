@@ -16,5 +16,6 @@ CORS(
     supports_credentials=True,
 )
 
-api = ExtendedSpecTree("flask", MODE="strict", before=before_handler, PATH="/", version=1)
+api = ExtendedSpecTree("flask", MODE="strict", before=before_handler, version=1)
+# This will register all routes from the 2 Blueprints in this file
 api.register(public_api)
