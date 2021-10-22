@@ -1,16 +1,23 @@
 from datetime import datetime
+from decimal import Decimal
 
+from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
+from psycopg2 import errors as psycog2_errors
 import pytest
+from sqlalchemy import func
+import sqlalchemy.exc
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.payments import api as payments_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models import ApiErrors
+from pcapi.models import db
 from pcapi.repository import repository
 
 
@@ -67,25 +74,6 @@ class WalletBalanceTest:
         assert user.real_wallet_balance == 0
 
     @pytest.mark.usefixtures("db_session")
-    def test_balance_is_the_sum_of_deposits_if_no_bookings(self):
-        # given
-        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
-        users_factories.DepositGrantFactory(user=user, version=1)
-
-        # then
-        assert user.wallet_balance == 500 + 500
-        assert user.real_wallet_balance == 500 + 500
-
-    @pytest.mark.usefixtures("db_session")
-    def test_balance_count_non_expired_deposits(self):
-        # given
-        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1, deposit__expirationDate=None)
-
-        # then
-        assert user.wallet_balance == 500
-        assert user.real_wallet_balance == 500
-
-    @pytest.mark.usefixtures("db_session")
     def test_balance_ignores_expired_deposits(self):
         # given
         user = users_factories.BeneficiaryGrant18Factory(
@@ -100,10 +88,10 @@ class WalletBalanceTest:
     def test_balance(self):
         # given
         user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
-        bookings_factories.UsedBookingFactory(user=user, quantity=1, amount=10)
-        bookings_factories.UsedBookingFactory(user=user, quantity=2, amount=20)
-        bookings_factories.BookingFactory(user=user, quantity=3, amount=30)
-        bookings_factories.CancelledBookingFactory(user=user, quantity=4, amount=40)
+        bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, quantity=1, amount=10)
+        bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, quantity=2, amount=20)
+        bookings_factories.IndividualBookingFactory(individualBooking__user=user, quantity=3, amount=30)
+        bookings_factories.CancelledIndividualBookingFactory(individualBooking__user=user, quantity=4, amount=40)
 
         # then
         assert user.wallet_balance == 500 - (10 + 2 * 20 + 3 * 30)
@@ -113,7 +101,7 @@ class WalletBalanceTest:
     def test_real_balance_with_only_used_bookings(self):
         # given
         user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
-        bookings_factories.BookingFactory(user=user, isUsed=False, quantity=1, amount=30)
+        bookings_factories.IndividualBookingFactory(individualBooking__user=user, isUsed=False, quantity=1, amount=30)
 
         # then
         assert user.wallet_balance == 500 - 30
@@ -123,13 +111,74 @@ class WalletBalanceTest:
     def test_balance_should_not_be_negative(self):
         # given
         user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
-        bookings_factories.UsedBookingFactory(user=user, quantity=1, amount=10)
+        bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, quantity=1, amount=10)
         deposit = user.deposit
         deposit.expirationDate = datetime(2000, 1, 1)
 
         # then
         assert user.wallet_balance == 0
         assert user.real_wallet_balance == 0
+
+
+@pytest.mark.usefixtures("db_session")
+class SQLFunctionsTest:
+    def test_wallet_balance(self):
+        with freeze_time(datetime.utcnow() - relativedelta(years=2, days=2)):
+            user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
+            # disable trigger because deposit.expirationDate > now() is False in database time
+            db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
+            bookings_factories.IndividualBookingFactory(individualBooking__user=user, amount=18)
+            db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
+
+        payments_api.create_deposit(user, "test")
+
+        bookings_factories.IndividualBookingFactory(individualBooking__user=user, isUsed=True, amount=10)
+        bookings_factories.IndividualBookingFactory(individualBooking__user=user, isUsed=False, amount=1)
+
+        assert db.session.query(func.get_wallet_balance(user.id, False)).first()[0] == Decimal(289)
+        assert db.session.query(func.get_wallet_balance(user.id, True)).first()[0] == Decimal(290)
+
+    def test_wallet_balance_no_deposit(self):
+        user = users_factories.UserFactory()
+
+        assert db.session.query(func.get_wallet_balance(user.id, False)).first()[0] == 0
+
+    def test_wallet_balance_multiple_deposit(self):
+        user = users_factories.BeneficiaryGrant18Factory()
+        users_factories.DepositGrantFactory(user=user)
+        users_factories.DepositGrantFactory(user=user)
+
+        with pytest.raises((psycog2_errors.CardinalityViolation, sqlalchemy.exc.ProgrammingError)) as exc:
+            # pylint: disable=expression-not-assigned
+            db.session.query(func.get_wallet_balance(user.id, False)).first()[0]
+
+        assert "more than one row returned by a subquery" in str(exc.value)
+
+    def test_wallet_balance_expired_deposit(self):
+        with freeze_time(datetime.utcnow() - relativedelta(years=2, days=2)):
+            user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
+            # disable trigger because deposit.expirationDate > now() is False in database time
+            db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
+            bookings_factories.IndividualBookingFactory(individualBooking__user=user, amount=18)
+            db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
+
+        assert db.session.query(func.get_wallet_balance(user.id, False)).first()[0] == 0
+
+    def test_deposit_balance(self):
+        deposit = users_factories.DepositGrantFactory()
+
+        bookings_factories.IndividualBookingFactory(individualBooking__attached_deposit=deposit, isUsed=True, amount=10)
+        bookings_factories.IndividualBookingFactory(individualBooking__attached_deposit=deposit, isUsed=False, amount=1)
+
+        assert db.session.query(func.get_deposit_balance(deposit.id, False)).first()[0] == 289
+        assert db.session.query(func.get_deposit_balance(deposit.id, True)).first()[0] == 290
+
+    def test_deposit_balance_wrong_id(self):
+        with pytest.raises(sqlalchemy.exc.InternalError) as exc:
+            # pylint: disable=expression-not-assigned
+            db.session.query(func.get_deposit_balance(None, False)).first()[0]
+
+        assert "the deposit was not found" in str(exc)
 
 
 class HasPhysicalVenuesTest:

@@ -60,6 +60,9 @@ def create_deposit(beneficiary: User, deposit_source: str, version: int = None) 
     if repository.does_deposit_exists_for_beneficiary_and_type(beneficiary, granted_deposit.type):
         raise exceptions.DepositTypeAlreadyGrantedException(granted_deposit.type)
 
+    if beneficiary.has_active_deposit:
+        raise exceptions.UserHasAlreadyActiveDeposit()
+
     if version is not None:
         granted_deposit.version = version
 

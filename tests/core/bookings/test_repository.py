@@ -26,6 +26,7 @@ from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_payment
 from pcapi.models import Booking
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.payment_status import TransactionStatus
@@ -1624,20 +1625,22 @@ class FindExpiringBookingsTest:
 
 @pytest.mark.usefixtures("db_session")
 def test_get_deposit_booking():
-    user = users_factories.BeneficiaryGrant18Factory()
-    with freeze_time(datetime.utcnow() - relativedelta(years=2)):
-        previous_deposit = create_deposit(user, "test")
+    with freeze_time(datetime.utcnow() - relativedelta(years=2, days=2)):
+        user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
+        # disable trigger because deposit.expirationDate > now() is False in database time
+        db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
+        previous_deposit_booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
+        db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
 
-    previous_deposit_booking = bookings_factories.IndividualBookingFactory(
-        individualBooking__user=user, individualBooking__attached_deposit=previous_deposit
-    )
+    create_deposit(user, "test")
+
     current_deposit_booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
     current_deposit_booking_2 = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
     bookings_factories.IndividualBookingFactory(
         individualBooking__user=user, individualBooking__attached_deposit="forced_none", amount=0
     )
 
-    previous_deposit_id = previous_deposit.id
+    previous_deposit_id = user.deposits[0].id
     current_deposit_id = user.deposit.id
 
     with assert_num_queries(1):

@@ -54,9 +54,9 @@ class GetAllUsersWalletBalancesTest:
         stock3 = offers_factories.StockFactory(offer=offer, price=40)
         user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
 
-        bookings_factories.BookingFactory(user=user, stock=stock1)
-        bookings_factories.CancelledBookingFactory(user=user, stock=stock2)
-        bookings_factories.UsedBookingFactory(user=user, stock=stock3, quantity=2)
+        bookings_factories.IndividualBookingFactory(individualBooking__user=user, stock=stock1)
+        bookings_factories.CancelledIndividualBookingFactory(individualBooking__user=user, stock=stock2)
+        bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, stock=stock3, quantity=2)
 
         # when
         balances = get_all_users_wallet_balances()

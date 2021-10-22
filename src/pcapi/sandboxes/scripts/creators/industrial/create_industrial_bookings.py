@@ -2,11 +2,10 @@ from datetime import datetime
 import logging
 from random import choice
 
-from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
-from pcapi.model_creators.generic_creators import create_booking
 from pcapi.repository import repository
 
 
@@ -99,12 +98,12 @@ def _create_bookings_for_other_beneficiaries(
             else:
                 booking_amount = None
 
-            bookings_by_name[booking_name] = create_booking(
-                user=user,
-                amount=booking_amount,
-                is_used=is_used,
-                date_used=datetime.now() if is_used else None,
+            bookings_by_name[booking_name] = IndividualBookingFactory(
+                individualBooking__user=user,
+                isUsed=is_used,
                 stock=stock,
+                dateUsed=datetime.now() if is_used else None,
+                amount=booking_amount,
                 token=str(token),
                 offerer=offer.venue.managingOfferer,
                 venue=offer.venue,
@@ -144,6 +143,8 @@ def _create_has_booked_some_bookings(bookings_by_name, offers_by_name, user, use
         else:
             is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
 
-        booking = BookingFactory(user=user, isUsed=is_used, stock=stock, dateUsed=datetime.now() if is_used else None)
+        booking = IndividualBookingFactory(
+            individualBooking__user=user, isUsed=is_used, stock=stock, dateUsed=datetime.now() if is_used else None
+        )
         booking_name = "{} / {} / {}".format(offer_name, user_name, booking.token)
         bookings_by_name[booking_name] = booking

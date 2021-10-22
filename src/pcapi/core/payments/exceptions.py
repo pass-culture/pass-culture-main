@@ -9,3 +9,7 @@ class DepositTypeAlreadyGrantedException(ApiErrors):
 
 class UserNotGrantable(Exception):
     pass
+
+
+class UserHasAlreadyActiveDeposit(UserNotGrantable):
+    pass

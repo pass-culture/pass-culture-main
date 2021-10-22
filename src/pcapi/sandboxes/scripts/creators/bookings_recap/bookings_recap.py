@@ -4,8 +4,8 @@ import logging
 
 from pcapi.core.bookings.exceptions import BookingIsAlreadyCancelled
 from pcapi.core.bookings.exceptions import BookingIsAlreadyUsed
-from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.bookings.factories import UsedBookingFactory
+from pcapi.core.bookings.factories import IndividualBookingFactory
+from pcapi.core.bookings.factories import UsedIndividualBookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventProductFactory
@@ -96,8 +96,8 @@ def save_bookings_recap_sandbox():
     offer1_venue4 = ThingOfferFactory(product=product1_venue4, venue=venue4_virtual)
     stock_1_offer1_venue4 = ThingStockFactory(offer=offer1_venue4, quantity=70, price=10.99)
 
-    BookingFactory(
-        user=beneficiary1,
+    IndividualBookingFactory(
+        individualBooking__user=beneficiary1,
         stock=stock_1_offer1_venue1,
         dateCreated=datetime(2020, 3, 18, 14, 56, 12, 0),
         isUsed=True,
@@ -105,10 +105,14 @@ def save_bookings_recap_sandbox():
         quantity=2,
     )
 
-    BookingFactory(user=beneficiary1, stock=stock_2_offer2_venue1, dateCreated=datetime(2020, 4, 22, 9, 17, 12, 0))
+    IndividualBookingFactory(
+        individualBooking__user=beneficiary1,
+        stock=stock_2_offer2_venue1,
+        dateCreated=datetime(2020, 4, 22, 9, 17, 12, 0),
+    )
 
-    BookingFactory(
-        user=beneficiary2,
+    IndividualBookingFactory(
+        individualBooking__user=beneficiary2,
         stock=stock_1_offer1_venue1,
         dateCreated=datetime(2020, 3, 18, 12, 18, 12, 0),
         isUsed=True,
@@ -116,15 +120,15 @@ def save_bookings_recap_sandbox():
         quantity=2,
     )
 
-    booking2_beneficiary2 = BookingFactory(
-        user=beneficiary2,
+    booking2_beneficiary2 = IndividualBookingFactory(
+        individualBooking__user=beneficiary2,
         stock=stock_1_offer1_venue2,
         dateCreated=datetime(2020, 4, 12, 14, 31, 12, 0),
         isCancelled=False,
     )
 
-    booking1_beneficiary3 = BookingFactory(
-        user=beneficiary3,
+    booking1_beneficiary3 = IndividualBookingFactory(
+        individualBooking__user=beneficiary3,
         stock=stock_2_offer2_venue1,
         dateCreated=datetime(2020, 1, 4, 19, 31, 12, 0),
         isCancelled=False,
@@ -133,22 +137,24 @@ def save_bookings_recap_sandbox():
         quantity=2,
     )
 
-    booking2_beneficiary3 = BookingFactory(
-        user=beneficiary3,
+    booking2_beneficiary3 = IndividualBookingFactory(
+        individualBooking__user=beneficiary3,
         stock=stock_1_offer1_venue2,
         dateCreated=datetime(2020, 3, 21, 22, 9, 12, 0),
         isCancelled=False,
     )
 
-    booking3_beneficiary1 = UsedBookingFactory(
-        user=beneficiary1, stock=stock_1_offer1_venue3, dateCreated=datetime(2020, 4, 12, 14, 31, 12, 0)
+    booking3_beneficiary1 = UsedIndividualBookingFactory(
+        individualBooking__user=beneficiary1,
+        stock=stock_1_offer1_venue3,
+        dateCreated=datetime(2020, 4, 12, 14, 31, 12, 0),
     )
 
     payment_booking3_beneficiary1 = PaymentFactory(booking=booking3_beneficiary1)
     PaymentStatusFactory(payment=payment_booking3_beneficiary1, status=TransactionStatus.PENDING)
 
-    booking3_beneficiary2 = UsedBookingFactory(
-        user=beneficiary2,
+    booking3_beneficiary2 = UsedIndividualBookingFactory(
+        individualBooking__user=beneficiary2,
         stock=stock_1_offer1_venue3,
         dateCreated=datetime(2020, 4, 12, 19, 31, 12, 0),
         dateUsed=datetime(2020, 4, 22, 17, 00, 10, 0),
@@ -157,28 +163,30 @@ def save_bookings_recap_sandbox():
     PaymentFactory(booking=booking3_beneficiary2)
     PaymentStatusFactory(payment=payment_booking3_beneficiary1, status=TransactionStatus.SENT)
 
-    booking3_beneficiary3 = UsedBookingFactory(
-        user=beneficiary3, stock=stock_1_offer1_venue3, dateCreated=datetime(2020, 4, 12, 22, 9, 12, 0)
+    booking3_beneficiary3 = UsedIndividualBookingFactory(
+        individualBooking__user=beneficiary3,
+        stock=stock_1_offer1_venue3,
+        dateCreated=datetime(2020, 4, 12, 22, 9, 12, 0),
     )
 
     payment_booking3_beneficiary3 = PaymentFactory(booking=booking3_beneficiary3)
     PaymentStatusFactory(payment=payment_booking3_beneficiary3, status=TransactionStatus.ERROR)
 
-    UsedBookingFactory(
-        user=beneficiary3,
+    UsedIndividualBookingFactory(
+        individualBooking__user=beneficiary3,
         stock=stock_1_offer1_venue2,
         dateCreated=datetime(2020, 3, 21, 22, 9, 12, 0),
     )
 
-    booking5_beneficiary3 = BookingFactory(
-        user=beneficiary3,
+    booking5_beneficiary3 = IndividualBookingFactory(
+        individualBooking__user=beneficiary3,
         stock=stock_1_offer1_venue4,
         dateCreated=datetime(2020, 3, 21, 22, 9, 12, 0),
         isCancelled=False,
     )
 
-    booking6_beneficiary3 = UsedBookingFactory(
-        user=beneficiary3,
+    booking6_beneficiary3 = UsedIndividualBookingFactory(
+        individualBooking__user=beneficiary3,
         stock=stock_1_offer2_venue2,
         dateCreated=datetime(2020, 3, 21, 22, 9, 12, 0),
         dateUsed=datetime(2020, 4, 22, 21, 9, 12, 0),
@@ -187,8 +195,8 @@ def save_bookings_recap_sandbox():
     payment_booking6_beneficiary3 = PaymentFactory(booking=booking6_beneficiary3)
     PaymentStatusFactory(payment=payment_booking6_beneficiary3, status=TransactionStatus.SENT)
 
-    booking7_beneficiary2 = UsedBookingFactory(
-        user=beneficiary2,
+    booking7_beneficiary2 = UsedIndividualBookingFactory(
+        individualBooking__user=beneficiary2,
         stock=stock_1_offer2_venue2,
         dateCreated=datetime(2020, 4, 21, 22, 6, 12, 0),
         dateUsed=datetime(2020, 4, 22, 22, 9, 12, 0),
@@ -197,8 +205,8 @@ def save_bookings_recap_sandbox():
     payment_booking7_beneficiary2 = PaymentFactory(booking=booking7_beneficiary2)
     PaymentStatusFactory(payment=payment_booking7_beneficiary2, status=TransactionStatus.RETRY)
 
-    UsedBookingFactory(
-        user=beneficiary1,
+    UsedIndividualBookingFactory(
+        individualBooking__user=beneficiary1,
         stock=stock_1_offer2_venue2,
         dateCreated=datetime(2020, 2, 21, 22, 6, 12, 0),
         dateUsed=datetime(2020, 4, 22, 23, 9, 12, 0),

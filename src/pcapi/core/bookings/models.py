@@ -309,58 +309,68 @@ class Booking(PcObject, Model):
 # populated after the deployment of v122, make the column NOT NULLable
 # and remove the filter below (add a migration for _each_ change).
 Booking.trig_ddl = """
-    CREATE OR REPLACE FUNCTION get_wallet_balance(user_id BIGINT, only_used_bookings BOOLEAN)
-    RETURNS NUMERIC(10,2) AS $$
+    CREATE OR REPLACE FUNCTION public.get_deposit_balance (deposit_id bigint, only_used_bookings boolean)
+        RETURNS numeric
+        AS $$
     DECLARE
-        sum_deposits NUMERIC ;
-        sum_bookings NUMERIC ;
+        deposit_amount bigint := (SELECT CASE WHEN ("expirationDate" > now() OR "expirationDate" IS NULL) THEN amount ELSE 0 END amount FROM deposit WHERE id = deposit_id);
+        sum_bookings numeric;
     BEGIN
-        SELECT COALESCE(SUM(amount), 0)
-        INTO sum_deposits
-        FROM deposit
-        WHERE "userId"=user_id
-        AND ("expirationDate" > now() OR "expirationDate" IS NULL);
+        IF deposit_amount IS NULL
+        THEN RAISE EXCEPTION 'the deposit was not found';
+        END IF;
 
-        CASE
-            only_used_bookings
-        WHEN true THEN
-            SELECT COALESCE(SUM(amount * quantity), 0)
-            INTO sum_bookings
-            FROM booking
-            WHERE "userId"=user_id AND NOT "isCancelled" AND "isUsed" = true;
-        WHEN false THEN
-            SELECT COALESCE(SUM(amount * quantity), 0)
-            INTO sum_bookings
-            FROM booking
-            WHERE "userId"=user_id AND NOT "isCancelled";
-        END CASE;
+        SELECT
+            COALESCE(SUM(amount * quantity), 0) INTO sum_bookings
+        FROM
+            booking
+            JOIN individual_booking ON (booking."individualBookingId" = individual_booking.id)
+        WHERE
+            individual_booking."depositId" = deposit_id
+            AND NOT booking."isCancelled"
+            AND (NOT only_used_bookings OR booking."isUsed" = TRUE);
+        RETURN
+            deposit_amount - sum_bookings;
+        END;
+    $$
+    LANGUAGE plpgsql;
 
-        RETURN (sum_deposits - sum_bookings);
-    END; $$
+    CREATE OR REPLACE FUNCTION public.get_wallet_balance (user_id bigint, only_used_bookings boolean)
+        RETURNS numeric
+        AS $$
+    DECLARE
+        deposit_id bigint := (SELECT deposit.id FROM deposit WHERE "userId" = user_id  AND "expirationDate" > now());
+    BEGIN
+        RETURN
+            CASE WHEN deposit_id IS NOT NULL THEN get_deposit_balance(deposit_id, only_used_bookings) ELSE 0 END;
+    END;
+    $$
     LANGUAGE plpgsql;
 
     CREATE OR REPLACE FUNCTION check_booking()
     RETURNS TRIGGER AS $$
     DECLARE
         lastStockUpdate date := (SELECT "dateModified" FROM stock WHERE id=NEW."stockId");
+        deposit_id bigint := (SELECT individual_booking."depositId" FROM booking LEFT JOIN individual_booking ON individual_booking.id = booking."individualBookingId" WHERE booking.id=NEW.id);
     BEGIN
-      IF EXISTS (SELECT "quantity" FROM stock WHERE id=NEW."stockId" AND "quantity" IS NOT NULL)
-         AND (
-             (SELECT "quantity" FROM stock WHERE id=NEW."stockId")
-              <
-              (SELECT SUM(quantity) FROM booking WHERE "stockId"=NEW."stockId" AND NOT "isCancelled")
-              )
-         THEN RAISE EXCEPTION 'tooManyBookings'
-                    USING HINT = 'Number of bookings cannot exceed "stock.quantity"';
-      END IF;
-
-      IF (
-        (NEW."educationalBookingId" IS NULL AND OLD."educationalBookingId" IS NULL)
+    IF EXISTS (SELECT "quantity" FROM stock WHERE id=NEW."stockId" AND "quantity" IS NOT NULL)
         AND (
-          -- If this is a new booking, we probably want to check the wallet.
-          OLD IS NULL
-          -- If we're updating an existing booking...
-          OR (
+            (SELECT "quantity" FROM stock WHERE id=NEW."stockId")
+            <
+            (SELECT SUM(quantity) FROM booking WHERE "stockId"=NEW."stockId" AND NOT "isCancelled")
+            )
+        THEN RAISE EXCEPTION 'tooManyBookings'
+                    USING HINT = 'Number of bookings cannot exceed "stock.quantity"';
+    END IF;
+
+    IF (
+        (NEW."educationalBookingId" IS NULL AND OLD."educationalBookingId" IS NULL)
+        AND (NEW."individualBookingId" IS NOT NULL OR OLD."individualBookingId" IS NOT NULL)
+        AND (
+        -- If this is a new booking, we probably want to check the wallet.
+        OLD IS NULL
+        -- If we're updating an existing booking...
+        OR (
             -- Check the wallet if we are changing the quantity or the amount
             -- The backend should never do that, but let's be defensive.
             (NEW."quantity" != OLD."quantity" OR NEW."amount" != OLD."amount")
@@ -369,17 +379,19 @@ Booking.trig_ddl = """
             -- should be able to cancel their booking. Also, their booking can
             -- be marked as used or not used.)
             OR (NEW."isCancelled" != OLD."isCancelled" AND NOT NEW."isCancelled")
-          )
         )
-        -- Allow to book free offers even with no credit left (or expired deposits)
-        AND (NEW."amount" != 0)
-        AND (get_wallet_balance(NEW."userId", false) < 0)
-      )
-      THEN RAISE EXCEPTION 'insufficientFunds'
-                 USING HINT = 'The user does not have enough credit to book';
-      END IF;
+        )
+        AND (
+            -- Allow to book free offers even with no credit left (or expired deposits)
+            (deposit_id IS NULL AND NEW."amount" != 0)
+            OR (deposit_id IS NOT NULL AND get_deposit_balance(deposit_id, false) < 0)
+        )
+    )
+    THEN RAISE EXCEPTION 'insufficientFunds'
+                USING HINT = 'The user does not have enough credit to book';
+    END IF;
 
-      RETURN NEW;
+    RETURN NEW;
     END;
     $$ LANGUAGE plpgsql;
 

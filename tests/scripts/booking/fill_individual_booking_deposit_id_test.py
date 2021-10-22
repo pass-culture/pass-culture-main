@@ -5,12 +5,14 @@ from dateutil.relativedelta import relativedelta
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.models import db
 from pcapi.scripts.booking.fill_individual_booking_deposit_id import fill_individual_booking_deposit_id
 
 
 @pytest.mark.usefixtures("db_session")
 def test_fill_individual_booking_deposit_id(caplog):
     already_filled_bookings = bookings_factories.IndividualBookingFactory.create_batch(3)
+    db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
     to_update_bookings = bookings_factories.IndividualBookingFactory.create_batch(
         3, individualBooking__attached_deposit="forced_none"
     )
@@ -25,6 +27,7 @@ def test_fill_individual_booking_deposit_id(caplog):
         dateCreated=(datetime.utcnow() + relativedelta(years=3)),
         individualBooking__attached_deposit="forced_none",
     )
+    db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
 
     with caplog.at_level(logging.WARNING):
         fill_individual_booking_deposit_id(3)

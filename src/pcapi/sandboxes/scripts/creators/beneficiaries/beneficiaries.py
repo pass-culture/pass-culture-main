@@ -50,7 +50,9 @@ def create_beneficiary_with_empty_deposit() -> None:
         needsToFillCulturalSurvey=False,
         hasSeenTutorials=True,
     )
-    bookings_factories.BookingFactory(user=beneficiary_user, amount=beneficiary_user.deposit.amount)
+    bookings_factories.IndividualBookingFactory(
+        individualBooking__user=beneficiary_user, amount=beneficiary_user.deposit.amount
+    )
 
     logger.info("created 1 beneficiary with empty deposit")
 
