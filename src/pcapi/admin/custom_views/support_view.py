@@ -1,15 +1,18 @@
 import datetime
 import logging
+from typing import Callable
 
 import flask
 import flask_admin
 import flask_admin.helpers
 import flask_admin.model.helpers
 import flask_login
+from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
 import sqlalchemy
 import sqlalchemy.orm
-import wtforms
+from sqlalchemy.sql import ColumnElement
+from werkzeug import Response
 import wtforms.validators
 
 from pcapi.admin import base_configuration
@@ -86,6 +89,13 @@ class IDPieceNumberForm(wtforms.Form):
 
 
 class BeneficiaryView(base_configuration.BaseAdminView):
+    VIEW_FILTERS = {
+        "INTERNAL": users_models.User.has_beneficiary_role.is_(True),
+        "JOUVE": (
+            users_models.User.has_beneficiary_role.is_(False)
+            & users_models.User.beneficiaryFraudChecks.any(type=fraud_models.FraudCheckType.JOUVE)
+        ),
+    }
 
     column_list = [
         "id",
@@ -126,13 +136,13 @@ class BeneficiaryView(base_configuration.BaseAdminView):
     page_size = 100
 
     @property
-    def column_type_formatters(self):
+    def column_type_formatters(self) -> dict[type, Callable]:
         type_formatters = super().column_type_formatters
         type_formatters[datetime.datetime] = lambda view, value: value.strftime("%d/%m/%Y à %H:%M:%S")
         return type_formatters
 
     @property
-    def column_formatters(self):
+    def column_formatters(self) -> dict[str, Callable]:
         formatters = super().column_formatters
         formatters.update(
             {
@@ -152,30 +162,25 @@ class BeneficiaryView(base_configuration.BaseAdminView):
 
         return super().is_accessible()
 
-    def get_query(self):
-        filters = users_models.User.beneficiaryFraudChecks.any() | users_models.User.beneficiaryFraudResult.has()
-        if flask_login.current_user.has_jouve_role:
-            filters = users_models.User.has_beneficiary_role.is_(False) & users_models.User.beneficiaryFraudChecks.any(
-                type=fraud_models.FraudCheckType.JOUVE
-            )
+    def get_view_filter(self) -> ColumnElement:
+        role = "JOUVE" if flask_login.current_user.has_jouve_role else "INTERNAL"
+        return self.VIEW_FILTERS[role]
 
-        query = users_models.User.query.filter(filters).options(
+    def get_query(self) -> BaseQuery:
+        view_filter = self.get_view_filter()
+        query = users_models.User.query.filter(view_filter).options(
             sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudChecks),
             sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudResult),
             sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudReview),
         )
         return query
 
-    def get_count_query(self):
-        filters = users_models.User.beneficiaryFraudChecks.any() | users_models.User.beneficiaryFraudResult.has()
-        if flask_login.current_user.has_jouve_role:
-            filters = users_models.User.beneficiaryFraudChecks.any(type=fraud_models.FraudCheckType.JOUVE)
-
-        query = db.session.query(sqlalchemy.func.count(users_models.User.id)).filter(filters)
-        return query
+    def get_count_query(self) -> BaseQuery:
+        view_filter = self.get_view_filter()
+        return users_models.User.query.filter(view_filter).with_entities(sqlalchemy.func.count(users_models.User.id))
 
     @flask_admin.expose("/details/")
-    def details_view(self):
+    def details_view(self) -> Response:
         return_url = flask_admin.helpers.get_redirect_target() or self.get_url(".index_view")
 
         if not self.can_view_details:
@@ -206,7 +211,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         )
 
     @flask_admin.expose("/validate/beneficiary/<user_id>", methods=["POST"])
-    def validate_beneficiary(self, user_id):
+    def validate_beneficiary(self, user_id: int) -> Response:
         if not FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS.is_active():
             flask.flash("Fonctionnalité non activée", "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
@@ -252,7 +257,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         return flask.redirect(flask.url_for(".details_view", id=user_id))
 
     @flask_admin.expose("/update/beneficiary/id_piece_number/<user_id>", methods=["POST"])
-    def update_beneficiary_id_piece_number(self, user_id):
+    def update_beneficiary_id_piece_number(self, user_id: int) -> Response:
         if not self.check_super_admins() and not flask_login.current_user.has_jouve_role:
             flask.flash("Vous n'avez pas les droits suffisant pour activer ce bénéficiaire", "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
@@ -291,7 +296,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         return flask.redirect(flask.url_for(".details_view", id=user_id))
 
     @flask_admin.expose("/validate/beneficiary/phone_number/<user_id>", methods=["POST"])
-    def validate_phone_number(self, user_id):
+    def validate_phone_number(self, user_id: int) -> Response:
         if not flask_login.current_user.has_admin_role:
             flask.flash(
                 "Vous n'avez pas les droits suffisant pour valider le numéro de téléphone de cet utilisateur", "error"
