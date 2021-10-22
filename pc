@@ -185,11 +185,11 @@ elif [[ "$CMD" == "bash" ]]; then
     exit
   fi
 
-# Create diff output between schema in staging & local backend
+# Create diff output between schema in an environment & local
 elif [[ "$CMD" == "diff-schema" ]]; then
   docker exec pc-postgres pg_dump -d pass_culture -U pass_culture -s > /tmp/pc_schema_local
-  kubectl -n $ENV exec -it $(pod_console) -- bash -c 'dbclient-fetcher postgresql 10.4 && pg_dump "$SCALINGO_POSTGRESQL_URL" -s' > /tmp/pc_schema_staging
-  diff /tmp/pc_schema_staging /tmp/pc_schema_local
+  kubectl -n $ENV exec -it $(pod_console) -- bash -c 'pg_dump "$DATABASE_URL" -s' > /tmp/pc_schema_$ENV
+  diff /tmp/pc_schema_$ENV /tmp/pc_schema_local
   exit
 
 # Dump pass_culture database into pgdump file
