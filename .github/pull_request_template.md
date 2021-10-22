@@ -21,6 +21,6 @@ Lien vers le ticket Jira : https://passculture.atlassian.net/browse/PC-XXXXX
     - [ ] PR : (PC-XXX) Description rapide de l' US
     - [ ] Commit(s) : [PC-XXX] description rapide du ticket
 - [ ] J'ai écrit les tests nécessaires
-- [ ] J'ai vérifié les migrations (upgrade / downgrade ; locks)
+- [ ] J'ai vérifié les migrations (upgrade / downgrade ; locks ; édition de `alembic_version_conflict_detection.txt`)
 - [ ] J'ai tenté d'améliorer la dette technique (BSR, déplacement de modèles dans `pcapi.core`, etc)
 - [ ] J'ai ajouté un / des screenshots pour d'éventuels changements graphiques (ex: Admin)
