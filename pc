@@ -7,15 +7,14 @@ set -o nounset
 # =============================================
 
 if [[ $# -eq 0 ]] || [[ "$1" == "-h" ]]; then
-  echo "$(basename "$0") [-h] [-e env -b backend -f file -r region c] -- program to deal with Pass Culture ecosystem
+  echo "$(basename "$0") [-h] [-e env -b backend -f file c] -- program to deal with Pass Culture ecosystem
 where:
   -h  show this help text
   -e  specify environment to target (default: development)
   -b  specify backend to connect with local app (default: localhost)
-  -f  file to upload to scalingo off-container
-  -r  region
+  -f  file to upload to pod
   -t  specify version you want to deploy (create tag with this name)
-  -c  command that you want to run"
+  c  command that you want to run"
   exit 0
 fi
 
@@ -45,13 +44,6 @@ else
   FILE_TO_UPLOAD=${FILE_TO_UPLOAD:-'none'}
 fi
 
-if [[ $# -gt 2 ]] && [[ "$1" == "-r" ]]; then
-  export SCALINGO_REGION=$2
-  shift 2
-else
-  export SCALINGO_REGION=osc-fr1
-fi
-
 if [[ $# -gt 2 ]] && [[ "$1" == "-t" ]]; then
 
   if [[ "$2" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
@@ -68,20 +60,6 @@ fi
 
 CMD="$1"
 shift
-
-# =============================================
-# Set variables for env
-# =============================================
-
-if [[ "$ENV" == "production" ]]; then
-  SCALINGO_APP=pass-culture-api
-elif [[ "$ENV" == "testing" ]]; then
-  SCALINGO_APP=pass-culture-api-dev
-elif [[ "$ENV" == "perf" ]]; then
-  SCALINGO_APP=pass-culture-api-perf
-elif [[  ! -z "$ENV" ]]; then
-  SCALINGO_APP=pass-culture-api-"$ENV"
-fi
 
 # =============================================
 # Utilities functions
@@ -466,16 +444,6 @@ elif [[ "$CMD" == "symlink" ]]; then
 # Administration commands
 # =============================================
 
-# List pip licences
-elif [[ "$CMD" == "api-licenses" ]]; then
-  COLUMNS=${COLUMNS:-''};
-  if [[ "$ENV" == "development" ]]; then
-    RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && pip-licenses --format-html >> licenses.html"'
-  else
-    echo_error "These command is only available in DEV"
-    exit
-  fi
-
 # Display logs from API
 elif [[ "$CMD" == "logs" ]]; then
   source "$INFRA_SCRIPTS_PATH"logs.sh
@@ -484,7 +452,7 @@ elif [[ "$CMD" == "logs" ]]; then
 # Display logs from Database
 elif [[ "$CMD" == "access-db-logs" ]]; then
   source "$INFRA_SCRIPTS_PATH"/access_db_logs.sh
-  access_db_logs $SCALINGO_APP
+  access_db_logs
 
 # Connect to Postgresql database in command line using psql
 elif [[ "$CMD" == "psql" ]]; then
@@ -532,16 +500,6 @@ elif [[ "$CMD" == "python" ]]; then
     exit
   fi
 
-
-# Connect to administration instances
-elif [[ "$CMD" == "ssh" ]]; then
-  if [[ "$ENV" == "production" ]]; then
-    ssh deploy@api.passculture.beta.gouv.fr
-  elif [[ "$ENV" == "staging" ]]; then
-    ssh deploy@api.passculture-staging.beta.gouv.fr
-  fi
-
-
 # Display environement database restore infos
 elif [[ "$CMD" == "db_restore_infos" ]]; then
   source "$INFRA_SCRIPTS_PATH"get_restore_infos.sh
@@ -569,19 +527,8 @@ else
 fi
 
 # =============================================
-# Execute command
+# Execute command locally
 # =============================================
 
-if [[ $PWD == "/home/deploy/pass-culture-main" ]]; then
-  echo $RUN
-  eval $RUN
-else
-  if [[ "$ENV" == "production" ]] || [[ "$ENV" == "staging" ]]; then
-    echo "$RUN" | ssh deploy@api.passculture.beta.gouv.fr bash
-  elif [[ "$ENV" == "wordpress" ]]; then
-    ssh debian@passculture.beta.gouv.fr
-  else
-    echo $RUN
-    eval $RUN
-  fi
-fi
+echo "$RUN"
+eval "$RUN"

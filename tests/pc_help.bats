@@ -3,7 +3,7 @@
 
 @test "PC script should show its usage when pc -h" {
   # Given
-  expected_output="pc [-h] [-e env -b backend -f file -r region c] -- program to deal with Pass Culture ecosystem"
+  expected_output="pc [-h] [-e env -b backend -f file c] -- program to deal with Pass Culture ecosystem"
 
   # When
   run pc -h
