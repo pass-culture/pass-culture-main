@@ -48,7 +48,10 @@ class GetBookingResponse(BaseModel):
 def get_booking_response(booking: Booking) -> GetBookingResponse:
     if booking.stock.offer.subcategoryId == subcategories.SEANCE_CINE.id:
         formula = BookingFormula.PLACE
-    elif booking.stock.offer.subcategoryId == subcategories.CARTE_CINE_ILLIMITE.id:
+    elif booking.stock.offer.subcategoryId in (
+        subcategories.CARTE_CINE_ILLIMITE.id,
+        subcategories.CARTE_CINE_MULTISEANCES.id,
+    ):
         formula = BookingFormula.ABO
     else:
         formula = BookingFormula.VOID
