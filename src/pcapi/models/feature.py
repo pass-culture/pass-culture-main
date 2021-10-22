@@ -71,6 +71,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS = (
         "Utiliser Sendinblue pour envoyer les emails transactionnels (Ceux qui ont été migrés)"
     )
+    ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE = "Utiliser la nouvelle règle de détection d'utilisateur en doublon"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -116,6 +117,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS,
     FeatureToggle.ENABLE_DMS_GRAPHQL_API,
     FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION,
+    FeatureToggle.ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE,
     FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS,
 )
 

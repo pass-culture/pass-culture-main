@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import Optional
 
 from pcapi.core.fraud import api as fraud_api
@@ -46,6 +47,20 @@ def _check_department_is_eligible(beneficiary_pre_subscription: BeneficiaryPreSu
 
 
 def _check_not_a_duplicate(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
+    if FeatureToggle.ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE.is_active():
+        query = beneficiary_by_civility_query(
+            first_name=beneficiary_pre_subscription.first_name,
+            last_name=beneficiary_pre_subscription.last_name,
+            exclude_email=beneficiary_pre_subscription.email,
+            interval=timedelta(days=90),
+        )
+        has_duplicates = query.count() >= 3
+        if has_duplicates:
+            duplicate = query.first()
+            raise BeneficiaryIsADuplicate(
+                f"User with id {duplicate.id} has too many duplicates (found without birthDate)."
+            )
+
     duplicates = beneficiary_by_civility_query(
         first_name=beneficiary_pre_subscription.first_name,
         last_name=beneficiary_pre_subscription.last_name,

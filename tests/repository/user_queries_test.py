@@ -185,6 +185,22 @@ class BeneficiaryByCivilityQueryTest:
         assert user_found[0].email == email
         assert user_not_found is None
 
+    def test_exclude_interval(self):
+        users_factories.BeneficiaryGrant18Factory(
+            firstName="john", lastName="doe", dateCreated=datetime.now() - timedelta(days=50)
+        )
+        john = users_factories.BeneficiaryGrant18Factory(
+            firstName="john", lastName="doe", dateCreated=datetime.now() - timedelta(days=30)
+        )
+
+        users_found = beneficiary_by_civility_query("john", "doe", interval=timedelta(days=40)).all()
+
+        assert len(users_found) == 1
+        assert users_found[0] == john
+
+        users_found = beneficiary_by_civility_query("john", "doe", interval=timedelta(days=60)).all()
+        assert len(users_found) == 2
+
 
 class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
     @pytest.mark.usefixtures("db_session")

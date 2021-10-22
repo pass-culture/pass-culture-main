@@ -1,5 +1,6 @@
 from datetime import MINYEAR
 from datetime import datetime
+from datetime import timedelta
 from typing import Optional
 
 from sqlalchemy import Column
@@ -53,14 +54,19 @@ def find_pro_users_by_email_provider(email_provider: str) -> list[User]:
 
 
 def beneficiary_by_civility_query(
-    first_name: str, last_name: str, date_of_birth: datetime, exclude_email: Optional[str] = None
+    first_name: str,
+    last_name: str,
+    date_of_birth: datetime = None,
+    interval: timedelta = None,
+    exclude_email: Optional[str] = None,
 ) -> Query:
     civility_predicate = (
-        (matching(User.firstName, first_name))
-        & (matching(User.lastName, last_name))
-        & (User.dateOfBirth == date_of_birth)
-        & (User.isBeneficiary == True)
+        (matching(User.firstName, first_name)) & (matching(User.lastName, last_name)) & (User.isBeneficiary == True)
     )
+    if interval:
+        civility_predicate = civility_predicate & (User.dateCreated >= (datetime.now() - interval))
+    if date_of_birth:
+        civility_predicate = civility_predicate & (User.dateOfBirth == date_of_birth)
     if exclude_email:
         civility_predicate = civility_predicate & (User.email != exclude_email)
 

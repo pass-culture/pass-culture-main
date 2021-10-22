@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 
 import pytest
 
@@ -82,6 +83,46 @@ def test_raises_if_duplicate(app):
 
     # Then
     assert str(error.value) == f"User with id {existing_user.id} is a duplicate."
+
+
+from pcapi.core.testing import override_features
+
+
+@pytest.mark.usefixtures("db_session")
+class ValidateButDuplicateTest:
+    @override_features(ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE=True)
+    def test_beneficiary_is_duplicate(self):
+        first_name = "John"
+        last_name = "Doe"
+        users_factories.BeneficiaryGrant18Factory.create_batch(4, firstName=first_name, lastName=last_name)
+        beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(first_name=first_name, last_name=last_name)
+        with pytest.raises(BeneficiaryIsADuplicate):
+            validate(beneficiary_pre_subcription)
+
+    @override_features(ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE=True)
+    def test_duplicate_jouve_new_rule_date_range(self):
+        first_name = "John"
+        last_name = "Doe"
+        users_factories.BeneficiaryGrant18Factory.create_batch(
+            2, firstName=first_name, lastName=last_name, dateCreated=datetime.now() - timedelta(days=100)
+        )
+        users_factories.BeneficiaryGrant18Factory.create_batch(
+            2, firstName=first_name, lastName=last_name, dateCreated=datetime.now() - timedelta(days=100)
+        )
+        beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(first_name=first_name, last_name=last_name)
+        validate(beneficiary_pre_subcription)
+
+    @override_features(ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE=True)
+    def test_duplicate_current_rule_still_exist(self):
+        first_name = "John"
+        last_name = "Doe"
+        existing_user = users_factories.BeneficiaryGrant18Factory(firstName=first_name, lastName=last_name)
+
+        beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(
+            first_name=first_name, last_name=last_name, date_of_birth=existing_user.dateOfBirth
+        )
+        with pytest.raises(BeneficiaryIsADuplicate):
+            validate(beneficiary_pre_subcription)
 
 
 @pytest.mark.usefixtures("db_session")
