@@ -48,7 +48,7 @@ def test_async_index_venue_ids(app):
     assert enqueued_ids == {permanent_venue.id, other_venue.id}
 
 
-@override_settings(REDIS_VENUE_IDS_CHUNK_SIZE=1)
+@override_settings(REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE=1)
 def test_index_offers_of_venues_in_queue(app):
     bookable_offer = make_bookable_offer()
     venue1 = bookable_offer.venue
@@ -58,7 +58,7 @@ def test_index_offers_of_venues_in_queue(app):
     app.redis_client.sadd(queue, venue1.id, venue2.id)
 
     # `index_offers_of_venues_in_queue` pops 1 venue from the queue
-    # (REDIS_VENUE_IDS_FOR_OFFERS_TO_INDEX).
+    # (REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE).
     search.index_offers_of_venues_in_queue()
     assert app.redis_client.scard(queue) == 1
 
