@@ -144,19 +144,19 @@ def test_get_batches():
 @pytest.mark.usefixtures("db_session")
 def test_index_offers(app):
     backend = get_backend()
-    offers = [stock.offer for stock in offers_factories.StockFactory.create_batch(18)]
+    offers = [stock.offer for stock in offers_factories.StockFactory.create_batch(36)]
     with requests_mock.Mocker() as mock:
         posted_by_engine = {
             i: mock.post(f"https://appsearch.example.com/api/as/v1/engines/offers-{i}/documents", json=[{"errors": []}])
             for i in range(len(appsearch.OFFERS_ENGINE_NAMES))
         }
         backend.index_offers(offers)
-        for i in range(6):
+        for i in range(12):
             assert posted_by_engine[i].call_count == 1
             posted_json = posted_by_engine[i].last_request.json()
             assert len(posted_json) == 3
             for item in posted_json:
-                assert item["id"] % 6 == i
+                assert item["id"] % 12 == i
 
 
 def test_unindex_offer_ids(app):

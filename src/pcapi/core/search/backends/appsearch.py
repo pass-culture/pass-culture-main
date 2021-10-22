@@ -35,11 +35,11 @@ ENGINE_LANGUAGE = "fr"
 # (https://www.elastic.co/guide/en/app-search/current/documents.html#documents-create).
 DOCUMENTS_PER_REQUEST_LIMIT = 100
 
-# We set up an "offers-meta" meta-engine with 6 engines named
-# "offers-0", "offers-1", ... "offers-5". Each offer is indexed on one
+# We set up an "offers-meta" meta-engine with 12 engines named
+# "offers-0", "offers-1", ... "offers-11". Each offer is indexed on one
 # of these engines, depending on the offer id.
 def get_engine_names():
-    return [f"offers-{i}" for i in range(6)]
+    return [f"offers-{i}" for i in range(12)]
 
 
 OFFERS_ENGINE_NAMES = get_engine_names()
