@@ -29,6 +29,7 @@ def delete_unwanted_existing_product(isbn: str):
     if product_has_at_least_one_booking:
         offers = get_offers_by_product_id(product.id)
         product.isGcuCompatible = False
+        product.isSynchronizationCompatible = False
         offers = update_is_active_status(offers, False)
         repository.save(*offers, product)
         raise ProductWithBookingsException
@@ -49,7 +50,7 @@ def delete_unwanted_existing_product(isbn: str):
 
 def find_active_book_product_by_isbn(isbn: str) -> Optional[Product]:
     return (
-        Product.query.filter(Product.isGcuCompatible)
+        Product.query.filter(Product.can_be_synchronized)
         .filter(Product.subcategoryId == subcategories.LIVRE_PAPIER.id)
         .filter(Product.idAtProviders == isbn)
         .one_or_none()

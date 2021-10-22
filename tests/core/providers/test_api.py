@@ -129,6 +129,7 @@ class SynchronizeStocksTest:
             {"ref": "3010000108124", "available": 17},
             {"ref": "3010000108125", "available": 17},
             {"ref": "3010000101790", "available": 1},
+            {"ref": "3010000102735", "available": 1},
         ]
         offerers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
         venue = VenueFactory()
@@ -145,6 +146,7 @@ class SynchronizeStocksTest:
         product = create_product(spec[2]["ref"])
         create_product(spec[4]["ref"])
         create_product(spec[6]["ref"], isGcuCompatible=False)
+        create_product(spec[8]["ref"], isSynchronizationCompatible=False)
 
         stock_with_booking = create_stock(spec[5]["ref"], siret, quantity=20)
         BookingFactory(stock=stock_with_booking)
@@ -171,9 +173,10 @@ class SynchronizeStocksTest:
         created_offer = Offer.query.filter_by(idAtProviders=f"{spec[2]['ref']}@{siret}").one()
         assert created_offer.stocks[0].quantity == 18
 
-        # Test doesn't create offer if product does not exist or not gcu compatible
+        # Test doesn't create offer if product does not exist or not gcu compatible or not synchronization compatible
         assert Offer.query.filter_by(idAtProviders=f"{spec[3]['ref']}@{siret}").count() == 0
         assert Offer.query.filter_by(idAtProviders=f"{spec[6]['ref']}@{siret}").count() == 0
+        assert Offer.query.filter_by(idAtProviders=f"{spec[8]['ref']}@{siret}").count() == 0
 
         # Test second page is actually processed
         second_created_offer = Offer.query.filter_by(idAtProviders=f"{spec[4]['ref']}@{siret}").one()

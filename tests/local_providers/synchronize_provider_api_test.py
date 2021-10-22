@@ -24,6 +24,7 @@ ISBNs = [
     "3010000108124",
     "3010000108125",
     "3010000108126",
+    "3010000108127",
 ]
 provider_responses = [
     {
@@ -99,6 +100,7 @@ class ProviderAPICronTest:
         product = create_product(ISBNs[2], product_price="8.01")
         create_product(ISBNs[4], product_price="10.02")
         create_product(ISBNs[6], isGcuCompatible=False, product_price="10.04")
+        create_product(ISBNs[8], isSynchronizationCompatible=False, product_price="7.08")
 
         stock_with_booking = create_stock(ISBNs[5], siret, quantity=20, product_price="18.01")
         BookingFactory(stock=stock_with_booking)
@@ -132,9 +134,10 @@ class ProviderAPICronTest:
         created_offer = Offer.query.filter_by(idAtProviders=f"{ISBNs[2]}@{siret}").one()
         assert created_offer.stocks[0].quantity == 18
 
-        # Test doesn't create offer if product does not exist or not gcu compatible
+        # Test doesn't create offer if product does not exist or not gcu or not synchronization compatible
         assert Offer.query.filter_by(idAtProviders=f"{ISBNs[3]}@{siret}").count() == 0
         assert Offer.query.filter_by(idAtProviders=f"{ISBNs[6]}@{siret}").count() == 0
+        assert Offer.query.filter_by(idAtProviders=f"{ISBNs[8]}@{siret}").count() == 0
 
         # Test second page is actually processed
         second_created_offer = Offer.query.filter_by(idAtProviders=f"{ISBNs[4]}@{siret}").one()

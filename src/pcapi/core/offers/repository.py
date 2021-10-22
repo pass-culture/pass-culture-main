@@ -188,7 +188,7 @@ def get_stocks_for_offer(offer_id: int) -> list[Stock]:
 
 def get_products_map_by_provider_reference(id_at_providers: list[str]) -> dict[str, Product]:
     products = (
-        Product.query.filter(Product.isGcuCompatible)
+        Product.query.filter(Product.can_be_synchronized)
         .filter(Product.subcategoryId == subcategories.LIVRE_PAPIER.id)
         .filter(Product.idAtProviders.in_(id_at_providers))
         .all()
