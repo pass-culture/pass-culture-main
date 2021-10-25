@@ -254,8 +254,8 @@ class ResendEmailValidationRequest(BaseModel):
 
 
 class GetIdCheckTokenResponse(BaseModel):
-    token: str
-    token_timestamp: datetime.datetime
+    token: Optional[str]
+    token_timestamp: Optional[datetime.datetime]
 
 
 class ValidatePhoneNumberRequest(BaseModel):
