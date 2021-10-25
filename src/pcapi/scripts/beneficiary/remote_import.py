@@ -196,9 +196,9 @@ def process_application(
             date_of_birth=information.birth_date,
             exclude_email=information.email,
         ).all()
-
         if duplicate_users and information.application_id not in retry_ids:
             _process_duplication(duplicate_users, information, procedure_id)
+            subscription_messages.on_duplicate_user(user)
 
         else:
             process_beneficiary_application(

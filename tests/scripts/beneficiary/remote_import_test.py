@@ -849,10 +849,11 @@ class RunIntegrationTest:
     def test_import_duplicated_user(self, get_application_details, get_closed_application_ids_for_demarche_simplifiee):
         # given
         existing_user = users_factories.BeneficiaryGrant18Factory(
-            firstName="johnny",
+            firstName="john",
             lastName="doe",
             email="john.doe.beneficiary@example.com",
-            idPieceNumber="1234123412",
+            dateOfBirth=self.BENEFICIARY_BIRTH_DATE,
+            idPieceNumber="1234123432",
             isEmailValidated=True,
             isActive=True,
         )
@@ -861,18 +862,11 @@ class RunIntegrationTest:
             firstName="john",
             lastName="doe",
             email="john.doe@example.com",
+            dateOfBirth=existing_user.dateOfBirth,
             isEmailValidated=True,
             isActive=True,
         )
 
-        created_import = users_factories.BeneficiaryImportFactory(
-            applicationId=123, beneficiary=user, source="demarches_simplifiees"
-        )
-        users_factories.BeneficiaryImportStatusFactory(
-            status=ImportStatus.CREATED,
-            beneficiaryImport=created_import,
-            author=None,
-        )
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
         get_application_details.side_effect = self._get_details
         # when
@@ -888,17 +882,12 @@ class RunIntegrationTest:
         assert user.beneficiaryFraudChecks[0].type == fraud_models.FraudCheckType.DMS
 
         assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.SUSPICIOUS
-        assert (
-            f"Le n° de cni 1234123412 est déjà pris par l'utilisateur {existing_user.id}"
-            in user.beneficiaryFraudResult.reason
-        )
+        assert f"Duplicat de l'utilisateur {existing_user.id}" in user.beneficiaryFraudResult.reason
 
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.source == "demarches_simplifiees"
         assert beneficiary_import.applicationId == 123
-        assert beneficiary_import.beneficiary == user
-        assert beneficiary_import.currentStatus == ImportStatus.REJECTED
-
+        assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
         sub_msg = user.subscriptionMessages[0]
         assert (
             sub_msg.userMessage
@@ -907,6 +896,7 @@ class RunIntegrationTest:
         assert sub_msg.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
 
     @override_features(FORCE_PHONE_VALIDATION=False)
+    @freezegun.freeze_time("2021-10-30 09:00:00")
     @patch(
         "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
     )
@@ -949,6 +939,12 @@ class RunIntegrationTest:
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
         assert beneficiary_import_status.beneficiaryImportId == beneficiary_import.id
         assert beneficiary_import_status.detail == f"Nr de piece déjà utilisé par {user.id}"
+        sub_msg = user.subscriptionMessages[0]
+        assert (
+            sub_msg.userMessage
+            == "Ce document a déjà été analysé. Vérifie que tu n’as pas créé de compte avec une autre adresse e-mail. Consulte l’e-mail envoyé le 30/10/2021 pour plus d’informations."
+        )
+        assert sub_msg.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
 
     @override_features(FORCE_PHONE_VALIDATION=False)
     @patch(
