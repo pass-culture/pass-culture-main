@@ -49,7 +49,6 @@ services:
       - ./api:/opt/services/flaskapp/src
     env_file:
       - env_file
-      - ${ENV:-development}_env_file
     networks:
       - db_nw
       - web_nw
