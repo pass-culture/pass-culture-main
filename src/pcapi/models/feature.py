@@ -72,6 +72,7 @@ class FeatureToggle(enum.Enum):
         "Utiliser Sendinblue pour envoyer les emails transactionnels (Ceux qui ont été migrés)"
     )
     ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE = "Utiliser la nouvelle règle de détection d'utilisateur en doublon"
+    ENFORCE_BANK_INFORMATION_WITH_SIRET = "Forcer les informations banquaires à être liées à un SIRET."
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -119,6 +120,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION,
     FeatureToggle.ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE,
     FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS,
+    FeatureToggle.ENFORCE_BANK_INFORMATION_WITH_SIRET,
 )
 
 if not settings.IS_DEV:
