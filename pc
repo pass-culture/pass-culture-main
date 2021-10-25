@@ -210,7 +210,7 @@ elif [[ "$CMD" == "psql-file" ]]; then
 
 # Restart API after removing the database and files
 elif [[ "$CMD" == "restart-backend" ]]; then
-  source "$INFRA_SCRIPTS_PATH"start_backend.sh
+  source "$INFRA_SCRIPTS_PATH"/start_backend.sh
   restart_backend
 
 # Clear all data in postgresql database
@@ -258,8 +258,8 @@ elif [[ "$CMD" == "set-backend" ]]; then
 
 # Start API server with database and nginx server
 elif [[ "$CMD" == "start-backend" ]]; then
-    source "$INFRA_SCRIPTS_PATH"start_backend.sh
-    start_backend
+  source "$INFRA_SCRIPTS_PATH"/start_backend.sh
+  start_backend
 
 # Start pro or adage application
 elif [[ "$CMD" == "start-pro" ]] || [[ "$CMD" == "start-adage-front" ]]; then
@@ -279,7 +279,7 @@ elif [[ "$CMD" == "start-pro" ]] || [[ "$CMD" == "start-adage-front" ]]; then
 # Run tests for API
 # Need start-backend to be successful and delete all data
 elif [[ "$CMD" == "test-backend" ]]; then
-  source "$INFRA_SCRIPTS_PATH"test_backend.sh
+  source "$INFRA_SCRIPTS_PATH"/test_backend.sh
   test_backend $*
 
 # Run only local providers tests for API
@@ -305,12 +305,12 @@ elif  [[ "$CMD" == "test-cafe-pro" ]]; then
 
 # Start Metabase container with sandbox data
 elif [[ "$CMD" == "start-metabase" ]]; then
-  source "$INFRA_SCRIPTS_PATH"start-metabase.sh
+  source "$INFRA_SCRIPTS_PATH"/start-metabase.sh
   start_metabase
 
 # Restart volumes and start Metabase container with sandbox data
 elif [[ "$CMD" == "restart-metabase" ]]; then
-  source "$INFRA_SCRIPTS_PATH"start-metabase.sh
+  source "$INFRA_SCRIPTS_PATH"/start-metabase.sh
   restart_metabase
 
 
@@ -446,7 +446,7 @@ elif [[ "$CMD" == "symlink" ]]; then
 
 # Display logs from API
 elif [[ "$CMD" == "logs" ]]; then
-  source "$INFRA_SCRIPTS_PATH"logs.sh
+  source "$INFRA_SCRIPTS_PATH"/logs.sh
   logs $*
 
 # Display logs from Database
@@ -502,7 +502,7 @@ elif [[ "$CMD" == "python" ]]; then
 
 # Display environement database restore infos
 elif [[ "$CMD" == "db_restore_infos" ]]; then
-  source "$INFRA_SCRIPTS_PATH"get_restore_infos.sh
+  source "$INFRA_SCRIPTS_PATH"/get_restore_infos.sh
   get_restore_infos
 
 
