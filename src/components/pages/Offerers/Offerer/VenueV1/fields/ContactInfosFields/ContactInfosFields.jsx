@@ -22,7 +22,7 @@ const ContactInfosFields = ({ readOnly }) => (
 
     <TextField
       className="field text-field"
-      label="Téléphone"
+      label="Téléphone :"
       name="contact.phoneNumber"
       readOnly={readOnly}
       type="phone"
@@ -30,7 +30,7 @@ const ContactInfosFields = ({ readOnly }) => (
     />
     <TextField
       className="field text-field"
-      label="Mail"
+      label="Mail :"
       name="contact.email"
       readOnly={readOnly}
       type="email"
@@ -38,7 +38,7 @@ const ContactInfosFields = ({ readOnly }) => (
     />
     <TextField
       className="field text-field"
-      label="URL de votre site web"
+      label="URL de votre site web :"
       name="contact.website"
       readOnly={readOnly}
       type="url"

@@ -94,7 +94,7 @@ const AccessibilityFields = ({ formValues, readOnly, venue }) => {
       </p>
 
       <p className="vp-subtitle">
-        Ce lieu est accessible aux publics en situation de handicaps :
+        Ce lieu est accessible aux publics en situation de handicap :
       </p>
       <div>
         <CheckboxField

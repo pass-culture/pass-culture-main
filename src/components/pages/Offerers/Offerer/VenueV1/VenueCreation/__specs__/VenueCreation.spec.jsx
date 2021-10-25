@@ -71,9 +71,9 @@ describe('contact form enable in venue creation form', () => {
 
   it('should display contact fields', async ()=> {
     renderVenueCreation({ props })
-    const contactPhoneNumber = await screen.findByLabelText("Téléphone")
-    const contactMail = await screen.findByLabelText("Mail")
-    const contactUrl = await screen.findByLabelText("URL de votre site web")
+    const contactPhoneNumber = await screen.findByLabelText("Téléphone :")
+    const contactMail = await screen.findByLabelText("Mail :")
+    const contactUrl = await screen.findByLabelText("URL de votre site web :")
 
     expect(contactPhoneNumber).toBeInTheDocument()
     expect(contactMail).toBeInTheDocument()
@@ -87,9 +87,9 @@ describe('contact form enable in venue creation form', () => {
 
   it('should fill contact fields', async ()=> {
     renderVenueCreation({ props })
-    const contactPhoneNumber = await screen.findByLabelText("Téléphone")
-    const contactMail = await screen.findByLabelText("Mail")
-    const contactUrl = await screen.findByLabelText("URL de votre site web")
+    const contactPhoneNumber = await screen.findByLabelText("Téléphone :")
+    const contactMail = await screen.findByLabelText("Mail :")
+    const contactUrl = await screen.findByLabelText("URL de votre site web :")
 
     userEvent.paste(contactPhoneNumber, '0606060606')
     userEvent.paste(contactMail, 'test@test.com')

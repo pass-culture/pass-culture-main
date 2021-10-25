@@ -33,9 +33,9 @@ const renderVenueEdition = ({ props }) => {
   )
 
   const getContactInputs = async () => {
-    const contactPhoneNumber = await screen.findByLabelText("Téléphone")
-    const contactMail = await screen.findByLabelText("Mail")
-    const contactUrl = await screen.findByLabelText("URL de votre site web")
+    const contactPhoneNumber = await screen.findByLabelText("Téléphone :")
+    const contactMail = await screen.findByLabelText("Mail :")
+    const contactUrl = await screen.findByLabelText("URL de votre site web :")
 
     const clearAndFillContact = ({ phone, mail, website })=>{
       userEvent.clear(contactPhoneNumber)
