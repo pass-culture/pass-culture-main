@@ -17,6 +17,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class EduconnectTest:
     email = "lucy.ellingson@example.com"
     request_id = "id-XXMmsDBrJGm1N0761"
+    request_id_key_prefix = "educonnect-saml-request-"
 
     def test_get_educonnect_login(self, client, app):
         user = users_factories.UserFactory(email=self.email)
@@ -26,16 +27,16 @@ class EduconnectTest:
         response = client.get("/saml/educonnect/login")
         assert response.status_code == 302
         assert response.location.startswith("https://pr4.educonnect.phm.education.gouv.fr/idp")
-        assert len(app.redis_client.keys("id-*")) == 1
+        assert len(app.redis_client.keys(f"{self.request_id_key_prefix}*")) == 1
 
-        request_id = app.redis_client.keys("id-*")[0]
+        request_id = app.redis_client.keys(f"{self.request_id_key_prefix}*")[0]
         assert int(app.redis_client.get(request_id)) == user.id
 
     @patch("pcapi.core.users.external.educonnect.api.get_saml_client")
     def test_on_educonnect_authentication_response(self, mock_get_educonnect_saml_client, client, caplog, app):
         # set user_id in redis as if /saml/educonnect/login was called
         user = users_factories.UserFactory(email=self.email)
-        app.redis_client.set(self.request_id, user.id)
+        app.redis_client.set(f"{self.request_id_key_prefix}{self.request_id}", user.id)
 
         mock_saml_client = MagicMock()
         mock_saml_response = MagicMock()
@@ -87,10 +88,12 @@ class EduconnectTest:
         response = client.get("/saml/educonnect/login")
         assert response.status_code == 302
         assert response.location.startswith("https://pr4.educonnect.phm.education.gouv.fr/idp")
-        assert len(app.redis_client.keys("id-*")) == 1
+        assert len(app.redis_client.keys(f"{self.request_id_key_prefix}*")) == 1
 
-        request_id = app.redis_client.keys("id-*")[0]
-        assert int(app.redis_client.get(request_id)) == user.id
+        request_id_key = app.redis_client.keys(f"{self.request_id_key_prefix}*")[0]
+        assert int(app.redis_client.get(request_id_key)) == user.id
+
+        request_id = request_id_key[len(f"{self.request_id_key_prefix}") :]
 
         # Then Educonnect will call /saml/acs
         mock_get_educonnect_user.return_value = EduconnectUser(

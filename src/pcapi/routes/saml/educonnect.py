@@ -43,7 +43,8 @@ def on_educonnect_authentication_response() -> Response:
     except educonnect_exceptions.EduconnectAuthenticationException:
         raise ApiErrors()  # TODO: redirect user to error page
 
-    user_id = app.redis_client.get(educonnect_user.saml_request_id)
+    key = educonnect_api.build_educonnect_saml_request_id_key(educonnect_user.saml_request_id)
+    user_id = app.redis_client.get(key)
     if user_id is None:
         raise ApiErrors({"saml_request_id": "user associated to saml_request_id not found"})
     user = user_models.User.query.get(user_id)
