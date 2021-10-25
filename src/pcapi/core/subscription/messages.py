@@ -1,5 +1,6 @@
 import datetime
 
+import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
 from pcapi.repository import repository
 
@@ -77,11 +78,12 @@ def on_idcheck_invalid_document_date(user: users_models.User) -> None:
 
 
 def on_id_check_unread_document(user: users_models.User) -> None:
+    token = users_api.create_id_check_token(user)
     message = models.SubscriptionMessage(
         user=user,
         userMessage="Ton dossier n’a pas pu être validé car la photo que tu as transmise est illisible.",
         callToActionTitle="Essayer avec une autre photo",
-        callToActionLink="passculture://idcheck?token=XYZ",
+        callToActionLink=f"passculture://idcheck?token={token}",
         callToActionIcon=models.CallToActionIcon.RETRY,
     )
     repository.save(message)
