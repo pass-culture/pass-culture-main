@@ -124,7 +124,7 @@ def count_existing_id_check_tokens(user: User) -> int:
 
 
 def create_id_check_token(user: User) -> Optional[Token]:
-    if user.eligibility != EligibilityType.AGE18 or user.has_beneficiary_role:
+    if user.eligibility is None or user.has_beneficiary_role:
         return None
 
     alive_token_count = count_existing_id_check_tokens(user)

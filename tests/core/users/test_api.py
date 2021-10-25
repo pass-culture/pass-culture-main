@@ -188,13 +188,6 @@ class GenerateIdCheckTokenIfEligibleTest:
         assert token
 
     @freeze_time("2018-06-01")
-    def test_when_not_elible_under_age(self):
-        # user is 17 years old
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 8, 1))
-        token = create_id_check_token(user)
-        assert not token
-
-    @freeze_time("2018-06-01")
     def test_when_not_elible_above_age(self):
         # user is 19 years old
         user = users_factories.UserFactory(dateOfBirth=datetime(1999, 5, 1))
