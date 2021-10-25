@@ -52,7 +52,6 @@ export const OffersSearch = ({
           attributesToRetrieve={attributesToRetrieve}
           facetFilters={facetFilters}
         />
-
         <SearchBox />
         <div className="search-results">
           {venueFilter && (
