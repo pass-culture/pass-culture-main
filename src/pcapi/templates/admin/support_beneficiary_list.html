@@ -12,3 +12,17 @@
 {{ super() }}
 
 {% endblock %}
+
+{% block empty_list_message %}
+<div class="text-center">
+    <p>Pas de donnée à afficher.</p>
+    <p>
+        Cette liste n'affiche rien tant qu'aucun filtre n'est appliqué et qu'aucune recherche n'est initiée.<br/>
+        Pour obtenir des données, veuillez tenter de:
+        <ul>
+            <li>appliquer un filtre</li>
+            <li>faire une recherche</li>
+        </ul>
+    </p>
+</div>
+{% endblock %}

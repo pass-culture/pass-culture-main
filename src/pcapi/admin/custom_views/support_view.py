@@ -95,6 +95,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             users_models.User.has_beneficiary_role.is_(False)
             & users_models.User.beneficiaryFraudChecks.any(type=fraud_models.FraudCheckType.JOUVE)
         ),
+        "UNFILTERED": False,
     }
 
     column_list = [
@@ -162,8 +163,17 @@ class BeneficiaryView(base_configuration.BaseAdminView):
 
         return super().is_accessible()
 
+    def _are_search_and_filters_empty(self) -> bool:
+        view_args = self._get_list_extra_args()
+        return (not view_args.search) and (not view_args.filters)
+
     def get_view_filter(self) -> ColumnElement:
-        role = "JOUVE" if flask_login.current_user.has_jouve_role else "INTERNAL"
+        if flask_login.current_user.has_jouve_role:
+            role = "JOUVE"
+        elif self._are_search_and_filters_empty():
+            role = "UNFILTERED"
+        else:
+            role = "INTERNAL"
         return self.VIEW_FILTERS[role]
 
     def get_query(self) -> BaseQuery:
