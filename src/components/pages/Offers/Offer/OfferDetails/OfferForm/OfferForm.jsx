@@ -41,6 +41,7 @@ import WithdrawalReminder from './Messages/WithdrawalReminder'
 import OfferCategories from './OfferCategories'
 import OfferOptions from './OfferOptions'
 import SynchronizedProviderInformation from './SynchronisedProviderInfos'
+import { isUrlValid } from './validators'
 
 // JOCONDE React:component "Ce composant est vraiment le plus beau et le plus lisible que nous ayons côté pro. Prenez en de la graine !"
 
@@ -341,7 +342,7 @@ const OfferForm = ({
     [formValues.offererId, handleFormUpdate, setSelectedOfferer]
   )
 
-  const isValid = useCallback(() => {
+  const isValid = useCallback( () => {
     let newFormErrors = {}
     const formFields = [...offerFormFields, 'offererId']
 
@@ -364,6 +365,14 @@ const OfferForm = ({
       ].includes(true)
     ) {
       newFormErrors['disabilityCompliant'] = 'Ce champ est obligatoire.'
+    }
+
+    if (!isUrlValid(formValues.url)) {
+      newFormErrors['url'] = 'L’URL renseignée n’est pas valide'
+    }
+
+    if (!isUrlValid(formValues.externalTicketOfficeUrl)) {
+      newFormErrors['externalTicketOfficeUrl'] = 'L’URL renseignée n’est pas valide'
     }
 
     setFormErrors(newFormErrors)

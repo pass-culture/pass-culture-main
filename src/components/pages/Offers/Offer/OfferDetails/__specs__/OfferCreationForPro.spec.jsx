@@ -1842,6 +1842,41 @@ describe('offerDetails - Creation - pro user', () => {
       expect(isbn).toHaveTextContent('Ce champ est obligatoire')
     })
 
+    it('should show error for external ticket office url input', async () => {
+      // Given
+      await renderOffers(props, store)
+      setOfferValues({ categoryId: 'FILM' })
+      setOfferValues({ subcategoryId: 'VOD' })
+      setOfferValues({ externalTicketOfficeUrl: 'NotAValidUrl' })
+
+      // When
+      fireEvent.click(screen.getByText('Étape suivante'))
+
+      // Then
+      const url = await findInputErrorForField('externalTicketOfficeUrl')
+      expect(url).toHaveTextContent('L’URL renseignée n’est pas valide')
+    })
+
+    it('should show error for url input', async () => {
+      // Given
+      const offerValues = {
+        venueId: venues[2].id,
+        url: 'NotAValidUrl',
+      }
+      await renderOffers(props, store)
+
+      setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+      setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
+      setOfferValues(offerValues)
+
+      // When
+      await userEvent.click(screen.getByText('Étape suivante'))
+
+      // Then
+      const url = await findInputErrorForField('url')
+      expect(url).toHaveTextContent('L’URL renseignée n’est pas valide')
+    })
+
     it('should show error sent by API and show an error notification', async () => {
       // Given
       const offerValues = {
