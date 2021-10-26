@@ -5,6 +5,8 @@ from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.offers.factories import EducationalEventStockFactory
 from pcapi.core.offers.factories import MediationFactory
+from pcapi.core.offers.factories import UserOffererFactory
+from pcapi.core.offers.factories import VenueFactory
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 
 
@@ -72,6 +74,8 @@ def create_industrial_educational_bookings() -> None:
 
     now = datetime.datetime.now(datetime.timezone.utc)
     stocks = []
+    venue = VenueFactory(name="Opéra Royal de Versailles", isPermanent=True)
+    UserOffererFactory(validationToken=None, offerer=venue.managingOfferer)
 
     for stock_data in FAKE_STOCK_DATA:
         stocks.append(
@@ -83,6 +87,7 @@ def create_industrial_educational_bookings() -> None:
                 offer__withdrawalDetails="Récupération du ticket à l'adresse du lieu",
                 offer__description="Une description multi-lignes.\nOù il est notamment question du nombre d'élèves.\nNbr d'élèves max: 50",
                 offer__name=stock_data["name"],
+                offer__venue=venue,
             )
         )
 
@@ -99,6 +104,7 @@ def create_industrial_educational_bookings() -> None:
             offer__withdrawalDetails="Récupération du ticket à l'adresse du lieu",
             offer__description="Une description multi-lignes.\nOù il est notamment question du nombre d'élèves.\nNbr d'élèves max: 50",
             offer__name="Stage d'initiation à la photographie : prise en main de l'appareil-photo",
+            offer__venue=venue,
         ),
         EducationalEventStockFactory(
             quantity=60,
@@ -108,6 +114,7 @@ def create_industrial_educational_bookings() -> None:
             offer__withdrawalDetails="Récupération du ticket à l'adresse du lieu",
             offer__description="Une description multi-lignes.\nOù il est notamment question du nombre d'élèves.\nNbr d'élèves max: 50",
             offer__name="Explorer la nature au Parc Zoologique et Botanique de Mulhouse",
+            offer__venue=venue,
         ),
     ]
 
