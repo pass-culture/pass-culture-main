@@ -54,6 +54,7 @@ class SerializeBookingRecapTest:
                     "offer_identifier": humanize(thing_booking_recap.offer_identifier),
                     "event_beginning_datetime": None,
                     "offer_isbn": None,
+                    "offer_is_educational": False,
                 },
                 "beneficiary": {
                     "lastname": "Seldon",
@@ -81,6 +82,7 @@ class SerializeBookingRecapTest:
                     "offer_identifier": humanize(thing_booking_recap_2.offer_identifier),
                     "event_beginning_datetime": None,
                     "offer_isbn": None,
+                    "offer_is_educational": False,
                 },
                 "beneficiary": {
                     "lastname": "Trevize",
@@ -138,6 +140,7 @@ class SerializeBookingRecapTest:
                     "offer_identifier": humanize(event_booking_recap.offer_identifier),
                     "event_beginning_datetime": format_into_timezoned_date(day_after_booking_date),
                     "offer_isbn": None,
+                    "offer_is_educational": False,
                 },
                 "beneficiary": {
                     "lastname": "Seldon",
@@ -195,6 +198,7 @@ class SerializeBookingRecapTest:
                     "offer_name": "Martine a la playa",
                     "offer_identifier": humanize(thing_booking_recap.offer_identifier),
                     "offer_isbn": "987654345678",
+                    "offer_is_educational": False,
                 },
                 "beneficiary": {
                     "lastname": "Seldon",

@@ -421,8 +421,8 @@ class FindByProUserIdTest:
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
-        bookings_factories.UsedBookingFactory(
-            user=beneficiary,
+        bookings_factories.UsedIndividualBookingFactory(
+            individualBooking__user=beneficiary,
             stock=stock,
             dateCreated=booking_date,
             token="ABCDEF",
@@ -553,7 +553,12 @@ class FindByProUserIdTest:
             offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
         )
         yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCDEF")
+        bookings_factories.IndividualBookingFactory(
+            individualBooking__user=beneficiary,
+            stock=stock,
+            dateCreated=yesterday,
+            token="ABCDEF",
+        )
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(

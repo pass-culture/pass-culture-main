@@ -24,6 +24,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import EducationalBooking
+from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
@@ -399,7 +400,10 @@ def _filter_bookings_recap_query(
     query = (
         bookings_recap_query.outerjoin(Payment)
         .reset_joinpoint()
-        .join(User)
+        .outerjoin(IndividualBooking)
+        .outerjoin(User)
+        .outerjoin(EducationalBooking)
+        .outerjoin(EducationalRedactor)
         .join(Stock)
         .join(Offer)
         .join(Venue)
@@ -448,6 +452,7 @@ def _build_bookings_recap_query(bookings_recap_query: Query) -> Query:
         Booking.cancellationDate.label("cancellationDate"),
         Booking.cancellationLimitDate.label("cancellationLimitDate"),
         Booking.isConfirmed.label("isConfirmed"),
+        Booking.educationalBookingId.label("educationalBookingId"),
         Offer.name.label("offerName"),
         Offer.id.label("offerId"),
         Offer.extraData.label("offerExtraData"),
@@ -457,6 +462,9 @@ def _build_bookings_recap_query(bookings_recap_query: Query) -> Query:
         User.lastName.label("beneficiaryLastname"),
         User.email.label("beneficiaryEmail"),
         User.phoneNumber.label("beneficiaryPhoneNumber"),
+        EducationalRedactor.firstName.label("redactorFirstname"),
+        EducationalRedactor.lastName.label("redactorLastname"),
+        EducationalRedactor.email.label("redactorEmail"),
         Stock.beginningDatetime.label("stockBeginningDatetime"),
         Venue.departementCode.label("venueDepartementCode"),
         Offerer.name.label("offererName"),
@@ -513,6 +521,10 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
         booking_is_confirmed=booking.isConfirmed,
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
+        booking_is_educational=booking.educationalBookingId is not None,
+        redactor_email=booking.redactorEmail,
+        redactor_firstname=booking.redactorFirstname,
+        redactor_lastname=booking.redactorLastname,
         venue_identifier=booking.venueId,
         date_used=_serialize_date_with_timezone(booking.dateUsed, booking),
         payment_date=_serialize_date_with_timezone(booking.paymentDate, booking),

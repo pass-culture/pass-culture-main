@@ -20,10 +20,10 @@ class BookingRecapStatus(Enum):
 class BookingRecap:
     def __init__(
         self,
-        beneficiary_lastname: str,
-        beneficiary_firstname: str,
-        beneficiary_email: str,
-        beneficiary_phonenumber: str,
+        beneficiary_lastname: Optional[str],
+        beneficiary_firstname: Optional[str],
+        beneficiary_email: Optional[str],
+        beneficiary_phonenumber: Optional[str],
         booking_token: str,
         booking_date: datetime,
         booking_is_duo: bool,
@@ -31,6 +31,7 @@ class BookingRecap:
         booking_is_cancelled: bool,
         booking_is_reimbursed: bool,
         booking_is_confirmed: bool,
+        booking_is_educational: bool,
         booking_amount: float,
         cancellation_date: Optional[datetime],
         cancellation_limit_date: Optional[datetime],
@@ -40,6 +41,9 @@ class BookingRecap:
         offer_name: str,
         offer_isbn: Optional[str],
         offerer_name: str,
+        redactor_lastname: Optional[str],
+        redactor_firstname: Optional[str],
+        redactor_email: Optional[str],
         venue_identifier: int,
         venue_name: str,
         venue_is_virtual: bool,
@@ -57,10 +61,14 @@ class BookingRecap:
         self.booking_is_cancelled = booking_is_cancelled
         self.booking_is_reimbursed = booking_is_reimbursed
         self.booking_is_confirmed = booking_is_confirmed
+        self.booking_is_educational = booking_is_educational
         self.offer_identifier = offer_identifier
         self.offer_name = offer_name
         self.offer_isbn = offer_isbn
         self.offerer_name = offerer_name
+        self.redactor_lastname = redactor_lastname
+        self.redactor_firstname = redactor_firstname
+        self.redactor_email = redactor_email
         self.venue_identifier = venue_identifier
         self.booking_status_history = self.build_status_history(
             booking_date=booking_date,

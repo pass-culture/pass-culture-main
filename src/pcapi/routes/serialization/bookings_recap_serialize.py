@@ -76,11 +76,12 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> dict[str, Any]:
             if booking_recap.event_beginning_datetime
             else None,
             "offer_isbn": booking_recap.offer_isbn,
+            "offer_is_educational": booking_recap.booking_is_educational,
         },
         "beneficiary": {
-            "lastname": booking_recap.beneficiary_lastname,
-            "firstname": booking_recap.beneficiary_firstname,
-            "email": booking_recap.beneficiary_email,
+            "lastname": booking_recap.beneficiary_lastname or booking_recap.redactor_lastname,
+            "firstname": booking_recap.beneficiary_firstname or booking_recap.redactor_firstname,
+            "email": booking_recap.beneficiary_email or booking_recap.redactor_email,
             "phonenumber": booking_recap.beneficiary_phonenumber,
         },
         "booking_token": booking_recap.booking_token,
