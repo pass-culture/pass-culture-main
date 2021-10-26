@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
@@ -78,6 +78,26 @@ describe('bookings offer cell', () => {
       const offer_name_link = offer_name.closest('a')
       expect(offer_name_link.href).toContain('offres/A2')
       expect(offer_name_link.target).toContain('_blank')
+    })
+
+    it('should display educational tag when offer is educational', () => {
+      // Given
+      const props = {
+        offer: {
+          event_beginning_datetime: '2020-05-12T11:03:28.564687+04:00',
+          offer_identifier: 'A2',
+          offer_name: 'La danse des poireaux',
+          type: 'event',
+          venue_department_code: '93',
+          offer_is_educational: true,
+        },
+      }
+
+      // When
+      renderOfferCell(props)
+
+      // Then
+      expect(screen.getByText('Offre collective')).toBeInTheDocument()
     })
   })
 })

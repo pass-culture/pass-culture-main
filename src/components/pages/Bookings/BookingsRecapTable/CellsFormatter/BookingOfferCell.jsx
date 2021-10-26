@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import { format } from 'date-fns-tz'
 import PropTypes from 'prop-types'
@@ -23,6 +23,11 @@ const BookingOfferCell = ({ offer }) => {
       target="_blank"
       title={`${offer.offer_name} (ouverture dans un nouvel onglet)`}
     >
+      {offer.offer_is_educational && (
+        <div className="tag">
+          Offre collective
+        </div>
+      )}
       <div className="booking-offer-name">
         {offer.offer_name}
       </div>
@@ -49,6 +54,7 @@ BookingOfferCell.propTypes = {
     offer_isbn: PropTypes.string,
     offer_identifier: PropTypes.string.isRequired,
     offer_name: PropTypes.string.isRequired,
+    offer_is_educational: PropTypes.bool.isRequired,
   }).isRequired,
 }
 

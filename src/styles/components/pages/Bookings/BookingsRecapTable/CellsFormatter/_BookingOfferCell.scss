@@ -15,3 +15,19 @@
 .booking-offer-additional-info {
   color: $grey-dark;
 }
+
+.tag {
+  align-items: center;
+  border: solid rem(1px) $tertiary;
+  border-radius: rem(4px);
+  color: $tertiary;
+  display: flex;
+  height: fit-content;
+  justify-content: center;
+  line-height: rem(16px);
+  margin-bottom: rem(5px);
+  padding: rem(0 4px);
+  width: fit-content;
+
+  @include highlight();
+}
