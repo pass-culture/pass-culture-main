@@ -360,7 +360,8 @@ def activate_beneficiary(user: User, deposit_source: str = None) -> User:
 
     if "apps_flyer" in user.externalIds:
         log_user_becomes_beneficiary_event_job.delay(user.id)
-    deposit = payment_api.create_deposit(user, deposit_source=deposit_source)
+
+    deposit = payment_api.create_deposit(user, deposit_source=deposit_source, eligibility=EligibilityType.AGE18)
 
     db.session.add_all((user, deposit))
     db.session.commit()

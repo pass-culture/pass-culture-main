@@ -810,6 +810,36 @@ class RunIntegrationTest:
 
         assert len(push_testing.requests) == 1
 
+    @patch(
+        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+    )
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    def test_import_makes_user_beneficiary_after_19_birthday(
+        self, get_application_details, get_closed_application_ids_for_demarche_simplifiee
+    ):
+        date_of_birth = (datetime.now() - relativedelta(years=19)).strftime("%Y-%m-%dT%H:%M:%S")
+
+        # Create a user that has validated its email and phone number, meaning it
+        # should become beneficiary.
+        users_factories.UserFactory(
+            email=self.EMAIL,
+            isEmailValidated=True,
+            dateOfBirth=date_of_birth,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
+        get_application_details.side_effect = self._get_details
+
+        # when
+        remote_import.run(
+            procedure_id=6712558,
+        )
+
+        # then
+        user = users_models.User.query.one()
+
+        assert user.roles == [users_models.UserRole.BENEFICIARY]
+
     @override_features(FORCE_PHONE_VALIDATION=False)
     @freezegun.freeze_time("2021-10-30 09:00:00")
     @patch(

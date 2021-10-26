@@ -25,8 +25,13 @@ def _compute_eighteenth_birthday(birth_date: datetime.datetime) -> datetime.date
     return datetime.datetime.combine(birth_date, datetime.time(0, 0)) + relativedelta(years=18)
 
 
-def get_granted_deposit(beneficiary: User, version: Optional[int] = None) -> Optional[GrantedDeposit]:
-    if beneficiary.eligibility == EligibilityType.UNDERAGE:
+def get_granted_deposit(
+    beneficiary: User, version: Optional[int] = None, eligibility: Optional[EligibilityType] = None
+) -> Optional[GrantedDeposit]:
+    if not eligibility:
+        eligibility = beneficiary.eligibility
+
+    if eligibility == EligibilityType.UNDERAGE:
         return GrantedDeposit(
             amount=deposit_conf.GRANTED_DEPOSIT_AMOUNT_BY_AGE_AND_VERSION[beneficiary.age][1],
             expiration_date=_compute_eighteenth_birthday(beneficiary.dateOfBirth),
@@ -34,7 +39,7 @@ def get_granted_deposit(beneficiary: User, version: Optional[int] = None) -> Opt
             version=1,
         )
 
-    if beneficiary.eligibility == EligibilityType.AGE18 or settings.IS_INTEGRATION:
+    if eligibility == EligibilityType.AGE18 or settings.IS_INTEGRATION:
         if version is None:
             version = 2
         return GrantedDeposit(
@@ -47,12 +52,14 @@ def get_granted_deposit(beneficiary: User, version: Optional[int] = None) -> Opt
     return None
 
 
-def create_deposit(beneficiary: User, deposit_source: str, version: int = None) -> Deposit:
+def create_deposit(
+    beneficiary: User, deposit_source: str, version: int = None, eligibility: Optional[EligibilityType] = None
+) -> Deposit:
     """Create a new deposit for the user if there is no deposit yet.
 
     The ``version`` argument MUST NOT be used outside (very specific) tests.
     """
-    granted_deposit = get_granted_deposit(beneficiary, version)
+    granted_deposit = get_granted_deposit(beneficiary, version, eligibility)
 
     if not granted_deposit:
         raise exceptions.UserNotGrantable()
