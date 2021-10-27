@@ -321,6 +321,7 @@ class UpdateIDPieceNumberTest:
         assert user.has_beneficiary_role
         assert len(user.beneficiaryImports) == 1
         assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
+        assert user.beneficiaryImports[0].eligibilityType == users_models.EligibilityType.AGE18
 
     def test_update_beneficiary_id_piece_number_from_dms_data(self, client):
         user = users_factories.UserFactory()

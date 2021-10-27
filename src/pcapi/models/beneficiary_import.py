@@ -1,16 +1,11 @@
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import BigInteger
-from sqlalchemy import Column
-from sqlalchemy import ForeignKey
-from sqlalchemy import Index
-from sqlalchemy import Integer
-from sqlalchemy import String
-from sqlalchemy import desc
+import sqlalchemy as sa
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
+from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
@@ -25,17 +20,24 @@ class BeneficiaryImportSources(Enum):
 
 
 class BeneficiaryImport(PcObject, Model):
-    applicationId = Column(BigInteger, nullable=False)
+    applicationId = sa.Column(sa.BigInteger, nullable=False)
 
-    beneficiaryId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=True)
+    beneficiaryId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
 
-    sourceId = Column(Integer, nullable=True)
+    sourceId = sa.Column(sa.Integer, nullable=True)
 
-    source = Column(String(255), nullable=False)
+    source = sa.Column(sa.String(255), nullable=False)
 
     beneficiary = relationship("User", foreign_keys=[beneficiaryId], backref="beneficiaryImports")
 
-    Index(
+    eligibilityType = sa.Column(
+        sa.Enum(EligibilityType, create_constraint=False),
+        nullable=False,
+        default=EligibilityType.AGE18,
+        server_default=sa.text(EligibilityType.AGE18.value),
+    )
+
+    sa.Index(
         "idx_beneficiary_import_application",
         applicationId,
         sourceId,
@@ -95,11 +97,11 @@ class BeneficiaryImport(PcObject, Model):
         return f"dossier {self.source} [{self.applicationId}]"
 
     @classmethod
-    def _query_last_status(cls, column: Column):
+    def _query_last_status(cls, column: sa.Column):
         return (
             db.session.query(column)
             .filter(BeneficiaryImportStatus.beneficiaryImportId == cls.id)
-            .order_by(desc(BeneficiaryImportStatus.date))
+            .order_by(sa.desc(BeneficiaryImportStatus.date))
             .limit(1)
             .as_scalar()
         )
