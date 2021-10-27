@@ -14,7 +14,7 @@ from google.cloud import tasks_v2
 import pytest
 
 from pcapi import settings
-from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.fraud import factories as fraud_factories
@@ -1316,8 +1316,8 @@ class ValidatePhoneNumberTest:
 
 
 def test_suspend_account(app):
-    booking = BookingFactory()
-    user = booking.user
+    booking = booking_factories.IndividualBookingFactory()
+    user = booking.individualBooking.user
 
     access_token = create_access_token(identity=user.email)
     test_client = TestClient(app.test_client())

@@ -4,6 +4,7 @@ from flask import abort
 from flask import jsonify
 from flask_login import current_user
 from flask_login import login_required
+from sqlalchemy.orm import joinedload
 
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
@@ -34,7 +35,10 @@ def get_bookings() -> Any:
 @private_api.route("/bookings/<booking_id>", methods=["GET"])
 @login_required
 def get_booking(booking_id: int) -> Any:
-    booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
+    booking = (
+        Booking.query.filter_by(id=dehumanize(booking_id)).options(joinedload(Booking.individualBooking)).first_or_404()
+    )
+    booking.userId = booking.individualBooking.userId
 
     return jsonify(as_dict(booking, includes=WEBAPP_GET_BOOKING_INCLUDES)), 200
 

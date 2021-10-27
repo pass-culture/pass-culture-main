@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timezone
 
+from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -8,6 +9,9 @@ from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
 from pcapi.utils.human_ids import humanize
+
+
+pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def make_booking(**kwargs):
@@ -26,7 +30,7 @@ def make_booking(**kwargs):
         stock__offer__venue__managingOfferer__name="Théâtre du coin",
     )
     attributes.update(kwargs)
-    return bookings_factories.BookingFactory(**attributes)
+    return bookings_factories.IndividualBookingFactory(**attributes)
 
 
 def get_expected_base_email_data(booking, mediation, **overrides):
@@ -34,19 +38,19 @@ def get_expected_base_email_data(booking, mediation, **overrides):
         "MJ-TemplateID": 3094927,
         "MJ-TemplateLanguage": True,
         "Vars": {
-            "user_first_name": "Joe",
-            "booking_date": "3 octobre 2019",
-            "booking_hour": "15h24",
-            "offer_name": "Super événement",
-            "offerer_name": "Théâtre du coin",
-            "event_date": "6 novembre 2019",
-            "event_hour": "15h59",
-            "offer_price": "23.99 €",
-            "offer_token": "ABC123",
-            "venue_name": "Lieu de l'offreur",
-            "venue_address": "25 avenue du lieu",
-            "venue_postal_code": "75010",
-            "venue_city": "Paris",
+            "user_first_name": booking.firstName,
+            "booking_date": "15 octobre 2021",
+            "booking_hour": "14h48",
+            "offer_name": booking.stock.offer.name,
+            "offerer_name": booking.offerer.name,
+            "event_date": "20 octobre 2021",
+            "event_hour": "14h48",
+            "offer_price": f"{booking.total_amount} €" if booking.stock.price > 0 else "Gratuit",
+            "offer_token": booking.token,
+            "venue_name": booking.stock.offer.venue.name,
+            "venue_address": booking.stock.offer.venue.address,
+            "venue_postal_code": booking.stock.offer.venue.postalCode,
+            "venue_city": booking.stock.offer.venue.city,
             "all_but_not_virtual_thing": 1,
             "all_things_not_virtual_thing": 0,
             "is_event": 1,
@@ -67,22 +71,26 @@ def get_expected_base_email_data(booking, mediation, **overrides):
     return email_data
 
 
-@pytest.mark.usefixtures("db_session")
+@freeze_time("2021-10-15 12:48:00")
 def test_should_return_event_specific_data_for_email_when_offer_is_an_event():
-    booking = make_booking()
+    booking = bookings_factories.IndividualBookingFactory(
+        stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow()
+    )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
-    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
     expected = get_expected_base_email_data(booking, mediation)
     assert email_data == expected
 
 
-@pytest.mark.usefixtures("db_session")
+@freeze_time("2021-10-15 12:48:00")
 def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event():
-    booking = make_booking(quantity=2)
+    booking = booking = bookings_factories.IndividualBookingFactory(
+        stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow(), quantity=2
+    )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
     expected = get_expected_base_email_data(
         booking,
@@ -94,15 +102,17 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event()
     assert email_data == expected
 
 
-@pytest.mark.usefixtures("db_session")
+@freeze_time("2021-10-15 12:48:00")
 def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing():
-    booking = make_booking(
-        stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        stock__offer__name="Super bien culturel",
+    stock = offers_factories.ThingStockFactory(
+        price=23.99,
+        offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        offer__name="Super bien culturel",
     )
+    booking = bookings_factories.IndividualBookingFactory(stock=stock, dateCreated=datetime.utcnow())
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
     expected = get_expected_base_email_data(
         booking,
@@ -119,55 +129,60 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing():
     assert email_data == expected
 
 
-@pytest.mark.usefixtures("db_session")
+@freeze_time("2021-10-15 12:48:00")
 def test_should_use_public_name_when_available():
-    booking = make_booking(
+    booking = bookings_factories.IndividualBookingFactory(
         stock__offer__venue__name="LIBRAIRIE GENERALE UNIVERSITAIRE COLBERT",
         stock__offer__venue__publicName="Librairie Colbert",
+        dateCreated=datetime.utcnow(),
     )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
     expected = get_expected_base_email_data(
         booking,
         mediation,
         venue_name="Librairie Colbert",
+        **{key: value for key, value in email_data["Vars"].items() if key != "venue_name"},
     )
     assert email_data == expected
 
 
-@pytest.mark.usefixtures("db_session")
+@freeze_time("2021-10-15 12:48:00")
 def test_should_return_withdrawal_details_when_available():
     withdrawal_details = "Conditions de retrait spécifiques."
-    booking = make_booking(
+    booking = bookings_factories.IndividualBookingFactory(
         stock__offer__withdrawalDetails=withdrawal_details,
+        dateCreated=datetime.utcnow(),
     )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
     expected = get_expected_base_email_data(
         booking,
         mediation,
         offer_withdrawal_details=withdrawal_details,
+        **{key: value for key, value in email_data["Vars"].items() if key != "offer_withdrawal_details"},
     )
     assert email_data == expected
 
 
+@freeze_time("2021-10-15 12:48:00")
 class DigitalOffersTest:
-    @pytest.mark.usefixtures("db_session")
     def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing(self):
-        booking = make_booking(
+        booking = bookings_factories.IndividualBookingFactory(
             quantity=10,
             stock__price=0,
             stock__offer__product__subcategoryId=subcategories.VOD.id,
             stock__offer__product__url="http://example.com",
             stock__offer__name="Super offre numérique",
+            dateCreated=datetime.utcnow(),
         )
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
         expected = get_expected_base_email_data(
             booking,
@@ -187,7 +202,6 @@ class DigitalOffersTest:
         )
         assert email_data == expected
 
-    @pytest.mark.usefixtures("db_session")
     def test_hide_cancellation_policy_on_bookings_with_activation_code(self):
         offer = offers_factories.OfferFactory(
             venue__name="Lieu de l'offreur",
@@ -196,7 +210,7 @@ class DigitalOffersTest:
         )
         digital_stock = offers_factories.StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]
-        booking = bookings_factories.UsedBookingFactory(
+        booking = bookings_factories.UsedIndividualBookingFactory(
             stock__offer=offer,
             activationCode=first_activation_code,
             dateCreated=datetime(2018, 1, 1),
@@ -204,7 +218,7 @@ class DigitalOffersTest:
 
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
         expected = get_expected_base_email_data(
             booking,
             mediation,
@@ -232,92 +246,88 @@ class DigitalOffersTest:
 
         assert email_data == expected
 
+    def test_use_activation_code_instead_of_token_if_possible(self):
+        booking = bookings_factories.IndividualBookingFactory(
+            individualBooking__user__email="used-email@example.com",
+            quantity=10,
+            stock__price=0,
+            stock__offer__product__subcategoryId=subcategories.VOD.id,
+            stock__offer__product__url="http://example.com?token={token}&offerId={offerId}&email={email}",
+            stock__offer__name="Super offre numérique",
+            dateCreated=datetime.utcnow(),
+        )
+        offers_factories.ActivationCodeFactory(stock=booking.stock, booking=booking, code="code_toto")
+        mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-@pytest.mark.usefixtures("db_session")
-def test_use_activation_code_instead_of_token_if_possible():
-    booking = make_booking(
-        user__email="used-email@example.com",
-        quantity=10,
-        stock__price=0,
-        stock__offer__product__subcategoryId=subcategories.VOD.id,
-        stock__offer__product__url="http://example.com?token={token}&offerId={offerId}&email={email}",
-        stock__offer__name="Super offre numérique",
-    )
-    offers_factories.ActivationCodeFactory(stock=booking.stock, booking=booking, code="code_toto")
-    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
-    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+        expected = get_expected_base_email_data(
+            booking,
+            mediation,
+            all_but_not_virtual_thing=0,
+            all_things_not_virtual_thing=0,
+            event_date="",
+            event_hour="",
+            is_event=0,
+            is_single_event=0,
+            offer_name="Super offre numérique",
+            offer_price="Gratuit",
+            can_expire=0,
+            offer_token="code_toto",
+            is_digital_booking_with_activation_code_and_no_expiration_date=1,
+            code_expiration_date="",
+            has_offer_url=1,
+            digital_offer_url=f"http://example.com?token=code_toto&offerId={humanize(booking.stock.offer.id)}&email=used-email@example.com",
+            expiration_delay="",
+        )
+        assert email_data == expected
 
-    expected = get_expected_base_email_data(
-        booking,
-        mediation,
-        all_but_not_virtual_thing=0,
-        all_things_not_virtual_thing=0,
-        event_date="",
-        event_hour="",
-        is_event=0,
-        is_single_event=0,
-        offer_name="Super offre numérique",
-        offer_price="Gratuit",
-        can_expire=0,
-        offer_token="code_toto",
-        is_digital_booking_with_activation_code_and_no_expiration_date=1,
-        code_expiration_date="",
-        has_offer_url=1,
-        digital_offer_url=f"http://example.com?token=code_toto&offerId={humanize(booking.stock.offer.id)}&email=used-email@example.com",
-        expiration_delay="",
-    )
-    assert email_data == expected
+    def test_add_expiration_date_from_activation_code(self):
+        booking = bookings_factories.IndividualBookingFactory(
+            quantity=10,
+            stock__price=0,
+            stock__offer__product__subcategoryId=subcategories.VOD.id,
+            stock__offer__product__url="http://example.com",
+            stock__offer__name="Super offre numérique",
+            dateCreated=datetime.utcnow(),
+        )
+        offers_factories.ActivationCodeFactory(
+            stock=booking.stock,
+            booking=booking,
+            code="code_toto",
+            expirationDate=datetime(2030, 1, 1),
+        )
+        mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
+        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
-@pytest.mark.usefixtures("db_session")
-def test_add_expiration_date_from_activation_code():
-    booking = make_booking(
-        quantity=10,
-        stock__price=0,
-        stock__offer__product__subcategoryId=subcategories.VOD.id,
-        stock__offer__product__url="http://example.com",
-        stock__offer__name="Super offre numérique",
-    )
-    offers_factories.ActivationCodeFactory(
-        stock=booking.stock,
-        booking=booking,
-        code="code_toto",
-        expirationDate=datetime(2030, 1, 1),
-    )
-    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
-
-    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
-
-    expected = get_expected_base_email_data(
-        booking,
-        mediation,
-        all_but_not_virtual_thing=0,
-        all_things_not_virtual_thing=0,
-        event_date="",
-        event_hour="",
-        is_event=0,
-        is_single_event=0,
-        offer_name="Super offre numérique",
-        offer_price="Gratuit",
-        can_expire=0,
-        offer_token="code_toto",
-        code_expiration_date="1 janvier 2030",
-        has_offer_url=1,
-        digital_offer_url="http://example.com",
-        expiration_delay="",
-    )
-    assert email_data == expected
+        expected = get_expected_base_email_data(
+            booking,
+            mediation,
+            all_but_not_virtual_thing=0,
+            all_things_not_virtual_thing=0,
+            event_date="",
+            event_hour="",
+            is_event=0,
+            is_single_event=0,
+            offer_name="Super offre numérique",
+            offer_price="Gratuit",
+            can_expire=0,
+            offer_token="code_toto",
+            code_expiration_date="1 janvier 2030",
+            has_offer_url=1,
+            digital_offer_url="http://example.com",
+            expiration_delay="",
+        )
+        assert email_data == expected
 
 
-@pytest.mark.usefixtures("db_session")
 def test_should_return_total_price_for_duo_offers():
-    booking = bookings_factories.BookingFactory(quantity=2, stock__price=10)
-    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+    booking = bookings_factories.IndividualBookingFactory(quantity=2, stock__price=10)
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
     assert email_data["Vars"]["offer_price"] == "20.00 €"
 
 
-@pytest.mark.usefixtures("db_session")
 def test_digital_offer_without_departement_code_information():
     """
     Test that a user without any postal code information can book a digital
@@ -327,23 +337,26 @@ def test_digital_offer_without_departement_code_information():
     offer = offers_factories.DigitalOfferFactory()
     stock = offers_factories.StockFactory(offer=offer)
     date_created = datetime(2021, 7, 1, 10, 0, 0, tzinfo=timezone.utc)
-    booking = bookings_factories.BookingFactory(stock=stock, dateCreated=date_created, user__departementCode=None)
+    booking = bookings_factories.IndividualBookingFactory(
+        stock=stock, dateCreated=date_created, user__departementCode=None
+    )
 
-    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
     assert email_data["Vars"]["booking_date"] == "1 juillet 2021"
     assert email_data["Vars"]["booking_hour"] == "12h00"
 
 
-@pytest.mark.usefixtures("db_session")
+@freeze_time("2021-10-15 12:48:00")
 class BooksBookingExpirationDateTest:
     def test_should_return_new_expiration_delay_data_for_email_when_offer_is_a_book(self):
-        booking = make_booking(
+        booking = bookings_factories.IndividualBookingFactory(
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
             stock__offer__name="Super livre",
+            dateCreated=datetime.utcnow(),
         )
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
-        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
         expected = get_expected_base_email_data(
             booking,

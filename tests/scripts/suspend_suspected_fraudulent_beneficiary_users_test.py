@@ -1,7 +1,6 @@
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.bookings.factories import UsedBookingFactory
+from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
@@ -17,8 +16,8 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
         fraudulent_emails_providers = ["example.com"]
         admin_user = AdminFactory()
         fraudulent_user = BeneficiaryGrant18Factory(email="jesuisunefraude@example.com")
-        BookingFactory(user=fraudulent_user, stock__price=1)
-        BookingFactory(user=fraudulent_user, stock__price=2)
+        booking_factories.IndividualBookingFactory(individualBooking__user=fraudulent_user, stock__price=1)
+        booking_factories.IndividualBookingFactory(individualBooking__user=fraudulent_user, stock__price=2)
 
         # When
         suspend_fraudulent_beneficiary_users_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
@@ -32,8 +31,8 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
         fraudulent_emails_providers = ["example.com"]
         admin_user = AdminFactory()
         fraudulent_user = BeneficiaryGrant18Factory(email="jesuisunefraude@example.com")
-        booking_1 = BookingFactory(user=fraudulent_user, stock__price=1)
-        booking_2 = BookingFactory(user=fraudulent_user, stock__price=2)
+        booking_1 = booking_factories.IndividualBookingFactory(individualBooking__user=fraudulent_user, stock__price=1)
+        booking_2 = booking_factories.IndividualBookingFactory(individualBooking__user=fraudulent_user, stock__price=2)
 
         # When
         suspend_fraudulent_beneficiary_users_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
@@ -51,7 +50,9 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
         fraudulent_emails_providers = ["example.com"]
         admin_user = AdminFactory()
         fraudulent_user = BeneficiaryGrant18Factory(email="jesuisunefraude@example.com")
-        uncancellable_booking = UsedBookingFactory(user=fraudulent_user, stock__price=1)
+        uncancellable_booking = booking_factories.UsedIndividualBookingFactory(
+            individualBooking__user=fraudulent_user, stock__price=1
+        )
 
         # When
         suspend_fraudulent_beneficiary_users_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
@@ -72,7 +73,7 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
         )
         beneficiary_fraudulent_user_with_subdomain = BeneficiaryGrant18Factory(email="jesuisunefraude@sub.example.com")
         non_beneficiary_fraudulent_user = UserFactory(email="jesuisuneautrefraude@example.com")
-        BookingFactory(user=beneficiary_fraudulent_user, stock__price=1)
+        booking_factories.IndividualBookingFactory(individualBooking__user=beneficiary_fraudulent_user, stock__price=1)
 
         # When
         suspend_fraudulent_beneficiary_users_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
@@ -92,7 +93,7 @@ class SuspendFraudulentBeneficiaryUsersByEmailProvidersTest:
         fraudulent_emails_providers = ["gmoil.com"]
         admin_user = AdminFactory()
         non_fraudulent_user = BeneficiaryGrant18Factory(email="jenesuispasunefraude@example.com")
-        BookingFactory(user=non_fraudulent_user, stock__price=1)
+        booking_factories.IndividualBookingFactory(individualBooking__user=non_fraudulent_user, stock__price=1)
 
         # When
         suspend_fraudulent_beneficiary_users_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
@@ -107,8 +108,12 @@ class SuspendFraudulentBeneficiaryUsersByIdsTest:
         fraudulent_user_ids = [23]
         admin_user = AdminFactory()
         fraudulent_user = BeneficiaryGrant18Factory(id=23)
-        fraudulent_user_booking_1 = BookingFactory(user=fraudulent_user, stock__price=1)
-        fraudulent_user_booking_2 = BookingFactory(user=fraudulent_user, stock__price=2)
+        fraudulent_user_booking_1 = booking_factories.IndividualBookingFactory(
+            individualBooking__user=fraudulent_user, stock__price=1
+        )
+        fraudulent_user_booking_2 = booking_factories.IndividualBookingFactory(
+            individualBooking__user=fraudulent_user, stock__price=2
+        )
 
         suspend_fraudulent_beneficiary_users_by_ids(fraudulent_user_ids, admin_user, dry_run=False)
 
@@ -123,7 +128,9 @@ class SuspendFraudulentBeneficiaryUsersByIdsTest:
         fraudulent_user_ids = [15]
         admin_user = AdminFactory()
         fraudulent_user = BeneficiaryGrant18Factory(id=15)
-        uncancellable_booking = UsedBookingFactory(user=fraudulent_user, stock__price=1)
+        uncancellable_booking = booking_factories.UsedIndividualBookingFactory(
+            individualBooking__user=fraudulent_user, stock__price=1
+        )
 
         suspend_fraudulent_beneficiary_users_by_ids(fraudulent_user_ids, admin_user, dry_run=False)
 

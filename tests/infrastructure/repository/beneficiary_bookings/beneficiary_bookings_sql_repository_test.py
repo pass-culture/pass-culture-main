@@ -3,9 +3,7 @@ from datetime import timedelta
 
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.bookings.factories import CancelledBookingFactory
-from pcapi.core.bookings.factories import UsedBookingFactory
+import pcapi.core.bookings.factories as booking_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
@@ -29,8 +27,8 @@ class BeneficiaryBookingsSQLRepositoryTest:
         beneficiary = BeneficiaryGrant18Factory()
         offer = ThingOfferFactory(isActive=True, url="http://url.com", product__thumbCount=1)
         stock = ThingStockFactory(offer=offer, price=0, quantity=10)
-        booking = UsedBookingFactory(
-            user=beneficiary,
+        booking = booking_factories.UsedIndividualBookingFactory(
+            individualBooking__user=beneficiary,
             stock=stock,
             token="ABCDEF",
             dateCreated=datetime(2020, 4, 22, 0, 0),
@@ -74,8 +72,8 @@ class BeneficiaryBookingsSQLRepositoryTest:
         beneficiary_2 = BeneficiaryGrant18Factory()
         offer = EventOfferFactory()
         stock = EventStockFactory(offer=offer)
-        booking1 = BookingFactory(user=beneficiary_1, stock=stock)
-        BookingFactory(user=beneficiary_2, stock=stock)
+        booking1 = booking_factories.IndividualBookingFactory(individualBooking__user=beneficiary_1, stock=stock)
+        booking_factories.IndividualBookingFactory(individualBooking__user=beneficiary_2, stock=stock)
 
         # When
         result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=beneficiary_1.id)
@@ -94,9 +92,9 @@ class BeneficiaryBookingsSQLRepositoryTest:
         stock1 = EventStockFactory(offer=offer1)
         stock2 = EventStockFactory(offer=offer2)
         stock3 = EventStockFactory(offer=offer3)
-        BookingFactory(user=beneficiary, stock=stock1)
-        BookingFactory(user=beneficiary, stock=stock2)
-        booking3 = BookingFactory(user=beneficiary, stock=stock3)
+        booking_factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock=stock1)
+        booking_factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock=stock2)
+        booking3 = booking_factories.IndividualBookingFactory(individualBooking__user=beneficiary, stock=stock3)
 
         # When
         result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=beneficiary.id)
@@ -114,8 +112,12 @@ class BeneficiaryBookingsSQLRepositoryTest:
         beneficiary = BeneficiaryGrant18Factory()
         offer = EventOfferFactory()
         stock = EventStockFactory(offer=offer)
-        booking1 = CancelledBookingFactory(user=beneficiary, stock=stock, dateCreated=two_days_ago)
-        CancelledBookingFactory(user=beneficiary, stock=stock, dateCreated=three_days_ago)
+        booking1 = booking_factories.CancelledIndividualBookingFactory(
+            individualBooking__user=beneficiary, stock=stock, dateCreated=two_days_ago
+        )
+        booking_factories.CancelledIndividualBookingFactory(
+            individualBooking__user=beneficiary, stock=stock, dateCreated=three_days_ago
+        )
 
         # When
         result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=beneficiary.id)
@@ -134,22 +136,22 @@ class BeneficiaryBookingsSQLRepositoryTest:
 
         beneficiary = BeneficiaryGrant18Factory()
 
-        booking1 = BookingFactory(
-            user=beneficiary,
+        booking1 = booking_factories.IndividualBookingFactory(
+            individualBooking__user=beneficiary,
             stock=EventStockFactory(
                 beginningDatetime=three_days,
                 bookingLimitDatetime=now,
             ),
         )
-        booking2 = BookingFactory(
-            user=beneficiary,
+        booking2 = booking_factories.IndividualBookingFactory(
+            individualBooking__user=beneficiary,
             stock=EventStockFactory(
                 beginningDatetime=two_days,
                 bookingLimitDatetime=now,
             ),
         )
-        booking3 = BookingFactory(
-            user=beneficiary,
+        booking3 = booking_factories.IndividualBookingFactory(
+            individualBooking__user=beneficiary,
             stock=EventStockFactory(
                 beginningDatetime=two_days_bis,
                 bookingLimitDatetime=now,

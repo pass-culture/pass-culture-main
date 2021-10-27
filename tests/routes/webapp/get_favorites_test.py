@@ -1,11 +1,11 @@
 import pytest
 
+from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.repository import repository
@@ -57,14 +57,9 @@ class Returns200Test:
     def when_user_is_logged_in_and_a_favorite_booked_offer_exist(self, app):
         # Given
         user = users_factories.BeneficiaryGrant18Factory()
-        offerer = create_offerer()
-        venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
-        offer = create_offer_with_thing_product(venue, thumb_count=0)
-        mediation = create_mediation(offer, is_active=True)
-        favorite = create_favorite(mediation=mediation, offer=offer, user=user)
-        stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user=user, stock=stock)
-        repository.save(booking, favorite)
+        favorite = users_factories.FavoriteFactory(user=user)
+        stock = offers_factories.StockFactory(offer=favorite.offer)
+        booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user, stock=stock)
 
         # When
         response = TestClient(app.test_client()).with_session_auth(user.email).get("/favorites")

@@ -22,8 +22,8 @@ class Returns200Test:
     def test_when_user_has_rights_and_regular_offer(self, client):
         # Given
         past = datetime.now() - timedelta(days=2)
-        booking = bookings_factories.BookingFactory(
-            user__email="beneficiary@example.com",
+        booking = bookings_factories.IndividualBookingFactory(
+            individualBooking__user__email="beneficiary@example.com",
             stock__beginningDatetime=past,
             stock__offer=offers_factories.EventOfferFactory(
                 extraData={
@@ -119,7 +119,7 @@ class Returns200Test:
 
     def test_when_api_key_is_provided_and_rights_and_regular_offer(self, client):
         # Given
-        booking = bookings_factories.BookingFactory()
+        booking = bookings_factories.IndividualBookingFactory()
         ApiKeyFactory(offerer=booking.offerer, prefix="test_prefix")
 
         # When
@@ -131,7 +131,7 @@ class Returns200Test:
 
     def test_when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, client):
         # Given
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.IndividualBookingFactory(
             stock__beginningDatetime=datetime.now() - timedelta(days=2),
         )
         user_offerer = offers_factories.UserOffererFactory(offerer=booking.offerer)
@@ -159,7 +159,7 @@ class Returns401Test:
 class Returns403Test:
     def test_when_user_doesnt_have_rights_and_token_exists(self, client):
         # Given
-        booking = bookings_factories.BookingFactory()
+        booking = bookings_factories.IndividualBookingFactory()
         another_pro_user = offers_factories.UserOffererFactory().user
 
         # When
@@ -174,7 +174,7 @@ class Returns403Test:
 
     def test_when_given_api_key_not_related_to_booking_offerer(self, client):
         # Given
-        booking = bookings_factories.BookingFactory()
+        booking = bookings_factories.IndividualBookingFactory()
         ApiKeyFactory()  # another offerer's API key
 
         # When
@@ -191,7 +191,7 @@ class Returns403Test:
     def test_when_booking_not_confirmed(self, client):
         # Given
         next_week = datetime.utcnow() + timedelta(weeks=1)
-        booking = bookings_factories.BookingFactory(stock__beginningDatetime=next_week)
+        booking = bookings_factories.IndividualBookingFactory(stock__beginningDatetime=next_week)
         pro_user = offers_factories.UserOffererFactory(offerer=booking.offerer).user
 
         # When

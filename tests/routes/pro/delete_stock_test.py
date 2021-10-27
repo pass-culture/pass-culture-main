@@ -34,7 +34,7 @@ class Returns200Test:
                 "body": f"""Ta commande "{offer.name}" a été annulée par l'offreur.""",
                 "title": "Commande annulée",
             },
-            "user_ids": [booking.userId],
+            "user_ids": [booking.individualBooking.userId],
         }
 
 

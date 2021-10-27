@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from pcapi.core.bookings.factories import CancelledBookingFactory
+from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
@@ -14,8 +14,8 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
+@pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_and_has_no_deposit(self, app):
         # Given
         user = BeneficiaryGrant18Factory(
@@ -63,7 +63,6 @@ class Returns200Test:
             "wallet_is_activated": False,
         }
 
-    @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_and_has_a_deposit(self, app):
         # Given
         BeneficiaryGrant18Factory(
@@ -82,7 +81,6 @@ class Returns200Test:
         assert response.json["wallet_is_activated"] == True
         assert response.json["deposit_expiration_date"] == "2002-01-01T02:02:00Z"
 
-    @pytest.mark.usefixtures("db_session")
     def when_user_has_booked_some_offers(self, app):
         # Given
         user = BeneficiaryGrant18Factory(email="wallet_test@email.com", postalCode="93020", deposit__version=1)
@@ -102,10 +100,10 @@ class Returns200Test:
             "physical": {"initial": 200.0, "remaining": 195.0},
         }
 
-    @pytest.mark.usefixtures("db_session")
     def when_user_has_cancelled_some_offers(self, app):
         # Given
-        CancelledBookingFactory(user__email="wallet_test@email.com", user__postalCode="75130", user__deposit__version=1)
+        user = BeneficiaryGrant18Factory(email="wallet_test@email.com", postalCode="75130", deposit__version=1)
+        booking_factories.CancelledIndividualBookingFactory(individualBooking__user=user)
 
         # When
         response = (
@@ -120,7 +118,6 @@ class Returns200Test:
             "physical": {"initial": 200.0, "remaining": 200.0},
         }
 
-    @pytest.mark.usefixtures("db_session")
     def when_user_is_created_without_postal_code(self, app):
         # Given
         BeneficiaryGrant18Factory(email="wallet_test@email.com", postalCode=None, departementCode=None)
@@ -133,7 +130,6 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
 
-    @pytest.mark.usefixtures("db_session")
     def when_user_is_a_pro(self, app):
         # Given
         pro = ProFactory(email="pro@example.com", postalCode=None, dateOfBirth=None)
@@ -147,7 +143,6 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["suspensionReason"] == None
 
-    @pytest.mark.usefixtures("db_session")
     def when_user_is_an_admin(self, app):
         # Given
         AdminFactory(email="admin@example.com", postalCode=None, dateOfBirth=None)
@@ -158,7 +153,6 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
 
-    @pytest.mark.usefixtures("db_session")
     def should_return_deposit_version(self, app):
         # Given
         BeneficiaryGrant18Factory(email="wallet_test@email.com", postalCode="93020", deposit__version=1)

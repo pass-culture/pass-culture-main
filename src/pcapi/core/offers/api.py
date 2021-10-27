@@ -448,7 +448,7 @@ def upsert_stocks(
 
     for stock in edited_stocks:
         previous_beginning = edited_stocks_previous_beginnings[stock.id]
-        if stock.beginningDatetime != previous_beginning:
+        if stock.beginningDatetime != previous_beginning and not stock.offer.isEducational:
             _notify_beneficiaries_upon_stock_edit(stock)
     search.async_index_offer_ids([offer.id])
 

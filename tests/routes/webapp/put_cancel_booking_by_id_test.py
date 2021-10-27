@@ -19,10 +19,10 @@ class Returns200Test:
         # Given
         in_four_days = datetime.utcnow() + timedelta(days=4)
         stock = offers_factories.EventStockFactory(beginningDatetime=in_four_days)
-        booking = bookings_factories.BookingFactory(stock=stock)
+        booking = bookings_factories.IndividualBookingFactory(stock=stock)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(booking.user.email)
+        client = TestClient(app.test_client()).with_session_auth(booking.email)
         response = client.put(f"/bookings/{humanize(booking.id)}/cancel")
         booking = Booking.query.get(booking.id)
 
@@ -48,10 +48,10 @@ class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def when_the_booking_cannot_be_cancelled(self, app):
         # Given
-        booking = bookings_factories.UsedBookingFactory()
+        booking = bookings_factories.UsedIndividualBookingFactory()
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(booking.user.email)
+        client = TestClient(app.test_client()).with_session_auth(booking.email)
         response = client.put(f"/bookings/{humanize(booking.id)}/cancel")
         booking = Booking.query.get(booking.id)
 

@@ -40,7 +40,7 @@ from pcapi.utils.human_ids import humanize
 class CreatePaymentForBookingTest:
     def test_basics(self):
         offerer = offers_factories.OffererFactory(name="offerer", siren="123456")
-        booking = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer)
+        booking = bookings_factories.IndividualBookingFactory(stock__offer__venue__managingOfferer=offerer)
         reimbursement = BookingReimbursement(booking, PhysicalOffersReimbursement(), Decimal(10))
         batch_date = datetime.utcnow()
 
@@ -60,7 +60,7 @@ class CreatePaymentForBookingTest:
         assert payment.recipientSiren == "123456"
 
     def test_use_iban_and_bic_from_venue(self):
-        booking = bookings_factories.BookingFactory()
+        booking = bookings_factories.IndividualBookingFactory()
         offers_factories.BankInformationFactory(venue=booking.venue, iban="iban1", bic="bic1")
         offers_factories.BankInformationFactory(offerer=booking.offerer, iban="iban2", bic="bic2")
         reimbursement = BookingReimbursement(booking, PhysicalOffersReimbursement(), Decimal(10))
@@ -72,7 +72,7 @@ class CreatePaymentForBookingTest:
         assert payment.bic == "BIC1"
 
     def test_use_iban_and_bic_from_offerer(self):
-        booking = bookings_factories.BookingFactory()
+        booking = bookings_factories.IndividualBookingFactory()
         offers_factories.BankInformationFactory(offerer=booking.offerer, iban="iban", bic="bic")
         reimbursement = BookingReimbursement(booking, PhysicalOffersReimbursement(), Decimal(10))
         batch_date = datetime.utcnow()
@@ -83,7 +83,7 @@ class CreatePaymentForBookingTest:
         assert payment.bic == "BIC"
 
     def test_with_custom_reimbursement_rule(self):
-        booking = bookings_factories.BookingFactory()
+        booking = bookings_factories.IndividualBookingFactory()
         rule = payments_factories.CustomReimbursementRuleFactory(offer=booking.stock.offer, amount=2)
         reimbursement = BookingReimbursement(booking, rule, Decimal(2))
         batch_date = datetime.utcnow()
@@ -231,7 +231,7 @@ class CreatePaymentDetailsTest:
     @pytest.mark.usefixtures("db_session")
     def test_contains_info_on_booking(self):
         # given
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.IndividualBookingFactory(
             dateCreated=datetime(2018, 2, 5),
             dateUsed=datetime(2018, 2, 19),
         )

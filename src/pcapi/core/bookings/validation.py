@@ -6,6 +6,7 @@ from pcapi.core.bookings import constants
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -36,9 +37,10 @@ def check_can_book_free_offer(user: User, stock: Stock) -> None:
 def check_offer_already_booked(user: User, offer: Offer) -> None:
     """Raise ``OfferIsAlreadyBooked`` if the user already booked this offer."""
     if db.session.query(
-        Booking.query.filter_by(
-            user=user,
-            isCancelled=False,
+        IndividualBooking.query.join(Booking)
+        .filter(
+            IndividualBooking.user == user,
+            Booking.isCancelled == False,
         )
         .join(Stock)
         .filter(Stock.offerId == offer.id)
@@ -92,7 +94,7 @@ def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer) -
 
 
 def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
-    if booking.userId != user.id:
+    if booking.individualBooking is None or booking.individualBooking.userId != user.id:
         raise exceptions.BookingDoesntExist()
     if booking.isUsed:
         raise exceptions.BookingIsAlreadyUsed()
@@ -105,11 +107,11 @@ def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
 
 # FIXME: should not raise exceptions from `api_errors` (see below for details).
 def check_booking_can_be_cancelled(booking: Booking) -> None:
-    if booking.isCancelled:
+    if booking.isCancelled or booking.status == BookingStatus.CANCELLED:
         gone = api_errors.ResourceGoneError()
         gone.add_error("global", "Cette contremarque a déjà été annulée")
         raise gone
-    if booking.isUsed:
+    if booking.isUsed or booking.status == BookingStatus.USED:
         forbidden = api_errors.ForbiddenError()
         forbidden.add_error("global", "Impossible d'annuler une réservation consommée")
         raise forbidden

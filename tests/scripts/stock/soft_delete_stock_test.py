@@ -44,7 +44,7 @@ class SoftDeleteStockTest:
     @pytest.mark.usefixtures("db_session")
     def should_cancel_every_bookings_for_target_stock(self):
         # Given
-        booking = bookings_factories.BookingFactory()
+        booking = bookings_factories.IndividualBookingFactory()
 
         # When
         soft_delete_stock(booking.stock.id)

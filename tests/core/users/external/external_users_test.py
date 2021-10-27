@@ -4,6 +4,7 @@ from decimal import Decimal
 import pytest
 
 from pcapi.core.bookings.factories import IndividualBookingFactory
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import testing as sendinblue_testing
@@ -65,7 +66,9 @@ def test_get_user_attributes():
     b2 = IndividualBookingFactory(
         individualBooking__user=user, amount=10, dateUsed=datetime(2021, 5, 6), stock__offer=offer
     )
-    IndividualBookingFactory(individualBooking__user=user, amount=100, isCancelled=True)  # should be ignored
+    IndividualBookingFactory(
+        individualBooking__user=user, amount=100, status=BookingStatus.CANCELLED
+    )  # should be ignored
 
     last_date_created = max(booking.dateCreated for booking in [b1, b2])
 

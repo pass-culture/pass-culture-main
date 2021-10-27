@@ -126,19 +126,19 @@ def book_offer(
     )
 
     try:
-        user_emails.send_booking_confirmation_email_to_offerer(individual_booking.booking)
+        user_emails.send_individual_booking_confirmation_email_to_offerer(individual_booking)
     except MailServiceException as error:
         logger.exception("Could not send booking=%s confirmation email to offerer: %s", booking.id, error)
     try:
-        user_emails.send_booking_confirmation_email_to_beneficiary(individual_booking.booking)
+        user_emails.send_individual_booking_confirmation_email_to_beneficiary(individual_booking)
     except MailServiceException as error:
         logger.exception("Could not send booking=%s confirmation email to beneficiary: %s", booking.id, error)
 
     search.async_index_offer_ids([stock.offerId])
 
-    update_external_user(beneficiary)
+    update_external_user(individual_booking.user)
 
-    return booking
+    return individual_booking.booking
 
 
 def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> None:
@@ -168,7 +168,8 @@ def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> Non
         },
     )
 
-    update_external_user(booking.user)
+    if booking.individualBooking is not None:
+        update_external_user(booking.individualBooking.user)
 
     search.async_index_offer_ids([booking.stock.offerId])
 
@@ -265,7 +266,7 @@ def mark_as_used(booking: Booking) -> None:
     logger.info("Booking was marked as used", extra={"bookingId": booking.id})
 
     if booking.individualBookingId is not None:
-        update_external_user(booking.user)
+        update_external_user(booking.individualBooking.user)
 
 
 def mark_as_used_with_uncancelling(booking: Booking) -> None:
@@ -293,7 +294,7 @@ def mark_as_used_with_uncancelling(booking: Booking) -> None:
     logger.info("Booking was uncancelled and marked as used", extra={"bookingId": booking.id})
 
     if booking.individualBookingId is not None:
-        update_external_user(booking.user)
+        update_external_user(booking.individualBooking.user)
 
 
 def mark_as_cancelled(booking: Booking) -> None:
@@ -319,7 +320,8 @@ def mark_as_unused(booking: Booking) -> None:
     repository.save(booking)
     logger.info("Booking was marked as unused", extra={"booking": booking.id})
 
-    update_external_user(booking.user)
+    if booking.individualBookingId is not None:
+        update_external_user(booking.individualBooking.user)
 
 
 def get_qr_code_data(booking_token: str) -> str:

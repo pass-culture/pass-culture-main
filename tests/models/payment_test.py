@@ -3,8 +3,8 @@ from datetime import timedelta
 
 import pytest
 
+import pcapi.core.bookings.factories as booking_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_payment
 from pcapi.model_creators.generic_creators import create_payment_message
 from pcapi.model_creators.generic_creators import create_payment_status
@@ -100,7 +100,7 @@ class PaymentDateTest:
         def test_payment_date_should_return_payment_date_for_status_sent(self, app):
             # Given
             beneficiary = users_factories.BeneficiaryGrant18Factory()
-            booking = create_booking(user=beneficiary)
+            booking = booking_factories.IndividualBookingFactory(individualBooking__user=beneficiary)
             today = datetime.utcnow()
             payment_message = create_payment_message(name="mon message")
             payment = create_payment(booking, booking.offerer, 5, payment_message=payment_message)
@@ -118,7 +118,7 @@ class PaymentDateTest:
         def test_payment_date_should_return_oldest_payment_date_for_status_sent_if_several(self, app):
             # Given
             beneficiary = users_factories.BeneficiaryGrant18Factory()
-            booking = create_booking(user=beneficiary)
+            booking = booking_factories.IndividualBookingFactory(individualBooking__user=beneficiary)
             today = datetime.utcnow()
             yesterday = datetime.utcnow() - timedelta(days=1)
             payment_message = create_payment_message(name="mon message")
@@ -138,7 +138,7 @@ class PaymentDateTest:
         def test_payment_date_should_return_no_payment_date_for_status_pending(self, app):
             # Given
             beneficiary = users_factories.BeneficiaryGrant18Factory()
-            booking = create_booking(user=beneficiary)
+            booking = booking_factories.IndividualBookingFactory(individualBooking__user=beneficiary)
             today = datetime.utcnow()
             payment_message = create_payment_message(name="mon message")
             payment = create_payment(booking, booking.offerer, 5, payment_message=payment_message)

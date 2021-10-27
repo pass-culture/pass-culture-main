@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.offerers.api import find_api_key
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.models import ApiKey
@@ -10,7 +10,7 @@ from pcapi.utils.human_ids import humanize
 
 @pytest.mark.usefixtures("db_session")
 def test_api_key_journey(client):
-    booking = BookingFactory()
+    booking = booking_factories.IndividualBookingFactory()
     user_offerer = UserOffererFactory(offerer=booking.offerer)
     client.with_session_auth(user_offerer.user.email)
 

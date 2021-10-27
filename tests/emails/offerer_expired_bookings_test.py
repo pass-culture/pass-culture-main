@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
-from pcapi.core.bookings.factories import CancelledBookingFactory
+from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import OffererFactory
@@ -23,9 +23,9 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled_with_new_a
     offerer = OffererFactory()
     long_ago = now - timedelta(days=31)
     dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-    expired_today_dvd_booking = CancelledBookingFactory(
-        user__publicName="Dory",
-        user__email="dory@example.com",
+    expired_today_dvd_booking = CancelledIndividualBookingFactory(
+        individualBooking__user__publicName="Dory",
+        individualBooking__user__email="dory@example.com",
         stock__offer__product=dvd,
         stock__offer__name="Memento",
         stock__offer__venue__name="Mnémosyne",
@@ -35,9 +35,9 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled_with_new_a
     )
 
     cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
-    expired_today_cd_booking = CancelledBookingFactory(
-        user__publicName="Dorian",
-        user__email="dorian@example.com",
+    expired_today_cd_booking = CancelledIndividualBookingFactory(
+        individualBooking__user__publicName="Dorian",
+        individualBooking__user__email="dorian@example.com",
         stock__offer__product=cd,
         stock__offer__name="Random Access Memories",
         stock__offer__venue__name="Virgin Megastore",

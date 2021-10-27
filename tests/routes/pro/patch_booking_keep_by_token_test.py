@@ -139,7 +139,7 @@ class Returns403Test:
             another_pro_user = offers_factories.UserOffererFactory().user
 
             # When
-            url = f"/v2/bookings/keep/token/{booking.token}?email={booking.user.email}"
+            url = f"/v2/bookings/keep/token/{booking.token}?email={booking.email}"
             response = client.with_session_auth(another_pro_user.email).patch(url)
 
             # Then

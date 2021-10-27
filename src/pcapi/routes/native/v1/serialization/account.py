@@ -10,6 +10,8 @@ from pydantic.fields import Field
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offers import validation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -214,9 +216,15 @@ class UserProfileResponse(BaseModel):
 
     @staticmethod
     def _get_booked_offers(user: User) -> dict:
-        not_cancelled_bookings = Booking.query.options(
-            joinedload(Booking.stock).joinedload(Stock.offer).load_only(Offer.id)
-        ).filter_by(userId=user.id, isCancelled=False)
+        not_cancelled_bookings = (
+            Booking.query.join(Booking.individualBooking)
+            .options(joinedload(Booking.stock).joinedload(Stock.offer).load_only(Offer.id))
+            .filter(
+                IndividualBooking.userId == user.id,
+                Booking.status != BookingStatus.CANCELLED,
+                Booking.isCancelled.is_(False),
+            )
+        )
 
         return {booking.stock.offer.id: booking.id for booking in not_cancelled_bookings}
 

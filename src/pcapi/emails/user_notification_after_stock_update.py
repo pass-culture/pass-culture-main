@@ -9,7 +9,7 @@ def retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking: Boo
     stock = booking.stock
     offer = stock.offer
     offer_name = offer.name
-    user_first_name = booking.user.firstName
+    user_first_name = booking.firstName
     venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
     is_event = int(offer.isEvent)
     event_date = ""

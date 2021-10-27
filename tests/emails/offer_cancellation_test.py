@@ -23,11 +23,10 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
         booking_limit_datetime = beginning_datetime - timedelta(hours=1)
 
-        user = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.EventStockFactory(
             beginningDatetime=beginning_datetime, price=20, quantity=10, bookingLimitDatetime=booking_limit_datetime
         )
-        booking = bookings_factories.BookingFactory(user=user, stock=stock)
+        booking = bookings_factories.IndividualBookingFactory(stock=stock)
 
         # When
         with patch("pcapi.utils.mailing.find_ongoing_bookings_by_stock", return_value=[]):
@@ -40,8 +39,8 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         html_recap = str(email_html.find("p", {"id": "recap"}))
         html_no_recal = str(email_html.find("p", {"id": "no-recap"}))
         assert "Vous venez d'annuler" in html_action
-        assert f"{user.firstName} {user.lastName}" in html_action
-        assert user.email in html_action
+        assert booking.publicName in html_action
+        assert booking.email in html_action
         assert f"pour {stock.offer.name}" in html_recap
         assert f"proposé par {venue.name}" in html_recap
         assert "le 20 juillet 2019 à 14:00" in html_recap
@@ -61,8 +60,10 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         stock = offers_factories.EventStockFactory(
             beginningDatetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc), price=20, quantity=10
         )
-        booking1 = bookings_factories.BookingFactory(stock=stock, token="98765")
-        booking2 = bookings_factories.BookingFactory(user=other_beneficiary, stock=stock, token="12345")
+        booking1 = bookings_factories.IndividualBookingFactory(stock=stock, token="98765")
+        booking2 = bookings_factories.IndividualBookingFactory(
+            individualBooking__user=other_beneficiary, stock=stock, token="12345"
+        )
 
         # When
         with patch("pcapi.utils.mailing.find_ongoing_bookings_by_stock", return_value=[booking2]):
@@ -82,12 +83,10 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
     @pytest.mark.usefixtures("db_session")
     def test_make_offerer_driven_cancellation_email_for_offerer_thing_and_already_existing_booking(self, app):
         # Given
-        user1 = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.ThingStockFactory(price=0, quantity=10)
-        booking = bookings_factories.BookingFactory(user=user1, stock=stock, token="12346")
+        booking = bookings_factories.IndividualBookingFactory(stock=stock, token="12346")
 
-        user2 = users_factories.BeneficiaryGrant18Factory()
-        booking2 = bookings_factories.BookingFactory(user=user2, stock=stock, token="12345")
+        booking2 = bookings_factories.IndividualBookingFactory(stock=stock, token="12345")
         ongoing_bookings = [booking2]
 
         # When
@@ -101,15 +100,15 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         html_recap = email_html.find("p", {"id": "recap"}).text
         html_recap_table = email_html.find("table", {"id": "recap-table"}).text
         assert "Vous venez d'annuler" in html_action
-        assert f"{user1.firstName} {user1.lastName}" in html_action
-        assert user1.email in html_action
+        assert booking.publicName in html_action
+        assert booking.email in html_action
         assert f"pour {stock.offer.product.name}" in html_recap
         assert f"proposé par {venue.name}" in html_recap
         assert venue.address in html_recap
         assert venue.city in html_recap
         assert venue.postalCode in html_recap
-        assert user2.firstName in html_recap_table
-        assert user2.email in html_recap_table
+        assert booking2.firstName in html_recap_table
+        assert booking2.email in html_recap_table
         assert booking.token not in html_recap_table
         assert booking2.token not in html_recap_table
         assert (
@@ -129,9 +128,8 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
         self, mock_is_offer_active, mock_build_pc_pro_offer_link
     ):
         # Given
-        user = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime(2019, 10, 9, 10, 20, 00))
-        booking = bookings_factories.CancelledBookingFactory(user=user, stock=stock, quantity=2)
+        booking = bookings_factories.CancelledIndividualBookingFactory(stock=stock, quantity=2)
 
         # When
         mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking)
@@ -151,8 +149,8 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 "date": "09-Oct-2019",
                 "heure": "12h20",
                 "quantite": booking.quantity,
-                "user_name": f"{user.firstName} {user.lastName}",
-                "user_email": user.email,
+                "user_name": booking.publicName,
+                "user_email": booking.email,
                 "is_active": 1,
                 "nombre_resa": 0,
                 "users": [],
@@ -168,8 +166,8 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
     def test_should_return_mailjet_data_with_ongoing_bookings(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
         stock = offers_factories.EventStockFactory(price=0, beginningDatetime=datetime(2019, 10, 9, 10, 20, 00))
-        booking1 = bookings_factories.CancelledBookingFactory(stock=stock, quantity=2)
-        booking2 = bookings_factories.BookingFactory(stock=stock)
+        booking1 = bookings_factories.CancelledIndividualBookingFactory(stock=stock, quantity=2)
+        booking2 = bookings_factories.IndividualBookingFactory(stock=stock)
 
         # When
         mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking1)
@@ -189,16 +187,16 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 "date": "09-Oct-2019",
                 "heure": "12h20",
                 "quantite": booking1.quantity,
-                "user_name": f"{booking1.user.firstName} {booking1.user.lastName}",
-                "user_email": booking1.user.email,
+                "user_name": booking1.publicName,
+                "user_email": booking1.email,
                 "is_active": 1,
                 "nombre_resa": 1,
                 "users": [
                     {
                         "contremarque": booking2.token,
-                        "email": booking2.user.email,
-                        "firstName": booking2.user.firstName,
-                        "lastName": booking2.user.lastName,
+                        "email": booking2.email,
+                        "firstName": booking2.firstName,
+                        "lastName": booking2.lastName,
                     }
                 ],
             },
@@ -213,8 +211,8 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
     def test_should_return_mailjet_data_on_thing_offer(self, mock_is_offer_active, mock_build_pc_pro_offer_link):
         # Given
         stock = offers_factories.ThingStockFactory()
-        booking1 = bookings_factories.CancelledBookingFactory(stock=stock, quantity=2)
-        booking2 = bookings_factories.BookingFactory(stock=stock, quantity=1)
+        booking1 = bookings_factories.CancelledIndividualBookingFactory(stock=stock, quantity=2)
+        booking2 = bookings_factories.IndividualBookingFactory(stock=stock, quantity=1)
 
         # When
         mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking1)
@@ -234,16 +232,16 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 "date": "",
                 "heure": "",
                 "quantite": booking1.quantity,
-                "user_name": f"{booking1.user.firstName} {booking1.user.lastName}",
-                "user_email": booking1.user.email,
+                "user_name": booking1.publicName,
+                "user_email": booking1.email,
                 "is_active": 0,
                 "nombre_resa": 1,
                 "users": [
                     {
                         "contremarque": booking2.token,
-                        "email": booking2.user.email,
-                        "firstName": booking2.user.firstName,
-                        "lastName": booking2.user.lastName,
+                        "email": booking2.email,
+                        "firstName": booking2.firstName,
+                        "lastName": booking2.lastName,
                     }
                 ],
             },
@@ -259,8 +257,8 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
         # Given
         virtual_venue = offers_factories.VirtualVenueFactory()
         stock = offers_factories.ThingStockFactory(offer__venue=virtual_venue)
-        booking1 = bookings_factories.CancelledBookingFactory(stock=stock, quantity=2)
-        booking2 = bookings_factories.BookingFactory(stock=stock)
+        booking1 = bookings_factories.CancelledIndividualBookingFactory(stock=stock, quantity=2)
+        booking2 = bookings_factories.IndividualBookingFactory(stock=stock)
 
         # When
         mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking1)
@@ -279,16 +277,16 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 "date": "",
                 "heure": "",
                 "quantite": booking1.quantity,
-                "user_name": f"{booking1.user.firstName} {booking1.user.lastName}",
-                "user_email": booking1.user.email,
+                "user_name": booking1.publicName,
+                "user_email": booking1.email,
                 "is_active": 0,
                 "nombre_resa": 1,
                 "users": [
                     {
                         "contremarque": booking2.token,
-                        "email": booking2.user.email,
-                        "firstName": booking2.user.firstName,
-                        "lastName": booking2.user.lastName,
+                        "email": booking2.email,
+                        "firstName": booking2.firstName,
+                        "lastName": booking2.lastName,
                     }
                 ],
             },
@@ -331,7 +329,7 @@ class IsOfferActiveForRecapTest:
         stock = offers_factories.EventStockFactory(
             offer__isActive=True, price=0, quantity=2, bookingLimitDatetime=event_date, beginningDatetime=event_date
         )
-        bookings_factories.BookingFactory(stock=stock, quantity=2)
+        bookings_factories.IndividualBookingFactory(stock=stock, quantity=2)
 
         # When
         is_active = _is_offer_active_for_recap(stock)
@@ -345,7 +343,7 @@ class IsOfferActiveForRecapTest:
         stock = offers_factories.EventStockFactory(
             offer__isActive=True, price=0, quantity=2, bookingLimitDatetime=datetime.now() - timedelta(days=6)
         )
-        bookings_factories.BookingFactory(stock=stock, quantity=2)
+        bookings_factories.IndividualBookingFactory(stock=stock, quantity=2)
 
         # When
         is_active = _is_offer_active_for_recap(stock)
@@ -357,7 +355,7 @@ class IsOfferActiveForRecapTest:
     def test_should_return_true_when_stock_is_unlimited(self, app):
         # Given
         stock = offers_factories.ThingStockFactory(offer__isActive=True, price=0, quantity=None)
-        bookings_factories.BookingFactory(stock=stock, quantity=2)
+        bookings_factories.IndividualBookingFactory(stock=stock, quantity=2)
 
         # When
         is_active = _is_offer_active_for_recap(stock)
@@ -371,7 +369,7 @@ class IsOfferActiveForRecapTest:
         stock = offers_factories.ThingStockFactory(
             offer__isActive=True, price=0, quantity=None, bookingLimitDatetime=datetime.now() - timedelta(days=6)
         )
-        bookings_factories.BookingFactory(stock=stock, quantity=2)
+        bookings_factories.IndividualBookingFactory(stock=stock, quantity=2)
 
         # When
         is_active = _is_offer_active_for_recap(stock)

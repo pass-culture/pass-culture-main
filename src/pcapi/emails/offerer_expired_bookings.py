@@ -28,8 +28,8 @@ def _extract_bookings_information_from_bookings_list(bookings: list[Booking]) ->
                 "offer_name": offer.name,
                 "venue_name": offer.venue.publicName if offer.venue.publicName else offer.venue.name,
                 "price": str(stock.price) if stock.price > 0 else "gratuit",
-                "user_name": booking.user.publicName,
-                "user_email": booking.user.email,
+                "user_name": booking.publicName,
+                "user_email": booking.email,
                 "pcpro_offer_link": build_pc_pro_offer_link(offer),
             }
         )

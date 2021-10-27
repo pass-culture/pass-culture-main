@@ -134,7 +134,7 @@ class FindByBeneficiaryTest:
         venue = offers_factories.VenueFactory()
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer, price=0)
-        booking = bookings_factories.BookingFactory(stock=stock, user=beneficiary)
+        booking = bookings_factories.IndividualBookingFactory(stock=stock, individualBooking__user=beneficiary)
         mediation = offers_factories.MediationFactory(offer=offer)
         favorite = users_factories.FavoriteFactory(mediation=mediation, offer=offer, user=beneficiary)
 

@@ -5,50 +5,50 @@
 <h2>Réservations</h2>
 
 <form action="" method="POST">
-  {{ forms.display_form(search_form, "Rechercher la réservation") }}
+    {{ forms.display_form(search_form, "Rechercher la réservation") }}
 </form>
 
 {% if booking %}
-  <hr>
-  <p>
-    <div><b>Code :</b> {{ booking.token }}</div>
-    <div><b>Bénéficiaire :</b> {{ booking.user.email }} ({{ booking.user.id }})</div>
-    <div><b>Offre :</b> {{ booking.stock.offer.name }}</div>
-    <div><b>Date d'annulation :</b>
-      {% if booking.isCancelled %}
-        {% if booking.cancellationDate %}
-            {{ booking.cancellationDate.strftime('%d/%m/%Y %H:%M') }}
-        {% else %}
-            inconnue
-        {% endif %}
-      {% else %}
-        non annulée
-      {% endif %}
-    </div>
-  </p>
+<hr>
+<p>
+<div><b>Code :</b> {{ booking.token }}</div>
+<div><b>Bénéficiaire :</b> {{ booking.email }} ({{ booking.individualBooking.user.id }})</div>
+<div><b>Offre :</b> {{ booking.stock.offer.name }}</div>
+<div><b>Date d'annulation :</b>
+    {% if booking.isCancelled %}
+    {% if booking.cancellationDate %}
+    {{ booking.cancellationDate.strftime('%d/%m/%Y %H:%M') }}
+    {% else %}
+    inconnue
+    {% endif %}
+    {% else %}
+    non annulée
+    {% endif %}
+</div>
+</p>
 
-  {% if mark_as_used_form %}
-    <p>
-      Si cette réservation a été annulée par erreur (ou
-      frauduleusement) alors qu'elle a en fait été utilisée, il est
-      possible de la marquer comme utilisée.
-    </p>
-    <form action={{ url_for(".uncancel_and_mark_as_used", booking_id=booking.id) }} method="POST">
-      {{ forms.display_form(mark_as_used_form) }}
-      <input class="btn btn-danger" type="submit" value="Marquer comme utilisée">
-    </form>
-  {% endif %}
+{% if mark_as_used_form %}
+<p>
+    Si cette réservation a été annulée par erreur (ou
+    frauduleusement) alors qu'elle a en fait été utilisée, il est
+    possible de la marquer comme utilisée.
+</p>
+<form action={{ url_for(".uncancel_and_mark_as_used", booking_id=booking.id) }} method="POST">
+    {{ forms.display_form(mark_as_used_form) }}
+    <input class="btn btn-danger" type="submit" value="Marquer comme utilisée">
+</form>
+{% endif %}
 
-  {% if cancel_form %}
-    <p>
-      Annuler cette réservation manuellement.
-      <br>
-    </p>
-    <form action={{ url_for(".cancel", booking_id=booking.id) }} method="POST">
-      {{ forms.display_form(cancel_form) }}
-      <input class="btn btn-danger" type="submit" value="Marquer comme annulée">
-    </form>
-  {% endif %}
+{% if cancel_form %}
+<p>
+    Annuler cette réservation manuellement.
+    <br>
+</p>
+<form action={{ url_for(".cancel", booking_id=booking.id) }} method="POST">
+    {{ forms.display_form(cancel_form) }}
+    <input class="btn btn-danger" type="submit" value="Marquer comme annulée">
+</form>
+{% endif %}
 
 {% endif %} {# if booking #}
 

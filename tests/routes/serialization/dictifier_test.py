@@ -1,14 +1,13 @@
 import pytest
 
+from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
-from pcapi.models import Stock
 from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
 
@@ -141,12 +140,11 @@ class AsDictTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_humanized_ids_for_foreign_keys(self, app):
         # given
-        user = users_factories.UserFactory.build(id=12, postalCode=None)
-        booking = create_booking(user=user, stock=Stock(), idx=13)
-        booking.userId = user.id
+        user = users_factories.BeneficiaryGrant18Factory(id=12)
+        individual_booking = booking_factories.IndividualBookingFactory(individualBooking__user=user).individualBooking
 
         # when
-        dict_result = as_dict(booking, includes=[])
+        dict_result = as_dict(individual_booking, includes=[])
 
         # then
         assert dict_result["userId"] == "BQ"

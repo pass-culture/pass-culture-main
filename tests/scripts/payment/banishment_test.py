@@ -2,8 +2,7 @@ import uuid
 
 import pytest
 
-import pcapi.core.users.factories as users_factories
-from pcapi.model_creators.generic_creators import create_booking
+import pcapi.core.bookings.factories as booking_factories
 from pcapi.model_creators.generic_creators import create_payment
 from pcapi.model_creators.generic_creators import create_payment_message
 from pcapi.models.payment_status import TransactionStatus
@@ -15,8 +14,7 @@ class DoBanPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_modify_statuses_on_given_payments(self, app):
         # given
-        user = users_factories.BeneficiaryGrant18Factory()
-        booking = create_booking(user=user)
+        booking = booking_factories.IndividualBookingFactory()
         offerer = booking.offerer
 
         transaction1 = create_payment_message(name="XML1")
@@ -48,8 +46,7 @@ class DoBanPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_does_not_modify_statuses_on_given_payments_if_a_payment_id_is_not_found(self, app):
         # given
-        user = users_factories.BeneficiaryGrant18Factory()
-        booking = create_booking(user=user)
+        booking = booking_factories.IndividualBookingFactory()
         offerer = booking.offerer
 
         transaction1 = create_payment_message(name="XML1")

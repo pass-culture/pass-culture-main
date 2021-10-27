@@ -269,12 +269,12 @@ class SuspendAccountTest:
 
     def test_suspend_beneficiary(self):
         user = users_factories.BeneficiaryGrant18Factory()
-        cancellable_booking = bookings_factories.BookingFactory(user=user)
+        cancellable_booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
         yesterday = datetime.now() - timedelta(days=1)
-        confirmed_booking = bookings_factories.BookingFactory(
-            user=user, cancellation_limit_date=yesterday, status=BookingStatus.CONFIRMED
+        confirmed_booking = bookings_factories.IndividualBookingFactory(
+            individualBooking__user=user, cancellation_limit_date=yesterday, status=BookingStatus.CONFIRMED
         )
-        used_booking = bookings_factories.UsedBookingFactory(user=user)
+        used_booking = bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user)
         actor = users_factories.AdminFactory()
 
         users_api.suspend_account(user, users_constants.SuspensionReason.FRAUD, actor)
@@ -288,7 +288,7 @@ class SuspendAccountTest:
         assert used_booking.status is BookingStatus.USED
 
     def test_suspend_pro(self):
-        booking = bookings_factories.BookingFactory()
+        booking = bookings_factories.IndividualBookingFactory()
         pro = offers_factories.UserOffererFactory(offerer=booking.offerer).user
         actor = users_factories.AdminFactory()
 
@@ -299,7 +299,7 @@ class SuspendAccountTest:
         assert booking.status is BookingStatus.CANCELLED
 
     def test_suspend_pro_with_other_offerer_users(self):
-        booking = bookings_factories.BookingFactory()
+        booking = bookings_factories.IndividualBookingFactory()
         pro = offers_factories.UserOffererFactory(offerer=booking.offerer).user
         offers_factories.UserOffererFactory(offerer=booking.offerer)
         actor = users_factories.AdminFactory()

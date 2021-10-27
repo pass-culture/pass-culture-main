@@ -194,8 +194,8 @@ class BeneficiaryUserViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_suspend_beneficiary(self, mocked_validate_csrf_token, app):
         admin = users_factories.AdminFactory(email="admin15@example.com")
-        booking = bookings_factories.BookingFactory()
-        beneficiary = booking.user
+        booking = bookings_factories.IndividualBookingFactory()
+        beneficiary = booking.individualBooking.user
 
         client = TestClient(app.test_client()).with_session_auth(admin.email)
         url = f"/pc/back-office/beneficiary_users/suspend?user_id={beneficiary.id}"

@@ -1,6 +1,6 @@
 from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
-from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.categories import subcategories
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils.mailing import build_pc_pro_offer_link
@@ -8,17 +8,18 @@ from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
 
 
-def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
+def retrieve_data_for_offerer_booking_recap_email(individual_booking: IndividualBooking) -> dict:
+    booking = individual_booking.booking
     offer = booking.stock.offer
     venue = offer.venue
     venue_name = venue.publicName if venue.publicName else venue.name
     offer_name = offer.name
     price = "Gratuit" if booking.stock.price == 0 else f"{booking.stock.price} €"
     quantity = booking.quantity
-    user_email = booking.user.email
-    user_firstname = booking.user.firstName
-    user_lastname = booking.user.lastName
-    user_phoneNumber = booking.user.phoneNumber or ""
+    user_email = individual_booking.user.email
+    user_firstname = individual_booking.user.firstName
+    user_lastname = individual_booking.user.lastName
+    user_phoneNumber = individual_booking.user.phoneNumber or ""
     departement_code = venue.departementCode or "numérique"
     is_event = int(offer.isEvent)
 

@@ -4,6 +4,8 @@ from typing import Tuple
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -84,15 +86,16 @@ def _get_bookings_categories_and_subcategories(user_bookings: list[Booking]) -> 
 
 def _get_user_bookings(user: User) -> List[Booking]:
     return (
-        Booking.query.options(joinedload(Booking.venue).load_only(Venue.isVirtual))
+        Booking.query.join(IndividualBooking, Booking.individualBookingId == IndividualBooking.id)
         .options(joinedload(Booking.individualBooking))
+        .options(joinedload(Booking.venue).load_only(Venue.isVirtual))
         .options(
             joinedload(Booking.stock)
             .joinedload(Stock.offer)
             .load_only(Offer.url, Offer.productId, Offer.subcategoryId)
             .joinedload(Offer.venue)
         )
-        .filter_by(userId=user.id, isCancelled=False)
+        .filter(IndividualBooking.userId == user.id, Booking.status != BookingStatus.CANCELLED)
         .order_by(db.desc(Booking.dateCreated))
         .all()
     )

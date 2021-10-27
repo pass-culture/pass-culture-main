@@ -224,9 +224,7 @@ class Booking(PcObject, Model):
 
         token = self.activationCode.code if self.activationCode else self.token
 
-        return (
-            url.replace("{token}", token).replace("{offerId}", humanize(offer.id)).replace("{email}", self.user.email)
-        )
+        return url.replace("{token}", token).replace("{offerId}", humanize(offer.id)).replace("{email}", self.email)
 
     @staticmethod
     def restize_internal_error(ie: Exception) -> list[str]:
@@ -288,6 +286,16 @@ class Booking(PcObject, Model):
 
         if self.educationalBooking is not None:
             return self.educationalBooking.educationalRedactor.lastName
+
+        return None
+
+    @property
+    def publicName(self) -> Optional[str]:
+        if self.individualBooking is not None:
+            return self.individualBooking.user.publicName
+
+        if self.educationalBooking is not None:
+            return f"{self.educationalBooking.educationalRedactor.firstName} {self.educationalBooking.educationalRedactor.lastName}"
 
         return None
 

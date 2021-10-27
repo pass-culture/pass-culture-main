@@ -9,7 +9,6 @@ import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.core.bookings.validation as bookings_validation
-from pcapi.core.categories import subcategories
 from pcapi.routes.apis import private_api
 from pcapi.routes.apis import public_api
 from pcapi.routes.serialization import serialize
@@ -45,6 +44,8 @@ BASE_CODE_DESCRIPTIONS = {
 }
 
 # @debt api-migration
+# TODO (gvanneste, 2021-10-19) : retravailler cette fonction, notamment check_user_is_logged_in_or_email_is_provided
+# À brûler : juste checker si le user a droit de récupérer les bookings
 @public_api.route("/bookings/token/<token>", methods=["GET"])
 def get_booking_by_token(token: str) -> tuple[str, int]:
     email: Optional[str] = request.args.get("email", None)
@@ -278,14 +279,11 @@ def _create_response_to_get_booking_by_token(booking: Booking) -> dict:
     response = {
         "bookingId": humanize(booking.id),
         "date": date,
-        "email": booking.user.email,
+        "email": booking.email,
         "isUsed": booking.isUsed,
         "offerName": offer_name,
-        "userName": booking.user.publicName,
-        "venueDepartmentCode": venue_departement_code,
+        "userName": booking.publicName,
+        "venueDepartementCode": venue_departement_code,
     }
-
-    if offer.subcategoryId in subcategories.ACTIVATION_SUBCATEGORIES:
-        response.update({"phoneNumber": booking.user.phoneNumber, "dateOfBirth": serialize(booking.user.dateOfBirth)})
 
     return response

@@ -1,3 +1,4 @@
+from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import Mediation
 from pcapi.core.users.models import User
@@ -106,13 +107,14 @@ def _get_stocks_information(offers_ids: list[int]) -> list[object]:
 def _get_bookings_information(beneficiary_id: int) -> list[Booking]:
     offer_activation_subcategories = [subcategories.ACTIVATION_EVENT.id, subcategories.ACTIVATION_THING.id]
     return (
-        Booking.query.join(User, User.id == Booking.userId)
+        Booking.query.join(IndividualBooking)
+        .join(User, User.id == IndividualBooking.userId)
         .join(Stock, Stock.id == Booking.stockId)
         .join(Offer)
         .join(Product, Offer.productId == Product.id)
         .join(Venue, Venue.id == Offer.venueId)
         .outerjoin(ActivationCode, ActivationCode.bookingId == Booking.id)
-        .filter(Booking.userId == beneficiary_id)
+        .filter(IndividualBooking.userId == beneficiary_id)
         .filter(Offer.subcategoryId.notin_(offer_activation_subcategories))
         .distinct(Booking.stockId)
         .order_by(Booking.stockId, Booking.isCancelled, Booking.dateCreated.desc())
@@ -128,8 +130,8 @@ def _get_bookings_information(beneficiary_id: int) -> list[Booking]:
             Booking.quantity,
             Booking.stockId,
             Booking.token,
-            Booking.userId,
             Booking.displayAsEnded,
+            IndividualBooking.userId,
             Offer.id.label("offerId"),
             Offer.name,
             Offer.subcategoryId,

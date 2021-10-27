@@ -181,7 +181,9 @@ class UpsertStocksTest:
         event_reported_in_10_days = now + timedelta(days=10)
         offer = factories.EventOfferFactory()
         existing_stock = factories.StockFactory(offer=offer, beginningDatetime=event_in_4_days)
-        booking = bookings_factories.UsedBookingFactory(stock=existing_stock, dateCreated=booking_made_3_days_ago)
+        booking = bookings_factories.UsedIndividualBookingFactory(
+            stock=existing_stock, dateCreated=booking_made_3_days_ago
+        )
         edited_stock_data = StockEditionBodyModel(
             id=existing_stock.id,
             beginningDatetime=event_reported_in_10_days,
@@ -207,7 +209,7 @@ class UpsertStocksTest:
         event_reported_in_less_48_hours = now + timedelta(days=1)
         offer = factories.EventOfferFactory()
         existing_stock = factories.StockFactory(offer=offer, beginningDatetime=event_in_3_days)
-        booking = bookings_factories.UsedBookingFactory(
+        booking = bookings_factories.UsedIndividualBookingFactory(
             stock=existing_stock, dateCreated=now, dateUsed=date_used_in_48_hours
         )
         edited_stock_data = StockEditionBodyModel(
@@ -654,8 +656,8 @@ class DeleteStockTest:
     def test_delete_stock_cancel_bookings_and_send_emails(self, mocked_send_to_beneficiaries, mocked_send_to_offerer):
         stock = factories.EventStockFactory()
         booking1 = bookings_factories.IndividualBookingFactory(stock=stock)
-        booking2 = bookings_factories.CancelledBookingFactory(stock=stock)
-        booking3 = bookings_factories.UsedBookingFactory(stock=stock)
+        booking2 = bookings_factories.CancelledIndividualBookingFactory(stock=stock)
+        booking3 = bookings_factories.UsedIndividualBookingFactory(stock=stock)
 
         api.delete_stock(stock)
 
@@ -679,7 +681,7 @@ class DeleteStockTest:
 
         assert push_testing.requests[-1] == {
             "group_id": "Cancel_booking",
-            "user_ids": [booking1.userId],
+            "user_ids": [booking1.individualBooking.userId],
             "message": {
                 "body": f"""Ta réservation "{stock.offer.name}" a été annulée par l'offreur.""",
                 "title": "Réservation annulée",

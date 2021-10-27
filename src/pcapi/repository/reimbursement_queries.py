@@ -8,6 +8,7 @@ from sqlalchemy import subquery
 from sqlalchemy.orm import aliased
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import EducationalBooking
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.educational.models import EducationalRedactor
@@ -43,6 +44,7 @@ def find_all_offerers_payments(
             payment_date.between(*reimbursement_period, symmetric=True),
             Booking.offererId.in_(offerer_ids),
             Booking.isUsed,
+            Booking.status == BookingStatus.USED,
             (Booking.venueId == venue_id) if venue_id else (Booking.venueId is not None),
         )
         .join(Offerer)

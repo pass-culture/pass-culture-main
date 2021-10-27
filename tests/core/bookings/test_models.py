@@ -50,9 +50,9 @@ def test_save_cancellation_date_postgresql_function():
 
 
 def test_booking_completed_url_gets_normalized():
-    booking = factories.BookingFactory(
+    booking = factories.IndividualBookingFactory(
         token="ABCDEF",
-        user__email="1@example.com",
+        individualBooking__user__email="1@example.com",
         stock__offer__url="example.com?token={token}&email={email}",
     )
     assert booking.completedUrl == "http://example.com?token=ABCDEF&email=1@example.com"

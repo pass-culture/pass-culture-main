@@ -42,7 +42,7 @@ def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> Optio
     )
     return TransactionalNotificationData(
         group_id=GroupId.CANCEL_BOOKING.value,
-        user_ids=[booking.userId for booking in bookings],
+        user_ids=[booking.individualBooking.userId for booking in bookings],
         message=TransactionalNotificationMessage(
             title=f"{cancelled_object.capitalize()} annulée",
             body=f"""Ta {cancelled_object} "{bookings[0].stock.offer.name}" a été annulée par l'offreur.""",
@@ -63,7 +63,7 @@ def get_tomorrow_stock_notification_data(stock_id: int) -> Optional[Transactiona
 
     return TransactionalNotificationData(
         group_id=GroupId.TOMORROW_STOCK.value,
-        user_ids=[booking.userId for booking in individual_bookings],
+        user_ids=[individual_booking.userId for individual_booking in individual_bookings],
         message=TransactionalNotificationMessage(
             title=f"{stock.offer.name}, c'est demain !",
             body="Retrouve les détails de la réservation sur l’application pass Culture",

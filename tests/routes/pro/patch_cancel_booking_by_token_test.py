@@ -15,7 +15,7 @@ class Returns204Test:
     def test_should_returns_204_with_cancellation_allowed(self, client):
         # Given
         stock = offers_factories.EventStockFactory(offer__name="Chouette concert")
-        booking = bookings_factories.BookingFactory(stock=stock)
+        booking = bookings_factories.IndividualBookingFactory(stock=stock)
         ApiKeyFactory(offerer=booking.offerer)
 
         # When
@@ -38,13 +38,13 @@ class Returns204Test:
                 "body": """Ta réservation "Chouette concert" a été annulée par l'offreur.""",
                 "title": "Réservation annulée",
             },
-            "user_ids": [booking.userId],
+            "user_ids": [booking.individualBooking.userId],
         }
 
     @pytest.mark.usefixtures("db_session")
     def test_should_returns_204_with_lowercase_token(self, client):
         # Given
-        booking = bookings_factories.BookingFactory()
+        booking = bookings_factories.IndividualBookingFactory()
         ApiKeyFactory(offerer=booking.offerer)
 
         # When

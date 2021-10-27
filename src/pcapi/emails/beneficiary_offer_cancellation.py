@@ -1,5 +1,6 @@
 from sqlalchemy.orm import joinedload
 
+from pcapi.core.bookings.models import IndividualBooking
 from pcapi.models import Booking
 from pcapi.models import Stock
 from pcapi.utils.mailing import build_pc_pro_offer_link
@@ -9,9 +10,12 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 
 
 def retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking: Booking) -> dict:
-    user = booking.user
     stock = booking.stock
-    bookings = Booking.query.filter_by(isCancelled=False, stock=stock).options(joinedload(Booking.user)).all()
+    bookings = (
+        Booking.query.filter_by(isCancelled=False, stock=stock)
+        .options(joinedload(Booking.individualBooking).joinedload(IndividualBooking.user))
+        .all()
+    )
     offer = stock.offer
     venue = offer.venue
     departement_code = venue.departementCode or "numérique"
@@ -20,6 +24,8 @@ def retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking: B
     booked_date = format_booking_date_for_email(booking)
     booked_hour = format_booking_hours_for_email(booking)
     is_active = _is_offer_active_for_recap(stock)
+    user_public_name = f"{booking.firstName} {booking.lastName}"
+    user_email = booking.email
 
     return {
         "MJ-TemplateID": 780015,
@@ -34,8 +40,8 @@ def retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking: B
             "date": booked_date,
             "heure": booked_hour,
             "quantite": booking.quantity,
-            "user_name": user.publicName,
-            "user_email": user.email,
+            "user_name": user_public_name,
+            "user_email": user_email,
             "is_active": int(is_active),
             "nombre_resa": len(bookings),
             "users": extract_users_information_from_bookings(bookings),

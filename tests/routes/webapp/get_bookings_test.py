@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.factories import VenueFactory
@@ -27,9 +27,9 @@ class Returns200Test:
         offer2 = ThingOfferFactory()
         stock = ThingStockFactory(offer=offer, price=0, quantity=None)
         stock2 = ThingStockFactory(offer=offer2, price=0)
-        booking1 = BookingFactory(user=user1, stock=stock, token="ABCDEF")
-        BookingFactory(user=user2, stock=stock, token="GHIJK")
-        booking3 = BookingFactory(user=user1, stock=stock2, token="BBBBB")
+        booking1 = IndividualBookingFactory(individualBooking__user=user1, stock=stock, token="ABCDEF")
+        IndividualBookingFactory(individualBooking__user=user2, stock=stock, token="GHIJK")
+        booking3 = IndividualBookingFactory(individualBooking__user=user1, stock=stock2, token="BBBBB")
 
         # When
         response = TestClient(app.test_client()).with_session_auth(user1.email).get("/bookings")
@@ -103,7 +103,7 @@ class Returns200Test:
             },
             "stockId": humanize(stock.id),
             "token": "ABCDEF",
-            "userId": humanize(booking1.userId),
+            "userId": humanize(booking1.individualBooking.userId),
         }
 
     @patch("pcapi.routes.webapp.bookings.FeatureToggle.is_active", return_value=True)
@@ -117,9 +117,9 @@ class Returns200Test:
         offer2 = ThingOfferFactory()
         stock = ThingStockFactory(offer=offer, price=0, quantity=None)
         stock2 = ThingStockFactory(offer=offer2, price=0)
-        BookingFactory(user=user1, stock=stock, token="ABCDEF")
-        BookingFactory(user=user2, stock=stock, token="GHIJK")
-        BookingFactory(user=user1, stock=stock2, token="BBBBB")
+        IndividualBookingFactory(individualBooking__user=user1, stock=stock, token="ABCDEF")
+        IndividualBookingFactory(individualBooking__user=user2, stock=stock, token="GHIJK")
+        IndividualBookingFactory(individualBooking__user=user1, stock=stock2, token="BBBBB")
 
         # When
         response = TestClient(app.test_client()).with_session_auth(user1.email).get("/bookings")

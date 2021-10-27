@@ -1,6 +1,7 @@
 import pytest
 from pytest import fixture
 
+from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.users.models import User
 from pcapi.models import Booking
 from pcapi.models import Offer
@@ -27,4 +28,4 @@ class BookingsRecapTest:
         assert self._find_bookings_by_user_firstname("Loulou") == 6
 
     def _find_bookings_by_user_firstname(self, name: str) -> list[Booking]:
-        return Booking.query.join(User).filter(User.firstName == name).count()
+        return Booking.query.join(IndividualBooking).join(User).filter(User.firstName == name).count()

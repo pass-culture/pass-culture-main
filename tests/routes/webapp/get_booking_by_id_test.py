@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingProductFactory
@@ -32,7 +32,7 @@ class Returns200Test:
             product=product,
         )
         stock = ThingStockFactory(offer=offer, price=0, quantity=None)
-        booking = BookingFactory(user=user, stock=stock, token="ABCDEF")
+        booking = IndividualBookingFactory(individualBooking__user=user, stock=stock, token="ABCDEF")
 
         # When
         response = TestClient(app.test_client()).with_session_auth(user.email).get("/bookings/" + humanize(booking.id))

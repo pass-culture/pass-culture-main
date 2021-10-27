@@ -7,6 +7,8 @@ from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.query import Query
 
+from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.bookings.models import IndividualBooking
 from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
 from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
@@ -144,8 +146,9 @@ def find_favorites_domain_by_beneficiary(beneficiary_identifier: int) -> list[Fa
         Offer.query.filter(Offer.id.in_(offer_ids))
         .join(Stock)
         .join(Booking)
-        .filter(Booking.userId == beneficiary_identifier)
-        .filter(Booking.isCancelled == False)
+        .join(IndividualBooking)
+        .filter(IndividualBooking.userId == beneficiary_identifier)
+        .filter(Booking.status != BookingStatus.CANCELLED)
         .with_entities(
             Booking.id.label("booking_id"),
             Booking.quantity,

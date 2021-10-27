@@ -27,7 +27,7 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
             "MJ-TemplateLanguage": True,
             "Vars": {
                 "offer_name": booking.stock.offer.name,
-                "user_first_name": booking.user.firstName,
+                "user_first_name": booking.firstName,
                 "venue_name": booking.venue.name,
                 "event_date": "mardi 20 août 2019",
                 "event_hour": "14h",

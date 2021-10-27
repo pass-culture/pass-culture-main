@@ -201,7 +201,6 @@ class CancelExpiredBookingsTest:
         # Then
         assert pending_educational_booking.status == BookingStatus.PENDING
 
-    # TODO gvanneste
     def test_handle_expired_bookings_should_cancel_expired_individual_and_educational_bookings(self, app) -> None:
         # Given
         now = datetime.utcnow()

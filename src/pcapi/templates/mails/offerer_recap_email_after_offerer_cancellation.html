@@ -1,55 +1,61 @@
 <html>
-    <body>
-        <p id="mail-greeting">Cher partenaire pass Culture,</p>
-        <p id="action">
-            Vous venez d'annuler la réservation de {{ user_name }} ({{ user_email }})
-        </p>
-            <p id="recap">
-                Voici le récapitulatif
-                {% if is_final %}
-                    final des réservations :
-                {% else %}
-                    des réservations à ce jour :
-                {% endif %}
-                <br/> (total {{ number_of_bookings }}) pour {{ stock_name }}
-                {% if stock_date_time %}
-                    <br/> le {{ stock_date_time }},
-                {% endif %}
-                {% if venue.isVirtual %}
-                    <br/> Offre numérique proposée par {{ venue.name }}.
-                {% else %}
-                    <br/> proposé par {{ venue.name }} (Adresse : {{ venue.address }}, {{ venue.postalCode }} {{ venue.city }}).
-                {% endif %}
-            </p>
-            {% if stock_bookings %}
-                <table id="recap-table">
-                    <tr>
-                        <th>Prénom</th>
-                        <th>Nom</th>
-                        <th>Email</th>
-                        {% if booking_is_on_event %}
-                            <th>Code réservation</th>
-                        {% endif %}
-                    </tr>
-                    {% for booking in stock_bookings %}
-                        <tr>
-                            <td>{{ booking.user.firstName }}</td>
-                            <td>{{ booking.user.lastName }}</td>
-                            <td>{{ booking.user.email }}</td>
-                            {% if booking_is_on_event %}
-                                <td>{{ booking.token }}</td>
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                </table>
-            {% else %}
-                <p id="no-recap">Aucune réservation</p>
-            {% endif %}
-        <p id="unsubscribe-option">
-            Vous recevez ce message parce que votre adresse e-mail est renseignée comme adresse de contact sur votre offre.
-            <br> Si vous souhaitez modifier l’adresse de contact cliquez ici : <a id="change-email" href="mailto:support@passculture.app?subject=Changer%20l%27adresse%20e-mail%20de%20notification%20des%20r%C3%A9servations">être notifié des réservations à une autre adresse e-mail</a>.
-            <br> Si vous ne souhaitez plus recevoir de notifications de réservations par e-mail, cliquez ici : <a id="remove-email" href="mailto:support@passculture.app?subject=Ne%20plus%20recevoir%20les%20notifications%20de%20r%C3%A9servations">ne plus recevoir les notifications de réservations</a>.
-        </p>
-    </body>
-</html>
 
+<body>
+    <p id="mail-greeting">Cher partenaire pass Culture,</p>
+    <p id="action">
+        Vous venez d'annuler la réservation de {{ user_name }} ({{ user_email }})
+    </p>
+    <p id="recap">
+        Voici le récapitulatif
+        {% if is_final %}
+        final des réservations :
+        {% else %}
+        des réservations à ce jour :
+        {% endif %}
+        <br /> (total {{ number_of_bookings }}) pour {{ stock_name }}
+        {% if stock_date_time %}
+        <br /> le {{ stock_date_time }},
+        {% endif %}
+        {% if venue.isVirtual %}
+        <br /> Offre numérique proposée par {{ venue.name }}.
+        {% else %}
+        <br /> proposé par {{ venue.name }} (Adresse : {{ venue.address }}, {{ venue.postalCode }} {{ venue.city }}).
+        {% endif %}
+    </p>
+    {% if stock_bookings %}
+    <table id="recap-table">
+        <tr>
+            <th>Prénom</th>
+            <th>Nom</th>
+            <th>Email</th>
+            {% if booking_is_on_event %}
+            <th>Code réservation</th>
+            {% endif %}
+        </tr>
+        {% for booking in stock_bookings %}
+        <tr>
+            <td>{{ booking.firstName }}</td>
+            <td>{{ booking.lastName }}</td>
+            <td>{{ booking.email }}</td>
+            {% if booking_is_on_event %}
+            <td>{{ booking.token }}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p id="no-recap">Aucune réservation</p>
+    {% endif %}
+    <p id="unsubscribe-option">
+        Vous recevez ce message parce que votre adresse e-mail est renseignée comme adresse de contact sur votre offre.
+        <br> Si vous souhaitez modifier l’adresse de contact cliquez ici : <a id="change-email"
+            href="mailto:support@passculture.app?subject=Changer%20l%27adresse%20e-mail%20de%20notification%20des%20r%C3%A9servations">être
+            notifié des réservations à une autre adresse e-mail</a>.
+        <br> Si vous ne souhaitez plus recevoir de notifications de réservations par e-mail, cliquez ici : <a
+            id="remove-email"
+            href="mailto:support@passculture.app?subject=Ne%20plus%20recevoir%20les%20notifications%20de%20r%C3%A9servations">ne
+            plus recevoir les notifications de réservations</a>.
+    </p>
+</body>
+
+</html>

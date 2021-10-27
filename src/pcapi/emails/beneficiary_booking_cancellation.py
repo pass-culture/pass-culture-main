@@ -1,15 +1,15 @@
 import datetime
 
-from pcapi.models import Booking
+from pcapi.core.bookings.models import IndividualBooking
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
 
 
-def make_beneficiary_booking_cancellation_email_data(booking: Booking) -> dict:
-    stock = booking.stock
-    beneficiary = booking.user
+def make_beneficiary_booking_cancellation_email_data(individual_booking: IndividualBooking) -> dict:
+    stock = individual_booking.booking.stock
+    beneficiary = individual_booking.user
     offer = stock.offer
     event_date = ""
     event_hour = ""
@@ -17,7 +17,7 @@ def make_beneficiary_booking_cancellation_email_data(booking: Booking) -> dict:
     is_event = int(offer.isEvent)
     offer_id = humanize(offer.id)
     offer_name = offer.name
-    price = str(booking.total_amount)
+    price = str(individual_booking.booking.total_amount)
     is_free_offer = 1 if stock.price == 0 else 0
     can_book_again = int(beneficiary.deposit.expirationDate > datetime.datetime.now())
 

@@ -6,6 +6,7 @@ from typing import Union
 
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Mediation
 from pcapi.core.providers.models import AllocineVenueProvider
@@ -101,7 +102,6 @@ def create_booking(
     if not stock.offer:
         stock.offer = create_offer_with_thing_product(venue)
 
-    booking.user = user
     booking.amount = amount if amount is not None else stock.price
     booking.dateCreated = date_created
     booking.dateUsed = date_used
@@ -114,10 +114,14 @@ def create_booking(
     booking.offerer = offerer
     booking.venue = venue
     booking.token = token if token is not None else random_token()
-    booking.userId = user.id
     booking.cancellationLimitDate = bookings_api.compute_cancellation_limit_date(stock.beginningDatetime, date_created)
 
-    return booking
+    individual_booking = IndividualBooking()
+    individual_booking.user = user
+    individual_booking.userId = user.id
+    individual_booking.booking = booking
+
+    return individual_booking.booking
 
 
 def create_favorite(idx: int = None, mediation: Mediation = None, offer: Offer = None, user: User = None) -> Favorite:

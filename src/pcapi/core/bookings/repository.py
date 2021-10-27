@@ -66,11 +66,23 @@ BOOKING_STATUS_LABELS = {
 
 def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
     query = Booking.query.filter_by(token=token.upper())
+    offer_is_educational = query.join(Stock).join(Offer).with_entities(Offer.isEducational).scalar()
 
     if email:
         # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
         # all emails have been sanitized in the database.
-        query = query.join(User).filter(func.lower(User.email) == sanitize_email(email))
+        if not offer_is_educational:
+            query = (
+                query.join(IndividualBooking)
+                .join(IndividualBooking.user)
+                .filter(func.lower(User.email) == sanitize_email(email))
+            )
+        elif offer_is_educational:
+            query = (
+                query.join(EducationalBooking)
+                .join(EducationalBooking.educationalRedactor)
+                .filter(func.lower(EducationalBooking.educationalRedactor.email) == sanitize_email(email))
+            )
 
     if offer_id:
         query = query.join(Stock).join(Offer).filter(Offer.id == offer_id)
@@ -193,7 +205,7 @@ def token_exists(token: str) -> bool:
 
 
 def find_not_used_and_not_cancelled() -> list[Booking]:
-    return Booking.query.filter(Booking.isUsed.is_(False)).filter(Booking.isCancelled.is_(False)).all()
+    return Booking.query.filter_by(isUsed=False, isCancelled=False).all()
 
 
 def find_used_by_token(token: str) -> Booking:
@@ -267,7 +279,7 @@ def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: dat
                 else_=(Booking.dateCreated + constants.BOOKINGS_AUTO_EXPIRY_DELAY).between(*rest_window),
             ),
         )
-        .order_by(Booking.userId)
+        .order_by(IndividualBooking.userId)
     )
 
 
@@ -286,7 +298,7 @@ def find_expired_individual_bookings_ordered_by_user(expired_on: date = None) ->
         .filter(Booking.isCancelled.is_(True))
         .filter(cast(Booking.cancellationDate, Date) == expired_on)
         .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
-        .order_by(Booking.userId)
+        .order_by(IndividualBooking.userId)
         .all()
     )
 
@@ -358,14 +370,16 @@ def find_offers_booked_by_beneficiaries(users: list[User]) -> list[Offer]:
         Offer.query.distinct(Offer.id)
         .join(Stock)
         .join(Booking)
-        .filter(Booking.userId.in_(user.id for user in users))
+        .join(IndividualBooking)
+        .filter(IndividualBooking.userId.in_(user.id for user in users))
         .all()
     )
 
 
 def find_cancellable_bookings_by_beneficiaries(users: list[User]) -> list[Booking]:
     return (
-        Booking.query.filter(Booking.userId.in_(user.id for user in users))
+        Booking.query.join(IndividualBooking)
+        .filter(IndividualBooking.userId.in_(user.id for user in users))
         .filter(Booking.isCancelled.is_(False))
         .filter(Booking.isUsed.is_(False))
         .all()
@@ -514,8 +528,8 @@ def _get_filtered_booking_pro(
             venue_id,
             extra_joins=(
                 Stock.offer,
-                Booking.user,
                 Booking.individualBooking,
+                IndividualBooking.user,
                 Booking.educationalBooking,
                 EducationalBooking.educationalRedactor,
             ),

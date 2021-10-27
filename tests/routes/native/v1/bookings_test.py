@@ -4,10 +4,9 @@ from datetime import timedelta
 from flask_jwt_extended.utils import create_access_token
 from freezegun import freeze_time
 import pytest
+from sqlalchemy.orm import joinedload
 
-from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.bookings.factories import CancelledBookingFactory
-from pcapi.core.bookings.factories import UsedBookingFactory
+from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories import subcategories
@@ -42,8 +41,10 @@ class PostBookingTest:
 
         assert response.status_code == 200
 
-        booking = Booking.query.filter(Booking.stockId == stock.id).first()
-        assert booking.userId == user.id
+        booking = (
+            Booking.query.filter(Booking.stockId == stock.id).options(joinedload(Booking.individualBooking)).first()
+        )
+        assert booking.individualBooking.userId == user.id
         assert response.json["bookingId"] == booking.id
 
     def test_no_stock_found(self, app):
@@ -72,7 +73,7 @@ class PostBookingTest:
 
     def test_already_booked(self, app):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = BookingFactory(user=user)
+        booking = booking_factories.IndividualBookingFactory(individualBooking__user=user)
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -93,44 +94,52 @@ class GetBookingsTest:
         OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
-        permanent_booking = UsedBookingFactory(
-            user=user,
+        permanent_booking = booking_factories.UsedIndividualBookingFactory(
+            individualBooking__user=user,
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
             dateUsed=datetime(2021, 2, 3),
         )
 
-        event_booking = BookingFactory(user=user, stock=EventStockFactory(beginningDatetime=datetime(2021, 3, 14)))
+        event_booking = booking_factories.IndividualBookingFactory(
+            individualBooking__user=user, stock=EventStockFactory(beginningDatetime=datetime(2021, 3, 14))
+        )
 
         digital_stock = StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]
         second_activation_code = digital_stock.activationCodes[1]
-        digital_booking = UsedBookingFactory(
-            user=user,
+        digital_booking = booking_factories.UsedIndividualBookingFactory(
+            individualBooking__user=user,
             stock=digital_stock,
             activationCode=first_activation_code,
         )
-        ended_digital_booking = UsedBookingFactory(
-            user=user,
+        ended_digital_booking = booking_factories.UsedIndividualBookingFactory(
+            individualBooking__user=user,
             displayAsEnded=True,
             stock=digital_stock,
             activationCode=second_activation_code,
         )
-        expire_tomorrow = BookingFactory(user=user, dateCreated=datetime.now() - timedelta(days=29))
-        used_but_in_future = UsedBookingFactory(
-            user=user,
+        expire_tomorrow = booking_factories.IndividualBookingFactory(
+            individualBooking__user=user, dateCreated=datetime.now() - timedelta(days=29)
+        )
+        used_but_in_future = booking_factories.UsedIndividualBookingFactory(
+            individualBooking__user=user,
             dateUsed=datetime(2021, 3, 11),
             stock=StockFactory(beginningDatetime=datetime(2021, 3, 15)),
         )
 
-        cancelled_permanent_booking = CancelledBookingFactory(
-            user=user,
+        cancelled_permanent_booking = booking_factories.CancelledIndividualBookingFactory(
+            individualBooking__user=user,
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
             cancellation_date=datetime(2021, 3, 10),
         )
-        cancelled = CancelledBookingFactory(user=user, cancellation_date=datetime(2021, 3, 8))
-        used1 = UsedBookingFactory(user=user, dateUsed=datetime(2021, 3, 1))
-        used2 = UsedBookingFactory(
-            user=user,
+        cancelled = booking_factories.CancelledIndividualBookingFactory(
+            individualBooking__user=user, cancellation_date=datetime(2021, 3, 8)
+        )
+        used1 = booking_factories.UsedIndividualBookingFactory(
+            individualBooking__user=user, dateUsed=datetime(2021, 3, 1)
+        )
+        used2 = booking_factories.UsedIndividualBookingFactory(
+            individualBooking__user=user,
             displayAsEnded=True,
             dateUsed=datetime(2021, 3, 2),
             stock__offer__url=OFFER_URL,
@@ -220,7 +229,7 @@ class CancelBookingTest:
 
     def test_cancel_booking(self, app):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = BookingFactory(user=user)
+        booking = booking_factories.IndividualBookingFactory(individualBooking__user=user)
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -236,7 +245,7 @@ class CancelBookingTest:
 
     def test_cancel_others_booking(self, app):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = BookingFactory()
+        booking = booking_factories.IndividualBookingFactory()
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -248,7 +257,9 @@ class CancelBookingTest:
 
     def test_cancel_confirmed_booking(self, app):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = BookingFactory(user=user, cancellation_limit_date=datetime.now() - timedelta(days=1))
+        booking = booking_factories.IndividualBookingFactory(
+            individualBooking__user=user, cancellation_limit_date=datetime.now() - timedelta(days=1)
+        )
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -270,7 +281,7 @@ class ToggleBookingVisibilityTest:
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         access_token = create_access_token(identity=self.identifier)
 
-        booking = BookingFactory(user=user, displayAsEnded=None)
+        booking = booking_factories.IndividualBookingFactory(individualBooking__user=user, displayAsEnded=None)
         booking_id = booking.id
 
         test_client = TestClient(app.test_client())
@@ -295,8 +306,8 @@ class ToggleBookingVisibilityTest:
 
         stock = StockWithActivationCodesFactory()
         activation_code = stock.activationCodes[0]
-        booking = UsedBookingFactory(
-            user=user,
+        booking = booking_factories.UsedIndividualBookingFactory(
+            individualBooking__user=user,
             displayAsEnded=None,
             dateUsed=datetime.now(),
             stock=stock,

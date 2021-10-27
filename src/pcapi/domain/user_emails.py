@@ -6,6 +6,7 @@ from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected import (
     send_duplicate_beneficiary_pre_subscription_rejected_data,
 )
@@ -60,21 +61,21 @@ from pcapi.utils.mailing import make_pro_user_validation_email
 logger = logging.getLogger(__name__)
 
 
-def send_booking_confirmation_email_to_offerer(booking: Booking) -> None:
-    offerer_booking_email = booking.stock.offer.bookingEmail
+def send_individual_booking_confirmation_email_to_offerer(individual_booking: IndividualBooking) -> None:
+    offerer_booking_email = individual_booking.booking.stock.offer.bookingEmail
     if offerer_booking_email:
-        data = retrieve_data_for_offerer_booking_recap_email(booking)
+        data = retrieve_data_for_offerer_booking_recap_email(individual_booking)
         mails.send(recipients=[offerer_booking_email], data=data)
 
 
-def send_booking_confirmation_email_to_beneficiary(booking: Booking) -> None:
-    data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
-    mails.send(recipients=[booking.user.email], data=data)
+def send_individual_booking_confirmation_email_to_beneficiary(individual_booking: IndividualBooking) -> None:
+    data = retrieve_data_for_beneficiary_booking_confirmation_email(individual_booking)
+    mails.send(recipients=[individual_booking.user.email], data=data)
 
 
-def send_beneficiary_booking_cancellation_email(booking: Booking) -> None:
-    data = make_beneficiary_booking_cancellation_email_data(booking)
-    mails.send(recipients=[booking.user.email], data=data)
+def send_individual_booking_cancellation_email(individual_booking: IndividualBooking) -> None:
+    data = make_beneficiary_booking_cancellation_email_data(individual_booking)
+    mails.send(recipients=[individual_booking.user.email], data=data)
 
 
 def send_user_webapp_offer_link_email(user: User, offer: Offer) -> None:
@@ -118,8 +119,8 @@ def send_booking_cancellation_emails_to_user_and_offerer(
     booking: Booking,
     reason: BookingCancellationReasons,
 ) -> None:
-    if reason == BookingCancellationReasons.BENEFICIARY:
-        send_beneficiary_booking_cancellation_email(booking)
+    if reason == BookingCancellationReasons.BENEFICIARY and booking.individualBooking is not None:
+        send_individual_booking_cancellation_email(booking.individualBooking)
         send_user_driven_cancellation_email_to_offerer(booking)
     if reason == BookingCancellationReasons.OFFERER:
         send_warning_to_user_after_pro_booking_cancellation(booking)
@@ -211,7 +212,7 @@ def send_batch_stock_postponement_emails_to_users(bookings: list[Booking]) -> No
 
 def send_booking_postponement_emails_to_users(booking: Booking) -> None:
     data = retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking)
-    mails.send(recipients=[booking.user.email], data=data)
+    mails.send(recipients=[booking.email], data=data)
 
 
 def send_rejection_email_to_beneficiary_pre_subscription(

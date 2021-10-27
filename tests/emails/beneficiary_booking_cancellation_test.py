@@ -15,8 +15,8 @@ from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booki
 class MakeBeneficiaryBookingCancellationEmailDataTest:
     def test_should_return_thing_data_when_booking_is_a_thing(self):
         # Given
-        booking = factories.CancelledBookingFactory(
-            user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
+        booking = factories.CancelledIndividualBookingFactory(
+            individualBooking__user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
             stock=ThingStockFactory(
                 price=10.2,
                 beginningDatetime=datetime.now() - timedelta(days=1),
@@ -26,7 +26,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
         )
 
         # When
-        email_data = make_beneficiary_booking_cancellation_email_data(booking)
+        email_data = make_beneficiary_booking_cancellation_email_data(booking.individualBooking)
 
         # Then
         assert email_data == {
@@ -48,8 +48,8 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
     @freeze_time("2019-11-26 18:29:20.891028")
     def test_should_return_event_data_when_booking_is_an_event(self):
         # Given
-        booking = factories.CancelledBookingFactory(
-            user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
+        booking = factories.CancelledIndividualBookingFactory(
+            individualBooking__user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
             stock=EventStockFactory(
                 price=10.2,
                 beginningDatetime=datetime.utcnow(),
@@ -59,7 +59,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
         )
 
         # When
-        email_data = make_beneficiary_booking_cancellation_email_data(booking)
+        email_data = make_beneficiary_booking_cancellation_email_data(booking.individualBooking)
 
         # Then
         assert email_data == {
@@ -80,20 +80,20 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
 
     def test_should_return_is_free_offer_when_offer_price_equals_to_zero(self):
         # Given
-        booking = factories.CancelledBookingFactory(stock__price=0)
+        booking = factories.CancelledIndividualBookingFactory(stock__price=0)
 
         # When
-        email_data = make_beneficiary_booking_cancellation_email_data(booking)
+        email_data = make_beneficiary_booking_cancellation_email_data(booking.individualBooking)
 
         # Then
         assert email_data["Vars"]["is_free_offer"] == 1
 
     def test_should_return_the_price_multiplied_by_quantity_when_it_is_a_duo_offer(self):
         # Given
-        booking = factories.CancelledBookingFactory(quantity=2, stock__price=10)
+        booking = factories.CancelledIndividualBookingFactory(quantity=2, stock__price=10)
 
         # When
-        email_data = make_beneficiary_booking_cancellation_email_data(booking)
+        email_data = make_beneficiary_booking_cancellation_email_data(booking.individualBooking)
 
         # Then
         assert email_data["Vars"]["offer_price"] == "20.00"

@@ -1,7 +1,6 @@
 import datetime
 
 import factory
-from factory.declarations import LazyAttribute
 
 from pcapi.core.educational.factories import EducationalBookingFactory as EducationalBookingSubFactory
 from pcapi.core.educational.factories import PendingEducationalBookingFactory as PendingEducationalBookingSubFactory
@@ -23,7 +22,7 @@ class BookingFactory(BaseFactory):
     quantity = 1
     stock = factory.SubFactory(offers_factories.StockFactory)
     token = factory.LazyFunction(random_token)
-    user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
+    user = None
     amount = factory.SelfAttribute("stock.price")
     status = models.BookingStatus.CONFIRMED
 
@@ -115,14 +114,14 @@ class IndividualBookingSubFactory(BaseFactory):
 
 class IndividualBookingFactory(BookingFactory):
     individualBooking = factory.SubFactory(IndividualBookingSubFactory)
-    user = LazyAttribute(lambda booking: booking.individualBooking.user)
+    user = None
 
 
 class CancelledIndividualBookingFactory(CancelledBookingFactory):
     individualBooking = factory.SubFactory(IndividualBookingSubFactory)
-    user = LazyAttribute(lambda booking: booking.individualBooking.user)
+    user = None
 
 
 class UsedIndividualBookingFactory(UsedBookingFactory):
     individualBooking = factory.SubFactory(IndividualBookingSubFactory)
-    user = LazyAttribute(lambda booking: booking.individualBooking.user)
+    user = None

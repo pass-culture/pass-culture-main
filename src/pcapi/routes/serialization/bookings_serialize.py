@@ -57,38 +57,26 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         formula = BookingFormula.VOID
 
     extra_data = booking.stock.offer.extraData or {}
-    is_educational_booking = booking.educationalBookingId is not None
 
     return GetBookingResponse(
         bookingId=humanize(booking.id),
-        dateOfBirth=(
-            format_into_utc_date(booking.user.dateOfBirth)
-            if not is_educational_booking
-            and booking.stock.offer.subcategoryId in subcategories.ACTIVATION_SUBCATEGORIES
-            else ""
-        ),
+        dateOfBirth="",
         datetime=(format_into_utc_date(booking.stock.beginningDatetime) if booking.stock.beginningDatetime else ""),
         ean13=(
             extra_data.get("isbn", "") if booking.stock.offer.subcategoryId in subcategories.BOOK_WITH_ISBN else None
         ),
-        email=booking.educationalBooking.educationalRedactor.email if is_educational_booking else booking.user.email,
+        email=booking.email,
         formula=formula,
         isUsed=booking.isUsed,
         offerId=booking.stock.offer.id,
         publicOfferId=humanize(booking.stock.offer.id),
         offerName=booking.stock.offer.product.name,
         offerType=BookingOfferType.EVENEMENT if booking.stock.offer.isEvent else BookingOfferType.EVENEMENT,
-        phoneNumber=(
-            booking.user.phoneNumber
-            if booking.stock.offer.subcategoryId in subcategories.ACTIVATION_SUBCATEGORIES
-            else ""
-        ),
+        phoneNumber="",
         price=booking.amount,
         quantity=booking.quantity,
         theater=extra_data.get("theater", ""),
-        userName=f"{booking.educationalBooking.educationalRedactor.firstName} {booking.educationalBooking.educationalRedactor.lastName}"
-        if is_educational_booking
-        else booking.user.publicName,
+        userName=booking.publicName,
         venueAddress=booking.venue.address,
         venueDepartmentCode=booking.venue.departementCode,
         venueName=booking.venue.name,
