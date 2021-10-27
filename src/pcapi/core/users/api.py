@@ -239,7 +239,11 @@ def initialize_account(
 def steps_to_become_beneficiary(user: User) -> list[BeneficiaryValidationStep]:
     missing_steps = []
 
-    if not user.is_phone_validated and FeatureToggle.FORCE_PHONE_VALIDATION.is_active():
+    if (
+        not user.is_phone_validated
+        and user.eligibility != EligibilityType.UNDERAGE
+        and FeatureToggle.FORCE_PHONE_VALIDATION.is_active()
+    ):
         missing_steps.append(BeneficiaryValidationStep.PHONE_VALIDATION)
 
     beneficiary_import = get_beneficiary_import_for_beneficiary(user)
