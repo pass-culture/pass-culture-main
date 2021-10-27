@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path')
 const configPaths = require('../config/paths')
 
 function resolve(dir) {
@@ -6,12 +6,13 @@ function resolve(dir) {
 }
 
 const aliases = {
-  'components': resolve('../src/components'),
+  components: resolve('../src/components'),
   'ui-kit': resolve('../src/ui-kit'),
-  'styles': resolve('../src/styles'),
-  'images': resolve('../src/images'),
-  'icons': resolve('../src/icons'),
-  'utils': resolve('../src/utils'),
+  styles: resolve('../src/styles'),
+  images: resolve('../src/images'),
+  screens: resolve('../src/screens'),
+  icons: resolve('../src/icons'),
+  utils: resolve('../src/utils'),
 }
 
 const sassResourcesLoader = {
@@ -21,7 +22,7 @@ const sassResourcesLoader = {
     resources: [
       path.resolve(configPaths.appSrc, './styles/variables/index.scss'),
       path.resolve(configPaths.appSrc, './styles/mixins/index.scss'),
-    ]
+    ],
   },
 }
 
