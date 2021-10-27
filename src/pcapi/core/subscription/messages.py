@@ -164,8 +164,8 @@ def on_dms_application_parsing_errors_but_updatables_values(user: users_models.U
 
 def on_dms_application_parsing_errors(user: users_models.User, error_fields: list[str]) -> None:
     user_message = _generate_form_field_error(
-        "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car ‘{formatted_error_fields}’ n’est pas valide.",
-        "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car ‘{formatted_error_fields}’ ne sont pas valides.",
+        "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car le champ ‘{formatted_error_fields}’ n’est pas valide.",
+        "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car les champs ‘{formatted_error_fields}’ ne sont pas valides.",
         error_fields,
     )
     message = models.SubscriptionMessage(
