@@ -261,6 +261,16 @@ class Desk extends Component {
                   {`${booking.price} €`}
                 </div>
               </div>
+              {booking.ean13 !== null && (
+                <div>
+                  <div className="desk-label">
+                    {'Isbn : '}
+                  </div>
+                  <div className="desk-value">
+                    {booking.ean13}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

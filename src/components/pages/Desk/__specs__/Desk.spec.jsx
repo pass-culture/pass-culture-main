@@ -148,6 +148,7 @@ describe('src | components | Desk', () => {
         offerName: 'Fake offer',
         userName: 'Fake user name',
         price: 40,
+        ean13: 'isbn',
       })
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
@@ -171,7 +172,52 @@ describe('src | components | Desk', () => {
       expect(bookingDate).toBeInTheDocument()
       const bookingPrice = await queryByTextTrimHtml(screen, 'Prix : 40 €')
       expect(bookingPrice).toBeInTheDocument()
+      const bookingIsbn = await queryByTextTrimHtml(screen, 'Isbn : isbn')
+      expect(bookingIsbn).toBeInTheDocument()
     })
+
+    it('should display isbn line with empty informations if offer is a book', async () => {
+      // given
+      jest.spyOn(props, 'getBooking').mockResolvedValue({
+        datetime: '2020-10-23T20:00:00Z',
+        offerName: 'Fake offer',
+        userName: 'Fake user name',
+        price: 40,
+        ean13: '',
+      })
+      renderDesk(props)
+      const tokenInput = screen.getByLabelText('Contremarque')
+
+      // when
+      fireEvent.change(tokenInput, { target: { value: 'MEFA01' } })
+
+      // then
+      await screen.findByRole('button', { name: 'Valider la contremarque' })
+      const bookingIsbn = await queryByTextTrimHtml(screen, 'Isbn :')
+      expect(bookingIsbn).toBeInTheDocument()
+    })
+
+    it('should not display isbn line if offer is not a book', async () => {
+      // given
+      jest.spyOn(props, 'getBooking').mockResolvedValue({
+        datetime: '2020-10-23T20:00:00Z',
+        offerName: 'Fake offer',
+        userName: 'Fake user name',
+        price: 40,
+        ean13: null,
+      })
+      renderDesk(props)
+      const tokenInput = screen.getByLabelText('Contremarque')
+
+      // when
+      fireEvent.change(tokenInput, { target: { value: 'MEFA01' } })
+
+      // then
+      await screen.findByRole('button', { name: 'Valider la contremarque' })
+      const bookingIsbn = await queryByTextTrimHtml(screen, 'Isbn :')
+      expect(bookingIsbn).not.toBeInTheDocument()
+    })
+
 
     it('should display an error message when token validation fails', async () => {
       // given
