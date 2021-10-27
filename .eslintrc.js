@@ -39,6 +39,7 @@ const comonConfig = {
     'jest/no-hooks': 'off',
     'jest/prefer-expect-assertions': 'off',
     'jest/prefer-inline-snapshots': 'off',
+    'jest/expect-expect': 'off',
     'jsx-a11y/label-has-for': 'off',
     'jsx-a11y/no-onchange': 'off',
     'no-var': 'warn',
@@ -50,7 +51,6 @@ const comonConfig = {
         unnamedComponents: 'arrow-function',
       },
     ],
-    'react/jsx-no-bind': 'off',
     'react/jsx-no-literals': 'off',
     'react/jsx-curly-brace-presence': [2, { props: 'never', children: 'never' }],
     'react/jsx-filename-extension': [1, { extensions: ['.jsx', '.tsx'] }],
@@ -61,6 +61,7 @@ const comonConfig = {
     'react/jsx-max-depth': 'off',
     'react/jsx-newline': 'off',
     'react/jsx-props-no-spreading': 'off',
+    'react/jsx-no-bind': 'off',
     'react/jsx-wrap-multilines': [
       'warn',
       {
@@ -139,17 +140,23 @@ const strictConfig = {
   overrides: [
     ...comonConfig.overrides,
     {
-      files: ['./src/**/*.[jt]sx'],
+      files: ['src/**/*.jsx', 'src/**/*.tsx'],
       rules: {
-        'max-lines-per-function': ['error', 150],
+        'max-lines-per-function': ['error', 200],
       },
     },
     {
-      files: ['./src/**/__tests__/**/*.[jt]s?(x)', '.src/**/?(*.)+(spec|test).[jt]s?(x)'],
+      files: [
+        './src/**/__specs__/*.jsx',
+        './src/**/__specs__/*.tsx',
+        './src/**/__specs__/*.ts',
+        './src/**/__specs__/*.js',
+      ],
       extends: ['plugin:testing-library/react'],
       rules: {
         'max-lines-per-function': ['error', 300],
         'max-nested-callbacks': ['error', 50],
+        'max-statements': ['error', 25],
       },
     },
   ],
