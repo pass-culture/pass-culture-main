@@ -94,6 +94,7 @@ class BeneficiaryImport(PcObject, Model):
     def get_detailed_source(self) -> str:
         if self.source == BeneficiaryImportSources.demarches_simplifiees.value:
             return f"démarches simplifiées dossier [{self.applicationId}]"
+        # TODO(viconnex): implement source for educonnect
         return f"dossier {self.source} [{self.applicationId}]"
 
     @classmethod

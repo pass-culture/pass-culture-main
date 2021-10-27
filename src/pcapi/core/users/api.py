@@ -38,6 +38,7 @@ from pcapi.core.offers import models as offers_models
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
+from pcapi.core.users import exceptions
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -358,20 +359,28 @@ def activate_beneficiary(user: User, deposit_source: str = None) -> User:
         if not beneficiary_import:
             raise exceptions.BeneficiaryImportMissingException()
 
+        eligibility = beneficiary_import.eligibilityType
         deposit_source = beneficiary_import.get_detailed_source()
+    else:
+        eligibility = EligibilityType.AGE18
 
-    user.add_beneficiary_role()
+    if eligibility == EligibilityType.UNDERAGE:
+        user.add_underage_beneficiary_role()
+    elif eligibility == EligibilityType.AGE18:
+        user.add_beneficiary_role()
+    else:
+        raise exceptions.InvalidEligibilityTypeException()
 
     if "apps_flyer" in user.externalIds:
         log_user_becomes_beneficiary_event_job.delay(user.id)
 
-    deposit = payment_api.create_deposit(user, deposit_source=deposit_source, eligibility=EligibilityType.AGE18)
+    deposit = payment_api.create_deposit(user, deposit_source=deposit_source, eligibility=eligibility)
 
     db.session.add_all((user, deposit))
     db.session.commit()
     update_external_user(user)
 
-    logger.info("Activated beneficiary and created deposit", extra={"user": user.id})
+    logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit_source})
     return user
 
 

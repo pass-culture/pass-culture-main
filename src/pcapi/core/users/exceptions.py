@@ -118,3 +118,7 @@ class IdentityDocumentVerificationException(Exception):
 
 class InvalidUserRoleException(Exception):
     pass
+
+
+class InvalidEligibilityTypeException(Exception):
+    pass

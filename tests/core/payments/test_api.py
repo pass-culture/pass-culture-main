@@ -40,7 +40,7 @@ class CreateDepositTest:
             dateOfBirth=datetime.combine(datetime.utcnow(), time(0, 0)) - relativedelta(years=age, months=2)
         )
 
-        deposit = api.create_deposit(beneficiary, "created by test")
+        deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility)
 
         assert deposit.type == DepositType.GRANT_15_17
         assert deposit.version == 1
@@ -60,16 +60,6 @@ class CreateDepositTest:
         assert deposit.amount == Decimal(300)
         assert deposit.user.id == beneficiary.id
         assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
-
-    def test_create_not_eligible_user_deposit(self):
-        not_eligible_user = users_factories.UserFactory(
-            dateOfBirth=datetime.combine(datetime.now(), time(0, 0)) - relativedelta(years=19, days=4)
-        )
-
-        with pytest.raises(exceptions.UserNotGrantable):
-            api.create_deposit(not_eligible_user, "created by test")
-
-        assert not Deposit.query.filter_by(userId=not_eligible_user.id).first()
 
     @override_settings(IS_INTEGRATION=True)
     def test_deposit_on_integration(self):

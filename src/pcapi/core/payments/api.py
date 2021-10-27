@@ -26,14 +26,15 @@ def _compute_eighteenth_birthday(birth_date: datetime.datetime) -> datetime.date
 
 
 def get_granted_deposit(
-    beneficiary: User, version: Optional[int] = None, eligibility: Optional[EligibilityType] = None
+    beneficiary: User, eligibility: EligibilityType, version: Optional[int] = None
 ) -> Optional[GrantedDeposit]:
-    if not eligibility:
-        eligibility = beneficiary.eligibility
-
     if eligibility == EligibilityType.UNDERAGE:
         return GrantedDeposit(
-            amount=deposit_conf.GRANTED_DEPOSIT_AMOUNT_BY_AGE_AND_VERSION[beneficiary.age][1],
+            # as the beneficiary activation process may be asynchronous (with Jouve or DMS),
+            # beneficiary.age may be > 17 although it was <= 17 when the subscription was made
+            amount=deposit_conf.GRANTED_DEPOSIT_AMOUNT_BY_AGE_AND_VERSION[beneficiary.age][1]
+            if beneficiary.age in deposit_conf.GRANTED_DEPOSIT_AMOUNT_BY_AGE_AND_VERSION
+            else deposit_conf.GRANTED_DEPOSIT_AMOUNT_BY_AGE_AND_VERSION[17][1],
             expiration_date=_compute_eighteenth_birthday(beneficiary.dateOfBirth),
             type=DepositType.GRANT_15_17,
             version=1,
@@ -53,13 +54,16 @@ def get_granted_deposit(
 
 
 def create_deposit(
-    beneficiary: User, deposit_source: str, version: int = None, eligibility: Optional[EligibilityType] = None
+    beneficiary: User,
+    deposit_source: str,
+    eligibility: Optional[EligibilityType] = EligibilityType.AGE18,
+    version: int = None,
 ) -> Deposit:
     """Create a new deposit for the user if there is no deposit yet.
 
     The ``version`` argument MUST NOT be used outside (very specific) tests.
     """
-    granted_deposit = get_granted_deposit(beneficiary, version, eligibility)
+    granted_deposit = get_granted_deposit(beneficiary, eligibility, version=version)
 
     if not granted_deposit:
         raise exceptions.UserNotGrantable()

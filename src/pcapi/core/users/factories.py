@@ -278,7 +278,9 @@ class DepositGrantFactory(BaseFactory):
     def _create(cls, model_class, *args, **kwargs):
         if "amount" in kwargs:
             raise ValueError("You cannot directly set deposit amount: set version instead")
-        granted_deposit = payments_api.get_granted_deposit(kwargs["user"], kwargs.get("version"))
+        granted_deposit = payments_api.get_granted_deposit(
+            kwargs["user"], kwargs["user"].eligibility, kwargs.get("version")
+        )
         if "version" not in kwargs:
             kwargs["version"] = granted_deposit.version
         kwargs["amount"] = granted_deposit.amount

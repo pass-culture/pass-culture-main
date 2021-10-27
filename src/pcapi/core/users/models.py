@@ -414,6 +414,11 @@ class User(PcObject, Model, NeedsValidationMixin):
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
         self._add_role(UserRole.BENEFICIARY)
 
+    def add_underage_beneficiary_role(self) -> None:
+        if self.isAdmin:
+            raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
+        self._add_role(UserRole.UNDERAGE_BENEFICIARY)
+
     def add_pro_role(self) -> None:
         self._add_role(UserRole.PRO)
 

@@ -25,7 +25,7 @@ def get_newly_eligible_user_email_data(user: users_models.User) -> dict:
         path="id-check",
         params={"email": user.email},
     )
-    granted_deposit = get_granted_deposit(user)
+    granted_deposit = get_granted_deposit(user, user.eligibility)
 
     return {
         "Mj-TemplateID": 2030056,
