@@ -4,22 +4,12 @@
   .name {
     @include button();
 
+    display: block;
     margin-bottom: rem(4px);
     overflow-wrap: break-word;
   }
 
-  .tag {
-    color: $tertiary;
-    border: solid rem(1px) $tertiary;
-    border-radius: rem(4px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: fit-content;
-    height: fit-content;
-    padding: rem(0 4px);
-    @include highlight();
-    line-height: rem(16px);
+  .educational-tag {
     margin-bottom: rem(5px);
   }
 

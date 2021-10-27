@@ -6,6 +6,8 @@ import { format } from 'date-fns-tz'
 import PropTypes from 'prop-types'
 import React from 'react'
 
+import { Tag } from 'ui-kit'
+
 import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from '../../../../../utils/date'
 
 const BookingOfferCell = ({ offer }) => {
@@ -24,9 +26,9 @@ const BookingOfferCell = ({ offer }) => {
       title={`${offer.offer_name} (ouverture dans un nouvel onglet)`}
     >
       {offer.offer_is_educational && (
-        <div className="tag">
+        <Tag className="booking-educational-tag">
           Offre collective
-        </div>
+        </Tag>
       )}
       <div className="booking-offer-name">
         {offer.offer_name}

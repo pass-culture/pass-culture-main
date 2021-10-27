@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -12,6 +12,7 @@ import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import StatusLabel from 'components/pages/Offers/Offer/OfferStatus/StatusLabel'
 import { OFFER_STATUS_SOLD_OUT } from 'components/pages/Offers/Offers/_constants'
 import { computeVenueDisplayName } from 'repository/venuesService'
+import { Tag } from 'ui-kit'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
@@ -81,9 +82,9 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
       </td>
       <td className="title-column">
         {offer.isEducational && (
-          <div className="tag">
+          <Tag className="educational-tag">
             Offre collective
-          </div>
+          </Tag>
         )}
         <Link
           className="name"
