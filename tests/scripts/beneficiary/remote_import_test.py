@@ -1269,7 +1269,7 @@ class GraphQLSourceProcessApplicationTest:
         assert user.subscriptionMessages[0]
         assert (
             user.subscriptionMessages[0].userMessage
-            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car ‘ta pièce d'identité, ton code postal’ ne sont pas valides."
+            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car les champs ‘ta pièce d'identité, ton code postal’ ne sont pas valides."
         )
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
 
