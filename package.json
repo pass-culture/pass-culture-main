@@ -30,7 +30,7 @@
     "testcafe-firefox": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'firefox:headless'",
     "testcafe-chromium": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'chromium:headless'",
     "prepare": "husky install",
-    "storybook": "start-storybook -p 6006",
+    "storybook": "start-storybook -s ./public -p 6006",
     "build-storybook": "build-storybook -o docs-build -s ./src/stories/assets",
     "dept:report": "tyrion -p .",
     "dept:tendency": "tyrion --evolution 100 -p ."
