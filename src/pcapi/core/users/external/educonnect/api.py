@@ -37,7 +37,9 @@ def get_saml_client() -> Saml2Client:
     config = {
         "entityid": entityid,
         "metadata": {
-            "local": [path.join(BASEDIR, f"{FILES_DIR}/educonnect.metadata.xml")],
+            "local": [
+                path.join(BASEDIR, f"{FILES_DIR}/educonnect.{'production' if settings.IS_PROD else 'pr4'}.metadata.xml")
+            ],
         },
         "service": {
             "sp": {

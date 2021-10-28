@@ -7,6 +7,7 @@ from flask_jwt_extended.utils import create_access_token
 import pytest
 
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.external.educonnect.models import EduconnectUser
 
@@ -27,6 +28,21 @@ class EduconnectTest:
         response = client.get("/saml/educonnect/login")
         assert response.status_code == 302
         assert response.location.startswith("https://pr4.educonnect.phm.education.gouv.fr/idp")
+        assert len(app.redis_client.keys(f"{self.request_id_key_prefix}*")) == 1
+
+        request_id = app.redis_client.keys(f"{self.request_id_key_prefix}*")[0]
+        assert int(app.redis_client.get(request_id)) == user.id
+
+    @override_settings(IS_PROD=True)
+    @override_settings(API_URL_FOR_EDUCONNECT="https://backend.passculture.app")
+    def test_get_educonnect_login_production(self, client, app):
+        user = users_factories.UserFactory(email=self.email)
+        access_token = create_access_token(identity=self.email)
+        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = client.get("/saml/educonnect/login")
+        assert response.status_code == 302
+        assert response.location.startswith("https://educonnect.education.gouv.fr/idp")
         assert len(app.redis_client.keys(f"{self.request_id_key_prefix}*")) == 1
 
         request_id = app.redis_client.keys(f"{self.request_id_key_prefix}*")[0]

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" entityID="https://educonnect.education.gouv.fr/idp">
+
+    <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">
+
+        <Extensions>
+            <shibmd:Scope regexp="false">educt</shibmd:Scope>
+        </Extensions>
+
+        <KeyDescriptor use="signing">
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>
+MIIDUTCCAjmgAwIBAgIVAMWaDtu4mbR8qqj3S1EvKD1L0S/+MA0GCSqGSIb3DQEB
+CwUAMCcxJTAjBgNVBAMMHGVkdWNvbm5lY3QuZWR1Y2F0aW9uLmdvdXYuZnIwHhcN
+MTcwMTA2MTExNTI4WhcNMzcwMTA2MTExNTI4WjAnMSUwIwYDVQQDDBxlZHVjb25u
+ZWN0LmVkdWNhdGlvbi5nb3V2LmZyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
+CgKCAQEAvSPOS7A26SYwStaFR8upnbzJvNmwMkLeQiGPx6ZTv/wG2YyMAPCsxIuK
+YdGjcjo77xYP94xZSZVnE1PVcq9DlL1lDEFC8nzlKB0p/lFgk96lJwLgpHEXubyq
+mV1Rn3tEyfNCSfGskO1kdPtgvaYnrkaKwMa4NTrQU1m8FhdgHUtrSqk380imjiBb
+fYp0dycYen4Z7bt2Dv72VfZYysWGhtj8pvWeFx42QPhSnYzCPm8k4fxtP8gSfq0R
+khKqFh7Uj4Pke98yh4E/Yp8tS0ekI4UFUB1qvQPQkvgHIwsaO9awgq9AhefHiaXY
+/9EGgi3B6jX7o4KAwvHNHGnajV6ZgwIDAQABo3QwcjAdBgNVHQ4EFgQUVCYi18Ey
+E66DyrMVMFIGSf7KMPEwUQYDVR0RBEowSIIcZWR1Y29ubmVjdC5lZHVjYXRpb24u
+Z291di5mcoYoaHR0cHM6Ly9lZHVjb25uZWN0LmVkdWNhdGlvbi5nb3V2LmZyL2lk
+cDANBgkqhkiG9w0BAQsFAAOCAQEADEX58pI83aEOfed8zVMpPA8M0VBrHbhsNLLZ
+hmqeqCyimaX3EY5CMBbKoiX05Mg6PJqak04ukfk/nQCnnOeO1wFNJs90HFBVeE8G
+hv/W+5dV2zqK0XP2jFm64VqFnzlUF10BV+UNbdu4MCzcErQn1Pfznk6JOQqTICgE
+ZjM15FW1bmL+IgG9Eo8jiRkYMP5jwg5SeeAY2S0Pa0QPnhO3k0swg3ybl7coYEWj
+s7j/W3lwa5TgAQFyzSZTIglqp/254H1bgUQcKtluqkhDSZglHJFZq1p2OLkzQrSc
+MgZ3L67RHaj0tPe250X6luXbMGuJMT3t3YGskfLtQhiG5GWeSw==
+</ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+
+        </KeyDescriptor>
+        <KeyDescriptor use="encryption">
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>
+MIIDUTCCAjmgAwIBAgIVAOYm6skXmR4dluEAxT48NhM73+FqMA0GCSqGSIb3DQEB
+CwUAMCcxJTAjBgNVBAMMHGVkdWNvbm5lY3QuZWR1Y2F0aW9uLmdvdXYuZnIwHhcN
+MTcwMTA2MTExNTI5WhcNMzcwMTA2MTExNTI5WjAnMSUwIwYDVQQDDBxlZHVjb25u
+ZWN0LmVkdWNhdGlvbi5nb3V2LmZyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
+CgKCAQEAtu358jOq+uc5ie73Mc/yrlTBn3mHAeefjuqz3C8swLLkdRB7oATmSQyx
+OPfyUwRxBzouCFrk86uRCiaY96fshSdry+JyFSk/2tpKJauBGB2TfaOeqdASwB25
++Q972qPk0KG+f+P2aXyPiIMXSboq6salXH64GTgYH94f4fWQXynsNu0QEGi3bech
+sOkQLHtflmMbLatbqlYGCsMKBrgNko7m0lWyJYWe5VVfs20wGlE9WB2zFvnJMWPF
+DeYxzueHGWNANBDEE4PfseN4PCAcT8tZCAsT/7UAI8utx1AekRbVcbS350dWwrTI
+ob4XqMr2BQp+6M+SfH1CtUQKb3NSbQIDAQABo3QwcjAdBgNVHQ4EFgQUkVfgZMGH
+a5ALDVHwYBRlNmkVGG0wUQYDVR0RBEowSIIcZWR1Y29ubmVjdC5lZHVjYXRpb24u
+Z291di5mcoYoaHR0cHM6Ly9lZHVjb25uZWN0LmVkdWNhdGlvbi5nb3V2LmZyL2lk
+cDANBgkqhkiG9w0BAQsFAAOCAQEAkaMmG8AzPUmGM38xmudtDbBGC47RHrf0NzlD
+SjQWR1BWFVb8P4NoI8/E3/5TseM7U8uYCF2M3A0+mfOQNODMzo0wU+YpeVsYdS3T
+9vsjA5XTPhcKrWdWy6+3lxY0vr/7N/5LVlh5uSbMb1aSxXmYGGy4A5kIty3ul+3l
+EXjwu2LzMHnZuzm8sZb+dDVs56nW1MjL/V63AIhoQPnJI68N0Ges/KvOZL4iau4m
+Y7OD+QRSSgQKyJ7RNggtPQ2Y5R+oWCO9lSsH7t6T4lZMNi9QsNNjApPIKcwN/WFR
+OdicAhJckc1/T3LRZDhRPSbOlB/pklfjjO7S7Wf4TfYNUavl+A==
+</ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+
+        </KeyDescriptor>
+
+        <NameIDFormat>urn:mace:shibboleth:1.0:nameIdentifier</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+
+        <SingleSignOnService Binding="urn:mace:shibboleth:1.0:profiles:AuthnRequest" Location="https://educonnect.education.gouv.fr/idp/profile/Shibboleth/SSO" />
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://educonnect.education.gouv.fr/idp/profile/SAML2/POST/SSO" />
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign" Location="https://educonnect.education.gouv.fr/idp/profile/SAML2/POST-SimpleSign/SSO" />
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://educonnect.education.gouv.fr/idp/profile/SAML2/Redirect/SSO" />
+
+    </IDPSSODescriptor>
+
+</EntityDescriptor>
