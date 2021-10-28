@@ -3005,4 +3005,4 @@ def test_get_deposit_booking():
     with assert_num_queries(1):
         current_deposit_bookings = get_bookings_from_deposit(current_deposit_id)
 
-    assert current_deposit_bookings == [current_deposit_booking, current_deposit_booking_2]
+    assert set(current_deposit_bookings) == {current_deposit_booking, current_deposit_booking_2}
