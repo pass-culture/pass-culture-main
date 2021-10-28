@@ -96,7 +96,8 @@ def create_industrial_app_beneficiaries():
 
 def create_industrial_app_underage_beneficiaries():
     if not FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
-        raise Exception("The flag ENABLE_NATIVE_EAC_INDIVIDUAL should be active")
+        logger.warning("cannot create underage beneficiaries when the flag ENABLE_NATIVE_EAC_INDIVIDUAL OFF")
+        return {}
 
     logger.info("create_industrial_app_underage_beneficiaries")
 
@@ -195,9 +196,6 @@ def create_industrial_app_other_users():
 
 
 def create_industrial_app_general_public_users():
-    if not FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
-        raise Exception("The flag ENABLE_NATIVE_EAC_INDIVIDUAL should be active")
-
     logger.info("create_industrial_app_general_public_users")
 
     users_by_name = {}
@@ -242,17 +240,19 @@ def create_industrial_app_general_public_users():
 def create_short_email_beneficiaries() -> dict:
     fake = Faker("fr_FR")
     users = []
+    is_eac_active = FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active()
 
-    for age in [15, 16, 17]:
-        users.append(
-            users_factories.UnderageBeneficiaryFactory(
-                email=f"bene_{age}@example.com",
-                subscription_age=age,
-                firstName=fake.first_name(),
-                lastName=fake.last_name(),
-                needsToFillCulturalSurvey=False,
+    if is_eac_active:
+        for age in [15, 16, 17]:
+            users.append(
+                users_factories.UnderageBeneficiaryFactory(
+                    email=f"bene_{age}@example.com",
+                    subscription_age=age,
+                    firstName=fake.first_name(),
+                    lastName=fake.last_name(),
+                    needsToFillCulturalSurvey=False,
+                )
             )
-        )
     for age in [15, 16, 17, 18]:
         users.append(
             users_factories.UserFactory(
@@ -276,17 +276,18 @@ def create_short_email_beneficiaries() -> dict:
             needsToFillCulturalSurvey=False,
         )
     )
-    with freeze_time(datetime.utcnow() - relativedelta(years=3)):
-        users.append(
-            users_factories.UnderageBeneficiaryFactory(
-                email="exunderage_18@example.com",
-                dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=15, months=5),
-                subscription_age=15,
-                firstName=fake.first_name(),
-                lastName=fake.last_name(),
-                needsToFillCulturalSurvey=False,
+    if is_eac_active:
+        with freeze_time(datetime.utcnow() - relativedelta(years=3)):
+            users.append(
+                users_factories.UnderageBeneficiaryFactory(
+                    email="exunderage_18@example.com",
+                    dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=15, months=5),
+                    subscription_age=15,
+                    firstName=fake.first_name(),
+                    lastName=fake.last_name(),
+                    needsToFillCulturalSurvey=False,
+                )
             )
-        )
     with freeze_time(datetime.utcnow() - relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, months=5)):
         users.append(
             users_factories.BeneficiaryGrant18Factory(
