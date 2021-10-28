@@ -595,7 +595,7 @@ secrets:
   - name: SENTRY_DSN
     version: 3
   - name: SUPER_ADMIN_EMAIL_ADDRESSES
-    version: 10
+    version: 11
   - name: SUPPORT_EMAIL_ADDRESS
     version: 2
   - name: TRANSACTIONS_RECIPIENTS
