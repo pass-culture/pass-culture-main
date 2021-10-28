@@ -40,7 +40,6 @@ class BookingRecap:
         offer_identifier: int,
         offer_name: str,
         offer_isbn: Optional[str],
-        offerer_name: str,
         redactor_lastname: Optional[str],
         redactor_firstname: Optional[str],
         redactor_email: Optional[str],
@@ -146,6 +145,7 @@ class BookingRecapLegacy(BookingRecap):
         booking_is_cancelled: bool,
         booking_is_reimbursed: bool,
         booking_is_confirmed: bool,
+        booking_is_educational: bool,
         booking_amount: float,
         cancellation_date: Optional[datetime],
         cancellation_limit_date: Optional[datetime],
@@ -155,6 +155,9 @@ class BookingRecapLegacy(BookingRecap):
         offer_name: str,
         offer_isbn: Optional[str],
         offerer_name: str,
+        redactor_lastname: Optional[str],
+        redactor_firstname: Optional[str],
+        redactor_email: Optional[str],
         venue_identifier: int,
         venue_name: str,
         venue_is_virtual: bool,
@@ -181,6 +184,10 @@ class BookingRecapLegacy(BookingRecap):
             cancellation_limit_date=cancellation_limit_date,
             payment_date=payment_date,
             date_used=date_used,
+            redactor_lastname=redactor_lastname,
+            redactor_firstname=redactor_firstname,
+            redactor_email=redactor_email,
+            booking_is_educational=booking_is_educational,
         )
         self.offerer_name = offerer_name
         self.venue_identifier = venue_identifier

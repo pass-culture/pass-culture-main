@@ -1283,8 +1283,8 @@ class FindByProUserTest:
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
-        bookings_factories.UsedBookingFactory(
-            user=beneficiary,
+        bookings_factories.UsedIndividualBookingFactory(
+            individualBooking__user=beneficiary,
             stock=stock,
             dateCreated=booking_date,
             token="ABCDEF",
@@ -1330,7 +1330,7 @@ class FindByProUserTest:
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
+        bookings_factories.IndividualBookingFactory(user=beneficiary, stock=stock, quantity=2)
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -1354,7 +1354,7 @@ class FindByProUserTest:
         offers_factories.UserOffererFactory(offerer=offerer)
         offers_factories.UserOffererFactory(offerer=offerer)
 
-        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
+        bookings_factories.IndividualBookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -1384,7 +1384,7 @@ class FindByProUserTest:
             offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
         )
         yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.BookingFactory(
+        bookings_factories.IndividualBookingFactory(
             user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCDEF", status=BookingStatus.PENDING
         )
 
@@ -1432,7 +1432,7 @@ class FindByProUserTest:
             offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
         )
         more_than_two_days_ago = datetime.utcnow() - timedelta(days=3)
-        bookings_factories.BookingFactory(
+        bookings_factories.IndividualBookingFactory(
             user=beneficiary, stock=stock, dateCreated=more_than_two_days_ago, token="ABCDEF"
         )
 
@@ -1462,7 +1462,7 @@ class FindByProUserTest:
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=5)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.CancelledBookingFactory(
+        bookings_factories.CancelledIndividualBookingFactory(
             user=beneficiary,
             stock=stock,
             dateCreated=yesterday,
@@ -1497,7 +1497,7 @@ class FindByProUserTest:
         offer = offers_factories.EventOfferFactory(venue=venue, product=product)
         stock = offers_factories.EventStockFactory(offer=offer, price=5)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.UsedBookingFactory(
+        bookings_factories.UsedIndividualBookingFactory(
             user=beneficiary,
             stock=stock,
             dateCreated=yesterday,
@@ -1535,7 +1535,7 @@ class FindByProUserTest:
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         today = datetime.utcnow()
-        bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
+        bookings_factories.IndividualBookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
 
         offerer2 = offers_factories.OffererFactory(siren="8765432")
         offers_factories.UserOffererFactory(user=pro, offerer=offerer2)
@@ -1543,7 +1543,7 @@ class FindByProUserTest:
         venue2 = offers_factories.VenueFactory(managingOfferer=offerer, siret="8765432098765")
         offer2 = offers_factories.ThingOfferFactory(venue=venue2)
         stock2 = offers_factories.ThingStockFactory(offer=offer2, price=0)
-        bookings_factories.BookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
+        bookings_factories.IndividualBookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -1567,8 +1567,10 @@ class FindByProUserTest:
         stock = offers_factories.EventStockFactory(offer=offer, price=0)
         today = datetime.utcnow()
         yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCD")
-        booking2 = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
+        bookings_factories.IndividualBookingFactory(user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCD")
+        booking2 = bookings_factories.IndividualBookingFactory(
+            user=beneficiary, stock=stock, dateCreated=today, token="FGHI"
+        )
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -1595,7 +1597,7 @@ class FindByProUserTest:
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
-        bookings_factories.BookingFactory(user=beneficiary, stock=stock)
+        bookings_factories.IndividualBookingFactory(user=beneficiary, stock=stock)
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -1618,7 +1620,9 @@ class FindByProUserTest:
         offer = offers_factories.EventOfferFactory(venue=venue, isDuo=True)
         stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.utcnow())
         today = datetime.utcnow()
-        booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
+        booking = bookings_factories.IndividualBookingFactory(
+            user=beneficiary, stock=stock, dateCreated=today, token="FGHI"
+        )
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -1645,7 +1649,7 @@ class FindByProUserTest:
         offer = offers_factories.EventOfferFactory(venue=venue, isDuo=True)
         stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.utcnow())
         today = datetime.utcnow()
-        booking = bookings_factories.BookingFactory(
+        booking = bookings_factories.IndividualBookingFactory(
             user=beneficiary, stock=stock, dateCreated=today, token="FGHI", quantity=2
         )
 
@@ -1676,7 +1680,7 @@ class FindByProUserTest:
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
-        bookings_factories.UsedBookingFactory(
+        bookings_factories.UsedIndividualBookingFactory(
             user=beneficiary,
             stock=stock,
             dateCreated=booking_date,
@@ -1707,7 +1711,7 @@ class FindByProUserTest:
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
-        bookings_factories.UsedBookingFactory(
+        bookings_factories.UsedIndividualBookingFactory(
             user=beneficiary,
             stock=stock,
             dateCreated=booking_date,
@@ -1730,8 +1734,10 @@ class FindByProUserTest:
         pro_user = users_factories.ProFactory()
         user_offerer = offers_factories.UserOffererFactory(user=pro_user)
 
-        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
-        booking_two = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
+        bookings_factories.IndividualBookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
+        booking_two = bookings_factories.IndividualBookingFactory(
+            stock__offer__venue__managingOfferer=user_offerer.offerer
+        )
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -1753,15 +1759,15 @@ class FindByProUserTest:
         # Given
         user_offerer = offers_factories.UserOffererFactory()
         event_date = datetime(2020, 12, 24, 10, 30)
-        expected_booking = bookings_factories.BookingFactory(
+        expected_booking = bookings_factories.IndividualBookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=event_date, offer__venue__managingOfferer=user_offerer.offerer
             )
         )
-        bookings_factories.BookingFactory(
+        bookings_factories.IndividualBookingFactory(
             stock=offers_factories.EventStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
         )
-        bookings_factories.BookingFactory(
+        bookings_factories.IndividualBookingFactory(
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
         )
 
@@ -1791,7 +1797,7 @@ class FindByProUserTest:
         stock_in_cayenne = offers_factories.EventStockFactory(
             offer=offer_in_cayenne, beginningDatetime=cayenne_event_datetime
         )
-        cayenne_booking = bookings_factories.BookingFactory(stock=stock_in_cayenne)
+        cayenne_booking = bookings_factories.IndividualBookingFactory(stock=stock_in_cayenne)
 
         offer_in_mayotte = offers_factories.OfferFactory(
             venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
@@ -1800,7 +1806,7 @@ class FindByProUserTest:
         stock_in_mayotte = offers_factories.EventStockFactory(
             offer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime
         )
-        mayotte_booking = bookings_factories.BookingFactory(stock=stock_in_mayotte)
+        mayotte_booking = bookings_factories.IndividualBookingFactory(stock=stock_in_mayotte)
 
         # When
         bookings_recap_paginated = booking_repository.find_by_pro_user(
@@ -1822,15 +1828,15 @@ class FindByProUserTest:
         user_offerer = offers_factories.UserOffererFactory()
         booking_beginning_period = datetime(2020, 12, 24, 10, 30).date()
         booking_ending_period = datetime(2020, 12, 26, 15, 00).date()
-        expected_booking = bookings_factories.BookingFactory(
+        expected_booking = bookings_factories.IndividualBookingFactory(
             dateCreated=datetime(2020, 12, 26, 15, 30),
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
         )
-        bookings_factories.BookingFactory(
+        bookings_factories.IndividualBookingFactory(
             dateCreated=datetime(2020, 12, 29, 15, 30),
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
         )
-        bookings_factories.BookingFactory(
+        bookings_factories.IndividualBookingFactory(
             dateCreated=datetime(2020, 12, 22, 15, 30),
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
         )
@@ -1863,7 +1869,7 @@ class FindByProUserTest:
         stock_in_cayenne = offers_factories.EventStockFactory(
             offer=offer_in_cayenne,
         )
-        cayenne_booking = bookings_factories.BookingFactory(
+        cayenne_booking = bookings_factories.IndividualBookingFactory(
             stock=stock_in_cayenne, dateCreated=cayenne_booking_datetime
         )
 
@@ -1874,7 +1880,7 @@ class FindByProUserTest:
         stock_in_mayotte = offers_factories.EventStockFactory(
             offer=offer_in_mayotte,
         )
-        mayotte_booking = bookings_factories.BookingFactory(
+        mayotte_booking = bookings_factories.IndividualBookingFactory(
             stock=stock_in_mayotte, dateCreated=mayotte_booking_datetime
         )
 

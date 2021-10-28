@@ -268,6 +268,30 @@ class Returns200Test:
         assert len(response.json["bookings_recap"]) == 1
 
     @testing.override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
+    def when_booking_is_educational(self, app):
+        admin = users_factories.AdminFactory()
+        user_offerer = offers_factories.UserOffererFactory()
+        bookings_factories.EducationalBookingFactory(
+            dateCreated=datetime(2020, 8, 11, 12, 0, 0),
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
+            educationalBooking__educationalRedactor__firstName="Georges",
+            educationalBooking__educationalRedactor__lastName="Moustaki",
+            educationalBooking__educationalRedactor__email="redactor@email.com",
+        )
+
+        client = TestClient(app.test_client()).with_session_auth(admin.email)
+        response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+
+        assert response.status_code == 200
+        assert response.json["bookings_recap"][0]["stock"]["offer_is_educational"] is True
+        assert response.json["bookings_recap"][0]["beneficiary"] == {
+            "email": "redactor@email.com",
+            "firstname": "Georges",
+            "lastname": "Moustaki",
+            "phonenumber": None,
+        }
+
+    @testing.override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
     def when_user_is_linked_to_a_valid_offerer(self, app):
         booking = bookings_factories.UsedBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
@@ -294,6 +318,7 @@ class Returns200Test:
                 "stock": {
                     "offer_name": booking.stock.offer.name,
                     "offer_identifier": humanize(booking.stock.offer.id),
+                    "offer_is_educational": False,
                     "event_beginning_datetime": None,
                     "offer_isbn": None,
                 },
