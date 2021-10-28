@@ -683,21 +683,6 @@ describe('offerDetails - Creation - pro user', () => {
             )
           ).toBeInTheDocument()
         })
-
-        it('should display accessibility checkboxes unchecked by default', async () => {
-          // Given
-          await renderOffers(props, store)
-
-          // When
-          setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          setOfferValues({ subcategoryId: 'CONCERT' })
-
-          // Then
-          expect(await getOfferInputForField('visualDisabilityCompliant')).not.toBeChecked()
-          expect(await getOfferInputForField('mentalDisabilityCompliant')).not.toBeChecked()
-          expect(await getOfferInputForField('motorDisabilityCompliant')).not.toBeChecked()
-          expect(await getOfferInputForField('audioDisabilityCompliant')).not.toBeChecked()
-        })
       })
 
       describe('venue selection', () => {
@@ -1467,88 +1452,6 @@ describe('offerDetails - Creation - pro user', () => {
             )
           )
         })
-      })
-
-      it('should initialize empty disabilityCompliance', async () => {
-        // Given
-        await renderOffers(props, store)
-        setOfferValues({ categoryId: 'LIVRE' })
-        setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
-        pcapi.getVenue.mockResolvedValue(venues[0])
-        setOfferValues({ venueId: venues[0].id })
-        await sidebarDisplayed()
-
-        const accessibilityCheckboxes = {
-          audioDisabilityCompliant: await getOfferInputForField('audioDisabilityCompliant'),
-          mentalDisabilityCompliant: await getOfferInputForField('mentalDisabilityCompliant'),
-          motorDisabilityCompliant: await getOfferInputForField('motorDisabilityCompliant'),
-          visualDisabilityCompliant: await getOfferInputForField('visualDisabilityCompliant'),
-          noDisabilityCompliant: await getOfferInputForField('noDisabilityCompliant'),
-        }
-
-        // initial value are empty, all values are false
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
-
-        // one accessibility true, other falses
-        await fireEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
-
-        // all accessibility false, noDisabilityCompliant should be true
-        await fireEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).toBeChecked()
-
-        // again, one accessibility true, other falses
-        await fireEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
-
-        // click on noDisabilityCompliant should change other accessibility to false
-        await fireEvent.click(accessibilityCheckboxes.noDisabilityCompliant)
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).toBeChecked()
-
-        // a second click on noDisabilityCompliant shouldn't change values
-        await fireEvent.click(accessibilityCheckboxes.noDisabilityCompliant)
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).toBeChecked()
-
-        // change venue should use venue acessibility values
-        setOfferValues({ subcategoryId: 'LIVRE_PAPIER', venueId: venues[1].id })
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
-
-        // change to venue without accessibility set should change all values to false
-        setOfferValues({ subcategoryId: 'LIVRE_PAPIER', venueId: venues[0].id })
-
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
       })
     })
 

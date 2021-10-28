@@ -87,6 +87,7 @@ const getOfferConditionalFields = ({
 
   return offerConditionalFields
 }
+
 const OfferForm = ({
   areAllVenuesVirtual,
   backUrl,

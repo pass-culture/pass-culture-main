@@ -94,13 +94,19 @@ describe('offerDetails - Edition', () => {
       offererName: 'La structure',
       bookingEmail: 'venue@example.com',
       withdrawalDetails: null,
+      audioDisabilityCompliant: null,
+      mentalDisabilityCompliant: null,
+      motorDisabilityCompliant: null,
+      visualDisabilityCompliant: null,
     }
 
     editedOffer = {
       id: 'ABC12',
+      nonHumanizedOfferId: 111,
       subcategoryId: 'ID',
       name: 'My edited offer',
       venue: editedOfferVenue,
+      venueId: editedOfferVenue.id,
       thumbUrl: null,
       description: 'My edited description',
       withdrawalDetails: 'My edited withdrawal details',
@@ -108,6 +114,10 @@ describe('offerDetails - Edition', () => {
       extraData: {
         isbn: '1234567890123',
       },
+      audioDisabilityCompliant: false,
+      mentalDisabilityCompliant: false,
+      motorDisabilityCompliant: false,
+      visualDisabilityCompliant: false,
     }
 
     categories = {
@@ -167,16 +177,11 @@ describe('offerDetails - Edition', () => {
 
   describe('render when editing an existing offer', () => {
     describe('when interacting with disability fields', () => {
-      let audioDisabilityCompliantCheckbox
-      let mentalDisabilityCompliantCheckbox
-      let motorDisabilityCompliantCheckbox
-      let visualDisabilityCompliantCheckbox
-      let noDisabilityCompliantCheckbox
-
       describe('for offers without any disability compliance information', () => {
         beforeEach(async () => {
           const editedOffer = {
             id: 'ABC12',
+            nonHumanizedOfferId: 111,
             subcategoryId: 'ID',
             name: 'My edited offer',
             venue: editedOfferVenue,
@@ -191,24 +196,6 @@ describe('offerDetails - Edition', () => {
 
           // When
           await renderOffers(props, store)
-        })
-
-        it('should not have checked values', async () => {
-          const uncheckedDisabilityFields = [
-            'audioDisabilityCompliant',
-            'mentalDisabilityCompliant',
-            'motorDisabilityCompliant',
-            'visualDisabilityCompliant',
-            'visualDisabilityCompliant',
-            'noDisabilityCompliant',
-          ]
-
-          uncheckedDisabilityFields.forEach(label => {
-            const input = screen.getByLabelText(fieldLabels[label].label, {
-              exact: fieldLabels[label].exact,
-            })
-            expect(input).not.toBeChecked()
-          })
         })
 
         it('should display error when submitting empty values', async () => {
@@ -240,163 +227,6 @@ describe('offerDetails - Edition', () => {
             'Vous devez cocher l’une des options ci-dessus'
           )
           expect(accessibilityErrorNotification).toBeNull()
-        })
-      })
-
-      describe('for offers with disability compliance information', () => {
-        beforeEach(async () => {
-          const editedOffer = {
-            id: 'ABC12',
-            subcategoryId: 'ID',
-            name: 'My edited offer',
-            venue: editedOfferVenue,
-            thumbUrl: null,
-            audioDisabilityCompliant: true,
-            mentalDisabilityCompliant: true,
-            motorDisabilityCompliant: true,
-            visualDisabilityCompliant: true,
-            status: 'ACTIVE',
-          }
-          pcapi.loadOffer.mockResolvedValue(editedOffer)
-
-          // When
-          await renderOffers(props, store)
-        })
-
-        it('should initialize noDisabilityCompliant unchecked and others checked', async () => {
-          const uncheckedDisabilityFields = [
-            'audioDisabilityCompliant',
-            'mentalDisabilityCompliant',
-            'motorDisabilityCompliant',
-            'visualDisabilityCompliant',
-          ]
-
-          uncheckedDisabilityFields.forEach(label => {
-            const input = screen.getByLabelText(fieldLabels[label].label, {
-              exact: fieldLabels[label].exact,
-            })
-            expect(input).toBeChecked()
-          })
-
-          const noDisabilityCompliantCheckBox = screen.getByLabelText(
-            fieldLabels.noDisabilityCompliant.label,
-            {
-              exact: fieldLabels.noDisabilityCompliant.exact,
-            }
-          )
-
-          expect(noDisabilityCompliantCheckBox).not.toBeChecked()
-        })
-
-        it('should uncheck all when noDisabilityCompliant is checked', async () => {
-          // When
-          const noDisabilityCompliantCheckBox = screen.getByLabelText(
-            fieldLabels.noDisabilityCompliant.label,
-            {
-              exact: fieldLabels.noDisabilityCompliant.exact,
-            }
-          )
-
-          userEvent.click(noDisabilityCompliantCheckBox)
-
-          // Then
-          expect(noDisabilityCompliantCheckBox).toBeChecked()
-
-          const checkedDisabilityFields = [
-            'audioDisabilityCompliant',
-            'mentalDisabilityCompliant',
-            'motorDisabilityCompliant',
-            'visualDisabilityCompliant',
-            'visualDisabilityCompliant',
-          ]
-          checkedDisabilityFields.forEach(label => {
-            const input = screen.getByLabelText(fieldLabels[label].label, {
-              exact: fieldLabels[label].exact,
-            })
-            expect(input).not.toBeChecked()
-          })
-        })
-      })
-
-      describe('for offers with disability compliance information set to false', () => {
-        beforeEach(async () => {
-          const editedOffer = {
-            id: 'ABC12',
-            subcategoryId: 'ID',
-            name: 'My edited offer',
-            venue: editedOfferVenue,
-            thumbUrl: null,
-            audioDisabilityCompliant: false,
-            mentalDisabilityCompliant: false,
-            motorDisabilityCompliant: false,
-            visualDisabilityCompliant: false,
-            status: 'ACTIVE',
-          }
-          pcapi.loadOffer.mockResolvedValue(editedOffer)
-
-          await renderOffers(props, store)
-          audioDisabilityCompliantCheckbox = screen.getByLabelText(
-            fieldLabels.audioDisabilityCompliant.label,
-            {
-              exact: fieldLabels.audioDisabilityCompliant.exact,
-            }
-          )
-          mentalDisabilityCompliantCheckbox = screen.getByLabelText(
-            fieldLabels.mentalDisabilityCompliant.label,
-            {
-              exact: fieldLabels.mentalDisabilityCompliant.exact,
-            }
-          )
-          motorDisabilityCompliantCheckbox = screen.getByLabelText(
-            fieldLabels.motorDisabilityCompliant.label,
-            {
-              exact: fieldLabels.motorDisabilityCompliant.exact,
-            }
-          )
-          visualDisabilityCompliantCheckbox = screen.getByLabelText(
-            fieldLabels.visualDisabilityCompliant.label,
-            {
-              exact: fieldLabels.visualDisabilityCompliant.exact,
-            }
-          )
-          noDisabilityCompliantCheckbox = screen.getByLabelText(
-            fieldLabels.noDisabilityCompliant.label,
-            {
-              exact: fieldLabels.noDisabilityCompliant.exact,
-            }
-          )
-        })
-
-        it('should initialize noDisabilityCompliant checked and uncheck others', async () => {
-          expect(noDisabilityCompliantCheckbox).toBeChecked()
-          expect(audioDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(mentalDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(motorDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(visualDisabilityCompliantCheckbox).not.toBeChecked()
-        })
-
-        it('should uncheck noDisabilityCompliant when a disabilityCompliant is checked', async () => {
-          // When
-          userEvent.click(mentalDisabilityCompliantCheckbox)
-
-          // Then
-          expect(noDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(audioDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(mentalDisabilityCompliantCheckbox).toBeChecked()
-          expect(motorDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(visualDisabilityCompliantCheckbox).not.toBeChecked()
-        })
-
-        it("shouldn't allow noDisabilityCompliant to be unchecked when it's the only one checked", async () => {
-          // When
-          userEvent.click(noDisabilityCompliantCheckbox)
-
-          // Then
-          expect(noDisabilityCompliantCheckbox).toBeChecked()
-          expect(audioDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(mentalDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(motorDisabilityCompliantCheckbox).not.toBeChecked()
-          expect(visualDisabilityCompliantCheckbox).not.toBeChecked()
         })
       })
     })
@@ -636,6 +466,7 @@ describe('offerDetails - Edition', () => {
       editedOfferVenue.isVirtual = true
       const editedOffer = {
         id: 'ABC12',
+        nonHumanizedOfferId: 111,
         subcategoryId: 'ID',
         bookingEmail: 'booking@example.net',
         description: 'Offer description',
@@ -806,6 +637,7 @@ describe('offerDetails - Edition', () => {
       editedOfferVenue.isVirtual = true
       const editedOffer = {
         id: 'ABC12',
+        nonHumanizedOfferId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -900,6 +732,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        nonHumanizedOfferId: 111,
         subcategoryId: 'ID2',
         name: 'My edited offer',
         description: 'Offer description',
@@ -924,6 +757,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        nonHumanizedOfferId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -975,6 +809,7 @@ describe('offerDetails - Edition', () => {
         // Given
         const editedOffer = {
           id: 'ABC12',
+          nonHumanizedOfferId: 111,
           subcategoryId: 'ID',
           name: 'My synchronized offer',
           showType: 400,
@@ -1012,6 +847,7 @@ describe('offerDetails - Edition', () => {
         editedOfferVenue.isVirtual = true
         const editedOffer = {
           id: 'ABC12',
+          nonHumanizedOfferId: 111,
           subcategoryId: 'ID',
           name: 'My edited offer',
           showType: 400,
@@ -1055,6 +891,7 @@ describe('offerDetails - Edition', () => {
         editedOfferVenue.isVirtual = true
         const editedOffer = {
           id: 'ABC12',
+          nonHumanizedOfferId: 111,
           subcategoryId: 'ID',
           name: 'My edited offer',
           showType: '400',
@@ -1136,6 +973,7 @@ describe('offerDetails - Edition', () => {
         // Given
         const editedOffer = {
           id: 'ABC12',
+          nonHumanizedOfferId: 111,
           subcategoryId: 'ID',
           name: 'My edited offer',
           description: 'Offer description',
@@ -1176,6 +1014,7 @@ describe('offerDetails - Edition', () => {
         // Given
         const editedOffer = {
           id: 'ABC12',
+          nonHumanizedOfferId: 111,
           subcategoryId: 'ID',
           name: 'My edited offer',
           showType: 400,
@@ -1224,6 +1063,7 @@ describe('offerDetails - Edition', () => {
         // given
         const editedOffer = {
           id: 'ABC12',
+          nonHumanizedOfferId: 111,
           subcategoryId: 'ID',
           name: 'My edited offer',
           description: 'Offer description',
@@ -1302,6 +1142,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        nonHumanizedOfferId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1340,6 +1181,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        nonHumanizedOfferId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1373,6 +1215,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        nonHumanizedOfferId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1431,6 +1274,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        nonHumanizedOfferId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1472,6 +1316,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        nonHumanizedOfferId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1510,6 +1355,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        nonHumanizedOfferId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1563,6 +1409,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        nonHumanizedOfferId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1601,6 +1448,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        nonHumanizedOfferId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1632,6 +1480,7 @@ describe('offerDetails - Edition', () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
+        nonHumanizedOfferId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1668,6 +1517,7 @@ describe('offerDetails - Edition', () => {
     it('should show a success notification when a thumbnail submitted', async () => {
       // Given
       jest.spyOn(Object, 'values').mockReturnValue(['item'])
+      console.log('editedOffer', editedOffer)
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       pcapi.updateOffer.mockResolvedValue({ id: 'AA' })
       pcapi.postThumbnail.mockResolvedValue({ id: 'BB' })
@@ -1704,6 +1554,7 @@ describe('offerDetails - Edition', () => {
 
       const editedOffer = {
         id: 'ABC12',
+        nonHumanizedOfferId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1737,6 +1588,7 @@ describe('offerDetails - Edition', () => {
       })
       const editedOffer = {
         id: 'ABC12',
+        nonHumanizedOfferId: 111,
         subcategoryId: 'ID',
         name: 'My edited offer',
         description: 'Offer description',
@@ -1755,151 +1607,6 @@ describe('offerDetails - Edition', () => {
       const cancelLink = screen.getByRole('link', { name: 'Annuler et quitter' })
       expect(cancelLink).toBeInTheDocument()
       expect(cancelLink).toHaveAttribute('href', '/offres')
-    })
-  })
-
-  describe('accessibility fields', () => {
-    let accessibilityCheckboxes
-
-    beforeEach(async () => {
-      editedOfferVenue = {
-        id: 'AB',
-        isVirtual: false,
-        managingOfferer: venueManagingOfferer,
-        managingOffererId: venueManagingOfferer.id,
-        name: 'Le lieu',
-        offererName: 'La structure',
-        bookingEmail: 'venue@example.com',
-        withdrawalDetails: null,
-        audioDisabilityCompliant: null,
-        mentalDisabilityCompliant: null,
-        motorDisabilityCompliant: null,
-        visualDisabilityCompliant: null,
-        noDisabilityCompliant: null,
-      }
-
-      editedOffer = {
-        id: 'ABC12',
-        subcategoryId: 'ID',
-        name: 'My edited offer',
-        description: 'Offer description',
-        venueId: editedOfferVenue.id,
-        venue: editedOfferVenue,
-        withdrawalDetails: 'Offer withdrawal details',
-        bookingEmail: null,
-        status: 'ACTIVE',
-        audioDisabilityCompliant: null,
-        mentalDisabilityCompliant: null,
-        motorDisabilityCompliant: null,
-        visualDisabilityCompliant: null,
-        noDisabilityCompliant: null,
-      }
-      pcapi.loadOffer.mockResolvedValue(editedOffer)
-    })
-
-    describe('with a offer that dont have accessibility set', () => {
-      beforeEach(async () => {
-        pcapi.loadOffer.mockResolvedValue(editedOffer)
-        await renderOffers(props, store)
-
-        accessibilityCheckboxes = {
-          audioDisabilityCompliant: await getOfferInputForField('audioDisabilityCompliant'),
-          mentalDisabilityCompliant: await getOfferInputForField('mentalDisabilityCompliant'),
-          motorDisabilityCompliant: await getOfferInputForField('motorDisabilityCompliant'),
-          visualDisabilityCompliant: await getOfferInputForField('visualDisabilityCompliant'),
-          noDisabilityCompliant: await getOfferInputForField('noDisabilityCompliant'),
-        }
-      })
-
-      it('should initializ with all checkboxes unchecked', async () => {
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
-      })
-
-      it('onclick, the checkbox should be checked without any other change', async () => {
-        await fireEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
-      })
-
-      it('noDisabilityCompliant, should be auto-checked', async () => {
-        await fireEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
-
-        await fireEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).toBeChecked()
-
-        // click on checked noDisabilityCompliant should not change anything
-        await fireEvent.click(accessibilityCheckboxes.noDisabilityCompliant)
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).toBeChecked()
-      })
-
-      it('onclick on noDisabilityCompliant, should uncheck other checkboxes', async () => {
-        // again, one accessibility true, other falses
-        await fireEvent.click(accessibilityCheckboxes.audioDisabilityCompliant)
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
-
-        // click on noDisabilityCompliant should change other accessibility to false
-        await fireEvent.click(accessibilityCheckboxes.noDisabilityCompliant)
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).toBeChecked()
-      })
-    })
-
-    describe('with a offer that dont have accessibility set but it venue does', () => {
-      let venueAccessibilities = {
-        audioDisabilityCompliant: true,
-        mentalDisabilityCompliant: false,
-        motorDisabilityCompliant: true,
-        visualDisabilityCompliant: true,
-      }
-
-      beforeEach(async () => {
-        editedOffer.venue = { ...editedOffer.venue, ...venueAccessibilities }
-        pcapi.loadOffer.mockResolvedValue(editedOffer)
-        await renderOffers(props, store)
-
-        accessibilityCheckboxes = {
-          audioDisabilityCompliant: await getOfferInputForField('audioDisabilityCompliant'),
-          mentalDisabilityCompliant: await getOfferInputForField('mentalDisabilityCompliant'),
-          motorDisabilityCompliant: await getOfferInputForField('motorDisabilityCompliant'),
-          visualDisabilityCompliant: await getOfferInputForField('visualDisabilityCompliant'),
-          noDisabilityCompliant: await getOfferInputForField('noDisabilityCompliant'),
-        }
-      })
-
-      it('should initialize with venueAccessibility', async () => {
-        expect(accessibilityCheckboxes.audioDisabilityCompliant).toBeChecked()
-        expect(accessibilityCheckboxes.mentalDisabilityCompliant).not.toBeChecked()
-        expect(accessibilityCheckboxes.motorDisabilityCompliant).toBeChecked()
-        expect(accessibilityCheckboxes.visualDisabilityCompliant).toBeChecked()
-        expect(accessibilityCheckboxes.noDisabilityCompliant).not.toBeChecked()
-      })
     })
   })
 })
