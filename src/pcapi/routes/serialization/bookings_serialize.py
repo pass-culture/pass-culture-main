@@ -27,7 +27,7 @@ class GetBookingResponse(BaseModel):
     bookingId: str
     dateOfBirth: str  # avoid breaking legacy value "" returned for void date
     datetime: str  # avoid breaking legacy value "" returned for void date
-    ean13: str
+    ean13: Optional[str]
     email: str
     formula: BookingFormula
     isUsed: bool
@@ -68,7 +68,9 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
             else ""
         ),
         datetime=(format_into_utc_date(booking.stock.beginningDatetime) if booking.stock.beginningDatetime else ""),
-        ean13=extra_data.get("isbn", ""),
+        ean13=(
+            extra_data.get("isbn", "") if booking.stock.offer.subcategoryId in subcategories.BOOK_WITH_ISBN else None
+        ),
         email=booking.educationalBooking.educationalRedactor.email if is_educational_booking else booking.user.email,
         formula=formula,
         isUsed=booking.isUsed,
