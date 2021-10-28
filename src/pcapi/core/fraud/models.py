@@ -194,7 +194,7 @@ class BeneficiaryFraudCheck(PcObject, Model):
 
     type = sqlalchemy.Column(sqlalchemy.Enum(FraudCheckType, create_constraint=False), nullable=False)
 
-    thirdPartyId = sqlalchemy.Column(sqlalchemy.TEXT, nullable=False)
+    thirdPartyId = sqlalchemy.Column(sqlalchemy.TEXT(), nullable=False)
 
     resultContent = sqlalchemy.Column(sqlalchemy.dialects.postgresql.JSONB)
 

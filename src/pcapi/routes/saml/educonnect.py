@@ -8,7 +8,9 @@ from werkzeug.wrappers import Response
 
 from pcapi import settings
 from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud import exceptions as fraud_exceptions
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import models as user_models
 from pcapi.core.users.external.educonnect import api as educonnect_api
 from pcapi.core.users.external.educonnect import exceptions as educonnect_exceptions
@@ -39,9 +41,11 @@ def on_educonnect_authentication_response() -> Response:
     try:
         educonnect_user = educonnect_api.get_educonnect_user(request.form["SAMLResponse"])
     except educonnect_exceptions.ResponseTooOld:
-        raise ApiErrors({"saml_response": "Too old"})  # TODO: redirect user to error page
+        logger.warning("Educonnect saml_response too old")
+        return redirect(f"{settings.WEBAPP_V2_URL}/idcheck/erreur", code=302)
     except educonnect_exceptions.EduconnectAuthenticationException:
-        raise ApiErrors()  # TODO: redirect user to error page
+        logger.warning("Educonnect authentication Error")
+        return redirect(f"{settings.WEBAPP_V2_URL}/idcheck/erreur", code=302)
 
     key = educonnect_api.build_educonnect_saml_request_id_key(educonnect_user.saml_request_id)
     user_id = app.redis_client.get(key)
@@ -74,6 +78,24 @@ def on_educonnect_authentication_response() -> Response:
         ),
     )
 
+    error_page_base_url = f"{settings.WEBAPP_V2_URL}/idcheck/educonnect/erreur?"
+    try:
+        subscription_api.create_beneficiary_import(user)
+    except fraud_exceptions.UserAgeNotValid:
+        error_query_param = {"code": "UserAgeNotValid"}
+        return redirect(error_page_base_url + urlencode(error_query_param), code=302)
+    except fraud_exceptions.UserAlreadyBeneficiary:
+        error_query_param = {"code": "UserAlreadyBeneficiary"}
+        return redirect(error_page_base_url + urlencode(error_query_param), code=302)
+    except fraud_exceptions.FraudException as e:
+        logger.warning(
+            "Fraud suspicion after Educonnect authentication: %s",
+            e,
+            extra={"userId": user.id, "educonnectId": educonnect_user.educonnect_id},
+        )
+    except Exception as e:  # pylint: disable=broad-except
+        logger.error("Error while creating BeneficiaryImport from Educonnect: %s", e, extra={})
+
     user_information_validation_base_url = f"{settings.WEBAPP_V2_URL}/idcheck/validation?"
     query_params = {
         "firstName": educonnect_user.first_name,
@@ -81,5 +103,4 @@ def on_educonnect_authentication_response() -> Response:
         "dateOfBirth": educonnect_user.birth_date,
         "logoutUrl": educonnect_user.logout_url,
     }
-
     return redirect(user_information_validation_base_url + urlencode(query_params), code=302)

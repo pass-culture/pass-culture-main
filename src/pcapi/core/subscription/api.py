@@ -1,6 +1,8 @@
 import logging
 from typing import Optional
 
+from pcapi.core.fraud import exceptions as fraud_exceptions
+import pcapi.core.fraud.models as fraud_models
 from pcapi.core.payments import api as payments_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
@@ -92,3 +94,36 @@ def check_and_activate_beneficiary(userId: int, deposit_source: str = None) -> u
             return user
         user = activate_beneficiary(user, deposit_source)
         return user
+
+
+def create_beneficiary_import(user: users_models.User) -> None:
+    if not user.beneficiaryFraudResult:
+        raise exceptions.BeneficiaryFraudResultMissing()
+    fraud_result: fraud_models.BeneficiaryFraudResult = user.beneficiaryFraudResult
+    fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+        user=user,
+        type=fraud_models.FraudCheckType.EDUCONNECT,
+    ).one_or_none()
+
+    fraud_ko_reasons = fraud_result.reason_codes
+    if fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_ko_reasons:
+        raise fraud_exceptions.DuplicateUser()
+
+    if fraud_models.FraudReasonCode.AGE_NOT_VALID in fraud_ko_reasons:
+        raise fraud_exceptions.UserAgeNotValid()
+
+    if fraud_check.type != fraud_models.FraudCheckType.EDUCONNECT:
+        raise NotImplementedError()
+
+    if fraud_result.status != fraud_models.FraudStatus.OK:
+        raise fraud_exceptions.FraudException()
+
+    beneficiary_import = BeneficiaryImport(
+        thirdPartyId=fraud_check.thirdPartyId,
+        beneficiaryId=user.id,
+        sourceId=None,
+        source=BeneficiaryImportSources.educonnect.value,
+        beneficiary=user,
+    )
+    beneficiary_import.setStatus(ImportStatus.CREATED)
+    repository.save(beneficiary_import)

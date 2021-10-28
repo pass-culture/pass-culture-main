@@ -17,10 +17,11 @@ from pcapi.models.pc_object import PcObject
 class BeneficiaryImportSources(Enum):
     demarches_simplifiees = "demarches_simplifiees"
     jouve = "jouve"
+    educonnect = "educonnect"
 
 
 class BeneficiaryImport(PcObject, Model):
-    applicationId = sa.Column(sa.BigInteger, nullable=False)
+    applicationId = sa.Column(sa.BigInteger, nullable=True)
 
     beneficiaryId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
 
@@ -28,7 +29,7 @@ class BeneficiaryImport(PcObject, Model):
 
     source = sa.Column(sa.String(255), nullable=False)
 
-    beneficiary = relationship("User", foreign_keys=[beneficiaryId], backref="beneficiaryImports")
+    thirdPartyId = sa.Column(sa.TEXT, nullable=True, index=True)
 
     eligibilityType = sa.Column(
         sa.Enum(EligibilityType, create_constraint=False),
@@ -36,14 +37,7 @@ class BeneficiaryImport(PcObject, Model):
         default=EligibilityType.AGE18,
         server_default=sa.text(EligibilityType.AGE18.value),
     )
-
-    sa.Index(
-        "idx_beneficiary_import_application",
-        applicationId,
-        sourceId,
-        source,
-        unique=True,
-    )
+    beneficiary = relationship("User", foreign_keys=[beneficiaryId], backref="beneficiaryImports")
 
     def setStatus(self, status: ImportStatus, detail: str = None, author: User = None):
         new_status = BeneficiaryImportStatus()

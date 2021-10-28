@@ -12,3 +12,11 @@ class UserEmailNotValidated(FraudException):
 
 class UserPhoneNotValidated(FraudException):
     pass
+
+
+class UserAgeNotValid(FraudException):
+    pass
+
+
+class DuplicateUser(FraudException):
+    pass

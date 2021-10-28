@@ -11,6 +11,7 @@ import pcapi.core.payments.api as payments_api
 from pcapi.core.payments.models import DepositType
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.constants as users_constants
+from pcapi.core.users.external.educonnect import models as educonnect_models
 import pcapi.core.users.models
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportStatus
@@ -289,3 +290,23 @@ class DepositGrantFactory(BaseFactory):
         if "type" not in kwargs:
             kwargs["type"] = granted_deposit.type
         return super()._create(model_class, *args, **kwargs)
+
+
+class EduconnectUserFactory(factory.Factory):
+    class Meta:
+        model = educonnect_models.EduconnectUser
+
+    class Params:
+        age = 15
+
+    connection_datetime = LazyAttribute(lambda _: datetime.combine(date.today(), time(0, 0)) - relativedelta(days=1))
+    birth_date = LazyAttribute(
+        lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=o.age, months=1)
+    )
+    educonnect_id = "e6759833fb379e0340322889f2a367a5a5150f1533f80dfe963d21e43e33f7164b76cc802766cdd33c6645e1abfd1875"
+    last_name = factory.Faker("last_name")
+    first_name = factory.Faker("first_name")
+    logout_url = "https://educonnect.education.gouv.fr/Logout"
+    saml_request_id = factory.Faker("lexify", text="id-?????????????????")
+
+    student_level = "2212"
