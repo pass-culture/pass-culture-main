@@ -6,13 +6,18 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 const BeneficiaryCell = ({ beneficiaryInfos }) => {
-  const beneficiaryName = beneficiaryInfos.lastname.concat(' ', beneficiaryInfos.firstname)
+  const beneficiaryName = [beneficiaryInfos.lastname, beneficiaryInfos.firstname].join(' ').trim()
+
   return (
     <div>
-      <span>
-        {beneficiaryName}
-      </span>
-      <br />
+      {beneficiaryName !== '' && (
+        <div data-testid="booking-cell-beneficiary-name">
+          <span>
+            {beneficiaryName}
+          </span>
+          <br />
+        </div>
+      )}
       <span className="beneficiary-subtitle">
         {beneficiaryInfos.email}
       </span>
@@ -29,8 +34,8 @@ const BeneficiaryCell = ({ beneficiaryInfos }) => {
 BeneficiaryCell.propTypes = {
   beneficiaryInfos: PropTypes.shape({
     email: PropTypes.string.isRequired,
-    firstname: PropTypes.string.isRequired,
-    lastname: PropTypes.string.isRequired,
+    firstname: PropTypes.string,
+    lastname: PropTypes.string,
     phonenumber: PropTypes.string,
   }).isRequired,
 }
