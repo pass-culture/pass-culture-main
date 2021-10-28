@@ -11,6 +11,7 @@ from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.messages as subscription_messages
 import pcapi.core.users.api as users_api
 import pcapi.core.users.constants as users_constants
@@ -354,7 +355,7 @@ def process_beneficiary_application(
 
     if not users_api.steps_to_become_beneficiary(user):
         deposit_source = beneficiary_import.get_detailed_source()
-        users_api.activate_beneficiary(user, deposit_source)
+        subscription_api.activate_beneficiary(user, deposit_source)
     else:
         users_external.update_external_user(user)
 

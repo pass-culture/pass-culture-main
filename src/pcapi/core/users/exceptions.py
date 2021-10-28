@@ -80,10 +80,6 @@ class IdCheckAlreadyCompleted(Exception):
     pass
 
 
-class BeneficiaryImportMissingException(Exception):
-    pass
-
-
 class InvalidPhoneNumber(PhoneVerificationException):
     pass
 

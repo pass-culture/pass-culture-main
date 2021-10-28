@@ -10,10 +10,7 @@ from sqlalchemy.orm.query import Query
 from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
 from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
-from pcapi.models import BeneficiaryImport
-from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import Booking
-from pcapi.models import ImportStatus
 from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import Stock
@@ -169,16 +166,6 @@ def find_favorites_domain_by_beneficiary(beneficiary_identifier: int) -> list[Fa
         )
         for favorite_sql_entity in favorite_sql_entities
     ]
-
-
-def get_beneficiary_import_for_beneficiary(user: User) -> Optional[BeneficiaryImport]:
-    return (
-        BeneficiaryImport.query.join(BeneficiaryImportStatus)
-        .filter(BeneficiaryImportStatus.status == ImportStatus.CREATED)
-        .filter(BeneficiaryImport.beneficiaryId == user.id)
-        .order_by(BeneficiaryImportStatus.date.desc())
-        .first()
-    )
 
 
 def does_validated_phone_exist(phone_number: str):

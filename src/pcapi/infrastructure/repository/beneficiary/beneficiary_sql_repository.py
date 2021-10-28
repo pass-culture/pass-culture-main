@@ -1,5 +1,6 @@
 from typing import Optional
 
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users import api as users_api
 from pcapi.core.users.external import update_external_user
@@ -16,7 +17,7 @@ class BeneficiarySQLRepository:
         repository.save(user_sql_entity)
 
         if not users_api.steps_to_become_beneficiary(user_sql_entity):
-            user_sql_entity = users_api.check_and_activate_beneficiary(
+            user_sql_entity = subscription_api.check_and_activate_beneficiary(
                 user_sql_entity.id, beneficiary_pre_subscription.deposit_source
             )
         else:

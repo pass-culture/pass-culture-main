@@ -20,6 +20,7 @@ import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.payments.conf import GRANT_18_VALIDITY_IN_YEARS
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
@@ -452,7 +453,7 @@ class CreateBeneficiaryTest:
     def test_with_eligible_user(self):
         eligible_date = date.today() - relativedelta(years=18, days=30)
         user = users_factories.UserFactory(roles=[], dateOfBirth=eligible_date)
-        user = users_api.activate_beneficiary(user, "test")
+        user = subscription_api.activate_beneficiary(user, "test")
         assert user.has_beneficiary_role
         assert len(user.deposits) == 1
 
@@ -470,7 +471,7 @@ class CreateBeneficiaryTest:
 
         with requests_mock.Mocker() as mock:
             posted = mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
-            user = users_api.activate_beneficiary(user, "test")
+            user = subscription_api.activate_beneficiary(user, "test")
 
             assert posted.last_request.json() == expected
 
@@ -480,7 +481,7 @@ class CreateBeneficiaryTest:
     def test_external_users_updated(self):
         eligible_date = date.today() - relativedelta(years=18, days=30)
         user = users_factories.UserFactory(roles=[], dateOfBirth=eligible_date)
-        users_api.activate_beneficiary(user, "test")
+        subscription_api.activate_beneficiary(user, "test")
 
         assert len(batch_testing.requests) == 1
         assert len(sendinblue_testing.sendinblue_requests) == 1

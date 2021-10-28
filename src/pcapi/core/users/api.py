@@ -36,8 +36,10 @@ from pcapi.core.mails.transactional.users.email_address_change import send_infor
 from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
 from pcapi.core.offers import models as offers_models
 import pcapi.core.payments.api as payment_api
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
+import pcapi.core.subscription.repository as subscription_repository
 from pcapi.core.users import exceptions
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
@@ -51,8 +53,6 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import does_validated_phone_exist
-from pcapi.core.users.repository import get_and_lock_user
-from pcapi.core.users.repository import get_beneficiary_import_for_beneficiary
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import delete_object
 from pcapi.core.users.utils import encode_jwt_payload
@@ -81,7 +81,6 @@ from pcapi.tasks.account import verify_identity_document
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.token import random_token
 from pcapi.utils.urls import get_webapp_url
-from pcapi.workers.apps_flyer_job import log_user_becomes_beneficiary_event_job
 
 
 logger = logging.getLogger(__name__)
@@ -247,7 +246,7 @@ def steps_to_become_beneficiary(user: User) -> list[BeneficiaryValidationStep]:
     ):
         missing_steps.append(BeneficiaryValidationStep.PHONE_VALIDATION)
 
-    beneficiary_import = get_beneficiary_import_for_beneficiary(user)
+    beneficiary_import = subscription_repository.get_beneficiary_import_for_beneficiary(user)
     if not beneficiary_import:
         missing_steps.append(BeneficiaryValidationStep.ID_CHECK)
 
@@ -261,7 +260,7 @@ def validate_phone_number_and_activate_user(user: User, code: str) -> User:
     validate_phone_number(user, code)
 
     if not steps_to_become_beneficiary(user):
-        activate_beneficiary(user)
+        subscription_api.activate_beneficiary(user)
 
 
 def update_beneficiary_mandatory_information(
@@ -289,7 +288,7 @@ def update_beneficiary_mandatory_information(
         and fraud_api.has_user_passed_fraud_checks(user)
         and not fraud_api.is_user_fraudster(user)
     ):
-        check_and_activate_beneficiary(user.id)
+        subscription_api.check_and_activate_beneficiary(user.id)
     else:
         update_external_user(user)
 
@@ -351,48 +350,6 @@ def update_user_information_from_external_source(
     db.session.add(user)
     db.session.flush()
     return user
-
-
-def activate_beneficiary(user: User, deposit_source: str = None) -> User:
-    if not deposit_source:
-        beneficiary_import = get_beneficiary_import_for_beneficiary(user)
-        if not beneficiary_import:
-            raise exceptions.BeneficiaryImportMissingException()
-
-        eligibility = beneficiary_import.eligibilityType
-        deposit_source = beneficiary_import.get_detailed_source()
-    else:
-        eligibility = EligibilityType.AGE18
-
-    if eligibility == EligibilityType.UNDERAGE:
-        user.add_underage_beneficiary_role()
-    elif eligibility == EligibilityType.AGE18:
-        user.add_beneficiary_role()
-    else:
-        raise exceptions.InvalidEligibilityTypeException()
-
-    if "apps_flyer" in user.externalIds:
-        log_user_becomes_beneficiary_event_job.delay(user.id)
-
-    deposit = payment_api.create_deposit(user, deposit_source=deposit_source, eligibility=eligibility)
-
-    db.session.add_all((user, deposit))
-    db.session.commit()
-    update_external_user(user)
-
-    logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit_source})
-    return user
-
-
-def check_and_activate_beneficiary(userId: int, deposit_source: str = None) -> User:
-    with transaction():
-        user = get_and_lock_user(userId)
-        # TODO: Handle switch from underage_beneficiary to beneficiary
-        if user.is_beneficiary or not user.hasCompletedIdCheck:
-            db.session.rollback()
-            return user
-        user = activate_beneficiary(user, deposit_source)
-        return user
 
 
 def attach_beneficiary_import_details(

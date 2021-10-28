@@ -1,0 +1,2 @@
+class BeneficiaryImportMissingException(Exception):
+    pass
