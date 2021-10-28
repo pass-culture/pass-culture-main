@@ -1173,6 +1173,19 @@ class BeneficairyInformationUpdateTest:
         assert new_user.firstName == jouve_data.firstName
         assert new_user.lastName == jouve_data.lastName
 
+    def test_update_user_information_from_educonnect(self):
+        user = UserFactory(
+            firstName=None,
+            lastName=None,
+            dateOfBirth=None,
+        )
+        educonnect_data = fraud_factories.EduconnectContentFactory()
+        new_user = users_api.update_user_information_from_external_source(user, educonnect_data)
+
+        assert new_user.firstName == educonnect_data.first_name
+        assert new_user.lastName == educonnect_data.last_name
+        assert new_user.dateOfBirth == educonnect_data.birth_date
+
     def test_update_user_information_from_jouve_empty_source(self):
         user = UserFactory(activity="Etudiant", postalCode="75001")
         jouve_data = fraud_factories.JouveContentFactory(

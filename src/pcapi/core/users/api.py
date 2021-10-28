@@ -304,7 +304,7 @@ def update_beneficiary_mandatory_information(
 
 
 def update_user_information_from_external_source(
-    user: User, data: Union[fraud_models.DMSContent, fraud_models.JouveContent]
+    user: User, data: Union[fraud_models.DMSContent, fraud_models.JouveContent, fraud_models.EduconnectContent]
 ) -> User:
     if isinstance(data, fraud_models.DMSContent):
         # FIXME: the following function does not override user.dateOfBirth, we should do it
@@ -342,6 +342,11 @@ def update_user_information_from_external_source(
         if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
             if not user.phoneNumber and data.phoneNumber:
                 user.phoneNumber = data.phoneNumber
+
+    elif isinstance(data, fraud_models.EduconnectContent):
+        user.firstName = data.first_name
+        user.lastName = data.last_name
+        user.dateOfBirth = data.birth_date
 
     # update user fields to be correctly initialized
     user.hasSeenTutorials = False
