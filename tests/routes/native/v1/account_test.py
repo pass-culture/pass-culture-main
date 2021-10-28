@@ -134,6 +134,7 @@ class AccountTest:
             "depositVersion": 1,
             "depositType": "GRANT_18",
             "depositExpirationDate": "2040-01-01T00:00:00Z",
+            "eligibility": "age-18",
             "eligibilityEndDatetime": "2019-01-01T00:00:00Z",
             "eligibilityStartDatetime": "2018-01-01T00:00:00Z",
             "isBeneficiary": True,

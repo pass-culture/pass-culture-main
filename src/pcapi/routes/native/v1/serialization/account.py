@@ -171,6 +171,7 @@ class UserProfileResponse(BaseModel):
     deposit_expiration_date: Optional[datetime.datetime]
     deposit_version: Optional[int]
     deposit_type: Optional[DepositType]
+    eligibility: Optional[EligibilityType]
     eligibility_end_datetime: Optional[datetime.datetime]
     eligibility_start_datetime: Optional[datetime.datetime]
     email: str
@@ -230,6 +231,7 @@ class UserProfileResponse(BaseModel):
         result.subscriptionMessage = SubscriptionMessage.from_model(
             subscription_api.get_latest_subscription_message(user)
         )
+        # FIXME: (Lixxday) Remove after isBeneficiary column has been deleted
         result.isBeneficiary = user.is_beneficiary
         return result
 
