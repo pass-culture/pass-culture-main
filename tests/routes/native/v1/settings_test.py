@@ -55,7 +55,6 @@ class SettingsTest:
         WEBAPP_V2_ENABLED=True,
         ENABLE_PHONE_VALIDATION=False,
         DISPLAY_DMS_REDIRECTION=False,
-        USE_APP_SEARCH_ON_NATIVE_APP=False,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
         ENABLE_NATIVE_EAC_INDIVIDUAL=True,
     )
