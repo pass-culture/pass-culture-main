@@ -58,8 +58,8 @@ DUO_QUANTITY = 2
 
 BOOKING_STATUS_LABELS = {
     BookingStatus.PENDING: "réservé",
-    BookingStatus.CONFIRMED: "réservé",
-    BookingStatus.CANCELLED: "réservé",
+    BookingStatus.CONFIRMED: "confirmé",
+    BookingStatus.CANCELLED: "annulé",
     BookingStatus.USED: "validé",
     BookingStatus.REIMBURSED: "remboursé",
 }
@@ -487,6 +487,8 @@ def _get_filtered_bookings_count(
         .with_entities(Booking.id, Booking.quantity)
         .distinct(Booking.id)
     ).cte()
+    # We really want total quantities here (and not the number of bookings),
+    # since we'll build two rows for each "duo" bookings later.
     bookings_count = db.session.query(func.coalesce(func.sum(bookings.c.quantity), 0))
     return bookings_count.scalar()
 
@@ -522,7 +524,7 @@ def _get_filtered_booking_report(
             Booking.dateCreated.label("bookedAt"),
             Booking.dateUsed.label("usedAt"),
             Booking.reimbursementDate.label("reimbursedAt"),
-            Booking.cancellationDate.label("canceleddAt"),
+            Booking.cancellationDate.label("cancelledAt"),
             # `get_batch` function needs a field called exactly `id` to work,
             # the label prevents SA from using a bad (prefixed) label for this field
             Booking.id.label("id"),
@@ -557,7 +559,7 @@ def _get_filtered_booking_pro(
             Booking.quantity,
             Booking.amount.label("bookingAmount"),
             Booking.dateUsed.label("usedAt"),
-            Booking.cancellationDate.label("canceledAt"),
+            Booking.cancellationDate.label("cancelledAt"),
             Booking.cancellationLimitDate.label("cancellationLimitDate"),
             Booking.status,
             Booking.reimbursementDate.label("reimbursedAt"),
@@ -689,7 +691,7 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
         redactor_lastname=booking.redactorLastname,
         date_used=_serialize_date_with_timezone(booking.usedAt, booking),
         payment_date=_serialize_date_with_timezone(booking.reimbursedAt, booking),
-        cancellation_date=_serialize_date_with_timezone(booking.canceledAt, booking=booking),
+        cancellation_date=_serialize_date_with_timezone(booking.cancelledAt, booking=booking),
         cancellation_limit_date=_serialize_date_with_timezone(booking.cancellationLimitDate, booking),
         event_beginning_datetime=(
             _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode)
