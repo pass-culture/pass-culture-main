@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+import dataclasses
 import datetime
 import enum
 import typing
@@ -174,6 +174,13 @@ FRAUD_CHECK_MAPPING = {
 }
 
 
+class FraudReasonCode(enum.Enum):
+    ALREADY_BENEFICIARY = "already_beneficiary"
+    AGE_NOT_VALID = "age_is_not_valid"
+    DUPLICATE_USER = "duplicate_user"
+    INE_NOT_WHITELISTED = "ine_not_whitelisted"
+
+
 class BeneficiaryFraudCheck(PcObject, Model):
     __tablename__ = "beneficiary_fraud_check"
 
@@ -212,6 +219,13 @@ class BeneficiaryFraudResult(PcObject, Model):
 
     reason = sqlalchemy.Column(sqlalchemy.Text)
 
+    reason_codes = sqlalchemy.Column(
+        sqlalchemy.ARRAY(sqlalchemy.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
+        nullable=False,
+        server_default="{}",
+        default=[],
+    )
+
     dateCreated = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False, server_default=sqlalchemy.func.now())
 
     dateUpdated = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True, onupdate=sqlalchemy.func.now())
@@ -237,10 +251,11 @@ class BeneficiaryFraudReview(PcObject, Model):
     reason = sqlalchemy.Column(sqlalchemy.Text)
 
 
-@dataclass
+@dataclasses.dataclass
 class FraudItem:
     status: FraudStatus
     detail: typing.Optional[str]
+    reason_code: typing.Optional[FraudReasonCode] = None
 
     def __bool__(self) -> bool:
         return self.status == FraudStatus.OK

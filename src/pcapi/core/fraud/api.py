@@ -217,6 +217,7 @@ def _duplicate_user_fraud_item(first_name: str, last_name: str, birth_date: date
     return models.FraudItem(
         status=models.FraudStatus.SUSPICIOUS if duplicate_user else models.FraudStatus.OK,
         detail=f"Duplicat de l'utilisateur {duplicate_user.id}" if duplicate_user else None,
+        reason_code=models.FraudReasonCode.DUPLICATE_USER,
     )
 
 
@@ -310,6 +311,7 @@ def _underage_user_fraud_item(birth_date: datetime.date):
     return models.FraudItem(
         status=models.FraudStatus.KO,
         detail=f"L'age de l'utilisateur est invalide ({age} ans). Il devrait être parmi {constants.ELIGIBILITY_UNDERAGE_RANGE}",
+        reason_code=models.FraudReasonCode.AGE_NOT_VALID,
     )
 
 
@@ -457,6 +459,11 @@ def validate_frauds(user: user_models.User, fraud_items: list[models.FraudItem])
     fraud_result.reason = f" {FRAUD_RESULT_REASON_SEPARATOR} ".join(
         fraud_item.detail for fraud_item in fraud_items if fraud_item.status != models.FraudStatus.OK
     )
+    fraud_result.reason_codes = [
+        fraud_item.reason_code
+        for fraud_item in fraud_items
+        if fraud_item.status != models.FraudStatus.OK and fraud_item.reason_code is not None
+    ]
 
     return fraud_result
 
