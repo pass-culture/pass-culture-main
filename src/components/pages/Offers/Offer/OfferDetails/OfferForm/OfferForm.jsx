@@ -35,7 +35,7 @@ import {
   TEXT_INPUT_DEFAULT_VALUE,
 } from '../_constants'
 
-import AccessibilityCheckboxList from './AccessibilityCheckboxList'
+import AccessibilityCheckboxList, { getAccessibilityValues } from './AccessibilityCheckboxList'
 import OfferRefundWarning from './Messages/OfferRefundWarning'
 import WithdrawalReminder from './Messages/WithdrawalReminder'
 import OfferCategories from './OfferCategories'
@@ -144,6 +144,40 @@ const OfferForm = ({
 
   const offererOptions = buildSelectOptions('id', 'name', offerersNames)
 
+  const setOfferVenue = useCallback(
+    newVenueId => {
+      if (readOnlyFields.includes('venueId')) {
+        return
+      }
+
+      let updatedValues = {
+        venueId: newVenueId,
+      }
+      const venue = venues.find(venue => venue.id === updatedValues.venueId)
+      if (venue) {
+        const venueAccessibilities = {
+          audioDisabilityCompliant: venue.audioDisabilityCompliant,
+          mentalDisabilityCompliant: venue.mentalDisabilityCompliant,
+          motorDisabilityCompliant: venue.motorDisabilityCompliant,
+          visualDisabilityCompliant: venue.visualDisabilityCompliant,
+        }
+        const haveUnsetAccessibility = Object.values(venueAccessibilities).includes(null)
+        updatedValues = {
+          ...updatedValues,
+          ...Object.keys(venueAccessibilities).reduce(
+            (acc, field) => ({ ...acc, [field]: !!venueAccessibilities[field] }),
+            {}
+          ),
+          noDisabilityCompliant: haveUnsetAccessibility
+            ? false
+            : !Object.values(venueAccessibilities).includes(true),
+        }
+      }
+      handleFormUpdate(updatedValues)
+    },
+    [handleFormUpdate, readOnlyFields, venues]
+  )
+
   useEffect(() => {
     resetMandatoryFields()
     if (isIsbnRequiredInLivreEditionEnabled && CAN_CREATE_FROM_ISBN_SUBCATEGORIES.includes(offerSubCategory?.id)) {
@@ -157,16 +191,29 @@ const OfferForm = ({
 
   useEffect(
     function initializeFormData() {
+      // If formValues have been initiliazed we've nothing to do.
+      if (Object.keys(formValues).length > 0) {
+        return
+      }
+
       if (
         initialValues.bookingEmail &&
         initialValues.bookingEmail !== DEFAULT_FORM_VALUES.bookingEmail
       ) {
         setReceiveNotificationEmails(true)
       }
+
       setFormValues({ ...DEFAULT_FORM_VALUES, ...initialValues })
+      const accessibilityInitialValues = getAccessibilityValues(initialValues)
+      if (
+        'venueId' in initialValues
+        && Object.values(accessibilityInitialValues).includes(null)
+      ) {
+        setOfferVenue(initialValues.venueId)
+      }
       setIsLoading(false)
     },
-    [initialValues, setFormValues]
+    [formValues, initialValues, setFormValues, setOfferVenue]
   )
 
   useEffect(
@@ -189,35 +236,6 @@ const OfferForm = ({
       setOfferFormFields(newFormFields)
     },
     [offerSubCategory, isUserAdmin, receiveNotificationEmails, venue]
-  )
-
-  useEffect(
-    function storeOfferSubCategoryAndVenueWhenSelected() {
-      if (formValues.subcategoryId) {
-        setOfferSubCategory(
-          subCategories.find(type => type.id === formValues.subcategoryId)
-        )
-      }
-
-      if (
-        formValues.venueId &&
-        venueOptions.find(showedVenue => showedVenue.id === formValues.venueId)
-      ) {
-        const selectedVenue = venues.find(venue => venue.id === formValues.venueId)
-        setVenue(selectedVenue)
-        handleFormUpdate({ offererId: selectedVenue.managingOffererId })
-      } else {
-        setVenue(null)
-      }
-    },
-    [
-      formValues.subcategoryId,
-      formValues.venueId,
-      handleFormUpdate,
-      venues,
-      venueOptions,
-      subCategories,
-    ]
   )
 
   useEffect(
@@ -247,10 +265,41 @@ const OfferForm = ({
       }
 
       if (venuesToShow.length === 1) {
-        handleFormUpdate({ venueId: venuesToShow[0].id })
+        setOfferVenue(venuesToShow[0].id)
       }
     },
-    [offerSubCategory, handleFormUpdate, venues]
+    [offerSubCategory, setOfferVenue, venues]
+  )
+
+  useEffect(
+    function storeOfferSubCategoryAndVenueWhenSelected() {
+      if (formValues.subcategoryId) {
+        setOfferSubCategory(
+          subCategories.find(type => type.id === formValues.subcategoryId)
+        )
+      }
+
+      if (
+        formValues.venueId &&
+        venueOptions.find(showedVenue => showedVenue.id === formValues.venueId)
+      ) {
+        const selectedVenue = venues.find(venue => venue.id === formValues.venueId)
+        if (selectedVenue) {
+          setVenue(selectedVenue)
+          handleFormUpdate({ offererId: selectedVenue.managingOffererId })
+        }
+      } else {
+        setVenue(null)
+      }
+    },
+    [
+      formValues.subcategoryId,
+      formValues.venueId,
+      handleFormUpdate,
+      venues,
+      venueOptions,
+      subCategories,
+    ]
   )
 
   useEffect(
@@ -437,34 +486,9 @@ const OfferForm = ({
 
   const handleChangeVenue = useCallback(
     event => {
-      let updatedValues = {
-        venueId: event.target.value,
-      }
-      const venue = venues.find(venue => venue.id === updatedValues.venueId)
-      if (venue) {
-        const venueAccessibilities = {
-          audioDisabilityCompliant: venue.audioDisabilityCompliant,
-          mentalDisabilityCompliant: venue.mentalDisabilityCompliant,
-          motorDisabilityCompliant: venue.motorDisabilityCompliant,
-          visualDisabilityCompliant: venue.visualDisabilityCompliant,
-        }
-        const haveUnsetAccessibility = Object.values(venueAccessibilities).includes(
-          null || undefined
-        )
-        updatedValues = {
-          ...updatedValues,
-          ...Object.keys(venueAccessibilities).reduce(
-            (acc, field) => ({ ...acc, [field]: !!venueAccessibilities[field] }),
-            {}
-          ),
-          noDisabilityCompliant: haveUnsetAccessibility
-            ? false
-            : !Object.values(venueAccessibilities).includes(true),
-        }
-      }
-      handleFormUpdate(updatedValues)
+      setOfferVenue(event.target.value)
     },
-    [handleFormUpdate, venues]
+    [setOfferVenue]
   )
 
   const handleSingleFormUpdate = useCallback(
