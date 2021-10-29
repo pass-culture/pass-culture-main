@@ -1,6 +1,6 @@
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
@@ -24,12 +24,6 @@ const AppLayout = props => {
     ...defaultConfig,
     ...layoutConfig,
   }
-
-  useEffect(() => {
-    if (document.referrer.includes('beta.gouv.fr')) {
-      setShouldDisplayBanner(true)
-    }
-  }, [])
 
   const closeBanner = useCallback(() => {
     setShouldDisplayBanner(false)
