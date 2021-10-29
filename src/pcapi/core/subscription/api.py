@@ -124,6 +124,8 @@ def create_beneficiary_import(user: users_models.User) -> None:
         sourceId=None,
         source=BeneficiaryImportSources.educonnect.value,
         beneficiary=user,
+        # TODO(viconnex): select the eligibilityType according to the subscription date
+        eligibilityType=users_models.EligibilityType.UNDERAGE,
     )
     beneficiary_import.setStatus(ImportStatus.CREATED)
     pcapi_repository.repository.save(beneficiary_import)

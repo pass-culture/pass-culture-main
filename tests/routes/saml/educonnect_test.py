@@ -109,7 +109,8 @@ class EduconnectTest:
         assert fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one_or_none() is not None
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
-    def test_complete_educonnect_login(self, mock_get_educonnect_user, client, app, caplog):
+    def test_complete_educonnect_beneficiary_activation(self, mock_get_educonnect_user, client, app, caplog):
+        # the user initiates an educonnect login
         user, request_id = self.connect_to_educonnect(client, app)
 
         # Then Educonnect will call /saml/acs
@@ -137,6 +138,22 @@ class EduconnectTest:
         beneficiary_import = BeneficiaryImport.query.filter_by(beneficiaryId=user.id).one_or_none()
         assert beneficiary_import is not None
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
+
+        access_token = create_access_token(identity=user.email)
+
+        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        profile_data = {
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "postalCode": "77000",
+            "activity": "Lycéen",
+        }
+
+        response = client.patch("/native/v1/beneficiary_information", profile_data)
+
+        assert user.roles == [user_models.UserRole.UNDERAGE_BENEFICIARY]
+        assert user.deposit.amount == 30
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
     def test_educonnect_redirects_to_success_page_with_waning_log(self, mock_get_educonnect_user, client, app, caplog):
