@@ -283,7 +283,7 @@ crons:
       args:
         - "Wrong_Env"
     clock:
-      enabled: false
+      enabled: true
       command:
         - flask
       args:
@@ -295,7 +295,7 @@ crons:
       args:
         - algolia_clock
     titelive:
-      enabled: false
+      enabled: true
       command:
         - flask
       args:
