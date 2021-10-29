@@ -11,6 +11,7 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import exceptions as fraud_exceptions
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.users import api as users_api
 from pcapi.core.users import models as user_models
 from pcapi.core.users.external.educonnect import api as educonnect_api
 from pcapi.core.users.external.educonnect import exceptions as educonnect_exceptions
@@ -68,14 +69,16 @@ def on_educonnect_authentication_response() -> Response:
         },
     )
 
+    educonnect_data = fraud_models.EduconnectContent(
+        first_name=educonnect_user.first_name,
+        last_name=educonnect_user.last_name,
+        educonnect_id=educonnect_user.educonnect_id,
+        birth_date=educonnect_user.birth_date,
+    )
+
     fraud_api.on_educonnect_result(
         user,
-        fraud_models.EduconnectContent(
-            first_name=educonnect_user.first_name,
-            last_name=educonnect_user.last_name,
-            educonnect_id=educonnect_user.educonnect_id,
-            birth_date=educonnect_user.birth_date,
-        ),
+        educonnect_data,
     )
 
     error_page_base_url = f"{settings.WEBAPP_V2_URL}/idcheck/educonnect/erreur?"
@@ -103,4 +106,5 @@ def on_educonnect_authentication_response() -> Response:
         "dateOfBirth": educonnect_user.birth_date,
         "logoutUrl": educonnect_user.logout_url,
     }
+    users_api.update_user_information_from_external_source(user, educonnect_data)
     return redirect(user_information_validation_base_url + urlencode(query_params), code=302)

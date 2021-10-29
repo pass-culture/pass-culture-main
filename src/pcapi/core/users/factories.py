@@ -299,10 +299,8 @@ class EduconnectUserFactory(factory.Factory):
     class Params:
         age = 15
 
-    connection_datetime = LazyAttribute(lambda _: datetime.combine(date.today(), time(0, 0)) - relativedelta(days=1))
-    birth_date = LazyAttribute(
-        lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=o.age, months=1)
-    )
+    connection_datetime = LazyAttribute(lambda _: date.today() - relativedelta(days=1))
+    birth_date = factory.LazyAttribute(lambda o: date.today() - relativedelta(years=o.age, months=1))
     educonnect_id = "e6759833fb379e0340322889f2a367a5a5150f1533f80dfe963d21e43e33f7164b76cc802766cdd33c6645e1abfd1875"
     last_name = factory.Faker("last_name")
     first_name = factory.Faker("first_name")
