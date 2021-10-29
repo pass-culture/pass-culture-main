@@ -94,7 +94,7 @@ def on_educonnect_authentication_response() -> Response:
             extra={"userId": user.id, "educonnectId": educonnect_user.educonnect_id},
         )
     except Exception as e:  # pylint: disable=broad-except
-        logger.error("Error while creating BeneficiaryImport from Educonnect: %s", e, extra={})
+        logger.error("Error while creating BeneficiaryImport from Educonnect: %s", e, extra={"user_id": user.id})
 
     user_information_validation_base_url = f"{settings.WEBAPP_V2_URL}/idcheck/validation?"
     query_params = {

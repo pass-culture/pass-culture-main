@@ -16,7 +16,7 @@ from pcapi.workers import apps_flyer_job
 
 from . import exceptions
 from . import models
-from . import repository
+from . import repository as subscription_repository
 
 
 logger = logging.getLogger(__name__)
@@ -56,7 +56,7 @@ def get_latest_subscription_message(user: users_models.User) -> Optional[models.
 
 def activate_beneficiary(user: users_models.User, deposit_source: str = None) -> users_models.User:
     if not deposit_source:
-        beneficiary_import = repository.get_beneficiary_import_for_beneficiary(user)
+        beneficiary_import = subscription_repository.get_beneficiary_import_for_beneficiary(user)
         if not beneficiary_import:
             raise exceptions.BeneficiaryImportMissingException()
 
@@ -126,4 +126,4 @@ def create_beneficiary_import(user: users_models.User) -> None:
         beneficiary=user,
     )
     beneficiary_import.setStatus(ImportStatus.CREATED)
-    repository.save(beneficiary_import)
+    pcapi_repository.save(beneficiary_import)
