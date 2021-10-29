@@ -26,9 +26,15 @@ logger = logging.getLogger(__name__)
 @blueprint.saml_blueprint.route("educonnect/login", methods=["GET"])
 @authenticated_user_required
 def login_educonnect(user: user_models.User) -> Response:
+    redirect_user = request.args.get("redirect", default=True, type=bool)
     redirect_url = educonnect_api.get_login_redirect_url(user)
+    response = Response()
 
-    response = redirect(redirect_url, code=302)
+    if not redirect_user:
+        response.status_code = 200
+        response.headers["educonnect-redirect"] = redirect_url
+    else:
+        response = redirect(redirect_url, code=302)
 
     response.headers["Cache-Control"] = "no-cache, no-store"
     response.headers["Pragma"] = "no-cache"
