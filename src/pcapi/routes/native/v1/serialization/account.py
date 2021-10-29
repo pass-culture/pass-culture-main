@@ -35,6 +35,7 @@ from . import BaseModel
 
 
 class ActivityEnum(str, Enum):
+    middle_school_student = "Collégien"
     high_school_student = "Lycéen"
     student = "Étudiant"
     employee = "Employé"
