@@ -126,4 +126,4 @@ def create_beneficiary_import(user: users_models.User) -> None:
         beneficiary=user,
     )
     beneficiary_import.setStatus(ImportStatus.CREATED)
-    pcapi_repository.save(beneficiary_import)
+    pcapi_repository.repository.save(beneficiary_import)
