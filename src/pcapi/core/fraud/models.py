@@ -62,10 +62,11 @@ def _parse_date(date: typing.Optional[str]) -> typing.Optional[datetime.datetime
 
 
 class EduconnectContent(pydantic.BaseModel):
-    first_name: str
-    last_name: str
-    educonnect_id: str
     birth_date: datetime.date
+    educonnect_id: str
+    first_name: str
+    ine_hash: str
+    last_name: str
 
 
 class JouveContent(pydantic.BaseModel):

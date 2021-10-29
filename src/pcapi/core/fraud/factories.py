@@ -1,5 +1,6 @@
 from datetime import datetime
 import random
+import string
 
 from dateutil.relativedelta import relativedelta
 import factory
@@ -157,7 +158,8 @@ class EduconnectContentFactory(factory.Factory):
     class Params:
         age = 15
 
-    last_name = factory.Faker("last_name")
-    first_name = factory.Faker("first_name")
-    educonnect_id = factory.Faker("lexify", text="id-?????????????????")
     birth_date = factory.LazyAttribute(lambda o: datetime.now() - relativedelta(years=o.age, months=4))
+    educonnect_id = factory.Faker("lexify", text="id-?????????????????")
+    first_name = factory.Faker("first_name")
+    ine_hash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
+    last_name = factory.Faker("last_name")

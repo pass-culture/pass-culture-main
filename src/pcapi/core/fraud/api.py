@@ -127,6 +127,7 @@ def educonnect_fraud_checks(beneficiary_fraud_check: models.BeneficiaryFraudChec
         )
     )
     fraud_items.append(_underage_user_fraud_item(educonnect_content.birth_date))
+    fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash))
     return fraud_items
 
 
@@ -233,6 +234,14 @@ def _duplicate_id_piece_number_fraud_item(document_id_number: str) -> models.Fra
         detail=f"Le n° de cni {document_id_number} est déjà pris par l'utilisateur {duplicate_user.id}"
         if duplicate_user
         else None,
+    )
+
+
+def _duplicate_ine_hash_fraud_item(ine_hash: str) -> models.FraudItem:
+    duplicate_user = user_models.User.query.filter(user_models.User.ineHash == ine_hash).first()
+    return models.FraudItem(
+        status=models.FraudStatus.SUSPICIOUS if duplicate_user else models.FraudStatus.OK,
+        detail=f"L'INE {ine_hash} est déjà pris par l'utilisateur {duplicate_user.id}" if duplicate_user else None,
     )
 
 

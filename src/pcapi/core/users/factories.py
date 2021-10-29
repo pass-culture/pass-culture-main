@@ -156,6 +156,7 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
         lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=o.subscription_age, months=5)
     )
     dateCreated = LazyAttribute(lambda o: o.dateOfBirth + relativedelta(years=o.subscription_age, hours=12))
+    ineHash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
 
     @factory.post_generation
     def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument

@@ -444,12 +444,17 @@ class UserFraudsterTest:
 
 @pytest.mark.usefixtures("db_session")
 class EduconnectFraudTest:
-    def test_on_educonnect_result_creates_a_fraud_check(self):
+    def test_on_educonnect_result(self):
         user = users_factories.UserFactory()
+        birth_date = (datetime.datetime.today() - relativedelta(years=15)).date()
         fraud_api.on_educonnect_result(
             user,
             fraud_models.EduconnectContent(
-                educonnect_id="id-1", first_name="Lucy", last_name="Ellingson", birth_date=datetime.date(2021, 10, 15)
+                birth_date=birth_date,
+                educonnect_id="id-1",
+                first_name="Lucy",
+                ine_hash="5ba682c0fc6a05edf07cd8ed0219258f",
+                last_name="Ellingson",
             ),
         )
 
@@ -460,11 +465,13 @@ class EduconnectFraudTest:
         assert fraud_check.userId == user.id
         assert fraud_check.type == fraud_models.FraudCheckType.EDUCONNECT
         assert fraud_check.source_data().__dict__ == {
-            "first_name": "Lucy",
-            "last_name": "Ellingson",
             "educonnect_id": "id-1",
-            "birth_date": datetime.date(2021, 10, 15),
+            "first_name": "Lucy",
+            "ine_hash": "5ba682c0fc6a05edf07cd8ed0219258f",
+            "last_name": "Ellingson",
+            "birth_date": birth_date,
         }
+        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
 
     @pytest.mark.parametrize(
         "age,expected_fraud_check_status",
@@ -477,14 +484,12 @@ class EduconnectFraudTest:
         ],
     )
     def test_educonnect_age_fraud_check(self, age, expected_fraud_check_status):
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age))
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
-            user=user,
             resultContent=fraud_factories.EduconnectContentFactory(age=age),
         )
         result = fraud_api.educonnect_fraud_checks(beneficiary_fraud_check=fraud_check)
-        assert len(result) == 2
+        assert len(result) == 3
         assert result[1].status == expected_fraud_check_status
         if expected_fraud_check_status == fraud_models.FraudStatus.KO:
             assert (
@@ -499,7 +504,6 @@ class EduconnectFraudTest:
         already_existing_user = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
-            user=already_existing_user,
             resultContent=fraud_factories.EduconnectContentFactory(
                 first_name=already_existing_user.firstName,
                 last_name=already_existing_user.lastName,
@@ -508,8 +512,23 @@ class EduconnectFraudTest:
         )
         result = fraud_api.educonnect_fraud_checks(fraud_check)
 
-        assert len(result) == 2
+        assert len(result) == 3
         assert result[0].status == fraud_models.FraudStatus.SUSPICIOUS
         assert result[0].detail == f"Duplicat de l'utilisateur {already_existing_user.id}"
         assert result[1].status == fraud_models.FraudStatus.OK
         assert result[1].detail == "L'age de l'utilisateur est valide (15 ans)."
+
+    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
+    def test_educonnect_ine_duplicates_fraud_checks(self):
+        same_ine_user = users_factories.UnderageBeneficiaryFactory(ineHash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            resultContent=fraud_factories.EduconnectContentFactory(ine_hash=same_ine_user.ineHash),
+        )
+        result = fraud_api.educonnect_fraud_checks(fraud_check)
+
+        assert result[2].status == fraud_models.FraudStatus.SUSPICIOUS
+        assert (
+            result[2].detail
+            == f"L'INE ylwavk71o3jiwyla83fxk5pcmmu0ws01 est déjà pris par l'utilisateur {same_ine_user.id}"
+        )
