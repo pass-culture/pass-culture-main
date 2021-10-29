@@ -158,7 +158,7 @@ class EduconnectTest:
         response = client.patch("/native/v1/beneficiary_information", profile_data)
 
         assert user.roles == [user_models.UserRole.UNDERAGE_BENEFICIARY]
-        assert user.deposit.amount == 30
+        assert user.deposit.amount == 20
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
     def test_educonnect_redirects_to_success_page_with_waning_log(self, mock_get_educonnect_user, client, app, caplog):
