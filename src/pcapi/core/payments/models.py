@@ -4,6 +4,7 @@ from decimal import Decimal
 import enum
 
 import psycopg2.extras
+import pytz
 from sqlalchemy import BigInteger
 from sqlalchemy import CheckConstraint
 from sqlalchemy import Column
@@ -99,7 +100,9 @@ class CustomReimbursementRule(ReimbursementRule, Model):
 
     @classmethod
     def _make_timespan(cls, start, end=None):
-        return psycopg2.extras.DateTimeRange(start.isoformat(), end.isoformat() if end else None, bounds="[)")
+        start = start.astimezone(pytz.utc).isoformat()
+        end = end.astimezone(pytz.utc).isoformat() if end else None
+        return psycopg2.extras.DateTimeRange(start, end, bounds="[)")
 
     def is_active(self, booking: Booking):
         if booking.dateUsed < self.timespan.lower:

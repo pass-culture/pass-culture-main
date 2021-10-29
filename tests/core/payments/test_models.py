@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import datetime
 
 import pytest
+import pytz
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
@@ -41,6 +42,15 @@ class CustomReimbursementRuleTest:
         assert rule.timespan.upper == end
         assert rule.timespan.lower_inc
         assert not rule.timespan.upper_inc
+
+    def test_timespan_setter_with_timezone(self):
+        offer = offers_factories.OfferFactory()
+        tz = pytz.timezone("Europe/Paris")
+        start = tz.localize(datetime.datetime(2021, 1, 12, 0, 0))
+        rule = models.CustomReimbursementRule(timespan=(start, None), amount=1, offer=offer)
+        repository.save(rule)
+        db.session.refresh(rule)
+        assert rule.timespan.lower == datetime.datetime(2021, 1, 11, 23, 0)
 
     def test_is_active(self):
         start = datetime.datetime(2021, 1, 12, 0, 0)
