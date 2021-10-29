@@ -74,8 +74,8 @@ class ReimbursementDetails:
             self.payment_iban = payment_info.iban
             self.venue_name = payment_info.venue_name
             self.offer_name = payment_info.offer_name
-            self.user_last_name = payment_info.user_lastName
-            self.user_first_name = payment_info.user_firstName
+            self.user_last_name = payment_info.user_lastName or payment_info.redactor_lastname
+            self.user_first_name = payment_info.user_firstName or payment_info.redactor_firstname
             self.booking_token = payment_info.booking_token
             self.booking_used_date = payment_info.booking_dateUsed
             self.booking_total_amount = format_number_as_french(

@@ -8,6 +8,9 @@ from sqlalchemy import subquery
 from sqlalchemy.orm import aliased
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import EducationalBooking
+from pcapi.core.bookings.models import IndividualBooking
+from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -43,7 +46,10 @@ def find_all_offerers_payments(
             (Booking.venueId == venue_id) if venue_id else (Booking.venueId is not None),
         )
         .join(Offerer)
-        .join(User)
+        .outerjoin(IndividualBooking)
+        .outerjoin(User)
+        .outerjoin(EducationalBooking)
+        .outerjoin(EducationalRedactor)
         .join(Stock)
         .join(Offer)
         .join(Venue)
@@ -52,6 +58,8 @@ def find_all_offerers_payments(
         .with_entities(
             User.lastName.label("user_lastName"),
             User.firstName.label("user_firstName"),
+            EducationalRedactor.firstName.label("redactor_firstname"),
+            EducationalRedactor.lastName.label("redactor_lastname"),
             Booking.token.label("booking_token"),
             Booking.dateUsed.label("booking_dateUsed"),
             Booking.quantity.label("booking_quantity"),
@@ -86,7 +94,10 @@ def legacy_find_all_offerers_payments(offerer_ids: list[int]) -> list[namedtuple
         Payment.query.join(payment_status_query)
         .reset_joinpoint()
         .join(Booking)
-        .join(User)
+        .outerjoin(IndividualBooking)
+        .outerjoin(User)
+        .outerjoin(EducationalBooking)
+        .outerjoin(EducationalRedactor)
         .reset_joinpoint()
         .join(Stock)
         .join(Offer)
@@ -98,6 +109,8 @@ def legacy_find_all_offerers_payments(offerer_ids: list[int]) -> list[namedtuple
         .with_entities(
             User.lastName.label("user_lastName"),
             User.firstName.label("user_firstName"),
+            EducationalRedactor.firstName.label("redactor_firstname"),
+            EducationalRedactor.lastName.label("redactor_lastname"),
             Booking.token.label("booking_token"),
             Booking.dateUsed.label("booking_dateUsed"),
             Booking.quantity.label("booking_quantity"),

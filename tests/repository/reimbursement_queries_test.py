@@ -22,8 +22,8 @@ in_two_days = today + timedelta(days=2)
 reimbursement_period = (today, in_two_days)
 
 
+@pytest.mark.usefixtures("db_session")
 class FindAllOffererPaymentsTest:
-    @pytest.mark.usefixtures("db_session")
     def test_should_not_return_payment_info_with_error_status(self, app):
         # Given
         booking = bookings_factories.UsedBookingFactory()
@@ -41,7 +41,6 @@ class FindAllOffererPaymentsTest:
         # Then
         assert len(payments) == 0
 
-    @pytest.mark.usefixtures("db_session")
     def test_should_return_one_payment_info_with_sent_status(self, app):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory(lastName="User", firstName="Plus")
@@ -54,7 +53,9 @@ class FindAllOffererPaymentsTest:
             price=10,
         )
         now = datetime.utcnow()
-        booking = bookings_factories.UsedBookingFactory(user=beneficiary, stock=stock, dateUsed=now, token="ABCDEF")
+        booking = bookings_factories.UsedIndividualBookingFactory(
+            individualBooking__user=beneficiary, stock=stock, dateUsed=now, token="ABCDEF"
+        )
 
         payment = payments_factories.PaymentFactory(
             amount=50,
@@ -74,7 +75,7 @@ class FindAllOffererPaymentsTest:
 
         # Then
         assert len(payments) == 1
-        assert payments[0] == (
+        expected_elements = (
             "User",
             "Plus",
             "ABCDEF",
@@ -94,7 +95,55 @@ class FindAllOffererPaymentsTest:
             "All good",
         )
 
-    @pytest.mark.usefixtures("db_session")
+        assert set(expected_elements).issubset(set(payments[0]))
+
+    def test_should_return_one_payment_info_with_sent_status_when_offer_educational(self, app):
+        # Given
+        now = datetime.utcnow()
+        educational_booking = bookings_factories.UsedEducationalBookingFactory(dateUsed=now, token="ABCDEF")
+
+        payment = payments_factories.PaymentFactory(
+            amount=50,
+            reimbursementRate=1,
+            booking=educational_booking,
+            iban="CF13QSDFGH456789",
+            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
+        )
+        payments_factories.PaymentStatusFactory(
+            payment=payment, status=TransactionStatus.ERROR, detail="Iban non fourni"
+        )
+        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.RETRY, detail="All good")
+        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT, detail="All good")
+
+        # When
+        payments = find_all_offerer_payments(
+            educational_booking.stock.offer.venue.managingOfferer.id, reimbursement_period
+        )
+
+        # Then
+        assert len(payments) == 1
+        assert payments[0] == (
+            None,
+            None,
+            educational_booking.firstName,
+            educational_booking.lastName,
+            educational_booking.token,
+            now,
+            1,
+            Decimal("10.00"),
+            "Product 0",
+            "1 boulevard Poissonnière",
+            "Le Petit Rintintin 0",
+            "00000000000000",
+            "1 boulevard Poissonnière",
+            Decimal("50.00"),
+            Decimal("1.00"),
+            "CF13QSDFGH456789",
+            "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
+            TransactionStatus.SENT,
+            "All good",
+        )
+
     def test_should_return_last_matching_status_based_on_date_for_each_payment(self, app):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory(lastName="User", firstName="Plus")
@@ -107,8 +156,12 @@ class FindAllOffererPaymentsTest:
             price=10,
         )
         now = datetime.utcnow()
-        booking1 = bookings_factories.UsedBookingFactory(user=beneficiary, stock=stock, dateUsed=now, token="ABCDEF")
-        booking2 = bookings_factories.UsedBookingFactory(user=beneficiary, stock=stock, dateUsed=now, token="ABCDFE")
+        booking1 = bookings_factories.UsedIndividualBookingFactory(
+            individualBooking__user=beneficiary, stock=stock, dateUsed=now, token="ABCDEF"
+        )
+        booking2 = bookings_factories.UsedIndividualBookingFactory(
+            individualBooking__user=beneficiary, stock=stock, dateUsed=now, token="ABCDFE"
+        )
 
         payment = payments_factories.PaymentFactory(
             amount=50,
@@ -142,6 +195,8 @@ class FindAllOffererPaymentsTest:
         assert payments[0] == (
             "User",
             "Plus",
+            None,
+            None,
             "ABCDFE",
             now,
             1,
@@ -161,6 +216,8 @@ class FindAllOffererPaymentsTest:
         assert payments[1] == (
             "User",
             "Plus",
+            None,
+            None,
             "ABCDEF",
             now,
             1,
@@ -178,7 +235,6 @@ class FindAllOffererPaymentsTest:
             "All good",
         )
 
-    @pytest.mark.usefixtures("db_session")
     def test_should_return_payments_from_multiple_venues(self, app):
         # Given
         offerer = OffererFactory()
@@ -195,7 +251,6 @@ class FindAllOffererPaymentsTest:
         # Then
         assert len(payments) == 2
 
-    @pytest.mark.usefixtures("db_session")
     def test_should_return_payments_filtered_by_venue(self, app):
         # Given
         offerer = OffererFactory()
@@ -212,10 +267,9 @@ class FindAllOffererPaymentsTest:
 
         # Then
         assert len(payments) == 1
-        assert payments[0][2] == payment_1.booking.token
-        assert payments[0][8] == venue_1.name
+        assert payment_1.booking.token in payments[0]
+        assert venue_1.name in payments[0]
 
-    @pytest.mark.usefixtures("db_session")
     def test_should_return_payments_filtered_by_payment_date(self, app):
         # Given
         tomorrow_at_nine = datetime.combine(tomorrow, datetime.min.time()) + timedelta(hours=9)
@@ -231,8 +285,8 @@ class FindAllOffererPaymentsTest:
 
         # Then
         assert len(payments) == 1
-        assert payments[0][2] == payment_1.booking.token
-        assert payments[0][8] == venue_1.name
+        assert payment_1.booking.token in payments[0]
+        assert venue_1.name in payments[0]
 
 
 class LegacyFindAllOffererPaymentsTest:
@@ -241,7 +295,7 @@ class LegacyFindAllOffererPaymentsTest:
         # Given
         stock = offers_factories.ThingStockFactory(price=10)
         now = datetime.utcnow()
-        booking = bookings_factories.UsedBookingFactory(stock=stock, dateUsed=now, token="ABCDEF")
+        booking = bookings_factories.UsedIndividualBookingFactory(stock=stock, dateUsed=now, token="ABCDEF")
         payment = payments_factories.PaymentFactory(
             booking=booking, transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019"
         )
@@ -257,6 +311,8 @@ class LegacyFindAllOffererPaymentsTest:
         assert payments[0] == (
             "Doux",
             "Jeanne",
+            None,
+            None,
             "ABCDEF",
             now,
             1,
@@ -287,7 +343,9 @@ class LegacyFindAllOffererPaymentsTest:
             price=10,
         )
         now = datetime.utcnow()
-        booking = bookings_factories.UsedBookingFactory(user=beneficiary, stock=stock, dateUsed=now, token="ABCDEF")
+        booking = bookings_factories.UsedIndividualBookingFactory(
+            individualBooking__user=beneficiary, stock=stock, dateUsed=now, token="ABCDEF"
+        )
 
         payment = payments_factories.PaymentFactory(
             amount=50,
@@ -310,6 +368,8 @@ class LegacyFindAllOffererPaymentsTest:
         assert payments[0] == (
             "User",
             "Plus",
+            None,
+            None,
             "ABCDEF",
             now,
             1,
@@ -340,8 +400,12 @@ class LegacyFindAllOffererPaymentsTest:
             price=10,
         )
         now = datetime.utcnow()
-        booking1 = bookings_factories.UsedBookingFactory(user=beneficiary, stock=stock, dateUsed=now, token="ABCDEF")
-        booking2 = bookings_factories.UsedBookingFactory(user=beneficiary, stock=stock, dateUsed=now, token="ABCDFE")
+        booking1 = bookings_factories.UsedIndividualBookingFactory(
+            individualBooking__user=beneficiary, stock=stock, dateUsed=now, token="ABCDEF"
+        )
+        booking2 = bookings_factories.UsedIndividualBookingFactory(
+            individualBooking__user=beneficiary, stock=stock, dateUsed=now, token="ABCDFE"
+        )
 
         payment = payments_factories.PaymentFactory(
             amount=50,
@@ -375,6 +439,8 @@ class LegacyFindAllOffererPaymentsTest:
         assert payments[0] == (
             "User",
             "Plus",
+            None,
+            None,
             "ABCDFE",
             now,
             1,
@@ -394,6 +460,8 @@ class LegacyFindAllOffererPaymentsTest:
         assert payments[1] == (
             "User",
             "Plus",
+            None,
+            None,
             "ABCDEF",
             now,
             1,
