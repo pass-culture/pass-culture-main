@@ -1,6 +1,8 @@
 from datetime import date
 from datetime import datetime
 from datetime import time
+import random
+import string
 import uuid
 
 from dateutil.relativedelta import relativedelta
@@ -306,5 +308,5 @@ class EduconnectUserFactory(factory.Factory):
     first_name = factory.Faker("first_name")
     logout_url = "https://educonnect.education.gouv.fr/Logout"
     saml_request_id = factory.Faker("lexify", text="id-?????????????????")
-
+    ine_hash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
     student_level = "2212"

@@ -82,6 +82,7 @@ class EduconnectTest:
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.67": ["2006-08-18"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.73": ["2212"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.6": ["2021-10-08 11:51:33.437"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.64": ["5ba682c0fc6a05edf07cd8ed0219258f"],
         }
         mock_saml_response.in_response_to = self.request_id
 
@@ -98,6 +99,7 @@ class EduconnectTest:
             "date_of_birth": "2006-08-18",
             "educonnect_connection_date": "2021-10-08T11:51:33.437000",
             "educonnect_id": "e6759833fb379e0340322889f2a367a5a5150f1533f80dfe963d21e43e33f7164b76cc802766cdd33c6645e1abfd1875",
+            "ine_hash": "5ba682c0fc6a05edf07cd8ed0219258f",
             "first_name": "Max",
             "last_name": "SENS",
             "logout_url": "https://educonnect.education.gouv.fr/Logout",
@@ -123,19 +125,14 @@ class EduconnectTest:
             response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
-        assert caplog.records[0].extra == {
-            "date_of_birth": educonnect_user.birth_date.isoformat(),
-            "educonnect_connection_date": educonnect_user.connection_datetime.isoformat(),
-            "educonnect_id": educonnect_user.educonnect_id,
-            "first_name": educonnect_user.first_name,
-            "last_name": educonnect_user.last_name,
-            "logout_url": educonnect_user.logout_url,
-            "saml_request_id": request_id,
-            "student_level": educonnect_user.student_level,
-            "user_email": self.email,
-        }
 
-        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one_or_none() is not None
+        assert (
+            fraud_models.BeneficiaryFraudCheck.query.filter_by(
+                user=user, type=fraud_models.FraudCheckType.EDUCONNECT
+            ).one_or_none()
+            is not None
+        )
+        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
 
         beneficiary_import = BeneficiaryImport.query.filter_by(beneficiaryId=user.id).one_or_none()
         assert beneficiary_import is not None

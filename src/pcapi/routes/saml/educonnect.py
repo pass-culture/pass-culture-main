@@ -48,10 +48,11 @@ def on_educonnect_authentication_response() -> Response:
         logger.warning("Educonnect authentication Error")
         return redirect(f"{settings.WEBAPP_V2_URL}/idcheck/erreur", code=302)
 
-    key = educonnect_api.build_educonnect_saml_request_id_key(educonnect_user.saml_request_id)
+    key = educonnect_api.build_saml_request_id_key(educonnect_user.saml_request_id)
     user_id = app.redis_client.get(key)
     if user_id is None:
         raise ApiErrors({"saml_request_id": "user associated to saml_request_id not found"})
+
     user = user_models.User.query.get(user_id)
 
     logger.info(
@@ -61,6 +62,7 @@ def on_educonnect_authentication_response() -> Response:
             "date_of_birth": educonnect_user.birth_date.isoformat(),
             "educonnect_connection_date": educonnect_user.connection_datetime.isoformat(),
             "educonnect_id": educonnect_user.educonnect_id,
+            "ine_hash": educonnect_user.ine_hash,
             "first_name": educonnect_user.first_name,
             "last_name": educonnect_user.last_name,
             "logout_url": educonnect_user.logout_url,
@@ -69,17 +71,15 @@ def on_educonnect_authentication_response() -> Response:
         },
     )
 
-    educonnect_data = fraud_models.EduconnectContent(
-        first_name=educonnect_user.first_name,
-        last_name=educonnect_user.last_name,
-        educonnect_id=educonnect_user.educonnect_id,
+    educonnect_content = fraud_models.EduconnectContent(
         birth_date=educonnect_user.birth_date,
+        educonnect_id=educonnect_user.educonnect_id,
+        first_name=educonnect_user.first_name,
+        ine_hash=educonnect_user.ine_hash,
+        last_name=educonnect_user.last_name,
     )
 
-    fraud_api.on_educonnect_result(
-        user,
-        educonnect_data,
-    )
+    fraud_api.on_educonnect_result(user, educonnect_content)
 
     error_page_base_url = f"{settings.WEBAPP_V2_URL}/idcheck/educonnect/erreur?"
     try:
@@ -114,5 +114,6 @@ def on_educonnect_authentication_response() -> Response:
         "dateOfBirth": educonnect_user.birth_date,
         "logoutUrl": educonnect_user.logout_url,
     }
-    users_api.update_user_information_from_external_source(user, educonnect_data, commit=True)
+    users_api.update_user_information_from_external_source(user, educonnect_content, commit=True)
+
     return redirect(user_information_validation_base_url + urlencode(query_params), code=302)

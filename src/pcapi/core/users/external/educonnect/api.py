@@ -78,7 +78,7 @@ def get_login_redirect_url(user: user_models.User) -> str:
     logger.info(
         "Sending saml login request with educonnect request_id = %s", saml_request_id, extra={"user_id": user.id}
     )
-    key = build_educonnect_saml_request_id_key(saml_request_id)
+    key = build_saml_request_id_key(saml_request_id)
     app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
 
     redirect_url = next(header[1] for header in info["headers"] if header[0] == "Location")
@@ -106,6 +106,7 @@ def get_educonnect_user(saml_response: str) -> models.EduconnectUser:
             birth_date=datetime.strptime(educonnect_identity[_get_field_oid("67")][0], "%Y-%m-%d").date(),
             educonnect_id=educonnect_identity[_get_field_oid("57")][0],
             first_name=educonnect_identity["givenName"][0],
+            ine_hash=educonnect_identity[_get_field_oid("64")][0],
             last_name=educonnect_identity["sn"][0],
             logout_url=educonnect_identity[_get_field_oid("5")][0],
             saml_request_id=saml_request_id,
@@ -131,5 +132,5 @@ def _get_field_oid(oid_key: str) -> str:
     return f"urn:oid:1.3.6.1.4.1.20326.10.999.1.{oid_key}"
 
 
-def build_educonnect_saml_request_id_key(saml_request_id: str) -> str:
+def build_saml_request_id_key(saml_request_id: str) -> str:
     return f"educonnect-saml-request-{saml_request_id}"
