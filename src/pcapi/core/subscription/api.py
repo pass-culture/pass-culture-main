@@ -3,12 +3,15 @@ from typing import Optional
 
 from pcapi.core.fraud import exceptions as fraud_exceptions
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.mails.transactional.users import accepted_as_beneficiary_email
 from pcapi.core.payments import api as payments_api
 from pcapi.core.users import api as users_api
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exception
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.external import update_external_user
+from pcapi.domain import user_emails as old_user_emails
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import ImportStatus
@@ -56,7 +59,9 @@ def get_latest_subscription_message(user: users_models.User) -> Optional[models.
     return models.SubscriptionMessage.query.filter_by(user=user).order_by(models.SubscriptionMessage.id.desc()).first()
 
 
-def activate_beneficiary(user: users_models.User, deposit_source: str = None) -> users_models.User:
+def activate_beneficiary(
+    user: users_models.User, deposit_source: str = None, has_activated_account: Optional[bool] = True
+) -> users_models.User:
     if not deposit_source:
         beneficiary_import = subscription_repository.get_beneficiary_import_for_beneficiary(user)
         if not beneficiary_import:
@@ -81,20 +86,26 @@ def activate_beneficiary(user: users_models.User, deposit_source: str = None) ->
 
     db.session.add_all((user, deposit))
     db.session.commit()
-    update_external_user(user)
-
     logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit_source})
+
+    db.session.refresh(user)
+
+    update_external_user(user)
+    _send_beneficiary_activation_email(user, has_activated_account)
+
     return user
 
 
-def check_and_activate_beneficiary(userId: int, deposit_source: str = None) -> users_models.User:
+def check_and_activate_beneficiary(
+    userId: int, deposit_source: str = None, has_activated_account: Optional[bool] = True
+) -> users_models.User:
     with pcapi_repository.transaction():
         user = users_repository.get_and_lock_user(userId)
         # TODO: Handle switch from underage_beneficiary to beneficiary
         if user.is_beneficiary or not user.hasCompletedIdCheck:
             db.session.rollback()
             return user
-        user = activate_beneficiary(user, deposit_source)
+        user = activate_beneficiary(user, deposit_source, has_activated_account)
         return user
 
 
@@ -136,3 +147,15 @@ def create_beneficiary_import(user: users_models.User) -> None:
     pcapi_repository.repository.save(beneficiary_import)
 
     users_api.update_user_information_from_external_source(user, fraud_check.source_data(), commit=True)
+
+
+def _send_beneficiary_activation_email(user: users_models.User, has_activated_account: bool):
+    from pcapi.core.users.api import create_reset_password_token
+
+    if not has_activated_account:
+        token = create_reset_password_token(
+            user, token_life_time=users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
+        )
+        old_user_emails.send_activation_email(user=user, token=token)
+    else:
+        accepted_as_beneficiary_email.send_accepted_as_beneficiary_email(user=user)

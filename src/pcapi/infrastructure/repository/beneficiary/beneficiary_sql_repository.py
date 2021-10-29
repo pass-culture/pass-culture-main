@@ -18,7 +18,7 @@ class BeneficiarySQLRepository:
 
         if not users_api.steps_to_become_beneficiary(user_sql_entity):
             user_sql_entity = subscription_api.check_and_activate_beneficiary(
-                user_sql_entity.id, beneficiary_pre_subscription.deposit_source
+                user_sql_entity.id, beneficiary_pre_subscription.deposit_source, has_activated_account=user is not None
             )
         else:
             update_external_user(user_sql_entity)

@@ -303,6 +303,7 @@ class ProcessBeneficiaryApplicationTest:
         assert first.activity == "Étudiant"
 
         assert len(push_testing.requests) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
 
     @pytest.mark.usefixtures("db_session")
     def test_an_import_status_is_saved_if_beneficiary_is_created(self, app):
@@ -330,24 +331,6 @@ class ProcessBeneficiaryApplicationTest:
         assert beneficiary_import.beneficiary.email == "jane.doe@example.com"
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert beneficiary_import.applicationId == 123
-
-    @patch("pcapi.scripts.beneficiary.remote_import.create_beneficiary_from_application")
-    @patch("pcapi.scripts.beneficiary.remote_import.repository")
-    @patch("pcapi.scripts.beneficiary.remote_import.user_emails.send_activation_email")
-    @pytest.mark.usefixtures("db_session")
-    def test_account_activation_email_is_sent(
-        self, send_activation_email, mock_repository, create_beneficiary_from_application, app
-    ):
-        # given
-        information = fraud_factories.DMSContentFactory(application_id=123)
-
-        create_beneficiary_from_application.return_value = users_factories.BeneficiaryGrant18Factory.build()
-
-        # when
-        remote_import.process_beneficiary_application(information=information, procedure_id=123456)
-
-        # then
-        send_activation_email.assert_called()
 
     @patch("pcapi.scripts.beneficiary.remote_import.create_beneficiary_from_application")
     @patch("pcapi.scripts.beneficiary.remote_import.repository")

@@ -232,6 +232,8 @@ class BeneficiaryValidationViewTest:
         assert user.firstName == jouve_content.firstName
         assert user.lastName == jouve_content.lastName
 
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
+
     def test_review_ko_does_not_activate_the_beneficiary(self, client):
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)

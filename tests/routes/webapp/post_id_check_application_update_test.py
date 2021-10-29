@@ -192,7 +192,7 @@ class Returns200Test:
         assert beneficiary_import.beneficiary == user
 
         mocked_send_activation_email.assert_not_called()
-        mocked_send_accepted_as_beneficiary_email.assert_called_once()
+        mocked_send_accepted_as_beneficiary_email.assert_not_called()
 
         assert len(push_testing.requests) == 1
         assert len(users_testing.sendinblue_requests) == 1

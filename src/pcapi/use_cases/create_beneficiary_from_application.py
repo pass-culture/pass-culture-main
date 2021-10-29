@@ -2,10 +2,8 @@ import logging
 
 from pcapi.connectors.beneficiaries import jouve_backend
 from pcapi.core.fraud.api import on_jouve_result
-from pcapi.core.mails.transactional import users as user_emails
 from pcapi.core.mails.transactional.users.fraud_suspicion_email import send_fraud_suspicion_email
 from pcapi.core.subscription import messages as subscription_messages
-from pcapi.core.users.api import create_reset_password_token
 from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.exceptions import CantRegisterBeneficiary
@@ -134,12 +132,6 @@ class CreateBeneficiaryFromApplication:
         else:
             user = self.beneficiary_repository.save(beneficiary_pre_subscription, user=preexisting_account)
             logger.info("User registered from application", extra={"applicationId": application_id, "userId": user.id})
-
-            if preexisting_account is None:
-                token = create_reset_password_token(user)
-                old_user_emails.send_activation_email(user=user, token=token)
-            else:
-                user_emails.accepted_as_beneficiary_email.send_accepted_as_beneficiary_email(user=user)
 
 
 create_beneficiary_from_application = CreateBeneficiaryFromApplication()

@@ -10,8 +10,9 @@ from pcapi.models.feature import FeatureToggle
 
 
 def get_accepted_as_beneficiary_email_data(user: User) -> Union[dict, SendinblueTransactionalEmailData]:
-    if user.has_active_deposit is None:
+    if not user.has_active_deposit:
         raise ValueError("Beneficiary should have a deposit")
+
     deposit_amount = user.deposit.amount
 
     if not FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS.is_active():
@@ -57,6 +58,7 @@ def send_accepted_as_beneficiary_email(user: User) -> bool:
     else:
         data = None
 
-    if data:
-        return mails.send(recipients=[user.email], data=data, send_with_sendinblue=True)
-    return False
+    if not data:
+        return False
+
+    return mails.send(recipients=[user.email], data=data, send_with_sendinblue=True)
