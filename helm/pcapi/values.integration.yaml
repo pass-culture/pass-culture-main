@@ -466,6 +466,8 @@ secrets:
     version: 2
   - name: ALGOLIA_APPLICATION_ID
     version: 2
+  - name: ALLOCINE_API_KEY
+    version: 1
   - name: BATCH_SECRET_API_KEY
     version: 1
   - name: BLACKLISTED_SMS_RECIPIENTS
