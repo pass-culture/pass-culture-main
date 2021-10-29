@@ -11,32 +11,14 @@ import {
   isFieldReadOnlyForSynchronizedOffer,
   isSynchronizedOffer,
 } from 'components/pages/Offers/domain/localProvider'
-import { getDisabilityComplianceValues } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/AccessibilityCheckboxList'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 
-import {
-  DEFAULT_FORM_VALUES,
-  EDITED_OFFER_READ_ONLY_FIELDS,
-} from '../_constants'
+import { DEFAULT_FORM_VALUES, EDITED_OFFER_READ_ONLY_FIELDS } from '../_constants'
 import OfferForm from '../OfferForm'
-
-
-const computeNoDisabilityComplianceValue = offer => {
-  const disabilityCompliantValues = [
-    offer.audioDisabilityCompliant,
-    offer.mentalDisabilityCompliant,
-    offer.motorDisabilityCompliant,
-    offer.visualDisabilityCompliant,
-  ]
-
-  const unknownDisabilityCompliance = disabilityCompliantValues.includes(null)
-  const hasDisabilityCompliance = disabilityCompliantValues.includes(true)
-  if (hasDisabilityCompliance || unknownDisabilityCompliance) {
-    return false
-  }
-
-  return true
-}
+import {
+  checkHasNoDisabilityCompliance,
+  getAccessibilityValues,
+} from '../OfferForm/AccessibilityCheckboxList'
 
 const OfferEdition = ({
   categories,
@@ -67,8 +49,8 @@ const OfferEdition = ({
         return { ...acc, [field]: DEFAULT_FORM_VALUES[field] }
       }, {})
 
-      const offerAccessibility = getDisabilityComplianceValues(offer)
-      const venueAccessibility = getDisabilityComplianceValues(offer.venue)
+      const offerAccessibility = getAccessibilityValues(offer)
+      const venueAccessibility = getAccessibilityValues(offer.venue)
       if (
         Object.values(offerAccessibility).includes(null) &&
         !Object.values(venueAccessibility).includes(null)
@@ -82,7 +64,7 @@ const OfferEdition = ({
 
       initialValues.subcategoryId = offer.subcategoryId
       initialValues.offererId = offer.venue.managingOffererId
-      initialValues.noDisabilityCompliant = computeNoDisabilityComplianceValue(offer)
+      initialValues.noDisabilityCompliant = checkHasNoDisabilityCompliance(offer)
 
       return initialValues
     }
