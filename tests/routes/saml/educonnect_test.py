@@ -48,6 +48,15 @@ class EduconnectTest:
         user, request_id = self.connect_to_educonnect(client, app)
         assert int(app.redis_client.get(f"{self.request_id_key_prefix}{request_id}")) == user.id
 
+    def test_educonnect_login_no_redirect(self, client):
+        users_factories.UserFactory(email=self.email)
+        access_token = create_access_token(identity=self.email)
+        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        response = client.get("/saml/educonnect/login?redirect=false")
+
+        assert response.status_code == 200
+        assert response.headers["educonnect-redirect"].startswith("https://pr4.educonnect.phm.education.gouv.fr/idp")
+
     @override_settings(IS_PROD=True)
     @override_settings(API_URL_FOR_EDUCONNECT="https://backend.passculture.app")
     def test_get_educonnect_login_production(self, client, app):
