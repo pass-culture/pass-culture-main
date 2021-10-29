@@ -85,19 +85,13 @@ def _ensure_new_password_is_strong_enough(field_name: str, field_value: str, err
     at_least_one_lowercase = "(?=.*?[a-z])"
     at_least_one_digit = "(?=.*?[0-9])"
     min_length = ".{12,}"
-    at_least_one_special_char = "(?=.*?[#~|=;:,+><?!@$%^&*_.-])"
 
-    regex = (
-        "^"
-        + at_least_one_uppercase
-        + at_least_one_lowercase
-        + at_least_one_digit
-        + at_least_one_special_char
-        + min_length
-        + "$"
-    )
+    regex = "^" + at_least_one_uppercase + at_least_one_lowercase + at_least_one_digit + min_length + "$"
 
-    if not re.match(regex, field_value):
+    # Special characters: !"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~
+    at_least_one_special_char = len(set(field_value).intersection(set(string.punctuation))) > 0
+
+    if not re.match(regex, field_value) or not at_least_one_special_char:
         errors.add_error(
             field_name,
             "Ton mot de passe doit contenir au moins :\n"

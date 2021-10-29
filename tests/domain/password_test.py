@@ -170,6 +170,17 @@ class EnsureNewPasswordIsStrongEnoughTest:
             ";v4l1dP455sw0rd",
             ",v4l1dP455sw0rd",
             ".v4l1dP455sw0rd",
+            "{v4l1dP455sw0rd",
+            "}v4l1dP455sw0rd",
+            "(v4l1dP455sw0rd",
+            ")v4l1dP455sw0rd",
+            "\\v4l1dP455sw0rd",
+            "/v4l1dP455sw0rd",
+            '"v4l1dP455sw0rd',
+            "'v4l1dP455sw0rd",
+            "[v4l1dP455sw0rd",
+            "]v4l1dP455sw0rd",
+            "`v4l1dP455sw0rd",
         ],
     )
     def test_should_not_add_errors_when_password_is_valid(self, newPassword):
