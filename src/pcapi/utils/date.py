@@ -83,10 +83,6 @@ class DateTimes:
         return self.datetimes == other.datetimes
 
 
-def strftime(date) -> str:
-    return date.strftime(DATE_ISO_FORMAT)
-
-
 def match_format(value: str, fmt: str) -> str:
     try:
         datetime.strptime(value, fmt)
