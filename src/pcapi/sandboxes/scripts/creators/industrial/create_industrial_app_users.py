@@ -10,11 +10,14 @@ from dateutil.relativedelta import relativedelta
 from faker import Faker
 from freezegun import freeze_time
 
+from pcapi.core.bookings import factories as bookings_factory
 from pcapi.core.payments.conf import GRANT_18_VALIDITY_IN_YEARS
 from pcapi.core.payments.models import DepositType
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.models import TokenType
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 
 
@@ -288,6 +291,22 @@ def create_short_email_beneficiaries() -> dict:
                     needsToFillCulturalSurvey=False,
                 )
             )
+
+            beneficiary_and_exunderage = users_factories.UnderageBeneficiaryFactory(
+                email="bene_18_exunderage@example.com",
+                dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=15, months=5),
+                subscription_age=15,
+                firstName=fake.first_name(),
+                lastName=fake.last_name(),
+                needsToFillCulturalSurvey=False,
+            )
+            db.session.execute("ALTER TABLE booking DISABLE TRIGGER booking_update;")
+            bookings_factory.IndividualBookingFactory(individualBooking__user=beneficiary_and_exunderage)
+            db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
+
+        subscription_api.activate_beneficiary(beneficiary_and_exunderage, "sandbox")
+        users.append(beneficiary_and_exunderage)
+
     with freeze_time(datetime.utcnow() - relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, months=5)):
         users.append(
             users_factories.BeneficiaryGrant18Factory(
