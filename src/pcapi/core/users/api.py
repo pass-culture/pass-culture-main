@@ -2,6 +2,7 @@ from contextlib import contextmanager
 from dataclasses import asdict
 from datetime import date
 from datetime import datetime
+from datetime import time
 from datetime import timedelta
 from decimal import Decimal
 from enum import Enum
@@ -349,7 +350,8 @@ def update_user_information_from_external_source(
     elif isinstance(data, fraud_models.EduconnectContent):
         user.firstName = data.first_name
         user.lastName = data.last_name
-        user.dateOfBirth = data.birth_date
+        user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0))
+        user.ineHash = data.ine_hash
 
     # update user fields to be correctly initialized
     user.hasSeenTutorials = False

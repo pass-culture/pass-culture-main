@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
@@ -1177,14 +1178,19 @@ class BeneficairyInformationUpdateTest:
         user = UserFactory(
             firstName=None,
             lastName=None,
-            dateOfBirth=None,
         )
-        educonnect_data = fraud_factories.EduconnectContentFactory()
+        educonnect_data = fraud_factories.EduconnectContentFactory(
+            first_name="Raoul",
+            last_name="Dufy",
+            birth_date=date(2000, 5, 1),
+            ine_hash="identifiantnati0naleleve",
+        )
         new_user = users_api.update_user_information_from_external_source(user, educonnect_data)
 
-        assert new_user.firstName == educonnect_data.first_name
-        assert new_user.lastName == educonnect_data.last_name
-        assert new_user.dateOfBirth == educonnect_data.birth_date
+        assert new_user.firstName == "Raoul"
+        assert new_user.lastName == "Dufy"
+        assert new_user.dateOfBirth == datetime(2000, 5, 1, 0, 0)
+        assert new_user.ineHash == "identifiantnati0naleleve"
 
     def test_update_user_information_from_jouve_empty_source(self):
         user = UserFactory(activity="Etudiant", postalCode="75001")
