@@ -108,56 +108,24 @@ class EduconnectTest:
             "user_email": self.email,
         }
 
-        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).one_or_none() is not None
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            user=user, type=fraud_models.FraudCheckType.EDUCONNECT
+        ).one()
 
-    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
-    def test_complete_educonnect_beneficiary_activation(self, mock_get_educonnect_user, client, app, caplog):
-        # the user initiates an educonnect login
-        user, request_id = self.connect_to_educonnect(client, app)
-
-        # Then Educonnect will call /saml/acs
-        educonnect_user = users_factories.EduconnectUserFactory(
-            first_name="Lucy", last_name="Ellingson", saml_request_id=request_id
-        )
-        mock_get_educonnect_user.return_value = educonnect_user
-
-        with caplog.at_level(logging.INFO):
-            response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
-
-        assert response.status_code == 302
-
-        assert (
-            fraud_models.BeneficiaryFraudCheck.query.filter_by(
-                user=user, type=fraud_models.FraudCheckType.EDUCONNECT
-            ).one_or_none()
-            is not None
-        )
-        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
-
-        beneficiary_import = BeneficiaryImport.query.filter_by(beneficiaryId=user.id).one_or_none()
-        assert beneficiary_import is not None
-        assert beneficiary_import.currentStatus == ImportStatus.CREATED
-        assert user.firstName == "Lucy"
-        assert user.lastName == "Ellingson"
-        assert user.dateOfBirth == datetime.datetime.combine(
-            datetime.datetime.today() - relativedelta(years=15, months=1), datetime.time(0, 0)
-        )
-
-        access_token = create_access_token(identity=user.email)
-
-        client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        profile_data = {
-            "address": "1 rue des rues",
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activity": "Lycéen",
+        assert fraud_check.resultContent == {
+            "birth_date": "2006-08-18",
+            "educonnect_id": "e6759833fb379e0340322889f2a367a5a5150f1533f80dfe963d21e43e33f7164b76cc802766cdd33c6645e1abfd1875",
+            "first_name": "Max",
+            "ine_hash": "5ba682c0fc6a05edf07cd8ed0219258f",
+            "last_name": "SENS",
         }
-
-        response = client.patch("/native/v1/beneficiary_information", profile_data)
-
-        assert user.roles == [user_models.UserRole.UNDERAGE_BENEFICIARY]
-        assert user.deposit.amount == 20
+        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
+        beneficiary_import = BeneficiaryImport.query.filter_by(beneficiaryId=user.id).one_or_none()
+        assert beneficiary_import.currentStatus == ImportStatus.CREATED
+        assert user.firstName == "Max"
+        assert user.lastName == "SENS"
+        assert user.dateOfBirth == datetime.datetime(2006, 8, 18, 0, 0)
+        assert user.ineHash == "5ba682c0fc6a05edf07cd8ed0219258f"
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
     def test_educonnect_redirects_to_success_page_with_waning_log(self, mock_get_educonnect_user, client, app, caplog):
