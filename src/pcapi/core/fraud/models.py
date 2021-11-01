@@ -180,6 +180,7 @@ class FraudReasonCode(enum.Enum):
     ALREADY_BENEFICIARY = "already_beneficiary"
     AGE_NOT_VALID = "age_is_not_valid"
     DUPLICATE_USER = "duplicate_user"
+    DUPLICATE_INE = "duplicate_ine"
     INE_NOT_WHITELISTED = "ine_not_whitelisted"
 
 

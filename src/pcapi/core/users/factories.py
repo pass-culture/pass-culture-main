@@ -309,5 +309,5 @@ class EduconnectUserFactory(factory.Factory):
     first_name = factory.Faker("first_name")
     logout_url = "https://educonnect.education.gouv.fr/Logout"
     saml_request_id = factory.Faker("lexify", text="id-?????????????????")
-    ine_hash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
+    ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
     student_level = "2212"

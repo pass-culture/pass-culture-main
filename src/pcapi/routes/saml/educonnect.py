@@ -91,6 +91,9 @@ def on_educonnect_authentication_response() -> Response:
         )
         error_query_param = {"code": "UserAgeNotValid"}
         return redirect(error_page_base_url + urlencode(error_query_param), code=302)
+    except fraud_exceptions.NotWhitelistedINE:
+        error_query_param = {"code": "UserNotWhitelisted"}
+        return redirect(error_page_base_url + urlencode(error_query_param), code=302)
     except fraud_exceptions.UserAlreadyBeneficiary:
         logger.warning(
             "User already beneficiary",

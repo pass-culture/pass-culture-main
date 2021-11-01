@@ -526,6 +526,8 @@ secrets:
     version: 1
   - name: USER_PROFILING_API_KEY
     version: 1
+  - name: WHITELISTED_INE_HASHES
+    version: 1
   - name: APPS_FLYER_ANDROID_API_KEY
     version: 1
   - name: APPS_FLYER_IOS_API_KEY

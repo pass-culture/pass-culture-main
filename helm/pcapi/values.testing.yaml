@@ -569,6 +569,8 @@ secrets:
     version: 2
   - name: WHITELISTED_EMAIL_RECIPIENTS
     version: 1
+  - name: WHITELISTED_INE_HASHES
+    version: 1
   - name: WHITELISTED_SMS_RECIPIENTS
     version: 3
   - name: REPORT_OFFER_EMAIL_ADDRESS

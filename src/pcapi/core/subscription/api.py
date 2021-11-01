@@ -112,6 +112,9 @@ def create_beneficiary_import(user: users_models.User) -> None:
     if fraud_models.FraudReasonCode.AGE_NOT_VALID in fraud_ko_reasons:
         raise fraud_exceptions.UserAgeNotValid()
 
+    if fraud_models.FraudReasonCode.INE_NOT_WHITELISTED in fraud_ko_reasons:
+        raise fraud_exceptions.NotWhitelistedINE()
+
     if fraud_check.type != fraud_models.FraudCheckType.EDUCONNECT:
         raise NotImplementedError()
 

@@ -8,6 +8,7 @@ import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.testing import override_features
+from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models import db
@@ -473,34 +474,44 @@ class EduconnectFraudTest:
         }
         assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
 
-    @pytest.mark.parametrize(
-        "age,expected_fraud_check_status",
-        [
-            (14, fraud_models.FraudStatus.KO),
-            (18, fraud_models.FraudStatus.KO),
-            (15, fraud_models.FraudStatus.OK),
-            (16, fraud_models.FraudStatus.OK),
-            (17, fraud_models.FraudStatus.OK),
-        ],
-    )
-    def test_educonnect_age_fraud_check(self, age, expected_fraud_check_status):
+    @pytest.mark.parametrize("age", [14, 18])
+    def test_age_fraud_check_ko(self, age):
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
             resultContent=fraud_factories.EduconnectContentFactory(age=age),
         )
         result = fraud_api.educonnect_fraud_checks(beneficiary_fraud_check=fraud_check)
-        assert len(result) == 3
-        assert result[1].status == expected_fraud_check_status
-        if expected_fraud_check_status == fraud_models.FraudStatus.KO:
-            assert (
-                result[1].detail
-                == f"L'age de l'utilisateur est invalide ({age} ans). Il devrait être parmi [15, 16, 17]"
-            )
-        else:
-            assert result[1].detail == f"L'age de l'utilisateur est valide ({age} ans)."
+
+        age_check = next(
+            fraud_check
+            for fraud_check in result
+            if fraud_check.reason_code == fraud_models.FraudReasonCode.AGE_NOT_VALID
+        )
+        assert age_check.status == fraud_models.FraudStatus.KO
+        assert (
+            age_check.detail == f"L'age de l'utilisateur est invalide ({age} ans). Il devrait être parmi [15, 16, 17]"
+        )
+
+    @pytest.mark.parametrize("age", [15, 16, 17])
+    def test_age_fraud_check_ok(self, age):
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            resultContent=fraud_factories.EduconnectContentFactory(age=age),
+        )
+        result = fraud_api.educonnect_fraud_checks(beneficiary_fraud_check=fraud_check)
+
+        age_check = next(
+            (
+                fraud_check
+                for fraud_check in result
+                if fraud_check.reason_code == fraud_models.FraudReasonCode.AGE_NOT_VALID
+            ),
+            None,
+        )
+        assert not age_check
 
     @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
-    def test_educonnect_duplicates_fraud_checks(self):
+    def test_duplicates_fraud_checks(self):
         already_existing_user = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
@@ -512,14 +523,17 @@ class EduconnectFraudTest:
         )
         result = fraud_api.educonnect_fraud_checks(fraud_check)
 
-        assert len(result) == 3
-        assert result[0].status == fraud_models.FraudStatus.SUSPICIOUS
-        assert result[0].detail == f"Duplicat de l'utilisateur {already_existing_user.id}"
-        assert result[1].status == fraud_models.FraudStatus.OK
-        assert result[1].detail == "L'age de l'utilisateur est valide (15 ans)."
+        duplicate_check = next(
+            fraud_check
+            for fraud_check in result
+            if fraud_check.reason_code == fraud_models.FraudReasonCode.DUPLICATE_USER
+        )
+
+        assert duplicate_check.status == fraud_models.FraudStatus.SUSPICIOUS
+        assert duplicate_check.detail == f"Duplicat de l'utilisateur {already_existing_user.id}"
 
     @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
-    def test_educonnect_ine_duplicates_fraud_checks(self):
+    def test_ine_duplicates_fraud_checks(self):
         same_ine_user = users_factories.UnderageBeneficiaryFactory(ineHash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
@@ -527,8 +541,48 @@ class EduconnectFraudTest:
         )
         result = fraud_api.educonnect_fraud_checks(fraud_check)
 
-        assert result[2].status == fraud_models.FraudStatus.SUSPICIOUS
+        duplicate_ine_check = next(
+            fraud_check
+            for fraud_check in result
+            if fraud_check.reason_code == fraud_models.FraudReasonCode.DUPLICATE_INE
+        )
+        assert duplicate_ine_check.status == fraud_models.FraudStatus.SUSPICIOUS
         assert (
-            result[2].detail
+            duplicate_ine_check.detail
             == f"L'INE ylwavk71o3jiwyla83fxk5pcmmu0ws01 est déjà pris par l'utilisateur {same_ine_user.id}"
         )
+
+    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
+    @override_settings(WHITELISTED_INE_HASHES=["identifiantWhitelisté1"])
+    def test_ine_whitelisted_fraud_checks_pass(self):
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            resultContent=fraud_factories.EduconnectContentFactory(ine_hash="identifiantWhitelisté1"),
+        )
+        result = fraud_api.educonnect_fraud_checks(fraud_check)
+
+        duplicate_ine_check = next(
+            (
+                fraud_check
+                for fraud_check in result
+                if fraud_check.reason_code == fraud_models.FraudReasonCode.INE_NOT_WHITELISTED
+            ),
+            None,
+        )
+        assert duplicate_ine_check is None
+
+    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
+    @override_settings(WHITELISTED_INE_HASHES=["identifiantWhitelisté1"])
+    def test_ine_whitelisted_fraud_checks_fail(self):
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            resultContent=fraud_factories.EduconnectContentFactory(ine_hash="identifiantWhitelisté2"),
+        )
+        result = fraud_api.educonnect_fraud_checks(fraud_check)
+
+        duplicate_ine_check = next(
+            fraud_check
+            for fraud_check in result
+            if fraud_check.reason_code == fraud_models.FraudReasonCode.INE_NOT_WHITELISTED
+        )
+        assert duplicate_ine_check.status == fraud_models.FraudStatus.SUSPICIOUS

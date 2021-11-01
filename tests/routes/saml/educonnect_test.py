@@ -9,6 +9,7 @@ from flask_jwt_extended.utils import create_access_token
 import pytest
 
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
@@ -128,7 +129,7 @@ class EduconnectTest:
         assert user.ineHash == "5ba682c0fc6a05edf07cd8ed0219258f"
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
-    def test_educonnect_redirects_to_success_page_with_waning_log(self, mock_get_educonnect_user, client, app, caplog):
+    def test_educonnect_redirects_to_success_page_with_warning_log(self, mock_get_educonnect_user, client, app, caplog):
         user, request_id = self.connect_to_educonnect(client, app)
         educonnect_user = users_factories.EduconnectUserFactory(saml_request_id=request_id)
         mock_get_educonnect_user.return_value = educonnect_user
@@ -144,7 +145,6 @@ class EduconnectTest:
             response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
-        print(response.location)
         assert response.location.startswith("https://webapp-v2.example.com/idcheck/validation")
         assert caplog.messages == ["Fraud suspicion after Educonnect authentication: "]
         assert caplog.records[0].extra == {"userId": user.id, "educonnectId": educonnect_user.educonnect_id}
@@ -203,3 +203,31 @@ class EduconnectTest:
         assert user.dateOfBirth == datetime.datetime.combine(
             datetime.date.today() - relativedelta(years=age, months=1), datetime.time(0, 0)
         )
+
+    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    def test_educonnect_ine_not_whitelisted(self, mock_get_educonnect_user, client, app):
+        _, request_id = self.connect_to_educonnect(client, app)
+        mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
+            saml_request_id=request_id, ine_hash="identifiantNonWhitlisté"
+        )
+
+        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+
+        assert response.status_code == 302
+        assert response.location.startswith(
+            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserNotWhitelisted"
+        )
+
+    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
+    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    def test_educonnect_ine_whitelist_filter_off(self, mock_get_educonnect_user, client, app):
+        user, request_id = self.connect_to_educonnect(client, app)
+        mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
+            saml_request_id=request_id, ine_hash="identifiantNonWhitlisté"
+        )
+
+        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+
+        assert response.status_code == 302
+        assert response.location.startswith("https://webapp-v2.example.com/idcheck/validation")
+        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK

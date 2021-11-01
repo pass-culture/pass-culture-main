@@ -76,6 +76,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
     PAUSE_JOUVE_SUBSCRIPTION = "Mettre en pause les inscriptions depuis JOUVE"
     IMPROVE_BOOKINGS_PERF = "Améliore les performances pour la page pro des réservations"
+    ENABLE_INE_WHITELIST_FILTER = "Active le filtre sur les INE whitelistés"
 
     def is_active(self) -> bool:
         if flask.has_request_context():

@@ -20,3 +20,7 @@ class UserAgeNotValid(FraudException):
 
 class DuplicateUser(FraudException):
     pass
+
+
+class NotWhitelistedINE(FraudException):
+    pass

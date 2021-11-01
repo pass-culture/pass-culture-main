@@ -7,6 +7,7 @@ from typing import Union
 from dateutil.relativedelta import relativedelta
 import sqlalchemy
 
+from pcapi import settings
 from pcapi.connectors.beneficiaries import jouve_backend
 from pcapi.core.users import constants
 from pcapi.core.users import models as user_models
@@ -128,6 +129,9 @@ def educonnect_fraud_checks(beneficiary_fraud_check: models.BeneficiaryFraudChec
     )
     fraud_items.append(_underage_user_fraud_item(educonnect_content.birth_date))
     fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash))
+    if FeatureToggle.ENABLE_INE_WHITELIST_FILTER.is_active():
+        fraud_items.append(_whitelisted_ine_fraud_item(educonnect_content.ine_hash))
+
     return fraud_items
 
 
@@ -223,7 +227,7 @@ def _duplicate_user_fraud_item(first_name: str, last_name: str, birth_date: date
     return models.FraudItem(
         status=models.FraudStatus.SUSPICIOUS if duplicate_user else models.FraudStatus.OK,
         detail=f"Duplicat de l'utilisateur {duplicate_user.id}" if duplicate_user else None,
-        reason_code=models.FraudReasonCode.DUPLICATE_USER,
+        reason_code=models.FraudReasonCode.DUPLICATE_USER if duplicate_user else None,
     )
 
 
@@ -242,6 +246,18 @@ def _duplicate_ine_hash_fraud_item(ine_hash: str) -> models.FraudItem:
     return models.FraudItem(
         status=models.FraudStatus.SUSPICIOUS if duplicate_user else models.FraudStatus.OK,
         detail=f"L'INE {ine_hash} est déjà pris par l'utilisateur {duplicate_user.id}" if duplicate_user else None,
+        reason_code=models.FraudReasonCode.DUPLICATE_INE if duplicate_user else None,
+    )
+
+
+def _whitelisted_ine_fraud_item(ine_hash: str) -> models.FraudItem:
+    is_ine_whitelisted = ine_hash in settings.WHITELISTED_INE_HASHES
+
+    return models.FraudItem(
+        # TODO: ask if it is considered as KO or SUSPICIOUS
+        status=models.FraudStatus.OK if is_ine_whitelisted else models.FraudStatus.SUSPICIOUS,
+        detail=f"L'INE {ine_hash} n'est pas whitelisté" if not is_ine_whitelisted else None,
+        reason_code=models.FraudReasonCode.INE_NOT_WHITELISTED if not is_ine_whitelisted else None,
     )
 
 
@@ -321,7 +337,10 @@ def _get_threshold_id_fraud_item(
 def _underage_user_fraud_item(birth_date: datetime.date):
     age = relativedelta(datetime.date.today(), birth_date).years
     if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
-        return models.FraudItem(status=models.FraudStatus.OK, detail=f"L'age de l'utilisateur est valide ({age} ans).")
+        return models.FraudItem(
+            status=models.FraudStatus.OK,
+            detail=f"L'age de l'utilisateur est valide ({age} ans).",
+        )
     return models.FraudItem(
         status=models.FraudStatus.KO,
         detail=f"L'age de l'utilisateur est invalide ({age} ans). Il devrait être parmi {constants.ELIGIBILITY_UNDERAGE_RANGE}",
