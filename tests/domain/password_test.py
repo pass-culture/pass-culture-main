@@ -179,18 +179,21 @@ class EnsureNewPasswordIsStrongEnoughTest:
             '"v4l1dP455sw0rd',
             "'v4l1dP455sw0rd",
             "[v4l1dP455sw0rd",
-            "]v4l1dP455sw0rd",
             "`v4l1dP455sw0rd",
         ],
     )
     def test_should_not_add_errors_when_password_is_valid(self, newPassword):
-        # given
         api_errors = ApiErrors()
 
-        # when
         _ensure_new_password_is_strong_enough("newPassword", newPassword, api_errors)
 
-        # then
+        assert not api_errors.errors
+
+    def test_should_not_add_errors_when_password_is_valid_2(self):
+        api_errors = ApiErrors()
+
+        _ensure_new_password_is_strong_enough("newPassword", "]v4l1dP455sw0rd", api_errors)
+
         assert not api_errors.errors
 
     @pytest.mark.parametrize(
