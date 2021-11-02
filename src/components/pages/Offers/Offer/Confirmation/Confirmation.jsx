@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
@@ -42,7 +42,8 @@ const Confirmation = ({ isCreatingOffer, location, offer, setOffer }) => {
             Offre en cours de validation
           </h2>
           <p className="oc-details">
-            Votre offre est en cours de validation par l’équipe du pass Culture. Vous recevrez un e-mail de confirmation une fois votre offre validée et disponible à la réservation.
+            Votre offre est en cours de validation par l’équipe du pass Culture. Vous recevrez un
+            e-mail de confirmation une fois votre offre validée et disponible à la réservation.
           </p>
         </div>
       ) : (
@@ -58,7 +59,7 @@ const Confirmation = ({ isCreatingOffer, location, offer, setOffer }) => {
       )}
       <div className="oc-actions">
         <OfferPreviewLink
-          mediationId={offer.activeMediation ? offer.activeMediation.id : null}
+          nonHumanizedOfferId={offer.nonHumanizedId}
           offerId={offer.id}
         />
         <Link
