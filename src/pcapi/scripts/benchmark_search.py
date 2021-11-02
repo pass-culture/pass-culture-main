@@ -49,7 +49,7 @@ APPSEARCH_API_KEY = os.environ["APPSEARCH_API_KEY"]
 APPSEARCH_HOST = os.environ["APPSEARCH_HOST"].rstrip("/")
 APPSEARCH_ENGINE_NAME = "offers-meta"
 
-OFFER_URL = "https://app.passculture.beta.gouv.fr/accueil/details/{human_id}"
+OFFER_URL = "https://web.passculture.app/accueil/details/{human_id}"
 TZ = pytz.timezone("Europe/Paris")
 
 SLOW_QUERY_THRESHOLD = 1
