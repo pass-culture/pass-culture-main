@@ -20,6 +20,7 @@ export const offerFactory = (
     isEvent: false,
     isFullyBooked: false,
     isThing: true,
+    nonHumanizedId: currentOfferId,
     status: 'ACTIVE',
     stocks,
     venue: customVenue,

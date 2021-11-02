@@ -1,6 +1,6 @@
 /*
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import { act, render } from '@testing-library/react'
 import React from 'react'
@@ -11,8 +11,8 @@ import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutConta
 import { configureTestStore } from 'store/testUtils'
 import routes from 'utils/routes_map'
 
-export const renderOffer = async initialEntries => {
-  const store = configureTestStore({
+export const renderOffer = async (initialEntries, store) => {
+  const defaultStore = configureTestStore({
     data: { users: [{ email: 'email@example.com', publicName: 'François', isAdmin: false }] },
   })
   let path = ''
@@ -25,7 +25,7 @@ export const renderOffer = async initialEntries => {
 
   await act(async () => {
     await render(
-      <Provider store={store}>
+      <Provider store={store ? store : defaultStore}>
         <MemoryRouter initialEntries={[{ ...initialEntries }]}>
           <Route path={path}>
             <OfferLayoutContainer />

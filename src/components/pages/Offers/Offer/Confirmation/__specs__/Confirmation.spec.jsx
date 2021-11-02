@@ -6,6 +6,7 @@ import '@testing-library/jest-dom'
 import { screen } from '@testing-library/react'
 
 import { renderOffer } from 'components/pages/Offers/Offer/__specs__/render'
+import { configureTestStore } from 'store/testUtils'
 import { offerFactory } from 'utils/apiFactories'
 import { loadFakeApiOffer } from 'utils/fakeApi'
 
@@ -68,6 +69,34 @@ describe('confirmation page', () => {
     expect(screen.getByText('Créer une nouvelle offre', { selector: 'a' })).toHaveAttribute(
       'href',
       '/offres/creation'
+    )
+  })
+
+  it('should display right preview link when feature flip is active', async () => {
+    // Given
+    const store = configureTestStore({
+      features: {
+        list: [
+          {
+            isActive: true,
+            name: 'WEBAPP_V2_ENABLED',
+            nameKey: 'WEBAPP_V2_ENABLED',
+          },
+        ],
+      },
+    })
+
+    const offer = offerFactory({ name: 'mon offre', status: 'DRAFT' })
+    loadFakeApiOffer(offer)
+
+    // When
+    await renderOffer({ pathname: `/offres/${offer.id}/confirmation` }, store)
+
+    // Then
+
+    expect(screen.getByText('Prévisualiser dans l’app', { selector: 'a' })).toHaveAttribute(
+      'href',
+      `http://localhost/offre/${offer.nonHumanizedId}`
     )
   })
 
