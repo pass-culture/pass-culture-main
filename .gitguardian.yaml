@@ -1,0 +1,6 @@
+# Ignore security incidents with the SHA256 of the occurrence obtained at output or the secret itself
+matches-ignore:
+  - name: Batch SDK API key for Android
+    match: 947430e70e301c007d6108cf9ee944591d2c1ad20292cfeaa2f965fa3726f116
+  - name: Batch SDK API key for iOS
+    match: 813fe86f73c021251acb0853c17f1e505ab38e19311363e1f55bbaa86b41cf05
