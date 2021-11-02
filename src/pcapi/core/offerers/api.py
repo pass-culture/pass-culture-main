@@ -19,7 +19,7 @@ from pcapi.core.offerers.repository import find_offerer_by_siren
 from pcapi.core.offerers.repository import find_offerer_by_validation_token
 from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
 from pcapi.core.users.models import User
-from pcapi.core.users.repository import get_user_with_validated_attachment_by_offerer
+from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.pro_emails import send_attachment_validation_email_to_pro_offerer
 from pcapi.domain.pro_emails import send_validation_confirmation_email_to_pro
@@ -227,13 +227,14 @@ def validate_offerer(token: str) -> None:
     if offerer is None:
         raise ValidationTokenNotFoundError()
 
-    applicant = get_user_with_validated_attachment_by_offerer(offerer)
+    applicants = get_users_with_validated_attachment_by_offerer(offerer)
     offerer.validationToken = None
     offerer.dateValidated = datetime.utcnow()
-    applicant.add_pro_role()
+    for applicant in applicants:
+        applicant.add_pro_role()
     managed_venues = offerer.managedVenues
 
-    repository.save(offerer)
+    repository.save(offerer, *applicants)
     search.async_index_offers_of_venue_ids([venue.id for venue in managed_venues])
 
     try:

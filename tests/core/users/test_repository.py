@@ -10,7 +10,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import repository
-from pcapi.core.users.repository import get_user_with_validated_attachment_by_offerer
+from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer
 from pcapi.domain.favorite.favorite import FavoriteDomain
 
 
@@ -182,7 +182,8 @@ class GetApplicantOfOffererUnderValidationTest:
         )
 
         # When
-        applicant_found = get_user_with_validated_attachment_by_offerer(applied_offerer)
+        applicants_found = get_users_with_validated_attachment_by_offerer(applied_offerer)
 
         # Then
-        assert applicant_found.id == applicant.id
+        assert len(applicants_found) == 1
+        assert applicants_found[0].id == applicant.id

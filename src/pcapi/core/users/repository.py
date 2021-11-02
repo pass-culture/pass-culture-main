@@ -172,9 +172,9 @@ def does_validated_phone_exist(phone_number: str):
     return bool(User.query.filter(User.phoneNumber == phone_number, User.is_phone_validated).count())
 
 
-def get_user_with_validated_attachment_by_offerer(offerer: Offerer) -> User:
+def get_users_with_validated_attachment_by_offerer(offerer: Offerer) -> User:
     return (
         User.query.join(UserOfferer)
         .filter(UserOfferer.validationToken.is_(None), UserOfferer.offererId == offerer.id)
-        .one()
+        .all()
     )
