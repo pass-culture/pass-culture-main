@@ -190,6 +190,11 @@ def on_identity_fraud_check_result(
         fraud_items += educonnect_fraud_checks(beneficiary_fraud_check)
 
     fraud_result = validate_frauds(user, fraud_items)
+    if (
+        beneficiary_fraud_check.type == models.FraudCheckType.JOUVE
+        and FeatureToggle.PAUSE_JOUVE_SUBSCRIPTION.is_active()
+    ):
+        fraud_result.status = models.FraudStatus.SUBSCRIPTION_ON_HOLD
     repository.save(fraud_result)
     return fraud_result
 
@@ -453,7 +458,7 @@ def validate_frauds(user: user_models.User, fraud_items: list[models.FraudItem])
             fraud_result.status = status
     else:
         fraud_result = models.BeneficiaryFraudResult(
-            userId=user.id,
+            user=user,
             status=status,
         )
     fraud_result.reason = f" {FRAUD_RESULT_REASON_SEPARATOR} ".join(

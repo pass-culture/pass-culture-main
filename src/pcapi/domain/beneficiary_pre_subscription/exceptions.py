@@ -10,6 +10,10 @@ class BeneficiaryIsNotEligible(CantRegisterBeneficiary):
     pass
 
 
+class SubscriptionJourneyOnHold(CantRegisterBeneficiary):
+    pass
+
+
 class FraudDetected(CantRegisterBeneficiary):
     pass
 

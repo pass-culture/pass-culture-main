@@ -114,6 +114,27 @@ class JouveFraudCheckTest:
         db.session.refresh(user)
         assert not user.has_beneficiary_role
 
+    @override_features(PAUSE_JOUVE_SUBSCRIPTION=True)
+    @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
+    def test_jouve_subscription_journey_on_hold(self, _get_raw_content, client):
+        user = users_factories.UserFactory(
+            hasCompletedIdCheck=True,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE,
+            email=self.user_email,
+        )
+        _get_raw_content.return_value = self.JOUVE_CONTENT
+
+        response = client.post("/beneficiaries/application_update", json={"id": self.application_id})
+        assert response.status_code == 200
+
+        fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(user=user).first()
+
+        assert fraud_result.status == fraud_models.FraudStatus.SUBSCRIPTION_ON_HOLD
+
+        db.session.refresh(user)
+        assert not user.has_beneficiary_role
+
     @pytest.mark.parametrize("jouve_field", ["birthLocationCtrl", "bodyBirthDateCtrl", "bodyNameCtrl"])
     @pytest.mark.parametrize("wrong_possible_value", ["NOT_APPLICABLE", "KO"])
     def test_id_check_fraud_items_wrong_values_are_supiscious(self, jouve_field, wrong_possible_value):

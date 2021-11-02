@@ -7,6 +7,7 @@ from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsNotEligible
 from pcapi.domain.beneficiary_pre_subscription.exceptions import IdPieceNumberDuplicate
+from pcapi.domain.beneficiary_pre_subscription.exceptions import SubscriptionJourneyOnHold
 from pcapi.domain.beneficiary_pre_subscription.exceptions import SuspiciousFraudDetected
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository.user_queries import beneficiary_by_civility_query
@@ -91,11 +92,17 @@ def _check_id_piece_number_is_unique(beneficiary_pre_subscription: BeneficiaryPr
         raise IdPieceNumberDuplicate(f"id piece number n°{beneficiary_pre_subscription.id_piece_number} already taken")
 
 
+def _check_subscription_on_hold(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
+    if FeatureToggle.PAUSE_JOUVE_SUBSCRIPTION.is_active():
+        raise SubscriptionJourneyOnHold()
+
+
 def validate(
     beneficiary_pre_subscription: BeneficiaryPreSubscription,
     preexisting_account: User = None,
     ignore_id_piece_number_field: bool = False,
 ) -> None:
+    _check_subscription_on_hold(beneficiary_pre_subscription)
     _check_department_is_eligible(beneficiary_pre_subscription)
     if not preexisting_account:
         _check_email_is_not_taken(beneficiary_pre_subscription)

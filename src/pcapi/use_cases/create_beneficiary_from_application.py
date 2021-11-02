@@ -10,6 +10,7 @@ from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.exceptions import CantRegisterBeneficiary
 from pcapi.domain.beneficiary_pre_subscription.exceptions import FraudDetected
+from pcapi.domain.beneficiary_pre_subscription.exceptions import SubscriptionJourneyOnHold
 from pcapi.domain.beneficiary_pre_subscription.exceptions import SuspiciousFraudDetected
 from pcapi.domain.beneficiary_pre_subscription.fraud_validator import validate_fraud
 from pcapi.domain.beneficiary_pre_subscription.validator import validate
@@ -113,6 +114,8 @@ class CreateBeneficiaryFromApplication:
             old_user_emails.send_rejection_email_to_beneficiary_pre_subscription(
                 beneficiary_pre_subscription=beneficiary_pre_subscription, beneficiary_is_eligible=True
             )
+        except SubscriptionJourneyOnHold as exc:
+            logger.warning("User subscription is on hold", extra={"applicationId": application_id, "reason": exc})
         except CantRegisterBeneficiary as cant_register_beneficiary_exception:
             exception_reason = str(cant_register_beneficiary_exception)
             logger.warning(

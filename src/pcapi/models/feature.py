@@ -74,6 +74,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE = "Utiliser la nouvelle règle de détection d'utilisateur en doublon"
     ENFORCE_BANK_INFORMATION_WITH_SIRET = "Forcer les informations banquaires à être liées à un SIRET."
     ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
+    PAUSE_JOUVE_SUBSCRIPTION = "Mettre en pause les inscriptions depuis JOUVE"
     IMPROVE_BOOKINGS_PERF = "Améliore les performances pour la page pro des réservations"
 
     def is_active(self) -> bool:
@@ -125,6 +126,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENFORCE_BANK_INFORMATION_WITH_SIRET,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
     FeatureToggle.IMPROVE_BOOKINGS_PERF,
+    FeatureToggle.PAUSE_JOUVE_SUBSCRIPTION,
 )
 
 if not settings.IS_DEV:

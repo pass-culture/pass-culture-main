@@ -27,6 +27,7 @@ class FraudStatus(enum.Enum):
     OK = "OK"
     KO = "KO"
     SUSPICIOUS = "SUSPICIOUS"
+    SUBSCRIPTION_ON_HOLD = "SUBSCRIPTION_ON_HOLD"  # todo : find a name
 
 
 class FraudReviewStatus(enum.Enum):
