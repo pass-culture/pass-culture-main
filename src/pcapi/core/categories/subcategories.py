@@ -191,7 +191,7 @@ CARTE_CINE_MULTISEANCES = Subcategory(
     can_be_educational=False,
     online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
     is_digital_deposit=False,
-    is_physical_deposit=True,
+    is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
 CARTE_CINE_ILLIMITE = Subcategory(
@@ -209,7 +209,7 @@ CARTE_CINE_ILLIMITE = Subcategory(
     can_be_educational=False,
     online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
     is_digital_deposit=False,
-    is_physical_deposit=True,
+    is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
 SEANCE_CINE = Subcategory(
@@ -281,7 +281,7 @@ CINE_VENTE_DISTANCE = Subcategory(
     can_be_educational=False,
     online_offline_platform=OnlineOfflinePlatformChoices.ONLINE.value,
     is_digital_deposit=False,
-    is_physical_deposit=True,
+    is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
 
@@ -674,7 +674,7 @@ CARTE_MUSEE = Subcategory(
     can_be_educational=False,
     online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
     is_digital_deposit=False,
-    is_physical_deposit=True,
+    is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
 ABO_MUSEE = Subcategory(
@@ -692,7 +692,7 @@ ABO_MUSEE = Subcategory(
     can_be_educational=False,
     online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
     is_digital_deposit=False,
-    is_physical_deposit=True,
+    is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
 VISITE = Subcategory(
@@ -782,7 +782,7 @@ MUSEE_VENTE_DISTANCE = Subcategory(
     can_be_educational=False,
     online_offline_platform=OnlineOfflinePlatformChoices.ONLINE.value,
     is_digital_deposit=False,
-    is_physical_deposit=True,
+    is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
 # endregion
