@@ -221,7 +221,7 @@ describe('offerDetails - Edition', () => {
           )
           expect(errorNotification).toBeInTheDocument()
           let accessibilityErrorNotification = await screen.findByText(
-            'Vous devez cocher l’une des options ci-dessus'
+            'Veuillez cocher au moins une option ci-dessus'
           )
           expect(accessibilityErrorNotification).toBeInTheDocument()
           expect(pcapi.updateOffer).not.toHaveBeenCalled()

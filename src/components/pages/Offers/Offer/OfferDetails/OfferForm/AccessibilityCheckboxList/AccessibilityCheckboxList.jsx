@@ -8,7 +8,6 @@ import { ReactComponent as MentalDisabilitySvg } from 'icons/mental-disability.s
 import { ReactComponent as MotorDisabilitySvg } from 'icons/motor-disability.svg'
 import { ReactComponent as VisualDisabilitySvg } from 'icons/visual-disability.svg'
 
-
 export const getDisabilityComplianceValues = values => ({
   audioDisabilityCompliant: values.audioDisabilityCompliant,
   mentalDisabilityCompliant: values.mentalDisabilityCompliant,
@@ -116,7 +115,7 @@ const AccessibilityCheckboxList = ({ onChange, formValues, isInError, isDisabled
 
       {isInError && (
         <InputError>
-          Vous devez cocher l’une des options ci-dessus
+          Veuillez cocher au moins une option ci-dessus
         </InputError>
       )}
     </>
