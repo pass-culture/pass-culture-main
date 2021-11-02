@@ -11,6 +11,7 @@ import sqlalchemy.exc
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.payments import api as payments_api
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
 from pcapi.model_creators.generic_creators import create_offerer
@@ -260,6 +261,7 @@ class CalculateAgeTest:
         assert users_factories.UserFactory.build(dateOfBirth=datetime(1999, 5, 1)).age == 19
 
     @freeze_time("2018-06-01")
+    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=False)
     def test_eligibility_start_end_datetime_beneficiary(self):
         assert users_factories.UserFactory.build(dateOfBirth=None).eligibility_start_datetime is None
         assert users_factories.UserFactory.build(
@@ -270,18 +272,25 @@ class CalculateAgeTest:
         assert users_factories.UserFactory.build(
             dateOfBirth=datetime(2000, 6, 1, 5, 1)
         ).eligibility_end_datetime == datetime(2019, 6, 1, 0, 0)
+        assert users_factories.UserFactory.build(
+            dateOfBirth=datetime(2001, 6, 1, 5, 1)
+        ).eligibility_end_datetime == datetime(2020, 6, 1, 0, 0)
 
     @freeze_time("2018-06-01")
+    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_eligibility_start_end_datetime_underage_beneficiary(self):
         assert users_factories.UserFactory.build(dateOfBirth=None).eligibility_start_datetime is None
         assert users_factories.UserFactory.build(
-            dateOfBirth=datetime(2003, 6, 1, 5, 1)
-        ).eligibility_start_datetime == datetime(2018, 6, 1, 0, 0)
+            dateOfBirth=datetime(2000, 6, 1, 5, 1)
+        ).eligibility_start_datetime == datetime(2015, 6, 1, 0, 0)
 
         assert users_factories.UserFactory.build(dateOfBirth=None).eligibility_end_datetime is None
         assert users_factories.UserFactory.build(
-            dateOfBirth=datetime(2003, 6, 1, 5, 1)
-        ).eligibility_end_datetime == datetime(2021, 6, 1, 0, 0)
+            dateOfBirth=datetime(2000, 6, 1, 5, 1)
+        ).eligibility_end_datetime == datetime(2019, 6, 1, 0, 0)
+        assert users_factories.UserFactory.build(
+            dateOfBirth=datetime(2001, 6, 1, 5, 1)
+        ).eligibility_end_datetime == datetime(2019, 6, 1, 0, 0)
 
 
 @pytest.mark.usefixtures("db_session")

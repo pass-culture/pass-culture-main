@@ -354,10 +354,10 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @property
     def eligibility_start_datetime(self) -> Optional[datetime]:
-        if not self.dateOfBirth or not self.eligibility:
+        if not self.dateOfBirth:
             return None
 
-        if self.eligibility == EligibilityType.UNDERAGE:
+        if FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
             return datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
                 years=constants.ELIGIBILITY_UNDERAGE_RANGE[0]
             )
@@ -365,10 +365,10 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @property
     def eligibility_end_datetime(self) -> Optional[datetime]:
-        if not self.dateOfBirth or not self.eligibility:
+        if not self.dateOfBirth:
             return None
 
-        if self.eligibility == EligibilityType.UNDERAGE:
+        if FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active() and self.age < constants.ELIGIBILITY_AGE_18:
             return datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
                 years=constants.ELIGIBILITY_UNDERAGE_RANGE[-1] + 1
             )
