@@ -39,6 +39,7 @@ def beneficiary_fraud_result_formatter(view, context, model, name) -> Markup:
         fraud_models.FraudStatus.OK: "badge-success",
         fraud_models.FraudStatus.KO: "badge-danger",
         fraud_models.FraudStatus.SUSPICIOUS: "badge-warning",
+        fraud_models.FraudStatus.SUBSCRIPTION_ON_HOLD: "badge-warning",
     }
 
     if model.beneficiaryFraudResult:

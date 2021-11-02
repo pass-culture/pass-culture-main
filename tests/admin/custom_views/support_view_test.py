@@ -31,7 +31,7 @@ class BeneficiaryListViewTest:
             fraud_factories.BeneficiaryFraudCheckFactory(user=user)
             fraud_factories.BeneficiaryFraudResultFactory(user=user)
             fraud_factories.BeneficiaryFraudReviewFactory(user=user, review=review_status)
-        response = client.get("/pc/back-office/support_beneficiary/")
+        response = client.get(f"/pc/back-office/support_beneficiary/?search={user.id}")
         assert response.status_code == 200
 
     def test_list_view_jouve_operator(self, client):
