@@ -333,3 +333,6 @@ API_URL_FOR_EDUCONNECT = os.environ.get(
 )  # must match the url specified in the metadata file provided to educonnect
 EDUCONNECT_SP_CERTIFICATE = os.environ.get("EDUCONNECT_SP_CERTIFICATE", PUBLIC_CERTIFICATE_EXAMPLE)
 EDUCONNECT_SP_PRIVATE_KEY = os.environ.get("EDUCONNECT_SP_PRIVATE_KEY", PRIVATE_KEY_EXAMPLE)
+
+# PERMISSIONS
+PERMISSIONS = base64.b64decode(os.environ.get("PERMISSIONS", "")).decode("utf-8")

@@ -3,14 +3,17 @@ import datetime
 from decimal import Decimal
 
 from flask_admin.form import SecureForm
+from flask_login import current_user
 import markupsafe
 import pytz
 from sqlalchemy.orm import joinedload
+from werkzeug.exceptions import Forbidden
 import wtforms.fields.core as wtf_fields
 import wtforms.fields.html5 as wtf_html5_fields
 import wtforms.validators as wtf_validators
 
 from pcapi.admin import fields
+from pcapi.admin import permissions
 from pcapi.admin import widgets
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.categories.categories import ALL_CATEGORIES_DICT
@@ -113,8 +116,6 @@ def format_subcategories(view, context, model, name):
 
 
 class CustomReimbursementRuleView(BaseAdminView):
-    can_create = True
-    can_edit = True
     can_delete = False
     column_list = [
         "offerer.name",
@@ -140,6 +141,21 @@ class CustomReimbursementRuleView(BaseAdminView):
     }
     column_filters = ["offerer.name", "offer.name"]
 
+    @property
+    def can_create(self):
+        return self.can_add_or_modify()
+
+    @property
+    def can_edit(self):
+        return self.can_add_or_modify()
+
+    def can_add_or_modify(self):
+        # We don't call `has_permission()` from `is_accessible()`
+        # because we still want admin users to be able to list
+        # reimbursement rules. We want to restrict addition and
+        # modification only.
+        return permissions.has_permission(current_user, "add-or-modify-custom-reimbursement-rules")
+
     def get_query(self):
         return self.model.query.options(joinedload(self.model.offerer), joinedload(self.model.offer))
 
@@ -150,6 +166,8 @@ class CustomReimbursementRuleView(BaseAdminView):
         return EditForm
 
     def create_model(self, form):
+        if not self.can_create:
+            raise Forbidden()
         start_date = date_utils.get_day_start(form.start_date.data, payments_utils.ACCOUNTING_TIMEZONE)
         end_date = (
             date_utils.get_day_start(form.end_date.data, payments_utils.ACCOUNTING_TIMEZONE)
@@ -173,6 +191,8 @@ class CustomReimbursementRuleView(BaseAdminView):
             return None
 
     def update_model(self, form, rule):
+        if not self.can_edit:
+            raise Forbidden()
         end_date = date_utils.get_day_start(form.end_date.data, payments_utils.ACCOUNTING_TIMEZONE)
         try:
             rule = payments_api.edit_reimbursement_rule(rule, end_date=end_date)
