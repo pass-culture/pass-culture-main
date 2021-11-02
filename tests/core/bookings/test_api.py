@@ -237,6 +237,15 @@ class BookOfferTest:
         assert booking.status not in [BookingStatus.CANCELLED, BookingStatus.USED]
         assert booking.cancellationLimitDate == two_days_after_booking
 
+    def test_book_stock_with_unlimited_quantity(self):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        stock = offers_factories.StockFactory(price=10, quantity=None)
+
+        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+
+        assert booking.quantity == 1
+        assert stock.quantity is None
+
     def test_raise_if_is_admin(self):
         user = users_factories.AdminFactory()
         stock = offers_factories.StockFactory()
