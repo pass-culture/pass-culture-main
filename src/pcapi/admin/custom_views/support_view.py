@@ -92,7 +92,10 @@ class IDPieceNumberForm(wtforms.Form):
 
 class BeneficiaryView(base_configuration.BaseAdminView):
     VIEW_FILTERS = {
-        "INTERNAL": users_models.User.has_beneficiary_role.is_(True),
+        "INTERNAL": sqlalchemy.and_(
+            users_models.User.has_admin_role.is_(False),
+            users_models.User.has_pro_role.is_(False),
+        ),
         "JOUVE": (
             users_models.User.has_beneficiary_role.is_(False)
             & users_models.User.beneficiaryFraudChecks.any(type=fraud_models.FraudCheckType.JOUVE)
