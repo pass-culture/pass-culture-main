@@ -102,7 +102,7 @@ class AttachBenerificaryImportDetailsTest:
 class EduconnectFlowTest:
     @freeze_time("2021-10-10")
     @patch("pcapi.core.users.external.educonnect.api.get_saml_client")
-    def test_on_educonnect_authentication_response(self, mock_get_educonnect_saml_client, client, app):
+    def test_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
         user = users_factories.UserFactory()
         access_token = create_access_token(identity=user.email)
         client.auth_header = {"Authorization": f"Bearer {access_token}"}

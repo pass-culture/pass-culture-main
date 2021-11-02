@@ -11,7 +11,6 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import exceptions as fraud_exceptions
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
-from pcapi.core.users import api as users_api
 from pcapi.core.users import models as user_models
 from pcapi.core.users.external.educonnect import api as educonnect_api
 from pcapi.core.users.external.educonnect import exceptions as educonnect_exceptions
@@ -117,6 +116,5 @@ def on_educonnect_authentication_response() -> Response:
         "dateOfBirth": educonnect_user.birth_date,
         "logoutUrl": educonnect_user.logout_url,
     }
-    users_api.update_user_information_from_external_source(user, educonnect_content, commit=True)
 
     return redirect(user_information_validation_base_url + urlencode(query_params), code=302)

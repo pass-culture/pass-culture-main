@@ -4,6 +4,8 @@ from typing import Optional
 from pcapi.core.fraud import exceptions as fraud_exceptions
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.payments import api as payments_api
+from pcapi.core.users import api as users_api
+from pcapi.core.users import exceptions as users_exception
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.external import update_external_user
@@ -70,7 +72,7 @@ def activate_beneficiary(user: users_models.User, deposit_source: str = None) ->
     elif eligibility == users_models.EligibilityType.AGE18:
         user.add_beneficiary_role()
     else:
-        raise exceptions.InvalidEligibilityTypeException()
+        raise users_exception.InvalidEligibilityTypeException()
 
     if "apps_flyer" in user.externalIds:
         apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
@@ -132,3 +134,5 @@ def create_beneficiary_import(user: users_models.User) -> None:
     )
     beneficiary_import.setStatus(ImportStatus.CREATED)
     pcapi_repository.repository.save(beneficiary_import)
+
+    users_api.update_user_information_from_external_source(user, fraud_check.source_data(), commit=True)
