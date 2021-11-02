@@ -52,7 +52,7 @@ class NativeAppUserResetPasswordEmailDataTest:
             "Vars": {
                 "native_app_link": (
                     "https://passcultureapptestauto.page.link/"
-                    "?link=https%3A%2F%2Fapp.passculture-testing.beta.gouv.fr%2Fmot-de-passe-perdu%3F"
+                    "?link=https%3A%2F%2Fapp-native.testing.internal-passculture.app%2Fmot-de-passe-perdu%3F"
                     "token%3Dabc%26expiration_timestamp%3D1577836800%26email%3Dewing%252Bdemo%2540example.com"
                 )
             },

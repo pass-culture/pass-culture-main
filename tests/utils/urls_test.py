@@ -8,7 +8,7 @@ class FirebaseLinksTest:
         url = utils.generate_firebase_dynamic_link(path="signup-confirmation", params=None)
         assert url == (
             "https://passcultureapptestauto.page.link/"
-            "?link=https%3A%2F%2Fapp.passculture-testing.beta.gouv.fr%2Fsignup-confirmation"
+            "?link=https%3A%2F%2Fapp-native.testing.internal-passculture.app%2Fsignup-confirmation"
         )
 
     def test_generate_firebase_dynamic_link_with_params(self):
@@ -22,8 +22,9 @@ class FirebaseLinksTest:
         )
         assert url == (
             "https://passcultureapptestauto.page.link/"
-            "?link=https%3A%2F%2Fapp.passculture-testing.beta.gouv.fr%2Fsignup-confirmation%3F"
-            "token%3D2sD3hu6DRhqhqeg4maVxJq0LGh88CkkBlrywgowuMp0%26expiration_timestamp%3D1620905607%26email%3Dtestemail%2540example.com"
+            "?link=https%3A%2F%2Fapp-native.testing.internal-passculture.app%2Fsignup-confirmation%3F"
+            "token%3D2sD3hu6DRhqhqeg4maVxJq0LGh88CkkBlrywgowuMp0%26expiration_timestamp%3D1620905607"
+            "%26email%3Dtestemail%2540example.com"
         )
 
 

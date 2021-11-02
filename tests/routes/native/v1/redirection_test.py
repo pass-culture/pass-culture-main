@@ -7,5 +7,6 @@ class RedirectToNativeTest:
         response = test_client.get("/native/v1/redirect_to_native/mot-de-passe-perdu?token=abccontrepoirot")
         assert response.status_code == 302
         assert (
-            response.location == "https://app.passculture-testing.beta.gouv.fr/mot-de-passe-perdu?token=abccontrepoirot"
+            response.location == "https://app-native.testing.internal-passculture.app"
+            "/mot-de-passe-perdu?token=abccontrepoirot"
         )
