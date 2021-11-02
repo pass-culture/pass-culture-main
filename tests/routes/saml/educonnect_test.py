@@ -142,7 +142,9 @@ class EduconnectTest:
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert user.firstName == "Lucy"
         assert user.lastName == "Ellingson"
-        assert user.dateOfBirth == datetime.date.today() - relativedelta(years=15, months=1)
+        assert user.dateOfBirth == datetime.datetime.combine(
+            datetime.datetime.today() - relativedelta(years=15, months=1), datetime.time(0, 0)
+        )
 
         access_token = create_access_token(identity=user.email)
 
@@ -210,4 +212,29 @@ class EduconnectTest:
         assert response.status_code == 302
         assert response.location.startswith(
             "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid"
+        )
+
+    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    def test_educonnect_connection_synchronizes_data(self, mock_get_educonnect_user, client, app):
+        user, request_id = self.connect_to_educonnect(client, app)
+        age = 15
+
+        previous_user_first_name = user.firstName
+        previous_user_last_name = user.lastName
+        previous_user_date_of_birth = user.dateOfBirth
+
+        mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
+            saml_request_id=request_id, age=age, last_name="Hayward", first_name="Verona"
+        )
+
+        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+
+        assert response.status_code == 302
+        assert user.firstName != previous_user_first_name
+        assert user.firstName == "Verona"
+        assert user.lastName != previous_user_last_name
+        assert user.lastName == "Hayward"
+        assert user.dateOfBirth != previous_user_date_of_birth
+        assert user.dateOfBirth == datetime.datetime.combine(
+            datetime.date.today() - relativedelta(years=age, months=1), datetime.time(0, 0)
         )

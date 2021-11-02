@@ -85,9 +85,17 @@ def on_educonnect_authentication_response() -> Response:
     try:
         subscription_api.create_beneficiary_import(user)
     except fraud_exceptions.UserAgeNotValid:
+        logger.warning(
+            "User age not valid",
+            extra={"userId": user.id, "educonnectId": educonnect_user.educonnect_id},
+        )
         error_query_param = {"code": "UserAgeNotValid"}
         return redirect(error_page_base_url + urlencode(error_query_param), code=302)
     except fraud_exceptions.UserAlreadyBeneficiary:
+        logger.warning(
+            "User already beneficiary",
+            extra={"userId": user.id, "educonnectId": educonnect_user.educonnect_id},
+        )
         error_query_param = {"code": "UserAlreadyBeneficiary"}
         return redirect(error_page_base_url + urlencode(error_query_param), code=302)
     except fraud_exceptions.FraudException as e:
@@ -106,5 +114,5 @@ def on_educonnect_authentication_response() -> Response:
         "dateOfBirth": educonnect_user.birth_date,
         "logoutUrl": educonnect_user.logout_url,
     }
-    users_api.update_user_information_from_external_source(user, educonnect_data)
+    users_api.update_user_information_from_external_source(user, educonnect_data, commit=True)
     return redirect(user_information_validation_base_url + urlencode(query_params), code=302)

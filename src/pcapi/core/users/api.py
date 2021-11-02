@@ -305,7 +305,9 @@ def update_beneficiary_mandatory_information(
 
 
 def update_user_information_from_external_source(
-    user: User, data: Union[fraud_models.DMSContent, fraud_models.JouveContent, fraud_models.EduconnectContent]
+    user: User,
+    data: Union[fraud_models.DMSContent, fraud_models.JouveContent, fraud_models.EduconnectContent],
+    commit=False,
 ) -> User:
     if isinstance(data, fraud_models.DMSContent):
         # FIXME: the following function does not override user.dateOfBirth, we should do it
@@ -355,6 +357,8 @@ def update_user_information_from_external_source(
 
     db.session.add(user)
     db.session.flush()
+    if commit:
+        db.session.commit()
     return user
 
 
