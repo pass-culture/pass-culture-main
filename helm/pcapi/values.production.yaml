@@ -608,5 +608,3 @@ secrets:
     version: 1
   - name: WALLET_BALANCES_RECIPIENTS
     version: 2
-  - name: WHITELISTED_INE_HASHES
-    version: 1

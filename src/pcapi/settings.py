@@ -333,4 +333,3 @@ API_URL_FOR_EDUCONNECT = os.environ.get(
 )  # must match the url specified in the metadata file provided to educonnect
 EDUCONNECT_SP_CERTIFICATE = os.environ.get("EDUCONNECT_SP_CERTIFICATE", PUBLIC_CERTIFICATE_EXAMPLE)
 EDUCONNECT_SP_PRIVATE_KEY = os.environ.get("EDUCONNECT_SP_PRIVATE_KEY", PRIVATE_KEY_EXAMPLE)
-WHITELISTED_INE_HASHES = utils.parse_str_to_list(os.environ.get("WHITELISTED_INE_HASHES"))

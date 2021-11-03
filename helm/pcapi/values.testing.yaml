@@ -361,7 +361,6 @@ uploadIdentityDocument:
           - backend.passculture-testing.beta.gouv.fr
           - backend.testing.passculture.team
 
-
 # Deployment for all cloud tasks
 cloudTasks:
   enabled: true
@@ -568,8 +567,6 @@ secrets:
   - name: WALLET_BALANCES_RECIPIENTS
     version: 2
   - name: WHITELISTED_EMAIL_RECIPIENTS
-    version: 1
-  - name: WHITELISTED_INE_HASHES
     version: 1
   - name: WHITELISTED_SMS_RECIPIENTS
     version: 3
