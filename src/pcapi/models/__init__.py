@@ -1,3 +1,4 @@
+from pcapi.models.db import db  # isort: skip
 from pcapi.core.bookings.models import Booking
 from pcapi.core.finance.models import BusinessUnit
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
@@ -30,7 +31,6 @@ from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.criterion import Criterion
-from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.feature import Feature
