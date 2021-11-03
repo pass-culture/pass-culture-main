@@ -10,29 +10,13 @@ from operator import attrgetter
 from typing import Optional
 
 from dateutil.relativedelta import relativedelta
-from sqlalchemy import BigInteger
-from sqlalchemy import Boolean
-from sqlalchemy import CheckConstraint
-from sqlalchemy import Column
-from sqlalchemy import DateTime
-from sqlalchemy import Enum
-from sqlalchemy import ForeignKey
-from sqlalchemy import LargeBinary
-from sqlalchemy import String
-from sqlalchemy import Text
-from sqlalchemy import UniqueConstraint
-from sqlalchemy import func
-from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.dialects.postgresql.json import JSONB
+import sqlalchemy as sa
+from sqlalchemy import orm
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
-from sqlalchemy.orm import backref
-from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
-from sqlalchemy.sql.expression import false
-from sqlalchemy.sql.expression import or_
 
 from pcapi import settings
 from pcapi.core.payments.models import Deposit
@@ -71,21 +55,21 @@ class PhoneValidationStatusType(enum.Enum):
 class Token(PcObject, Model):
     __tablename__ = "token"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    userId = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
+    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    user = relationship("User", foreign_keys=[userId], backref=backref("tokens", passive_deletes=True))
+    user = orm.relationship("User", foreign_keys=[userId], backref=orm.backref("tokens", passive_deletes=True))
 
-    value = Column(String, index=True, unique=True, nullable=False)
+    value = sa.Column(sa.String, index=True, unique=True, nullable=False)
 
-    type = Column(Enum(TokenType, create_constraint=False), nullable=False)
+    type = sa.Column(sa.Enum(TokenType, create_constraint=False), nullable=False)
 
-    creationDate = Column(DateTime, nullable=False, server_default=func.now())
+    creationDate = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
-    expirationDate = Column(DateTime, nullable=True)
+    expirationDate = sa.Column(sa.DateTime, nullable=True)
 
-    isUsed = Column(Boolean, nullable=False, server_default=false(), default=False)
+    isUsed = sa.Column(sa.Boolean, nullable=False, server_default=expression.false(), default=False)
 
 
 class UserRole(enum.Enum):
@@ -116,33 +100,33 @@ class NotificationSubscriptions:
 class User(PcObject, Model, NeedsValidationMixin):
     __tablename__ = "user"
 
-    email = Column(String(120), nullable=False, unique=True)
+    email = sa.Column(sa.String(120), nullable=False, unique=True)
 
-    address = Column(Text, nullable=True)
+    address = sa.Column(sa.Text, nullable=True)
 
-    city = Column(String(100), nullable=True)
+    city = sa.Column(sa.String(100), nullable=True)
 
     clearTextPassword = None
 
-    culturalSurveyId = Column(UUID(as_uuid=True), nullable=True)
+    culturalSurveyId = sa.Column(postgresql.UUID(as_uuid=True), nullable=True)
 
-    culturalSurveyFilledDate = Column(DateTime, nullable=True)
+    culturalSurveyFilledDate = sa.Column(sa.DateTime, nullable=True)
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    dateOfBirth = Column(DateTime, nullable=True)
+    dateOfBirth = sa.Column(sa.DateTime, nullable=True)
 
-    departementCode = Column(String(3), nullable=True)
+    departementCode = sa.Column(sa.String(3), nullable=True)
 
-    firstName = Column(String(128), nullable=True)
+    firstName = sa.Column(sa.String(128), nullable=True)
 
-    idPieceNumber = Column(String, nullable=True, unique=True)
+    idPieceNumber = sa.Column(sa.String, nullable=True, unique=True)
 
-    ineHash = Column(Text, nullable=True, unique=True)
+    ineHash = sa.Column(sa.Text, nullable=True, unique=True)
 
-    isAdmin = Column(
-        Boolean,
-        CheckConstraint(
+    isAdmin = sa.Column(
+        sa.Boolean,
+        sa.CheckConstraint(
             (
                 f'NOT (({ UserRole.BENEFICIARY }=ANY("roles") OR { UserRole.UNDERAGE_BENEFICIARY }=ANY("roles")) '
                 f'AND { UserRole.ADMIN }=ANY("roles"))'
@@ -154,64 +138,64 @@ class User(PcObject, Model, NeedsValidationMixin):
         default=False,
     )
 
-    lastName = Column(String(128), nullable=True)
+    lastName = sa.Column(sa.String(128), nullable=True)
 
-    lastConnectionDate = Column(DateTime, nullable=True)
+    lastConnectionDate = sa.Column(sa.DateTime, nullable=True)
 
-    needsToFillCulturalSurvey = Column(Boolean, server_default=expression.true(), default=True)
+    needsToFillCulturalSurvey = sa.Column(sa.Boolean, server_default=expression.true(), default=True)
 
-    notificationSubscriptions = Column(
-        MutableDict.as_mutable(JSONB),
+    notificationSubscriptions = sa.Column(
+        MutableDict.as_mutable(postgresql.json.JSONB),
         nullable=True,
         default=asdict(NotificationSubscriptions()),
         server_default="""{"marketing_push": true, "marketing_email": true}""",
     )
 
-    offerers = relationship("Offerer", secondary="user_offerer")
+    offerers = orm.relationship("Offerer", secondary="user_offerer")
 
-    password = Column(LargeBinary(60), nullable=False)
+    password = sa.Column(sa.LargeBinary(60), nullable=False)
 
-    phoneNumber = Column(String(20), nullable=True)
+    phoneNumber = sa.Column(sa.String(20), nullable=True)
 
-    postalCode = Column(String(5), nullable=True)
+    postalCode = sa.Column(sa.String(5), nullable=True)
 
-    publicName = Column(String(255), nullable=False)
+    publicName = sa.Column(sa.String(255), nullable=False)
 
-    roles = Column(
-        MutableList.as_mutable(ARRAY(Enum(UserRole, native_enum=False, create_constraint=False))),
+    roles = sa.Column(
+        MutableList.as_mutable(postgresql.ARRAY(sa.Enum(UserRole, native_enum=False, create_constraint=False))),
         nullable=False,
         server_default="{}",
     )
 
-    civility = Column(String(20), nullable=True)
+    civility = sa.Column(sa.String(20), nullable=True)
 
-    activity = Column(String(128), nullable=True)
+    activity = sa.Column(sa.String(128), nullable=True)
 
-    hasSeenTutorials = Column(Boolean, nullable=True)
+    hasSeenTutorials = sa.Column(sa.Boolean, nullable=True)
 
-    hasSeenProTutorials = Column(Boolean, nullable=False, server_default=expression.false())
+    hasSeenProTutorials = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
 
-    isEmailValidated = Column(Boolean, nullable=True, server_default=expression.false())
+    isEmailValidated = sa.Column(sa.Boolean, nullable=True, server_default=expression.false())
 
-    isBeneficiary = Column(Boolean, nullable=False, server_default=expression.false())
+    isBeneficiary = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
 
-    phoneValidationStatus = Column(Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
+    phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
 
     # FIXME (dbaty, 2020-12-14): once v114 has been deployed, populate
     # existing rows with the empty string and add NOT NULL constraint.
-    suspensionReason = Column(Text, nullable=True, default="")
+    suspensionReason = sa.Column(sa.Text, nullable=True, default="")
 
     # FIXME (dbaty, 2020-12-14): once v114 has been deployed, populate
     # existing rows, remove this field and let the User model
     # use DeactivableMixin. We'll need to add a migration that adds a
     # NOT NULL constraint.
-    isActive = Column(Boolean, nullable=True, server_default=expression.true(), default=True)
+    isActive = sa.Column(sa.Boolean, nullable=True, server_default=expression.true(), default=True)
 
-    hasCompletedIdCheck = Column(Boolean, nullable=True)
+    hasCompletedIdCheck = sa.Column(sa.Boolean, nullable=True)
 
-    externalIds = Column(JSONB, nullable=True, default={}, server_default="{}")
+    externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")
 
-    extraData = Column(MutableDict.as_mutable(JSONB), nullable=True, default={}, server_default="{}")
+    extraData = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}")
 
     def checkPassword(self, passwordToCheck):
         return crypto.check_password(passwordToCheck, self.password)
@@ -285,7 +269,7 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @property
     def real_wallet_balance(self):
-        balance = db.session.query(func.get_wallet_balance(self.id, True)).scalar()
+        balance = db.session.query(sa.func.get_wallet_balance(self.id, True)).scalar()
         # Balance can be negative if the user has booked in the past
         # but their deposit has expired. We don't want to expose a
         # negative number.
@@ -293,7 +277,7 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @property
     def wallet_balance(self):
-        balance = db.session.query(func.get_wallet_balance(self.id, False)).scalar()
+        balance = db.session.query(sa.func.get_wallet_balance(self.id, False)).scalar()
         return max(0, balance)
 
     @property
@@ -387,7 +371,9 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @is_beneficiary.expression
     def is_beneficiary(cls):  # pylint: disable=no-self-argument
-        return or_(cls.roles.contains([UserRole.BENEFICIARY]), cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY]))
+        return expression.or_(
+            cls.roles.contains([UserRole.BENEFICIARY]), cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
+        )
 
     def _add_role(self, role: UserRole) -> None:
         if self.roles is None:
@@ -442,7 +428,7 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @has_admin_role.expression
     def has_admin_role(cls) -> bool:  # pylint: disable=no-self-argument
-        return or_(cls.roles.contains([UserRole.ADMIN]), cls.isAdmin.is_(True))
+        return expression.or_(cls.roles.contains([UserRole.ADMIN]), cls.isAdmin.is_(True))
 
     @hybrid_property
     def has_beneficiary_role(self) -> bool:
@@ -513,22 +499,22 @@ class DomainsCredit:
 class Favorite(PcObject, Model):
     __tablename__ = "favorite"
 
-    userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
+    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
-    user = relationship("User", foreign_keys=[userId], backref="favorites")
+    user = orm.relationship("User", foreign_keys=[userId], backref="favorites")
 
-    offerId = Column(BigInteger, ForeignKey("offer.id"), index=True, nullable=False)
+    offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
-    offer = relationship("Offer", foreign_keys=[offerId], backref="favorites")
+    offer = orm.relationship("Offer", foreign_keys=[offerId], backref="favorites")
 
-    mediationId = Column(BigInteger, ForeignKey("mediation.id"), index=True, nullable=True)
+    mediationId = sa.Column(sa.BigInteger, sa.ForeignKey("mediation.id"), index=True, nullable=True)
 
-    mediation = relationship("Mediation", foreign_keys=[mediationId], backref="favorites")
+    mediation = orm.relationship("Mediation", foreign_keys=[mediationId], backref="favorites")
 
-    dateCreated = Column(DateTime, nullable=True, default=datetime.utcnow)
+    dateCreated = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
 
     __table_args__ = (
-        UniqueConstraint(
+        sa.UniqueConstraint(
             "userId",
             "offerId",
             name="unique_favorite",
