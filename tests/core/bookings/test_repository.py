@@ -2628,11 +2628,6 @@ class FindSoonToBeExpiredBookingsTest:
         # Then
         assert expired_bookings == [expected_booking.individualBooking]
 
-    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
-    @patch(
-        "pcapi.core.bookings.constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE",
-        date.today() - timedelta(days=10),
-    )
     @pytest.mark.usefixtures("db_session")
     def test_should_return_only_soon_to_be_expired_bookings_books_case(self):
         soon_expired_creation_date = datetime.combine(date.today() - timedelta(days=5), time(12, 34, 17))
@@ -2659,36 +2654,6 @@ class FindSoonToBeExpiredBookingsTest:
         assert booking_repository.find_soon_to_be_expiring_individual_bookings_ordered_by_user().all() == [
             soon_expired_books_booking.individualBooking
         ]
-
-    # TODO(yacine) this test should be removed 20 days after enabling FF ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
-    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
-    @patch(
-        "pcapi.core.bookings.constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE",
-        date.today() - timedelta(days=10),
-    )
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_only_soon_to_be_expired_bookings_transition_period(self):
-        soon_expired_with_new_creation_date = datetime.combine(date.today() - timedelta(days=5), time(12, 34, 17))
-        too_old_creation_date = datetime.combine(date.today() - timedelta(days=15), time(12, 34, 17))
-        soon_expired_with_old_creation_date = datetime.combine(date.today() - timedelta(days=23), time(12, 34, 17))
-
-        soon_expired_with_new_creation_date = bookings_factories.IndividualBookingFactory(
-            dateCreated=soon_expired_with_new_creation_date,
-            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
-        )
-        soon_expired_with_old_creation_date = bookings_factories.IndividualBookingFactory(
-            dateCreated=soon_expired_with_old_creation_date,
-            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
-        )
-        bookings_factories.IndividualBookingFactory(
-            dateCreated=too_old_creation_date, stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id
-        )
-
-        soon_expired_bookings = booking_repository.find_soon_to_be_expiring_individual_bookings_ordered_by_user().all()
-        assert set(soon_expired_bookings) == {
-            soon_expired_with_new_creation_date.individualBooking,
-            soon_expired_with_old_creation_date.individualBooking,
-        }
 
 
 class GetActiveBookingsQuantityForOffererTest:
