@@ -1854,7 +1854,7 @@ describe('offerDetails - Creation - pro user', () => {
 
       // Then
       const url = await findInputErrorForField('externalTicketOfficeUrl')
-      expect(url).toHaveTextContent('L’URL renseignée n’est pas valide')
+      expect(url).toHaveTextContent('Veuillez renseigner une URL valide')
     })
 
     it('should show error for url input', async () => {
@@ -1874,7 +1874,7 @@ describe('offerDetails - Creation - pro user', () => {
 
       // Then
       const url = await findInputErrorForField('url')
-      expect(url).toHaveTextContent('L’URL renseignée n’est pas valide')
+      expect(url).toHaveTextContent('Veuillez renseigner une URL valide')
     })
 
     it('should show error sent by API and show an error notification', async () => {

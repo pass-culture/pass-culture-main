@@ -368,11 +368,11 @@ const OfferForm = ({
     }
 
     if (!isUrlValid(formValues.url)) {
-      newFormErrors['url'] = 'L’URL renseignée n’est pas valide'
+      newFormErrors['url'] = 'Veuillez renseigner une URL valide'
     }
 
     if (!isUrlValid(formValues.externalTicketOfficeUrl)) {
-      newFormErrors['externalTicketOfficeUrl'] = 'L’URL renseignée n’est pas valide'
+      newFormErrors['externalTicketOfficeUrl'] = 'Veuillez renseigner une URL valide'
     }
 
     setFormErrors(newFormErrors)
