@@ -48,9 +48,6 @@ def get_email_confirmation_email_data(
     )
 
 
-def send_email_confirmation_email(
-    user: User,
-    token: Token,
-) -> bool:
+def send_email_confirmation_email(user: User, token: Token) -> bool:
     data = get_email_confirmation_email_data(user=user, token=token)
     return mails.send(recipients=[user.email], data=data, send_with_sendinblue=True)

@@ -194,8 +194,8 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
         update_external_user(model)
-        token = create_reset_password_token(model)
-        if is_created and not send_activation_email(model, token=token):
+        if is_created and not send_activation_email(model):
+            token = create_reset_password_token(model)
             flash(
                 f"L'envoi d'email a échoué. Le mot de passe peut être réinitialisé depuis le lien suivant : {build_pc_webapp_reset_password_link(token.value)}",
                 "error",

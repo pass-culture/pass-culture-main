@@ -1,3 +1,4 @@
+from datetime import timedelta
 import logging
 import typing
 
@@ -232,11 +233,10 @@ def send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
         mails.send(recipients=[beneficiary.email], data=data)
 
 
-def send_activation_email(
-    user: User,
-    token: Token,
-) -> bool:
+def send_activation_email(user: User, reset_password_token_life_time: typing.Optional[timedelta] = None) -> bool:
+    token = users_api.create_reset_password_token(user, token_life_time=reset_password_token_life_time)
     data = beneficiary_activation.get_activation_email_data(user=user, token=token)
+
     return mails.send(recipients=[user.email], data=data)
 
 

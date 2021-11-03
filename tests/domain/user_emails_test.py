@@ -248,20 +248,16 @@ class SendAdminUserValidationEmailTest:
 
 @pytest.mark.usefixtures("db_session")
 class SendActivationEmailTest:
-    @patch("pcapi.emails.beneficiary_activation.get_activation_email_data")
-    def test_send_activation_email(self, mocked_get_activation_email_data):
+    def test_send_activation_email(self):
         # given
         beneficiary = users_factories.BeneficiaryGrant18Factory.build()
-        token = users_factories.EmailValidationToken.build(user=beneficiary)
-        mocked_get_activation_email_data.return_value = {"Html-part": ""}
 
         # when
-        send_activation_email(beneficiary, token=token)
+        send_activation_email(beneficiary)
 
         # then
-        mocked_get_activation_email_data.assert_called_once_with(user=beneficiary, token=token)
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["Html-part"] == ""
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 994771
 
     def test_send_activation_email_for_native(self):
         # given

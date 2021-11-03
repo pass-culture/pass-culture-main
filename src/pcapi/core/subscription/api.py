@@ -150,12 +150,9 @@ def create_beneficiary_import(user: users_models.User) -> None:
 
 
 def _send_beneficiary_activation_email(user: users_models.User, has_activated_account: bool):
-    from pcapi.core.users.api import create_reset_password_token
-
     if not has_activated_account:
-        token = create_reset_password_token(
-            user, token_life_time=users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
+        old_user_emails.send_activation_email(
+            user=user, reset_password_token_life_time=users_constants.RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
         )
-        old_user_emails.send_activation_email(user=user, token=token)
     else:
         accepted_as_beneficiary_email.send_accepted_as_beneficiary_email(user=user)
