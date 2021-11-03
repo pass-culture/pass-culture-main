@@ -1,6 +1,7 @@
+from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
+from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -24,13 +25,10 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
 
     expiration_delay: str = ""
     if can_expire:
-        if (
-            FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS.is_active()
-            and offer.subcategoryId == subcategories.LIVRE_PAPIER.id
-        ):
-            expiration_delay = "10"
+        if offer.subcategoryId == subcategories.LIVRE_PAPIER.id:
+            expiration_delay = BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
         else:
-            expiration_delay = "30"
+            expiration_delay = BOOKINGS_AUTO_EXPIRY_DELAY.days
 
     department_code = venue.departementCode if not is_digital_offer else beneficiary.departementCode
     booking_date_in_tz = utc_datetime_to_department_timezone(booking.dateCreated, department_code)

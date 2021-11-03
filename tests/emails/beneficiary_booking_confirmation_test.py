@@ -115,7 +115,7 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing():
         is_single_event=0,
         offer_name="Super bien culturel",
         can_expire=1,
-        expiration_delay="30",
+        expiration_delay=30,
     )
     assert email_data == expected
 
@@ -336,34 +336,7 @@ def test_digital_offer_without_departement_code_information():
 
 
 @pytest.mark.usefixtures("db_session")
-class BooksBookingExpirationDateLegacyRulesTest:
-    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
-    def test_should_return_legacy_expiration_delay_data_for_email_when_offer_is_a_book(self):
-        booking = make_booking(
-            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
-            stock__offer__name="Super livre",
-        )
-        mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
-
-        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
-
-        expected = get_expected_base_email_data(
-            booking,
-            mediation,
-            all_things_not_virtual_thing=1,
-            event_date="",
-            event_hour="",
-            is_event=0,
-            is_single_event=0,
-            offer_name="Super livre",
-            can_expire=1,
-            expiration_delay="30",
-        )
-        assert email_data == expected
-
-
-@pytest.mark.usefixtures("db_session")
-class BooksBookingExpirationDateNewRulesTest:
+class BooksBookingExpirationDateTest:
     @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
     def test_should_return_new_expiration_delay_data_for_email_when_offer_is_a_book(self):
         booking = make_booking(
@@ -384,6 +357,6 @@ class BooksBookingExpirationDateNewRulesTest:
             is_single_event=0,
             offer_name="Super livre",
             can_expire=1,
-            expiration_delay="10",
+            expiration_delay=10,
         )
         assert email_data == expected
