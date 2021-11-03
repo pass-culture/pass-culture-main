@@ -77,7 +77,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                             "-rawProviderQuantity",
                         ],
                     },
-                    {"key": "venue", "includes": ["-validationToken"]},
+                    {"key": "venue", "includes": ["-validationToken", "-businessUnitId"]},
                 ],
             },
         ],

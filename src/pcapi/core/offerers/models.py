@@ -203,6 +203,9 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     contact = relationship("VenueContact", back_populates="venue", uselist=False)
 
+    businessUnitId = Column(Integer, ForeignKey("business_unit.id"), nullable=True)
+    businessUnit = relationship("BusinessUnit", foreign_keys=[businessUnitId], backref="venues")
+
     # bannerUrl should provide a safe way to retrieve the banner,
     # whereas bannerMeta should provide extra information that might be
     # helpful like image type, author, etc. that can change over time.
