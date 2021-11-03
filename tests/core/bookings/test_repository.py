@@ -4,7 +4,6 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from io import StringIO
-from unittest.mock import patch
 
 from dateutil import tz
 from dateutil.relativedelta import relativedelta
@@ -2913,8 +2912,6 @@ class FindBookingsByFraudulentUsersTest:
 
 
 class FindExpiringBookingsTest:
-    @patch("pcapi.core.bookings.constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE", datetime(2021, 8, 5))
-    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
     @pytest.mark.usefixtures("db_session")
     def test_find_expired_bookings_before_and_after_enabling_feature_flag(self):
         with freeze_time("2021-08-01 15:00:00") as frozen_time:

@@ -11,7 +11,6 @@ from typing import Optional
 from dateutil import tz
 from sqlalchemy import Column
 from sqlalchemy import Date
-from sqlalchemy import and_
 from sqlalchemy import case
 from sqlalchemy import cast
 from sqlalchemy import func
@@ -215,12 +214,7 @@ def find_expiring_individual_bookings_query() -> Query:
             case(
                 [
                     (
-                        and_(
-                            Offer.subcategoryId == subcategories.LIVRE_PAPIER.id,
-                            # TODO(yacine) remove this condition 20 days after activation of FF
-                            #  ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
-                            Booking.dateCreated >= constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE,
-                        ),
+                        Offer.subcategoryId == subcategories.LIVRE_PAPIER.id,
                         (Booking.dateCreated + constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight,
                     ),
                 ],

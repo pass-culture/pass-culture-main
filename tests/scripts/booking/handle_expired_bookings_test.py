@@ -1,8 +1,6 @@
-from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from unittest import mock
-from unittest.mock import patch
 
 import pytest
 
@@ -13,7 +11,6 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.scripts.booking import handle_expired_bookings
 
 
@@ -21,11 +18,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class CancelExpiredBookingsTest:
-    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
-    @patch(
-        "pcapi.core.bookings.constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE",
-        date.today() - timedelta(days=20),
-    )
     def test_should_cancel_old_thing_that_can_expire_booking(self, app) -> None:
         now = datetime.utcnow()
         eleven_days_ago = now - timedelta(days=11)
