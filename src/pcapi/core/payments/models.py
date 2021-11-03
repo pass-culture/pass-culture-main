@@ -5,16 +5,7 @@ import enum
 
 import psycopg2.extras
 import pytz
-from sqlalchemy import BigInteger
-from sqlalchemy import CheckConstraint
-from sqlalchemy import Column
-from sqlalchemy import DateTime
-from sqlalchemy import Enum
-from sqlalchemy import ForeignKey
-from sqlalchemy import Numeric
-from sqlalchemy import String
-from sqlalchemy import Text
-from sqlalchemy import func
+import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import SmallInteger
@@ -61,38 +52,38 @@ class CustomReimbursementRule(ReimbursementRule, Model):
     only one rule can be valid at a time.
     """
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    offerId = Column(BigInteger, ForeignKey("offer.id"), nullable=True)
+    offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), nullable=True)
 
     offer = relationship("Offer", foreign_keys=[offerId], backref="custom_reimbursement_rules")
 
-    offererId = Column(BigInteger, ForeignKey("offerer.id"), nullable=True)
+    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), nullable=True)
 
     offerer = relationship("Offerer", foreign_keys=[offererId], backref="custom_reimbursement_rules")
 
     # FIXME (dbaty, 2021-11-04): remove `categories` column once v161 is deployed
-    categories = Column(postgresql.ARRAY(Text()), server_default="{}")
+    categories = sa.Column(postgresql.ARRAY(sa.Text()), server_default="{}")
     # A list of identifiers of subcategories on which the rule applies.
     # If the list is empty, the rule applies on all offers of an
     # offerer.
-    subcategories = Column(postgresql.ARRAY(Text()), server_default="{}")
+    subcategories = sa.Column(postgresql.ARRAY(sa.Text()), server_default="{}")
 
-    amount = Column(Numeric(10, 2), nullable=True)
+    amount = sa.Column(sa.Numeric(10, 2), nullable=True)
 
     # rate is between 0 and 1 (included), or NULL if `amount` is set.
-    rate = Column(Numeric(3, 2), nullable=True)
+    rate = sa.Column(sa.Numeric(3, 2), nullable=True)
 
-    timespan = Column(postgresql.TSRANGE)
+    timespan = sa.Column(postgresql.TSRANGE)
 
     __table_args__ = (
         # A rule relates to an offer or an offerer, never both.
-        CheckConstraint('num_nonnulls("offerId", "offererId") = 1'),
+        sa.CheckConstraint('num_nonnulls("offerId", "offererId") = 1'),
         # A rule has an amount or a rate, never both.
-        CheckConstraint("num_nonnulls(amount, rate) = 1"),
+        sa.CheckConstraint("num_nonnulls(amount, rate) = 1"),
         # A timespan must have a lower bound. Upper bound is optional.
-        CheckConstraint("lower(timespan) IS NOT NULL"),
-        CheckConstraint("rate IS NULL OR (rate BETWEEN 0 AND 1)"),
+        sa.CheckConstraint("lower(timespan) IS NOT NULL"),
+        sa.CheckConstraint("rate IS NULL OR (rate BETWEEN 0 AND 1)"),
     )
 
     def __init__(self, **kwargs):
@@ -136,27 +127,29 @@ class DepositType(enum.Enum):
 
 
 class Deposit(PcObject, Model):
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    amount = Column(Numeric(10, 2), nullable=False)
+    amount = sa.Column(sa.Numeric(10, 2), nullable=False)
 
-    userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
+    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
     user = relationship("User", foreign_keys=[userId], backref="deposits")
 
     individual_bookings = relationship("IndividualBooking", back_populates="deposit")
 
-    source = Column(String(300), nullable=False)
+    source = sa.Column(sa.String(300), nullable=False)
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.datetime.utcnow(), server_default=func.now())
+    dateCreated = sa.Column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow(), server_default=sa.func.now()
+    )
 
-    expirationDate = Column(DateTime, nullable=True)
+    expirationDate = sa.Column(sa.DateTime, nullable=True)
 
-    version = Column(SmallInteger, nullable=False)
+    version = sa.Column(SmallInteger, nullable=False)
 
-    type = Column(
+    type = sa.Column(
         "type",
-        Enum(DepositType, native_enum=False, create_constraint=False),
+        sa.Enum(DepositType, native_enum=False, create_constraint=False),
         nullable=False,
         server_default=DepositType.GRANT_18.value,
     )
