@@ -4,7 +4,7 @@ from pcapi.models import feature
 
 # revision identifiers, used by Alembic.
 revision = "d324e17d5314"
-down_revision = "51ac2a874ba9"
+down_revision = "83d275671e3e"
 branch_labels = None
 depends_on = None
 

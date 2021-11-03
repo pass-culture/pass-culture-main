@@ -65,7 +65,6 @@ class FeatureToggle(enum.Enum):
     WEBAPP_V2_ENABLED = "Utiliser la nouvelle web app (décli web/v2) au lieu de l'ancienne"
     PRO_REIMBURSEMENTS_FILTERS = "Permet de filtrer la liste de remboursements"
     ENABLE_NATIVE_EAC_INDIVIDUAL = "Active l'EAC individuel sur l'app native"
-    ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS = "Active le nouveau délai de rétractation pour les livres"
     ENABLE_DMS_GRAPHQL_API = "Utilise l'API GraphQL de DMS"
     ENABLE_EDUCONNECT_AUTHENTICATION = "Active l'authentification via educonnect sur l'app native"
     ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS = (
@@ -119,7 +118,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.PERF_VENUE_STATS,
     FeatureToggle.WEBAPP_V2_ENABLED,
     FeatureToggle.PRO_REIMBURSEMENTS_FILTERS,
-    FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS,
     FeatureToggle.ENABLE_DMS_GRAPHQL_API,
     FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION,
     FeatureToggle.ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE,
