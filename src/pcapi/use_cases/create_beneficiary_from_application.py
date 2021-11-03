@@ -113,7 +113,7 @@ class CreateBeneficiaryFromApplication:
                 beneficiary_pre_subscription=beneficiary_pre_subscription, beneficiary_is_eligible=True
             )
         except SubscriptionJourneyOnHold as exc:
-            logger.warning("User subscription is on hold", extra={"applicationId": application_id, "reason": exc})
+            logger.warning("User subscription is on hold", extra={"applicationId": application_id, "reason": str(exc)})
         except CantRegisterBeneficiary as cant_register_beneficiary_exception:
             exception_reason = str(cant_register_beneficiary_exception)
             logger.warning(
