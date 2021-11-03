@@ -129,31 +129,20 @@ def send_booking_cancellation_emails_to_user_and_offerer(
         send_user_driven_cancellation_email_to_offerer(booking)
 
 
-# TODO(yacine) this function will be removed after removing FF ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
-def legacy_send_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings: list[Booking]) -> None:
-    data = build_expired_bookings_recap_email_data_for_beneficiary(
-        beneficiary, bookings, booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
-    )
-    mails.send(recipients=[beneficiary.email], data=data)
-
-
 def send_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings: list[Booking]) -> None:
-    if not FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS.is_active():
-        legacy_send_expired_bookings_recap_email_to_beneficiary(beneficiary, bookings)
-    else:
-        books_bookings, other_bookings = filter_books_bookings(bookings)
+    books_bookings, other_bookings = filter_books_bookings(bookings)
 
-        if books_bookings:
-            books_bookings_data = build_expired_bookings_recap_email_data_for_beneficiary(
-                beneficiary, bookings, booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
-            )
-            mails.send(recipients=[beneficiary.email], data=books_bookings_data)
+    if books_bookings:
+        books_bookings_data = build_expired_bookings_recap_email_data_for_beneficiary(
+            beneficiary, bookings, booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
+        )
+        mails.send(recipients=[beneficiary.email], data=books_bookings_data)
 
-        if other_bookings:
-            other_bookings_data = build_expired_bookings_recap_email_data_for_beneficiary(
-                beneficiary, bookings, booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
-            )
-            mails.send(recipients=[beneficiary.email], data=other_bookings_data)
+    if other_bookings:
+        other_bookings_data = build_expired_bookings_recap_email_data_for_beneficiary(
+            beneficiary, bookings, booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
+        )
+        mails.send(recipients=[beneficiary.email], data=other_bookings_data)
 
 
 # TODO(yacine) this function will be removed after removing FF ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
