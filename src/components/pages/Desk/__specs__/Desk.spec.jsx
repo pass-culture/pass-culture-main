@@ -172,7 +172,7 @@ describe('src | components | Desk', () => {
       expect(bookingDate).toBeInTheDocument()
       const bookingPrice = await queryByTextTrimHtml(screen, 'Prix : 40 €')
       expect(bookingPrice).toBeInTheDocument()
-      const bookingIsbn = await queryByTextTrimHtml(screen, 'Isbn : isbn')
+      const bookingIsbn = await queryByTextTrimHtml(screen, 'ISBN : isbn')
       expect(bookingIsbn).toBeInTheDocument()
     })
 
@@ -193,7 +193,7 @@ describe('src | components | Desk', () => {
 
       // then
       await screen.findByRole('button', { name: 'Valider la contremarque' })
-      const bookingIsbn = await queryByTextTrimHtml(screen, 'Isbn :')
+      const bookingIsbn = await queryByTextTrimHtml(screen, 'ISBN :')
       expect(bookingIsbn).toBeInTheDocument()
     })
 
@@ -214,7 +214,7 @@ describe('src | components | Desk', () => {
 
       // then
       await screen.findByRole('button', { name: 'Valider la contremarque' })
-      const bookingIsbn = await queryByTextTrimHtml(screen, 'Isbn :')
+      const bookingIsbn = await queryByTextTrimHtml(screen, 'ISBN :')
       expect(bookingIsbn).not.toBeInTheDocument()
     })
 
