@@ -558,62 +558,11 @@ class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 12345
 
-    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=False)
-    @patch(
-        "pcapi.domain.user_emails.build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary",
-        return_value={"Vars": {"days_before_cancel": 7, "days_from_booking": 23}},
-    )
-    def test_should_send_one_email_to_beneficiary_when_they_have_soon_to_be_expired_bookings_and_FF_disabled(
-        self, build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary
-    ):
-        # given
-        now = datetime.utcnow()
-        user = users_factories.BeneficiaryGrant18Factory(email="isasimov@example.com")
-        created_5_days_ago = now - timedelta(days=5)
-        created_23_days_ago = now - timedelta(days=23)
-
-        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        soon_to_be_expired_book_booking = BookingFactory(
-            stock__offer__product=book,
-            stock__offer__name="Fondation",
-            stock__offer__venue__name="Première Fondation",
-            dateCreated=created_5_days_ago,
-            user=user,
-        )
-
-        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
-        soon_to_be_expired_cd_booking = BookingFactory(
-            stock__offer__product=cd,
-            stock__offer__name="Fondation et Empire",
-            stock__offer__venue__name="Seconde Fondation",
-            dateCreated=created_23_days_ago,
-            user=user,
-        )
-
-        # when
-        send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
-            user, [soon_to_be_expired_book_booking, soon_to_be_expired_cd_booking]
-        )
-
-        # then
-        build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary.assert_called_once_with(
-            beneficiary=user,
-            bookings=[soon_to_be_expired_book_booking, soon_to_be_expired_cd_booking],
-            days_before_cancel=7,
-            days_from_booking=23,
-        )
-
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-
-        assert mails_testing.outbox[0].sent_data["Vars"]["days_before_cancel"] == 7
-        assert mails_testing.outbox[0].sent_data["Vars"]["days_from_booking"] == 23
-
-    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
     @patch(
         "pcapi.domain.user_emails.build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary",
         return_value={"MJ-TemplateID": 12345},
     )
-    def test_should_send_two_emails_to_beneficiary_when_they_have_soon_to_be_expired_bookings_and_FF_enabled(
+    def test_should_send_two_emails_to_beneficiary_when_they_book_and_other_things_have_soon_to_be_expired_bookings(
         self, build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary
     ):
         # given

@@ -1,24 +1,17 @@
 from typing import List
 from typing import Tuple
 
-from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE
 from pcapi.core.categories import subcategories
 from pcapi.core.users.models import User
 from pcapi.models import Booking
 
 
 def filter_books_bookings(bookings: list[Booking]) -> Tuple[List[Booking], List[Booking]]:
-
     books_bookings = []
     other_bookings = []
 
     for booking in bookings:
-        if (
-            booking.stock.offer.subcategoryId == subcategories.LIVRE_PAPIER.id
-            # TODO(yacine) remove this condition below 20 days after activation of FF
-            # ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS
-            and booking.dateCreated >= BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY_START_DATE
-        ):
+        if booking.stock.offer.subcategoryId == subcategories.LIVRE_PAPIER.id:
             books_bookings.append(booking)
         else:
             other_bookings.append(booking)

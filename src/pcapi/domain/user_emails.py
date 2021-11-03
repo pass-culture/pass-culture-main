@@ -51,7 +51,6 @@ from pcapi.emails.user_warning_after_pro_booking_cancellation import (
     retrieve_data_to_warn_user_after_pro_booking_cancellation,
 )
 from pcapi.models import Offer
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository.offerer_queries import find_new_offerer_user_email
 from pcapi.utils.mailing import make_admin_user_validation_email
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
@@ -176,37 +175,26 @@ def send_admin_user_validation_email(user: User, token: Token) -> None:
 def send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
     beneficiary: User, bookings: list[Booking]
 ) -> None:
-    if FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS.is_active():
-        books_bookings, other_bookings = filter_books_bookings(bookings)
-        if books_bookings:
-            books_bookings_data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
-                beneficiary=beneficiary,
-                bookings=books_bookings,
-                days_before_cancel=booking_constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
-                days_from_booking=booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
-                - booking_constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
-            )
-            mails.send(recipients=[beneficiary.email], data=books_bookings_data)
-
-        if other_bookings:
-            other_bookings_data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
-                beneficiary=beneficiary,
-                bookings=other_bookings,
-                days_before_cancel=booking_constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
-                days_from_booking=booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
-                - booking_constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
-            )
-            mails.send(recipients=[beneficiary.email], data=other_bookings_data)
-
-    else:
-        data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
+    books_bookings, other_bookings = filter_books_bookings(bookings)
+    if books_bookings:
+        books_bookings_data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
             beneficiary=beneficiary,
-            bookings=bookings,
+            bookings=books_bookings,
+            days_before_cancel=booking_constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
+            days_from_booking=booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
+            - booking_constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
+        )
+        mails.send(recipients=[beneficiary.email], data=books_bookings_data)
+
+    if other_bookings:
+        other_bookings_data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
+            beneficiary=beneficiary,
+            bookings=other_bookings,
             days_before_cancel=booking_constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
             days_from_booking=booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
             - booking_constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
         )
-        mails.send(recipients=[beneficiary.email], data=data)
+        mails.send(recipients=[beneficiary.email], data=other_bookings_data)
 
 
 def send_activation_email(user: User, reset_password_token_life_time: typing.Optional[timedelta] = None) -> bool:
