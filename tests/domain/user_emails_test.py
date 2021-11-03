@@ -192,7 +192,7 @@ class SendBookingConfirmationEmailToOffererTest:
 
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["To"] == "booking.email@example.com"
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 2843165
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 3095147
 
 
 @pytest.mark.usefixtures("db_session")

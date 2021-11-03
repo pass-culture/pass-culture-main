@@ -148,7 +148,7 @@ class BookOfferTest:
 
         assert len(mails_testing.outbox) == 2
         email_data1 = mails_testing.outbox[0].sent_data
-        assert email_data1["MJ-TemplateID"] == 2843165  # to offerer
+        assert email_data1["MJ-TemplateID"] == 3095147  # to offerer
         email_data2 = mails_testing.outbox[1].sent_data
         assert email_data2["MJ-TemplateID"] == 3094927  # to beneficiary
 

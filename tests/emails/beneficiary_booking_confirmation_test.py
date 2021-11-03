@@ -6,7 +6,6 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
 from pcapi.utils.human_ids import humanize
 
@@ -337,7 +336,6 @@ def test_digital_offer_without_departement_code_information():
 
 @pytest.mark.usefixtures("db_session")
 class BooksBookingExpirationDateTest:
-    @override_features(ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS=True)
     def test_should_return_new_expiration_delay_data_for_email_when_offer_is_a_book(self):
         booking = make_booking(
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
