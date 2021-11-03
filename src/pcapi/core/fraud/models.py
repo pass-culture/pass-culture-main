@@ -262,3 +262,11 @@ class FraudItem:
 
     def __bool__(self) -> bool:
         return self.status == FraudStatus.OK
+
+
+### TODO: remove after 15-17 test phase ###
+class IneHashWhitelist(Model):
+    ine_hash = sqlalchemy.Column(sqlalchemy.TEXT, nullable=False, primary_key=True)
+
+
+### END ###
