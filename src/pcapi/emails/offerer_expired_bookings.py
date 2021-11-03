@@ -1,24 +1,14 @@
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import Booking
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.mailing import build_pc_pro_offer_link
-
-
-OLD_MAILJET_TEMPLATE_ID = 1952508
-NEW_MAILJET_TEMPLATE_ID = 3095184
 
 
 def build_expired_bookings_recap_email_data_for_offerer(
     offerer: Offerer, bookings: list[Booking], withdrawal_period
 ) -> dict:
-    mj_template_id = (
-        NEW_MAILJET_TEMPLATE_ID
-        if FeatureToggle.ENABLE_NEW_AUTO_EXPIRY_DELAY_BOOKS_BOOKINGS.is_active()
-        else OLD_MAILJET_TEMPLATE_ID
-    )
     return {
-        "Mj-TemplateID": mj_template_id,
+        "Mj-TemplateID": 3095184,
         "Mj-TemplateLanguage": True,
         "Vars": {
             "bookings": _extract_bookings_information_from_bookings_list(bookings),
