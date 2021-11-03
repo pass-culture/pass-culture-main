@@ -339,7 +339,7 @@ export const showOptionsTree = [
   },
   {
     code: 1100,
-    label: 'Spectacle Musical / Cabaret',
+    label: 'Spectacle / Cabaret',
     children: [
       { code: 1101, label: 'Cabaret' },
       { code: 1102, label: 'Café Concert' },
