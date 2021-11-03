@@ -7,7 +7,6 @@ from typing import Union
 from dateutil.relativedelta import relativedelta
 import sqlalchemy
 
-from pcapi import settings
 from pcapi.connectors.beneficiaries import jouve_backend
 from pcapi.core.users import constants
 from pcapi.core.users import models as user_models
@@ -251,7 +250,7 @@ def _duplicate_ine_hash_fraud_item(ine_hash: str) -> models.FraudItem:
 
 
 def _whitelisted_ine_fraud_item(ine_hash: str) -> models.FraudItem:
-    is_ine_whitelisted = ine_hash in settings.WHITELISTED_INE_HASHES
+    is_ine_whitelisted = db.session.query(models.IneHashWhitelist.query.filter_by(ine_hash=ine_hash).exists()).scalar()
 
     return models.FraudItem(
         # TODO: ask if it is considered as KO or SUSPICIOUS

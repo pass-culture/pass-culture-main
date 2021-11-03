@@ -8,7 +8,6 @@ import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models import db
@@ -446,6 +445,7 @@ class UserFraudsterTest:
 @pytest.mark.usefixtures("db_session")
 class EduconnectFraudTest:
     def test_on_educonnect_result(self):
+        fraud_factories.IneHashWhitelistFactory(ine_hash="5ba682c0fc6a05edf07cd8ed0219258f")
         user = users_factories.UserFactory()
         birth_date = (datetime.datetime.today() - relativedelta(years=15)).date()
         fraud_api.on_educonnect_result(
@@ -534,6 +534,7 @@ class EduconnectFraudTest:
 
     @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_ine_duplicates_fraud_checks(self):
+        fraud_factories.IneHashWhitelistFactory(ine_hash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
         same_ine_user = users_factories.UnderageBeneficiaryFactory(ineHash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
@@ -553,8 +554,8 @@ class EduconnectFraudTest:
         )
 
     @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
-    @override_settings(WHITELISTED_INE_HASHES=["identifiantWhitelisté1"])
     def test_ine_whitelisted_fraud_checks_pass(self):
+        fraud_factories.IneHashWhitelistFactory(ine_hash="identifiantWhitelisté1")
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
             resultContent=fraud_factories.EduconnectContentFactory(ine_hash="identifiantWhitelisté1"),
@@ -572,8 +573,8 @@ class EduconnectFraudTest:
         assert duplicate_ine_check is None
 
     @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
-    @override_settings(WHITELISTED_INE_HASHES=["identifiantWhitelisté1"])
     def test_ine_whitelisted_fraud_checks_fail(self):
+        fraud_factories.IneHashWhitelistFactory(ine_hash="identifiantWhitelisté1")
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
             resultContent=fraud_factories.EduconnectContentFactory(ine_hash="identifiantWhitelisté2"),

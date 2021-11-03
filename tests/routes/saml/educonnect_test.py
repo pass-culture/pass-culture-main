@@ -8,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
 import pytest
 
+from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
@@ -75,6 +76,8 @@ class EduconnectTest:
     @patch("pcapi.core.users.external.educonnect.api.get_saml_client")
     def test_on_educonnect_authentication_response(self, mock_get_educonnect_saml_client, client, caplog, app):
         # set user_id in redis as if /saml/educonnect/login was called
+        ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
+        fraud_factories.IneHashWhitelistFactory(ine_hash=ine_hash)
         user = users_factories.UserFactory(email=self.email)
         app.redis_client.set(f"{self.request_id_key_prefix}{self.request_id}", user.id)
 
@@ -92,7 +95,7 @@ class EduconnectTest:
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.67": ["2006-08-18"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.73": ["2212"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.6": ["2021-10-08 11:51:33.437"],
-            "urn:oid:1.3.6.1.4.1.20326.10.999.1.64": ["5ba682c0fc6a05edf07cd8ed0219258f"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.64": [ine_hash],
         }
         mock_saml_response.in_response_to = self.request_id
 
@@ -109,7 +112,7 @@ class EduconnectTest:
             "date_of_birth": "2006-08-18",
             "educonnect_connection_date": "2021-10-08T11:51:33.437000",
             "educonnect_id": "e6759833fb379e0340322889f2a367a5a5150f1533f80dfe963d21e43e33f7164b76cc802766cdd33c6645e1abfd1875",
-            "ine_hash": "5ba682c0fc6a05edf07cd8ed0219258f",
+            "ine_hash": ine_hash,
             "first_name": "Max",
             "last_name": "SENS",
             "logout_url": "https://educonnect.education.gouv.fr/Logout",
@@ -126,7 +129,7 @@ class EduconnectTest:
             "birth_date": "2006-08-18",
             "educonnect_id": "e6759833fb379e0340322889f2a367a5a5150f1533f80dfe963d21e43e33f7164b76cc802766cdd33c6645e1abfd1875",
             "first_name": "Max",
-            "ine_hash": "5ba682c0fc6a05edf07cd8ed0219258f",
+            "ine_hash": ine_hash,
             "last_name": "SENS",
         }
         assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
@@ -135,7 +138,7 @@ class EduconnectTest:
         assert user.firstName == "Max"
         assert user.lastName == "SENS"
         assert user.dateOfBirth == datetime.datetime(2006, 8, 18, 0, 0)
-        assert user.ineHash == "5ba682c0fc6a05edf07cd8ed0219258f"
+        assert user.ineHash == ine_hash
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
     def test_educonnect_redirects_to_success_page_with_warning_log(self, mock_get_educonnect_user, client, app, caplog):
@@ -189,6 +192,7 @@ class EduconnectTest:
         )
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    @override_features(ENABLE_INE_WHITELIST_FILTER=False)
     def test_educonnect_connection_synchronizes_data(self, mock_get_educonnect_user, client, app):
         user, request_id = self.connect_to_educonnect(client, app)
         age = 15

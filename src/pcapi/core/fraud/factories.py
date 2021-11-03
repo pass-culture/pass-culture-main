@@ -163,3 +163,12 @@ class EduconnectContentFactory(factory.Factory):
     first_name = factory.Faker("first_name")
     ine_hash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
     last_name = factory.Faker("last_name")
+
+
+### TODO: remove after 15-17 test phase ###
+class IneHashWhitelistFactory(testing.BaseFactory):
+    class Meta:
+        model = models.IneHashWhitelist
+
+
+### END ###

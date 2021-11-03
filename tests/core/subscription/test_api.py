@@ -6,6 +6,7 @@ from flask_jwt_extended.utils import create_access_token
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import factories as users_factories
@@ -103,6 +104,8 @@ class EduconnectFlowTest:
     @freeze_time("2021-10-10")
     @patch("pcapi.core.users.external.educonnect.api.get_saml_client")
     def test_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
+        ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
+        fraud_factories.IneHashWhitelistFactory(ine_hash=ine_hash)
         user = users_factories.UserFactory()
         access_token = create_access_token(identity=user.email)
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
@@ -133,7 +136,7 @@ class EduconnectFlowTest:
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.67": ["2006-08-18"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.73": ["2212"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.6": ["2021-10-08 11:51:33.437"],
-            "urn:oid:1.3.6.1.4.1.20326.10.999.1.64": ["5ba682c0fc6a05edf07cd8ed0219258f"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.64": [ine_hash],
         }
         mock_saml_response.in_response_to = request_id
 
@@ -153,7 +156,7 @@ class EduconnectFlowTest:
         assert user.firstName == "Max"
         assert user.lastName == "SENS"
         assert user.dateOfBirth == datetime(2006, 8, 18, 0, 0)
-        assert user.ineHash == "5ba682c0fc6a05edf07cd8ed0219258f"
+        assert user.ineHash == ine_hash
 
         profile_data = {
             "address": "1 rue des rues",
