@@ -1,4 +1,5 @@
 from pcapi.core.bookings.models import Booking
+from pcapi.core.finance.models import BusinessUnit
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
 from pcapi.core.fraud.models import BeneficiaryFraudResult
 from pcapi.core.mails.models import Email
@@ -132,4 +133,5 @@ models = (
     PaymentStatus,
     Token,
     SubscriptionMessage,
+    BusinessUnit,
 )
