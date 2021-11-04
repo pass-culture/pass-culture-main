@@ -107,7 +107,7 @@ def test_get_user_attributes():
         booking_count=2,
         booking_subcategories=["SUPPORT_PHYSIQUE_FILM"],
         deposit_activation_date=user.deposit_activation_date,
-        has_completed_id_check=None,
+        has_completed_id_check=True,
         user_id=user.id,
         is_eligible=True,
         is_email_validated=True,

@@ -11,6 +11,7 @@ from faker import Faker
 from freezegun import freeze_time
 
 from pcapi.core.bookings import factories as bookings_factory
+from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.payments.conf import GRANT_18_VALIDITY_IN_YEARS
 from pcapi.core.payments.models import DepositType
 from pcapi.core.subscription import api as subscription_api
@@ -304,7 +305,11 @@ def create_short_email_beneficiaries() -> dict:
             bookings_factory.IndividualBookingFactory(individualBooking__user=beneficiary_and_exunderage)
             db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
 
-        subscription_api.activate_beneficiary(beneficiary_and_exunderage, "sandbox")
+        fraud_factories.BeneficiaryFraudCheckFactory(user=beneficiary_and_exunderage)
+        fraud_factories.BeneficiaryFraudResultFactory(user=beneficiary_and_exunderage)
+        beneficiary_import = users_factories.BeneficiaryImportFactory(beneficiary=beneficiary_and_exunderage)
+        users_factories.BeneficiaryImportStatusFactory(beneficiaryImport=beneficiary_import, author=None)
+        subscription_api.activate_beneficiary(beneficiary_and_exunderage)
         users.append(beneficiary_and_exunderage)
 
     with freeze_time(datetime.utcnow() - relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, months=5)):
