@@ -6,9 +6,10 @@
 import PropTypes from 'prop-types'
 import React, { useState, useCallback } from 'react'
 
-import Spinner from 'components/layout/Spinner'
 
-import ConfirmDialog from '../ConfirmDialog/ConfirmDialog'
+import ConfirmDialog from "components/layout/ConfirmDialog/ConfirmDialog"
+import Icon from "components/layout/Icon"
+import Spinner from 'components/layout/Spinner'
 
 const StocksProviderForm = ({ saveVenueProvider, providerId, siret, venueId }) => {
   const [isCheckingApi, setIsCheckingApi] = useState(false)
@@ -65,9 +66,29 @@ const StocksProviderForm = ({ saveVenueProvider, providerId, siret, venueId }) =
       </form>
       {isConfirmDialogOpened && (
         <ConfirmDialog
+          cancelText="Annuler"
+          confirmText="Continuer"
           onCancel={handleCloseConfirmDialog}
           onConfirm={handleFormSubmit}
-        />
+          title="Certains ouvrages seront exclus de la synchronisation automatique."
+        >
+          <p>
+            Vous pouvez retrouver la liste des catégories de livres qui sont exclus de la
+            synchronisation automatique en suivant le lien
+            <a
+              className="tertiary-link"
+              href="https://aide.passculture.app/fr/articles/5394935-acteurs-culturels-pourquoi-la-remontee-de-mes-stocks-n-integre-pas-toutes-les-references"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <Icon
+                alt=""
+                svg="ico-external-site-red"
+              />
+              FAQ
+            </a>
+          </p>
+        </ConfirmDialog>
       )}
     </>
   )
