@@ -32,6 +32,7 @@ from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.beneficiary import remote_tag_has_completed
 from pcapi.scripts.booking.handle_expired_bookings import handle_expired_bookings
 from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_individual_bookings
+from pcapi.scripts.payment.user_recredit import recredit_underage_users
 from pcapi.workers.push_notification_job import send_tomorrow_stock_notification
 
 
@@ -180,6 +181,12 @@ def pc_send_withdrawal_terms_to_offerers_validated_yesterday() -> None:
         send_withdrawal_terms_to_newly_validated_offerer(offerer)
 
 
+@cron_context
+@log_cron_with_transaction
+def pc_recredit_underage_users() -> None:
+    recredit_underage_users()
+
+
 @blueprint.cli.command("clock")
 def clock() -> None:
     set_tag("pcapi.app_type", "clock")
@@ -226,5 +233,7 @@ def clock() -> None:
     scheduler.add_job(pc_clean_past_draft_offers, "cron", day="*", hour="20")
 
     scheduler.add_job(pc_send_withdrawal_terms_to_offerers_validated_yesterday, "cron", day="*", hour="6")
+
+    scheduler.add_job(pc_recredit_underage_users, "cron", day="*", hour="0")
 
     scheduler.start()

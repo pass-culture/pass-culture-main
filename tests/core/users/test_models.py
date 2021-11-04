@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
 
@@ -212,6 +213,26 @@ class UserTest:
 
             assert user.has_beneficiary_role
             assert not user.has_pro_role
+
+    class UserTest:
+        @pytest.mark.parametrize(
+            "birth_date,today,latest_birthday",
+            [
+                (date(2000, 1, 1), date(2019, 12, 31), date(2019, 1, 1)),
+                (date(2000, 1, 1), date(2020, 1, 1), date(2020, 1, 1)),
+                (date(2000, 1, 1), date(2020, 1, 2), date(2020, 1, 1)),
+                # february 29th, leap year
+                (date(2000, 2, 29), date(2020, 2, 28), date(2019, 2, 28)),
+                (date(2000, 2, 29), date(2020, 3, 1), date(2020, 2, 29)),
+                # february 29th, previous year is a leap year
+                (date(2000, 2, 29), date(2021, 2, 27), date(2020, 2, 29)),
+                (date(2000, 2, 29), date(2021, 2, 28), date(2021, 2, 28)),
+                (date(2000, 2, 29), date(2021, 3, 1), date(2021, 2, 28)),
+            ],
+        )
+        def test_with_leap_year(self, birth_date, today, latest_birthday):
+            with freeze_time(today):
+                assert user_models._get_latest_birthday(birth_date) == latest_birthday
 
 
 @pytest.mark.usefixtures("db_session")

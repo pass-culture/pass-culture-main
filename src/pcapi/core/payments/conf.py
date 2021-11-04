@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from pcapi.core.payments.models import DepositType
+from pcapi.core.payments.models import RecreditType
 
 
 GRANT_18_VALIDITY_IN_YEARS = 2
@@ -16,6 +17,17 @@ GRANTED_DEPOSIT_AMOUNT_BY_AGE_AND_VERSION = {
     16: {1: GRANTED_DEPOSIT_AMOUNT_16},
     17: {1: GRANTED_DEPOSIT_AMOUNT_17},
     18: {1: GRANTED_DEPOSIT_AMOUNT_18_v1, 2: GRANTED_DEPOSIT_AMOUNT_18_v2},
+}
+
+
+RECREDIT_TYPE_AGE_MAPPING = {
+    16: RecreditType.RECREDIT_16,
+    17: RecreditType.RECREDIT_17,
+}
+
+RECREDIT_TYPE_AMOUNT_MAPPING = {
+    RecreditType.RECREDIT_16: GRANTED_DEPOSIT_AMOUNT_16,
+    RecreditType.RECREDIT_17: GRANTED_DEPOSIT_AMOUNT_17,
 }
 
 

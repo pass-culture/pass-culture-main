@@ -97,6 +97,30 @@ class NotificationSubscriptions:
     marketing_email: bool = True
 
 
+# calculate date of latest birthday
+def _get_latest_birthday(birth_date: date) -> date:
+    """
+    Calculates the latest birthday of a given person.
+    :param birth_date: The person's birthday.
+    :return: The latest birthday's date.
+    """
+
+    today = date.today()
+
+    try:
+        this_year_birthday = birth_date.replace(year=today.year)
+    except ValueError:  # handle February 29
+        this_year_birthday = birth_date.replace(year=today.year, day=28)
+    try:
+        previous_year_birthday = birth_date.replace(year=today.year - 1)
+    except ValueError:  # handle February 29
+        previous_year_birthday = birth_date.replace(year=today.year - 1, day=28)
+
+    if this_year_birthday <= today:
+        return this_year_birthday
+    return previous_year_birthday
+
+
 class User(PcObject, Model, NeedsValidationMixin):
     __tablename__ = "user"
 
@@ -356,6 +380,10 @@ class User(PcObject, Model, NeedsValidationMixin):
                 years=constants.ELIGIBILITY_UNDERAGE_RANGE[-1] + 1
             )
         return datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(years=constants.ELIGIBILITY_AGE_18 + 1)
+
+    @property
+    def latest_birthday(self) -> date:
+        return _get_latest_birthday(self.dateOfBirth.date())
 
     @hybrid_property
     def is_phone_validated(self):

@@ -178,7 +178,6 @@ class RecreditType(enum.Enum):
     RECREDIT_17 = "Recredit17"
 
 
-
 class Recredit(PcObject, Model):
     depositId = sa.Column(sa.BigInteger, sa.ForeignKey("deposit.id"), nullable=False)
 
