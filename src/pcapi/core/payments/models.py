@@ -20,7 +20,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import SmallInteger
 
 from pcapi.core.bookings.models import Booking
-from pcapi.core.categories import subcategories
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
 
@@ -72,10 +71,12 @@ class CustomReimbursementRule(ReimbursementRule, Model):
 
     offerer = relationship("Offerer", foreign_keys=[offererId], backref="custom_reimbursement_rules")
 
-    # A list of identifiers of categories for which the rule applies.
+    # FIXME (dbaty, 2021-11-04): remove `categories` column once v161 is deployed
+    categories = Column(postgresql.ARRAY(Text()), server_default="{}")
+    # A list of identifiers of subcategories on which the rule applies.
     # If the list is empty, the rule applies on all offers of an
     # offerer.
-    categories = Column(postgresql.ARRAY(Text()), server_default="{}")
+    subcategories = Column(postgresql.ARRAY(Text()), server_default="{}")
 
     amount = Column(Numeric(10, 2), nullable=True)
 
@@ -112,9 +113,8 @@ class CustomReimbursementRule(ReimbursementRule, Model):
     def is_relevant(self, booking: Booking, cumulative_revenue="ignored"):
         if booking.stock.offerId == self.offerId:
             return True
-        if self.categories:
-            sub_category = subcategories.ALL_SUBCATEGORIES_DICT[booking.stock.offer.subcategoryId]
-            if sub_category.category_id not in self.categories:
+        if self.subcategories:
+            if booking.stock.offer.subcategoryId not in self.subcategories:
                 return False
         if booking.offererId == self.offererId:
             return True

@@ -6,7 +6,6 @@ from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
@@ -690,7 +689,7 @@ class CustomRuleFinderTest:
         )
         booking4 = bookings_factories.UsedBookingFactory()
         rule = payments_factories.CustomReimbursementRuleFactory(
-            offerer=offerer, categories=[categories.CINEMA.id], timespan=(yesterday, None)
+            offerer=offerer, subcategories=[subcategories.FESTIVAL_CINE.id], timespan=(yesterday, None)
         )
 
         finder = reimbursement.CustomRuleFinder()
