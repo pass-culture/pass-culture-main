@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 import random
 import string
@@ -5,6 +6,7 @@ import string
 from dateutil.relativedelta import relativedelta
 import factory
 from factory.declarations import LazyAttribute
+import factory.fuzzy
 
 from pcapi.core import testing
 import pcapi.core.users.factories as users_factories
@@ -29,7 +31,7 @@ class JouveContentFactory(factory.Factory):
     bodyFirstnameLevel = factory.Faker("pyint", max_value=100)
     bodyNameLevel = factory.Faker("pyint", max_value=100)
     bodyNameCtrl = random.choice(JOUVE_CTRL_VALUES)
-    bodyPieceNumber = factory.Faker("pyint")
+    bodyPieceNumber = factory.fuzzy.FuzzyText(length=12, chars=string.digits)
     bodyPieceNumberCtrl = random.choice(JOUVE_CTRL_VALUES)
     bodyPieceNumberLevel = factory.Faker("pyint", max_value=100)
     city = "Paris"
@@ -101,7 +103,7 @@ class DMSContentFactory(factory.Factory):
     postal_code = "75008"
     activity = "Étudiant"
     address = factory.Faker("address")
-    id_piece_number = factory.Sequence("{}".format)
+    id_piece_number = factory.Sequence(lambda _: "".join(random.choices(string.digits, k=12)))
 
 
 class UbbleIdentificationResponseFactory(factory.Factory):
@@ -145,7 +147,7 @@ class EduconnectContentFactory(factory.Factory):
     class Params:
         age = 15
 
-    birth_date = factory.LazyAttribute(lambda o: datetime.now() - relativedelta(years=o.age, months=4))
+    birth_date = factory.LazyAttribute(lambda o: date.today() - relativedelta(years=o.age, months=4))
     educonnect_id = factory.Faker("lexify", text="id-?????????????????")
     first_name = factory.Faker("first_name")
     ine_hash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
@@ -166,7 +168,7 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
         model = models.BeneficiaryFraudCheck
 
     user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
-    type = factory.LazyAttribute(lambda o: random.choice(list(FRAUD_CHECK_TYPE_MODEL_ASSOCIATION.keys())))
+    type = models.FraudCheckType.JOUVE
     thirdPartyId = factory.Sequence("ThirdPartyIdentifier-{0}".format)
 
     @classmethod
@@ -188,7 +190,7 @@ class BeneficiaryFraudResultFactory(testing.BaseFactory):
         model = models.BeneficiaryFraudResult
 
     user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
-    status = factory.LazyAttribute(lambda o: random.choice(list(models.FraudStatus)).value)
+    status = models.FraudStatus.OK
     reason = factory.Sequence("Fraud Result excuse #{0}".format)
 
 
