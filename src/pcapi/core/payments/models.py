@@ -143,6 +143,8 @@ class Deposit(PcObject, Model):
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow(), server_default=sa.func.now()
     )
 
+    dateUpdated = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
+
     expirationDate = sa.Column(sa.DateTime, nullable=True)
 
     version = sa.Column(SmallInteger, nullable=False)
@@ -153,6 +155,8 @@ class Deposit(PcObject, Model):
         nullable=False,
         server_default=DepositType.GRANT_18.value,
     )
+
+    recredits = relationship("Recredit", order_by="Recredit.dateCreated.desc()")
 
     @property
     def specific_caps(self):
@@ -167,3 +171,27 @@ class GrantedDeposit:
     expiration_date: datetime.datetime
     type: DepositType
     version: int = 1
+
+
+class RecreditType(enum.Enum):
+    RECREDIT_16 = "Recredit16"
+    RECREDIT_17 = "Recredit17"
+
+
+
+class Recredit(PcObject, Model):
+    depositId = sa.Column(sa.BigInteger, sa.ForeignKey("deposit.id"), nullable=False)
+
+    deposit = relationship("Deposit", foreign_keys=[depositId])
+
+    dateCreated = sa.Column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow(), server_default=sa.func.now()
+    )
+
+    amount = sa.Column(sa.Numeric(10, 2), nullable=False)
+
+    recreditType = sa.Column(
+        "recreditType",
+        sa.Enum(RecreditType, native_enum=False, create_constraint=False),
+        nullable=False,
+    )
