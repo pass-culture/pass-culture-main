@@ -100,7 +100,15 @@ class FindAllOffererPaymentsTest:
     def test_should_return_one_payment_info_with_sent_status_when_offer_educational(self, app):
         # Given
         now = datetime.utcnow()
-        educational_booking = bookings_factories.UsedEducationalBookingFactory(dateUsed=now, token="ABCDEF")
+        educational_booking = bookings_factories.UsedEducationalBookingFactory(
+            educationalBooking__educationalRedactor__firstName="Dominique",
+            educationalBooking__educationalRedactor__lastName="Leprof",
+            dateUsed=now,
+            token="ABCDEF",
+            quantity=5,
+            amount=50,
+            stock__price=10,
+        )
 
         payment = payments_factories.PaymentFactory(
             amount=50,
@@ -125,17 +133,17 @@ class FindAllOffererPaymentsTest:
         assert payments[0] == (
             None,
             None,
-            educational_booking.firstName,
-            educational_booking.lastName,
-            educational_booking.token,
+            "Dominique",
+            "Leprof",
+            "ABCDEF",
             now,
-            1,
-            Decimal("10.00"),
-            "Product 0",
-            "1 boulevard Poissonnière",
-            "Le Petit Rintintin 0",
-            "00000000000000",
-            "1 boulevard Poissonnière",
+            educational_booking.quantity,
+            educational_booking.amount,
+            educational_booking.stock.offer.name,
+            educational_booking.stock.offer.venue.managingOfferer.address,
+            educational_booking.stock.offer.venue.name,
+            educational_booking.stock.offer.venue.siret,
+            educational_booking.stock.offer.venue.address,
             Decimal("50.00"),
             Decimal("1.00"),
             "CF13QSDFGH456789",

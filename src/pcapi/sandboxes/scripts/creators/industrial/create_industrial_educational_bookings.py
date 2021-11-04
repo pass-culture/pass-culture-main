@@ -1,12 +1,17 @@
 import datetime
 
+from sqlalchemy.orm import joinedload
+
 from pcapi.core.bookings.factories import EducationalBookingFactory
+from pcapi.core.bookings.factories import UsedEducationalBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.offers.factories import EducationalEventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.users.models import User
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 
 
@@ -77,6 +82,17 @@ def create_industrial_educational_bookings() -> None:
     venue = VenueFactory(name="Opéra Royal de Versailles", isPermanent=True)
     UserOffererFactory(validationToken=None, offerer=venue.managingOfferer)
 
+    educational_redactor = educational_factories.EducationalRedactorFactory(email="compte.test@education.gouv.fr")
+    user_offerer_reimbursements = (
+        UserOfferer.query.join(User)
+        .filter(User.email == "pctest.pro93.0@example.com")
+        .options(joinedload(UserOfferer.offerer))
+        .first()
+    )
+    venue_reimbursements = VenueFactory(
+        name="Théâtre des potirons", isPermanent=True, managingOfferer=user_offerer_reimbursements.offerer
+    )
+
     for stock_data in FAKE_STOCK_DATA:
         stocks.append(
             EducationalEventStockFactory(
@@ -136,8 +152,6 @@ def create_industrial_educational_bookings() -> None:
             )
         )
 
-    educational_redactor = educational_factories.EducationalRedactorFactory(email="compte.test@education.gouv.fr")
-
     for stock in stocks:
         for educational_institution in educational_institutions:
             EducationalBookingFactory(
@@ -148,6 +162,23 @@ def create_industrial_educational_bookings() -> None:
                 cancellation_limit_date=now + datetime.timedelta(days=4),
                 status=BookingStatus.PENDING,
                 stock=stock,
+            )
+
+            UsedEducationalBookingFactory(
+                educationalBooking__educationalRedactor=educational_redactor,
+                educationalBooking__educationalInstitution=educational_institution,
+                educationalBooking__educationalYear=educational_current_year,
+                educationalBooking__confirmationLimitDate=now - datetime.timedelta(days=20),
+                cancellation_limit_date=now - datetime.timedelta(days=15),
+                dateUsed=now - datetime.timedelta(8),
+                status=BookingStatus.USED,
+                stock=EducationalEventStockFactory(
+                    quantity=100,
+                    price=1200,
+                    beginningDatetime=now - datetime.timedelta(days=10),
+                    bookingLimitDatetime=now - datetime.timedelta(days=10),
+                    offer__venue=venue_reimbursements,
+                ),
             )
 
     for next_year_stock in next_year_stocks:

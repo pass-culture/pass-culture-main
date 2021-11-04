@@ -1,8 +1,10 @@
 from datetime import datetime
+from datetime import timedelta
 import logging
 from random import choice
 
 from pcapi.core.bookings.factories import IndividualBookingFactory
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
@@ -90,6 +92,11 @@ def _create_bookings_for_other_beneficiaries(
             else:
                 is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
 
+            if is_used:
+                stock.beginningDatetime = datetime.now() - timedelta(days=2)
+                stock.bookingLimitDatetime = datetime.now() - timedelta(days=5)
+                repository.save(stock)
+
             if user_should_have_no_more_money and user not in list_of_users_with_no_more_money:
                 booking_amount = user.deposit.amount
                 list_of_users_with_no_more_money.append(user)
@@ -101,8 +108,9 @@ def _create_bookings_for_other_beneficiaries(
             bookings_by_name[booking_name] = IndividualBookingFactory(
                 individualBooking__user=user,
                 isUsed=is_used,
+                status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
                 stock=stock,
-                dateUsed=datetime.now() if is_used else None,
+                dateUsed=datetime.now() - timedelta(days=2) if is_used else None,
                 amount=booking_amount,
                 token=str(token),
                 offerer=offer.venue.managingOfferer,
@@ -143,8 +151,17 @@ def _create_has_booked_some_bookings(bookings_by_name, offers_by_name, user, use
         else:
             is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
 
+        if is_used:
+            stock.beginningDatetime = datetime.now() - timedelta(days=2)
+            stock.bookingLimitDatetime = datetime.now() - timedelta(days=5)
+            repository.save(stock)
+
         booking = IndividualBookingFactory(
-            individualBooking__user=user, isUsed=is_used, stock=stock, dateUsed=datetime.now() if is_used else None
+            individualBooking__user=user,
+            isUsed=is_used,
+            status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
+            stock=stock,
+            dateUsed=datetime.now() - timedelta(days=2) if is_used else None,
         )
         booking_name = "{} / {} / {}".format(offer_name, user_name, booking.token)
         bookings_by_name[booking_name] = booking
