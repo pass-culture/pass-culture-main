@@ -33,7 +33,7 @@ def adage_jwt_required(route_function):
                 raise ForbiddenError({"Authorization": "Unrecognized token"})
             except ExpiredSignatureError as expired_signature_error:
                 logger.warning("Token has expired", extra={"error": expired_signature_error})
-                raise InvalidTokenError({"Token expired"})
+                raise InvalidTokenError("Token expired")
 
             if not adage_jwt_decoded.get("exp"):
                 logger.warning("Token does not contain an expiration date")
@@ -49,6 +49,6 @@ def adage_jwt_required(route_function):
             kwargs["authenticated_information"] = authenticated_information
             return route_function(*args, **kwargs)
 
-        raise ForbiddenError({"Authorization": ["Unrecognized token"]})
+        raise ForbiddenError({"Authorization": "Unrecognized token"})
 
     return wrapper
