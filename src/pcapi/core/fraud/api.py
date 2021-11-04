@@ -22,6 +22,14 @@ logger = logging.getLogger(__name__)
 
 FRAUD_RESULT_REASON_SEPARATOR = ";"
 
+USER_PROFILING_RISK_MAPPING = {
+    models.UserProfilingRiskRating.TRUSTED: models.FraudStatus.OK,
+    models.UserProfilingRiskRating.NEUTRAL: models.FraudStatus.OK,
+    models.UserProfilingRiskRating.LOW: models.FraudStatus.OK,
+    models.UserProfilingRiskRating.MEDIUM: models.FraudStatus.SUSPICIOUS,
+    models.UserProfilingRiskRating.HIGH: models.FraudStatus.KO,
+}
+
 
 def on_educonnect_result(user: user_models.User, educonnect_content: models.EduconnectContent) -> None:
     if (
@@ -203,7 +211,7 @@ def on_identity_fraud_check_result(
     return fraud_result
 
 
-def validate_id_piece_number_format_fraud_item(id_piece_number):
+def validate_id_piece_number_format_fraud_item(id_piece_number) -> models.FraudItem:
     if not id_piece_number or not id_piece_number.strip():
         return models.FraudItem(
             status=models.FraudStatus.SUSPICIOUS, detail="Le numéro de la pièce d'identité est vide"
@@ -333,7 +341,7 @@ def _get_threshold_id_fraud_item(
     return models.FraudItem(status=status, detail=f"Le champ {key} a le score {value} (minimum {threshold})")
 
 
-def _underage_user_fraud_item(birth_date: datetime.date):
+def _underage_user_fraud_item(birth_date: datetime.date) -> models.FraudItem:
     age = relativedelta(datetime.date.today(), birth_date).years
     if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
         return models.FraudItem(
@@ -360,6 +368,16 @@ def create_user_profiling_check(
     return fraud_check
 
 
+def on_user_profiling_check(
+    user: user_models.User,
+    tmx_content: models.UserProfilingFraudData,
+) -> None:
+    risk_rating = tmx_content.risk_rating
+    user_profiling_status = USER_PROFILING_RISK_MAPPING[risk_rating]
+    if not user_profiling_status == models.FraudStatus.OK:
+        upsert_fraud_result(user, user_profiling_status, f"threat-metrix risk rating is {risk_rating.value}")
+
+
 def get_source_data(user: user_models.User) -> models.JouveContent:
     mapped_class = {models.FraudCheckType.DMS: models.DMSContent, models.FraudCheckType.JOUVE: models.JouveContent}
     fraud_check_type = (
@@ -373,16 +391,23 @@ def get_source_data(user: user_models.User) -> models.JouveContent:
     return mapped_class[fraud_check_type.type](**fraud_check_type.resultContent)
 
 
-def upsert_suspicious_fraud_result(user: user_models.User, reason: str) -> models.BeneficiaryFraudResult:
+def upsert_fraud_result(
+    user: user_models.User, status: models.FraudStatus, reason: str = None
+) -> models.BeneficiaryFraudResult:
     """
-    If the user has no fraud result: create one suspicious fraud result with
-    the given reason. If it already has one: update the result's reason.
+    If the user has no fraud result: create one fraud result with status and the given reason.
+    If it already has one: append the reason to the already recorded ones.
     """
+    reason = reason or ""
+    if status != models.FraudStatus.OK and not reason:
+        raise ValueError(f"a reason should be provided when setting fraud result to {status.value}")
+
     fraud_result = models.BeneficiaryFraudResult.query.filter_by(userId=user.id).one_or_none()
 
     if not fraud_result:
-        fraud_result = models.BeneficiaryFraudResult(user=user, status=models.FraudStatus.SUSPICIOUS, reason=reason)
+        fraud_result = models.BeneficiaryFraudResult(user=user, status=status, reason=reason)
     else:
+        fraud_result.status = status
         # if this function is called twice (or more) in a row with the same
         # reason, do not update the reason column with the same reason repeated
         # over and over. It makes the reason less readable and therefore less
@@ -441,7 +466,7 @@ def handle_sms_sending_limit_reached(user: user_models.User) -> models.Beneficia
     )
 
     create_internal_review_fraud_check(user, fraud_check_data)
-    return upsert_suspicious_fraud_result(user, reason)
+    return upsert_fraud_result(user, models.FraudStatus.SUSPICIOUS, reason)
 
 
 def handle_phone_validation_attempts_limit_reached(
@@ -455,7 +480,7 @@ def handle_phone_validation_attempts_limit_reached(
     )
 
     create_internal_review_fraud_check(user, fraud_check_data)
-    return upsert_suspicious_fraud_result(user, reason)
+    return upsert_fraud_result(user, models.FraudStatus.SUSPICIOUS, reason)
 
 
 def handle_document_validation_error(email: str, code: str) -> None:

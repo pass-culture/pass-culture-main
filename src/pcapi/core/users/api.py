@@ -40,7 +40,6 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
 import pcapi.core.subscription.repository as subscription_repository
-from pcapi.core.users import exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
@@ -849,6 +848,19 @@ def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryVali
     if user.eligibility == EligibilityType.AGE18:
         if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
             return BeneficiaryValidationStep.PHONE_VALIDATION
+
+        user_profiling = (
+            fraud_models.BeneficiaryFraudCheck.query.filter(fraud_models.BeneficiaryFraudCheck.user == user)
+            .filter(fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.USER_PROFILING)
+            .order_by(fraud_models.BeneficiaryFraudCheck.dateCreated.desc())
+            .first()
+        )
+        if (
+            not user_profiling
+            or user_profiling.resultContent["risk_rating"] == fraud_models.UserProfilingRiskRating.HIGH.value
+        ):
+            return None
+
         return get_id_check_validation_step(user)
 
     if user.eligibility == EligibilityType.UNDERAGE:

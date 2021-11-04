@@ -229,8 +229,15 @@ class AccountTest:
         assert response.json["nextBeneficiaryValidationStep"] == "phone-validation"
         assert response.status_code == 200
 
-        # Perform phone validation
+        # Perform phone validation and user profiling
         user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(
+                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+            ),
+        )
 
         response = test_client.get("/native/v1/me", headers=headers)
 
@@ -254,6 +261,43 @@ class AccountTest:
 
         assert response.status_code == 200
         assert not response.json["nextBeneficiaryValidationStep"]
+
+    def test_next_beneficiary_validation_step_user_profiling_risk_rating_high(self, app):
+        user = users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2003, 1, 1))
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        # Perform phone validation and user profiling
+        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(
+                risk_rating=fraud_models.UserProfilingRiskRating.HIGH
+            ),
+        )
+
+        response = test_client.get("/native/v1/me")
+
+        assert response.status_code == 200
+        assert response.json["nextBeneficiaryValidationStep"] == None
+
+    def test_next_beneficiary_validation_step_no_user_profiling(self, app):
+        user = users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2003, 1, 1))
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        # Perform phone validation but no user profiling
+        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+
+        response = test_client.get("/native/v1/me")
+
+        assert response.status_code == 200
+        assert response.json["nextBeneficiaryValidationStep"] == None
 
     @freeze_time("2021-06-01")
     def test_next_beneficiary_validation_step_not_eligible(self, app):
@@ -1516,3 +1560,64 @@ class ProfilingFraudScoreTest:
         response = client.post("/native/v1/user_profiling", json={"session_id": "gdavmoioeuboaobç!p'è"})
         assert response.status_code == 400
         assert matcher.call_count == 0
+
+    @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
+    @pytest.mark.parametrize(
+        "risk_rating",
+        (
+            fraud_models.UserProfilingRiskRating.HIGH,
+            fraud_models.UserProfilingRiskRating.MEDIUM,
+        ),
+    )
+    def test_fraud_result_on_risky_user_profiling(self, client, requests_mock, risk_rating):
+        user = users_factories.UserFactory()
+        session_id = "arbitrarysessionid"
+        payload = fraud_factories.UserProfilingFraudDataFactory(risk_rating=risk_rating).dict()
+        payload["event_datetime"] = payload["event_datetime"].isoformat()  # because datetime is not json serializable
+        payload["risk_rating"] = payload["risk_rating"].value  # because Enum is not json serializable
+        requests_mock.register_uri(
+            "POST",
+            settings.USER_PROFILING_URL,
+            json=payload,
+            status_code=200,
+        )
+        client.with_token(user.email)
+
+        response = client.post("/native/v1/user_profiling", json={"session_id": session_id})
+
+        assert response.status_code == 204
+        assert (
+            fraud_models.BeneficiaryFraudResult.query.filter(fraud_models.BeneficiaryFraudResult.user == user).count()
+            == 1
+        )
+
+    @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
+    @pytest.mark.parametrize(
+        "risk_rating",
+        (
+            fraud_models.UserProfilingRiskRating.TRUSTED,
+            fraud_models.UserProfilingRiskRating.NEUTRAL,
+            fraud_models.UserProfilingRiskRating.LOW,
+        ),
+    )
+    def test_no_fraud_result_on_safe_user_profiling(self, client, requests_mock, risk_rating):
+        user = users_factories.UserFactory()
+        payload = fraud_factories.UserProfilingFraudDataFactory(risk_rating=risk_rating).dict()
+        payload["event_datetime"] = payload["event_datetime"].isoformat()  # because datetime is not json serializable
+        payload["risk_rating"] = payload["risk_rating"].value  # because Enum is not json serializable
+        requests_mock.register_uri(
+            "POST",
+            settings.USER_PROFILING_URL,
+            json=payload,
+            status_code=200,
+        )
+        client.with_token(user.email)
+        session_id = "arbitrarysessionid"
+
+        response = client.post("/native/v1/user_profiling", json={"session_id": session_id})
+
+        assert response.status_code == 204
+        assert (
+            fraud_models.BeneficiaryFraudResult.query.filter(fraud_models.BeneficiaryFraudResult.user == user).count()
+            == 0
+        )

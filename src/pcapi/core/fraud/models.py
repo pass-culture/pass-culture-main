@@ -121,6 +121,14 @@ class DMSContent(pydantic.BaseModel):
     id_piece_number: typing.Optional[str]
 
 
+class UserProfilingRiskRating(enum.Enum):
+    TRUSTED = "trusted"
+    NEUTRAL = "neutral"
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+
+
 class UserProfilingFraudData(pydantic.BaseModel):
     account_email: str
     account_email_first_seen: typing.Optional[datetime.date]
@@ -145,7 +153,7 @@ class UserProfilingFraudData(pydantic.BaseModel):
     policy_score: int
     reason_code: typing.List[str]
     request_id: str
-    risk_rating: str
+    risk_rating: UserProfilingRiskRating
     session_id: str
     tmx_risk_rating: str
     tmx_summary_reason_code: typing.Optional[typing.List[str]]

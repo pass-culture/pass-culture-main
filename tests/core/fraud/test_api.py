@@ -255,7 +255,36 @@ class CommonTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class UpsertSuspiciousFraudResultTest:
+class UpsertFraudResultTest:
+    def test_create_on_first_fraud_result(self):
+        user = users_factories.UserFactory()
+        assert fraud_models.BeneficiaryFraudResult.query.count() == 0
+
+        result = fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, "no reason at all")
+
+        assert fraud_models.BeneficiaryFraudResult.query.count() == 1
+        assert result.user == user
+        assert result.reason == "no reason at all"
+
+    def test_update_on_following_fraud_results(self):
+        user = users_factories.UserFactory()
+        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.OK)
+        assert fraud_models.BeneficiaryFraudResult.query.count() == 1
+
+        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, "no reason at all")
+        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.KO, "no reason at all")
+
+        assert fraud_models.BeneficiaryFraudResult.query.count() == 1
+
+    @pytest.mark.parametrize("fraud_status", (fraud_models.FraudStatus.SUSPICIOUS, fraud_models.FraudStatus.KO))
+    def test_reason_is_mandatory_when_not_ok(self, fraud_status):
+        user = users_factories.UserFactory()
+
+        with pytest.raises(ValueError) as excinfo:
+            fraud_api.upsert_fraud_result(user, fraud_status)
+
+        assert str(excinfo.value) == f"a reason should be provided when setting fraud result to {fraud_status.value}"
+
     def test_do_not_repeat_previous_reason_and_keep_history(self):
         """
         Test that the upsert function does updated the reason when consecutive
@@ -265,13 +294,13 @@ class UpsertSuspiciousFraudResultTest:
         first_reason = "first reason"
         second_reason = "second reason"
 
-        fraud_api.upsert_suspicious_fraud_result(user, first_reason)
-        fraud_api.upsert_suspicious_fraud_result(user, first_reason)
-        fraud_api.upsert_suspicious_fraud_result(user, first_reason)
-        fraud_api.upsert_suspicious_fraud_result(user, second_reason)
-        fraud_api.upsert_suspicious_fraud_result(user, second_reason)
-        fraud_api.upsert_suspicious_fraud_result(user, first_reason)
-        result = fraud_api.upsert_suspicious_fraud_result(user, first_reason)
+        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, first_reason)
+        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, first_reason)
+        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, first_reason)
+        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, second_reason)
+        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, second_reason)
+        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, first_reason)
+        result = fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, first_reason)
 
         assert fraud_models.BeneficiaryFraudResult.query.count() == 1
         assert result.user == user
