@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 
@@ -22,7 +22,7 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
         className: 'fake className',
         disabled: false,
         form: {},
-        id: 1,
+        id: 'test-id',
         innerClassName: 'fake inner className',
         label: 'fake label',
         name: 'fake name',
@@ -44,7 +44,7 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
       expect(mainDiv.prop('className')).toBe(
         'field text-field fake className is-label-aligned is-read-only'
       )
-      expect(mainDiv.prop('id')).toBe(1)
+      expect(mainDiv.prop('id')).toBe('test-id-container')
     })
 
     it('should display the label and the required asterisk sign when not read only mode and label is provided', () => {

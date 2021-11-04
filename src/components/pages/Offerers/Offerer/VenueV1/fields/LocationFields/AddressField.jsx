@@ -1,9 +1,9 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
+ */
 
 /* eslint-disable react/prop-types */
 import classnames from 'classnames'
@@ -49,11 +49,12 @@ export const addressFieldRender = ({
         'is-label-aligned': label,
         'is-read-only': readOnly,
       })}
-      id={id}
+      id={`${id}-container`}
     >
       <label
         className={classnames('field-label', { empty: !label })}
         htmlFor={name}
+        // for={name}
       >
         {label && (
           <span>
@@ -76,6 +77,7 @@ export const addressFieldRender = ({
               {...addressProps}
               className="field-input field-address"
               disabled={disabled || readOnly}
+              id={id}
               name={name}
               onMarkerDragend={updateLocationFields(form, {
                 isLocationFrozen: false,
