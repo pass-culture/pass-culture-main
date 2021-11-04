@@ -21,10 +21,11 @@ const VenueProvidersManager = ({ venue }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await pcapi.loadProviders(venue.id).then(providers => setProviders(providers))
-      await pcapi
-        .loadVenueProviders(venue.id)
-        .then(venueProviders => setVenueProviders(venueProviders))
+      const providersResponse = await pcapi.loadProviders(venue.id)
+      setProviders(providersResponse)
+
+      const venueProvidersResponse = await pcapi.loadVenueProviders(venue.id)
+      setVenueProviders(venueProvidersResponse)
       setIsLoading(false)
     }
     fetchData()
