@@ -1,13 +1,22 @@
 import '@testing-library/jest-dom'
-import { render, screen, waitFor } from "@testing-library/react"
-import userEvent from '@testing-library/user-event'
+import { act, fireEvent, render, screen, waitFor, waitForElementToBeRemoved } from "@testing-library/react"
 import { createBrowserHistory } from "history"
 import React from "react"
 import { Provider } from "react-redux"
 import { Router } from "react-router-dom"
 
-import { configureTestStore } from "../../../../../../../store/testUtils"
+import * as pcapi from 'repository/pcapi/pcapi'
+import * as usersSelectors from 'store/selectors/data/usersSelectors'
+import { configureTestStore } from "store/testUtils"
+
 import VenueEditon from "../VenueEdition"
+
+import { getContactInputs } from './helpers'
+
+
+jest.mock('../../fields/LocationFields/utils/fetchAddressData', () => ({
+  fetchAddressData: jest.fn(),
+}))
 
 jest.mock('repository/pcapi/pcapi', () => ({
   createVenueProvider: jest.fn(),
@@ -19,12 +28,16 @@ jest.mock('utils/config', () => ({
   DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL: 'foo'
 }))
 
-const renderVenueEdition = ({ props }) => {
+const renderVenueEdition = async ({
+  props,
+  url = '/structures/AE/lieux/AQ?modification',
+  waitFormRender = true
+}) => {
   const store = configureTestStore()
   const history = createBrowserHistory()
-  history.push(`/structures/AE/lieux/TR?modification`)
+  history.push(url)
 
-  const utils = render(
+  const rtlRenderReturn = render(
     <Provider store={store}>
       <Router history={history}>
         <VenueEditon {...props} />
@@ -32,36 +45,21 @@ const renderVenueEdition = ({ props }) => {
     </Provider>
   )
 
-  const getContactInputs = async () => {
-    const contactPhoneNumber = await screen.findByLabelText("Téléphone :")
-    const contactMail = await screen.findByLabelText("Mail :")
-    const contactUrl = await screen.findByLabelText("URL de votre site web :")
+  screen.queryByText('Importation d’offres')
+  waitFormRender && await screen.findByTestId('venue-edition-form')
 
-    const clearAndFillContact = ({ phone, mail, website })=>{
-      userEvent.clear(contactPhoneNumber)
-      userEvent.clear(contactMail)
-      userEvent.clear(contactUrl)
-
-      userEvent.paste(contactPhoneNumber, phone)
-      userEvent.paste(contactMail, mail)
-      userEvent.paste(contactUrl, website)
-    }
-
-    return {
-      contactPhoneNumber,
-      contactMail,
-      contactUrl,
-      clearAndFillContact
-    }
+  const spinner = screen.queryByTestId('spinner')
+  if (spinner) {
+    await waitForElementToBeRemoved(() => spinner)
   }
 
-  return  {
-    ...utils,
-    getContactInputs
+  return {
+    history,
+    rtlRenderReturn
   }
 }
 
-describe('contact form enable in venue creation form', () => {
+describe('test page : VenueEdition', () => {
 
   let push
   let props
@@ -94,6 +92,11 @@ describe('contact form enable in venue creation form', () => {
         publicName: "Maison de la Brique",
         siret: "22222222311111",
         venueTypeId: "DE",
+        contact: {
+          email: '',
+          phoneNumber: '',
+          website: '',
+        }
       },
       history: {
         location: {
@@ -128,9 +131,53 @@ describe('contact form enable in venue creation form', () => {
       venueTypes: [],
       venueLabels: [],
     }
+
+    pcapi.loadProviders.mockResolvedValue([
+      { id: 'providerId', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' }
+    ])
+  })
+
+  describe('render', () => {
+    it('should render component with default state', async () => {
+      // when
+      await renderVenueEdition({ props })
+
+      // then
+      expect(screen.queryByRole('link', { name: 'Terminer' })).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: 'Valider' })).toBeInTheDocument()
+    })
+
+    it('should not render a Form when venue is virtual', async () => {
+      // given
+      props.venue.isVirtual = true
+
+      // when
+      await renderVenueEdition({ props, waitFormRender: false })
+
+      // then all form section shoudn't be in the document
+      expect(screen.queryByText('Informations lieu')).not.toBeInTheDocument()
+      expect(screen.queryByText('Coordonnées bancaires du lieu')).not.toBeInTheDocument()
+      expect(screen.queryByText('Adresse')).not.toBeInTheDocument()
+      expect(screen.queryByText('Accessibilité')).not.toBeInTheDocument()
+      expect(screen.queryByText('Contact')).not.toBeInTheDocument()
+    })
   })
 
   describe('when editing', () => {
+    beforeEach(() => {
+      props.location = {
+        search: '?modifie',
+      }
+      props.match = {
+        params: {
+          offererId: 'APEQ',
+          venueId: 'AQYQ',
+        },
+      }
+      props.query.context = () => ({
+        readOnly: false,
+      })
+    })
 
     it('should display contact fields', async ()=> {
       props= {
@@ -144,7 +191,7 @@ describe('contact form enable in venue creation form', () => {
           }
         },
       }
-      const { getContactInputs } = renderVenueEdition({ props })
+      await renderVenueEdition({ props })
       const { contactPhoneNumber, contactMail, contactUrl } = await getContactInputs()
 
       expect(contactPhoneNumber).toBeInTheDocument()
@@ -160,7 +207,7 @@ describe('contact form enable in venue creation form', () => {
       expect(contactMail).toHaveValue(props.venue.contact.email)
     })
 
-    it('should be able to edit fields', async ()=> {
+    it('should be able to edit contact fields', async ()=> {
       props= {
         ...props,
         venue: {
@@ -172,26 +219,26 @@ describe('contact form enable in venue creation form', () => {
           }
         },
       }
-      const { getContactInputs } = renderVenueEdition({ props })
+      await renderVenueEdition({ props })
       const { contactPhoneNumber, contactMail, contactUrl, clearAndFillContact } = await getContactInputs()
       const contactInfos = {
-        phone: "0606060606",
+        email:"test@test.com",
         website:"https://some-url-test.com",
-        mail:"test@test.com"
+        phoneNumber: "0606060606",
       }
       clearAndFillContact(contactInfos)
 
       expect(contactUrl).toHaveValue(contactInfos.website)
-      expect(contactPhoneNumber).toHaveValue(contactInfos.phone)
-      expect(contactMail).toHaveValue(contactInfos.mail)
+      expect(contactPhoneNumber).toHaveValue(contactInfos.phoneNumber)
+      expect(contactMail).toHaveValue(contactInfos.email)
 
       screen.getByText('Valider').click()
 
       const expectedRequestParams = {
         ...props.venue,
         contact:  {
-          email: contactInfos.mail,
-          phoneNumber: contactInfos.phone,
+          email: contactInfos.email,
+          phoneNumber: contactInfos.phoneNumber,
           website: contactInfos.website,
         },
       }
@@ -203,15 +250,96 @@ describe('contact form enable in venue creation form', () => {
       })
     })
 
+    it('should render component with correct state values', async () => {
+      // when
+      await renderVenueEdition({ props })
+
+      // then
+      expect(screen.queryByRole('link', { name: 'Terminer' })).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: 'Valider' })).toBeInTheDocument()
+    })
+
+    it('should be able to edit address field when venue has no SIRET', async () => {
+      // given
+      jest
+        .spyOn(usersSelectors, 'selectCurrentUser')
+        .mockReturnValue({ currentUser: 'fakeUser', publicName: 'fakeName' })
+
+      props = {
+        ...props,
+        venue: {
+          ...props.venue,
+          publicName: 'fake public name',
+          id: 'AQ',
+          siret: null,
+        },
+      }
+
+      await renderVenueEdition({ props })
+      const addressInput = screen.getByLabelText('Numéro et voie :', { exact: false })
+      await act(async () => await fireEvent.change(addressInput, { target: { value: 'Addresse de test' } }))
+
+      // then
+      expect(screen.getByDisplayValue('Addresse de test')).toBeInTheDocument()
+    })
+
+    it('should show apply booking checkbox on all existing offers when booking email field is edited', async () => {
+      // given
+      jest
+        .spyOn(usersSelectors, 'selectCurrentUser')
+        .mockReturnValue({ currentUser: 'fakeUser', publicName: 'fakeName' })
+
+      props = {
+        ...props,
+        venue: {
+          ...props.venue,
+          publicName: 'fake public name',
+          siret: '12345678901234',
+        },
+      }
+      const getApplyEmailBookingOnAllOffersLabel = () => screen.queryByText('Utiliser cet email pour me notifier des réservations de toutes les offres déjà postées dans ce lieu.', { exact: false })
+
+      // when
+      await renderVenueEdition({ props })
+
+      // then
+      expect(getApplyEmailBookingOnAllOffersLabel()).not.toBeInTheDocument()
+
+      const emailBookingField = screen.getByLabelText('E-mail :', { exact: false })
+      // react-final-form interactions need to be wrap into a act()
+      await act(async () => await fireEvent.change(emailBookingField, { target: { value: 'newbookingemail@example.com' } }))
+      expect(getApplyEmailBookingOnAllOffersLabel()).toBeInTheDocument()
+    })
+
+    it('should reset url search params and and track venue modification.', async () => {
+      // jest
+      props.handleSubmitRequest.mockImplementation(({ handleSuccess }) => {
+        handleSuccess(jest.fn(), false)()
+      })
+
+      // when
+      await renderVenueEdition({ props })
+
+      fireEvent.change(await screen.findByLabelText("Téléphone :"), { target: { value: '0101010101' } })
+      fireEvent.click(screen.queryByRole('button', { name: 'Valider' }))
+
+      await waitFor(() => {
+        expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null)
+        expect(props.trackModifyVenue).toHaveBeenCalledWith(props.venue.id)
+      })
+    })
   })
 
-  describe('when read only', () => {
-    beforeEach( ()=> {
-      jest.spyOn(props.query, 'context').mockImplementation().mockReturnValue({
+  describe('when reading', () => {
+    beforeEach(() => {
+      props.query.context = () => ({
+        isCreatedEntity: false,
+        isModifiedEntity: false,
         readOnly: true,
       })
     })
-    it('should display disabled fields', async() => {
+
+    it('should display disabled contact fields', async() => {
       props= {
         ...props,
         venue: {
@@ -224,7 +352,7 @@ describe('contact form enable in venue creation form', () => {
         },
       }
 
-      const { getContactInputs } = renderVenueEdition({ props })
+      await renderVenueEdition({ props })
       const { contactPhoneNumber, contactMail, contactUrl } = await getContactInputs()
 
       expect(contactPhoneNumber).toBeInTheDocument()
@@ -238,6 +366,43 @@ describe('contact form enable in venue creation form', () => {
       expect(contactUrl).toHaveValue(props.venue.contact.website)
       expect(contactPhoneNumber).toHaveValue(props.venue.contact.phoneNumber)
       expect(contactMail).toHaveValue(props.venue.contact.email)
+    })
+
+    it('should render component with correct state values', async () => {
+      // when
+      await renderVenueEdition({ props })
+
+      // then
+      // todo: check submit button state
+      expect(screen.queryByRole('link', { name: 'Terminer' })).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: 'Valider' })).not.toBeInTheDocument()
+    })
+
+    describe('create new offer link', () => {
+      it('should redirect to offer creation page', async () => {
+        // given
+        jest
+          .spyOn(usersSelectors, 'selectCurrentUser')
+          .mockReturnValue({ currentUser: 'fakeUser' })
+
+        props.venue = {
+          ...props.venue,
+          publicName: 'fake public name',
+          id: 'CM',
+        }
+
+        const { history } = await renderVenueEdition({ props, url: '/structures/APEQ/lieux/CM' })
+        const createOfferLink = screen.getByText('Créer une offre')
+
+        // when
+        fireEvent.click(createOfferLink)
+
+        // then
+        // todo: check location url or add a text in a fake offer creation route and test that it's displayed
+        expect(`${history.location.pathname}${history.location.search}`).toBe(
+          '/offres/creation?lieu=CM&structure=APEQ'
+        )
+      })
     })
   })
 })
