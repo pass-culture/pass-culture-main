@@ -8,10 +8,12 @@ import React, { Component } from 'react'
 
 import AppLayout from 'app/AppLayout'
 import Banner from 'components/layout/Banner/Banner'
+import ConfirmDialog from "components/layout/ConfirmDialog/ConfirmDialog"
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import { formatLocalTimeDateString } from 'utils/timezone'
+
 
 class Desk extends Component {
   constructor(props) {
@@ -24,6 +26,7 @@ class Desk extends Component {
       level: '',
       message: 'Saisissez une contremarque',
       token: '',
+      openDialog: false,
     }
 
     this.TOKEN_MAX_LENGTH = 6
@@ -200,7 +203,17 @@ class Desk extends Component {
           message: this.getErrorMessageFromApi(error),
         })
       })
+    this.setState({ openDialog: false })
   }
+
+  openDeskConfirmDialog = (event) => {
+    event.preventDefault()
+    this.setState({ openDialog: true })
+  }
+  closeDeskConfirmDialog = () => {
+    this.setState({ openDialog: false })
+  }
+
 
   render() {
     const { booking, isDisabledButton, isUsedToken, level, message, token } = this.state
@@ -278,11 +291,25 @@ class Desk extends Component {
             {isUsedToken && (
               <button
                 className="secondary-button"
-                onClick={this.invalidationOfToken(token)}
-                type="submit"
+                onClick={this.openDeskConfirmDialog}
+                type="button"
               >
                 Invalider la contremarque
               </button>
+            )}
+            {this.state.openDialog && (
+              <ConfirmDialog
+                cancelText="Annuler"
+                confirmText="Continuer"
+                onCancel={this.closeDeskConfirmDialog}
+                onConfirm={this.invalidationOfToken(token)}
+                title="Voulez-vous vraiment invalider cette contremarque ?"
+              >
+                <p>
+                  Cette contremarque a déjà été validée. Si vous l’invalidez, la réservation ne
+                  vous sera pas remboursée.
+                </p>
+              </ConfirmDialog>
             )}
             {!isUsedToken && (
               <button
