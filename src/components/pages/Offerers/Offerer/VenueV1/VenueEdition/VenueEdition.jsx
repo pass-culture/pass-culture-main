@@ -6,7 +6,7 @@
  */
 
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 import { Link, NavLink } from 'react-router-dom'
@@ -34,47 +34,49 @@ import VenueType from '../ValueObjects/VenueType'
 
 import VenueProvidersManager from './VenueProvidersManager'
 
-/**
- * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel -> à faire lors de la V2 ?"
- */
-class VenueEdition extends PureComponent {
-  constructor() {
-    super()
-    this.state = { isRequestPending: false }
-  }
 
-  componentDidMount() {
-    const { handleInitialRequest } = this.props
-    handleInitialRequest()
-  }
+const VenueEdition = ({
+  handleInitialRequest,
+  handleSubmitRequest,
+  handleSubmitRequestFail,
+  handleSubmitRequestSuccess,
+  history,
+  match: {
+    params: { offererId, venueId },
+  },
+  offerer,
+  query,
+  trackModifyVenue,
+  venue,
+  venueLabels,
+  venueTypes,
+  withdrawalDetailActive,
+}) => {
+  const [isRequestPending, setIsRequestPending] = useState(false)
 
-  handleFormFail = formResolver => (_state, action) => {
-    const { handleSubmitRequestFail } = this.props
+  // TODO check that it's execute only once when initialize
+  useEffect(() => handleInitialRequest(), [handleInitialRequest])
+
+  const handleFormFail = formResolver => (_state, action) => {
     const { payload } = action
-    const nextState = { isRequestPending: false }
     const errors = parseSubmitErrors(payload.errors)
     handleSubmitRequestFail(action)
-    this.setState(nextState, () => formResolver(errors))
+    formResolver(errors)
+    setIsRequestPending(false)
   }
 
-  handleFormSuccess = (formResolver, hasDelayedUpdates) => (_state, action) => {
-    const { venue, handleSubmitRequestSuccess, query, trackModifyVenue } = this.props
-
+  const handleFormSuccess = (formResolver, hasDelayedUpdates) => (_state, action) => {
     const { id: venueId } = venue
 
-    this.setState({ isRequestPending: false }, () => {
-      handleSubmitRequestSuccess(action, { hasDelayedUpdates })
-      formResolver()
-    })
-
+    handleSubmitRequestSuccess(action, { hasDelayedUpdates })
+    formResolver()
     trackModifyVenue(venueId)
     query.changeToReadOnly(null)
+    setIsRequestPending(false)
   }
 
-  handleOnFormSubmit = formValues => {
-    const { handleSubmitRequest } = this.props
-
-    this.setState({ isRequestPending: true })
+  const handleOnFormSubmit = formValues => {
+    setIsRequestPending(true)
     const hasDelayedUpdates = [
       formValues.isAccessibilityAppliedOnAllOffers,
       formValues.isWithdrawalAppliedOnAllOffers,
@@ -84,34 +86,18 @@ class VenueEdition extends PureComponent {
     return new Promise(resolve => {
       handleSubmitRequest({
         formValues,
-        handleFail: this.handleFormFail(resolve),
-        handleSuccess: this.handleFormSuccess(resolve, hasDelayedUpdates),
+        handleFail: handleFormFail(resolve),
+        handleSuccess: handleFormSuccess(resolve, hasDelayedUpdates),
       })
     })
   }
 
-  onHandleRender = formProps => {
-    const {
-      venue,
-      history,
-      match: {
-        params: { offererId, venueId },
-      },
-      query,
-      offerer,
-      venueTypes,
-      venueLabels,
-      withdrawalDetailActive,
-    } = this.props
-    const { isRequestPending } = this.state
+  const onHandleRender = formProps => {
     const { readOnly } = query.context({
       id: venueId,
     })
-
     const { siret: initialSiret, withdrawalDetails: initialWithdrawalDetails } = venue || {}
-
     const canSubmit = getCanSubmit(formProps)
-
     const { form, handleSubmit, values } = formProps
     const {
       bookingEmail,
@@ -191,7 +177,7 @@ class VenueEdition extends PureComponent {
     )
   }
 
-  getInitialValues(venue) {
+  const getInitialValues = (venue) => {
     let initialValues = { ...venue }
     const accessibilityFieldNames = [
       'audioDisabilityCompliant',
@@ -208,9 +194,8 @@ class VenueEdition extends PureComponent {
     return initialValues
   }
 
-  renderForm() {
-    const { venue } = this.props
-    const initialValues = this.getInitialValues(venue)
+  const renderForm = () => {
+    const initialValues = getInitialValues(venue)
     const decorators = [
       autoFillNoDisabilityCompliantDecorator,
       bindGetSuggestionsToLatitude,
@@ -222,65 +207,54 @@ class VenueEdition extends PureComponent {
         decorators={decorators}
         initialValues={initialValues}
         name="venue"
-        onSubmit={this.handleOnFormSubmit}
-        render={this.onHandleRender}
+        onSubmit={handleOnFormSubmit}
+        render={onHandleRender}
       />
     )
   }
 
-  render() {
-    const {
-      venue,
-      match: {
-        params: { offererId, venueId },
-      },
-      offerer,
-      query,
-    } = this.props
+  const { readOnly } = query.context({
+    id: venueId,
+  })
 
-    const { readOnly } = query.context({
-      id: venueId,
-    })
+  const { id: initialId, isVirtual: initialIsVirtual, name: initialName } = venue || {}
 
-    const { id: initialId, isVirtual: initialIsVirtual, name: initialName } = venue || {}
+  const pageTitle = readOnly ? 'Détails de votre lieu' : 'Modifier votre lieu'
+  const actionLink = !!initialId && (
+    <Link
+      className="primary-button with-icon"
+      to={`/offres/creation?lieu=${initialId}&structure=${offererId}`}
+    >
+      <AddOfferSvg />
+      <span>
+        Créer une offre
+      </span>
+    </Link>
+  )
 
-    const pageTitle = readOnly ? 'Détails de votre lieu' : 'Modifier votre lieu'
-    const actionLink = !!initialId && (
-      <Link
-        className="primary-button with-icon"
-        to={`/offres/creation?lieu=${initialId}&structure=${offererId}`}
+  return (
+    <div className="venue-page">
+      <NavLink
+        className="back-button has-text-primary"
+        to={`/accueil?structure=${offererId}`}
       >
-        <AddOfferSvg />
-        <span>
-          Créer une offre
-        </span>
-      </Link>
-    )
-
-    return (
-      <div className="venue-page">
-        <NavLink
-          className="back-button has-text-primary"
-          to={`/accueil?structure=${offererId}`}
-        >
-          <Icon svg="ico-back" />
-          Accueil
-        </NavLink>
-        <PageTitle title={pageTitle} />
-        <Titles
-          action={actionLink || undefined}
-          subtitle={initialName}
-          title="Lieu"
-        />
-        {!initialIsVirtual && (
-          <>
-            {venue && <VenueProvidersManager venue={venue} />}
-            {venue && offerer && this.renderForm()}
-          </>
-        )}
-      </div>
-    )
-  }
+        <Icon svg="ico-back" />
+        Accueil
+      </NavLink>
+      <PageTitle title={pageTitle} />
+      <Titles
+        action={actionLink || undefined}
+        subtitle={initialName}
+        title="Lieu"
+      />
+      {!initialIsVirtual && (
+        <>
+          {venue && <VenueProvidersManager venue={venue} />}
+          {venue && offerer && renderForm()}
+        </>
+      )}
+    </div>
+  )
 }
 
 VenueEdition.defaultProps = {
