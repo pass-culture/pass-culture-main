@@ -7,7 +7,9 @@ import factory
 from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.payments import conf as deposit_conf
 from pcapi.core.testing import BaseFactory
+from pcapi.core.users.factories import DepositGrantFactory
 from pcapi.domain import reimbursement
 from pcapi.models import payment_status
 
@@ -89,3 +91,12 @@ class PaymentWithCustomRuleFactory(PaymentFactory):
     customReimbursementRule = factory.SubFactory(CustomReimbursementRuleFactory)
     reimbursementRule = None
     reimbursementRate = None
+
+
+class RecreditFactory(BaseFactory):
+    class Meta:
+        model = payments_models.Recredit
+
+    deposit = factory.SubFactory(DepositGrantFactory)
+    amount = factory.LazyAttribute(lambda recredit: deposit_conf.RECREDIT_TYPE_AMOUNT_MAPPING[recredit.recreditType])
+    recreditType = payments_models.RecreditType.RECREDIT_16
