@@ -83,7 +83,7 @@ AddVenueProviderButton.propTypes = {
   setVenueProviders: PropTypes.func.isRequired,
   venue: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    siret: PropTypes.string.isRequired,
+    siret: PropTypes.string,
   }).isRequired,
 }
 

@@ -70,7 +70,7 @@ VenueProvidersManager.propTypes = {
   venue: PropTypes.shape({
     id: PropTypes.string.isRequired,
     managingOffererId: PropTypes.string.isRequired,
-    siret: PropTypes.string.isRequired,
+    siret: PropTypes.string,
     departementCode: PropTypes.string.isRequired,
   }).isRequired,
 }
