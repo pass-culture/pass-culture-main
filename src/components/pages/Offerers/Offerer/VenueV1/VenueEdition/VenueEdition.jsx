@@ -22,7 +22,7 @@ import AccessibilityFields, {
   autoFillNoDisabilityCompliantDecorator,
 } from '../fields/AccessibilityFields'
 import BankInformation from '../fields/BankInformationFields/BankInformationFields'
-import ContactInfosFields from "../fields/ContactInfosFields"
+import ContactInfosFields from '../fields/ContactInfosFields'
 import IdentifierFields from '../fields/IdentifierFields/IdentifierFields'
 import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
 import bindGetSuggestionsToLongitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLongitude'
@@ -129,6 +129,7 @@ class VenueEdition extends PureComponent {
 
     return (
       <form
+        data-testid="venue-edition-form"
         name="venue"
         onSubmit={handleSubmit}
       >
@@ -166,9 +167,7 @@ class VenueEdition extends PureComponent {
           readOnly={readOnly}
           venue={venue}
         />
-        <ContactInfosFields
-          readOnly={readOnly}
-        />
+        <ContactInfosFields readOnly={readOnly} />
         <hr />
         <div
           className="field is-grouped is-grouped-centered"
@@ -211,7 +210,6 @@ class VenueEdition extends PureComponent {
 
   renderForm() {
     const { venue } = this.props
-    const { isVirtual: initialIsVirtual } = venue || {}
     const initialValues = this.getInitialValues(venue)
     const decorators = [
       autoFillNoDisabilityCompliantDecorator,
@@ -220,15 +218,13 @@ class VenueEdition extends PureComponent {
     ]
 
     return (
-      !initialIsVirtual && (
-        <Form
-          decorators={decorators}
-          initialValues={initialValues}
-          name="venue"
-          onSubmit={this.handleOnFormSubmit}
-          render={this.onHandleRender}
-        />
-      )
+      <Form
+        decorators={decorators}
+        initialValues={initialValues}
+        name="venue"
+        onSubmit={this.handleOnFormSubmit}
+        render={this.onHandleRender}
+      />
     )
   }
 
@@ -246,7 +242,7 @@ class VenueEdition extends PureComponent {
       id: venueId,
     })
 
-    const { id: initialId, name: initialName } = venue || {}
+    const { id: initialId, isVirtual: initialIsVirtual, name: initialName } = venue || {}
 
     const pageTitle = readOnly ? 'Détails de votre lieu' : 'Modifier votre lieu'
     const actionLink = !!initialId && (
@@ -276,9 +272,12 @@ class VenueEdition extends PureComponent {
           subtitle={initialName}
           title="Lieu"
         />
-
-        {venue && <VenueProvidersManager venue={venue} />}
-        {venue && offerer && this.renderForm()}
+        {!initialIsVirtual && (
+          <>
+            {venue && <VenueProvidersManager venue={venue} />}
+            {venue && offerer && this.renderForm()}
+          </>
+        )}
       </div>
     )
   }
