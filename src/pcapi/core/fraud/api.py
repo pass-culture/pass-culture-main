@@ -377,6 +377,9 @@ def on_user_profiling_check_result(
     user_profiling_status = USER_PROFILING_RISK_MAPPING[risk_rating]
     if not user_profiling_status == models.FraudStatus.OK:
         upsert_fraud_result(user, user_profiling_status, f"threat-metrix risk rating is {risk_rating.value}")
+        from pcapi.core.subscription import messages as subscription_messages
+
+        subscription_messages.on_user_subscription_journey_stopped(user)
 
 
 def get_source_data(user: user_models.User) -> models.JouveContent:

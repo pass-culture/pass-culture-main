@@ -173,3 +173,12 @@ def on_dms_application_parsing_errors(user: users_models.User, error_fields: lis
         popOverIcon=models.PopOverIcon.WARNING,
     )
     repository.save(message)
+
+
+def on_user_subscription_journey_stopped(user: users_models.User) -> None:
+    message = models.SubscriptionMessage(
+        user=user,
+        userMessage="Ton inscription n'a pas pu aboutir.",
+        popOverIcon=models.PopOverIcon.ERROR,
+    )
+    repository.save(message)

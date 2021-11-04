@@ -279,7 +279,6 @@ class AccountTest:
         )
 
         response = client.get("/native/v1/me")
-
         assert response.status_code == 200
         assert response.json["nextBeneficiaryValidationStep"] == None
 
@@ -1637,6 +1636,9 @@ class ProfilingFraudScoreTest:
             fraud_models.BeneficiaryFraudResult.query.filter(fraud_models.BeneficiaryFraudResult.user == user).count()
             == 1
         )
+        assert len(user.subscriptionMessages) == 1
+        sub_message = user.subscriptionMessages[0]
+        assert sub_message.userMessage == "Ton inscription n'a pas pu aboutir."
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     @pytest.mark.parametrize(
