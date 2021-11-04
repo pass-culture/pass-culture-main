@@ -211,7 +211,8 @@ class RunTest:
 
         # same user, but different
         get_details.return_value = make_new_beneficiary_application_details(123, "closed", email="john.doe@example.com")
-        users_factories.BeneficiaryGrant18Factory(email="john.doe@example.com")
+        user = users_factories.BeneficiaryGrant18Factory(email="john.doe@example.com")
+        initial_beneficiary_import_id = user.beneficiaryImports[0].id
 
         # when
         remote_import.run(
@@ -219,7 +220,9 @@ class RunTest:
         )
 
         # then
-        beneficiary_import = BeneficiaryImport.query.first()
+        beneficiary_import = BeneficiaryImport.query.filter(
+            BeneficiaryImport.id != initial_beneficiary_import_id
+        ).first()
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.detail == "Compte existant avec cet email"
@@ -860,7 +863,7 @@ class RunIntegrationTest:
 
         # then
         assert users_models.User.query.count() == 2
-        assert BeneficiaryImport.query.count() == 1
+        assert BeneficiaryImport.query.filter_by(beneficiary=user).count() == 0
         user = users_models.User.query.get(user.id)
         assert len(user.beneficiaryFraudChecks) == 1
         assert user.beneficiaryFraudChecks[0].type == fraud_models.FraudCheckType.DMS
@@ -868,7 +871,7 @@ class RunIntegrationTest:
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
         assert f"Duplicat de l'utilisateur {existing_user.id}" in user.beneficiaryFraudResults[0].reason
 
-        beneficiary_import = BeneficiaryImport.query.first()
+        beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.beneficiary != existing_user).first()
         assert beneficiary_import.source == "demarches_simplifiees"
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
@@ -956,11 +959,11 @@ class RunIntegrationTest:
 
         # then
         assert process_mock.call_count == 0
-        assert BeneficiaryImport.query.count() == 1
+        assert BeneficiaryImport.query.filter(BeneficiaryImport.beneficiary != beneficiary).count() == 1
         fraud_check = applicant.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
 
-        beneficiary_import = BeneficiaryImport.query.first()
+        beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.beneficiary != beneficiary).first()
         assert beneficiary_import.source == "demarches_simplifiees"
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.beneficiary == applicant
@@ -1262,7 +1265,7 @@ class GraphQLSourceProcessApplicationTest:
     def test_avoid_reimporting_already_imported_user(self, get_applications_with_details):
         procedure_id = 42
         user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
-        already_imported_user = users_factories.BeneficiaryGrant18Factory()
+        already_imported_user = users_factories.BeneficiaryGrant18Factory(beneficiaryImports=[])
         users_factories.BeneficiaryImportFactory(
             beneficiary=already_imported_user, applicationId=2, sourceId=procedure_id
         )

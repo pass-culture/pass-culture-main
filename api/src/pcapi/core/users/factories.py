@@ -9,12 +9,13 @@ from dateutil.relativedelta import relativedelta
 import factory
 from factory.declarations import LazyAttribute
 
+from pcapi.core.fraud import models as fraud_models
 import pcapi.core.payments.api as payments_api
 from pcapi.core.payments.models import DepositType
 from pcapi.core.testing import BaseFactory
+from pcapi.core.users import models as users_models
 import pcapi.core.users.constants as users_constants
 from pcapi.core.users.external.educonnect import models as educonnect_models
-import pcapi.core.users.models
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import user_session
@@ -29,9 +30,29 @@ from . import models
 DEFAULT_PASSWORD = "user@AZERTY123"
 
 
+class BeneficiaryImportStatusFactory(BaseFactory):
+    class Meta:
+        model = BeneficiaryImportStatus
+
+    status = ImportStatus.CREATED.value
+    date = factory.Faker("date_time_between", start_date="-30d", end_date="-1d")
+    detail = factory.Faker("sentence", nb_words=3)
+    beneficiaryImport = factory.SubFactory("pcapi.core.users.factories.BeneficiaryImportFactory")
+    author = factory.SubFactory("pcapi.core.users.factories.UserFactory")
+
+
+class BeneficiaryImportFactory(BaseFactory):
+    class Meta:
+        model = BeneficiaryImport
+
+    applicationId = factory.Sequence(lambda n: n)
+    beneficiary = factory.SubFactory("pcapi.core.users.factories.UserFactory")
+    source = BeneficiaryImportSources.jouve.value
+
+
 class UserFactory(BaseFactory):
     class Meta:
-        model = pcapi.core.users.models.User
+        model = users_models.User
 
     email = factory.Sequence("jean.neige{}@example.com".format)
     address = factory.Sequence("{} place des noces rouges".format)
@@ -65,7 +86,7 @@ class UserFactory(BaseFactory):
 
 class AdminFactory(BaseFactory):
     class Meta:
-        model = pcapi.core.users.models.User
+        model = users_models.User
 
     email = factory.Sequence("un.admin{}@example.com".format)
     address = factory.Sequence("{} rue des détectives".format)
@@ -76,7 +97,7 @@ class AdminFactory(BaseFactory):
     publicName = "Frank Columbo"
     isEmailValidated = True
     isAdmin = True
-    roles = [pcapi.core.users.models.UserRole.ADMIN]
+    roles = [users_models.UserRole.ADMIN]
     hasSeenProTutorials = True
 
     @classmethod
@@ -98,7 +119,7 @@ class AdminFactory(BaseFactory):
 
 class BeneficiaryGrant18Factory(BaseFactory):
     class Meta:
-        model = pcapi.core.users.models.User
+        model = users_models.User
 
     email = factory.Sequence("jeanne.doux{}@example.com".format)
     address = factory.Sequence("{} rue des machines".format)
@@ -111,9 +132,10 @@ class BeneficiaryGrant18Factory(BaseFactory):
     departementCode = "75"
     firstName = "Jeanne"
     lastName = "Doux"
+    hasCompletedIdCheck = True
     isEmailValidated = True
     isAdmin = False
-    roles = [pcapi.core.users.models.UserRole.BENEFICIARY]
+    roles = [users_models.UserRole.BENEFICIARY]
     hasSeenProTutorials = True
 
     @classmethod
@@ -146,16 +168,67 @@ class BeneficiaryGrant18Factory(BaseFactory):
 
         return DepositGrantFactory(user=obj, **kwargs)
 
+    @factory.post_generation
+    def beneficiaryImports(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+        if not create:
+            return None
+
+        if extracted is not None:
+            return extracted
+
+        beneficiary_import = BeneficiaryImportFactory(
+            beneficiary=obj,
+            source=BeneficiaryImportSources.educonnect.value
+            if obj.eligibility == users_models.EligibilityType.UNDERAGE
+            else BeneficiaryImportSources.jouve.value,
+            eligibilityType=obj.eligibility,
+        )
+        BeneficiaryImportStatusFactory(beneficiaryImport=beneficiary_import, author=None)
+        return beneficiary_import
+
+    @factory.post_generation
+    def beneficiaryFraudChecks(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+        import pcapi.core.fraud.factories as fraud_factories
+
+        if not create:
+            return None
+
+        return fraud_factories.BeneficiaryFraudCheckFactory(
+            user=obj,
+            type=fraud_models.FraudCheckType.EDUCONNECT
+            if obj.eligibility == users_models.EligibilityType.UNDERAGE
+            else fraud_models.FraudCheckType.JOUVE,
+            resultContent=fraud_factories.EduconnectContentFactory(
+                first_name=obj.firstName,
+                last_name=obj.lastName,
+                birth_date=obj.dateOfBirth.date(),
+                ine_hash=obj.ineHash or "".join(random.choices(string.ascii_lowercase + string.digits, k=32)),
+            )
+            if obj.eligibility == users_models.EligibilityType.UNDERAGE
+            else fraud_factories.JouveContentFactory(firstName=obj.firstName, lastName=obj.lastName),
+        )
+
+    @factory.post_generation
+    def beneficiaryFraudResults(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+        import pcapi.core.fraud.factories as fraud_factories
+
+        if not create:
+            return None
+
+        return fraud_factories.BeneficiaryFraudResultFactory(
+            user=obj, status=fraud_models.FraudStatus.OK, eligibilityType=obj.eligibility, reason=None
+        )
+
 
 class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
     class Params:
         subscription_age = 15
 
-    roles = [pcapi.core.users.models.UserRole.UNDERAGE_BENEFICIARY]
+    roles = [users_models.UserRole.UNDERAGE_BENEFICIARY]
     dateOfBirth = LazyAttribute(
         lambda o: datetime.combine(date.today(), time(0, 0)) - relativedelta(years=o.subscription_age, months=5)
     )
-    dateCreated = LazyAttribute(lambda o: o.dateOfBirth + relativedelta(years=o.subscription_age, hours=12))
+    dateCreated = LazyAttribute(lambda user: user.dateOfBirth + relativedelta(years=user.subscription_age, hours=12))
     ineHash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
 
     @factory.post_generation
@@ -171,7 +244,7 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
 
 class ProFactory(BaseFactory):
     class Meta:
-        model = pcapi.core.users.models.User
+        model = users_models.User
 
     email = factory.Sequence("ma.librairie{}@example.com".format)
     address = factory.Sequence("{} rue des cinémas".format)
@@ -182,7 +255,7 @@ class ProFactory(BaseFactory):
     publicName = "René Coty"
     isEmailValidated = True
     isAdmin = False
-    roles = [pcapi.core.users.models.UserRole.PRO]
+    roles = [users_models.UserRole.PRO]
     hasSeenProTutorials = True
 
     @classmethod
@@ -247,26 +320,6 @@ class FavoriteFactory(BaseFactory):
 
     offer = factory.SubFactory("pcapi.core.offers.factories.OfferFactory")
     user = factory.SubFactory(UserFactory)
-
-
-class BeneficiaryImportFactory(BaseFactory):
-    class Meta:
-        model = BeneficiaryImport
-
-    applicationId = factory.Sequence(lambda n: n)
-    beneficiary = factory.SubFactory("pcapi.core.users.factories.UserFactory")
-    source = BeneficiaryImportSources.jouve.value
-
-
-class BeneficiaryImportStatusFactory(BaseFactory):
-    class Meta:
-        model = BeneficiaryImportStatus
-
-    status = ImportStatus.CREATED.value
-    date = factory.Faker("date_time_between", start_date="-30d", end_date="-1d")
-    detail = factory.Faker("sentence", nb_words=3)
-    beneficiaryImport = factory.SubFactory(BeneficiaryImportFactory)
-    author = factory.SubFactory("pcapi.core.users.factories.UserFactory")
 
 
 # DepositFactory in users module to avoid import loops

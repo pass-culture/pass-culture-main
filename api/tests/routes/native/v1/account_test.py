@@ -142,7 +142,7 @@ class AccountTest:
             "eligibilityStartDatetime": "2015-01-01T00:00:00Z",
             "isBeneficiary": True,
             "roles": ["BENEFICIARY"],
-            "hasCompletedIdCheck": None,
+            "hasCompletedIdCheck": True,
             "nextBeneficiaryValidationStep": None,
             "pseudo": "jdo",
             "recreditAmountToShow": None,
