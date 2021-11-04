@@ -300,6 +300,9 @@ describe('src | components | Desk', () => {
       expect(invalidateTokenButton).toBeEnabled()
       fireEvent.click(invalidateTokenButton)
 
+      const confirmInvalidateTokenButton = await screen.findByRole('button', { name: 'Continuer' })
+      fireEvent.click(confirmInvalidateTokenButton)
+
       // then
       expect(screen.getByText('Invalidation en cours...')).toBeInTheDocument()
       const responseFromApi = await screen.findByText('Contremarque invalidée !')
@@ -340,7 +343,6 @@ describe('src | components | Desk', () => {
       fireEvent.change(tokenInput, { target: { value: 'MEFA01' } })
       // then
       expect(await screen.findByText('token is already validated')).toBeInTheDocument()
-
       // when
       jest.spyOn(props, 'invalidateBooking').mockRejectedValue({
         errors: { booking: 'cannot invalidate booking' },
@@ -348,6 +350,9 @@ describe('src | components | Desk', () => {
       })
       const submitButton = await screen.findByRole('button', { name: 'Invalider la contremarque' })
       fireEvent.click(submitButton)
+
+      const confirmInvalidateTokenButton = await screen.findByRole('button', { name: 'Continuer' })
+      fireEvent.click(confirmInvalidateTokenButton)
       // then
       const responseFromApi = await screen.findByText('cannot invalidate booking')
       expect(responseFromApi).toBeInTheDocument()
