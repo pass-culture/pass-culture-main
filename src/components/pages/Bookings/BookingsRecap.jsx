@@ -44,30 +44,35 @@ const BookingsRecap = ({ location, showInformationNotification }) => {
         bookingPeriodEndingDate: preFilters.bookingEndingDate,
       }
 
-      const { pages, bookings_recap: bookingsRecap } = await pcapi
-        .loadFilteredBookingsRecap({ ...bookingsFilters })
-        .then(response => response)
-        .catch(() => ({
+      let filteredBookingsResponse
+      try  {
+        filteredBookingsResponse = await pcapi.loadFilteredBookingsRecap({ ...bookingsFilters })
+      } catch {
+        filteredBookingsResponse = {
           page: 0,
           pages: 0,
           total: 0,
           bookings_recap: [],
-        }))
+        }
+      }
+      const { pages, bookings_recap: bookingsRecap } = filteredBookingsResponse
       setBookingsRecap(bookingsRecap)
 
-      while (bookingsFilters.page < Math.min(pages, MAX_LOADED_PAGES)) {
-        bookingsFilters.page += 1
-        await pcapi
-          .loadFilteredBookingsRecap({ ...bookingsFilters })
-          .then(({ bookings_recap }) =>
-            setBookingsRecap(currentBookingsRecap =>
-              [...currentBookingsRecap].concat(bookings_recap)
-            )
-          )
+      let currentPage = bookingsFilters.page
+      while (currentPage < Math.min(pages, MAX_LOADED_PAGES)) {
+        currentPage += 1
+        const nextPageFilters = {
+          ...bookingsFilters,
+          page: currentPage,
+        }
+        const response = await pcapi.loadFilteredBookingsRecap(nextPageFilters)
+        setBookingsRecap(currentBookingsRecap =>
+          [...currentBookingsRecap].concat(response.bookings_recap)
+        )
       }
 
-      setIsLoading(false)
-      if (bookingsFilters.page === MAX_LOADED_PAGES && bookingsFilters.page < pages) {
+      setIsTableLoading(false)
+      if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
         showInformationNotification()
       }
     },
