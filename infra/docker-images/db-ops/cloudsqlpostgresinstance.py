@@ -187,11 +187,19 @@ class CloudSQLPostgresInstance:
             }
         ).execute()
 
+
         self.wait_for_operation(
             check_if_operation_done_function=lambda: self.is_sqladmin_operation_done(operation=operation),
             operation_id=operation["name"],
             check_interval=30
         )
+
+        operation = self.get_sqladmin_operation(name=operation["name"])
+        if "error" in operation:
+            raise RuntimeError("Failed to create replica %s: %s" % (replica_name, operation["error"]))
+
+        print("Replica %s created" % replica_name)
+
 
     def delete_replica(self, replica_name: str):
         print("Deleting replica %s" % replica_name)
@@ -306,11 +314,14 @@ class CloudSQLPostgresInstance:
 
         print("Ended: Exporting database %s to %s" % (database_name, dump_uri))
 
-    def is_sqladmin_operation_done(self, operation):
+    def get_sqladmin_operation(self, name):
         return self.sqladmin_operations_service.get(
             project=self.project,
-            operation=operation['name']
-        ).execute()["status"] == "DONE"
+            operation=name
+        ).execute()
+
+    def is_sqladmin_operation_done(self, operation):
+        return self.get_sqladmin_operation(operation["name"])["status"] == "DONE"
 
     @staticmethod
     def wait_for_operation(check_if_operation_done_function: Callable, operation_id: str, check_interval: int):
