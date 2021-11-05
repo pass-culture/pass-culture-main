@@ -189,6 +189,7 @@ jobs:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init
+      - run: cd api && git checkout dbaty/cleanup
       - run: ./install_lib_ci_with_chrome.sh
       - run: sudo ./pc symlink
       - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
@@ -293,6 +294,7 @@ jobs:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init
+      - run: cd api && git checkout dbaty/cleanup
       - run: ./install_lib_ci_with_chrome.sh
       - run: sudo ./pc symlink
       - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
