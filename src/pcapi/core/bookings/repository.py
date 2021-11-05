@@ -2,8 +2,10 @@ import csv
 from datetime import date
 from datetime import datetime
 from datetime import time
+from datetime import timedelta
 from io import StringIO
 import math
+from operator import and_
 from typing import Callable
 from typing import Iterable
 from typing import Optional
@@ -95,20 +97,17 @@ def find_by_pro_user(
 ) -> BookingsRecapPaginated:
     # TODO: remove this block when IMPROVE_BOOKINGS_PERF is definitely adopted
     if not FeatureToggle.IMPROVE_BOOKINGS_PERF.is_active():
+        sorted_booking_period = sorted(booking_period)
+        bookings_recap_query = _filter_bookings_recap_subquery(user, sorted_booking_period, event_date, venue_id)
+        bookings_recap_query = _build_bookings_recap_query(bookings_recap_query, sorted_booking_period, event_date)
+        bookings_recap_query_with_duplicates = _duplicate_booking_when_quantity_is_two(bookings_recap_query)
         if page == 1:
-            total_bookings_recap_count_query = _filter_bookings_recap_query(
-                db.session.query(func.coalesce(func.sum(Booking.quantity), 0)).select_from(Booking),
-                user,
-                booking_period,
-                event_date,
-                venue_id,
-            )
-            total_bookings_recap = total_bookings_recap_count_query.scalar()
+            total_bookings_recap = bookings_recap_query_with_duplicates.count()
         else:
             total_bookings_recap = 0
 
-        bookings_recap_query = _filter_bookings_recap_query(Booking.query, user, booking_period, event_date, venue_id)
-        bookings_recap_query = _build_bookings_recap_query(bookings_recap_query)
+        bookings_recap_query = _filter_bookings_recap_subquery(user, sorted_booking_period, event_date, venue_id)
+        bookings_recap_query = _build_bookings_recap_query(bookings_recap_query, sorted_booking_period, event_date)
         bookings_recap_query_with_duplicates = _duplicate_booking_when_quantity_is_two(bookings_recap_query)
         paginated_bookings = (
             bookings_recap_query_with_duplicates.order_by(text('"bookingDate" DESC'))
@@ -553,42 +552,72 @@ def _get_filtered_booking_pro(
 
 
 # TODO: to be removed when IMPROVE_BOOKINGS_PERF feature flag is definitely adopted
-def _filter_bookings_recap_query(
-    bookings_recap_query: Query,
+def _filter_bookings_recap_subquery(
     user: User,
     booking_period: tuple[date, date],
     event_date: Optional[date],
     venue_id: Optional[int],
 ) -> Query:
-    booking_date = _field_to_venue_timezone(Booking.dateCreated)
-    query = (
-        bookings_recap_query.outerjoin(Payment)
+    sorted_period = sorted(booking_period)
+
+    filter_subquery = (
+        db.session.query(
+            Booking.id,
+            Booking.stockId,
+            Booking.individualBookingId,
+            Booking.educationalBookingId,
+            Booking.token.label("bookingToken"),
+            Booking.dateCreated.label("bookingDate"),
+            Booking.isCancelled.label("isCancelled"),
+            Booking.isUsed.label("isUsed"),
+            Booking.quantity.label("quantity"),
+            Booking.amount.label("bookingAmount"),
+            Booking.dateUsed.label("dateUsed"),
+            Booking.cancellationDate.label("cancellationDate"),
+            Booking.cancellationLimitDate.label("cancellationLimitDate"),
+            Booking.reimbursementDate.label("reimbursementDate"),
+            Booking.isConfirmed.label("isConfirmed"),
+        )
+        .select_from(Booking)
+        .outerjoin(Payment)
         .reset_joinpoint()
-        .outerjoin(IndividualBooking)
-        .outerjoin(User)
-        .outerjoin(EducationalBooking)
-        .outerjoin(EducationalRedactor)
-        .join(Stock)
-        .join(Offer)
-        .join(Venue)
-        .join(Offerer)
-        .join(UserOfferer)
+        .join(UserOfferer, UserOfferer.offererId == Booking.offererId)
+        .group_by(Booking.id)
     )
 
     if not user.has_admin_role:
-        query = query.filter(UserOfferer.userId == user.id)
+        filter_subquery = filter_subquery.filter(UserOfferer.userId == user.id)
 
-    query = query.filter(UserOfferer.validationToken.is_(None)).filter(
-        booking_date.between(*booking_period, symmetric=True)
+    min_date, max_date = sorted_period
+
+    # FIXME (cgaunet, 2021-11-5): This hack is meant to prevent joins on venues and offerers when filtering dates.
+    # We need to filter further but it largely improves performance while TZ is not available
+    # on bookings and stocks.
+    approximative_min_date = min_date - timedelta(days=1)
+    approximative_max_date = max_date + timedelta(days=1)
+    filter_subquery = filter_subquery.filter(UserOfferer.validationToken.is_(None)).filter(
+        and_(
+            cast(Booking.dateCreated, Date) >= approximative_min_date,
+            cast(Booking.dateCreated, Date) <= approximative_max_date,
+        )
     )
 
     if venue_id:
-        query = query.filter(Booking.venueId == venue_id)
+        filter_subquery = filter_subquery.filter(Booking.venueId == venue_id)
 
     if event_date:
-        query = query.filter(_field_to_venue_timezone(Stock.beginningDatetime) == event_date)
+        approximative_event_min_date = event_date - timedelta(days=1)
+        approximative_event_max_date = event_date + timedelta(days=1)
+        filter_subquery = filter_subquery.join(Stock).filter(
+            and_(
+                cast(Stock.beginningDatetime, Date) >= approximative_event_min_date,
+                cast(Stock.beginningDatetime, Date) <= approximative_event_max_date,
+            )
+        )
 
-    return query
+    filter_subquery = filter_subquery.cte("filter_bookings")
+
+    return filter_subquery
 
 
 def _duplicate_booking_when_quantity_is_two(bookings_recap_query: Query) -> Query:
@@ -596,40 +625,59 @@ def _duplicate_booking_when_quantity_is_two(bookings_recap_query: Query) -> Quer
 
 
 # TODO: to be removed when IMPROVE_BOOKINGS_PERF feature flag is definitely adopted
-def _build_bookings_recap_query(bookings_recap_query: Query) -> Query:
-    return bookings_recap_query.distinct(Booking.token).with_entities(
-        Booking.token.label("bookingToken"),
-        Booking.dateCreated.label("bookingDate"),
-        Booking.isCancelled.label("isCancelled"),
-        Booking.isUsed.label("isUsed"),
-        Booking.quantity.label("quantity"),
-        Booking.amount.label("bookingAmount"),
-        Booking.dateUsed.label("dateUsed"),
-        Booking.cancellationDate.label("cancellationDate"),
-        Booking.cancellationLimitDate.label("cancellationLimitDate"),
-        Booking.isConfirmed.label("isConfirmed"),
-        Booking.educationalBookingId.label("educationalBookingId"),
-        Offer.name.label("offerName"),
-        Offer.id.label("offerId"),
-        Offer.extraData.label("offerExtraData"),
-        Payment.currentStatus.label("paymentStatus"),
-        Payment.lastProcessedDate.label("paymentDate"),
-        User.firstName.label("beneficiaryFirstname"),
-        User.lastName.label("beneficiaryLastname"),
-        User.email.label("beneficiaryEmail"),
-        User.phoneNumber.label("beneficiaryPhoneNumber"),
-        EducationalRedactor.firstName.label("redactorFirstname"),
-        EducationalRedactor.lastName.label("redactorLastname"),
-        EducationalRedactor.email.label("redactorEmail"),
-        Stock.beginningDatetime.label("stockBeginningDatetime"),
-        Venue.departementCode.label("venueDepartmentCode"),
-        Offerer.name.label("offererName"),
-        Offerer.postalCode.label("offererPostalCode"),
-        Venue.id.label("venueId"),
-        Venue.name.label("venueName"),
-        Venue.publicName.label("venuePublicName"),
-        Venue.isVirtual.label("venueIsVirtual"),
+def _build_bookings_recap_query(
+    bookings_recap_subquery: Query, booking_period: tuple[date], event_date: Optional[date]
+) -> Query:
+    query = (
+        db.session.query(bookings_recap_subquery)
+        .outerjoin(IndividualBooking, IndividualBooking.id == bookings_recap_subquery.c.individualBookingId)
+        .outerjoin(User, User.id == IndividualBooking.userId)
+        .outerjoin(EducationalBooking, EducationalBooking.id == bookings_recap_subquery.c.educationalBookingId)
+        .outerjoin(EducationalRedactor)
+        .join(Stock, Stock.id == bookings_recap_subquery.c.stockId)
+        .join(Offer)
+        .join(Venue)
+        .join(Offerer)
+        .filter(_field_to_venue_timezone(bookings_recap_subquery.c.bookingDate).between(*booking_period))
+        .with_entities(
+            bookings_recap_subquery.c.bookingToken.label("bookingToken"),
+            bookings_recap_subquery.c.bookingDate.label("bookingDate"),
+            bookings_recap_subquery.c.isCancelled,
+            bookings_recap_subquery.c.isUsed,
+            bookings_recap_subquery.c.quantity,
+            bookings_recap_subquery.c.bookingAmount.label("bookingAmount"),
+            bookings_recap_subquery.c.dateUsed.label("dateUsed"),
+            bookings_recap_subquery.c.cancellationDate.label("cancellationDate"),
+            bookings_recap_subquery.c.cancellationLimitDate.label("cancellationLimitDate"),
+            bookings_recap_subquery.c.isConfirmed.label("isConfirmed"),
+            bookings_recap_subquery.c.educationalBookingId,
+            Offer.name.label("offerName"),
+            Offer.id.label("offerId"),
+            Offer.extraData.label("offerExtraData"),
+            Payment.currentStatus.label("paymentStatus"),
+            Payment.lastProcessedDate.label("paymentDate"),
+            User.firstName.label("beneficiaryFirstname"),
+            User.lastName.label("beneficiaryLastname"),
+            User.email.label("beneficiaryEmail"),
+            User.phoneNumber.label("beneficiaryPhoneNumber"),
+            EducationalRedactor.firstName.label("redactorFirstname"),
+            EducationalRedactor.lastName.label("redactorLastname"),
+            EducationalRedactor.email.label("redactorEmail"),
+            Stock.beginningDatetime.label("stockBeginningDatetime"),
+            Venue.departementCode.label("venueDepartmentCode"),
+            Offerer.name.label("offererName"),
+            Offerer.postalCode.label("offererPostalCode"),
+            Venue.id.label("venueId"),
+            Venue.name.label("venueName"),
+            Venue.publicName.label("venuePublicName"),
+            Venue.isVirtual.label("venueIsVirtual"),
+        )
     )
+
+    if event_date is None:
+        return query
+
+    return query.filter(_field_to_venue_timezone(Stock.beginningDatetime) == event_date)
 
 
 def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
