@@ -5,7 +5,7 @@
  */
 
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -32,16 +32,27 @@ jest.mock('utils/date', () => ({
 }))
 
 const renderBookingsRecap = async (props, store = {}, routerState) => {
-  await act(async () => {
-    await render(
-      <Provider store={store}>
-        <MemoryRouter initialEntries={[{ pathname: '/reservations', state: routerState }]}>
-          <BookingsRecapContainer {...props} />
-          <NotificationContainer />
-        </MemoryRouter>
-      </Provider>
-    )
-  })
+  const rtlReturn = render(
+    <Provider store={store}>
+      <MemoryRouter initialEntries={[{ pathname: '/reservations', state: routerState }]}>
+        <BookingsRecapContainer {...props} />
+        <NotificationContainer />
+      </MemoryRouter>
+    </Provider>
+  )
+
+  const displayBookingsButton = screen.getByRole('button', { name: 'Afficher' })
+  const submitFilters = async () => {
+    fireEvent.click(displayBookingsButton)
+    await waitFor(() => expect(displayBookingsButton).not.toBeDisabled())
+  }
+
+  await waitFor(() => expect(displayBookingsButton).not.toBeDisabled())
+
+  return {
+    rtlReturn,
+    submitFilters,
+  }
 }
 
 describe('components | BookingsRecap | Pro user', () => {
@@ -154,11 +165,11 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookings_recap: [bookingRecap],
     })
-    await renderBookingsRecap(props, store)
+    const { submitFilters } = await renderBookingsRecap(props, store)
 
     // When
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await submitFilters()
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
@@ -173,10 +184,10 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 0,
       bookings_recap: [],
     })
-    await renderBookingsRecap(props, store)
+    const { submitFilters } = await renderBookingsRecap(props, store)
 
     // When
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await submitFilters()
 
     // Then
     const noBookingsForPreFilters = await screen.findByText(
@@ -193,9 +204,9 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 0,
       bookings_recap: [],
     })
-    await renderBookingsRecap(props, store)
+    const { submitFilters } = await renderBookingsRecap(props, store)
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await submitFilters()
 
     // When
     const resetButton = await screen.findByText('réinitialiser tous les filtres.')
@@ -214,10 +225,10 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookings_recap: [bookingRecap],
     })
-    await renderBookingsRecap(props, store)
+    const { submitFilters } = await renderBookingsRecap(props, store)
 
     // When
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await submitFilters()
 
     // Then
     expect(screen.queryByText('Réinitialiser les filtres')).not.toBeInTheDocument()
@@ -232,7 +243,7 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookings_recap: [bookingRecap],
     })
-    await renderBookingsRecap(props, store)
+    const { submitFilters } = await renderBookingsRecap(props, store)
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
     const defaultBookingPeriodBeginningDateInput = '16/05/2020'
     const defaultBookingPeriodEndingDateInput = '15/06/2020'
@@ -246,7 +257,7 @@ describe('components | BookingsRecap | Pro user', () => {
     )
     fireEvent.click(bookingPeriodEndingDateInput)
     fireEvent.click(screen.getAllByText('5')[0])
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await submitFilters()
 
     // When
     const resetButton = await screen.findByText('Réinitialiser les filtres')
@@ -269,9 +280,9 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookings_recap: [bookingRecap],
     })
-    await renderBookingsRecap(props, store)
+    const { submitFilters } = await renderBookingsRecap(props, store)
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await submitFilters()
 
     // When
     const resetButton = await screen.findByText('Réinitialiser les filtres')
@@ -304,11 +315,11 @@ describe('components | BookingsRecap | Pro user', () => {
     loadFilteredBookingsRecap
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
       .mockResolvedValueOnce(secondPaginatedBookingRecapReturned)
-    await renderBookingsRecap(props, store)
+    const { submitFilters } = await renderBookingsRecap(props, store)
 
     // When
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
-    await fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await submitFilters()
 
     // Then
     const secondBookingRecap = await screen.findAllByText(bookings2.stock.offer_name)
@@ -332,12 +343,12 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookings_recap: [bookingRecap],
     })
-    await renderBookingsRecap(props, store)
+    const { submitFilters } = await renderBookingsRecap(props, store)
 
     // When
     fireEvent.click(screen.getByLabelText('Date de l’évènement'))
     fireEvent.click(screen.getByText('8'))
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await submitFilters()
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
@@ -355,10 +366,10 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookings_recap: [bookingRecap],
     })
-    await renderBookingsRecap(props, store)
+    const { submitFilters } = await renderBookingsRecap(props, store)
 
     // When
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await submitFilters()
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
@@ -379,7 +390,7 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookings_recap: [bookingRecap],
     })
-    await renderBookingsRecap(props, store)
+    const { submitFilters } = await renderBookingsRecap(props, store)
 
     const bookingPeriodWrapper = screen.getByText('Période de réservation')
     const [beginningPeriodInput, endingPeriodInput] = within(
@@ -391,7 +402,7 @@ describe('components | BookingsRecap | Pro user', () => {
     fireEvent.click(screen.getByText('10'))
     fireEvent.click(endingPeriodInput)
     fireEvent.click(screen.getAllByText('5')[0])
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await submitFilters()
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
@@ -412,7 +423,7 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookings_recap: [bookingRecap],
     })
-    await renderBookingsRecap(props, store)
+    const { submitFilters } = await renderBookingsRecap(props, store)
 
     const bookingPeriodWrapper = screen.getByText('Période de réservation')
     const [beginningPeriodInput, endingPeriodInput] = within(
@@ -423,7 +434,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     fireEvent.change(beginningPeriodInput, { target: { value: '' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await submitFilters()
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
@@ -442,7 +453,7 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookings_recap: [bookingRecap],
     })
-    await renderBookingsRecap(props, store)
+    const { submitFilters } = await renderBookingsRecap(props, store)
 
     const bookingPeriodWrapper = screen.getByText('Période de réservation')
     const [beginningPeriodInput, endingPeriodInput] = within(
@@ -453,7 +464,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     fireEvent.change(endingPeriodInput, { target: { value: '' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await submitFilters()
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
@@ -472,7 +483,7 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookings_recap: [bookingRecap],
     })
-    await renderBookingsRecap(props, store)
+    const { submitFilters } = await renderBookingsRecap(props, store)
 
     const bookingPeriodWrapper = screen.getByText('Période de réservation')
     const endingPeriodInput = within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')[1]
@@ -480,7 +491,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // When
     fireEvent.click(endingPeriodInput)
     fireEvent.click(screen.getByText('16'))
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await submitFilters()
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
@@ -508,17 +519,17 @@ describe('components | BookingsRecap | Pro user', () => {
       bookings_recap: [otherVenueBooking],
     }
     loadFilteredBookingsRecap
-      .mockResolvedValueOnce(otherVenuePaginatedBookingRecapReturned)
-      .mockResolvedValueOnce(paginatedBookingRecapReturned)
-    await renderBookingsRecap(props, store)
+    .mockResolvedValueOnce(otherVenuePaginatedBookingRecapReturned)
+    .mockResolvedValueOnce(paginatedBookingRecapReturned)
+    const { submitFilters } = await renderBookingsRecap(props, store)
 
     userEvent.selectOptions(screen.getByLabelText('Lieu'), otherVenue.id)
-    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await submitFilters()
     await screen.findAllByText(otherVenueBooking.stock.offer_name)
 
     // When
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
-    await fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await submitFilters()
 
     // Then
     const firstBookingRecap = await screen.findAllByText(booking.stock.offer_name)
@@ -575,15 +586,8 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should inform the user that the filters have been modified when at least one of them was and before clicking on the "Afficher" button', async () => {
     // Given
-    render(
-      <Provider store={store}>
-        <MemoryRouter initialEntries={[{ pathname: '/reservations', state: undefined }]}>
-          <BookingsRecapContainer {...props} />
-          <NotificationContainer />
-        </MemoryRouter>
-      </Provider>
-    )
-    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    const { submitFilters } = await renderBookingsRecap(props, store)
+    await submitFilters()
 
     // When
     userEvent.selectOptions(
@@ -592,22 +596,13 @@ describe('components | BookingsRecap | Pro user', () => {
     )
 
     // Then
-    const informationalMessage = screen.getByText(
-      'Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour actualiser votre recherche.'
-    )
+    const informationalMessage = await screen.findByTestId('refresh-required-message')
     expect(informationalMessage).toBeInTheDocument()
   })
 
   it('should not inform the user when the selected filter is the same than the actual filter', async () => {
     // Given
-    render(
-      <Provider store={store}>
-        <MemoryRouter initialEntries={[{ pathname: '/reservations', state: undefined }]}>
-          <BookingsRecapContainer {...props} />
-          <NotificationContainer />
-        </MemoryRouter>
-      </Provider>
-    )
+    await renderBookingsRecap(props, store)
     userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
       await screen.findByText(venue.publicName)
@@ -625,14 +620,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should not inform the user of pre-filter modifications before first click on "Afficher" button', async () => {
     // Given
-    render(
-      <Provider store={store}>
-        <MemoryRouter initialEntries={[{ pathname: '/reservations', state: undefined }]}>
-          <BookingsRecapContainer {...props} />
-          <NotificationContainer />
-        </MemoryRouter>
-      </Provider>
-    )
+    await renderBookingsRecap(props, store)
 
     // When
     userEvent.selectOptions(
