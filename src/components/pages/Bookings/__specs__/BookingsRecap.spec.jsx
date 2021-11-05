@@ -15,20 +15,18 @@ import NotificationContainer from 'components/layout/Notification/NotificationCo
 import { BOOKING_STATUS } from 'components/pages/Bookings/BookingsRecapTable/CellsFormatter/utils/bookingStatusConverter'
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
 import { getVenuesForOfferer, loadFilteredBookingsRecap } from 'repository/pcapi/pcapi'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { bookingRecapFactory, venueFactory } from 'utils/apiFactories'
 import { getNthCallNthArg } from 'utils/testHelpers'
 
 import BookingsRecapContainer from '../BookingsRecapContainer'
-import { downLoadCSVFile } from '../downloadCSVBookings'
+
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
+  getFilteredBookingsCSV: jest.fn(),
   loadFilteredBookingsRecap: jest.fn(),
-}))
-
-jest.mock('../downloadCSVBookings', () => ({
-  downLoadCSVFile: jest.fn(),
 }))
 
 jest.mock('utils/date', () => ({
@@ -36,7 +34,7 @@ jest.mock('utils/date', () => ({
   getToday: jest.fn().mockReturnValue(new Date('2020-06-15T12:00:00Z')),
 }))
 
-const renderBookingsRecap = async (props, store = {}, routerState) => {
+const renderBookingsRecap = async (props, store = {}, routerState, waitDomReady) => {
   const rtlReturn = render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[{ pathname: '/reservations', state: routerState }]}>
@@ -47,15 +45,24 @@ const renderBookingsRecap = async (props, store = {}, routerState) => {
   )
 
   const displayBookingsButton = screen.getByRole('button', { name: 'Afficher' })
+  const downloadBookingsCsvButton = screen.getByRole('button', { name: 'Télécharger' })
   const submitFilters = async () => {
     fireEvent.click(displayBookingsButton)
     await waitFor(() => expect(displayBookingsButton).not.toBeDisabled())
   }
+  const submitDownloadFilters = async () => {
+    fireEvent.click(downloadBookingsCsvButton)
+    expect(downloadBookingsCsvButton).toBeDisabled()
+    await waitFor(() => expect(downloadBookingsCsvButton).toBeEnabled())
+  }
 
-  await waitFor(() => expect(displayBookingsButton).not.toBeDisabled())
+  if (waitDomReady || waitDomReady === undefined) {
+    await waitFor(() => expect(displayBookingsButton).not.toBeDisabled())
+  }
 
   return {
     rtlReturn,
+    submitDownloadFilters,
     submitFilters,
   }
 }
@@ -311,34 +318,37 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should fetch API for CSV when clicking on the download button and disable button while its loading', async () => {
     // Given
-    await renderBookingsRecap(props, store)
+    const { submitDownloadFilters } = await renderBookingsRecap(props, store, undefined)
 
     // When
-    const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
-    fireEvent.click(downloadButton)
+    // submit utils method wait for button to become disabled then enabled.
+    await submitDownloadFilters()
 
     // Then
-    expect(downloadButton).toBeDisabled()
-    expect(downLoadCSVFile).toHaveBeenCalledWith({
-      "bookingPeriodBeginningDate": DEFAULT_PRE_FILTERS.bookingBeginningDate,
-      "bookingPeriodEndingDate": DEFAULT_PRE_FILTERS.bookingEndingDate,
-      "eventDate": "all",
-      "page": 1,
-      "venueId": "all",
+    expect(pcapi.getFilteredBookingsCSV).toHaveBeenCalledWith({
+      bookingPeriodBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
+      bookingPeriodEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
+      eventDate: 'all',
+      page: 1,
+      venueId: 'all',
     })
-    await waitFor(() => expect(downloadButton).toBeEnabled())
   })
 
   it('should display an error message on CSV download when API returns a status other than 200', async () => {
     // Given
-    downLoadCSVFile.mockReturnValueOnce('error')
-    await renderBookingsRecap(props, store)
+    pcapi.getFilteredBookingsCSV.mockImplementation(() =>
+      Promise.reject(new Error('An error happened.'))
+    )
+
+    const { submitDownloadFilters } = await renderBookingsRecap(props, store)
 
     // When
-    await fireEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
+    await submitDownloadFilters()
 
     // Then
-    expect(screen.getByText('Une erreur s\'est produite. Veuillez réessayer ultérieurement.')).toBeInTheDocument()
+    expect(
+      await screen.findByText("Une erreur s'est produite. Veuillez réessayer ultérieurement.", { exact: false })
+    ).toBeInTheDocument()
   })
 
   it('should fetch bookings for the filtered venue as many times as the number of pages', async () => {
@@ -564,8 +574,8 @@ describe('components | BookingsRecap | Pro user', () => {
       bookings_recap: [otherVenueBooking],
     }
     loadFilteredBookingsRecap
-    .mockResolvedValueOnce(otherVenuePaginatedBookingRecapReturned)
-    .mockResolvedValueOnce(paginatedBookingRecapReturned)
+      .mockResolvedValueOnce(otherVenuePaginatedBookingRecapReturned)
+      .mockResolvedValueOnce(paginatedBookingRecapReturned)
     const { submitFilters } = await renderBookingsRecap(props, store)
 
     userEvent.selectOptions(screen.getByLabelText('Lieu'), otherVenue.id)

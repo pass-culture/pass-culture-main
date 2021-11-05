@@ -12,7 +12,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
 import ChoosePreFiltersMessage from './ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import { downLoadCSVFile } from './downloadCSVBookings'
+import { downloadCSVFile } from './downloadCSVBookings'
 import NoBookingsForPreFiltersMessage from './NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import { DEFAULT_PRE_FILTERS } from './PreFilters/_constants'
 import PreFilters from './PreFilters/PreFilters'
@@ -83,12 +83,11 @@ const BookingsRecap = ({ location, showNotification }) => {
 
   const downloadBookingsCSV = useCallback(async filters => {
     setIsDownloadingCSV(true)
-
-    const requestStatus  = await downLoadCSVFile(filters)
-    if (requestStatus === 'error') {
-      showNotification('error', 'Une erreur s\'est produite. Veuillez réessayer ultérieurement.')
+    try {
+      await downloadCSVFile(filters)
+    } catch (e) {
+      showNotification('error', "Une erreur s'est produite. Veuillez réessayer ultérieurement.")
     }
-
     setIsDownloadingCSV(false)
   }, [showNotification])
 
@@ -151,7 +150,7 @@ const BookingsRecap = ({ location, showNotification }) => {
         bookingsRecap.length > 0 ? (
           <BookingsRecapTable
             bookingsRecap={bookingsRecap}
-            isTableLoading={isTableLoading}
+            isLoading={isTableLoading}
             locationState={location.state}
           />
         ) : isTableLoading ? (

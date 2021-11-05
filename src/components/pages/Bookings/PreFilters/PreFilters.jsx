@@ -56,7 +56,7 @@ const PreFilters = ({
   )
 
   const isRefreshRequired = !isEqual(selectedPreFilters, appliedPreFilters) && wereBookingsRequested
-  const bookingsQueryParams = {
+  const downloadBookingsFilters = {
     page: 1,
     venueId: selectedPreFilters.offerVenueId,
     eventDate: selectedPreFilters.offerEventDate,
@@ -95,7 +95,7 @@ const PreFilters = ({
             <button
               className="primary-button"
               disabled={isDownloadingCSV || isLocalLoading}
-              onClick={() => downloadBookingsCSV(bookingsQueryParams)}
+              onClick={() => downloadBookingsCSV(downloadBookingsFilters)}
               type="button"
             >
               Télécharger
