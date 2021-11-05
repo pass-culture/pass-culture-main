@@ -9,6 +9,7 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import * as pcapi from 'repository/pcapi/pcapi'
+import { API_URL } from 'utils/config'
 
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
 import ChoosePreFiltersMessage from './ChoosePreFiltersMessage/ChoosePreFiltersMessage'
@@ -46,7 +47,7 @@ const BookingsRecap = ({ location, showInformationNotification }) => {
 
       let filteredBookingsResponse
       try  {
-        filteredBookingsResponse = await pcapi.loadFilteredBookingsRecap({ ...bookingsFilters })
+        filteredBookingsResponse = await pcapi.loadFilteredBookingsRecap(bookingsFilters)
       } catch {
         filteredBookingsResponse = {
           page: 0,
@@ -78,6 +79,23 @@ const BookingsRecap = ({ location, showInformationNotification }) => {
     },
     [showInformationNotification]
   )
+
+  const downloadBookingsCSV = useCallback(async filters => {
+    const queryParams = pcapi.buildBookingsRecapQuery(filters)
+    const result = await fetch(`${API_URL}/bookings/csv?${queryParams}`, { credentials: 'include' })
+
+    if (result.status === 200) {
+      const text = await result.text()
+      const fakeLink = document.createElement('a')
+      const blob = new Blob([text], { type: "text/csv" })
+      const date = new Date().toISOString()
+      fakeLink.href = URL.createObjectURL(blob)
+      fakeLink.setAttribute('download', `reservations_pass_culture-${date}.csv`)
+      document.body.appendChild(fakeLink)
+      fakeLink.click()
+      document.body.removeChild(fakeLink)
+    }
+  }, [])
 
   useEffect(() => {
     if (location.state?.statuses.length > 0) {
@@ -128,6 +146,7 @@ const BookingsRecap = ({ location, showInformationNotification }) => {
       <PreFilters
         appliedPreFilters={appliedPreFilters}
         applyPreFilters={loadBookingsRecap}
+        downloadBookingsCSV={downloadBookingsCSV}
         hasResult={bookingsRecap.length > 0}
         isLoading={isLoading}
         wereBookingsRequested={wereBookingsRequested}

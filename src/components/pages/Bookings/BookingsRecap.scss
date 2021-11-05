@@ -1,4 +1,28 @@
 .bookings-page {
+  .button-group {
+    margin-bottom: rem(32px);
+    position: relative;
+
+    &-buttons {
+      display: flex;
+      justify-content: center;
+      position: relative;
+
+      > button {
+        margin: 0 rem(12px);
+        width: rem(148px);
+      }
+    }
+
+    &-separator {
+      border-bottom: 1px solid $grey-medium;
+      display: block;
+      position: absolute;
+      top: 50%;
+      width: 100%;
+    }
+  }
+
   .br-warning {
     align-items: center;
     color: $grey-dark;

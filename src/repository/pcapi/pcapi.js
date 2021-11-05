@@ -270,6 +270,7 @@ export const buildBookingsRecapQuery = ({
   page,
 }) => {
   const params = { page }
+
   if (venueId !== DEFAULT_PRE_FILTERS.offerVenueId) {
     params.venueId = venueId
   }
