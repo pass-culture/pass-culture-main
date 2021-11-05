@@ -10,7 +10,6 @@ from pcapi.core import testing
 import pcapi.core.users.factories as users_factories
 
 from . import models
-from .models import UserProfilingRiskRating
 
 
 JOUVE_CTRL_VALUES = ["OK", "KO"]
@@ -48,7 +47,7 @@ class JouveContentFactory(factory.Factory):
     serviceCodeCtrl = factory.Faker("pystr")
 
 
-USERPROFILING_RATING = [rating.value for rating in UserProfilingRiskRating]
+USERPROFILING_RATING = [rating.value for rating in models.UserProfilingRiskRating]
 USERPROFILING_RESULTS = ["sucess", "failure"]
 USERPROFILING_BOOL = ["yes", "no"]
 

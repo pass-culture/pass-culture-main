@@ -215,16 +215,14 @@ class AccountTest:
     @pytest.mark.parametrize(
         "client_version,extra_step", [("1.154.9", "id-check"), ("1.160.0", "beneficiary-information")]
     )
-    @freeze_time("2021-06-01")
-    def test_next_beneficiary_validation_step(self, client_version, extra_step, app):
-        user = users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2003, 1, 1))
-
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+    def test_next_beneficiary_validation_step(self, client_version, extra_step, client):
+        user = users_factories.UserFactory(
+            email=self.identifier, dateOfBirth=datetime.now() - relativedelta(years=18, days=5)
+        )
+        client.with_token(user.email)
         headers = {"app-version": client_version}
 
-        response = test_client.get("/native/v1/me", headers=headers)
+        response = client.get("/native/v1/me", headers=headers)
 
         assert response.json["nextBeneficiaryValidationStep"] == "phone-validation"
         assert response.status_code == 200
@@ -239,7 +237,7 @@ class AccountTest:
             ),
         )
 
-        response = test_client.get("/native/v1/me", headers=headers)
+        response = client.get("/native/v1/me", headers=headers)
 
         assert response.status_code == 200
         assert response.json["nextBeneficiaryValidationStep"] == "id-check"
@@ -248,7 +246,7 @@ class AccountTest:
         user.extraData["is_identity_document_uploaded"] = True
         repository.save(user)
 
-        response = test_client.get("/native/v1/me", headers=headers)
+        response = client.get("/native/v1/me", headers=headers)
 
         assert response.status_code == 200
         assert response.json["nextBeneficiaryValidationStep"] == extra_step
@@ -257,17 +255,17 @@ class AccountTest:
         # Perform final step
         user.add_beneficiary_role()
 
-        response = test_client.get("/native/v1/me", headers=headers)
+        response = client.get("/native/v1/me", headers=headers)
 
         assert response.status_code == 200
         assert not response.json["nextBeneficiaryValidationStep"]
 
-    def test_next_beneficiary_validation_step_user_profiling_risk_rating_high(self, app):
-        user = users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2003, 1, 1))
-
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+    def test_next_beneficiary_validation_step_user_profiling_risk_rating_high(self, client):
+        user = users_factories.UserFactory(
+            email=self.identifier,
+            dateOfBirth=datetime.now() - relativedelta(years=18, days=5),
+        )
+        client.with_token(user.email)
 
         # Perform phone validation and user profiling
         user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
@@ -279,25 +277,42 @@ class AccountTest:
             ),
         )
 
-        response = test_client.get("/native/v1/me")
+        response = client.get("/native/v1/me")
 
         assert response.status_code == 200
         assert response.json["nextBeneficiaryValidationStep"] == None
 
-    def test_next_beneficiary_validation_step_no_user_profiling(self, app):
-        user = users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2003, 1, 1))
-
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+    @override_features(ALLOW_EMPTY_USER_PROFILING=False)
+    def test_next_beneficiary_validation_step_no_user_profiling(self, client):
+        user = users_factories.UserFactory(
+            email=self.identifier,
+            dateOfBirth=datetime.now() - relativedelta(years=18, days=5),
+        )
+        client.with_token(user.email)
 
         # Perform phone validation but no user profiling
         user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
 
-        response = test_client.get("/native/v1/me")
+        response = client.get("/native/v1/me")
 
         assert response.status_code == 200
         assert response.json["nextBeneficiaryValidationStep"] == None
+
+    @override_features(ALLOW_EMPTY_USER_PROFILING=True)
+    def test_next_beneficiary_validation_step_no_user_profiling_bypass(self, client):
+        user = users_factories.UserFactory(
+            email=self.identifier,
+            dateOfBirth=datetime.now() - relativedelta(years=18, days=5),
+        )
+        client.with_token(user.email)
+
+        # Perform phone validation but no user profiling
+        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+
+        response = client.get("/native/v1/me")
+
+        assert response.status_code == 200
+        assert response.json["nextBeneficiaryValidationStep"] == "id-check"
 
     @freeze_time("2021-06-01")
     def test_next_beneficiary_validation_step_not_eligible(self, app):

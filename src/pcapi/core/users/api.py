@@ -849,16 +849,7 @@ def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryVali
         if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
             return BeneficiaryValidationStep.PHONE_VALIDATION
 
-        user_profiling = (
-            fraud_models.BeneficiaryFraudCheck.query.filter(fraud_models.BeneficiaryFraudCheck.user == user)
-            .filter(fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.USER_PROFILING)
-            .order_by(fraud_models.BeneficiaryFraudCheck.dateCreated.desc())
-            .first()
-        )
-        if (
-            not user_profiling
-            or user_profiling.resultContent["risk_rating"] == fraud_models.UserProfilingRiskRating.HIGH.value
-        ):
+        if fraud_api.is_risky_user_profile(user):
             return None
 
         return get_id_check_validation_step(user)

@@ -355,7 +355,7 @@ def _underage_user_fraud_item(birth_date: datetime.date) -> models.FraudItem:
     )
 
 
-def create_user_profiling_check(
+def on_user_profiling_result(
     user: user_models.User, profiling_infos: models.UserProfilingFraudData
 ) -> models.BeneficiaryFraudCheck:
     fraud_check = models.BeneficiaryFraudCheck(
@@ -365,10 +365,11 @@ def create_user_profiling_check(
         resultContent=profiling_infos,
     )
     repository.save(fraud_check)
+    on_user_profiling_check_result(user, profiling_infos)
     return fraud_check
 
 
-def on_user_profiling_check(
+def on_user_profiling_check_result(
     user: user_models.User,
     tmx_content: models.UserProfilingFraudData,
 ) -> None:
@@ -527,6 +528,24 @@ def validate_frauds(user: user_models.User, fraud_items: list[models.FraudItem])
 
 def has_user_passed_fraud_checks(user: user_models.User) -> bool:
     return bool(user.beneficiaryFraudResult)
+
+
+def is_risky_user_profile(user: user_models.User) -> bool:
+    user_profiling = (
+        models.BeneficiaryFraudCheck.query.filter(models.BeneficiaryFraudCheck.user == user)
+        .filter(models.BeneficiaryFraudCheck.type == models.FraudCheckType.USER_PROFILING)
+        .order_by(models.BeneficiaryFraudCheck.dateCreated.desc())
+        .first()
+    )
+
+    if user_profiling and user_profiling.source_data().risk_rating == models.UserProfilingRiskRating.HIGH:
+        return True
+
+    if not (user_profiling or FeatureToggle.ALLOW_EMPTY_USER_PROFILING.is_active()):
+        # unprofiled user and forbidden empty profiling -> risky
+        return True
+
+    return False
 
 
 def is_user_fraudster(user: user_models.User) -> bool:
