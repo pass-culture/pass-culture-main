@@ -40,10 +40,6 @@ def get_offerer_helper(offerer):
     )
 
 
-def get_payment_helper(payment):
-    return as_dict(payment)
-
-
 def get_stock_helper(stock):
     return as_dict(stock)
 

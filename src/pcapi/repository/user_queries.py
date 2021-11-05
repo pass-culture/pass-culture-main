@@ -9,7 +9,6 @@ from sqlalchemy.orm import Query
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
-from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 from pcapi.models import BeneficiaryImport
@@ -98,14 +97,6 @@ def get_all_users_wallet_balances() -> list[WalletBalance]:
         WalletBalance(user_id, current_balance, real_balance)
         for user_id, current_balance, real_balance in wallet_balances
     ]
-
-
-def filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query: Query) -> Query:
-    return (
-        query.join(UserOfferer)
-        .join(Offerer)
-        .filter((Offerer.validationToken.is_(None)) & (UserOfferer.validationToken.is_(None)))
-    )
 
 
 def keep_only_webapp_users(query: Query) -> Query:
