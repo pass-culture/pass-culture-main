@@ -39,6 +39,20 @@ const fetchWithErrorHandler = async (path, options) => {
 }
 
 export const client = {
+  getPlainText: async (path, withCredentials = true) => {
+    let options = buildOptions(GET_HTTP_METHOD, withCredentials)
+    options['headers'] = { 'Content-Type': 'text/plain' }
+
+    try {
+      const response = await fetch(buildUrl(path), options)
+      if (response.status !== 200) {
+        throw Error('An error happened.')
+      }
+      return Promise.resolve(await response.text())
+    } catch (e) {
+      return Promise.reject(e)
+    }
+  },
   get: async (path, withCredentials = true) => {
     return await fetchWithErrorHandler(path, buildOptions(GET_HTTP_METHOD, withCredentials))
   },

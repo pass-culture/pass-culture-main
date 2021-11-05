@@ -262,7 +262,7 @@ export const loadVenueProviders = async venueId => {
 //
 // BookingsRecap
 //
-export const loadFilteredBookingsRecap = async ({
+export const buildBookingsRecapQuery = ({
   venueId = DEFAULT_PRE_FILTERS.offerVenueId,
   eventDate = DEFAULT_PRE_FILTERS.offerEventDate,
   bookingPeriodBeginningDate = DEFAULT_PRE_FILTERS.bookingBeginningDate,
@@ -285,9 +285,19 @@ export const loadFilteredBookingsRecap = async ({
     FORMAT_ISO_DATE_ONLY
   )
 
-  const queryParams = stringify(params)
+  return stringify(params)
+}
+
+export const loadFilteredBookingsRecap = async (filters) => {
+  const queryParams = buildBookingsRecapQuery(filters)
   return client.get(`/bookings/pro?${queryParams}`)
 }
+
+export const getFilteredBookingsCSV = async filters => {
+  const queryParams = buildBookingsRecapQuery(filters)
+  return client.getPlainText(`/bookings/csv?${queryParams}`)
+}
+
 
 //
 // Booking

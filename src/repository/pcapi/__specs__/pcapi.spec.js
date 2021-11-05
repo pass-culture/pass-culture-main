@@ -11,6 +11,7 @@ import {
   getVenuesForOfferer,
   getVenueStats,
   invalidateBooking,
+  getFilteredBookingsCSV,
   loadFilteredBookingsRecap,
   signout,
   updateUserInformations,
@@ -32,6 +33,7 @@ jest.mock('repository/pcapi/pcapiClient', () => ({
   client: {
     delete: jest.fn(),
     get: jest.fn().mockResolvedValue({}),
+    getPlainText: jest.fn().mockResolvedValue(''),
     patch: jest.fn(),
     post: jest.fn().mockResolvedValue({}),
     postWithFormData: jest.fn(),
@@ -332,6 +334,56 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith('/venues')
+    })
+  })
+
+  describe('getFilteredBookingsCSV', () => {
+    const returnedResponse = "i'm a text response"
+
+    beforeEach(() => {
+      client.getPlainText.mockResolvedValue(returnedResponse)
+    })
+
+    it('should return api response', async () => {
+      // When
+      const response = await getFilteredBookingsCSV({})
+
+      // Then
+      expect(response).toBe(returnedResponse)
+    })
+
+    it('should call bookings csv route with "page=1" and default period when no other filters are provided', async () => {
+      // Given
+      const filters = {
+        page: 1,
+      }
+
+      // When
+      await getFilteredBookingsCSV(filters)
+
+      // Then
+      expect(client.getPlainText).toHaveBeenCalledWith(
+        '/bookings/csv?page=1&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12'
+      )
+    })
+
+    it('should call offers route with filters when provided', async () => {
+      // Given
+      const filters = {
+        venueId: 'AA',
+        eventDate: new Date(2020, 8, 13),
+        page: 2,
+        bookingPeriodBeginningDate: new Date(2020, 6, 8),
+        bookingPeriodEndingDate: new Date(2020, 8, 4),
+      }
+
+      // When
+      await getFilteredBookingsCSV(filters)
+
+      // Then
+      expect(client.getPlainText).toHaveBeenCalledWith(
+        '/bookings/csv?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z&bookingPeriodBeginningDate=2020-07-08&bookingPeriodEndingDate=2020-09-04'
+      )
     })
   })
 
