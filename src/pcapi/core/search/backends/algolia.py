@@ -313,6 +313,7 @@ class AlgoliaBackend(base.SearchBackend):
         social_medias = getattr(venue.contact, "social_medias", {})
         return {
             "objectID": venue.id,
+            "city": venue.city,
             "name": venue.publicName or venue.name,
             "offerer_name": venue.managingOfferer.name,
             "venue_type": venue.venueTypeCode.name,

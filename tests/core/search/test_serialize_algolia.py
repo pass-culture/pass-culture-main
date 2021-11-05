@@ -542,6 +542,7 @@ def test_serialize_venue():
     serialized = AlgoliaBackend().serialize_venue(venue)
     assert serialized == {
         "objectID": venue.id,
+        "city": venue.city,
         "name": venue.name,
         "offerer_name": venue.managingOfferer.name,
         "venue_type": venue.venueTypeCode.name,
