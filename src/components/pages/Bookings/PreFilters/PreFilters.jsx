@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
@@ -14,13 +14,26 @@ import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByEventDate from './FilterByEventDate.jsx'
 import FilterByVenue from './FilterByVenue'
 
-const PreFilters = ({ appliedPreFilters, applyPreFilters, hasResult, isLoading, wereBookingsRequested }) => {
+const PreFilters = ({
+  appliedPreFilters,
+  applyPreFilters,
+  hasResult,
+  isLoading,
+  wereBookingsRequested,
+}) => {
   const [selectedPreFilters, setSelectedPreFilters] = useState({ ...appliedPreFilters })
   const [venues, setVenues] = useState([])
+  const [isLocalLoading, setIsLocalLoading] = useState(false)
 
   useEffect(() => {
-    pcapi.getVenuesForOfferer().then(venues => setVenues(formatAndOrderVenues(venues)))
-  }, [])
+    async function fetchVenues() {
+      setIsLocalLoading(true)
+      const venuesForOfferer = await pcapi.getVenuesForOfferer()
+      setVenues(formatAndOrderVenues(venuesForOfferer))
+      setIsLocalLoading(false)
+    }
+    fetchVenues()
+  }, [setIsLocalLoading, setVenues])
 
   useEffect(() => setSelectedPreFilters({ ...appliedPreFilters }), [appliedPreFilters])
 
@@ -71,7 +84,7 @@ const PreFilters = ({ appliedPreFilters, applyPreFilters, hasResult, isLoading, 
           <div className="separator" />
           <button
             className="primary-button"
-            disabled={isLoading}
+            disabled={isLoading || isLocalLoading}
             type="submit"
           >
             Afficher
@@ -80,8 +93,12 @@ const PreFilters = ({ appliedPreFilters, applyPreFilters, hasResult, isLoading, 
         </div>
       </form>
       {isRefreshRequired && (
-        <p className="pf-refresh-message">
-          Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour actualiser votre recherche.
+        <p
+          className="pf-refresh-message"
+          data-testid="refresh-required-message"
+        >
+          Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour actualiser votre
+          recherche.
         </p>
       )}
     </>
