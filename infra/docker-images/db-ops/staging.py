@@ -72,6 +72,8 @@ passculture_db_ops.post_process(
 
 passculture_db_ops.run_flask_command("sandbox", "--name", "beneficiaries", "--clean", "false")
 
+passculture_db_ops.run_flask_command("process_offers_from_database", "--clear=true", "--starting-page=0", "--ending-page=1", "--limit=10000")
+
 ehp.disconnect()
 
 # 8 Backup
