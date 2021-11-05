@@ -18,10 +18,6 @@ def get_booking_helper(booking):
     )
 
 
-def get_mediation_helper(mediation):
-    return as_dict(mediation)
-
-
 def get_offer_helper(offer):
     return dict(
         as_dict(offer),

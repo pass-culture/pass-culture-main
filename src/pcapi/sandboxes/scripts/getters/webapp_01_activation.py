@@ -11,11 +11,3 @@ def get_existing_webapp_not_validated_user():
     user = query.first()
 
     return {"user": get_beneficiary_helper(user)}
-
-
-def get_existing_webapp_validated_user():
-    query = keep_only_webapp_users(User.query)
-    query = query.filter(~User.tokens.any())
-    user = query.first()
-
-    return {"user": get_beneficiary_helper(user)}

@@ -14,8 +14,6 @@ import pcapi.sandboxes.scripts.getters.pro_13_reimbursements
 import pcapi.sandboxes.scripts.getters.pro_14_home_profile
 import pcapi.sandboxes.scripts.getters.webapp_01_activation
 import pcapi.sandboxes.scripts.getters.webapp_02_signin
-import pcapi.sandboxes.scripts.getters.webapp_02_signup
-import pcapi.sandboxes.scripts.getters.webapp_04_verso
 import pcapi.sandboxes.scripts.getters.webapp_05_search
 import pcapi.sandboxes.scripts.getters.webapp_06_booking_list
 import pcapi.sandboxes.scripts.getters.webapp_06_profile
