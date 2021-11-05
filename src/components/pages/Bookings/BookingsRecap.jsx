@@ -9,17 +9,17 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { API_URL } from 'utils/config'
 
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
 import ChoosePreFiltersMessage from './ChoosePreFiltersMessage/ChoosePreFiltersMessage'
+import { downLoadCSVFile } from './downloadCSVBookings'
 import NoBookingsForPreFiltersMessage from './NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import { DEFAULT_PRE_FILTERS } from './PreFilters/_constants'
 import PreFilters from './PreFilters/PreFilters'
 
 const MAX_LOADED_PAGES = 5
 
-const BookingsRecap = ({ location, showInformationNotification }) => {
+const BookingsRecap = ({ location, showNotification }) => {
   const [appliedPreFilters, setAppliedPreFilters] = useState({
     bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
     bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
@@ -27,12 +27,13 @@ const BookingsRecap = ({ location, showInformationNotification }) => {
     offerVenueId: location.state?.venueId || DEFAULT_PRE_FILTERS.offerVenueId,
   })
   const [bookingsRecap, setBookingsRecap] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isDownloadingCSV, setIsDownloadingCSV] = useState(false)
+  const [isTableLoading, setIsTableLoading] = useState(false)
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
 
   const loadBookingsRecap = useCallback(
     async preFilters => {
-      setIsLoading(true)
+      setIsTableLoading(true)
       setBookingsRecap([])
       setWereBookingsRequested(true)
       setAppliedPreFilters({ ...preFilters })
@@ -74,28 +75,22 @@ const BookingsRecap = ({ location, showInformationNotification }) => {
 
       setIsTableLoading(false)
       if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
-        showInformationNotification()
+        showNotification('information', 'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.')
       }
     },
-    [showInformationNotification]
+    [showNotification]
   )
 
   const downloadBookingsCSV = useCallback(async filters => {
-    const queryParams = pcapi.buildBookingsRecapQuery(filters)
-    const result = await fetch(`${API_URL}/bookings/csv?${queryParams}`, { credentials: 'include' })
+    setIsDownloadingCSV(true)
 
-    if (result.status === 200) {
-      const text = await result.text()
-      const fakeLink = document.createElement('a')
-      const blob = new Blob([text], { type: "text/csv" })
-      const date = new Date().toISOString()
-      fakeLink.href = URL.createObjectURL(blob)
-      fakeLink.setAttribute('download', `reservations_pass_culture-${date}.csv`)
-      document.body.appendChild(fakeLink)
-      fakeLink.click()
-      document.body.removeChild(fakeLink)
+    const requestStatus  = await downLoadCSVFile(filters)
+    if (requestStatus === 'error') {
+      showNotification('error', 'Une erreur s\'est produite. Veuillez réessayer ultérieurement.')
     }
-  }, [])
+
+    setIsDownloadingCSV(false)
+  }, [showNotification])
 
   useEffect(() => {
     if (location.state?.statuses.length > 0) {
@@ -148,17 +143,18 @@ const BookingsRecap = ({ location, showInformationNotification }) => {
         applyPreFilters={loadBookingsRecap}
         downloadBookingsCSV={downloadBookingsCSV}
         hasResult={bookingsRecap.length > 0}
-        isLoading={isLoading}
+        isDownloadingCSV={isDownloadingCSV}
+        isTableLoading={isTableLoading}
         wereBookingsRequested={wereBookingsRequested}
       />
       {wereBookingsRequested ? (
         bookingsRecap.length > 0 ? (
           <BookingsRecapTable
             bookingsRecap={bookingsRecap}
-            isLoading={isLoading}
+            isTableLoading={isTableLoading}
             locationState={location.state}
           />
-        ) : isLoading ? (
+        ) : isTableLoading ? (
           <Spinner />
         ) : (
           <NoBookingsForPreFiltersMessage resetPreFilters={resetPreFilters} />
@@ -177,7 +173,7 @@ BookingsRecap.propTypes = {
       statuses: PropTypes.arrayOf(PropTypes.string),
     }),
   }).isRequired,
-  showInformationNotification: PropTypes.func.isRequired,
+  showNotification: PropTypes.func.isRequired,
 }
 
 export default BookingsRecap

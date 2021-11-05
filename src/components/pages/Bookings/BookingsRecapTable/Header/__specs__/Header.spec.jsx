@@ -68,22 +68,6 @@ describe("bookings recap table's header", () => {
     expect(screen.queryByText('2 réservations')).toBeInTheDocument()
   })
 
-  it('should display a link to specific csv when not loading', () => {
-    // Given
-    const bookingsRecapFiltered = [oneBookingRecap]
-    const props = {
-      bookingsRecapFiltered: bookingsRecapFiltered,
-      isLoading: false,
-    }
-
-    // When
-    renderHeader(props)
-
-    // Then
-    const csv_download_link = screen.getByText('Télécharger le CSV')
-    expect(csv_download_link.download).toBe('Réservations Pass Culture.csv')
-  })
-
   it('should only display a specific message when data are still loading', () => {
     // Given
     const props = {

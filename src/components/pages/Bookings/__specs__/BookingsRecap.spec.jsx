@@ -20,10 +20,15 @@ import { bookingRecapFactory, venueFactory } from 'utils/apiFactories'
 import { getNthCallNthArg } from 'utils/testHelpers'
 
 import BookingsRecapContainer from '../BookingsRecapContainer'
+import { downLoadCSVFile } from '../downloadCSVBookings'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
   loadFilteredBookingsRecap: jest.fn(),
+}))
+
+jest.mock('../downloadCSVBookings', () => ({
+  downLoadCSVFile: jest.fn(),
 }))
 
 jest.mock('utils/date', () => ({
@@ -294,6 +299,46 @@ describe('components | BookingsRecap | Pro user', () => {
       'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Afficher »'
     )
     expect(choosePreFiltersMessage).toBeInTheDocument()
+  })
+
+  it('should have a CSV download button', async () => {
+    // When
+    await renderBookingsRecap(props, store)
+
+    // Then
+    expect(screen.getByRole('button', { name: 'Télécharger' })).toBeInTheDocument()
+  })
+
+  it('should fetch API for CSV when clicking on the download button and disable button while its loading', async () => {
+    // Given
+    await renderBookingsRecap(props, store)
+
+    // When
+    const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
+    fireEvent.click(downloadButton)
+
+    // Then
+    expect(downloadButton).toBeDisabled()
+    expect(downLoadCSVFile).toHaveBeenCalledWith({
+      "bookingPeriodBeginningDate": DEFAULT_PRE_FILTERS.bookingBeginningDate,
+      "bookingPeriodEndingDate": DEFAULT_PRE_FILTERS.bookingEndingDate,
+      "eventDate": "all",
+      "page": 1,
+      "venueId": "all",
+    })
+    await waitFor(() => expect(downloadButton).toBeEnabled())
+  })
+
+  it('should display an error message on CSV download when API returns a status other than 200', async () => {
+    // Given
+    downLoadCSVFile.mockReturnValueOnce('error')
+    await renderBookingsRecap(props, store)
+
+    // When
+    await fireEvent.click(screen.getByRole('button', { name: 'Télécharger' }))
+
+    // Then
+    expect(screen.getByText('Une erreur s\'est produite. Veuillez réessayer ultérieurement.')).toBeInTheDocument()
   })
 
   it('should fetch bookings for the filtered venue as many times as the number of pages', async () => {

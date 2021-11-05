@@ -12,12 +12,11 @@ import { showNotification } from 'store/reducers/notificationReducer'
 import BookingsRecap from './BookingsRecap'
 
 const mapDispatchToProps = dispatch => ({
-  showInformationNotification: () =>
+  showNotification: (type, text) =>
     dispatch(
       showNotification({
-        type: 'information',
-        text:
-          'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.',
+        type: type,
+        text: text,
       })
     ),
 })

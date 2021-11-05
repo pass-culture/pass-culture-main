@@ -19,8 +19,9 @@ const PreFilters = ({
   applyPreFilters,
   downloadBookingsCSV,
   hasResult,
-  isLoading,
-  wereBookingsRequested,
+  isTableLoading,
+  isDownloadingCSV,
+  wereBookingsRequested
 }) => {
   const [selectedPreFilters, setSelectedPreFilters] = useState({ ...appliedPreFilters })
   const [venues, setVenues] = useState([])
@@ -93,7 +94,7 @@ const PreFilters = ({
           <div className="button-group-buttons">
             <button
               className="primary-button"
-              disabled={isLoading || isLocalLoading}
+              disabled={isDownloadingCSV || isLocalLoading}
               onClick={() => downloadBookingsCSV(bookingsQueryParams)}
               type="button"
             >
@@ -101,7 +102,7 @@ const PreFilters = ({
             </button>
             <button
               className="secondary-button"
-              disabled={isLoading || isLocalLoading}
+              disabled={isTableLoading || isLocalLoading}
               type="submit"
             >
               Afficher
@@ -132,7 +133,8 @@ PreFilters.propTypes = {
   applyPreFilters: PropTypes.func.isRequired,
   downloadBookingsCSV: PropTypes.func.isRequired,
   hasResult: PropTypes.bool.isRequired,
-  isLoading: PropTypes.bool.isRequired,
+  isDownloadingCSV: PropTypes.bool.isRequired,
+  isTableLoading: PropTypes.bool.isRequired,
   wereBookingsRequested: PropTypes.bool.isRequired,
 }
 
