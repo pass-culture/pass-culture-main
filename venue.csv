@@ -1,5 +1,0 @@
-thumbCount,idAtProviders,dateModifiedAtLastProvider,id,name,address,latitude,longitude,lastProviderId,departementCode,postalCode,city,siret,managingOffererId,bookingEmail,isVirtual,comment,validationToken,publicName,fieldsUpdated,venueTypeId,venueLabelId,dateCreated,isPermanent,withdrawalDetails
-0,,2021-02-05 14:59:28.793566,10166,MADIANA CONGRES,PALAIS DES CONGRES,14.61492,-61.09502,,972,97233,SCHOELCHER,39352003600020,5581,thomas.balmelle@cinecaraibes.com,f,,,Cinéma Madiana,{},15,,2021-02-05 14:59:28.793585,f,
-0,,2021-02-05 15:24:51.208337,10168,CINEMA D ARBAUD,18 BOULEVARD FELIX EBOUE,15.99371,-61.72608,,971,97100,BASSE-TERRE,31308882500010,5582,exploitation.darbaud@rexdarbaud.gp,f,,,,{},15,,2021-02-05 15:24:51.208353,t,
-0,,2018-08-01 12:06:59.642707,258,Cinéma Eldorado,21 PLACE DES PALMISTES,4.92503,-52.31793,,973,97300,CAYENNE,84817561800018,324,eldoradoguyane@gmail.com,f,,,,{},15,,2018-08-01 12:06:59.643135,t,
-0,,2021-08-06 09:25:13.583033,25061,LE PAX,5 RUE MARECHAL JOFFRE,47.27656,-2.42966,,44,44510,LE POULIGUEN,41935462600014,11484,thomas.simonnet+PRO2@passculture.app,f,,,,{},15,6,2021-08-06 09:25:13.583044,t,PAX ROMANA
