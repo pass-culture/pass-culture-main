@@ -74,10 +74,6 @@ def beneficiary_by_civility_query(
     return User.query.filter(civility_predicate)
 
 
-def find_beneficiary_by_civility(first_name: str, last_name: str, date_of_birth: datetime) -> list[User]:
-    return beneficiary_by_civility_query(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth).all()
-
-
 def find_by_validation_token(token: str) -> User:
     return User.query.filter_by(validationToken=token).one_or_none()
 

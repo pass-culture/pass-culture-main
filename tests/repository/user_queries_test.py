@@ -11,7 +11,6 @@ from pcapi.models import BeneficiaryImportSources
 from pcapi.models import ImportStatus
 from pcapi.repository import repository
 from pcapi.repository.user_queries import beneficiary_by_civility_query
-from pcapi.repository.user_queries import find_beneficiary_by_civility
 from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
 from pcapi.repository.user_queries import find_pro_users_by_email_provider
 from pcapi.repository.user_queries import get_all_users_wallet_balances
@@ -97,74 +96,6 @@ class FindProUsersByEmailProviderTest:
 
         assert len(users) == 1
         assert users[0] == pro_user_with_matching_email
-
-
-class FindByCivilityTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_users_with_matching_criteria_ignoring_case(self, app):
-        john = users_factories.BeneficiaryGrant18Factory(email="john@example.com", firstName="john", lastName="DOe")
-        users_factories.BeneficiaryGrant18Factory(email="jane@example.com", firstName="jaNE", lastName="DOe")
-
-        users = find_beneficiary_by_civility("john", "doe", john.dateOfBirth)
-
-        assert len(users) == 1
-        assert users[0].email == "john@example.com"
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_users_with_matching_criteria_ignoring_dash(self, app):
-        users_factories.BeneficiaryGrant18Factory(email="jane@example.com", firstName="jaNE", lastName="DOe")
-        john = users_factories.BeneficiaryGrant18Factory(
-            email="john.b@example.com", firstName="john-bob", lastName="doe"
-        )
-
-        users = find_beneficiary_by_civility("johnbob", "doe", john.dateOfBirth)
-
-        assert len(users) == 1
-        assert users[0].email == "john.b@example.com"
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_users_with_matching_criteria_ignoring_spaces(self, app):
-        users_factories.BeneficiaryGrant18Factory(email="jane@example.com", firstName="jaNE", lastName="DOe")
-        john = users_factories.BeneficiaryGrant18Factory(
-            email="john.b@example.com", firstName="john bob", lastName="doe"
-        )
-
-        users = find_beneficiary_by_civility("johnbob", "doe", john.dateOfBirth)
-
-        assert len(users) == 1
-        assert users[0].email == "john.b@example.com"
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_users_with_matching_criteria_ignoring_accents(self, app):
-        users_factories.BeneficiaryGrant18Factory(email="jane@example.com", firstName="jaNE", lastName="DOe")
-        john = users_factories.BeneficiaryGrant18Factory(
-            email="john.b@example.com", firstName="john bob", lastName="doe"
-        )
-
-        users = find_beneficiary_by_civility("jöhn bób", "doe", john.dateOfBirth)
-
-        assert len(users) == 1
-        assert users[0].email == "john.b@example.com"
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_nothing_if_one_criteria_does_not_match(self, app):
-        john = users_factories.BeneficiaryGrant18Factory(firstName="Jean", lastName="DOe")
-
-        users = find_beneficiary_by_civility("john", "doe", john.dateOfBirth)
-
-        assert not users
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_users_with_matching_criteria_first_and_last_names_and_birthdate_and_invalid_email(self, app):
-        john = users_factories.BeneficiaryGrant18Factory(email="john@example.com", firstName="john", lastName="DOe")
-        users_factories.BeneficiaryGrant18Factory(email="jane@example.com", firstName="jaNE", lastName="DOe")
-
-        # when
-        users = find_beneficiary_by_civility("john", "doe", john.dateOfBirth)
-
-        # then
-        assert len(users) == 1
-        assert users[0].email == "john@example.com"
 
 
 @pytest.mark.usefixtures("db_session")
