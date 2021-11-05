@@ -85,15 +85,6 @@ class DateTimes:
         return self.datetimes == other.datetimes
 
 
-def match_format(value: str, fmt: str) -> str:
-    try:
-        datetime.strptime(value, fmt)
-    except ValueError:
-        return False
-    else:
-        return True
-
-
 def format_datetime(date_time: datetime) -> str:
     return babel_format_datetime(date_time, format="long", locale="fr")[:-9]
 

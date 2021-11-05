@@ -21,7 +21,6 @@ from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
 from pcapi.models.api_errors import UuidCastError
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
-from pcapi.utils.date import match_format
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
@@ -177,7 +176,7 @@ class PcObject:
 
     def _try_to_set_attribute_with_deserialized_datetime(self, col, key, value):
         try:
-            datetime_value = _deserialize_datetime(key, value)
+            datetime_value = _deserialize_datetime(value)
             setattr(self, key, datetime_value)
         except TypeError:
             error = DateTimeCastError()
@@ -212,21 +211,18 @@ def _dehumanize_if_needed(column, value: Any) -> Any:
     return value
 
 
-def _deserialize_datetime(key, value):
+def _deserialize_datetime(value):
     if value is None:
         return None
 
-    valid_patterns = ["%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M:%SZ"]
-    datetime_value = None
+    valid_formats = ["%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M:%SZ"]
+    for format_ in valid_formats:
+        try:
+            return datetime.strptime(value, format_)
+        except ValueError:
+            pass
 
-    for pattern in valid_patterns:
-        if match_format(value, pattern):
-            datetime_value = datetime.strptime(value, pattern)
-
-    if not datetime_value:
-        raise TypeError("Invalid value for %s: %r" % (key, value), "datetime", key)
-
-    return datetime_value
+    raise TypeError()
 
 
 def _is_human_id_column(column: Column) -> bool:
