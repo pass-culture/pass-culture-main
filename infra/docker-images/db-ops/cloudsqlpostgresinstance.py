@@ -84,15 +84,20 @@ class CloudSQLPostgresInstance:
             instance=self.name
         ).execute()
 
+        get_backup_operation = lambda: self.sqladmin_backup_runs_service.get(
+                                    project=self.project,
+                                    instance=self.name,
+                                    id=operation["backupContext"]["backupId"]
+                                ).execute()
+
         self.wait_for_operation(
-            check_if_operation_done_function=lambda: self.sqladmin_backup_runs_service.get(
-                project=self.project,
-                instance=self.name,
-                id=operation["backupContext"]["backupId"]
-            ).execute()["status"] == "SUCCESSFUL",
+            check_if_operation_done_function= lambda: get_backup_operation()["status"] not in ["SUCCESSFUL", "FAILED"],
             operation_id=operation["backupContext"]["backupId"],
             check_interval=60
         )
+
+        if get_backup_operation()["status"] != "SUCCESSFUL":
+            raise RuntimeError("Backup failed")
 
         print("Backup done")
 
