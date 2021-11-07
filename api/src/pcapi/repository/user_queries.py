@@ -59,7 +59,6 @@ def beneficiary_by_civility_query(
     interval: timedelta = None,
     exclude_email: Optional[str] = None,
 ) -> Query:
-    # TODO: Handle switch from underage_beneficiary to beneficiary
     civility_predicate = (
         (matching(User.firstName, first_name)) & (matching(User.lastName, last_name)) & (User.is_beneficiary == True)
     )
