@@ -122,7 +122,9 @@ def admin_update_identity_fraud_check_result(
     return fraud_check
 
 
-def educonnect_fraud_checks(beneficiary_fraud_check: models.BeneficiaryFraudCheck) -> list[models.FraudItem]:
+def educonnect_fraud_checks(
+    user: user_models.User, beneficiary_fraud_check: models.BeneficiaryFraudCheck
+) -> list[models.FraudItem]:
     educonnect_content = beneficiary_fraud_check.source_data()
     fraud_items = []
     # TODO: factorise in on_identity_fraud_check_result for the 3 *_fraud_checks
@@ -131,6 +133,7 @@ def educonnect_fraud_checks(beneficiary_fraud_check: models.BeneficiaryFraudChec
             first_name=educonnect_content.first_name,
             last_name=educonnect_content.last_name,
             birth_date=educonnect_content.birth_date,
+            excluded_user_id=user.id,
         )
     )
     fraud_items.append(_underage_user_fraud_item(educonnect_content.birth_date))
@@ -154,6 +157,7 @@ def jouve_fraud_checks(
             first_name=jouve_content.firstName,
             last_name=jouve_content.lastName,
             birth_date=jouve_content.birthDateTxt,
+            excluded_user_id=user.id,
         )
     )
 
@@ -176,6 +180,7 @@ def dms_fraud_checks(
             first_name=dms_content.first_name,
             last_name=dms_content.last_name,
             birth_date=dms_content.birth_date,
+            excluded_user_id=user.id,
         )
     )
     fraud_items.append(_duplicate_id_piece_number_fraud_item(dms_content.id_piece_number))
@@ -209,7 +214,7 @@ def on_identity_fraud_check_result(
         fraud_items += dms_fraud_checks(user, beneficiary_fraud_check)
 
     elif beneficiary_fraud_check.type == models.FraudCheckType.EDUCONNECT:
-        fraud_items += educonnect_fraud_checks(beneficiary_fraud_check)
+        fraud_items += educonnect_fraud_checks(user, beneficiary_fraud_check)
 
     fraud_result = validate_frauds(user, fraud_items)
     if (
@@ -233,12 +238,15 @@ def validate_id_piece_number_format_fraud_item(id_piece_number) -> models.FraudI
     return models.FraudItem(status=models.FraudStatus.OK, detail=None)
 
 
-def _duplicate_user_fraud_item(first_name: str, last_name: str, birth_date: datetime.date) -> models.FraudItem:
+def _duplicate_user_fraud_item(
+    first_name: str, last_name: str, birth_date: datetime.date, excluded_user_id: int
+) -> models.FraudItem:
     duplicate_user = user_models.User.query.filter(
         matching(user_models.User.firstName, first_name)
         & (matching(user_models.User.lastName, last_name))
         & (sqlalchemy.func.DATE(user_models.User.dateOfBirth) == birth_date)
         & (user_models.User.is_beneficiary == True)
+        & (user_models.User.id != excluded_user_id)
     ).first()
 
     return models.FraudItem(

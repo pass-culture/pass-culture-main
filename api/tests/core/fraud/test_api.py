@@ -321,7 +321,7 @@ class CommonFraudCheckTest:
 
     def test_duplicate_user_fraud_ok(self):
         fraud_item = fraud_api._duplicate_user_fraud_item(
-            first_name="Jean", last_name="Michel", birth_date=datetime.date.today()
+            first_name="Jean", last_name="Michel", birth_date=datetime.date.today(), excluded_user_id=1
         )
 
         assert fraud_item.status == fraud_models.FraudStatus.OK
@@ -329,10 +329,24 @@ class CommonFraudCheckTest:
     def test_duplicate_user_fraud_suspicious(self):
         user = users_factories.BeneficiaryGrant18Factory()
         fraud_item = fraud_api._duplicate_user_fraud_item(
-            first_name=user.firstName, last_name=user.lastName, birth_date=user.dateOfBirth.date()
+            first_name=user.firstName,
+            last_name=user.lastName,
+            birth_date=user.dateOfBirth.date(),
+            excluded_user_id=1,
         )
 
         assert fraud_item.status == fraud_models.FraudStatus.SUSPICIOUS
+
+    def test_duplicate_user_ok_if_self_found(self):
+        user = users_factories.BeneficiaryGrant18Factory()
+        fraud_item = fraud_api._duplicate_user_fraud_item(
+            first_name=user.firstName,
+            last_name=user.lastName,
+            birth_date=user.dateOfBirth.date(),
+            excluded_user_id=user.id,
+        )
+
+        assert fraud_item.status == fraud_models.FraudStatus.OK
 
     @pytest.mark.parametrize(
         "fraud_check_type",
@@ -531,11 +545,13 @@ class EduconnectFraudTest:
 
     @pytest.mark.parametrize("age", [14, 18])
     def test_age_fraud_check_ko(self, age):
+        user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
             resultContent=fraud_factories.EduconnectContentFactory(age=age),
+            user=user,
         )
-        result = fraud_api.educonnect_fraud_checks(beneficiary_fraud_check=fraud_check)
+        result = fraud_api.educonnect_fraud_checks(user, beneficiary_fraud_check=fraud_check)
 
         age_check = next(
             fraud_check
@@ -549,17 +565,18 @@ class EduconnectFraudTest:
 
     @pytest.mark.parametrize("age", [15, 16, 17])
     def test_age_fraud_check_ok(self, age):
+        user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
             resultContent=fraud_factories.EduconnectContentFactory(age=age),
         )
-        result = fraud_api.educonnect_fraud_checks(beneficiary_fraud_check=fraud_check)
+        result = fraud_api.educonnect_fraud_checks(user, beneficiary_fraud_check=fraud_check)
 
         age_check = next(
             (
-                fraud_check
-                for fraud_check in result
-                if fraud_check.reason_code == fraud_models.FraudReasonCode.AGE_NOT_VALID
+                fraud_item
+                for fraud_item in result
+                if fraud_item.reason_code == fraud_models.FraudReasonCode.AGE_NOT_VALID
             ),
             None,
         )
@@ -568,6 +585,7 @@ class EduconnectFraudTest:
     @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_duplicates_fraud_checks(self):
         already_existing_user = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
+        user = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
             resultContent=fraud_factories.EduconnectContentFactory(
@@ -575,27 +593,45 @@ class EduconnectFraudTest:
                 last_name=already_existing_user.lastName,
                 birth_date=already_existing_user.dateOfBirth,
             ),
+            user=user,
         )
-        result = fraud_api.educonnect_fraud_checks(fraud_check)
+        result = fraud_api.educonnect_fraud_checks(user, fraud_check)
 
         duplicate_check = next(
-            fraud_check
-            for fraud_check in result
-            if fraud_check.reason_code == fraud_models.FraudReasonCode.DUPLICATE_USER
+            fraud_item for fraud_item in result if fraud_item.reason_code == fraud_models.FraudReasonCode.DUPLICATE_USER
         )
 
         assert duplicate_check.status == fraud_models.FraudStatus.SUSPICIOUS
         assert duplicate_check.detail == f"Duplicat de l'utilisateur {already_existing_user.id}"
 
     @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
+    def test_same_user_is_not_duplicate(self):
+        underage_user = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
+
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            resultContent=fraud_factories.EduconnectContentFactory(
+                first_name=underage_user.firstName,
+                last_name=underage_user.lastName,
+                birth_date=underage_user.dateOfBirth,
+            ),
+            user=underage_user,
+        )
+        result = fraud_api.educonnect_fraud_checks(underage_user, fraud_check)
+
+        assert not any(fraud_item.reason_code == fraud_models.FraudReasonCode.DUPLICATE_USER for fraud_item in result)
+
+    @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_ine_duplicates_fraud_checks(self):
         fraud_factories.IneHashWhitelistFactory(ine_hash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
         same_ine_user = users_factories.UnderageBeneficiaryFactory(ineHash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
+        user_in_validation = users_factories.UserFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
             resultContent=fraud_factories.EduconnectContentFactory(ine_hash=same_ine_user.ineHash),
+            user=user_in_validation,
         )
-        result = fraud_api.educonnect_fraud_checks(fraud_check)
+        result = fraud_api.educonnect_fraud_checks(user_in_validation, fraud_check)
 
         duplicate_ine_check = next(
             fraud_check
@@ -610,12 +646,14 @@ class EduconnectFraudTest:
 
     @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_ine_whitelisted_fraud_checks_pass(self):
+        user = users_factories.UserFactory()
         fraud_factories.IneHashWhitelistFactory(ine_hash="identifiantWhitelisté1")
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
             resultContent=fraud_factories.EduconnectContentFactory(ine_hash="identifiantWhitelisté1"),
+            user=user,
         )
-        result = fraud_api.educonnect_fraud_checks(fraud_check)
+        result = fraud_api.educonnect_fraud_checks(user, fraud_check)
 
         duplicate_ine_check = next(
             (
@@ -629,12 +667,13 @@ class EduconnectFraudTest:
 
     @override_features(ENABLE_NATIVE_EAC_INDIVIDUAL=True)
     def test_ine_whitelisted_fraud_checks_fail(self):
+        user = users_factories.UserFactory()
         fraud_factories.IneHashWhitelistFactory(ine_hash="identifiantWhitelisté1")
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
             resultContent=fraud_factories.EduconnectContentFactory(ine_hash="identifiantWhitelisté2"),
         )
-        result = fraud_api.educonnect_fraud_checks(fraud_check)
+        result = fraud_api.educonnect_fraud_checks(user, fraud_check)
 
         duplicate_ine_check = next(
             fraud_check
