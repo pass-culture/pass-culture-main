@@ -260,7 +260,9 @@ class UpsertFraudResultTest:
         user = users_factories.UserFactory()
         assert fraud_models.BeneficiaryFraudResult.query.count() == 0
 
-        result = fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, "no reason at all")
+        result = fraud_api.upsert_fraud_result(
+            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, "no reason at all"
+        )
 
         assert fraud_models.BeneficiaryFraudResult.query.count() == 1
         assert result.user == user
@@ -268,11 +270,15 @@ class UpsertFraudResultTest:
 
     def test_update_on_following_fraud_results(self):
         user = users_factories.UserFactory()
-        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.OK)
+        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.OK, users_models.EligibilityType.AGE18)
         assert fraud_models.BeneficiaryFraudResult.query.count() == 1
 
-        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, "no reason at all")
-        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.KO, "no reason at all")
+        fraud_api.upsert_fraud_result(
+            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, "no reason at all"
+        )
+        fraud_api.upsert_fraud_result(
+            user, fraud_models.FraudStatus.KO, users_models.EligibilityType.AGE18, "no reason at all"
+        )
 
         assert fraud_models.BeneficiaryFraudResult.query.count() == 1
 
@@ -281,7 +287,7 @@ class UpsertFraudResultTest:
         user = users_factories.UserFactory()
 
         with pytest.raises(ValueError) as excinfo:
-            fraud_api.upsert_fraud_result(user, fraud_status)
+            fraud_api.upsert_fraud_result(user, fraud_status, users_models.EligibilityType.AGE18)
 
         assert str(excinfo.value) == f"a reason should be provided when setting fraud result to {fraud_status.value}"
 
@@ -294,13 +300,27 @@ class UpsertFraudResultTest:
         first_reason = "first reason"
         second_reason = "second reason"
 
-        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, first_reason)
-        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, first_reason)
-        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, first_reason)
-        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, second_reason)
-        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, second_reason)
-        fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, first_reason)
-        result = fraud_api.upsert_fraud_result(user, fraud_models.FraudStatus.SUSPICIOUS, first_reason)
+        fraud_api.upsert_fraud_result(
+            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, first_reason
+        )
+        fraud_api.upsert_fraud_result(
+            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, first_reason
+        )
+        fraud_api.upsert_fraud_result(
+            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, first_reason
+        )
+        fraud_api.upsert_fraud_result(
+            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, second_reason
+        )
+        fraud_api.upsert_fraud_result(
+            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, second_reason
+        )
+        fraud_api.upsert_fraud_result(
+            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, first_reason
+        )
+        result = fraud_api.upsert_fraud_result(
+            user, fraud_models.FraudStatus.SUSPICIOUS, users_models.EligibilityType.AGE18, first_reason
+        )
 
         assert fraud_models.BeneficiaryFraudResult.query.count() == 1
         assert result.user == user
@@ -515,7 +535,8 @@ class EduconnectFraudTest:
             "last_name": "Ellingson",
             "birth_date": birth_date,
         }
-        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
+        assert len(user.beneficiaryFraudResults) == 1
+        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
 
         # If the user logs in again with another educonnect account, update the fraud check
         fraud_api.on_educonnect_result(
@@ -541,7 +562,7 @@ class EduconnectFraudTest:
             "last_name": "Ellingson",
             "birth_date": birth_date,
         }
-        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
+        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
 
     @pytest.mark.parametrize("age", [14, 18])
     def test_age_fraud_check_ko(self, age):

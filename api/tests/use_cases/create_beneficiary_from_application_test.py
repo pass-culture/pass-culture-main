@@ -269,7 +269,7 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     create_beneficiary_from_application.execute(APPLICATION_ID)
 
     # Then
-    beneficiary_import = BeneficiaryImport.query.one()
+    beneficiary_import = BeneficiaryImport.query.filter_by(beneficiary=applicant).one()
     assert beneficiary_import.currentStatus == ImportStatus.REJECTED
     assert beneficiary_import.applicationId == APPLICATION_ID
     assert beneficiary_import.detail == f"User with id {existing_user.id} is a duplicate."

@@ -135,7 +135,8 @@ class EduconnectTest:
             "ine_hash": ine_hash,
             "last_name": "SENS",
         }
-        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
+        assert len(user.beneficiaryFraudResults) == 1
+        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
         beneficiary_import = BeneficiaryImport.query.filter_by(beneficiaryId=user.id).one_or_none()
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert user.firstName == "Max"
@@ -246,4 +247,4 @@ class EduconnectTest:
 
         assert response.status_code == 302
         assert response.location.startswith("https://webapp-v2.example.com/idcheck/validation")
-        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
+        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK

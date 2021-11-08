@@ -11,6 +11,7 @@ import sqlalchemy
 import sqlalchemy.dialects.postgresql
 import sqlalchemy.orm
 
+from pcapi.core.users import models as users_models
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
 
@@ -243,7 +244,13 @@ class BeneficiaryFraudResult(PcObject, Model):
     userId = sqlalchemy.Column(sqlalchemy.BigInteger, sqlalchemy.ForeignKey("user.id"), index=True, nullable=False)
 
     user = sqlalchemy.orm.relationship(
-        "User", foreign_keys=[userId], backref=sqlalchemy.orm.backref("beneficiaryFraudResult", uselist=False)
+        "User", foreign_keys=[userId], backref=sqlalchemy.orm.backref("beneficiaryFraudResults")
+    )
+
+    eligibilityType = sqlalchemy.Column(
+        sqlalchemy.Enum(users_models.EligibilityType, create_constraint=False),
+        nullable=False,
+        server_default=sqlalchemy.text(users_models.EligibilityType.AGE18.name),
     )
 
     status = sqlalchemy.Column(sqlalchemy.Enum(FraudStatus, create_constraint=False))

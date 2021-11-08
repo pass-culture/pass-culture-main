@@ -3,6 +3,7 @@ import logging
 from pcapi.connectors import api_demarches_simplifiees
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
+from pcapi.core.users.models import EligibilityType
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import ImportStatus
 from pcapi.repository import repository
@@ -62,6 +63,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
             BeneficiaryImportSources.demarches_simplifiees,
             "Webhook status update",
             import_status,
+            eligibilityType=EligibilityType.AGE18,
         )
 
     if form.state == api_demarches_simplifiees.GraphQLApplicationStates.draft:
