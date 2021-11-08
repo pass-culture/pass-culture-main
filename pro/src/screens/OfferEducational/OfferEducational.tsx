@@ -19,11 +19,12 @@ import {
   FormType,
   FormVenue,
 } from './OfferEducationalForm'
+import { OfferEducationalFormValues } from './types'
 
 interface IOfferEducationalProps {
   educationalCategories: Category[];
   educationalSubcategories: SubCategory[];
-  initialValues: Record<string, unknown>;
+  initialValues: OfferEducationalFormValues;
 }
 
 const OfferEducational = ({
