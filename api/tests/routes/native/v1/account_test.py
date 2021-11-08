@@ -1029,9 +1029,9 @@ class SendPhoneValidationCodeTest:
         assert content["phone_number"] == "+33601020304"
 
         # check that a fraud result has also been created
-        assert user.beneficiaryFraudResult
-        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.SUSPICIOUS
-        assert user.beneficiaryFraudResult.reason == expected_reason
+        assert len(user.beneficiaryFraudResults) == 1
+        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
+        assert user.beneficiaryFraudResults[0].reason == expected_reason
 
     def test_send_phone_validation_code_already_beneficiary(self, app):
         user = users_factories.BeneficiaryGrant18Factory(
@@ -1297,9 +1297,9 @@ class ValidatePhoneNumberTest:
         assert content["phone_number"] == "+33607080900"
 
         # check that a fraud result has also been created
-        assert user.beneficiaryFraudResult
-        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.SUSPICIOUS
-        assert user.beneficiaryFraudResult.reason == expected_reason
+        assert len(user.beneficiaryFraudResults) == 1
+        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
+        assert user.beneficiaryFraudResults[0].reason == expected_reason
 
     def test_wrong_code(self, app):
         user = users_factories.UserFactory(phoneNumber="+33607080900")

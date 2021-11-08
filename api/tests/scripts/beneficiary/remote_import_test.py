@@ -721,7 +721,8 @@ class RunIntegrationTest:
         assert fraud_content.birth_date == user.dateOfBirth.date()
         assert fraud_content.address == "11 Rue du Test"
 
-        fraud_result = user.beneficiaryFraudResult
+        assert len(user.beneficiaryFraudResults) == 1
+        fraud_result = user.beneficiaryFraudResults[0]
         assert fraud_result.status == fraud_models.FraudStatus.KO
         assert "Le n° de téléphone de l'utilisateur n'est pas validé" in fraud_result.reason
         assert BeneficiaryImport.query.count() == 1
@@ -864,8 +865,8 @@ class RunIntegrationTest:
         assert len(user.beneficiaryFraudChecks) == 1
         assert user.beneficiaryFraudChecks[0].type == fraud_models.FraudCheckType.DMS
 
-        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.SUSPICIOUS
-        assert f"Duplicat de l'utilisateur {existing_user.id}" in user.beneficiaryFraudResult.reason
+        assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
+        assert f"Duplicat de l'utilisateur {existing_user.id}" in user.beneficiaryFraudResults[0].reason
 
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.source == "demarches_simplifiees"
@@ -965,10 +966,10 @@ class RunIntegrationTest:
         assert beneficiary_import.beneficiary == applicant
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
 
-        assert applicant.beneficiaryFraudResult.status == fraud_models.FraudStatus.SUSPICIOUS
+        assert applicant.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
         assert (
             f"Le n° de cni 1234123412 est déjà pris par l'utilisateur {beneficiary.id}"
-            in applicant.beneficiaryFraudResult.reason
+            in applicant.beneficiaryFraudResults[0].reason
         )
 
     @override_features(FORCE_PHONE_VALIDATION=False)
@@ -1069,8 +1070,8 @@ class RunIntegrationTest:
         beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
         assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
 
-        assert applicant.beneficiaryFraudResult.status == fraud_models.FraudStatus.SUSPICIOUS
-        assert f"Duplicat de l'utilisateur {beneficiary.id}" in applicant.beneficiaryFraudResult.reason
+        assert applicant.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
+        assert f"Duplicat de l'utilisateur {beneficiary.id}" in applicant.beneficiaryFraudResults[0].reason
 
     @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
     @patch(
