@@ -96,7 +96,9 @@ class CloudSQLPostgresInstance:
             check_interval=60
         )
 
-        if get_backup_operation()["status"] != "SUCCESSFUL":
+        operation = get_backup_operation()
+
+        if operation["status"] != "SUCCESSFUL":
             raise RuntimeError("Backup failed")
 
         print("Backup done")
@@ -258,6 +260,10 @@ class CloudSQLPostgresInstance:
             operation_id=operation["name"],
             check_interval=60
         )
+
+        operation = self.get_sqladmin_operation(name=operation["name"])
+        if "error" in operation:
+            raise RuntimeError("Failed to restore backup %s: %s" % (backup_id, operation["error"]))
 
         print("Restore done")
 
