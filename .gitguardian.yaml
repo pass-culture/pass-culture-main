@@ -4,3 +4,7 @@ matches-ignore:
     match: 947430e70e301c007d6108cf9ee944591d2c1ad20292cfeaa2f965fa3726f116
   - name: Batch SDK API key for iOS
     match: 813fe86f73c021251acb0853c17f1e505ab38e19311363e1f55bbaa86b41cf05
+  - name: Batch SDK API key for Android (integration)
+    match: b604caa134449a6e5d59adc0be1f217a1f48cd4324a4b20daf1718a520263f61
+  - name: Batch SDK API key for iOS (integration)
+    match: 58b4786b2d33b4561eacb0c2a47e4187d5f4f88ade215fbe3655672939e09ca4
