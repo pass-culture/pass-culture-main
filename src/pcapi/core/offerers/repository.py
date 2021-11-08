@@ -1,5 +1,7 @@
 from typing import Optional
 
+import sqlalchemy.orm as sqla_orm
+
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -46,8 +48,10 @@ def get_filtered_venues(
     validated_offerer: Optional[bool] = None,
     validated_offerer_for_user: Optional[bool] = None,
 ) -> list[Venue]:
-    query = Venue.query.join(Offerer, Offerer.id == Venue.managingOffererId).join(
-        UserOfferer, UserOfferer.offererId == Offerer.id
+    query = (
+        Venue.query.join(Offerer, Offerer.id == Venue.managingOffererId)
+        .join(UserOfferer, UserOfferer.offererId == Offerer.id)
+        .options(sqla_orm.joinedload(Venue.managingOfferer))
     )
     if not user_is_admin:
         query = query.filter(UserOfferer.userId == pro_user_id)

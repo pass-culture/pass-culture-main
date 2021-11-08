@@ -2,7 +2,9 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core import testing
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
@@ -81,6 +83,30 @@ def test_default_admin_call(mock_get_filtered_venues, app):
         validated_offerer=None,
         validated_offerer_for_user=None,
     )
+
+
+@pytest.mark.usefixtures("db_session")
+def test_admin_call_num_queries(app):
+
+    admin_user = users_factories.AdminFactory(email="admin.pro@test.com")
+
+    user_offerers = offers_factories.UserOffererFactory.create_batch(3)
+
+    offers_factories.VenueFactory(managingOfferer=user_offerers[0].offerer)
+    offers_factories.VenueFactory(managingOfferer=user_offerers[1].offerer)
+    offers_factories.VenueFactory(managingOfferer=user_offerers[2].offerer)
+
+    client = TestClient(app.test_client()).with_session_auth(admin_user.email)
+
+    # when
+    n_queries = testing.AUTHENTICATION_QUERIES
+    n_queries += 1  # get venues + offerers
+    with assert_num_queries(n_queries):
+        response = client.get("/venues")
+
+    # then
+    assert response.status_code == 200
+    assert len(response.json["venues"]) == 3
 
 
 @pytest.mark.usefixtures("db_session")
