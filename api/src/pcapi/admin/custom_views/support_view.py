@@ -33,18 +33,21 @@ from pcapi.models.feature import FeatureToggle
 logger = logging.getLogger(__name__)
 
 
-def beneficiary_fraud_result_formatter(view, context, model, name) -> Markup:
+def beneficiary_fraud_results_formatter(view, context, model, name) -> Markup:
     result_mapping_class = {
         fraud_models.FraudStatus.OK: "badge-success",
         fraud_models.FraudStatus.KO: "badge-danger",
         fraud_models.FraudStatus.SUSPICIOUS: "badge-warning",
         fraud_models.FraudStatus.SUBSCRIPTION_ON_HOLD: "badge-warning",
     }
+    if not model.beneficiaryFraudResults:
+        return Markup("""<span class="badge badge-secondary">Inconnu</span>""")
 
-    if model.beneficiaryFraudResult:
-        instance = model.beneficiaryFraudResult.status
-        return Markup(f"""<span class="badge {result_mapping_class[instance]}">{instance.value}</span>""")
-    return Markup("""<span class="badge badge-secondary">Inconnu</span>""")
+    statuses = ""
+    for (index, fraud_result) in enumerate(model.beneficiaryFraudResults):
+        statuses += f"""<span class="badge {result_mapping_class[fraud_result.status]}" {"style='margin-left: 8px;'" if index > 0 else ""}>{fraud_result.status.value}</span>"""
+
+    return Markup(f"""<div>{statuses}</div>""")
 
 
 def beneficiary_fraud_review_formatter(view, context, model, name) -> Markup:
@@ -108,7 +111,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         "firstName",
         "lastName",
         "email",
-        "beneficiaryFraudResult",
+        "beneficiaryFraudResults",
         "beneficiaryFraudChecks",
         "beneficiaryFraudReview",
         "dateCreated",
@@ -116,7 +119,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
     column_labels = {
         "firstName": "Prénom",
         "lastName": "Nom",
-        "beneficiaryFraudResult": "Statut",
+        "beneficiaryFraudResults": "Statut(s)",
         "beneficiaryFraudChecks": "Vérifications anti fraudes",
         "beneficiaryFraudReview": "Evaluation Manuelle",
         "dateCreated": "Date de creation de compte",
@@ -126,7 +129,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
     column_filters = [
         "email",
         "dateCreated",
-        "beneficiaryFraudResult.status",
+        "beneficiaryFraudResults.status",
         "beneficiaryFraudChecks.type",
         "beneficiaryFraudReview",
     ]
@@ -153,7 +156,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         formatters.update(
             {
                 "beneficiaryFraudChecks": beneficiary_fraud_checks_formatter,
-                "beneficiaryFraudResult": beneficiary_fraud_result_formatter,
+                "beneficiaryFraudResults": beneficiary_fraud_results_formatter,
                 "beneficiaryFraudReview": beneficiary_fraud_review_formatter,
             }
         )
@@ -185,7 +188,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         view_filter = self.get_view_filter()
         query = users_models.User.query.filter(view_filter).options(
             sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudChecks),
-            sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudResult),
+            sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudResults),
             sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudReview),
         )
         return query
@@ -223,6 +226,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             get_value=self.get_detail_value,
             return_url=return_url,
             has_passed_id_check=fraud_api.has_user_passed_fraud_checks(user),
+            # FIXME(viconnex): should we not check if there is a Fraudcheck of type IdentityCheck ?
         )
 
     @flask_admin.expose("/validate/beneficiary/<user_id>", methods=["POST"])

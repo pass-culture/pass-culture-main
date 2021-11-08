@@ -16,6 +16,7 @@ from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
 
 from . import models
+from . import repository as fraud_repository
 
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,6 @@ USER_PROFILING_RISK_MAPPING = {
 
 
 def on_educonnect_result(user: user_models.User, educonnect_content: models.EduconnectContent) -> None:
-
     fraud_check = models.BeneficiaryFraudCheck.query.filter(
         models.BeneficiaryFraudCheck.user == user,
         models.BeneficiaryFraudCheck.type == models.FraudCheckType.EDUCONNECT,
@@ -209,20 +209,26 @@ def on_identity_fraud_check_result(
 
     if beneficiary_fraud_check.type == models.FraudCheckType.JOUVE:
         fraud_items += jouve_fraud_checks(user, beneficiary_fraud_check)
+        eligibilityType = user_models.EligibilityType.AGE18
 
     elif beneficiary_fraud_check.type == models.FraudCheckType.DMS:
         fraud_items += dms_fraud_checks(user, beneficiary_fraud_check)
+        eligibilityType = user_models.EligibilityType.AGE18
 
     elif beneficiary_fraud_check.type == models.FraudCheckType.EDUCONNECT:
         fraud_items += educonnect_fraud_checks(user, beneficiary_fraud_check)
+        eligibilityType = user_models.EligibilityType.UNDERAGE
+    else:
+        raise Exception("The fraud_check type is not known")
 
-    fraud_result = validate_frauds(user, fraud_items)
+    fraud_result = validate_frauds(user, fraud_items, eligibilityType)
     if (
         beneficiary_fraud_check.type == models.FraudCheckType.JOUVE
         and FeatureToggle.PAUSE_JOUVE_SUBSCRIPTION.is_active()
     ):
         fraud_result.status = models.FraudStatus.SUBSCRIPTION_ON_HOLD
     repository.save(fraud_result)
+
     return fraud_result
 
 
@@ -394,7 +400,10 @@ def on_user_profiling_check_result(
     risk_rating = tmx_content.risk_rating
     user_profiling_status = USER_PROFILING_RISK_MAPPING[risk_rating]
     if not user_profiling_status == models.FraudStatus.OK:
-        upsert_fraud_result(user, user_profiling_status, f"threat-metrix risk rating is {risk_rating.value}")
+        upsert_fraud_result(
+            user, user_profiling_status, user.eligibility, f"threat-metrix risk rating is {risk_rating.value}"
+        )
+
         from pcapi.core.subscription import messages as subscription_messages
 
         subscription_messages.on_user_subscription_journey_stopped(user)
@@ -414,20 +423,27 @@ def get_source_data(user: user_models.User) -> models.JouveContent:
 
 
 def upsert_fraud_result(
-    user: user_models.User, status: models.FraudStatus, reason: str = None
+    user: user_models.User,
+    status: models.FraudStatus,
+    eligibilityType: Optional[user_models.EligibilityType],
+    reason: str = None,
 ) -> models.BeneficiaryFraudResult:
     """
     If the user has no fraud result: create one fraud result with status and the given reason.
     If it already has one: append the reason to the already recorded ones.
     """
+    if not eligibilityType:
+        eligibilityType = user_models.EligibilityType.AGE18
     reason = reason or ""
     if status != models.FraudStatus.OK and not reason:
         raise ValueError(f"a reason should be provided when setting fraud result to {status.value}")
 
-    fraud_result = models.BeneficiaryFraudResult.query.filter_by(userId=user.id).one_or_none()
+    fraud_result = fraud_repository.get_current_beneficiary_fraud_result(user, eligibilityType)
 
     if not fraud_result:
-        fraud_result = models.BeneficiaryFraudResult(user=user, status=status, reason=reason)
+        fraud_result = models.BeneficiaryFraudResult(
+            user=user, status=status, reason=reason, eligibilityType=eligibilityType
+        )
     else:
         fraud_result.status = status
         # if this function is called twice (or more) in a row with the same
@@ -488,7 +504,7 @@ def handle_sms_sending_limit_reached(user: user_models.User) -> models.Beneficia
     )
 
     create_internal_review_fraud_check(user, fraud_check_data)
-    return upsert_fraud_result(user, models.FraudStatus.SUSPICIOUS, reason)
+    return upsert_fraud_result(user, models.FraudStatus.SUSPICIOUS, user.eligibility, reason)
 
 
 def handle_phone_validation_attempts_limit_reached(
@@ -502,7 +518,7 @@ def handle_phone_validation_attempts_limit_reached(
     )
 
     create_internal_review_fraud_check(user, fraud_check_data)
-    return upsert_fraud_result(user, models.FraudStatus.SUSPICIOUS, reason)
+    return upsert_fraud_result(user, models.FraudStatus.SUSPICIOUS, user.eligibility, reason)
 
 
 def handle_document_validation_error(email: str, code: str) -> None:
@@ -517,7 +533,9 @@ def handle_document_validation_error(email: str, code: str) -> None:
         logger.warning("fraud internal validation : Cannot find user with email %s", email)
 
 
-def validate_frauds(user: user_models.User, fraud_items: list[models.FraudItem]) -> models.BeneficiaryFraudResult:
+def validate_frauds(
+    user: user_models.User, fraud_items: list[models.FraudItem], eligibilityType: user_models.EligibilityType
+) -> models.BeneficiaryFraudResult:
     if all(fraud_item.status == models.FraudStatus.OK for fraud_item in fraud_items):
         status = models.FraudStatus.OK
     elif any(fraud_item.status == models.FraudStatus.KO for fraud_item in fraud_items):
@@ -525,16 +543,15 @@ def validate_frauds(user: user_models.User, fraud_items: list[models.FraudItem])
     else:
         status = models.FraudStatus.SUSPICIOUS
 
-    if user.beneficiaryFraudResult:
-        fraud_result = user.beneficiaryFraudResult
+    existing_fraud_result = fraud_repository.get_current_beneficiary_fraud_result(user, eligibilityType)
+
+    if existing_fraud_result:
+        fraud_result = existing_fraud_result
         # ensure we never overwrite a previously validated status
         if fraud_result.status != models.FraudStatus.OK:
             fraud_result.status = status
     else:
-        fraud_result = models.BeneficiaryFraudResult(
-            user=user,
-            status=status,
-        )
+        fraud_result = models.BeneficiaryFraudResult(user=user, status=status, eligibilityType=eligibilityType)
     fraud_result.reason = f" {FRAUD_RESULT_REASON_SEPARATOR} ".join(
         fraud_item.detail for fraud_item in fraud_items if fraud_item.status != models.FraudStatus.OK
     )
@@ -548,7 +565,7 @@ def validate_frauds(user: user_models.User, fraud_items: list[models.FraudItem])
 
 
 def has_user_passed_fraud_checks(user: user_models.User) -> bool:
-    return bool(user.beneficiaryFraudResult)
+    return bool(user.beneficiaryFraudResults)
 
 
 def is_risky_user_profile(user: user_models.User) -> bool:
@@ -570,4 +587,7 @@ def is_risky_user_profile(user: user_models.User) -> bool:
 
 
 def is_user_fraudster(user: user_models.User) -> bool:
-    return user.beneficiaryFraudResult.status != models.FraudStatus.OK
+    return any(
+        beneficiary_fraud_result.status != models.FraudStatus.OK
+        for beneficiary_fraud_result in user.beneficiaryFraudResults
+    )

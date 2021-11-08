@@ -182,26 +182,30 @@
   </div>
   <div class="col">
     <h3>Résultat de l'algorithme</h3>
-    {% if model.beneficiaryFraudResult %}
+    {% for beneficiary_fraud_result in model.beneficiaryFraudResults|reverse %}
     <table class="table">
       <tr>
+        <th scope="row">Souscription</th>
+        <td>{{ "pass 15-17" if beneficiary_fraud_result.eligibilityType.value == "underage" else "pass 18 ans" }}</td>
+      </tr>
+      <tr>
         <th scope="row">Etat</th>
-        <td>{{ model.beneficiaryFraudResult.status.value }}</td>
+        <td>{{ beneficiary_fraud_result.status.value }}</td>
       </tr>
       <tr>
         <th scope="row">Date de création</th>
-        <td>{{ model.beneficiaryFraudResult.dateCreated.strftime('le %d/%m/%Y à %H:%M:%S') }}</dd>
+        <td>{{ beneficiary_fraud_result.dateCreated.strftime('le %d/%m/%Y à %H:%M:%S') }}</dd>
         </td>
       </tr>
       <tr>
         <th scope="row">Dernière mise à jour</th>
-        <td>{% if model.beneficiaryFraudResult.dateUpdated %}{{ model.beneficiaryFraudResult.dateUpdated.strftime('le
+        <td>{% if beneficiary_fraud_result.dateUpdated %}{{ beneficiary_fraud_result.dateUpdated.strftime('le
           %d/%m/%Y à %H:%M:%S') }}{% else %}Inconnue{% endif %}</dd>
         </td>
       </tr>
       <tr>
         <th scope="row">Explication</th>
-        <td>{{ model.beneficiaryFraudResult.reason }}</dd>
+        <td>{{ beneficiary_fraud_result.reason }}</dd>
         </td>
       </tr>
     </table>
@@ -209,7 +213,7 @@
     <div class="card card-body">
       Aucun résultat de fraude
     </div>
-    {% endif %}
+    {% endfor %}
   </div>
   {% if model.beneficiaryFraudReview %}
   <div class="col">

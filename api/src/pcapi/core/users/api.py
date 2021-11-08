@@ -38,7 +38,6 @@ from pcapi.core.mails.transactional.users.email_confirmation_email import send_e
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
-from pcapi.core.subscription.models import BeneficiaryPreSubscription
 import pcapi.core.subscription.repository as subscription_repository
 from pcapi.core.users import models as users_models
 from pcapi.core.users.external import update_external_user
@@ -63,8 +62,6 @@ from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.user_activation import create_beneficiary_from_application
-from pcapi.models import BeneficiaryImport
-from pcapi.models import ImportStatus
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_offerer import UserOfferer
@@ -252,7 +249,9 @@ def steps_to_become_beneficiary(user: User) -> list[BeneficiaryValidationStep]:
         missing_steps.append(BeneficiaryValidationStep.PHONE_VALIDATION)
 
     beneficiary_import = subscription_repository.get_beneficiary_import_for_beneficiary(user)
-    if not beneficiary_import:
+    if not beneficiary_import or (
+        beneficiary_import.eligibilityType == EligibilityType.UNDERAGE and user.has_underage_beneficiary_role
+    ):
         missing_steps.append(BeneficiaryValidationStep.ID_CHECK)
 
     if not user.hasCompletedIdCheck:
@@ -290,6 +289,7 @@ def update_beneficiary_mandatory_information(
 
     if (
         not steps_to_become_beneficiary(user)
+        # the 2 following checks should be useless
         and fraud_api.has_user_passed_fraud_checks(user)
         and not fraud_api.is_user_fraudster(user)
     ):
@@ -365,31 +365,6 @@ def update_user_information_from_external_source(
     if commit:
         db.session.commit()
     return user
-
-
-def attach_beneficiary_import_details(
-    beneficiary: User,
-    beneficiary_pre_subscription: BeneficiaryPreSubscription,
-    status: ImportStatus = ImportStatus.CREATED,
-) -> None:
-    beneficiary_import = BeneficiaryImport.query.filter_by(
-        applicationId=beneficiary_pre_subscription.application_id,
-        sourceId=beneficiary_pre_subscription.source_id,
-        source=beneficiary_pre_subscription.source,
-        beneficiary=beneficiary,
-    ).one_or_none()
-    if not beneficiary_import:
-        beneficiary_import = BeneficiaryImport()
-
-        beneficiary_import.applicationId = beneficiary_pre_subscription.application_id
-        beneficiary_import.sourceId = beneficiary_pre_subscription.source_id
-        beneficiary_import.source = beneficiary_pre_subscription.source
-        beneficiary_import.beneficiary = beneficiary
-
-    beneficiary_import.setStatus(status=status)
-    beneficiary_import.beneficiary = beneficiary
-
-    repository.save(beneficiary_import)
 
 
 def request_email_confirmation(user: User) -> None:
