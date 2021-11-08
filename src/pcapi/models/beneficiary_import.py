@@ -35,7 +35,7 @@ class BeneficiaryImport(PcObject, Model):
         sa.Enum(EligibilityType, create_constraint=False),
         nullable=False,
         default=EligibilityType.AGE18,
-        server_default=sa.text(EligibilityType.AGE18.value),
+        server_default=sa.text(EligibilityType.AGE18.name),
     )
     beneficiary = relationship("User", foreign_keys=[beneficiaryId], backref="beneficiaryImports")
 
