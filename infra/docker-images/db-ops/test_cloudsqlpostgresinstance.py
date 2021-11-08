@@ -147,5 +147,44 @@ class TestCloudSQLPostgresInstance(unittest.TestCase):
         self.sqladmin_operations_service.get.assert_called_with(project=self.instance.project, operation=self.fake_sql_operation_name.get("name"))
         self.sqladmin_operations_service.get.return_value.execute.assert_called()
 
+    @patch("cloudsqlpostgresinstance.sleep")
+    def test_restore_backup_does_not_raise_error_on_success(self, sleep_mock):
+        self.sqladmin_instances_service.restoreBackup.return_value.execute.return_value = self.fake_pending_sql_operation
+
+        self.sqladmin_operations_service.get.return_value.execute.side_effect = [
+            self.fake_pending_sql_operation,
+            self.fake_done_sql_operation,
+            self.fake_done_sql_operation,
+        ]
+
+        self.instance.restore_backup(
+            backup_id="fake-backup-id",
+            backup_instance_id="fake-instance-id",
+            backup_instance_project="fake-project",
+        )
+
+        self.sqladmin_operations_service.get.assert_called_with(project=self.instance.project, operation=self.fake_sql_operation_name.get("name"))
+        self.sqladmin_operations_service.get.return_value.execute.assert_called()
+
+    @patch("cloudsqlpostgresinstance.sleep")
+    def test_restore_backup_raises_error_on_failure(self, sleep_mock):
+        self.sqladmin_instances_service.restoreBackup.return_value.execute.return_value = self.fake_pending_sql_operation
+
+        self.sqladmin_operations_service.get.return_value.execute.side_effect = [
+            self.fake_errored_sql_operation,
+            self.fake_errored_sql_operation,
+        ]
+
+        self.assertRaises(
+            RuntimeError,
+            self.instance.restore_backup,
+            backup_id="fake-backup-id",
+            backup_instance_id="fake-instance-id",
+            backup_instance_project="fake-project",
+        )
+
+        self.sqladmin_operations_service.get.assert_called_with(project=self.instance.project, operation=self.fake_sql_operation_name.get("name"))
+        self.sqladmin_operations_service.get.return_value.execute.assert_called()
+
 if __name__ == '__main__':
     unittest.main()
