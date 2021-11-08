@@ -134,7 +134,7 @@ class BatchBackend:
         make_post_request(BatchAPI.ANDROID)
         make_post_request(BatchAPI.IOS)
 
-    def delete_user_attributes(self, user_id: int, attribute_values: dict) -> None:
+    def delete_user_attributes(self, user_id: int) -> None:
         for api in (BatchAPI.IOS, BatchAPI.ANDROID):
             url = f"{settings.BATCH_API_URL}/1.0/{api.value}/data/users/{user_id}"
             try:
