@@ -78,14 +78,24 @@ def on_idcheck_invalid_document_date(user: users_models.User) -> None:
 
 
 def on_id_check_unread_document(user: users_models.User) -> None:
-    token = users_api.create_id_check_token(user)
-    message = models.SubscriptionMessage(
-        user=user,
-        userMessage="Ton dossier n’a pas pu être validé car la photo que tu as transmise est illisible.",
-        callToActionTitle="Essayer avec une autre photo",
-        callToActionLink=f"passculture://idcheck?token={token}",
-        callToActionIcon=models.CallToActionIcon.RETRY,
-    )
+    today = datetime.date.today()
+    if user.hasCompletedIdCheck:
+        message = models.SubscriptionMessage(
+            user=user,
+            userMessage=f"Nous n'arrivons pas à traiter ton document. Consulte l'e-mail envoyé le {today:%d/%m/%Y} pour plus d'informations.",
+            callToActionTitle="Consulter mes e-mails",
+            callToActionLink=INBOX_URL,
+            callToActionIcon=models.CallToActionIcon.EMAIL,
+        )
+    else:
+        token = users_api.create_id_check_token(user)
+        message = models.SubscriptionMessage(
+            user=user,
+            userMessage="Ton dossier n’a pas pu être validé car la photo que tu as transmise est illisible.",
+            callToActionTitle="Essayer avec une autre photo",
+            callToActionLink=f"passculture://idcheck?token={token}",
+            callToActionIcon=models.CallToActionIcon.RETRY,
+        )
     repository.save(message)
 
 
