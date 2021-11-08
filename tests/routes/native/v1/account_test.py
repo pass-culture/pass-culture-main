@@ -10,6 +10,7 @@ import uuid
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
 from freezegun.api import freeze_time
+from google.cloud import tasks_v2
 import pytest
 
 from pcapi import settings
@@ -564,6 +565,37 @@ class UserProfileUpdateTest:
 
         push_request = push_testing.requests[0]
         assert push_request == {"user_id": user.id}
+
+    @override_settings(BATCH_SECRET_API_KEY="coucou-la-cle")
+    @override_settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")
+    def test_unsubscribe_push_notifications_with_batch(self, app, cloud_task_client):
+        user = users_factories.UserFactory(email=self.identifier)
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post(
+            "/native/v1/profile", json={"subscriptions": {"marketingPush": False, "marketingEmail": False}}
+        )
+
+        assert response.status_code == 200
+        assert cloud_task_client.create_task.call_count == 2
+
+        ((_, ios_call_args), (_, android_call_args)) = cloud_task_client.create_task.call_args_list
+        assert ios_call_args["request"]["task"]["http_request"] == {
+            "body": b"null",
+            "headers": {"Content-Type": "application/json", "X-Authorization": "coucou-la-cle"},
+            "http_method": tasks_v2.HttpMethod.DELETE,
+            "url": f"https://api.example.com/1.0/fake_ios_api_key/data/users/{user.id}",
+        }
+
+        assert android_call_args["request"]["task"]["http_request"] == {
+            "body": b"null",
+            "headers": {"Content-Type": "application/json", "X-Authorization": "coucou-la-cle"},
+            "http_method": tasks_v2.HttpMethod.DELETE,
+            "url": f"https://api.example.com/1.0/fake_android_api_key/data/users/{user.id}",
+        }
 
 
 class CulturalSurveyTest:
