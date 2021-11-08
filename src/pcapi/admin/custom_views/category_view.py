@@ -30,7 +30,8 @@ class CategoryView(BaseCustomAdminView):
 class SubcategoryView(BaseCustomAdminView):
     @expose("/", methods=["GET"])
     def subcategories(self) -> Response:
-        column_names = [field.name for field in fields(Subcategory)]
+        column_names = ["pro_label", "app_label"]
+        column_names += [field.name for field in fields(Subcategory) if field.name not in ("pro_label", "app_label")]
         column_labels = {
             "id": "Nom tech de la sous-catégorie",
             "category_id": "Nom tech de la catégorie",
