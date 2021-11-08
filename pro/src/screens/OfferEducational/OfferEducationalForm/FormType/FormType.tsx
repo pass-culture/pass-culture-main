@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Category, SubCategory } from 'custom_types/categories'
+import { OfferEducationalFormValues } from 'screens/OfferEducational/types'
 import { Select, TextArea, TextInput } from 'ui-kit'
 
 import DurationPicker from '../DurationPicker'
@@ -13,7 +14,7 @@ import { buildOptions } from './utils/buildOptions'
 interface IFormTypeProps {
     categories: Category[],
     subCategories: SubCategory[],
-    values: Record<string, string>,
+    values: OfferEducationalFormValues,
     setFieldValue: (name: string, value: unknown) => void;
 }
 
