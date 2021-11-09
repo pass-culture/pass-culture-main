@@ -115,6 +115,19 @@ def format_subcategories(view, context, model, name):
     return markupsafe.Markup(labels)
 
 
+def get_error_message(exception: payments_exceptions.ReimbursementRuleValidationError):
+    if isinstance(exception, payments_exceptions.ConflictingReimbursementRule):
+        msg = str(exception)
+        msg += " Identifiant(s) technique(s) : "
+        msg += ", ".join(
+            f'<a href="/pc/back-office/customreimbursementrule/?flt1_0={rule_id}" target="_blank">{rule_id}</a>'
+            for rule_id in exception.conflicts
+        )
+        msg += "."
+        return markupsafe.Markup(msg)
+    return str(exception)
+
+
 class CustomReimbursementRuleView(BaseAdminView):
     can_delete = False
     column_list = [
@@ -140,7 +153,7 @@ class CustomReimbursementRuleView(BaseAdminView):
         "subcategories": format_subcategories,
         "timespan": format_timespan,
     }
-    column_filters = ["offerer.name", "offer.name"]
+    column_filters = ["id", "offerer.name", "offer.name"]
 
     @property
     def can_create(self):
@@ -188,7 +201,7 @@ class CustomReimbursementRuleView(BaseAdminView):
         except payments_exceptions.ReimbursementRuleValidationError as exc:
             # XXX (dbaty, 2021-10-20): WTForms does not have form-level validation, as of 2.3.3.
             # https://github.com/wtforms/wtforms/commit/22636b55eda9300b549c8bbaae6f9ae31595d445
-            form._fields["offerer"].errors = [str(exc)]
+            form._fields["offerer"].errors = [get_error_message(exc)]
             return None
 
     def update_model(self, form, rule):
@@ -198,6 +211,6 @@ class CustomReimbursementRuleView(BaseAdminView):
         try:
             rule = payments_api.edit_reimbursement_rule(rule, end_date=end_date)
         except payments_exceptions.ReimbursementRuleValidationError as exc:
-            form._fields["end_date"].errors = [str(exc)]
+            form._fields["end_date"].errors = [get_error_message(exc)]
             return None
         return rule

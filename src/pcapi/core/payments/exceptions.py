@@ -20,7 +20,9 @@ class ReimbursementRuleValidationError(Exception):
 
 
 class ConflictingReimbursementRule(ReimbursementRuleValidationError):
-    pass
+    def __init__(self, msg, conflicts):
+        super().__init__(msg)
+        self.conflicts = conflicts
 
 
 class WrongDateForReimbursementRule(ReimbursementRuleValidationError):
