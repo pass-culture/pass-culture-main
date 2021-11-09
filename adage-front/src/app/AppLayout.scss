@@ -1,0 +1,24 @@
+@import "sass-rem";
+
+header {
+  grid-column-end: end-line;
+  grid-column-start: col-start;
+  grid-row-start: row-header;
+  padding-left: rem(16px);
+  padding-top: rem(16px);
+
+  svg {
+    height: rem(60px);
+  }
+}
+
+main.app-layout {
+  display: flex;
+  flex-direction: column;
+  grid-column-start: col-main;
+  grid-row-start: row-main;
+
+  h1 {
+    font-size: rem(24px);
+  }
+}
