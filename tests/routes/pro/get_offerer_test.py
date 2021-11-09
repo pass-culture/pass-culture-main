@@ -70,7 +70,9 @@ class Returns200Test:
             "lastProviderId": offerer.lastProviderId,
             "managedVenues": [
                 {
+                    "audioDisabilityCompliant": False,
                     "address": offererVenue.address,
+                    "bookingEmail": offererVenue.bookingEmail,
                     "city": offererVenue.city,
                     "comment": offererVenue.comment,
                     "departementCode": offererVenue.departementCode,
@@ -78,11 +80,15 @@ class Returns200Test:
                     "isValidated": offererVenue.isValidated,
                     "isVirtual": offererVenue.isVirtual,
                     "managingOffererId": humanize(offererVenue.managingOffererId),
+                    "mentalDisabilityCompliant": False,
+                    "motorDisabilityCompliant": False,
                     "name": offererVenue.name,
                     "postalCode": offererVenue.postalCode,
                     "publicName": offererVenue.publicName,
                     "venueLabelId": humanize(offererVenue.venueLabelId),
                     "venueTypeId": humanize(offererVenue.venueTypeId),
+                    "visualDisabilityCompliant": False,
+                    "withdrawalDetails": offererVenue.withdrawalDetails,
                 }
                 for offererVenue in offerer.managedVenues
             ],

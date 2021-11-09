@@ -16,6 +16,7 @@ from pcapi.utils.date import format_into_utc_date
 
 class GetOffererVenueResponseModel(BaseModel):
     address: Optional[str]
+    bookingEmail: Optional[str]
     city: Optional[str]
     comment: Optional[str]
     departementCode: Optional[str]
@@ -28,6 +29,11 @@ class GetOffererVenueResponseModel(BaseModel):
     publicName: Optional[str]
     venueLabelId: Optional[str]
     venueTypeId: Optional[str]
+    withdrawalDetails: Optional[str]
+    audioDisabilityCompliant: Optional[bool]
+    mentalDisabilityCompliant: Optional[bool]
+    motorDisabilityCompliant: Optional[bool]
+    visualDisabilityCompliant: Optional[bool]
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
     _humanize_venue_label_id = humanize_field("venueLabelId")
