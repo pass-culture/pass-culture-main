@@ -21,7 +21,7 @@ import {
 } from './OfferEducationalForm'
 import { OfferEducationalFormValues } from './types'
 
-interface IOfferEducationalProps {
+export interface IOfferEducationalProps {
   educationalCategories: Category[];
   educationalSubcategories: SubCategory[];
   initialValues: OfferEducationalFormValues;
