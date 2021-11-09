@@ -13,6 +13,3 @@
 [submodule "maintenance-site"]
 	path = maintenance-site
 	url = git@github.com:pass-culture/pc-maintenance.git
-[submodule "adage-front"]
-	path = adage-front
-	url = git@github.com:pass-culture/pass-culture-adage-front.git
