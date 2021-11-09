@@ -139,9 +139,7 @@ class Deposit(PcObject, Model):
 
     source = sa.Column(sa.String(300), nullable=False)
 
-    dateCreated = sa.Column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow(), server_default=sa.func.now()
-    )
+    dateCreated = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
     dateUpdated = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
 
@@ -183,9 +181,7 @@ class Recredit(PcObject, Model):
 
     deposit = relationship("Deposit", foreign_keys=[depositId])
 
-    dateCreated = sa.Column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow(), server_default=sa.func.now()
-    )
+    dateCreated = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
     amount = sa.Column(sa.Numeric(10, 2), nullable=False)
 
