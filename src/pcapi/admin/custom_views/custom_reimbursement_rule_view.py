@@ -55,7 +55,7 @@ class AddForm(SecureForm):
     )
     subcategories = fields.SelectMultipleFieldWithOptgroups(
         "Sous-catégories",
-        description="Laisser vide si toutes les sous-catégories sont concernées ; sélectionnez les sous-catégories sinon. Utilisez les touches <ctrl> et <majuscule> pour sélectionner plusieurs sous-catégories.",
+        description="Laissez vide si toutes les sous-catégories sont concernées ; sélectionnez les sous-catégories souhaitées sinon. Pour sélectionner plusieurs sous-catégories, gardez appuyées les touches &lt;Cmd&gt; et/ou &lt;Majuscule&gt; sur Mac, et les touches &lt;Ctrl&gt; et/ou &lt;majuscule&gt; sur PC.",
         size=10,
         choices=SUBCATEGORY_CHOICES,
     )
