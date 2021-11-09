@@ -1007,7 +1007,7 @@ ABO_PRATIQUE_ART = Subcategory(
     can_be_educational=False,
     online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
     is_digital_deposit=False,
-    is_physical_deposit=True,
+    is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
 # endregion
