@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import * as PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
@@ -55,6 +55,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName, venueStats }) => {
   ]
 
   const isVenueV2Enabled = useActiveFeature('ENABLE_NEW_VENUE_PAGES')
+  const isBankInformationWithSiretActive = useActiveFeature('ENFORCE_BANK_INFORMATION_WITH_SIRET')
 
   const showVenueLink = `/structures/${offererId}/lieux/${id}`
   let editVenueLink = `/structures/${offererId}/lieux/${id}`
@@ -85,7 +86,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName, venueStats }) => {
                 </span>
               </Link>
             </h3>
-            {!isVirtual && (
+            {(!isVirtual || isBankInformationWithSiretActive) && (
               <Link
                 className="tertiary-link"
                 to={editVenueLink}

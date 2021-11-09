@@ -30,10 +30,11 @@ jest.mock('utils/config', () => ({
 
 const renderVenueEdition = async ({
   props,
+  storeOverrides = {},
   url = '/structures/AE/lieux/AQ?modification',
   waitFormRender = true
 }) => {
-  const store = configureTestStore()
+  const store = configureTestStore(storeOverrides)
   const history = createBrowserHistory()
   history.push(url)
 
@@ -157,6 +158,37 @@ describe('test page : VenueEdition', () => {
       // then all form section shoudn't be in the document
       expect(screen.queryByText('Informations lieu')).not.toBeInTheDocument()
       expect(screen.queryByText('Coordonnées bancaires du lieu')).not.toBeInTheDocument()
+      expect(screen.queryByText('Adresse')).not.toBeInTheDocument()
+      expect(screen.queryByText('Accessibilité')).not.toBeInTheDocument()
+      expect(screen.queryByText('Contact')).not.toBeInTheDocument()
+    })
+
+    it('should render readonly form when venue is virtual and feature flag active', async () => {
+      // given
+      props.venue.isVirtual = true
+      const storeOverrides = {
+        features: {
+          list: [
+            { isActive: true, nameKey: 'ENFORCE_BANK_INFORMATION_WITH_SIRET' },
+          ],
+        }
+      }
+
+      // when
+      await renderVenueEdition({ props, storeOverrides })
+
+      expect(screen.getByText('Informations lieu')).toBeInTheDocument()
+      expect(screen.getByText('Coordonnées bancaires du lieu')).toBeInTheDocument()
+
+      expect(screen.getByLabelText('Nom du lieu :')).toBeDisabled()
+      expect(screen.getByLabelText('E-mail :')).toBeDisabled()
+      expect(screen.getByText('Offre numérique')).toBeInTheDocument()
+      expect(screen.queryByText('SIRET :')).not.toBeInTheDocument()
+      expect(screen.queryByText("Nom d'usage du lieu :")).not.toBeInTheDocument()
+      expect(screen.queryByText('Commentaire (si pas de SIRET) :')).not.toBeInTheDocument()
+      expect(screen.queryByText('Label du Ministère de la Culture ou du CNC')).not.toBeInTheDocument()
+      expect(screen.queryByText('Description :')).not.toBeInTheDocument()
+
       expect(screen.queryByText('Adresse')).not.toBeInTheDocument()
       expect(screen.queryByText('Accessibilité')).not.toBeInTheDocument()
       expect(screen.queryByText('Contact')).not.toBeInTheDocument()
