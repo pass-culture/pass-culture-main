@@ -34,4 +34,3 @@ const categoryFactory = (subCategoryExtend: SubCategoryExtend): SubCategory =>
 
 export const subCategoriesFactory = (subCategoriesExtend: SubCategoryExtend[]): SubCategory[] => 
   subCategoriesExtend.map(categoryFactory)
-  

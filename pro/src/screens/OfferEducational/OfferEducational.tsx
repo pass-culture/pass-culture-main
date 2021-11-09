@@ -18,7 +18,7 @@ import FormVenue from './OfferEducationalForm/FormVenue'
 import Banner from 'components/layout/Banner/Banner'
 import { CGU_URL } from 'utils/config'
 
-interface IOfferEducationalProps {
+export interface IOfferEducationalProps {
     educationalCategories: Category[];
     educationalSubcategories: SubCategory[];
     initialValues: Record<string, unknown>;
