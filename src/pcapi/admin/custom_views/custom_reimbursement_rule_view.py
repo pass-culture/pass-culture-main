@@ -107,6 +107,8 @@ def format_timespan(view, context, model, name):
 
 def format_subcategories(view, context, model, name):
     labels = sorted(ALL_SUBCATEGORIES_DICT[subcategory_id].pro_label for subcategory_id in model.subcategories)
+    if model.offererId and not labels:
+        return "toutes les sous-catégories"
     if len(labels) > 5:
         summary = ", ".join(labels)
         labels = ", ".join(labels[:5])
