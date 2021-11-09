@@ -318,6 +318,10 @@ class CloudSQLPostgresInstance:
             check_interval=10
         )
 
+        operation = self.get_sqladmin_operation(name=operation["name"])
+        if "error" in operation:
+            raise RuntimeError("Failed to export dump of %s to %s: %s" % (database_name, dump_uri, operation["error"]))
+
         print("Ended: Exporting database %s to %s" % (database_name, dump_uri))
 
     def get_sqladmin_operation(self, name):
