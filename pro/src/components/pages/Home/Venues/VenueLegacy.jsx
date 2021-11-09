@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import * as PropTypes from 'prop-types'
 import React, { Fragment, useEffect, useState } from 'react'
@@ -68,6 +68,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
   ]
 
   const isVenueV2Enabled = useActiveFeature('ENABLE_NEW_VENUE_PAGES')
+  const isBankInformationWithSiretActive = useActiveFeature('ENFORCE_BANK_INFORMATION_WITH_SIRET')
 
   useEffect(() => {
     if (isStatOpen && !isStatLoaded) {
@@ -96,7 +97,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
   }, [offererId])
 
   let editVenueLink = `/structures/${offererId}/lieux/${id}`
-  
+
   if (!isVenueV2Enabled) {
     editVenueLink += '?modification'
   }
@@ -141,7 +142,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
                   </>
                 )}
               </button>
-              {!isVirtual && (
+              {(!isVirtual || isBankInformationWithSiretActive) && (
                 <>
                   <span className="button-group-separator" />
                   <Link

@@ -108,6 +108,7 @@ class IdentifierFields extends PureComponent {
       isCreatedEntity,
       isDirtyFieldBookingEmail,
       readOnly,
+      venueIsVirtual,
       venueLabels,
       venueLabelId,
       venueTypes,
@@ -139,27 +140,31 @@ class IdentifierFields extends PureComponent {
         </h2>
         <div className="field-group">
           {isCreatedEntity && <HiddenField name="managingOffererId" />}
-          <TextField
-            format={formatSiret}
-            label={siretLabel}
-            name="siret"
-            parse={parseSiret}
-            readOnly={readOnly || initialSiret !== null}
-            renderValue={this.handleRenderValue(fieldReadOnlyBecauseFrozenFormSiret, readOnly)}
-            type="siret"
-            validate={initialSiret ? undefined : siretValidate}
-          />
+          {!venueIsVirtual && (
+            <TextField
+              format={formatSiret}
+              label={siretLabel}
+              name="siret"
+              parse={parseSiret}
+              readOnly={readOnly || initialSiret !== null}
+              renderValue={this.handleRenderValue(fieldReadOnlyBecauseFrozenFormSiret, readOnly)}
+              type="siret"
+              validate={initialSiret ? undefined : siretValidate}
+            />
+          )}
           <TextField
             label="Nom du lieu : "
             name="name"
             readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
             required
           />
-          <TextField
-            label="Nom d’usage du lieu : "
-            name="publicName"
-            readOnly={readOnly}
-          />
+          {!venueIsVirtual && (
+            <TextField
+              label="Nom d’usage du lieu : "
+              name="publicName"
+              readOnly={readOnly}
+            />
+          )}
           <TextField
             label="E-mail : "
             name="bookingEmail"
@@ -178,13 +183,15 @@ class IdentifierFields extends PureComponent {
             />
           )}
 
-          <TextareaField
-            label="Commentaire (si pas de SIRET) : "
-            name="comment"
-            readOnly={readOnly}
-            rows={1}
-            validate={this.commentValidate}
-          />
+          {!venueIsVirtual && (
+            <TextareaField
+              label="Commentaire (si pas de SIRET) : "
+              name="comment"
+              readOnly={readOnly}
+              rows={1}
+              validate={this.commentValidate}
+            />
+          )}
           <div
             className={classnames('field field-select is-label-aligned', {
               readonly: readOnly,
@@ -207,7 +214,7 @@ class IdentifierFields extends PureComponent {
                   id="venue-type"
                 >
                   <span>
-                    {venueTypeLabel}
+                    {venueIsVirtual ? 'Offre numérique' : venueTypeLabel}
                   </span>
                 </div>
               ) : (
@@ -239,59 +246,63 @@ class IdentifierFields extends PureComponent {
               )}
             </div>
           </div>
-          <div
-            className={classnames('field field-select is-label-aligned', {
-              readonly: readOnly,
-            })}
-          >
-            <div className="field-label">
-              <label htmlFor="venue-label">
-                Label du Ministère de la Culture ou du CNC
-              </label>
-            </div>
+          {!venueIsVirtual && (
+            <div
+              className={classnames('field field-select is-label-aligned', {
+                readonly: readOnly,
+              })}
+            >
+              <div className="field-label">
+                <label htmlFor="venue-label">
+                  Label du Ministère de la Culture ou du CNC
+                </label>
+              </div>
 
-            <div className="field-control">
-              {readOnly ? (
-                <div
-                  className="venue-label-label"
-                  id="venue-label"
-                >
-                  <span>
-                    {venueLabelText}
-                  </span>
-                </div>
-              ) : (
-                <div className="control control-select">
+              <div className="field-control">
+                {readOnly ? (
                   <div
-                    className="select"
+                    className="venue-label-label"
+                    id="venue-label"
                   >
-                    <Field
-                      component="select"
-                      id="venue-label"
-                      name="venueLabelId"
-                    >
-                      <option value="">
-                        Si votre lieu est labellisé précisez-le en le sélectionnant dans la liste
-                      </option>
-                      {venueLabels.map(venueLabel => (
-                        <option
-                          key={`venue-label-${venueLabel.id}`}
-                          value={venueLabel.id}
-                        >
-                          {venueLabel.label}
-                        </option>
-                      ))}
-                    </Field>
+                    <span>
+                      {venueLabelText}
+                    </span>
                   </div>
-                </div>
-              )}
+                ) : (
+                  <div className="control control-select">
+                    <div
+                      className="select"
+                    >
+                      <Field
+                        component="select"
+                        id="venue-label"
+                        name="venueLabelId"
+                      >
+                        <option value="">
+                          Si votre lieu est labellisé précisez-le en le sélectionnant dans la liste
+                        </option>
+                        {venueLabels.map(venueLabel => (
+                          <option
+                            key={`venue-label-${venueLabel.id}`}
+                            value={venueLabel.id}
+                          >
+                            {venueLabel.label}
+                          </option>
+                        ))}
+                      </Field>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-          <TextareaField
-            label="Description : "
-            name="description"
-            readOnly={readOnly}
-          />
+          )}
+          {!venueIsVirtual && (
+            <TextareaField
+              label="Description : "
+              name="description"
+              readOnly={readOnly}
+            />
+          )}
         </div>
       </div>
     )
@@ -305,6 +316,7 @@ IdentifierFields.defaultProps = {
   isCreatedEntity: false,
   isDirtyFieldBookingEmail: false,
   readOnly: true,
+  venueIsVirtual: false,
   venueLabelId: null,
   venueTypeId: null,
 }
@@ -316,6 +328,7 @@ IdentifierFields.propTypes = {
   isCreatedEntity: PropTypes.bool,
   isDirtyFieldBookingEmail: PropTypes.bool,
   readOnly: PropTypes.bool,
+  venueIsVirtual: PropTypes.bool,
   venueLabelId: PropTypes.string,
   venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,
   venueTypeId: PropTypes.string,

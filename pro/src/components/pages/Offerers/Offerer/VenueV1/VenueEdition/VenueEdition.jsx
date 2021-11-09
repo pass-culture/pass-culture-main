@@ -11,6 +11,7 @@ import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 import { Link, NavLink } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
@@ -54,8 +55,12 @@ const VenueEdition = ({
 }) => {
   const [isRequestPending, setIsRequestPending] = useState(false)
 
+  const isBankInformationWithSiretActive = useActiveFeature('ENFORCE_BANK_INFORMATION_WITH_SIRET')
+
   // TODO check that it's execute only once when initialize
   useEffect(() => handleInitialRequest(), [handleInitialRequest])
+
+  const pageNotFoundRedirect = () => history.push('/404')
 
   const handleFormFail = formResolver => (_state, action) => {
     const { payload } = action
@@ -96,7 +101,7 @@ const VenueEdition = ({
     const { readOnly } = query.context({
       id: venueId,
     })
-    const { siret: initialSiret, withdrawalDetails: initialWithdrawalDetails } = venue || {}
+    const { siret: initialSiret, isVirtual: initialIsVirtual, withdrawalDetails: initialWithdrawalDetails } = venue || {}
     const canSubmit = getCanSubmit(formProps)
     const { form, handleSubmit, values } = formProps
     const {
@@ -124,13 +129,14 @@ const VenueEdition = ({
           formSiret={formSiret}
           initialSiret={initialSiret}
           isDirtyFieldBookingEmail={isDirtyFieldBookingEmail}
-          readOnly={readOnly}
+          readOnly={readOnly || initialIsVirtual}
+          venueIsVirtual={initialIsVirtual}
           venueLabelId={venueLabelId}
           venueLabels={venueLabels}
           venueTypeId={venueTypeId}
           venueTypes={venueTypes}
         />
-        {withdrawalDetailActive && (
+        {withdrawalDetailActive && !initialIsVirtual && (
           <WithdrawalDetailsFields
             initialWithdrawalDetails={initialWithdrawalDetails}
             readOnly={readOnly}
@@ -140,20 +146,24 @@ const VenueEdition = ({
           offerer={offerer}
           venue={venue}
         />
-        <LocationFields
-          fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
-          form={form}
-          formIsLocationFrozen={formIsLocationFrozen}
-          formLatitude={formLatitude === '' ? FRANCE_POSITION.latitude : formLatitude}
-          formLongitude={formLongitude === '' ? FRANCE_POSITION.longitude : formLongitude}
-          readOnly={readOnly}
-        />
-        <AccessibilityFields
-          formValues={values}
-          readOnly={readOnly}
-          venue={venue}
-        />
-        <ContactInfosFields readOnly={readOnly} />
+        {!initialIsVirtual && (
+          <>
+            <LocationFields
+              fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
+              form={form}
+              formIsLocationFrozen={formIsLocationFrozen}
+              formLatitude={formLatitude === '' ? FRANCE_POSITION.latitude : formLatitude}
+              formLongitude={formLongitude === '' ? FRANCE_POSITION.longitude : formLongitude}
+              readOnly={readOnly}
+            />
+            <AccessibilityFields
+              formValues={values}
+              readOnly={readOnly}
+              venue={venue}
+            />
+            <ContactInfosFields readOnly={readOnly} />
+          </>
+        )}
         <hr />
         <div
           className="field is-grouped is-grouped-centered"
@@ -232,6 +242,11 @@ const VenueEdition = ({
     </Link>
   )
 
+  if (initialIsVirtual && !isBankInformationWithSiretActive) {
+    pageNotFoundRedirect()
+    return null
+  }
+
   return (
     <div className="venue-page">
       <NavLink
@@ -247,12 +262,8 @@ const VenueEdition = ({
         subtitle={initialName}
         title="Lieu"
       />
-      {!initialIsVirtual && (
-        <>
-          {venue && <VenueProvidersManager venue={venue} />}
-          {venue && offerer && renderForm()}
-        </>
-      )}
+      {venue && !initialIsVirtual && <VenueProvidersManager venue={venue} />}
+      {venue && offerer && renderForm()}
     </div>
   )
 }
