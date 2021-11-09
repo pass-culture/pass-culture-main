@@ -118,6 +118,7 @@ def format_subcategories(view, context, model, name):
 class CustomReimbursementRuleView(BaseAdminView):
     can_delete = False
     column_list = [
+        "id",
         "offerer.name",
         "offerer.siren",
         "offer.name",
