@@ -171,7 +171,13 @@ class Returns200Test:
         assert venue.audioDisabilityCompliant == True
 
         mocked_update_all_venue_offers_accessibility_job.assert_called_once_with(
-            venue, {"audioDisabilityCompliant": True}
+            venue,
+            {
+                "audioDisabilityCompliant": True,
+                "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
+                "motorDisabilityCompliant": venue.motorDisabilityCompliant,
+                "visualDisabilityCompliant": venue.visualDisabilityCompliant,
+            },
         )
 
     @pytest.mark.usefixtures("db_session")
