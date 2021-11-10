@@ -1,0 +1,15 @@
+.title-1 {
+  @include title1();
+}
+
+.title-2 {
+  @include title2();
+}
+
+.title-3 {
+  @include title3();
+}
+
+.title-4 {
+  @include title4();
+}
