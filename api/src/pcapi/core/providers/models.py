@@ -82,7 +82,7 @@ class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):
 
     provider = relationship("Provider", foreign_keys=[providerId])
 
-    venueIdAtOfferProvider = Column(String(70))
+    venueIdAtOfferProvider = Column(String(70), nullable=False)
 
     lastSyncDate = Column(DateTime, nullable=True)
 
