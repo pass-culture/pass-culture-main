@@ -9,6 +9,7 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.factories import APIProviderFactory
 from pcapi.core.offerers.factories import AllocineProviderFactory
+from pcapi.core.offerers.factories import AllocineVenueProviderFactory
 from pcapi.core.offerers.factories import VenueProviderFactory
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
@@ -16,11 +17,9 @@ from pcapi.local_providers.provider_manager import do_update
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
-from pcapi.model_creators.generic_creators import create_allocine_venue_provider
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.generic_creators import create_venue_provider
-from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.repository import repository
 
 from tests.local_providers.provider_test_utils import TestLocalProvider
@@ -158,12 +157,7 @@ class SynchronizeVenueProviderTest:
         self, mock_do_update, mock_get_provider_class, app
     ):
         # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-
-        provider = activate_provider("AllocineStocks")
-        allocine_venue_provider = create_allocine_venue_provider(venue, provider, is_duo=True)
-        repository.save(allocine_venue_provider)
+        allocine_venue_provider = AllocineVenueProviderFactory()
 
         mock_provider_class = MagicMock()
         mock_get_provider_class.return_value = mock_provider_class
