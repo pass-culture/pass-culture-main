@@ -7,6 +7,7 @@ from flask import current_app as app
 from flask import jsonify
 from flask import request
 import simplejson as json
+from sqlalchemy.exc import DatabaseError
 from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import MethodNotAllowed
 from werkzeug.exceptions import NotFound
@@ -17,6 +18,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
 from pcapi.models.api_errors import UnauthorizedError
+from pcapi.routes.error_handlers.utils import format_sql_statement_params
 from pcapi.utils.human_ids import NonDehumanizableId
 
 
@@ -127,3 +129,15 @@ def ratelimit_handler(error: Exception) -> tuple[dict, int]:
     api_errors = ApiErrors()
     api_errors.add_error("global", "Nombre de tentatives de connexion dépassé, veuillez réessayer dans une minute")
     return jsonify(api_errors.errors), 429
+
+
+@app.errorhandler(DatabaseError)
+def database_error_handler(error: DatabaseError) -> Response:
+    logger.error(
+        "Database error %s with the following query.\n\n🚨🚨🚨🚨🚨 BEFORE COPYING THE QUERY MAKE SURE THERE IS NO SQL INJECTION 🚨🚨🚨🚨🚨🚨\n\n%s;",
+        error.__class__.__name__,
+        error.statement % format_sql_statement_params(error.params),
+    )
+    errors = ApiErrors()
+    errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
+    return jsonify(errors.errors), 500
