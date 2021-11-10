@@ -1,7 +1,5 @@
 import datetime
 
-from sqlalchemy.orm import joinedload
-
 from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.bookings.factories import UsedEducationalBookingFactory
 from pcapi.core.bookings.models import BookingStatus
@@ -10,8 +8,6 @@ from pcapi.core.offers.factories import EducationalEventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VenueFactory
-from pcapi.core.users.models import User
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 
 
@@ -83,11 +79,8 @@ def create_industrial_educational_bookings() -> None:
     UserOffererFactory(validationToken=None, offerer=venue.managingOfferer)
 
     educational_redactor = educational_factories.EducationalRedactorFactory(email="compte.test@education.gouv.fr")
-    user_offerer_reimbursements = (
-        UserOfferer.query.join(User)
-        .filter(User.email == "pctest.pro93.0@example.com")
-        .options(joinedload(UserOfferer.offerer))
-        .first()
+    user_offerer_reimbursements = UserOffererFactory(
+        validationToken=None, user__email="pc.test.payments.eac@example.com"
     )
     venue_reimbursements = VenueFactory(
         name="Théâtre des potirons", isPermanent=True, managingOfferer=user_offerer_reimbursements.offerer
