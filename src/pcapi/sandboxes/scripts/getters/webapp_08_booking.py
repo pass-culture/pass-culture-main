@@ -67,6 +67,7 @@ def get_non_free_event_offer():
     offer = (
         query.filter(Offer.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES))
         .filter(Offer.mediations.any(Mediation.isActive == True))
+        .filter(Offer.isEducational == False)
         .join(Venue, Venue.id == Offer.venueId)
         .join(Offerer, Offerer.id == Venue.managingOffererId)
         .filter(Offerer.validationToken == None)
@@ -77,6 +78,7 @@ def get_non_free_event_offer():
         return {
             "mediationId": [humanize(m.id) for m in offer.mediations if m.isActive][0],
             "offer": get_offer_helper(offer),
+            "stockCount": len(offer.stocks),
         }
     return {}
 

@@ -153,6 +153,7 @@ class GetNonFreeEventOfferTest:
                 "visualDisabilityCompliant": None,
                 "withdrawalDetails": None,
             },
+            "stockCount": 1,
         }
 
     @pytest.mark.usefixtures("db_session")
