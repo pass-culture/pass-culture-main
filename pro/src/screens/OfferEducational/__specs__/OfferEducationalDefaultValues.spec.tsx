@@ -6,6 +6,19 @@ import { Router } from 'react-router'
 
 import { getCategoriesSelect, getSubcategoriesSelect } from '../__tests-utils__/eacOfferCreationUtils'
 import setDefaultProps from '../__tests-utils__/setDefaultProps'
+import {
+  DESCRIPTION_LABEL,
+  EMAIL_LABEL,
+  NOTIFICATIONS_EMAIL_LABEL,
+  NOTIFICATIONS_LABEL,
+  OFFERER_LABEL,
+  OFFER_VENUE_OFFERER_LABEL,
+  OFFER_VENUE_OTHER_LABEL,
+  OFFER_VENUE_SCHOOL_LABEL,
+  PHONE_LABEL,
+  TITLE_LABEL,
+  VENUE_LABEL,
+} from '../constants/labels'
 import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
 import { accessibilityOptions } from '../OfferEducationalForm/FormAccessibility/accessibilityOptions'
 import { participantsOptions } from '../OfferEducationalForm/FormParticipants/participantsOptions'
@@ -39,21 +52,21 @@ describe('screens | OfferEducational', () => {
     const subCategoriesSelect = getSubcategoriesSelect()
     expect(subCategoriesSelect.value).toBe('')
 
-    const titleInput = screen.getByLabelText("Titre de l'offre") as HTMLInputElement
+    const titleInput = screen.getByLabelText(TITLE_LABEL) as HTMLInputElement
     expect(titleInput.value).toBe('')
 
-    const descriptionTextArea = screen.getByLabelText('Description') as HTMLTextAreaElement
+    const descriptionTextArea = screen.getByLabelText(DESCRIPTION_LABEL) as HTMLTextAreaElement
     expect(descriptionTextArea.value).toBe('')
 
-    const offererSelect = screen.getByLabelText('Structure') as HTMLSelectElement
+    const offererSelect = screen.getByLabelText(OFFERER_LABEL) as HTMLSelectElement
     expect(offererSelect.value).toBe('')
 
-    const venueSelect = screen.getByLabelText('Lieu qui percevra le remboursement') as HTMLSelectElement
+    const venueSelect = screen.getByLabelText(VENUE_LABEL) as HTMLSelectElement
     expect(venueSelect.value).toBe('')
 
-    const offerVenueRadio1 = screen.getByLabelText('Dans votre établissement') as HTMLInputElement
-    const offerVenueRadio2 = screen.getByLabelText("Dans l'établissement scolaire") as HTMLInputElement
-    const offerVenueRadio3 = screen.getByLabelText('Autre') as HTMLInputElement
+    const offerVenueRadio1 = screen.getByLabelText(OFFER_VENUE_OFFERER_LABEL) as HTMLInputElement
+    const offerVenueRadio2 = screen.getByLabelText(OFFER_VENUE_SCHOOL_LABEL) as HTMLInputElement
+    const offerVenueRadio3 = screen.getByLabelText(OFFER_VENUE_OTHER_LABEL) as HTMLInputElement
     [offerVenueRadio1, offerVenueRadio2, offerVenueRadio3].forEach(radio => {
       expect(radio.checked).toBe(false)
     })
@@ -68,16 +81,16 @@ describe('screens | OfferEducational', () => {
       expect(accessibilityCheckbox.checked).toBe(false)
     })
 
-    const phoneInput = screen.getByLabelText('Téléphone') as HTMLInputElement
+    const phoneInput = screen.getByLabelText(PHONE_LABEL) as HTMLInputElement
     expect(phoneInput.value).toBe('')
 
-    const emailInput = screen.getByLabelText('Email') as HTMLInputElement
+    const emailInput = screen.getByLabelText(EMAIL_LABEL) as HTMLInputElement
     expect(emailInput.value).toBe('')
 
-    const notificationsCheckbox = screen.getByLabelText('Être notifié par email des réservations') as HTMLInputElement
+    const notificationsCheckbox = screen.getByLabelText(NOTIFICATIONS_LABEL) as HTMLInputElement
     expect(notificationsCheckbox.checked).toBe(false)
 
-    const notificationEmailInput = screen.getByLabelText('Email auquel envoyer les notifications') as HTMLInputElement
+    const notificationEmailInput = screen.getByLabelText(NOTIFICATIONS_EMAIL_LABEL) as HTMLInputElement
     expect(notificationEmailInput.value).toBe('')
   })
 })

@@ -2,6 +2,7 @@ import React from 'react'
 
 import { TextInput } from 'ui-kit'
 
+import { EMAIL_LABEL, PHONE_LABEL } from '../../constants/labels'
 import FormSection from '../FormSection'
 
 import styles from './FormContact.module.scss'
@@ -14,13 +15,13 @@ const FormContact = (): JSX.Element => {
     >
       <div className={styles.subsection}>
         <TextInput
-          label="Téléphone"
+          label={PHONE_LABEL}
           name='phone'
         />
       </div>
       <div className={styles.subsection}>
         <TextInput
-          label="Email"
+          label={EMAIL_LABEL}
           name='email'
         />
       </div>
