@@ -1,27 +1,20 @@
 import pytest
 
+from pcapi.core.offerers.factories import AllocineProviderFactory
+from pcapi.core.offerers.factories import AllocineVenueProviderFactory
+from pcapi.core.offerers.factories import ProviderFactory
+from pcapi.core.offerers.factories import VenueProviderFactory
+from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import VenueProvider
-from pcapi.model_creators.generic_creators import create_allocine_venue_provider
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_provider
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
-from pcapi.repository import repository
 
 
 class AllocineVenueProviderTest:
     @pytest.mark.usefixtures("db_session")
     def test_allocine_venue_provider_should_inherit_from_venue_provider(self, app):
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-
         provider_allocine = activate_provider("AllocineStocks")
-
-        allocine_venue_provider = create_allocine_venue_provider(venue, provider_allocine, is_duo=True)
-
-        repository.save(allocine_venue_provider)
+        AllocineVenueProviderFactory(provider=provider_allocine, isDuo=True)
 
         assert VenueProvider.query.count() == 1
         assert AllocineVenueProvider.query.count() == 1
@@ -32,17 +25,13 @@ class AllocineVenueProviderTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_query_venue_provider_load_allocine_venue_provider_attributes_when_connected_to_allocine(self, app):
-        offerer = create_offerer()
-        venue = create_venue(offerer)
+        venue = VenueFactory()
 
-        provider_allocine = activate_provider("AllocineStocks")
-        provider = create_provider(local_class="TestLocalProvider")
+        provider_allocine = AllocineProviderFactory()
+        provider = ProviderFactory(localClass="TestLocalProvider")
 
-        venue_provider = create_venue_provider(venue, provider)
-
-        allocine_venue_provider = create_allocine_venue_provider(venue, provider_allocine, is_duo=True)
-
-        repository.save(venue_provider, allocine_venue_provider)
+        VenueProviderFactory(venue=venue, provider=provider)
+        AllocineVenueProviderFactory(venue=venue, provider=provider_allocine, isDuo=True)
 
         assert VenueProvider.query.count() == 2
         assert AllocineVenueProvider.query.count() == 1
