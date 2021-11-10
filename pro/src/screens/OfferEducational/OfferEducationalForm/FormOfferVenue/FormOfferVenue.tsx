@@ -2,6 +2,11 @@ import React from 'react'
 
 import { RadioButton } from 'ui-kit'
 
+import {
+  OFFER_VENUE_OFFERER_LABEL,
+  OFFER_VENUE_OTHER_LABEL,
+  OFFER_VENUE_SCHOOL_LABEL,
+} from '../../constants/labels'
 import FormSection from '../FormSection'
 
 import styles from './FormOfferVenue.module.scss'
@@ -18,17 +23,17 @@ const FormOfferVenue = (): JSX.Element => {
         </h4>
         <div className={styles['radio-group']}>
           <RadioButton
-            label='Dans votre établissement'
+            label={OFFER_VENUE_OFFERER_LABEL}
             name='offerVenueId'
             value='offererVenue'
           />
           <RadioButton
-            label="Dans l'établissement scolaire"
+            label={OFFER_VENUE_SCHOOL_LABEL}
             name='offerVenueId'
             value='school'
           />
           <RadioButton
-            label='Autre'
+            label={OFFER_VENUE_OTHER_LABEL}
             name='offerVenueId'
             value='other'
           />
