@@ -2,10 +2,10 @@ from datetime import datetime
 
 from sqlalchemy import and_
 
+import pcapi.core.bookings.api as bookings_api
 from pcapi.models import Booking
 from pcapi.models import Payment
 from pcapi.models import Stock
-from pcapi.repository import repository
 
 
 def cancel_booking_status_for_events_happening_during_quarantine() -> None:
@@ -28,5 +28,4 @@ def find_bookings_to_cancel() -> list[Booking]:
 
 def cancel_bookings(bookings: list[Booking]) -> None:
     for booking in bookings:
-        booking.mark_as_unused_set_confirmed()
-    repository.save(*bookings)
+        bookings_api.mark_as_unused(booking)

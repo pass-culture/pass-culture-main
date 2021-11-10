@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import UsedBookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -29,7 +30,7 @@ class CancelBookingsOfEventsFromFileTest:
         stock_to_cancel = ThingStockFactory(offer=offer_to_cancel)
         stock_to_not_cancel = ThingStockFactory(offer=offer_to_not_cancel)
 
-        self.booking_to_cancel = BookingFactory(user=beneficiary, stock=stock_to_cancel, isUsed=False, dateUsed=None)
+        self.booking_to_cancel = UsedBookingFactory(user=beneficiary, stock=stock_to_cancel)
         self.booking_to_not_cancel = BookingFactory(user=beneficiary, stock=stock_to_not_cancel)
 
         self.booking_2QLYYA_not_to_cancel = BookingFactory(user=beneficiary, stock=stock_to_cancel, token="2QLYYA")

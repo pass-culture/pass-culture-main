@@ -1,18 +1,12 @@
+import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.repository as booking_repository
-from pcapi.repository import payment_queries
-from pcapi.repository import repository
 
 
 def canceling_token_validation(token: str) -> None:
     booking = booking_repository.find_used_by_token(token)
 
     if booking:
-        if not payment_queries.has_payment(booking):
-            booking.mark_as_unused_set_confirmed()
-            repository.save(booking)
-
-            print(f"The token ({token}) is cancelled")
-        else:
-            print(f"We did not cancelled the booking whose token is {token} because it has been already paid")
+        bookings_api.mark_as_unused(booking)  # raises error if not allowed
+        print(f"The token ({token}) is cancelled")
     else:
         print(f"The token ({token}) is invalid")
