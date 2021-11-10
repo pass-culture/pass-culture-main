@@ -129,7 +129,7 @@ class EditModelTest:
             allocine_quantity=222,
             provider=provider.id,
             venue=venue.id,
-            venueIdAtOfferProvider=None,
+            venueIdAtOfferProvider="ABCDEF12345",
         )
 
         client.with_session_auth("user@example.com")
