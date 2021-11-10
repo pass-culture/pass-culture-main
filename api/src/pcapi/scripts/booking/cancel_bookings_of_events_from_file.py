@@ -8,7 +8,6 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.models import ApiErrors
 from pcapi.models import Offer
 from pcapi.models import Stock
-from pcapi.repository import repository
 
 
 logger = logging.getLogger(__name__)
@@ -54,11 +53,11 @@ def _cancel_bookings_of_offers_from_rows(csv_rows: Iterable, reason: BookingCanc
         )
 
         for booking in bookings_to_cancel:
-            booking.mark_as_unused_set_confirmed()
+            if booking.isUsed:
+                bookings_api.mark_as_unused(booking)
             bookings_api._cancel_booking(booking, reason)
 
         try:
-            repository.save(*bookings_to_cancel)
             logger.info(
                 "[CANCEL BOOKINGS OF EVENTS FROM FILE] Annulation des réservations de l'offre '%s' d'id %s réussie",
                 offer_name,

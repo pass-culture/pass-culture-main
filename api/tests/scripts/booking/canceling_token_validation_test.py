@@ -4,6 +4,7 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.payments.factories as payments_factories
 from pcapi.models import Booking
+from pcapi.models.api_errors import ResourceGoneError
 from pcapi.scripts.booking.canceling_token_validation import canceling_token_validation
 
 
@@ -31,7 +32,8 @@ def test_should_do_nothing_when_valid_token_is_given_but_the_booking_is_linked_t
     initial_date_used = booking.dateUsed
 
     # When
-    canceling_token_validation(token=token)
+    with pytest.raises(ResourceGoneError):
+        canceling_token_validation(token=token)
 
     # Then
     booking = Booking.query.first()
