@@ -2,6 +2,7 @@ import React from 'react'
 
 import { Select } from 'ui-kit'
 
+import { OFFERER_LABEL, VENUE_LABEL } from '../../constants/labels'
 import FormSection from '../FormSection'
 
 import styles from './FormVenue.module.scss'
@@ -15,14 +16,14 @@ const FormVenue = (): JSX.Element => {
       <div className={styles.subsection}>
         <Select
           disabled
-          label="Structure"
+          label={OFFERER_LABEL}
           name='offerer'
           options={[]}
         />
       </div>
       <div className={styles.subsection}>
         <Select
-          label="Lieu qui percevra le remboursement"
+          label={VENUE_LABEL}
           name='venueId'
           options={[]}
         />
