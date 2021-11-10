@@ -1,0 +1,15 @@
+.h1 {
+  @include title1();
+}
+
+.h2 {
+  @include title2();
+}
+
+.h3 {
+  @include title3();
+}
+
+.h4 {
+  @include title4();
+}
