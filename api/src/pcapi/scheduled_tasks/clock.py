@@ -1,5 +1,4 @@
-from datetime import date
-from datetime import timedelta
+import datetime
 import logging
 
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -8,6 +7,7 @@ from sentry_sdk import set_tag
 
 from pcapi import settings
 import pcapi.core.bookings.api as bookings_api
+import pcapi.core.finance.api as finance_api
 from pcapi.core.offerers.repository import get_offerers_by_date_validated
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_offers
@@ -138,7 +138,7 @@ def pc_notify_soon_to_be_expired_individual_bookings() -> None:
 def pc_notify_newly_eligible_users() -> None:
     if not settings.IS_PROD and not settings.IS_TESTING:
         return
-    yesterday = date.today() - timedelta(days=1)
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
     for user in get_newly_eligible_users(yesterday):
         send_newly_eligible_user_email(user)
 
@@ -175,7 +175,7 @@ def pc_clean_past_draft_offers() -> None:
 @cron_context
 @log_cron_with_transaction
 def pc_send_withdrawal_terms_to_offerers_validated_yesterday() -> None:
-    yesterday = date.today() - timedelta(days=1)
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
     offerers_validated_yesterday = get_offerers_by_date_validated(yesterday)
     for offerer in offerers_validated_yesterday:
         send_withdrawal_terms_to_newly_validated_offerer(offerer)
@@ -185,6 +185,13 @@ def pc_send_withdrawal_terms_to_offerers_validated_yesterday() -> None:
 @log_cron_with_transaction
 def pc_recredit_underage_users() -> None:
     recredit_underage_users()
+
+
+@cron_context
+@log_cron_with_transaction
+@cron_require_feature(FeatureToggle.PRICE_BOOKINGS)
+def price_bookings() -> None:
+    finance_api.price_bookings()
 
 
 @blueprint.cli.command("clock")
@@ -235,5 +242,7 @@ def clock() -> None:
     scheduler.add_job(pc_send_withdrawal_terms_to_offerers_validated_yesterday, "cron", day="*", hour="6")
 
     scheduler.add_job(pc_recredit_underage_users, "cron", day="*", hour="0")
+
+    scheduler.add_job(price_bookings, "cron", day="*", minute="/10")
 
     scheduler.start()

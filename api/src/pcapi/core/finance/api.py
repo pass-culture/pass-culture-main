@@ -1,9 +1,11 @@
+import datetime
 import logging
 
 import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
 
 import pcapi.core.bookings.models as bookings_models
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.models as payments_models
 from pcapi.domain import reimbursement
@@ -16,6 +18,60 @@ from . import utils
 
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_MAX_AGE_TO_PRICE = datetime.timedelta(minutes=60)
+
+
+def price_bookings(max_age: datetime.timedelta = DEFAULT_MAX_AGE_TO_PRICE):
+    """Price bookings that have been recently marked as used.
+
+    This function is normally called by a cron job.
+    """
+    # The lower bound avoids querying the whole table. If all goes
+    # well, bookings with an older `dateUsed` will have already been
+    # priced.
+    # The upper bound avoids selecting a very recent booking that may
+    # have been COMMITed to the database just before another booking
+    # with a slightly older `dateUsed`.
+    now = datetime.datetime.utcnow()
+    time_range = (now - max_age, now - datetime.timedelta(minutes=1))
+    bookings = (
+        bookings_models.Booking.query.filter(bookings_models.Booking.dateUsed.between(*time_range))
+        .outerjoin(
+            models.Pricing,
+            models.Pricing.bookingId == bookings_models.Booking.id,
+        )
+        .filter(models.Pricing.id.is_(None))
+        .join(bookings_models.Booking.venue)
+        .filter(offerers_models.Venue.businessUnitId.isnot(None))
+        .order_by(bookings_models.Booking.dateUsed, bookings_models.Booking.id)
+        .options(
+            sqla_orm.load_only(bookings_models.Booking.id),
+            # Our code does not access `Venue.id` but SQLAlchemy needs
+            # it to build a `Venue` object (which we access through
+            # `booking.venue`).
+            sqla_orm.contains_eager(bookings_models.Booking.venue).load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.businessUnitId,
+            ),
+        )
+    )
+    errorred_business_unit_ids = set()
+    for booking in bookings:
+        try:
+            if booking.venue.businessUnitId in errorred_business_unit_ids:
+                continue
+            price_booking(booking)
+        except Exception as exc:  # pylint: disable=broad-except
+            errorred_business_unit_ids.add(booking.venue.businessUnitId)
+            logger.exception(
+                "Could not price booking",
+                extra={
+                    "booking": booking.id,
+                    "business_unit": booking.venue.businessUnitId,
+                    "exc": str(exc),
+                },
+            )
 
 
 def lock_business_unit(business_unit_id: int):
