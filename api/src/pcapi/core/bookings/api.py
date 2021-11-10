@@ -20,6 +20,8 @@ from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
+import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.models as finance_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -316,6 +318,8 @@ def mark_as_cancelled(booking: Booking) -> None:
 
 def mark_as_unused(booking: Booking) -> None:
     validation.check_can_be_mark_as_unused(booking)
+    if FeatureToggle.PRICE_BOOKINGS.is_active():
+        finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
     booking.mark_as_unused_set_confirmed()
     repository.save(booking)
     logger.info("Booking was marked as unused", extra={"booking": booking.id})
