@@ -1,4 +1,5 @@
 import datetime
+from unittest import mock
 
 import pytest
 import sqlalchemy.orm as sqla_orm
@@ -186,3 +187,28 @@ class DeleteDependentPricingsTest:
         with pytest.raises(exceptions.NonCancellablePricingError):
             api._delete_dependent_pricings(booking, "some log message")
         assert models.Pricing.query.one() == pricing
+
+
+class PriceBookingsTest:
+    few_minutes_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+
+    def test_basics(self):
+        booking = bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
+        api.price_bookings()
+        assert len(booking.pricings) == 1
+
+    @mock.patch("pcapi.core.finance.api.price_booking", lambda booking: None)
+    def test_num_queries(self):
+        bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
+        n_queries = 1
+        with assert_num_queries(n_queries):
+            api.price_bookings()
+
+    def test_error_on_a_booking_does_not_block_other_bookings(self):
+        booking1 = create_booking_with_undeletable_dependent(date_used=self.few_minutes_ago)
+        booking2 = bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
+
+        api.price_bookings()
+
+        assert not booking1.pricings
+        assert len(booking2.pricings) == 1
