@@ -4,6 +4,13 @@ import { Category, SubCategory } from 'custom_types/categories'
 import { OfferEducationalFormValues } from 'screens/OfferEducational/types'
 import { Select, TextArea, TextInput } from 'ui-kit'
 
+import {
+  CATEGORY_LABEL,
+  DESCRIPTION_LABEL,
+  DURATION_LABEL,
+  SUBCATEGORY_LABEL,
+  TITLE_LABEL,
+} from '../../constants/labels'
 import DurationPicker from '../DurationPicker'
 import FormSection from '../FormSection'
 
@@ -33,33 +40,33 @@ const EACOfferCreationType = ({
     >
       <div className={styles.subsection}>
         <Select
-          label="Domaine"
+          label={CATEGORY_LABEL}
           name='category'
           options={buildOptions(categories)}
         />
       </div>
       <div className={styles.subsection}>
         <Select
-          label="Sous Domaine"
+          label={SUBCATEGORY_LABEL}
           name='subCategory'
           options={buildOptions(subCategoriesForSelectedCategory)}
         />
       </div>
       <div className={styles.subsection}>
         <TextInput
-          label="Titre de l'offre"
+          label={TITLE_LABEL}
           name="title"
         />
       </div>
       <div className={styles.subsection}>
         <TextArea
-          label="Description"
+          label={DESCRIPTION_LABEL}
           name='description'
         />
       </div>
       <div className={styles.subsection}>
         <DurationPicker
-          label="Durée"
+          label={DURATION_LABEL}
           name='duration'
           onChange={(value: number| null) => setFieldValue('duration', value)}
         />
