@@ -105,6 +105,24 @@ class JouveContent(pydantic.BaseModel):
     _parse_birth_date = validator("birthDateTxt", pre=True, allow_reuse=True)(_parse_date)
 
 
+class UbbleIdentificationResponse(pydantic.BaseModel):
+    comment: str
+    created_at: datetime.datetime = pydantic.Field(alias="created-at")
+    ended_at: datetime.datetime = pydantic.Field(alias="ended-at")
+    identification_id: str = pydantic.Field(alias="identification-id")
+    identification_url: str = pydantic.Field(alias="identification-url")
+    number_of_attempts: int = pydantic.Field(alias="number-of-attempts")
+    redirect_url: str = pydantic.Field(alias="redirect-url")
+    score: float
+    started_at: datetime.datetime = pydantic.Field(alias="started-at")
+    status: str  # migrate to an enum ?
+    updated_at: datetime.datetime = pydantic.Field(alias="updated-at")
+    status_updated_at: datetime.datetime = pydantic.Field(alias="status-updated-at")
+    user_agent: str = pydantic.Field(alias="user-agent")
+    user_ip_address: str = pydantic.Field(alias="user-ip-address")
+    webhook: str
+
+
 class DMSContent(pydantic.BaseModel):
     last_name: str
     first_name: str
