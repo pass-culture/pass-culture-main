@@ -31,6 +31,8 @@ from pcapi.utils.sentry import init_sentry_sdk
 logger = logging.getLogger(__name__)
 
 install_logging()
+
+sentry_sdk.utils.MAX_STRING_LENGTH = 8192
 init_sentry_sdk()
 
 app = Flask(__name__, static_url_path="/static")
