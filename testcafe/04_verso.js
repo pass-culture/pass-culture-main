@@ -42,11 +42,7 @@ test("je peux réserver l'offre", async t => {
   await t.useRole(userRole).navigateTo(offerPage)
 
   // when
-  await t
-    .expect(alreadyBookedOfferButton.exists)
-    .notOk()
-    .expect(bookOfferButton.exists)
-    .ok()
+  await t.expect(alreadyBookedOfferButton.exists).notOk().expect(bookOfferButton.exists).ok()
 })
 
 test("parcours complet de réservation d'une offre thing", async t => {
@@ -66,12 +62,7 @@ test("parcours complet de réservation d'une offre thing", async t => {
 
   await t.navigateTo(`${ROOT_PATH}profil`)
   previousWalletValue = await getUserWalletValue()
-  await t
-    .expect(previousWalletValue)
-    .gt(0)
-    .useRole(userRole)
-    .navigateTo(offerPage)
-    .wait(500)
+  await t.expect(previousWalletValue).gt(0).useRole(userRole).navigateTo(offerPage).wait(500)
 
   await t
     .expect(checkReversedIcon.exists)
@@ -90,24 +81,15 @@ test("parcours complet de réservation d'une offre thing", async t => {
   currentBookedToken = await bookingToken.textContent
   currentBookedToken = currentBookedToken.toLowerCase()
 
-  await t
-    .click(bookingSuccessButton)
-    .expect(checkReversedIcon.exists)
-    .ok()
+  await t.click(bookingSuccessButton).expect(checkReversedIcon.exists).ok()
 
   const testWalletValue = await getVersoWalletValue()
 
-  await t
-    .expect(testWalletValue)
-    .lt(previousWalletValue)
+  await t.expect(testWalletValue).lt(previousWalletValue)
 
   await t.navigateTo(`${ROOT_PATH}profil`)
   const currentWalletValue = await getUserWalletValue()
-  await t
-    .expect(currentWalletValue)
-    .gte(0)
-    .expect(currentWalletValue)
-    .lt(previousWalletValue)
+  await t.expect(currentWalletValue).gte(0).expect(currentWalletValue).lt(previousWalletValue)
 
   const bookedOffer = Selector(`.mb-my-booking[data-token="${currentBookedToken}"]`)
 
@@ -122,13 +104,13 @@ test("parcours complet de réservation d'une offre thing", async t => {
     .ok()
 })
 
-test("parcours complet de réservation d'une offre event à date unique", async t => {
+test("parcours complet de réservation d'une offre event", async t => {
   // given
   userRole = await createUserRoleFromUserSandbox(
     'webapp_08_booking',
     'get_existing_webapp_user_can_book_multidates'
   )
-  const { offer } = await fetchSandbox('webapp_08_booking', 'get_non_free_event_offer')
+  const { offer, stockCount } = await fetchSandbox('webapp_08_booking', 'get_non_free_event_offer')
   offerPage = `${offerDetailsURL}/${offer.id}`
 
   await t.useRole(userRole).navigateTo(offerPage)
@@ -143,8 +125,13 @@ test("parcours complet de réservation d'une offre event à date unique", async 
     .useRole(userRole)
     .navigateTo(offerPage)
     .click(bookOfferButton)
-    .click(dateSelectBox)
-    .click(selectableDates.nth(0))
+
+  // Si plus d'1 date réservable, on en sélectionne une via le datepicker
+  if (stockCount > 1) {
+    await t.click(dateSelectBox).click(selectableDates.nth(0))
+  }
+
+  await t
     .click(sendBookingButton)
     .expect(bookingErrorReasons.count)
     .eql(0)
@@ -152,18 +139,11 @@ test("parcours complet de réservation d'une offre event à date unique", async 
     .ok()
 
   currentBookedToken = await bookingToken.textContent
-  await t
-    .click(bookingSuccessButton)
-    .expect(checkReversedIcon.exists)
-    .ok()
+  await t.click(bookingSuccessButton).expect(checkReversedIcon.exists).ok()
 
   await t.navigateTo(`${ROOT_PATH}profil`)
   const currentWalletValue = await getUserWalletValue()
-  await t
-    .expect(currentWalletValue)
-    .gte(0)
-    .expect(currentWalletValue)
-    .lt(previousWalletValue)
+  await t.expect(currentWalletValue).gte(0).expect(currentWalletValue).lt(previousWalletValue)
 
   const bookedOffer = Selector(`.mb-my-booking[data-token="${currentBookedToken}"]`)
   await t
