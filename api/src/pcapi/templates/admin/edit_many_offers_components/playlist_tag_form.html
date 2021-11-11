@@ -1,0 +1,49 @@
+{% if type == 'book' %}
+    {% set form_action = url_for('/many_offers_operations.add_criteria_to_offers')+ "?isbn=" + isbn %}
+{% else %}
+    {% set form_action = url_for('/many_offers_operations.add_criteria_to_offers')+ "?visa=" + visa %}
+{% endif %}
+
+<div style="margin: 20px 0 2px;">
+    {% if active_offers_number > 0 %}
+        <button data-toggle="collapse" data-target="#playlist-tag-form" class="btn btn-info">
+            Ouvrir le formulaire de tag de playlist
+        </button>
+        <div id="playlist-tag-form" class="collapse" style="border: 2px gray solid; border-radius: 0.25em; padding: 10px;">
+            {% if current_criteria_on_offers.items()|length > 0 %}
+                <div>
+                    <h3 style="margin-top: 0;"><span class="label label-default">Tags déjà présents sur les offres</span></h3>
+                    <div>
+                        {% for key, value in current_criteria_on_offers.items() %}
+                         <p>{{ value["count"] }}/{{ active_offers_number }} offres actives ont déjà le tag {{ key }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            <form 
+                action="{{ form_action }}"
+                method="POST"
+                style="margin-top: 10px;"
+            >
+            {% for field in offer_criteria_form %}
+                {% if field.name == "csrf_token" %}
+                    {{ field }}
+                {% else %}
+                    <div class="form-group">
+                        <label>{{ field.label }} {% if field.flags.required %}*{% endif %}</label>
+                        {{ field(class_="form-control") }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <div>
+                <p>⚠️ {{ active_offers_number }} offres actives associées à {{ "cet ISBN" if type == 'book' else "ce visa d'exploitation" }} seront affectées</p>
+                <input class="btn btn-success" type="submit" value="Tagguer les offres associées au produit">
+            </div>
+            </form>
+        </div>
+    {% else %}
+        <button disabled class="btn btn-primary" type="button">
+            Ouvrir le formulaire de tag de playlist
+        </button>
+    {% endif %}
+</div>

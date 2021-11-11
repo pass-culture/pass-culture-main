@@ -1,0 +1,31 @@
+# Common python build files
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+.pytest_cache
+
+# Local env
+start-api-when-database-is-ready.sh
+
+# Tests
+tests/
+local_test_env_file
+pytest.ini
+
+# Dockerfiles
+Dockerfile
+
+# Docs
+*.md
+LICENSE
+
+# Misc
+.git*
+.circleci
+.vscode
+.pylintrc
+.tyrion-config.json
+mypy.ini
+Procfile
+pyproject.toml

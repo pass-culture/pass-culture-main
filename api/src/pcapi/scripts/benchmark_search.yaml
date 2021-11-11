@@ -1,0 +1,349 @@
+cases:
+
+#
+# Recherches toutes catégories
+#
+- description: "Recherche partout pour toutes catégories"
+  criteria: {}
+
+- description: "Recherche toutes catégorie sur 1 lieu (Paris)"
+  criteria:
+    position: "48.866669, 2.33333"
+
+- description: "Recherche toutes catégorie sur 1 lieu (Montpellier)"
+  criteria:
+    position: "43.610769, 3.876716"
+
+- description: "Recherche toutes catégorie sur 1 lieu (Strasbourg)"
+  criteria:
+    position: "48.5734053, 7.7521113"
+
+- description: "Recherche toutes catégorie sur 1 lieu (Marseille)"
+  criteria:
+    position: "43.296482, 5.36978"
+
+- description: "Recherche toutes catégorie sur 1 lieu (Rennes)"
+  criteria:
+    position: "48.117266, -1.6777926"
+
+- description: "Recherche toutes catégorie sur 1 lieu (Toulouse)"
+  criteria:
+    position: "43.604652, 1.444209"
+
+- description: "Recherche toutes catégorie sur 1 lieu (Lyon)"
+  criteria:
+    position: "45.750000, 4.850000"
+
+- description: "Recherche toutes catégorie sur 1 lieu (Brest)"
+  criteria:
+    position: "48.390394, -4.486076"
+
+- description: "Recherche toutes catégorie sur 1 lieu (Saint-Denis Réunion)"
+  criteria:
+    position: "-20.882057, 55.450675"
+
+- description: "Recherche toutes catégorie sur 1 lieu (Besançon)"
+  criteria:
+    position: "47.237829, 6.0240539"
+
+#
+# Recherches par catégorie + lieu
+#
+- description: "Top catégorie : Livres (à Paris)"
+  criteria:
+    categories:
+      - LIVRE
+    position: "48.866669, 2.33333"
+
+- description: "Top catégorie : Livres (à Montpellier)"
+  criteria:
+    categories:
+      - LIVRE
+    position: "43.610769, 3.876716"
+
+- description: "Top catégorie : Livres (à Strasbourg)"
+  criteria:
+    categories:
+      - LIVRE
+    position: "48.5734053, 7.7521113"
+
+- description: "Top catégorie : Musique (à Paris)"
+  criteria:
+    categories:
+      - MUSIQUE
+    position: "48.866669, 2.33333"
+
+- description: "Top catégorie : Musique (à Montpellier)"
+  criteria:
+    categories:
+      - MUSIQUE
+    position: "43.610769, 3.876716"
+
+- description: "Top catégorie : Musique (à Strasbourg)"
+  criteria:
+    categories:
+      - MUSIQUE
+    position: "48.5734053, 7.7521113"
+
+- description: "Top catégorie : Film (à Paris)"
+  criteria:
+    categories:
+      - FILM
+    position: "48.866669, 2.33333"
+
+- description: "Top catégorie : Film (à Montpellier)"
+  criteria:
+    categories:
+      - FILM
+    position: "43.610769, 3.876716"
+
+- description: "Top catégorie : Film (à Marseille)"
+  criteria:
+    categories:
+      - FILM
+    position: "43.296482, 5.36978"
+
+- description: "Top catégorie : Instrument de musique (à Paris)"
+  criteria:
+    categories:
+      - INSTRUMENT
+    position: "48.866669, 2.33333"
+
+- description: "Top catégorie : Instrument de musique (à Montpellier)"
+  criteria:
+    categories:
+      - INSTRUMENT
+    position: "43.610769, 3.876716"
+
+- description: "Top catégorie : Instrument de musique (à Rennes)"
+  criteria:
+    categories:
+      - INSTRUMENT
+    position: "48.117266, -1.6777926"
+
+
+#
+# Recherches les plus fréquentes
+#
+- description: "Top recherche 30 derniers jours : manga"
+  criteria:
+    text: "manga"
+
+- description: "Top recherche 30 derniers jours : deezer"
+  criteria:
+    text: "deezer"
+
+- description: "Top recherche 30 derniers jours : cinema"
+  criteria:
+    text: "cinema"
+
+- description: "Top recherche 30 derniers jours : spotify"
+  criteria:
+    text: "spotify"
+
+- description: "Top recherche 30 derniers jours : one piece"
+  criteria:
+    text: "one piece"
+
+- description: "Top recherche 30 derniers jours : netflix"
+  criteria:
+    text: "netflix"
+
+- description: "Top recherche 30 derniers jours : adn"
+  criteria:
+    text: "adn"
+
+- description: "Top recherche 30 derniers jours : concert"
+  criteria:
+    text: "concert"
+
+- description: "Top recherche 30 derniers jours : escape game"
+  criteria:
+    text: "escape game"
+
+#
+# Synonymes
+#
+- description: "Synonymes : ADN"
+  criteria:
+    text: "anime digital network"
+
+- description: "Synonymes : attaque des titans T.01"
+  criteria:
+    text: "attaque des titans T.01"
+
+- description: "Synonymes : attaque des titans T1"
+  criteria:
+    text: "attaque des titans T1"
+
+- description: "Synonymes : attaque des titans 1"
+  criteria:
+    text: "attaque des titans 1"
+
+- description: "Synonymes Canal : canal"
+  criteria:
+    text: "canal"
+
+- description: "Synonymes Canal : canal+"
+  criteria:
+    text: "canal+"
+
+- description: "Synonymes Canal : canal plus"
+  criteria:
+    text: "canal plus"
+
+- description: "Synonymes netflix"
+  criteria:
+    text: "netflix"
+
+- description: "Dédupliquer les doublons pour livre : 9782811611699"
+  criteria:
+    text: "9782811611699"
+
+- description: "Dédupliquer les doublons pour film : 154260"
+  criteria:
+    text: "154260"
+
+#
+# Filtres divers
+#
+- description: "Filtres : offre physique"
+  criteria:
+    is_thing: true
+
+- description: "Filtres : offre physique + duo"
+  criteria:
+    is_thing: true
+    is_duo: true
+
+- description: "Filtres : offre Sortie"
+  criteria:
+    is_event: true
+
+- description: "Filtres : offre Sortie + duo"
+  criteria:
+    is_event: true
+    is_duo: true
+
+- description: "Filtres : offre numérique"
+  criteria:
+    is_digital: true
+
+- description: "Filtres : offres gratuites uniquement"
+  criteria:
+    is_free: true
+
+- description: "Filtres : offres numériques entre 0 et 100 euros"
+  criteria:
+    is_digital: true
+    price_range: [0, 100]
+
+- description: "Filtres : offres physiques et sorties entre 0 et 200 euros"
+  criteria:
+    is_digital: false
+    price_range: [0, 200]
+
+- description: "Filtres : sorties le 15 septembre"
+  criteria:
+    is_event: true
+    date_range: ["2021-09-15", "2021-09-15"]
+
+- description: "Filtres : séances cinéma du 13 au 17/09, entre 17h et 23h"
+  criteria:
+    categories:
+      - CINEMA
+    date_range: ["2021-09-13", "2021-09-17"]
+    time_range: ["17:00", "23:00"]
+
+- description: "Filtres : uniquement les nouveautés cinéma pour les offres du 13 au 17/09, entre 17h et 23h"
+  criteria:
+    categories:
+      - CINEMA
+    newest_only: True
+    date_range: ["2021-09-13", "2021-09-17"]
+    time_range: ["17:00", "23:00"]
+
+- description: "Filtres : Paris, autour de 30 km"
+  criteria:
+    around:
+      position: "48.866669, 2.33333"
+      distance: 30  # kilomètres
+
+#
+# Offres les plus réservées
+#
+- description: "Offres les plus réservées : Deezer premium 3 mois"
+  criteria:
+    text: "Deezer premium"
+
+- description: "Offres les plus réservées : Canal + 3 mois"
+  criteria:
+    text: "Canal + 3 mois"
+
+- description: 'Offres les plus réservées : Cinépass Pathé Gaumont ("Cinépass")'
+  criteria:
+    text: "Cinépass"
+
+- description: 'Offres les plus réservées : Cinépass Pathé Gaumont ("cine pass")'
+  criteria:
+    text: "cine pass"
+
+- description: 'Offres les plus réservées : Cinépass Pathé Gaumont ("ciné pass")'
+  criteria:
+    text: "ciné pass"
+
+- description: 'Offres les plus réservées : Cinépass Pathé Gaumont ("Pathé")'
+  criteria:
+    text: "Pathé"
+
+- description: 'Offres les plus réservées : Cinépass Pathé Gaumont ("Pathe")'
+  criteria:
+    text: "Pathe"
+
+- description: 'Offres les plus réservées : Cinépass Pathé Gaumont ("Gaumont")'
+  criteria:
+    text: "Gaumont"
+
+- description: "Offres les plus réservées : OCS"
+  criteria:
+    text: "OCS"
+
+- description: 'Offres les plus réservées : CinéCarte 5/1 places Cinémas Pathé Gaumont ("CinéCarte)'
+  criteria:
+    text: "CinéCarte"
+
+- description: 'Offres les plus réservées : CinéCarte 5/1 places Cinémas Pathé Gaumont ("ciné carte")'
+  criteria:
+    text: "ciné carte"
+
+- description: 'Offres les plus réservées : BrutX - 3 mois ("BrutX")'
+  criteria:
+    text: "BrutX"
+
+- description: 'Offres les plus réservées : BrutX - 3 mois ("Brut X")'
+  criteria:
+    text: "Brut X"
+
+- description: 'Offres les plus réservées : BrutX - 3 mois ("brut x)'
+  criteria:
+    text: "brut x"
+
+- description: 'Offres les plus réservées : BrutX - 3 mois ("brut x 3 mois")'
+  criteria:
+    text: "brut x 3 mois"
+
+- description: 'Offres les plus réservées : Entrée DUO Océanopolis ("océanopolis")'
+  criteria:
+    text: "océanopolis"
+
+- description: 'Offres les plus réservées : Entrée DUO Océanopolis ("entrée océanopolis")'
+  criteria:
+    text: "entrée océanopolis"
+
+- description: 'Offres les plus réservées : Découvre le jeu vidéo Fantasy ("fantasy")'
+  criteria:
+    text: "fantasy"
+
+- description: 'Offres les plus réservées : Découvre le jeu vidéo Fantasy ("fantasy jeu vidéo")'
+  criteria:
+    text: "fantasy jeu video"

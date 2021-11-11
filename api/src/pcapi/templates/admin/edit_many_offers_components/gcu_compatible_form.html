@@ -1,0 +1,23 @@
+<div style="margin-top: 40px;">
+    {% if product_compatibility["status"] != 'incompatible_products' %}
+    <form
+        action="{{ url_for('/many_offers_operations.product_gcu_compatibility') }}?isbn={{ isbn }}"
+        method="POST"
+        onSubmit="return confirm('Êtes-vous sûr de vouloir rendre le produit incompatible et rendre inactif les offres associées ?');"
+    >
+        <input 
+            class="btn btn-danger"
+            type="submit"
+            value="Rendre le livre et les offres associées incompatibles avec les CGU"
+        >
+    </form>
+    {% else %}
+    <button
+        class="btn btn-primary"
+        type="button"
+        disabled
+    >
+        Rendre le livre et les offres associées incompatibles avec les CGU
+    </button>
+    {% endif %}
+</div>

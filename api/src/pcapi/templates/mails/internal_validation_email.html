@@ -1,0 +1,62 @@
+<html>
+    <body>
+        <h1>Inscription ou rattachement PRO à valider</h1>
+
+        <section data-testId="summary">
+            <h2><a href="{{ offerer_pro_link }}">Structure :</a></h2>
+            <pre>{{ offerer_summary }} </pre>
+
+            <h2>Utilisateur :</h2>
+            <pre>{{ user_summary }}</pre>
+
+            {% if not user_offerer.isValidated %}
+            <h2>Nouveau rattachement :</h2>
+            <strong class="validation">
+                Pour valider, <a href="{{ api_url }}/validate/user-offerer/{{ user_offerer.validationToken }}">cliquez ici</a>
+            </strong>
+            {% endif %}
+
+            {% if not offerer.isValidated %}
+            <h2>Nouvelle structure :</h2>
+            <strong class="validation">
+                Pour valider, <a href="{{ api_url }}/validate/offerer/{{ offerer.validationToken }}">cliquez ici</a>
+            </strong>
+            {% endif %}
+        </section>
+
+        <hr/>
+
+        <section data-testId="user_offerer">
+            {% if user_offerer.isValidated %}
+                <h2>Rattachement :</h2>
+            {% else %}
+                <h2>Nouveau rattachement :</h2>
+                <strong class="validation">
+                    Pour valider, <a href="{{ api_url }}/validate/user-offerer/{{ user_offerer.validationToken }}">cliquez ici</a>
+                </strong>
+            {% endif %}
+
+            <h3>Utilisateur :</h3>
+            <pre>{{ user_vars }}</pre>
+            <h3>Structure :</h3>
+            <pre>{{ offerer_vars_user_offerer }} </pre>
+        </section>
+
+        <hr/>
+
+        <section data-testId="offerer">
+            {% if offerer.isValidated %}
+                <h2>Structure :</h2>
+            {% else %}
+                <h2>Nouvelle structure :</h2>
+                <strong class="validation">
+                    Pour valider, <a href="{{ api_url }}/validate/offerer/{{ offerer.validationToken }}">cliquez ici</a>
+                </strong>
+            {% endif %}
+
+            <pre class="offerer-data">{{ offerer_vars }}</pre>
+            <h3>Infos API entreprise :</h3>
+            <pre class="api-entreprise-data">{{ api_entreprise }}</pre>
+        </section>
+    </body>
+</html>

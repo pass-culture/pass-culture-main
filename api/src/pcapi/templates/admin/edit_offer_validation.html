@@ -1,0 +1,46 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+    <h3>Validation de l'offre :</h3>
+    <p>
+        <div>Titre de l'offre : <strong>{{ offer_name }}</strong></div>
+        <div>Liens : <a href="{{ pc_offer_url }}" target="_blank" rel="noopener noreferrer"><strong>PRO</strong></a>
+            {% if metabase_offer_url %}
+                | <a href="{{ metabase_offer_url }}" target="_blank" rel="noopener noreferrer"><strong>Metabase</strong></a>
+            {% endif %}
+        </div>
+        <div>Lieu :
+            <a href="{{ venue_url }}" target="_blank" rel="noopener noreferrer"><strong>{{ venue_name }}</strong></a>
+        </div>
+        <div>Structure :
+            <a href="{{ offerer_url }}" target="_blank" rel="noopener noreferrer"><strong>{{ offerer_name }}</strong></a>
+        </div>
+        <div>Score : {{ offer_score }}</div>
+        <div>Code de catégorie juridique : <strong>{{ legal_category_code }}</strong></div>
+        <div>Libellé de catégorie juridique : <strong>{{ legal_category_label }}</strong></div>
+    </p>
+    <form method="POST">
+        {% for field in form %}
+            {% if field.name == "csrf_token" %}
+                {{ field }}
+            {% else %}
+                <div class="row form-group">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <label>{{ field.label }} {% if field.flags.required %}*{% endif %}</label>
+                    {{ field(class_="form-control") }}
+                </div>
+                <div class="col-md-3"></div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-8">
+                <a class="btn btn-default" href="{{ cancel_link_url }}" role="button">Annuler</a>
+                <button class="btn btn-success" name="action" type="submit" value="save">Enregistrer</button>
+                <button class="btn btn-success" name="action" type="submit" value="save-and-go-next">Enregistrer et passer à l'offre suivante</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
