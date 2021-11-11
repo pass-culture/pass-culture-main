@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 import logging
-from typing import List
 from typing import Optional
 from typing import Union
 
@@ -13,6 +12,7 @@ from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
 from pcapi import settings
 from pcapi.core.users import testing
 from pcapi.core.users.external import UserAttributes
+from pcapi.core.users.models import UserRole
 from pcapi.tasks.sendinblue_tasks import update_contact_attributes_task
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
 
@@ -41,9 +41,11 @@ class SendinblueAttributes(Enum):
     HAS_COMPLETED_ID_CHECK = "HAS_COMPLETED_ID_CHECK"
     INITIAL_CREDIT = "INITIAL_CREDIT"
     IS_BENEFICIARY = "IS_BENEFICIARY"
+    IS_BENEFICIARY_18 = "IS_BENEFICIARY_18"
     IS_ELIGIBLE = "IS_ELIGIBLE"
     IS_EMAIL_VALIDATED = "IS_EMAIL_VALIDATED"
     IS_PRO = "IS_PRO"
+    IS_UNDERAGE_BENEFICIARY = "IS_UNDERAGE_BENEFICIARY"
     LAST_BOOKING_DATE = "LAST_BOOKING_DATE"
     LAST_FAVORITE_CREATION_DATE = "LAST_FAVORITE_CREATION_DATE"
     LAST_VISIT_DATE = "LAST_VISIT_DATE"
@@ -54,7 +56,7 @@ class SendinblueAttributes(Enum):
     USER_ID = "USER_ID"
 
     @classmethod
-    def list(cls):
+    def list(cls):  # type: ignore [no-untyped-def]
         return list(map(lambda c: c.value, cls))
 
 
@@ -77,7 +79,7 @@ def update_contact_attributes(user_email: str, user_attributes: UserAttributes) 
     )
 
 
-def format_list(raw_list: List[str]) -> str:
+def format_list(raw_list: list[str]) -> str:
     return ",".join(raw_list)
 
 
@@ -101,9 +103,11 @@ def format_user_attributes(user_attributes: UserAttributes) -> dict:
         if user_attributes.domains_credit
         else None,
         SendinblueAttributes.IS_BENEFICIARY.value: user_attributes.is_beneficiary,
+        SendinblueAttributes.IS_BENEFICIARY_18.value: UserRole.BENEFICIARY in user_attributes.roles,
         SendinblueAttributes.IS_ELIGIBLE.value: user_attributes.is_eligible,
         SendinblueAttributes.IS_EMAIL_VALIDATED.value: user_attributes.is_email_validated,
         SendinblueAttributes.IS_PRO.value: user_attributes.is_pro,
+        SendinblueAttributes.IS_UNDERAGE_BENEFICIARY.value: UserRole.UNDERAGE_BENEFICIARY in user_attributes.roles,
         SendinblueAttributes.LAST_BOOKING_DATE.value: user_attributes.last_booking_date,
         SendinblueAttributes.LAST_FAVORITE_CREATION_DATE.value: user_attributes.last_favorite_creation_date,
         SendinblueAttributes.LAST_VISIT_DATE.value: user_attributes.last_visit_date,
@@ -171,7 +175,7 @@ def make_update_request(payload: UpdateSendinblueContactRequest) -> bool:
 
 
 def send_import_contacts_request(
-    api_instance: ContactsApi, file_body: str, list_ids: List[int], email_blacklist: bool = False
+    api_instance: ContactsApi, file_body: str, list_ids: list[int], email_blacklist: bool = False
 ) -> None:
     request_contact_import = sib_api_v3_sdk.RequestContactImport(
         email_blacklist=email_blacklist,
@@ -198,12 +202,12 @@ def format_file_value(value: Optional[Union[str, bool, int, datetime]]) -> str:
     return str(value)
 
 
-def build_file_body(users_data: List[SendinblueUserUpdateData]) -> str:
+def build_file_body(users_data: list[SendinblueUserUpdateData]) -> str:
     """Generates a csv-like string for bulk import, based on SendinblueAttributes
        e.g.: "EMAIL;FIRSTNAME;SMS\n#john@example.com;John;Doe;31234567923"
 
     Args:
-        users_data (List[SendinblueUserUpdateData]): users data
+        users_data (list[SendinblueUserUpdateData]): users data
 
     Returns:
         str: corresponding csv string
@@ -218,7 +222,7 @@ def build_file_body(users_data: List[SendinblueUserUpdateData]) -> str:
 
 
 def import_contacts_in_sendinblue(
-    sendinblue_users_data: List[SendinblueUserUpdateData], email_blacklist: bool = False
+    sendinblue_users_data: list[SendinblueUserUpdateData], email_blacklist: bool = False
 ) -> None:
     configuration = sib_api_v3_sdk.Configuration()
     configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
