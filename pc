@@ -555,13 +555,14 @@ elif [[ "$CMD" == "install" ]]; then
     cd $ROOT_PATH/webapp && yarn;
     cd $ROOT_PATH/pro && yarn;
     cd $ROOT_PATH/adage-front && yarn;
-    ./pc install-hooks'
+    ./pc install-hooks
+    git checkout -'
 
 # Install pre-push and pre-commit hooks in the api submodule
 elif [[ "$CMD" == "install-hooks" ]]; then
   RUN='cd $ROOT_PATH;
-    ln -s -f ../../../../api/hooks/pre-push .git/hooks/pre-push;
-    ln -s -f ../../../../api/hooks/pre-commit .git/hooks/pre-commit;
+    ln -s -f ../../api/hooks/pre-push .git/hooks/pre-push;
+    ln -s -f ../../api/hooks/pre-commit .git/hooks/pre-commit;
     chmod +x .git/hooks/pre-push;
     chmod +x .git/hooks/pre-commit;'
 

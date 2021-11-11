@@ -1,11 +1,11 @@
 #!/bin/bash
 
-ALEMBIC_STAGED_FILES=$(git diff --staged --name-only -- 'src/pcapi/alembic/versions/*.py')
+ALEMBIC_STAGED_FILES=$(git diff --staged --name-only -- 'api/src/pcapi/alembic/versions/*.py')
 if [[ "$ALEMBIC_STAGED_FILES" != "" ]]; then
   echo -e "\033[0;96mMigration changes detected: $ALEMBIC_STAGED_FILES \033[0m"
   echo -e "\033[0;96mUpdating alembic_version_conflict_detection.txt \033[0m\n"
-  alembic heads > alembic_version_conflict_detection.txt
-  git add alembic_version_conflict_detection.txt
+  alembic heads > api/alembic_version_conflict_detection.txt
+  git add api/alembic_version_conflict_detection.txt
 fi
 
 counter=0
