@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 BATCH_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 
-def update_user_attributes(user_id: int, user_attributes: UserAttributes):
+def update_user_attributes(user_id: int, user_attributes: UserAttributes) -> None:
     if user_attributes.is_pro:
         return
 
@@ -31,6 +31,7 @@ def format_user_attributes(user_attributes: UserAttributes) -> dict:
         "u.is_beneficiary": user_attributes.is_beneficiary,
         "date(u.deposit_expiration_date)": _format_date(user_attributes.deposit_expiration_date),
         "date(u.last_booking_date)": _format_date(user_attributes.last_booking_date),
+        "ut.roles": [role.value for role in user_attributes.roles] or None,
     }
 
     for product_use_date_key, product_use_date_value in user_attributes.products_use_date.items():
