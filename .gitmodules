@@ -1,9 +1,6 @@
 [submodule "api"]
 	path = api
 	url = git@github.com:pass-culture/pass-culture-api.git
-[submodule "doc"]
-	path = doc
-	url = git@github.com:pass-culture/pass-culture-doc.git
 [submodule "pro"]
 	path = pro
 	url = git@github.com:pass-culture/pass-culture-pro.git
