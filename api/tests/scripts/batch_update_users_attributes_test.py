@@ -7,6 +7,7 @@ from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.users.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.models import UserRole
 import pcapi.notifications.push.testing as push_testing
 from pcapi.scripts.batch_update_users_attributes import format_batch_users
 from pcapi.scripts.batch_update_users_attributes import format_sendinblue_users
@@ -87,6 +88,7 @@ def test_format_batch_user():
         "u.marketing_push_subscription": True,
         "u.postal_code": None,
         "ut.booking_categories": ["FILM"],
+        "ut.roles": [UserRole.BENEFICIARY.value],
     }
 
 

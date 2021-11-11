@@ -28,6 +28,7 @@ class FormatUserAttributesTest:
             "ut.booking_categories": ["CINEMA", "LIVRE"],
             "u.marketing_push_subscription": True,
             "u.postal_code": None,
+            "ut.roles": ["BENEFICIARY"],
         }
 
         # ensure attributes keys are shorter than MAX_BATCH_PARAMETER_SIZE
