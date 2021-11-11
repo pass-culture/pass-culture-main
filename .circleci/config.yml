@@ -49,7 +49,7 @@ commands:
   skip_unchanged:
     parameters:
       except_branches:
-        default: master,main,production
+        default: master
         description: Comma-separated list of git branches where we should never skip tests.
         type: string
       git_base_branch:
@@ -232,8 +232,8 @@ jobs:
     working_directory: ~/pass-culture
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
+      - skip_unchanged:
+          paths: webapp
       - run: ./install_lib_ci_with_chrome.sh
       - run: sudo ./pc symlink
       - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
