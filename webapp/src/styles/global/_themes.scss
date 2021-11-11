@@ -1,0 +1,74 @@
+.pc-theme-purple {
+  @extend .is-white-text;
+
+  background-color: $secondary;
+
+  [class*='border-'] {
+    border-color: $white;
+  }
+}
+
+.pc-theme-transparent {
+  @extend .is-white-text;
+
+  background-color: transparent;
+
+  a {
+    color: $white;
+  }
+
+  [class*='border-'] {
+    border-color: $white;
+  }
+}
+
+.pc-theme-default {
+  @extend .is-black-text;
+
+  background-color: $white;
+
+  [class*='border-'] {
+    border-color: $black;
+  }
+}
+
+.pc-theme-black {
+  @extend .is-white-text;
+
+  background-color: $black;
+
+  [class*='border-'] {
+    border-color: $white;
+  }
+}
+
+.pc-theme-white {
+  background-color: $white;
+  color: $primary;
+
+  [class*='border-'] {
+    border-color: $primary;
+  }
+}
+
+.pc-theme-red,
+.pc-theme-primary {
+  @extend .is-white-text;
+
+  background-color: $primary;
+
+  [class*='border-'] {
+    border-color: $white;
+  }
+}
+
+.pc-theme-gradient {
+  @extend .is-white-text;
+
+  background-color: $primary;
+  background-image: $linear-gradient-to-right;
+
+  [class*='border-'] {
+    border-color: $white;
+  }
+}

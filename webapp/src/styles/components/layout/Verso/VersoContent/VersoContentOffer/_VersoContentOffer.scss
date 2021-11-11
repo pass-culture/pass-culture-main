@@ -1,0 +1,63 @@
+.verso-info {
+  padding: $page-padding;
+
+  .duo-logo {
+    border-radius: 10px;
+    font-size: rem(12px);
+    font-weight: 600;
+    padding-bottom: rem(1px);
+    padding-left: rem(1px);
+    padding-right: rem(2px);
+  }
+
+  .duo-label {
+    padding-left: 2px;
+  }
+
+  ul.dates-info {
+    list-style: none;
+    margin-left: 0;
+
+    li + li {
+      margin-top: rem(5px);
+    }
+  }
+}
+
+.vco-distance {
+  align-items: center;
+  color: $primary;
+  display: flex;
+  font-size: rem(16px);
+  font-weight: 200;
+  font-weight: 400;
+  line-height: rem(29px);
+  padding-bottom: rem(8px);
+  padding-top: rem(12px);
+  text-decoration: none;
+
+  span {
+    margin-left: rem(12px);
+  }
+}
+
+.vco-itinerary {
+  align-items: center;
+  border: rem(2px) solid $primary;
+  border-radius: rem(24px);
+  color: $primary;
+  display: flex;
+  font-weight: bold;
+  justify-content: center;
+  margin-top: rem(16px);
+  padding: rem(6px) 0;
+
+  span {
+    margin-left: rem(12px);
+  }
+}
+
+.vco-geolocation-icon {
+  height: 24px;
+  width: 24px;
+}

@@ -1,0 +1,13 @@
+.slider-point {
+  background-color: $white;
+  border-radius: rem(8px);
+  height: rem(8px);
+  margin: 0 rem(5px);
+  opacity: 1;
+  width: rem(8px);
+
+  &.filled {
+    height: rem(14px);
+    width: rem(14px);
+  }
+}

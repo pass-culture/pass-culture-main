@@ -1,0 +1,111 @@
+#deck-navigation {
+  background-image: $linear-gradient-deck;
+  bottom: 0;
+  height: 240px;
+  position: absolute;
+  top: inherit;
+  width: 100%;
+  z-index: $zindex-decknavigation;
+
+  #dragButton {
+    left: 0;
+    padding-top: 38px;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  .controls {
+    height: 100%;
+    padding: 0 12px;
+    padding-bottom: 90px;
+    text-align: center;
+  }
+
+  .controls button {
+    border-radius: 0;
+    padding: 0;
+    user-select: none;
+  }
+
+  .controls button.after,
+  .controls button.before {
+    margin-bottom: 25px;
+  }
+
+  .button.after,
+  .button.before {
+    position: relative;
+    z-index: $zindex-navigation-arrows;
+  }
+
+  .controls button.after {
+    justify-content: flex-end;
+  }
+
+  .controls button.before {
+    justify-content: flex-start;
+  }
+
+  .controls > .flex-rows button {
+    margin-bottom: 15px;
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    .clue {
+      color: $white;
+      font-size: 1.3rem;
+      font-weight: 500;
+      min-height: 4.5rem;
+      min-width: 5rem;
+      text-align: center;
+      transition: none;
+
+      .separator {
+        font-family: initial;
+        font-weight: bold;
+        line-height: 1rem;
+        opacity: 0.5;
+      }
+
+      .finishable-ribbon-img {
+        margin-left: -40px;
+        top: 0;
+      }
+    }
+  }
+
+  .clue {
+    color: $white;
+    font-size: 1.3rem;
+    font-weight: 500;
+    min-height: 4.5rem;
+    min-width: 5rem;
+    text-align: center;
+    transition: opacity 250ms;
+
+    .separator {
+      font-family: initial;
+      font-weight: bold;
+      line-height: 1rem;
+      opacity: 0.5;
+    }
+
+    .finishable-ribbon-img {
+      margin-left: -40px;
+      top: 0;
+    }
+  }
+
+  .duo {
+    padding-left: rem(10px);
+  }
+
+  .duo-logo {
+    border-radius: 15px;
+    font-size: rem(15px);
+    font-weight: 700;
+    padding-left: rem(2px);
+    padding-right: rem(3px);
+  }
+}

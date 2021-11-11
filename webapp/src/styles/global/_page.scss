@@ -1,0 +1,14 @@
+.page {
+  height: 100%;
+  overflow-y: auto;
+  position: relative;
+  width: 100%;
+}
+
+.mosaic-background {
+  background-image: url(/mosaic-k.png);
+}
+
+.mosaicx2-background {
+  background-image: url(/mosaic-w@2x.png);
+}

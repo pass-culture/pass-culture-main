@@ -1,0 +1,27 @@
+.second-tutorial {
+  background-color: $primary;
+  background-image: url('/onboarding-2@2x.jpg');
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 100%;
+  width: 100%;
+
+  .second-tutorial-text {
+    margin: 1vh 10% 0;
+
+    &.second-paragraph {
+      margin-top: 4vh;
+    }
+  }
+
+  .text-highlight {
+    &.text-book-in-app::after {
+      width: rem(184px);
+    }
+
+    &.text-duo-offer::after {
+      width: rem(87px);
+    }
+  }
+}

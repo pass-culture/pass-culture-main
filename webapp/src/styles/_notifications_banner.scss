@@ -1,0 +1,27 @@
+#batchsdk-ui-alert-container {
+  #batchsdk-ui-alert {
+    margin: 0;
+    max-width: 500px;
+  }
+
+  #batchsdk-ui-alert__content__text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #batchsdk-ui-alert__buttons {
+    display: flex;
+    flex-direction: row;
+  }
+
+  #batchsdk-ui-alert__buttons_negative {
+    margin-top: 0;
+  }
+
+  #batchsdk-ui-alert__buttons_positive {
+    margin-left: 10px;
+  }
+}
+
+

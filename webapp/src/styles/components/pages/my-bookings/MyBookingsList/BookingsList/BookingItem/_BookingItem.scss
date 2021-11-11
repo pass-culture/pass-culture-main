@@ -1,0 +1,169 @@
+.mb-my-booking {
+  background-color: $white;
+  border-radius: rem(4px);
+  margin-bottom: rem(16px);
+
+  .isDuo {
+    padding-top: rem(20px);
+  }
+
+  .duo-logo {
+    border-radius: rem(8px);
+    color: $primary;
+    font-size: rem(12px);
+    font-weight: 700;
+    line-height: 1.3rem;
+    margin-right: rem(4px);
+    padding-bottom: rem(1px);
+    padding-left: rem(1px);
+    padding-right: rem(2px);
+  }
+
+  .teaser-arrow-img {
+    margin: 0;
+  }
+
+  .teaser-link {
+    height: rem(93px);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .teaser-sub-title {
+    color: $black;
+  }
+
+  .teaser-thumb {
+    width: rem(68px);
+  }
+
+  .teaser-wrapper {
+    background-image: none;
+    width: 65%;
+  }
+
+  @media (min-width: $tablet) {
+    .teaser-arrow {
+      width: 15%;
+    }
+
+    .teaser-thumb {
+      width: 20%;
+    }
+
+    .teaser-wrapper {
+      background-image: none;
+      width: 65%;
+    }
+  }
+}
+
+.mb-token-container {
+  @include dotted($primary, top, 'long');
+
+  overflow: hidden;
+  position: relative;
+
+  hr {
+    border: 1px solid $grey-medium;
+    display: inline-block;
+    height: rem(33px);
+    margin-top: rem(6px);
+    width: rem(1px);
+  }
+}
+
+.mb-corner {
+  border-radius: 100%;
+  height: rem(20px);
+  position: absolute;
+  width: rem(20px);
+
+  &.bottom {
+    bottom: rem(-10px);
+  }
+
+  &.left {
+    background-color: $teaser-gradient-start;
+    left: rem(-10px);
+  }
+
+  &.top {
+    top: rem(-10px);
+  }
+
+  &.right {
+    background-color: $teaser-gradient-end;
+    right: rem(-10px);
+  }
+}
+
+.mb-heading {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: rem(8px) rem(16px);
+
+  .teaser-title-booking {
+    margin-bottom: rem(5px);
+  }
+
+  .teaser-sub-title {
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+  }
+}
+
+.mb-infos {
+  color: $white;
+}
+
+.mb-info-picto {
+  margin-bottom: rem(6px);
+  text-align: center;
+
+  img {
+    width: rem(40px);
+  }
+}
+
+.mb-token {
+  @include token();
+
+  overflow-wrap: break-word;
+  text-align: center;
+  width: 50%;
+}
+
+.mb-token-contremarque-container {
+  align-items: center;
+  display: flex;
+  padding-bottom: rem(8px);
+}
+
+.mb-token-flipped {
+  @include token();
+
+  text-align: center;
+  width: 100%;
+}
+
+.mb-token-link-container {
+  text-align: center;
+  width: 50%;
+}
+
+.mb-token-link {
+  color: $primary;
+  font-size: rem(18px);
+  font-weight: 700;
+}
+
+.mb-token-title {
+  color: $grey-dark;
+  font-size: rem(13px);
+  font-weight: 500;
+  padding-top: rem(12px);
+  text-align: center;
+}

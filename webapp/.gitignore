@@ -1,0 +1,54 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+
+# testing
+/coverage
+/testcafe_screenshots
+
+# production
+/public/version.txt
+/build
+target.zip
+
+# misc
+.DS_Store
+.env.development.local
+.env.testing.local
+.env.staging.local
+.env.integration.local
+.env.test.local
+.env.production.local
+.tern-port
+.tern-project
+.*.swp
+\#*\#
+*~
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+netlifyctl.*
+netlifyctl-*
+
+*.apk
+
+docker-compose.yml
+env_file
+ngrok.yml
+tmp
+temp
+
+# IDEA
+.idea/
+webapp.iml
+
+# licenses
+licenses
+licenses.json
+
+# Snyk extension
+.dccache

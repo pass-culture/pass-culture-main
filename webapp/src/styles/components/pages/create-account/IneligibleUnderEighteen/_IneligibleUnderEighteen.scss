@@ -1,0 +1,61 @@
+.ineligible-page {
+  align-items: center;
+  background-image: url('/id-check-bg.jpg');
+  background-size: cover;
+  color: $white;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+
+  .animation-text-container {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex: 6;
+    flex-direction: column;
+  }
+
+  .ineligible-text {
+    width: 60%;
+  }
+
+  .link-container {
+    flex: 1;
+    width: 100%;
+  }
+
+  .ineligible-back {
+    background-color: $white;
+    border: none;
+    border-radius: 24px;
+    box-shadow: 0 2px 6px 0 $black-shadow;
+    color: $primary;
+    cursor: pointer;
+    display: block;
+    font-size: rem(16px);
+    font-weight: bold;
+    margin: 0 auto ;
+    padding: rem(15px) 0;
+    text-align: center;
+    width: 80%;
+  }
+
+  .animation {
+    height: 42%;
+    width: 100%;
+  }
+
+  h2 {
+    font-size: rem(24px);
+    font-style: italic;
+    font-weight: 500;
+    margin-bottom: rem(12px);
+  }
+
+  span {
+    text-align: center;
+  }
+}

@@ -1,0 +1,16 @@
+.verso-actions-bar {
+  background-color: $grey-light;
+  border-radius: rem(6px);
+  height: 36px;
+  max-height: 36px;
+  min-height: 36px;
+}
+
+.verso-actions-bar .icon {
+  height: auto;
+  width: auto;
+}
+
+.verso-actions-bar .icon::before {
+  margin-right: 0;
+}

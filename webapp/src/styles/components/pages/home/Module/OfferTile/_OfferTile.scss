@@ -1,0 +1,61 @@
+.offer-tile-wrapper {
+  margin-left: 2%;
+  width: 97%;
+
+  a {
+    color: $black;
+    text-decoration: none;
+  }
+
+  .otw-venue {
+    @include caption();
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .otw-offer-info {
+    @include caption();
+
+    color: $grey-dark;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .otw-image-wrapper {
+    position: relative;
+
+    img {
+      box-shadow: 0 rem(2px) rem(4px) 0 $black-shadow;
+      background-color: $grey;
+      border-radius: rem(8px);
+      height: rem(160px);
+      object-fit: cover;
+      margin-bottom: rem(5px);
+      width: 100%;
+    }
+
+    .otw-offer-linear-background {
+      align-items: flex-end;
+      display: flex;
+      bottom: rem(5px);
+      border-bottom-left-radius: rem(8px);
+      border-bottom-right-radius: rem(8px);
+      background-image: $linear-gradient-home;
+      position: absolute;
+      height: 60%;
+      width: 100%;
+
+      .otw-offer-name {
+        // does not work without "white-space: normal" property
+        @include multiLineEllipsis(2);
+        @include title3();
+
+        color: $white;
+        line-height: 1.3em;
+        margin: 0 rem(13px) rem(13px) rem(13px);
+        white-space: normal;
+      }
+    }
+  }
+}

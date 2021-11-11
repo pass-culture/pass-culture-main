@@ -1,0 +1,77 @@
+.result-wrapper {
+  align-items: center;
+  border-bottom: rem(1px) solid $grey-light;
+  display: flex;
+  flex: 3;
+  flex-direction: row;
+  max-width: 100%;
+  padding: rem(15px) 0;
+
+  a {
+    text-decoration: none;
+  }
+
+  .result-image {
+    background-color: $grey-medium;
+    border-radius: rem(7.5px);
+    box-shadow: 0 rem(2px) rem(4px) 0 $black-shadow;
+    height: rem(68px);
+    margin-right: rem(20px);
+    width: rem(68px);
+  }
+
+  .result-container {
+    flex: 2;
+    word-break: break-word;
+
+    .result-type {
+      color: $grey-dark;
+      font-size: rem(16px);
+      font-weight: 400;
+      margin-top: rem(6px);
+    }
+
+    .result-date {
+      color: $grey-dark;
+      font-size: rem(16px);
+      font-weight: 400;
+    }
+
+    .result-price {
+      color: $black;
+      font-size: rem(14px);
+      font-weight: 500;
+      margin-top: rem(6px);
+    }
+  }
+}
+
+.result-header {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+
+  .result-title {
+    color: $black;
+    flex: 4;
+    font-size: rem(16px);
+    font-weight: 700;
+  }
+
+  .result-distance {
+    color: $grey-dark;
+    flex: 2;
+    font-size: rem(16px);
+    font-weight: 400;
+    margin-left: rem(4px);
+    text-align: right;
+  }
+}
+
+@media screen and (max-width: $iphone5-width) and (max-height: $iphone5-height) {
+  .result-header {
+    .result-distance {
+      flex: 3;
+    }
+  }
+}

@@ -1,0 +1,21 @@
+.loading-page {
+  align-content: center;
+  align-items: center;
+  background-color: $primary;
+  background-image: $linear-gradient-to-right;
+  bottom: 0;
+  color: $white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 1;
+
+  .animation {
+    height: rem(200px);
+    width: rem(200px);
+  }
+}

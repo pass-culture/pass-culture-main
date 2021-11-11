@@ -1,0 +1,12 @@
+.recto {
+  height: 84%;
+  overflow: hidden;
+  position: absolute;
+  top: $header-height;
+  width: 100%;
+  z-index: 4;
+
+  .card & {
+    top: 0;
+  }
+}

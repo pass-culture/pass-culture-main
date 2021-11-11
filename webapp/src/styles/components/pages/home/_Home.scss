@@ -1,0 +1,58 @@
+.home-wrapper {
+  background-color: $white;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.hw-header {
+  background-color: $primary;
+  background-image: url(/home-background.jpg);
+  background-repeat: no-repeat;
+  background-size: 100% rem(400px);
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: rem(280px);
+  padding-top: rem(64px);
+
+  .hw-pseudo {
+    @include title1();
+
+    color: $white;
+    margin-bottom: rem(8px);
+    overflow: hidden;
+    padding-left: rem(15px);
+    padding-right: rem(15px);
+    text-overflow: ellipsis;
+    text-align: center;
+    width: 100%;
+    white-space: nowrap;
+  }
+
+  .hw-wallet {
+    @include body();
+
+    color: $white;
+  }
+}
+
+.hw-modules {
+  margin-top: rem(-115px);
+  margin-bottom: $navbar-height + rem(20px);
+}
+
+.home-details-wrapper {
+  .close-link {
+    background-color: $black;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    z-index: $zindex-navbar;
+  }
+
+  .recto {
+    top: 0;
+  }
+}
