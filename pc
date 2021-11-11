@@ -551,9 +551,7 @@ elif [[ "$CMD" == "deploy-backend" ]] \
 # Install new local environment
 elif [[ "$CMD" == "install" ]]; then
   RUN='cd $ROOT_PATH;
-    git submodule init;
-    git submodule update;
-    git submodule foreach git checkout master;
+    git checkout master;
     cd $ROOT_PATH/webapp && yarn;
     cd $ROOT_PATH/pro && yarn;
     cd $ROOT_PATH/adage-front && yarn;
@@ -562,10 +560,10 @@ elif [[ "$CMD" == "install" ]]; then
 # Install pre-push and pre-commit hooks in the api submodule
 elif [[ "$CMD" == "install-hooks" ]]; then
   RUN='cd $ROOT_PATH;
-    ln -s -f ../../../../api/hooks/pre-push .git/modules/api/hooks/pre-push;
-    ln -s -f ../../../../api/hooks/pre-commit .git/modules/api/hooks/pre-commit;
-    chmod +x .git/modules/api/hooks/pre-push;
-    chmod +x .git/modules/api/hooks/pre-commit;'
+    ln -s -f ../../../../api/hooks/pre-push .git/hooks/pre-push;
+    ln -s -f ../../../../api/hooks/pre-commit .git/hooks/pre-commit;
+    chmod +x .git/hooks/pre-push;
+    chmod +x .git/hooks/pre-commit;'
 
 # Create symlink to use "pc" command (admin rights may be needed)
 elif [[ "$CMD" == "symlink" ]]; then
