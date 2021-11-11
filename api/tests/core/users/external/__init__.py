@@ -4,6 +4,7 @@ from decimal import Decimal
 from pcapi.core.users.external.models import UserAttributes
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
+from pcapi.core.users.models import UserRole
 
 
 common_user_attributes = UserAttributes(
@@ -36,4 +37,5 @@ common_user_attributes = UserAttributes(
     postal_code=None,
     products_use_date={"product_brut_x_use": datetime(2021, 5, 6)},
     user_id=1,
+    roles=[UserRole.BENEFICIARY],
 )
