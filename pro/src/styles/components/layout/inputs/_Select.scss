@@ -1,0 +1,49 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.input-select {
+  display: flex;
+  flex-direction: column;
+
+  .it-sub-label {
+    @include caption();
+
+    color: $grey-dark;
+    float: right;
+    margin-left: rem(5px);
+  }
+
+  select {
+    @include body();
+
+    appearance: none;
+    background: url('/icons/dropdown-disclosure-down-b.svg') no-repeat right rem(15px) top 56%;
+    border: 1px solid $grey-medium;
+    border-radius: rem(20px);
+    height: rem(40px);
+    margin-top: rem(8px);
+    outline: none;
+    padding-left: rem(16px);
+    padding-right: rem(30px);
+    text-overflow: ellipsis;
+
+    &:focus {
+      border-color: $primary;
+      box-shadow: 0 0 0 1px $primary inset;
+    }
+
+    &:disabled {
+      background-color: $grey-light;
+      background-image: url('/icons/dropdown-disclosure-down-b-disabled.svg');
+      border-color: $grey-light;
+      color: $grey-dark;
+      cursor: initial;
+      opacity: 1;
+    }
+
+    &.error:not(:focus-within) {
+      border: 2px solid $red-error;
+    }
+  }
+}

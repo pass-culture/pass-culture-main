@@ -1,0 +1,109 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.columns,
+.field.is-grouped {
+  display: flex;
+}
+
+main {
+  .section {
+    margin-bottom: 2rem;
+    padding-bottom: 0;
+    padding-top: 0;
+
+    .main-list-title {
+      @include title4();
+
+      border-bottom: thin solid $grey-medium;
+      margin: 0.75rem 0;
+      padding-bottom: 0.5rem;
+
+      .main-list-title-text {
+        @include title4();
+      }
+
+      span {
+        margin-top: 3.5px;
+      }
+    }
+
+    .title-actions-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+
+  .advice {
+    font-size: rem(20px);
+    margin-bottom: rem(32px);
+
+    a {
+      border-bottom: 1px solid;
+
+      &:focus,
+      &:hover {
+        color: $primary;
+      }
+    }
+  }
+
+  &.fullscreen {
+    grid-column-end: end-line;
+    grid-column-start: col-start;
+    grid-row-end: end-line;
+    grid-row-start: row-nav;
+    height: 100vh;
+
+    .container {
+      display: flex;
+      max-width: 1000px;
+      min-height: 100%;
+      width: 1000px;
+
+      .columns {
+        min-height: 100%;
+      }
+    }
+  }
+
+  &.container {
+    grid-column-start: col-main;
+    grid-row-end: row-footer;
+    grid-row-start: row-header;
+
+    .page-content {
+      background: $white;
+      box-shadow: 0 0 3.75rem $black-shadow;
+
+      .after-notification-content {
+        padding: rem(24px);
+        position: relative;
+
+        &.with-padding {
+          padding-top: rem(74px);
+        }
+
+        .back-button {
+          @include button();
+
+          padding-left: rem(30px);
+          position: absolute;
+          top: rem(24px);
+
+          img {
+            left: 0;
+            position: absolute;
+          }
+        }
+      }
+    }
+  }
+
+  &.spinner-container {
+    grid-column-start: col-main;
+    grid-row-start: row-main;
+  }
+}

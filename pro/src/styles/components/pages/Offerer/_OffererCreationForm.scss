@@ -1,0 +1,16 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.offerer-form-validation {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.op-creation-form {
+  .input-text {
+    display: block;
+    margin-bottom: rem(16px);
+  }
+}

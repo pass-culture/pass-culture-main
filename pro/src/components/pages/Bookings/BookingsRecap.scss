@@ -1,0 +1,57 @@
+.bookings-page {
+  .button-group {
+    margin-bottom: rem(32px);
+    position: relative;
+
+    &-buttons {
+      display: flex;
+      justify-content: center;
+      position: relative;
+
+      > button {
+        margin: 0 rem(12px);
+        width: rem(148px);
+      }
+    }
+
+    &-separator {
+      border-bottom: 1px solid $grey-medium;
+      display: block;
+      position: absolute;
+      top: 50%;
+      width: 100%;
+    }
+  }
+
+  .br-warning {
+    align-items: center;
+    color: $grey-dark;
+    display: flex;
+    flex-direction: column;
+    height: rem(400px);
+    text-align: center;
+
+    p {
+      margin-top: rem(12px);
+      width: rem(400px);
+    }
+
+    svg {
+      height: rem(124px);
+      width: rem(124px);
+    }
+  }
+
+  .br-title {
+    @include title3();
+
+    display: inline-block;
+    margin: 0 rem(20px) rem(24px) 0;
+  }
+
+  .reset-filters-link {
+    @include body-important();
+
+    color: $primary;
+  }
+}

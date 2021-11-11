@@ -1,0 +1,46 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.bookings-table-wrapper {
+  display: flex;
+  flex-direction: column;
+
+  .bookings-table {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: rem(10px);
+
+    .column-offer-name {
+      width: rem(160px);
+    }
+
+    .column-booking-duo {
+      align-items: center;
+      display: flex;
+      padding: rem(10px) 0;
+      width: rem(35px);
+    }
+
+    .column-beneficiary {
+      width: rem(225px);
+      word-break: break-word;
+    }
+
+    .column-booking-date {
+      width: rem(135px);
+    }
+
+    .column-booking-token {
+      width: rem(120px);
+      word-break: break-word;
+    }
+
+    .column-booking-status {
+      padding-left: 0;
+      padding-right: rem(5px);
+      vertical-align: middle;
+    }
+  }
+}

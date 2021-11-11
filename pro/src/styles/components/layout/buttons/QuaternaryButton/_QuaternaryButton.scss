@@ -1,0 +1,31 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+@mixin quaternary {
+  @include caption();
+
+  color: $black;
+  line-height: rem(22px);
+
+  &:hover,
+  &:focus {
+    color: $black;
+    text-decoration: underline;
+  }
+
+  &:active {
+    color: $black;
+  }
+
+  img {
+    height: rem(24px);
+    margin-right: rem(4px);
+    vertical-align: bottom;
+    width: rem(24px);
+  }
+}
+
+.quaternary-link {
+  @include quaternary();
+}

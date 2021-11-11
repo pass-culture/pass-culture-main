@@ -1,0 +1,46 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.__react_component_tooltip {
+  a {
+    color: $white;
+    pointer-events: visible;
+    text-decoration: underline;
+  }
+
+  p {
+    margin-bottom: rem(6px);
+  }
+
+  &.show {
+    opacity: 1;
+  }
+
+  &.type-info {
+    background-color: $accent;
+    z-index: 99999;
+
+    ul {
+      list-style: none;
+
+      li {
+        list-style-position: outside;
+        margin-left: rem(14px);
+
+        &::before {
+          content: "- ";
+          list-style-position: outside;
+          margin-left: rem(-8px);
+        }
+      }
+    }
+  }
+
+  &.place-bottom {
+    margin-top: 0;
+  }
+
+  padding: rem(12px);
+  width: rem(300px);
+}

@@ -1,0 +1,84 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.it-with-icon-container {
+  align-items: center;
+  border: 1px solid $grey-medium;
+  border-radius: 22px;
+  display: flex;
+  height: rem(40px);
+  justify-content: space-between;
+  margin-top: rem(8px);
+  overflow: hidden;
+  width: 100%;
+
+  .labels {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  img {
+    height: rem(30px);
+    width: rem(30px);
+  }
+
+  &:focus-within {
+    border: 1px solid $primary;
+    box-shadow: 0 0 0 1px $primary inset;
+  }
+
+  &.disabled {
+    background-color: $grey-light;
+    border: none;
+    box-shadow: 0 0 0 1px $grey-light inset;
+
+    .it-icon {
+      background-color: $grey-light;
+      box-shadow: 0 0 0 1px $grey-light inset;
+    }
+
+    img {
+      cursor: not-allowed;
+      filter: opacity(0.5);
+    }
+  }
+
+  &.error:not(:focus-within) {
+    border: 2px solid $red-error;
+  }
+
+  .it-input-with-icon {
+    @include body();
+
+    border: none;
+    color: $black;
+    flex: 1;
+    height: 100%;
+    outline: none;
+    padding: rem(10px) rem(16px);
+
+    &:focus {
+      z-index: -1;
+    }
+
+    &:disabled {
+      background-color: $grey-light;
+      color: $grey-dark;
+      opacity: 1;
+    }
+  }
+
+  .it-icon {
+    background: none;
+    border: none;
+    height: 100%;
+    margin: 0 16px;
+    outline: none;
+    vertical-align: center;
+
+    img {
+      height: 100%;
+    }
+  }
+}

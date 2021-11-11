@@ -1,0 +1,28 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+*/
+
+.delete-stock-dialog {
+  padding: 0 rem(60px);
+  text-align: center;
+
+  h1 {
+    @include title4();
+  }
+
+  strong {
+    @include body-important();
+  }
+
+  p {
+    margin-top: rem(25px);
+    width: rem(350px);
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin: rem(30px) auto 0;
+    width: 65%;
+  }
+}

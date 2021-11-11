@@ -1,0 +1,226 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.field-group {
+  display: table;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+input.input,
+.select select,
+textarea.textarea {
+  @include body();
+
+  &[readonly]:not([type="checkbox"]) {
+    background-color: transparent;
+    border: none;
+    padding-left: 0.125rem;
+    resize: none;
+  }
+}
+
+:not(output):-moz-ui-invalid {
+  box-shadow: none;
+}
+
+.field-profil-input {
+  width: 100%;
+}
+
+.field {
+  &.field-siren {
+    input {
+      width: 8rem;
+    }
+
+    .display-name {
+      @include button();
+
+      color: $black;
+      display: inline-block;
+      padding-left: 0.25rem;
+      padding-top: 0.5rem;
+      text-transform: uppercase;
+    }
+  }
+
+  &.field-checkbox {
+    align-items: center;
+    display: flex;
+  }
+
+  &.has-addons {
+    &:focus-within .button {
+      border-color: $primary;
+    }
+
+    .control {
+      .button {
+        border-width: 2px;
+        height: 100%;
+
+        &:focus {
+          border-color: $grey-medium;
+
+          &:not(:active) {
+            box-shadow: none;
+          }
+        }
+      }
+
+      &:last-child {
+        .button {
+          border-left: none;
+        }
+      }
+
+      &:not(:last-child) {
+        .input {
+          border-right: none;
+        }
+
+        &.with-info {
+          .button {
+            border-bottom-right-radius: 1.125em;
+            border-top-right-radius: 1.125em;
+          }
+        }
+      }
+    }
+  }
+
+  &.is-horizontal {
+    &.field-bic,
+    &.field-checkbox,
+    &.field-file,
+    &.field-email,
+    &.field-select,
+    &.field-siren,
+    &.field-siret,
+    &.field-iban,
+    &.field-text {
+      height: 3.375em;
+
+      &.readonly {
+        height: 2.375em;
+      }
+    }
+
+    &.field-textarea {
+      textarea {
+        margin-bottom: 1.125rem;
+      }
+    }
+
+    display: table-row;
+    margin-bottom: 1.125rem;
+
+    .field-label,
+    .field-body {
+      display: table-cell;
+
+      .columns {
+        &:last-child {
+          margin-bottom: 1rem;
+        }
+      }
+    }
+
+    .field-label {
+      padding-right: 1rem;
+      padding-top: 0.5rem;
+      vertical-align: top;
+      white-space: nowrap;
+
+      .label {
+        color: $black;
+        margin-bottom: 0;
+      }
+
+      &.readonly {
+        padding-right: 0;
+      }
+    }
+
+    .field-body {
+      width: 100%;
+
+      .select.readonly {
+        &::after {
+          display: none !important;
+        }
+
+        select[disabled] {
+          background-color: transparent;
+          border: none;
+          color: $black;
+          cursor: default;
+          opacity: 1;
+          padding-left: 0.125rem;
+        }
+      }
+
+      textarea.textarea {
+        border-radius: 1.125em;
+      }
+
+      .control:not(.is-expanded):not(.control-checkbox) {
+        input,
+        .select {
+          width: auto;
+        }
+      }
+
+      .control-checkbox {
+        margin-top: 0.5rem;
+      }
+
+      .control-file {
+        align-items: center;
+        display: flex;
+        justify-content: flex-start;
+      }
+    }
+  }
+
+  .help {
+    .column {
+      line-height: initial;
+
+      &:first-child {
+        flex: none;
+        width: 6%;
+      }
+
+      &:not(:last-child) {
+        padding-right: 0.25rem;
+      }
+    }
+  }
+
+  .required:not(.readOnly) {
+    &::after {
+      color: $accent;
+      content: " *";
+      display: inline;
+    }
+  }
+}
+
+.required-legend {
+  color: $accent;
+}
+
+div.control.control-duration {
+  input.field-input.field-duration {
+    width: 5.5rem !important;
+  }
+}
+
+ul.help {
+  img {
+    vertical-align: text-bottom;
+  }
+}

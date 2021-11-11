@@ -1,0 +1,10 @@
+.tag {
+  @include highlight();
+
+  border: solid rem(1px) $tertiary;
+  border-radius: rem(4px);
+  color: $tertiary;
+  display: inline-block;
+  line-height: rem(16px);
+  padding: 0 rem(4px);
+}

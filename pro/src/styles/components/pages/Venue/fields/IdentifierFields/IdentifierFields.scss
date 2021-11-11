@@ -1,0 +1,87 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.identifier-field-section {
+  .field {
+    align-items: center;
+    display: flex;
+  }
+
+  .field-label {
+    @include body();
+
+    color: $black;
+    flex: 1;
+    white-space: initial;
+  }
+
+  .is-label-aligned .field-label {
+    margin: 0;
+    padding: 0;
+  }
+
+  .field-checkbox {
+    vertical-align: bottom;
+  }
+
+  .field-select {
+    padding: 0;
+    width: initial;
+  }
+
+  .control {
+    position: relative;
+  }
+
+  .select {
+    select {
+      @include body-important();
+
+      appearance: none;
+      background-color: $white;
+      border: rem(1px) solid $grey-medium;
+      border-radius: rem(18px);
+      height: rem(36px);
+      max-width: 100%;
+      outline: none;
+      padding: rem(4px) rem(40px) rem(4px) rem(16px);
+    }
+
+    &::after {
+      border: rem(3px) solid $black;
+      border-radius: rem(2px);
+      border-right: 0;
+      border-top: 0;
+      content: " ";
+      height: rem(10px);
+      margin-top: rem(-7px);
+      position: absolute;
+      right: rem(18px);
+      top: 50%;
+      transform: rotate(-45deg);
+      transform-origin: center;
+      width: rem(10px);
+    }
+  }
+
+  .field-control {
+    flex: 3;
+  }
+
+  .required-fields-hint {
+    color: $grey-dark;
+    float: right;
+    font-size: rem(13px);
+  }
+
+  .venue-type-label,
+  .venue-label-label {
+    padding-left: rem(22px);
+  }
+
+  .field.is-label-aligned .field-control {
+    display: flex;
+  }
+}

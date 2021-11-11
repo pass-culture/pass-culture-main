@@ -1,0 +1,21 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.booking-offer-name {
+  @include button();
+
+  max-width: rem(130px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.booking-offer-additional-info {
+  color: $grey-dark;
+}
+
+.booking-educational-tag {
+  margin-bottom: rem(5px);
+}

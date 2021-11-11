@@ -1,0 +1,10 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+@import 'CellsFormatter';
+@import 'NoFilteredBookings';
+@import 'Header';
+@import 'Table';
+@import 'Filters';
+@import 'PreFilters';

@@ -1,0 +1,79 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.styleguide-page {
+  h2 {
+    @include title2();
+
+    margin-bottom: rem(20px);
+  }
+
+  h3 {
+    @include title3();
+
+    margin-bottom: rem(10px);
+  }
+
+  input {
+    display: block;
+  }
+
+  ul {
+    background-color: $grey-light;
+    margin: rem(10px);
+    padding: rem(10px);
+  }
+
+  li {
+    padding: rem(2px) 0;
+    text-align: rem(10px);
+  }
+
+  li:hover a,
+  li:focus a {
+    color: $primary;
+  }
+
+  hr.separator {
+    border: 1px solid $grey-medium;
+  }
+
+  .flex-block {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 rem(20px);
+
+    .class-name {
+      @include body-important();
+
+      color: $primary;
+      font-style: italic;
+    }
+  }
+
+  .styleguide-select {
+    .input-select {
+      width: 30%;
+    }
+  }
+}
+
+.it-content {
+  flex: 2;
+}
+
+.it-description {
+  flex: 3;
+  margin-left: rem(10px);
+  text-align: center;
+  text-align: center;
+}
+
+.it-icon-snippet {
+  background-color: $grey-light;
+  border-radius: 5px;
+  padding: 0;
+  text-align: left;
+}

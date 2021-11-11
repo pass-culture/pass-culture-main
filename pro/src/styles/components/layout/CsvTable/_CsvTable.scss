@@ -1,0 +1,89 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+#csv-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#csv-table tr:focus,
+#csv-table tr:hover {
+  background-color: $grey-medium;
+}
+
+#csv-table {
+  thead {
+    th {
+      padding: rem(10px);
+    }
+  }
+
+  tbody {
+    td {
+      color: $grey-dark;
+      line-height: normal;
+      padding: rem(10px);
+      vertical-align: middle;
+    }
+
+    tr {
+      @include dotted($primary);
+    }
+  }
+}
+
+#csv-print-container {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.no-data-container {
+  align-items: center;
+  background-color: $white;
+  display: flex;
+  font-size: rem(20px);
+  grid-column-start: col-main;
+  grid-row-start: row-header;
+  justify-content: center;
+
+  p {
+    margin: rem(15px) 0;
+  }
+}
+
+#main-container {
+  background-color: $white;
+  grid-column-end: end-line;
+  grid-column-start: col-start;
+  grid-row-start: row-header;
+}
+
+#spinner-container {
+  align-items: center;
+  background-color: $white;
+  display: flex;
+  grid-column-start: col-main;
+  grid-row-start: row-header;
+  height: 100%;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+}
+
+@media print {
+  @page {
+    size: landscape;
+  }
+
+  body {
+    font-size: xx-small;
+
+    header,
+    #csv-print-button {
+      display: none;
+    }
+  }
+}

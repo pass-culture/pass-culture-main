@@ -1,0 +1,126 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.bookings-table {
+  .booking-status-label {
+    @include caption();
+
+    border-radius: rem(5px);
+    color: $white;
+    padding: rem(5px) rem(7px);
+  }
+
+  .booking-status-booked {
+    background-color: $secondary;
+  }
+
+  .booking-status-validated {
+    background-color: $accent;
+  }
+
+  .booking-status-cancelled {
+    background-color: $grey-dark;
+  }
+
+  .booking-status-reimbursed {
+    background-color: $green-valid;
+  }
+
+  .booking-status-confirmed {
+    background-color: $black;
+  }
+
+  .booking-status-wrapper {
+    line-height: 1.1875em;
+    position: relative;
+  }
+
+  .booking-status-wrapper img {
+    padding-right: rem(4px);
+    vertical-align: middle;
+  }
+
+  .booking-status-wrapper .bs-tooltip {
+    display: none;
+  }
+
+  .booking-status-wrapper:focus .bs-tooltip,
+  .booking-status-wrapper:hover .bs-tooltip {
+    background-color: $white;
+    border-radius: rem(4px);
+    box-shadow: 0 rem(2px) rem(10px) 0 $black-shadow;
+    color: $black;
+    display: block;
+    padding: rem(16px) rem(24px) rem(16px) rem(24px);
+    position: absolute;
+    right: 0;
+    top: rem(30px);
+    width: rem(340px);
+    z-index: 1;
+  }
+
+  .bs-offer-title {
+    @include button();
+
+    display: block;
+  }
+
+  .bs-offer-amount {
+    @include caption();
+
+    display: block;
+    margin-top: rem(7px);
+  }
+
+  .bs-history-title {
+    @include body();
+
+    margin-top: rem(16px);
+  }
+
+  .bs-history-label {
+    @include body();
+
+    margin-top: rem(12px);
+  }
+
+  .bs-history-datetime {
+    margin: rem(6px);
+  }
+
+  .booking-status-history li {
+    align-items: center;
+    display: flex;
+    list-style-type: none;
+    margin-top: rem(16px);
+  }
+
+  .colored-disc {
+    border-radius: rem(9px);
+    height: rem(14px);
+    margin-right: rem(16px);
+    width: rem(14px);
+
+    &.bs-history-booked {
+      background-color: $secondary;
+    }
+
+    &.bs-history-cancelled {
+      background-color: $grey-dark;
+    }
+
+    &.bs-history-confirmed {
+      background-color: $black;
+    }
+
+    &.bs-history-reimbursed {
+      background-color: $green-valid;
+    }
+
+    &.bs-history-validated {
+      background-color: $accent;
+    }
+  }
+}

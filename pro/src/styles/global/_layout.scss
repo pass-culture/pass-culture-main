@@ -1,0 +1,142 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  @include body();
+
+  color: $black;
+  height: 100%;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: 'Barlow', 'Helvetica Neue', arial, sans-serif;
+}
+
+body {
+  height: 100%;
+}
+
+#root {
+  display: grid;
+  grid-template-columns: [col-start] 1fr [col-main] rem(850px)  1fr;
+  grid-template-rows: [row-nav] rem(72px) [row-header] rem(80px) [row-main] 1fr [row-footer] rem(48px);
+  min-height: 100%;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+hr {
+  @include dotted($primary);
+
+  border: none;
+  height: rem(2px);
+  margin: rem(24px) 0;
+}
+
+a {
+  color: $black;
+  text-decoration: none;
+}
+
+address {
+  font-style: normal;
+}
+
+ul {
+  list-style: none;
+}
+
+pre {
+  background-color: $grey-medium;
+}
+
+input[type="radio"],
+input[type="date"],
+select,
+button {
+  cursor: pointer;
+}
+
+.main-list {
+  margin-bottom: 1rem;
+
+  > li {
+    display: flex;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    @include dotted($primary, bottom);
+
+    > * {
+      align-items: center;
+      display: flex;
+      padding: 0 0.5rem;
+
+      &.field {
+        margin: 0;
+      }
+
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+
+    .list-content {
+      display: block;
+      flex-grow: 1;
+    }
+
+    .caret,
+    .picto {
+      img {
+        height: 1.5rem;
+        vertical-align: middle;
+      }
+    }
+
+    .name {
+      font-size: rem(20px);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    ul.actions {
+      @include body();
+
+      display: flex;
+      justify-content: space-between;
+      list-style: none;
+      margin: 0;
+      white-space: nowrap;
+      width: 100%;
+
+      img {
+        height: 1rem;
+        margin-right: 0.2rem;
+        vertical-align: middle;
+      }
+    }
+  }
+}

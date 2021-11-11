@@ -1,0 +1,72 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+@mixin secondary {
+  @include button();
+
+  background-color: $white;
+  border: 2px solid $primary;
+  border-radius: rem(24px);
+  color: $primary;
+  height: rem(40px);
+  line-height: rem(36px);
+  padding: 0 rem(16px);
+
+  svg {
+    height: rem(25px);
+    margin-right: rem(16px);
+    vertical-align: middle;
+    width: rem(25px);
+  }
+
+  &.with-icon {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+
+    img {
+      height: rem(24px);
+      margin-right: rem(4px);
+    }
+  }
+
+  &:active,
+  &:hover,
+  &:focus {
+    background-color: $primary-dark;
+    border: 2px solid $primary-dark;
+    color: $white;
+
+    img,
+    svg {
+      filter: brightness(0) invert(1);
+    }
+  }
+
+  &:focus {
+    outline: transparent;
+  }
+}
+
+.secondary-button {
+  @include secondary();
+
+  &:disabled {
+    background-color: $white;
+    border: 2px solid $primary-disabled;
+    color: $primary-disabled;
+    cursor: not-allowed;
+    opacity: 1;
+  }
+}
+
+.secondary-link {
+  @include secondary();
+
+  display: inline-block;
+
+  &:active {
+    color: $white;
+  }
+}

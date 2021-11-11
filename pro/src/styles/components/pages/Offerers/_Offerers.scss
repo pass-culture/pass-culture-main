@@ -1,0 +1,76 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.offerers-page {
+  .has-text-primary {
+    align-items: center;
+    color: $primary;
+    display: flex;
+    justify-content: center;
+
+    svg {
+      height: rem(24px);
+      margin-right: rem(4px);
+    }
+
+    svg .ico-plus {
+      fill: $primary;
+    }
+  }
+
+  a.button {
+    &.cta {
+      &:focus,
+      &:hover {
+        background-color: transparent;
+        color: $primary;
+      }
+
+      border: 0;
+      top: 5%;
+    }
+  }
+
+  .form-search {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: row;
+
+    label {
+      flex: 2;
+    }
+
+    .input-text {
+      margin-bottom: rem(15px);
+    }
+
+    button {
+      margin-bottom: rem(15px);
+    }
+  }
+
+  .title-action-links span {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .primary-button span {
+    display: inline;
+    margin-right: rem(16px);
+  }
+
+  .secondary-button {
+    margin-left: rem(10px);
+  }
+
+  .pending {
+    opacity: 0.5;
+  }
+
+  .validating-status {
+    font-style: italic;
+  }
+}

@@ -1,0 +1,85 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+/* stylelint-disable pass-culture/no-font-properties */
+// regular
+@font-face {
+  font-family: 'Barlow';
+  font-weight: 400;
+  src:
+    url('../../fonts/barlow-latin-400-normal.woff2') format('woff2'),
+    url('../../fonts/barlow-latin-400-normal.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Barlow';
+  font-style: italic;
+  font-weight: 400;
+  src:
+    url('../../fonts/barlow-latin-400-italic.woff2') format('woff2'),
+    url('../../fonts/barlow-latin-400-italic.woff') format('woff');
+}
+
+// medium
+@font-face {
+  font-family: 'Barlow';
+  font-weight: 500;
+  src:
+    url('../../fonts/barlow-latin-500-normal.woff2') format('woff2'),
+    url('../../fonts/barlow-latin-500-normal.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Barlow';
+  font-style: italic;
+  font-weight: 500;
+  src:
+    url('../../fonts/barlow-latin-500-italic.woff2') format('woff2'),
+    url('../../fonts/barlow-latin-500-italic.woff') format('woff');
+}
+
+// semi-bold
+@font-face {
+  font-family: 'Barlow';
+  font-weight: 600;
+  src:
+    url('../../fonts/barlow-latin-600-normal.woff2') format('woff2'),
+    url('../../fonts/barlow-latin-600-normal.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Barlow';
+  font-style: italic;
+  font-weight: 600;
+  src:
+    url('../../fonts/barlow-latin-600-italic.woff2') format('woff2'),
+    url('../../fonts/barlow-latin-600-italic.woff') format('woff');
+}
+
+// bold
+@font-face {
+  font-family: 'Barlow';
+  font-weight: 700;
+  src:
+    url('../../fonts/barlow-latin-700-normal.woff2') format('woff2'),
+    url('../../fonts/barlow-latin-700-normal.woff') format('woff');
+}
+
+// extra-bold
+@font-face {
+  font-family: 'Barlow';
+  font-weight: 800;
+  src:
+    url('../../fonts/barlow-latin-800-normal.woff2') format('woff2'),
+    url('../../fonts/barlow-latin-800-normal.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Barlow';
+  font-style: italic;
+  font-weight: 800;
+  src:
+    url('../../fonts/barlow-latin-800-italic.woff2') format('woff2'),
+    url('../../fonts/barlow-latin-800-italic.woff') format('woff');
+}

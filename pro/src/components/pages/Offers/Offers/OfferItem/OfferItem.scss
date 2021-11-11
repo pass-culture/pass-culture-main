@@ -1,0 +1,123 @@
+.offer-item {
+  grid-template-rows: auto auto;
+
+  .name {
+    @include button();
+
+    display: block;
+    margin-bottom: rem(4px);
+    overflow-wrap: break-word;
+  }
+
+  .educational-tag {
+    margin-bottom: rem(5px);
+  }
+
+  .offer-thumb,
+  .default-thumb {
+    height: rem(84px);
+    width: rem(82px);
+  }
+
+  &.inactive {
+    .name,
+    .offer-thumb,
+    .default-thumb {
+      opacity: 0.5;
+    }
+  }
+
+  .title-container a {
+    display: block;
+  }
+
+  .secondary-link,
+  .secondary-button {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+
+    img {
+      flex-shrink: 0;
+      max-height: rem(16px);
+      max-width: rem(16px);
+    }
+  }
+
+  .stocks {
+    display: flex;
+    margin-top: rem(5px);
+
+    a {
+      color: $primary;
+    }
+
+    .sold-out-dates {
+      background-color: $white;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.3);
+      display: none;
+      margin-left: rem(8px);
+      padding: rem(16px);
+      position: absolute;
+
+      img {
+        margin-left: 0;
+        margin-right: rem(9px);
+        width: rem(20px);
+      }
+    }
+
+    .sold-out-icon {
+      margin-left: rem(8px);
+      width: rem(20px);
+
+      &:hover,
+      &:focus {
+        & ~ .sold-out-dates {
+          display: flex;
+        }
+      }
+    }
+  }
+
+  .isbn {
+    margin-top: rem(8px);
+  }
+
+  .status-column {
+    width: rem(148px);
+  }
+
+  .thumb-column {
+    width: rem(82px);
+  }
+
+  .title-column {
+    max-width: rem(185px);
+  }
+
+  .venue-column {
+    width: rem(135px);
+  }
+
+  .stock-column {
+    width: rem(100px);
+  }
+
+  .switch-column {
+    width: 6rem;
+
+    button {
+      width: rem(96px);
+    }
+  }
+
+  .edit-column {
+    width: rem(40px);
+
+    a {
+      width: rem(40px);
+    }
+  }
+}

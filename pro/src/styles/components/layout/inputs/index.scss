@@ -1,0 +1,12 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+@import 'Errors';
+@import 'Select';
+@import 'TextInput';
+@import 'TextareaInput';
+@import 'TextInputWithIcon';
+@import 'CheckboxInput';
+@import 'RadioInput';
+@import 'PeriodSelector';

@@ -1,0 +1,30 @@
+.unavailable-page {
+  align-items: center;
+  background: linear-gradient(125deg, $primary, $secondary);
+  color: $white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  h1 {
+    @include hero();
+
+    color: $white;
+    line-height: normal;
+    margin: rem(32px) 0 rem(16px);
+  }
+
+  p {
+    @include title2();
+  }
+
+  img.error-icon {
+    width: rem(350px);
+  }
+
+  img.brand-logo {
+    bottom: rem(40px);
+    position: fixed;
+    width: rem(110px);
+  }
+}

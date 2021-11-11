@@ -1,0 +1,24 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.blue-insert {
+  @include body();
+
+  align-items: center;
+  background-color: $notification-info;
+  color: $black;
+  display: flex;
+  flex-grow: 1;
+  justify-content: flex-start;
+  padding: rem(18px);
+
+  span {
+    margin-left: rem(12px);
+  }
+
+  img {
+    align-self: baseline;
+    height: auto;
+  }
+}

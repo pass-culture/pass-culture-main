@@ -1,0 +1,57 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+@mixin tertiary {
+  @include button();
+
+  color: $black;
+  line-height: rem(22px);
+
+  &:hover,
+  &:focus {
+    color: $black;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  img,
+  svg {
+    height: rem(24px);
+    margin-right: rem(4px);
+    vertical-align: bottom;
+    width: rem(24px);
+  }
+}
+
+.tertiary-link {
+  @include tertiary();
+}
+
+.tertiary-button {
+  @include tertiary();
+
+  background: none;
+  border: none;
+
+  &:disabled {
+    color: $grey-medium;
+    cursor: not-allowed;
+
+    img {
+      opacity: 0.3;
+    }
+  }
+
+  &.with-icon {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+
+    img,
+    svg {
+      height: rem(24px);
+      margin-right: rem(4px);
+    }
+  }
+}

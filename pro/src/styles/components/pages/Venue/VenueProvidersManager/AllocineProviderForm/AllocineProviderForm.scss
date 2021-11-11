@@ -1,0 +1,59 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.apf-price-section {
+  margin-top: 0.8rem;
+}
+
+.allocine-provider-form {
+  .field-asterisk {
+    color: $accent;
+    margin-left: rem(2px);
+  }
+
+  .apf-price-section {
+    .price-section-label {
+      display: flex;
+    }
+
+    .price-field {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  input {
+    text-align: left;
+  }
+
+  .blue-insert {
+    margin-top: 0.8rem;
+
+    img {
+      max-width: rem(24px);
+    }
+  }
+}
+
+.apf-quantity-section {
+  margin-top: 0.8rem;
+}
+
+.apf-is-duo-section {
+  display: flex;
+  margin-top: 0.8rem;
+}
+
+.apf-provider-import-button-section {
+  margin-top: rem(17px);
+
+  button {
+    width: 100%;
+  }
+}
+
+.apf-tooltip {
+  margin-left: rem(4px);
+}

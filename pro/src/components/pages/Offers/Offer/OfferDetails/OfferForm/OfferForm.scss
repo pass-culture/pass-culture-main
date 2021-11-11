@@ -1,0 +1,24 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+*/
+
+.offer-form {
+  .form-section {
+    margin-top: rem(32px);
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    .section-description {
+      margin-bottom: rem(24px);
+      margin-top: rem(16px);
+    }
+
+    &.accessibility-section {
+      label:first-of-type svg {
+        margin: 2.5px 8px 2.5px 3px;
+      }
+    }
+  }
+}

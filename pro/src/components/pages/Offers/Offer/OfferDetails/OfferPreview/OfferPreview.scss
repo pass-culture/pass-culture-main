@@ -1,0 +1,101 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+*/
+
+.offer-preview {
+  background-color: $grey-very-light;
+  border-radius: 3px;
+
+  .op-options-summary {
+    display: flex;
+    margin-bottom: rem(27px);
+    margin-top: rem(22px);
+
+    .op-option {
+      align-items: center;
+      border-left: rem(1px) solid $grey-medium;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      justify-content: center;
+
+      &:first-child {
+        border-left: none;
+      }
+
+      .op-option-ico {
+        flex: 0 0 rem(33px);
+        margin-top: rem(-4px);
+
+        .svg-color {
+          fill: $grey-dark;
+        }
+      }
+
+      .op-option-text {
+        @include mini-highlight();
+
+        flex: 1;
+        margin-bottom: rem(-9px);
+      }
+
+      &.disabled {
+        .op-option-ico {
+          .svg-color {
+            fill: $grey-light;
+          }
+        }
+
+        .op-option-text {
+          color: $grey-light;
+        }
+      }
+    }
+  }
+
+  .op-section {
+    background-color: $white;
+    border-radius: 3px;
+    margin-top: rem(6px);
+    padding: rem(12px) rem(15px) rem(16px) rem(15px);
+
+    &:first-child {
+      margin-top: rem(13px);
+    }
+  }
+
+  .op-section-title {
+    @include body-important();
+
+    margin-bottom: rem(16px);
+  }
+
+  .op-section-secondary-title {
+    @include highlight();
+
+    line-height: rem(16px);
+  }
+
+  .op-section-text {
+    @include preview-text();
+
+    margin-bottom: rem(16px);
+
+    &:last-child {
+      margin-bottom: 0;
+      word-break: break-word;
+    }
+  }
+
+  .op-address {
+    line-height: rem(20px);
+  }
+
+  .title-preview {
+    @include body-important();
+
+    max-width: rem(224px);
+    overflow-wrap: break-word;
+    text-align: center;
+  }
+}

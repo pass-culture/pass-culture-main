@@ -1,0 +1,37 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.loading-spinner {
+  color: $grey-dark;
+  text-align: center;
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    img,
+    svg {
+      animation: none;
+      margin-bottom: rem(15px);
+    }
+  }
+
+  img,
+  svg {
+    animation: rotation 3s infinite linear;
+    margin-bottom: rem(15px);
+  }
+
+  .content::after {
+    content: attr(data-dots);
+    position: absolute;
+  }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}

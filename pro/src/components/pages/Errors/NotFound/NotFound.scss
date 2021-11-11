@@ -1,0 +1,39 @@
+.no-match {
+  align-items: center;
+  background: linear-gradient(125deg, $primary, $secondary);
+  color: $white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  h1 {
+    @include hero();
+
+    color: $white;
+    line-height: normal;
+    margin: rem(32px) 0 rem(16px);
+  }
+
+  p {
+    @include title2();
+  }
+
+  img {
+    width: rem(350px);
+  }
+
+  .nm-redirection-link {
+    @include button();
+
+    align-items: center;
+    background-color: transparent;
+    border: 2px solid $white;
+    border-radius: rem(24px);
+    color: $white;
+    justify-content: center;
+    margin-top: rem(48px);
+    max-height: rem(50px);
+    outline: none;
+    padding: rem(12px) rem(52px);
+  }
+}
