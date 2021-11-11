@@ -1,0 +1,24 @@
+.h-support {
+  .hs-link {
+    align-items: center;
+    display: flex;
+
+    .ico-container {
+      flex: 0 0 rem(32px);
+      height: rem(25px);
+      overflow: hidden;
+
+      .ico-mail {
+        margin-left: rem(-3px);
+        margin-top: rem(-3px);
+      }
+    }
+  }
+
+  .hs-link-list {
+    li {
+      line-height: rem(32px);
+      margin-top: rem(12px);
+    }
+  }
+}

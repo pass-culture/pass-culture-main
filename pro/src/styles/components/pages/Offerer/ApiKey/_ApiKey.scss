@@ -1,0 +1,97 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.api-key {
+  .title {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-top: rem(32px);
+
+    .text {
+      @include title3();
+    }
+
+    .counter {
+      @include title4();
+
+      &--error {
+        color: $red-error;
+      }
+    }
+  }
+
+  .info {
+    color: $grey-dark;
+    margin-top: rem(16px);
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    margin-top: rem(16px);
+
+    .item {
+      align-items: center;
+      background-color: $grey-light;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      padding: rem(12px) rem(16px);
+      width: 100%;
+
+      &:not(:first-child) {
+        margin-top: rem(8px);
+      }
+
+      .text {
+        color: $grey-dark;
+        word-break: break-all;
+
+        &--new-key {
+          color: $primary;
+
+          @include button();
+        }
+      }
+
+      .action {
+        margin-left: rem(16px);
+      }
+    }
+  }
+
+  .generate {
+    margin-top: rem(16px);
+    min-width: rem(180px);
+  }
+}
+
+.api-key-dialog {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: rem(532px);
+  text-align: center;
+
+  .title {
+    @include gabarit();
+
+    margin-top: rem(24px);
+  }
+
+  .explanation {
+    margin-top: rem(24px);
+  }
+
+  .actions {
+    display: flex;
+    margin-top: rem(80px);
+
+    .confirm {
+      margin-left: rem(24px);
+    }
+  }
+}

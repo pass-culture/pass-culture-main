@@ -1,0 +1,25 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.offer-thumb {
+  border-radius: 3px;
+  height: rem(100px);
+  object-fit: cover;
+  width: rem(75px);
+}
+
+.default-thumb {
+  align-items: center;
+  background-color: $grey-medium;
+  border-radius: 3px;
+  display: flex;
+  height: rem(100px);
+  justify-content: center;
+  width: rem(75px);
+
+  svg {
+    height: 75%;
+    width: 75%;
+  }
+}

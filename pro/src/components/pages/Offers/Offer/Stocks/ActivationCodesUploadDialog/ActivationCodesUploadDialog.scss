@@ -1,0 +1,47 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+*/
+
+.activation-codes-upload {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  width: rem(540px);
+
+  .activation-codes-upload-icon {
+    height: rem(120px);
+    margin-top: rem(20px);
+    width: rem(200px);
+  }
+
+  .activation-codes-upload-title {
+    @include title4();
+
+    margin-top: rem(8px);
+  }
+
+  .activation-codes-upload-section {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .activation-codes-upload-separator {
+    border: 1px solid $grey-medium;
+    margin-bottom: rem(16px);
+    margin-top: rem(24px);
+    width: 100%;
+  }
+
+  .activation-codes-upload-template-section {
+    text-align: left;
+    width: 100%;
+  }
+
+  .activation-codes-upload-gabarit {
+    @include gabarit();
+
+    margin-bottom: rem(10px);
+  }
+}

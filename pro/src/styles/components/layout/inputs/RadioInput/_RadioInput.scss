@@ -1,0 +1,81 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+input[type="radio"] {
+  appearance: none;
+  border: 2px solid $grey-dark;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  font-size: inherit;
+  height: rem(19px);
+  margin-right: rem(8px);
+  outline: none;
+  width: rem(19px);
+
+  &:checked {
+    background: radial-gradient($grey-dark 0%, $grey-dark 40%, transparent 50%, transparent);
+
+    &:hover {
+      background: radial-gradient($primary 0%, $primary 40%, transparent 50%, transparent);
+      border-color: $primary;
+    }
+
+    &:focus {
+      background: radial-gradient($primary-dark 0%, $primary-dark 40%, transparent 50%, transparent);
+      border-color: $primary-dark;
+    }
+
+    &:disabled {
+      background: radial-gradient($grey-medium 0%, $grey-medium 40%, transparent 50%, transparent);
+      border-color: $grey-medium;
+      cursor: not-allowed;
+      opacity: 1;
+    }
+  }
+
+  &:not(:checked) {
+    &:hover {
+      border-color: $primary;
+    }
+
+    &:focus {
+      border-color: $primary-dark;
+    }
+
+    &:disabled {
+      border-color: $grey-medium;
+      opacity: 1;
+    }
+  }
+}
+
+.input-radio {
+  align-items: center;
+  display: flex;
+
+  .input-radio-label {
+    display: flex;
+    flex-direction: column;
+
+    &.disabled {
+      color: $grey-medium;
+      fill: $grey-medium;
+    }
+
+    .input-radio-sub-label {
+      @include caption();
+
+      color: $grey-dark;
+      margin-top: rem(8px);
+
+      &.disabled {
+        color: $grey-medium;
+      }
+    }
+  }
+
+  .input-radio-input {
+    align-self: flex-start;
+  }
+}

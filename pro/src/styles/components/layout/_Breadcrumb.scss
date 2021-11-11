@@ -1,0 +1,77 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.pc-breadcrumb {
+  color: $grey-medium;
+  display: flex;
+
+  .bc-step {
+    @include caption();
+
+    color: $grey-medium;
+    display: flex;
+
+    a {
+      color: $black;
+    }
+
+    &.active,
+    &.active a {
+      color: $primary;
+      position: relative;
+
+      &::after {
+        border-bottom: rem(2px) solid $primary;
+        content: '';
+        left: 0;
+        position: absolute;
+        top: rem(24px);
+        width: rem(56px);
+      }
+    }
+
+    .separator {
+      align-items: center;
+      display: flex;
+      height: rem(24px);
+      justify-content: center;
+      width: rem(24px);
+
+      path {
+        fill: $grey-medium;
+      }
+    }
+
+    &.active .separator path {
+      fill: $black;
+    }
+  }
+
+  &.bc-tab {
+    color: $black;
+
+    .bc-step {
+      @include button();
+
+      margin-left: rem(24px);
+
+      a:hover,
+      a:focus {
+        color: $primary;
+      }
+
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
+
+  &.bc-disabled {
+    .bc-step:nth-child(1) {
+      a {
+        color: $grey-dark;
+      }
+    }
+  }
+}

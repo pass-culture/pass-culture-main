@@ -1,0 +1,53 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.location-viewer {
+  margin-bottom: 1.125rem;
+  width: 100%;
+
+  .input-wrapper {
+    position: relative;
+    width: 90%;
+
+    .menu {
+      background: $white;
+      border: 2px solid $grey-medium;
+      border-bottom-left-radius: 1.125em;
+      border-bottom-right-radius: 1.125em;
+      border-top: none;
+      left: 1.125em;
+      overflow: hidden;
+      position: absolute;
+      right: 1.125em;
+      z-index: 2000;
+
+      &.empty {
+        display: none;
+      }
+
+      .item {
+        padding: 0.5rem 1rem;
+
+        &:not(.placeholder) {
+          &.highlighted {
+            font-weight: 700;
+          }
+
+          &:focus,
+          &:hover {
+            background-color: $grey-light;
+          }
+        }
+      }
+    }
+  }
+
+  .map {
+    height: 20rem;
+    margin-top: 1rem;
+    overflow: hidden;
+    width: 100%;
+  }
+}

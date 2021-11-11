@@ -1,0 +1,12 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.bank-instructions-label {
+  @include highlight();
+
+  color: $primary;
+  line-height: normal;
+  margin-bottom: rem(18px);
+}

@@ -1,0 +1,297 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.field-group {
+  display: table;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.field-control {
+  padding: rem(8px) 0;
+}
+
+.field-label {
+  @include title4();
+
+  color: $black;
+  margin-bottom: rem(12px);
+  padding-bottom: rem(6px);
+  padding-right: rem(12px);
+  white-space: nowrap;
+
+  &.empty {
+    margin: 0;
+    min-height: 0;
+    padding: 0;
+  }
+}
+
+.field-asterisk {
+  color: $accent;
+  margin-left: rem(2px);
+}
+
+.field-inner {
+  background-color: $white;
+}
+
+.checkbox-field {
+  display: flex;
+
+  svg {
+    margin-top: rem(-2px);
+  }
+}
+
+.checkbox-field,
+.checkboxes-field {
+  .field-inner {
+    @include body-important();
+
+    border: none;
+    border-radius: 0;
+    color: $black;
+    padding-left: rem(4px);
+  }
+}
+
+.field-select {
+  @include body-important();
+
+  appearance: none;
+  background-position: 97.5% 50%;
+  background-repeat: no-repeat;
+  border: none;
+  border-radius: 16px;
+  height: rem(36px);
+  min-height: rem(36px);
+  min-width: rem(250px);
+  outline: none !important;
+  padding-left: rem(24px);
+  width: rem(250px);
+}
+
+.field-textarea {
+  resize: none;
+  width: 100%;
+
+  textarea {
+    overflow: hidden;
+    overflow-wrap: break-word;
+    resize: none;
+  }
+}
+
+.field-checkbox,
+.field-checkboxes,
+.field-input,
+.field-textarea,
+.field-select {
+  color: $black;
+}
+
+.field-input,
+.field-textarea {
+  @include body-important();
+
+  border: 1px solid $grey-medium;
+  border-radius: 1.125em;
+  flex: 1;
+  outline: none !important;
+  padding: rem(6px) rem(18px);
+
+  &:focus {
+    border-color: $primary;
+  }
+
+  &::placeholder {
+    color: $grey-dark;
+  }
+}
+
+.field-date {
+  height: rem(32px);
+  padding: rem(6px);
+
+  input.date {
+    @include preview-text();
+
+    border: 0;
+    min-width: rem(60px);
+    text-align: center;
+    width: 100%;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  img {
+    height: rem(15px);
+    width: rem(15px);
+  }
+}
+
+.field-time,
+.field-number {
+  text-align: center;
+}
+
+.textarea-field,
+.texteditor-field {
+  .field-label {
+    padding-top: rem(8px);
+    vertical-align: middle;
+  }
+
+  .field-inner {
+    width: 100%;
+  }
+
+  .character-count {
+    @include preview-text();
+  }
+}
+
+.texteditor-field {
+  .controls-bar {
+    margin-bottom: 0.5rem;
+    overflow-y: hidden;
+
+    button {
+      border: 2px solid $grey-medium;
+      border-radius: 0;
+      margin-right: 0;
+
+      &:first-child {
+        border-radius: rem(5px) 0 0 rem(5px);
+        border-right: 0;
+      }
+
+      &:last-child {
+        border-left: 0;
+        border-radius: 0 rem(5px) rem(5px) 0;
+      }
+
+      .icon {
+        height: rem(30px);
+        width: rem(30px);
+      }
+
+      &.clicked {
+        background-color: $grey-medium;
+      }
+    }
+  }
+}
+
+.field {
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+
+  &.is-read-only {
+    .field-inner {
+      background-color: transparent;
+      border: none;
+      padding-left: rem(4px);
+      resize: none;
+
+      .field-checkbox,
+      .field-checkboxes {
+        input[type="checkbox"] {
+          opacity: 1;
+        }
+      }
+
+      .field-checkbox,
+      .field-checkboxes,
+      .field-input,
+      .field-textarea,
+      .field-select {
+        @include body-important();
+
+        background-color: transparent;
+        border: 0;
+        opacity: 1;
+
+        &:focus {
+          outline: none;
+        }
+      }
+
+      .field-select {
+        background-image: none;
+        cursor: default;
+        opacity: 1;
+      }
+    }
+  }
+
+  &.is-label-aligned {
+    display: table-row;
+
+    .field-label,
+    .control {
+      display: table-cell;
+    }
+
+    .field-label {
+      padding-bottom: rem(32px);
+    }
+
+    .field-control {
+      display: table-cell;
+      padding-bottom: 0;
+      padding-top: 0;
+      width: 100%;
+
+      .field-value {
+        .field-inner {
+          .field-input {
+            border-radius: 20px;
+            height: rem(36px);
+            width: inherit;
+          }
+        }
+      }
+    }
+  }
+}
+
+.field-errors {
+  @include caption();
+
+  color: $primary;
+  display: flex;
+  min-height: rem(24px);
+
+  .field-error-icon {
+    flex-shrink: 0;
+    margin-right: rem(12px);
+    margin-top: rem(2px);
+    width: rem(16px);
+  }
+}
+
+.input[type="email"],
+.input[type="text"],
+.input[type="url"] {
+  @include body();
+
+  align-items: center;
+  appearance: none;
+  border: rem(1px) solid $grey-medium;
+  border-radius: rem(20px);
+  box-shadow: none;
+  display: inline-flex;
+  height: rem(36px);
+  justify-content: flex-start;
+  line-height: 1.5;
+  outline: none;
+  padding: rem(6px) rem(18px);
+  position: relative;
+  vertical-align: top;
+}

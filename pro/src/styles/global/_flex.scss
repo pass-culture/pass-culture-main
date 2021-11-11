@@ -1,0 +1,33 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.flex-end,
+.flex-center,
+.flex-columns {
+  display: flex;
+}
+
+.flex-columns {
+  flex: 1;
+  flex-direction: row;
+}
+
+.flex-end {
+  justify-content: flex-end;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.flex-auto {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}

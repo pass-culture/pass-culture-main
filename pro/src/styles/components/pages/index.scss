@@ -1,0 +1,14 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+@import 'Bookings/index';
+@import 'LostPassword';
+@import 'Offerer/index';
+@import 'Offerers/index';
+@import 'Reimbursements/index';
+@import 'Signin/index';
+@import 'Signup/index';
+@import 'SignupConfirmation/index';
+@import 'SignupForm/index';
+@import 'Venue/index';

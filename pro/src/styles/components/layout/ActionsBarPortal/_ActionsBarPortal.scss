@@ -1,0 +1,25 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.actions-bar {
+  background: $white;
+  bottom: 0;
+  box-shadow: 0 0 3.75rem $black-shadow;
+  display: none;
+  left: 0;
+  position: fixed;
+  right: 0;
+  z-index: 10;
+
+  &.actions-bar-visible {
+    display: grid;
+    grid-template-columns: [col-start] 1fr [col-main] rem(850px)  1fr;
+  }
+
+  .actions-bar-content {
+    grid-column-start: col-main;
+    margin: 0 5rem;
+    padding: 1.25rem 0;
+  }
+}

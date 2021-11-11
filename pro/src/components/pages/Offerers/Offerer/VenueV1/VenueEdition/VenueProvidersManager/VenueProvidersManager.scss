@@ -1,0 +1,71 @@
+/*
+* @debt complexity "Gaël: file nested too deep in directory structure"
+*/
+
+.venue-providers-manager {
+  form {
+    width: 100%;
+  }
+
+  .stocks-provider-form {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .loading-spinner {
+    flex-grow: 1;
+  }
+
+  .account-section {
+    flex-direction: column;
+    margin-right: rem(25px);
+    max-width: rem(250px);
+  }
+
+  .account-label {
+    margin-bottom: rem(15px);
+    margin-top: rem(6px);
+  }
+
+  .account-value {
+    @include title4();
+
+    height: rem(36px);
+  }
+
+  .secondary-button {
+    margin-top: rem(6px);
+
+    svg .ico-plus {
+      fill: $primary;
+    }
+  }
+
+  .provider-picto {
+    align-items: center;
+    width: rem(30px);
+
+    img {
+      line-height: rem(30px);
+    }
+  }
+
+  .venue-id-at-offer-provider-container {
+    display: flex;
+    flex: 6;
+
+    .field-is-read-only {
+      margin-left: 0;
+    }
+
+    .tooltip .tooltip-info {
+      margin-left: rem(70px);
+      padding: rem(4px);
+    }
+  }
+
+  .input-select {
+    padding: rem(8px) 0;
+  }
+}

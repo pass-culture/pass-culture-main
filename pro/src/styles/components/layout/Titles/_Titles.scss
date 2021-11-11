@@ -1,0 +1,82 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+  padding-bottom: 0;
+  padding-top: 0;
+  position: relative;
+
+  .section-icon {
+    background-image: url(/icons/ico-structure.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 80%;
+    height: rem(120px);
+    margin-left: -2.5rem;
+    opacity: 0.25;
+    width: rem(120px);
+  }
+
+  .section-icon-mask {
+    height: rem(120px);
+    left: -5.3rem;
+    overflow: hidden;
+    position: absolute;
+    top: -2.75rem;
+    width: rem(80px);
+  }
+}
+
+.title-subtitle-link-block {
+  display: flex;
+  justify-content: space-between;
+
+  .title-action-links {
+    .link {
+      @include caption();
+
+      background-color: transparent;
+      color: $primary;
+      display: flex;
+      justify-content: flex-end;
+      line-height: rem(34px);
+
+      &:focus,
+      &:hover {
+        background-color: transparent;
+        color: $primary;
+      }
+    }
+  }
+
+  .primary-button {
+    display: flex;
+  }
+
+  img {
+    height: rem(25px);
+    width: rem(25px);
+  }
+}
+
+.cta {
+  border: 0;
+  line-height: rem(22px);
+  position: absolute;
+  right: 0;
+  top: -3px;
+
+  img {
+    height: rem(20px);
+    margin-right: rem(8px);
+    width: rem(20px);
+  }
+}
+
+h3.section-title {
+  @include title3();
+}

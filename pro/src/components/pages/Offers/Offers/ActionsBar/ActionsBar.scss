@@ -1,0 +1,13 @@
+.offers-actions-bar {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+
+  .actions-container {
+    display: flex;
+
+    button {
+      margin-left: 40px;
+    }
+  }
+}

@@ -1,0 +1,88 @@
+/*
+* @debt directory "Gaël: SCSS file should be co-located and imported within a component"
+*/
+
+.period-filter {
+  .period-filter-inputs {
+    border-radius: rem(20px);
+    display: flex;
+    height: rem(40px);
+    margin-top: rem(16px);
+
+    button {
+      outline: none;
+    }
+
+    &.disabled {
+      box-shadow: none;
+    }
+  }
+
+  .period-filter-inputs .field-date {
+    align-items: center;
+    background: url(/icons/ico-calendar.svg) no-repeat 90% center;
+    box-shadow: none;
+    display: flex;
+    height: rem(40px);
+
+    &:focus-within {
+      border-color: $primary;
+    }
+
+    &.disabled {
+      background-image: url(/icons/ico-calendar-disabled.svg);
+    }
+  }
+
+  .field-date-begin,
+  .field-date-end {
+    height: rem(40px);
+    padding: 0 rem(1px);
+  }
+
+  .field-date-begin {
+    border-bottom-right-radius: 0;
+    border-right: none;
+    border-top-right-radius: 0;
+  }
+
+  .field-date-end {
+    border-bottom-left-radius: 0;
+    border-left: none;
+    border-top-left-radius: 0;
+  }
+
+  .period-filter-begin-picker:focus-within .field-date-begin,
+  .period-filter-end-picker:focus-within .field-date-end {
+    border-color: $primary;
+    border-width: rem(2px);
+    padding: 0;
+  }
+
+  .period-filter-input {
+    @include body();
+
+    background: none;
+    border: 0;
+    outline: none;
+    padding-left: rem(10px);
+    width: rem(135px);
+
+    &:disabled {
+      color: $grey-dark;
+      cursor: initial;
+      opacity: 1;
+
+      &::placeholder {
+        color: $grey-dark;
+      }
+    }
+  }
+}
+
+.period-filter:focus-within {
+  .vertical-bar {
+    background-color: $primary;
+    width: rem(2px);
+  }
+}

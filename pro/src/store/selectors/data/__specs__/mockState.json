@@ -1,0 +1,496 @@
+{
+  "card": {
+    "areDetailsVisible": false,
+    "draggable": true,
+    "isActive": false,
+    "unFlippable": false
+  },
+  "data": {
+    "bookings": [],
+    "offerers": [
+        {
+          "id": "4Q",
+          "address": "RUE DES SAPOTILLES",
+          "bic": "QSDFGH8Z566",
+          "city": "Cayenne",
+          "dateCreated": "2019-05-06T09:12:46.278743Z",
+          "dateModifiedAtLastProvider": "2019-05-06T09:13:08.458343Z",
+          "iban": "FR7630001007941234567890185",
+          "idAtProviders": null,
+          "isActive": true,
+          "isValidated": true,
+          "lastProviderId": null,
+          "modelName": "Offerer",
+          "nOffers": 5,
+          "name": "Bar des amis",
+          "postalCode": "97300",
+          "siren": "222222233"
+      }],
+    "offers": [
+      {
+        "id": "AXBQ",
+        "bookingEmail": null,
+        "dateCreated": "2018-11-13T09:54:56.103080Z",
+        "dateModifiedAtLastProvider": "2018-11-13T09:54:56.103073Z",
+        "isEvent": false,
+        "idAtProviders": null,
+        "isActive": true,
+        "lastProviderId": null,
+        "modelName": "Offer",
+        "productId": "V4",
+        "isThing": true,
+        "venueId": "AYJA",
+        "eventOccurrencesIds": [],
+        "mediationsIds": [],
+        "stocksIds": ["DCRA"]
+      }
+    ],
+    "readRecommendations": [
+      {
+        "id": "AY9A",
+        "dateRead": "2019-05-06T09:13:45.266Z"
+      },
+      {
+        "id": "AY9Q",
+        "dateRead": "2019-05-06T09:13:46.910Z"
+      },
+      {
+        "id": "AYKQ",
+        "dateRead": "2019-05-06T09:20:59.025Z"
+      }
+    ],
+    "recommendations": [
+      {
+        "id": "A2KA",
+        "dateCreated": "2019-05-06T09:40:11.809052Z",
+        "dateRead": null,
+        "dateUpdated": "2019-05-06T09:40:11.809076Z",
+        "isClicked": true,
+        "isFavorite": false,
+        "isFirst": false,
+        "mediation": {
+          "authorId": "AK2A",
+          "backText": null,
+          "credit": "undefined",
+          "dateCreated": "2019-05-06T09:40:00.408589Z",
+          "dateModifiedAtLastProvider": "2019-05-06T09:40:00.408532Z",
+          "frontText": null,
+          "id": "AMCQ",
+          "idAtProviders": null,
+          "isActive": true,
+          "lastProviderId": null,
+          "modelName": "Mediation",
+          "offerId": "AX8Q",
+          "tutoIndex": null
+        },
+        "mediationId": "AMCQ",
+        "modelName": "Recommendation",
+        "offer": {
+          "ageMax": null,
+          "ageMin": null,
+          "bookingEmail": "fake@email.com",
+          "conditions": null,
+          "dateCreated": "2019-05-06T09:39:21.385332Z",
+          "dateModifiedAtLastProvider": "2019-05-06T09:39:21.385288Z",
+          "dateRange": [
+            "2019-05-26T09:39:24Z",
+            "2019-05-27T10:39:24Z"
+          ],
+          "description": "Raoul Taburin, c\"est l\"histoire d\"un petit garçon devenu grand sans savoir faire du vélo. L\"histoire d\"un immense malentendu vécu comme une malédiction. Un imposteur malgré lui.",
+          "durationMinutes": 120,
+          "extraData": {
+            "author": "Michal Aviad",
+            "stageDirector": "Laurne Valik",
+            "visa": "5454VCJGFDJRT"
+          },
+          "id": "AX8Q",
+          "idAtProviders": null,
+          "isActive": true,
+          "isEvent": true,
+          "isFinished": false,
+          "isFullyBooked": false,
+          "isNational": true,
+          "isThing": false,
+          "lastProviderId": null,
+          "mediaUrls": [],
+          "modelName": "Offer",
+          "name": "Nice offre",
+          "product": {
+            "ageMax": null,
+            "ageMin": null,
+            "conditions": null,
+            "dateModifiedAtLastProvider": "2019-05-06T09:39:21.350837Z",
+            "description": "Raoul Taburin, c\"est l\"histoire d\"un petit garçon devenu grand sans savoir faire du vélo. L\"histoire d\"un immense malentendu vécu comme une malédiction. Un imposteur malgré lui.",
+            "durationMinutes": 120,
+            "extraData": {
+              "author": "Michal Aviad",
+              "stageDirector": "Laurne Valik",
+              "visa": "5454VCJGFDJRT"
+            },
+            "id": "BAUQ",
+            "idAtProviders": null,
+            "isNational": true,
+            "lastProviderId": null,
+            "mediaUrls": [],
+            "modelName": "Product",
+            "name": "Nice offre",
+            "owningOffererId": "4Y",
+            "thumbUrl": "http://localhost/storage/thumbs/products/BAUQ",
+            "type": "EventType.CINEMA",
+            "url": null
+          },
+          "productId": "BAUQ",
+          "stocks": [
+            {
+              "available": null,
+              "beginningDatetime": "2019-05-26T09:39:24Z",
+              "bookingLimitDatetime": "2019-05-17T09:39:24Z",
+              "bookingRecapSent": null,
+              "dateModified": "2019-05-06T09:39:34.241354Z",
+              "dateModifiedAtLastProvider": "2019-05-06T09:39:34.241239Z",
+              "id": "AWNQ",
+              "idAtProviders": null,
+              "isSoftDeleted": false,
+              "lastProviderId": null,
+              "modelName": "Stock",
+              "offerId": "AX8Q",
+              "price": 0
+            },
+            {
+              "available": null,
+              "beginningDatetime": "2019-05-27T09:39:24Z",
+              "bookingLimitDatetime": "2019-05-25T09:39:24Z",
+              "bookingRecapSent": null,
+              "dateModified": "2019-05-06T09:39:40.773023Z",
+              "dateModifiedAtLastProvider": "2019-05-06T09:39:40.772850Z",
+              "id": "AW8A",
+              "idAtProviders": null,
+              "isSoftDeleted": false,
+              "lastProviderId": null,
+              "modelName": "Stock",
+              "offerId": "AX8Q",
+              "price": 0
+            }
+          ],
+          "thingId": null,
+          "type": "EventType.CINEMA",
+          "url": null,
+          "venue": {
+            "address": "RUE NIEUPORT",
+            "bookingEmail": "fake@email.com",
+            "city": "Drancy",
+            "comment": null,
+            "dateModifiedAtLastProvider": "2019-05-06T09:13:13.134271Z",
+            "departementCode": "93",
+            "id": "AFCA",
+            "idAtProviders": null,
+            "isVirtual": false,
+            "lastProviderId": null,
+            "latitude": 48.91678,
+            "longitude": 2.43846,
+            "managingOfferer": {
+              "address": "RUE NIEUPORT",
+              "city": "Drancy",
+              "dateCreated": "2019-05-06T09:12:46.278743Z",
+              "dateModifiedAtLastProvider": "2019-05-06T09:13:08.463068Z",
+              "id": "4Y",
+              "idAtProviders": null,
+              "isActive": true,
+              "lastProviderId": null,
+              "modelName": "Offerer",
+              "name": "Club Dorothy",
+              "postalCode": "93700",
+              "siren": "222222223",
+              "validationToken": null
+            },
+            "managingOffererId": "4Y",
+            "modelName": "Venue",
+            "name": "Maison de la Brique",
+            "postalCode": "93700",
+            "publicName": null,
+            "siret": "22222222311111",
+            "validationToken": null
+          },
+          "venueId": "AFCA"
+        },
+        "offerId": "AX8Q",
+        "search": "keywords_string=nice",
+        "shareMedium": null,
+        "thumbUrl": "http://localhost/storage/thumbs/mediations/AMCQ",
+        "userId": "AK4A"
+      }
+    ],
+    "types": [
+      {
+        "id": 0,
+        "appLabel": "Projections, Séances, Évènements",
+        "conditionalFields": [
+          "author",
+          "visa",
+          "stageDirector"
+        ],
+        "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "proLabel": "Cinéma — projections, séances, évènements",
+        "sublabel": "Regarder",
+        "type": "Event",
+        "value": "EventType.CINEMA"
+      },
+      {
+        "id": 1,
+        "appLabel": "Conférences, rencontres et découverte des métiers",
+        "conditionalFields": [
+          "speaker"
+        ],
+        "description": "Parfois une simple rencontre peut changer une vie...",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "proLabel": "Conférences, rencontres et découverte des métiers",
+        "sublabel": "Rencontrer",
+        "type": "Event",
+        "value": "EventType.CONFERENCE_DEBAT_DEDICACE"
+      },
+      {
+        "id": 2,
+        "appLabel": "Évenements, Rencontres, Concours",
+        "conditionalFields": [],
+        "description": "Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "proLabel": "Jeux",
+        "sublabel": "Jouer",
+        "type": "Event",
+        "value": "EventType.JEUX"
+      },
+      {
+        "id": 3,
+        "appLabel": "Concerts, Festivals",
+        "conditionalFields": [
+          "author",
+          "musicType",
+          "performer"
+        ],
+        "description": "Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "proLabel": "Musique — concerts, festivals",
+        "sublabel": "Écouter",
+        "type": "Event",
+        "value": "EventType.MUSIQUE"
+      },
+      {
+        "id": 4,
+        "appLabel": "Expositions, visites guidées, activités spécifiques",
+        "conditionalFields": [],
+        "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "proLabel": "Musées, patrimoine — expositions, visites guidées, activités spécifiques",
+        "sublabel": "Regarder",
+        "type": "Event",
+        "value": "EventType.MUSEES_PATRIMOINE"
+      },
+      {
+        "id": 5,
+        "appLabel": "Séances d’essai et stages ponctuels",
+        "conditionalFields": [
+          "speaker"
+        ],
+        "description": "Jamais osé monter sur les planches ? Tenter d’apprendre la guitare, le piano ou la photographie ? Partir cinq jours découvrir un autre monde ? Bricoler dans un fablab, ou pourquoi pas, enregistrer votre premier titre ?",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "proLabel": "Pratique — séances d’essai et stages ponctuels",
+        "sublabel": "Pratiquer",
+        "type": "Event",
+        "value": "EventType.PRATIQUE_ARTISTIQUE"
+      },
+      {
+        "id": 6,
+        "appLabel": "Spectacle vivant",
+        "conditionalFields": [
+          "author",
+          "showType",
+          "stageDirector",
+          "performer"
+        ],
+        "description": "Suivre un géant de 12 mètres dans la ville ? Rire aux éclats devant un stand up ? Rêver le temps d’un opéra ou d’un spectacle de danse ? Assister à une pièce de théâtre, ou se laisser conter une histoire ?",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "proLabel": "Spectacle vivant",
+        "sublabel": "Applaudir",
+        "type": "Event",
+        "value": "EventType.SPECTACLE_VIVANT"
+      },
+      {
+        "id": 7,
+        "appLabel": "Films sur supports physiques et VOD",
+        "conditionalFields": [],
+        "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
+        "offlineOnly": false,
+        "onlineOnly": false,
+        "proLabel": "Audiovisuel — films sur supports physiques et VOD",
+        "sublabel": "Regarder",
+        "type": "Thing",
+        "value": "ThingType.AUDIOVISUEL"
+      },
+      {
+        "id": 8,
+        "appLabel": "Abonnements",
+        "conditionalFields": [],
+        "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "proLabel": "Cinéma — abonnements",
+        "sublabel": "Regarder",
+        "type": "Thing",
+        "value": "ThingType.CINEMA_ABO"
+      },
+      {
+        "id": 9,
+        "appLabel": "Jeux — abonnements",
+        "conditionalFields": [],
+        "description": "Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?",
+        "offlineOnly": false,
+        "onlineOnly": true,
+        "proLabel": "Jeux — abonnements",
+        "sublabel": "Jouer",
+        "type": "Thing",
+        "value": "ThingType.JEUX_VIDEO_ABO"
+      },
+      {
+        "id": 10,
+        "appLabel": "Jeux vidéo",
+        "conditionalFields": [],
+        "description": "Résoudre l’énigme d’un jeu de piste dans votre ville ? Jouer en ligne entre amis ? Découvrir cet univers étrange avec une manette ?",
+        "offlineOnly": false,
+        "onlineOnly": true,
+        "proLabel": "Jeux vidéo",
+        "sublabel": "Jouer",
+        "type": "Thing",
+        "value": "ThingType.JEUX_VIDEO"
+      },
+      {
+        "id": 11,
+        "appLabel": "Livre audio numérique",
+        "conditionalFields": [
+          "author"
+        ],
+        "description": "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?",
+        "offlineOnly": false,
+        "onlineOnly": true,
+        "proLabel": "Livre audio numérique",
+        "sublabel": "Lire",
+        "type": "Thing",
+        "value": "ThingType.LIVRE_AUDIO"
+      },
+      {
+        "id": 12,
+        "appLabel": "Livres, cartes bibliothèque ou médiathèque",
+        "conditionalFields": [
+          "author",
+          "isbn"
+        ],
+        "description": "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?",
+        "offlineOnly": false,
+        "onlineOnly": false,
+        "proLabel": "Livre - format papier ou numérique, abonnements lecture",
+        "sublabel": "Lire",
+        "type": "Thing",
+        "value": "ThingType.LIVRE_EDITION"
+      },
+      {
+        "id": 13,
+        "appLabel": "Visites libres et abonnements",
+        "conditionalFields": [],
+        "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "proLabel": "Musées, arts visuels & patrimoine",
+        "sublabel": "Regarder",
+        "type": "Thing",
+        "value": "ThingType.MUSEES_PATRIMOINE_ABO"
+      },
+      {
+        "id": 14,
+        "appLabel": "Abonnements concerts",
+        "conditionalFields": [
+          "musicType"
+        ],
+        "description": "Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "proLabel": "Musique — abonnements concerts",
+        "sublabel": "Écouter",
+        "type": "Thing",
+        "value": "ThingType.MUSIQUE_ABO"
+      },
+      {
+        "id": 15,
+        "appLabel": "Supports physiques ou en ligne",
+        "conditionalFields": [
+          "author",
+          "musicType",
+          "performer"
+        ],
+        "description": "Plutôt rock, rap ou classique ? Sur un smartphone avec des écouteurs ou entre amis au concert ?",
+        "offlineOnly": false,
+        "onlineOnly": false,
+        "proLabel": "Musique (sur supports physiques ou en ligne)",
+        "sublabel": "Écouter",
+        "type": "Thing",
+        "value": "ThingType.MUSIQUE"
+      },
+      {
+        "id": 16,
+        "appLabel": "Achat d\"œuvres d’art",
+        "conditionalFields": [],
+        "description": "Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?",
+        "offlineOnly": false,
+        "onlineOnly": false,
+        "proLabel": "Vente d\"œuvres d\"art",
+        "sublabel": "Regarder",
+        "type": "Thing",
+        "value": "ThingType.OEUVRE_ART"
+      },
+      {
+        "id": 17,
+        "appLabel": "Pratique artistique — abonnements",
+        "conditionalFields": [
+          "speaker"
+        ],
+        "description": "Jamais osé monter sur les planches ? Tenter d’apprendre la guitare, le piano ou la photographie ? Partir cinq jours découvrir un autre monde ? Bricoler dans un fablab, ou pourquoi pas, enregistrer votre premier titre ?",
+        "offlineOnly": true,
+        "onlineOnly": false,
+        "proLabel": "Pratique artistique — abonnements",
+        "sublabel": "Pratiquer",
+        "type": "Thing",
+        "value": "ThingType.PRATIQUE_ARTISTIQUE_ABO"
+      },
+      {
+        "id": 18,
+        "appLabel": "Presse — Abonnements",
+        "conditionalFields": [],
+        "description": "S’abonner à un quotidien d’actualité ? À un hebdomadaire humoristique ? À un mensuel dédié à la nature ? Acheter une BD ou un manga ? Ou tout simplement ce livre dont tout le monde parle ?",
+        "offlineOnly": false,
+        "onlineOnly": true,
+        "proLabel": "Presse — Abonnements",
+        "sublabel": "Lire",
+        "type": "Thing",
+        "value": "ThingType.PRESSE_ABO"
+      },
+      {
+        "id": 19,
+        "appLabel": "Achat et location d’instruments de musique",
+        "conditionalFields": [],
+        "description": "Jamais osé monter sur les planches ? Tenter d’apprendre la guitare, le piano ou la photographie ? Partir cinq jours découvrir un autre monde ? Bricoler dans un fablab, ou pourquoi pas, enregistrer votre premier titre ?",
+        "offlineOnly": false,
+        "onlineOnly": false,
+        "proLabel": "Vente et location d‘instruments de musique",
+        "sublabel": "Pratiquer",
+        "type": "Thing",
+        "value": "ThingType.INSTRUMENT"
+      }
+    ]
+  }
+}

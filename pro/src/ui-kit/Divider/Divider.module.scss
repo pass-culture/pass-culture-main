@@ -1,0 +1,7 @@
+.divider {
+  border-bottom: rem(1px) solid $grey-medium;
+
+  &.divider-medium {
+    margin: rem(16px) 0 rem(16px) 0;
+  }
+}

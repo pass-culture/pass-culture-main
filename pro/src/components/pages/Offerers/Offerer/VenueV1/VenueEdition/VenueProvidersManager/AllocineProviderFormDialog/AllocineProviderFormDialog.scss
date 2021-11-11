@@ -1,0 +1,42 @@
+.allocine-provider-form-dialog {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: rem(504px);
+  text-align: left;
+
+  .title {
+    @include gabarit();
+  }
+
+  .explanation {
+    margin-top: rem(24px);
+  }
+
+  .allocine-provider-form {
+    margin-top: rem(32px);
+
+    input[type=number] {
+      height: rem(40px);
+    }
+
+    .imported-offres-clarification {
+      @include caption();
+
+      color: $grey-dark;
+      margin-top: rem(24px);
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      margin-top: rem(40px);
+
+      button {
+        margin: 0 rem(16px);
+        padding: 0 rem(80px);
+      }
+    }
+  }
+}
