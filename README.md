@@ -21,7 +21,7 @@ Le repo `main` contient les 6 sous-modules suivants :
 - [NVM](https://github.com/creationix/nvm) (Node Version Manager)
     - `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash`
 - [Node](https://nodejs.org/en/download/)
-    - Lancer `nvm install` dans `/pro` et `/webapp`
+    - Lancer `nvm install` dans `/pro`, `/webapp` et `/adage-front`
 - [Yarn](https://classic.yarnpkg.com/en/)
     - `npm install --global yarn` (NPM)
     - autres méthodes [dans la doc de Yarn](https://classic.yarnpkg.com/lang/en/docs/install/)
