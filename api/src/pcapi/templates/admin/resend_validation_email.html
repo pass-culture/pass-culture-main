@@ -1,0 +1,29 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+<div class="alert alert-primary" role="alert">
+    Vous êtes sur le point de <strong>réenvoyer</strong> un nouveau lien de confirmation d'email à l'utilisateur suivant :
+</div>
+
+<p>
+    <div>Identifiant : {{ user.id }}</div>
+    <div>Adresse mail : {{ user.email }}</div>
+    <div>Nom : {{ user.lastName }}</div>
+    <div>Prénom : {{ user.firstName }}</div>
+</p>
+
+<form action="{{ action }}" method="POST">
+    {% for field in form %}
+        {% if field.name == "csrf_token" %}
+            {{ field }}
+        {% else %}
+            <div class="form-group">
+                <label>{{ field.label }} {% if field.flags.required %}*{% endif %}</label>
+                {{ field }}
+            </div>
+        {% endif %}
+    {% endfor %}
+    <a class="btn btn-default" href="{{ cancel_link_url }}" role="button">Annuler</a>
+    <input class="btn btn-success" type="submit" value="Réenvoyer lien de confirmation">
+</form>
+
+{% endblock %}

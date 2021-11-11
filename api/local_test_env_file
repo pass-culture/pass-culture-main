@@ -1,0 +1,6 @@
+POSTGRES_USER=pytest
+POSTGRES_PASSWORD=pytest
+POSTGRES_DB=pass_culture
+DATABASE_URL_TEST=postgresql://pytest:pytest@localhost:5433/pass_culture
+REDIS_URL=redis://localhost:6379
+RUN_ENV=tests

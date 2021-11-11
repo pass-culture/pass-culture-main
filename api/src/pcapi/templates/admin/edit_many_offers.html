@@ -1,0 +1,42 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block head %}
+    {{ super() }}
+    {{ lib.form_css() }}
+{% endblock %}
+
+{% block body %}
+<div class="col-md-3"></div>
+<div class="col-md-6">
+  <div><a class="btn btn-link" href="{{ url_for('/many_offers_operations.search') }}">Revenir à la recherche</a></div>
+  <div>
+    <h3><span class="label label-default">Informations concernant les produits</span></h3>
+    <p><b>Titre du produit :</b> {{ name }}</p>
+    <p><b>Type de produit :</b> {{ "Séances de cinéma" if type == "cinema" else "Livres" }}</p>
+    <p><b>Nombre d'offres associées :</b></p>
+    <p><b>Actives : {{ active_offers_number }}</b></p>
+    <p><b>Inactives : {{ inactive_offers_number }}</b></p>
+    {% if type == "book" %}
+      <p><b>compatible avec les CGU :</b> {{ product_compatibility["text"] }}</p>
+      <p><b>ISBN :</b> {{ isbn }}</p>
+    {% endif %}
+    {% if type == "cinema" %}
+      <p><b>Visa d'exploitation :</b> {{ visa }}</p>
+    {% endif %}
+  </div>
+
+  {% include 'admin/edit_many_offers_components/playlist_tag_form.html' %}
+
+  {% if type == "book" %}
+    {% include 'admin/edit_many_offers_components/gcu_compatible_form.html' %}
+  {% endif %}
+</div>
+<div class="col-md-3"></div>
+
+{% endblock %}
+
+{% block tail %}
+    {{ super() }}
+    {{ lib.form_js() }}
+{% endblock %}

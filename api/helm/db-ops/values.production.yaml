@@ -1,0 +1,160 @@
+# Default values for passculture.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+image:
+  repository: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-tools/db-ops
+  tag: latest
+  pullPolicy: Always
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+schedule:  "0 3 * * 4" # Thursday at 3am
+timezone: "Europe/Paris"
+
+roleBinding:
+  create: true
+
+serviceAccount:
+  create: true
+  annotations:
+    iam.gke.io/gcp-service-account: metier-production-sqldump@passculture-metier-prod.iam.gserviceaccount.com
+
+workflows:
+  backup-ehp:
+    script: "/scripts/backup_ehp.py"
+    envVars:
+      SOURCE_INSTANCE: pcapi-ehp-0ef86e9a
+      SOURCE_INSTANCE_REGION: europe-west1
+      SOURCE_PROJECT: passculture-metier-ehp
+
+  testing-dump:
+    script: "/scripts/testing_dump.py"
+    envVars:
+      ENV: testing
+      SOURCE_INSTANCE: pcapi-ehp-0ef86e9a
+      SOURCE_INSTANCE_REGION: europe-west1
+      SOURCE_PROJECT: passculture-metier-ehp
+      DUMP_BUCKET: passculture-metier-ehp-dump-sql
+      SOURCE_DATABASES_TO_EXPORT: "pcapi-testing"
+    externalSecrets:
+      prefix: pcapi-testing
+      project: passculture-metier-ehp
+      mappings:
+        - secret: database_credentials_password
+          envVar: DEST_NEW_USER_PASSWORD
+
+  staging:
+    dependsOn: [testing-dump]
+    script: "/scripts/staging.py"
+    envVars:
+      ENV: staging
+      SOURCE_INSTANCE: pcapi-production-9fb2eb30
+      SOURCE_INSTANCE_REGION: europe-west1
+      SOURCE_PROJECT: passculture-metier-prod
+      SOURCE_USER: pcapi-production
+      DEST_INSTANCE: pcapi-ehp-0ef86e9a
+      DEST_INSTANCE_REGION: europe-west1
+      DEST_PROJECT: passculture-metier-ehp
+      DEST_NEW_USER: pcapi-staging
+      DEST_INSTANCE_IP_ADDRESS_TYPE: public
+      DUMP_BUCKET: passculture-metier-ehp-dump-sql
+      TABLES_TO_EMPTY : "activity user_session email"
+    additionnalEnvVars:
+      postProcessingEnvVars: true
+    externalSecrets:
+      prefix: pcapi-staging
+      project: passculture-metier-ehp
+      pcapiSecrets: true
+      mappings:
+        - secret: database_credentials_password
+          envVar: DEST_NEW_USER_PASSWORD
+        - secret: staging_test_user_password
+          envVar: STAGING_TEST_USER_PASSWORD
+
+  testing-restore:
+    dependsOn: [staging]
+    script: "/scripts/testing_restore.py"
+    envVars:
+      ENV: testing
+      DEST_PROJECT: passculture-metier-ehp
+      DEST_INSTANCE: pcapi-ehp-0ef86e9a
+      DEST_INSTANCE_REGION: europe-west1
+      DEST_NEW_USER: pcapi-testing
+      DUMP_BUCKET: passculture-metier-ehp-dump-sql
+    externalSecrets:
+      prefix: pcapi-testing
+      project: passculture-metier-ehp
+      mappings:
+        - secret: database_credentials_password
+          envVar: DEST_NEW_USER_PASSWORD
+
+  perf:
+    dependsOn: [staging]
+    script: "/scripts/perf.py"
+    envVars:
+      ENV: testing
+      SOURCE_INSTANCE: pcapi-ehp-0ef86e9a
+      SOURCE_INSTANCE_REGION: europe-west1
+      SOURCE_PROJECT: passculture-metier-ehp
+      SOURCE_USER: pcapi-staging
+      DEST_INSTANCE: pcapi-perf-1ac56766
+      DEST_INSTANCE_REGION: europe-west1
+      DEST_PROJECT: passculture-metier-ehp
+      DEST_NEW_USER: pcapi-perf
+      DEST_INSTANCE_IP_ADDRESS_TYPE: public
+    externalSecrets:
+      prefix: pcapi-perf
+      project: passculture-metier-ehp
+      mappings:
+        - secret: database_credentials_password
+          envVar: DEST_NEW_USER_PASSWORD
+
+postProcessingEnvVars:
+  ANONYMIZE_SQL_SCRIPT_PATH: /scripts/anonymize.sql
+  PCAPI_ROOT_PATH: /usr/src/app
+  IMPORT_USERS_SCRIPT_PATH: src/pcapi/scripts/beneficiary/import_users.py
+  USERS_CSV_PATH: /scripts/data_pass-culture-api-staging.csv
+  PC_SCRIPT_PATH: src/pcapi/scripts/pc.py
+
+pcapiSecrets:
+  - ADMINISTRATION_EMAIL_ADDRESS
+  - ALGOLIA_API_KEY
+  - ALGOLIA_APPLICATION_ID
+  - ALLOCINE_API_KEY
+  - CLOUD_TASK_BEARER_TOKEN
+  - DEMARCHES_SIMPLIFIEES_TOKEN
+  - DEMARCHES_SIMPLIFIEES_WEBHOOK_TOKEN
+  - DEV_EMAIL_ADDRESS
+  - EXPORT_TOKEN
+  - FLASK_SECRET
+  - FTP_TITELIVE_PWD
+  - FTP_TITELIVE_URI
+  - FTP_TITELIVE_USER
+  - JOUVE_API_DOMAIN
+  - JOUVE_PASSWORD
+  - JOUVE_USERNAME
+  - JOUVE_VAULT_GUID
+  - JWT_SECRET_KEY
+  - MAILJET_API_KEY
+  - MAILJET_API_SECRET
+  - OVH_BUCKET_NAME
+  - OVH_PASSWORD
+  - OVH_REGION_NAME
+  - OVH_TENANT_NAME
+  - OVH_USER
+  - PASS_CULTURE_BIC
+  - PASS_CULTURE_IBAN
+  - PASS_CULTURE_REMITTANCE_CODE
+  - PAYMENTS_DETAILS_RECIPIENTS
+  - PAYMENTS_REPORT_RECIPIENTS
+  - PC_GOOGLE_KEY
+  - PROVIDER_FNAC_BASIC_AUTHENTICATION_TOKEN
+  - RECAPTCHA_SECRET
+  - REDIS_URL
+  - SENDINBLUE_API_KEY
+  - SENTRY_DSN
+  - SUPPORT_EMAIL_ADDRESS
+  - TRANSACTIONS_RECIPIENTS
+  - WALLET_BALANCES_RECIPIENTS

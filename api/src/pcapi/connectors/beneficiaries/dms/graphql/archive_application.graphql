@@ -1,0 +1,10 @@
+mutation archiveApplication($input: DossierArchiverInput!) {
+  dossierArchiver(input: $input) {
+    dossier {
+      id
+    }
+    errors {
+      message
+    }
+  }
+}

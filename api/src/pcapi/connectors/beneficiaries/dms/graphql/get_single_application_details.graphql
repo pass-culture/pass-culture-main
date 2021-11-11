@@ -1,0 +1,98 @@
+query getApplication($applicationNumber: Int!) {
+    dossier(number: $applicationNumber) {
+        ...DossierFragment
+    }
+}
+
+fragment DossierFragment on Dossier {
+  id
+  number
+  archived
+  state
+  dateDerniereModification
+  datePassageEnConstruction
+  datePassageEnInstruction
+  dateTraitement
+  instructeurs {
+    id
+    email
+  }
+  groupeInstructeur {
+    id
+    number
+    label
+  }
+  champs {
+    ...ChampFragment
+    ...RootChampFragment
+  }
+  annotations {
+    ...ChampFragment
+    ...RootChampFragment
+  }
+  usager {
+      email
+  }
+  demandeur {
+    ... on PersonnePhysique {
+      civilite
+      nom
+      prenom
+      dateDeNaissance
+    }
+  }
+}
+
+fragment RootChampFragment on Champ {
+  ... on RepetitionChamp {
+    champs {
+      ...ChampFragment
+    }
+  }
+  ... on DossierLinkChamp {
+    dossier {
+      id
+      state
+      usager {
+        email
+      }
+    }
+  }
+}
+
+fragment ChampFragment on Champ {
+  id
+  label
+  stringValue
+  ... on LinkedDropDownListChamp {
+    primaryValue
+    secondaryValue
+  }
+  ... on MultipleDropDownListChamp {
+    values
+  }
+  ... on PieceJustificativeChamp {
+    label
+    stringValue
+  }
+  ... on AddressChamp {
+    address {
+      ...AddressFragment
+    }
+  }
+}
+
+fragment AddressFragment on Address {
+  label
+  type
+  streetAddress
+  streetNumber
+  streetName
+  postalCode
+  cityName
+  cityCode
+  departmentName
+  departmentCode
+  regionName
+  regionCode
+}

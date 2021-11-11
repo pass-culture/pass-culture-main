@@ -1,0 +1,15 @@
+{
+  "python.linting.pylintEnabled": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "editor.formatOnSave": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.nosetestsEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": [
+    "-vv",
+    "-s"
+  ],
+  "python.formatting.provider": "black"
+}
