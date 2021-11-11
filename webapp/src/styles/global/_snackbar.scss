@@ -1,0 +1,26 @@
+.Toastify__toast-container {
+  left: 0;
+  margin-left: 0;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  width: 100% !important;
+
+  button,
+  div {
+    color: $white;
+  }
+}
+
+.Toastify__toast {
+  font-family: $family-sans-serif;
+  padding: 0 rem(20px) !important;
+}
+
+.Toastify__toast--success {
+  background-color: $green-valid;
+}
+
+.Toastify__toast--error {
+  background-color: $error;
+}

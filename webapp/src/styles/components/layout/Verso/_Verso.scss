@@ -1,0 +1,85 @@
+.verso {
+  height: 100%;
+  transform: translate(0, 100%);
+  transition: transform 250ms;
+  will-change: transform;
+  z-index: $zindex-verso-view;
+
+  &.flipped {
+    // A remplacer par react-transition-group
+    // pour gérer les transitions dans le composant
+    transform: translate(0, 0);
+  }
+
+  &.with-header {
+    // NOTE: permet de passer le verso au dessus du header
+    // - dans la recherche
+    margin-top: $header-height;
+
+    .verso-info {
+      margin-bottom: $header-height;
+    }
+  }
+
+  .verso-wrapper {
+    @extend .flex-rows;
+    @extend .is-relative;
+
+    cursor: initial;
+    height: 100%;
+    min-height: 100%;
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+    padding-top: 56.25%;
+
+    .verso-header {
+      flex-shrink: 0;
+    }
+
+    .with-triangle::before {
+      $triangle-diag: 50px;
+
+      background-color: inherit;
+      content: "";
+      height: $triangle-diag;
+      left: 0;
+      margin: auto;
+      position: absolute;
+      right: 0;
+      top: -$triangle-diag/2;
+      transform: rotate(45deg);
+      width: $triangle-diag;
+      z-index: -1;
+    }
+
+    .verso-content {
+      background-color: $white;
+      flex: 1;
+      padding-bottom: $footer-height;
+    }
+
+    .verso-info-block {
+      margin-top: rem(12px);
+      white-space: pre-line;
+
+      h3 {
+        color: $primary;
+        font-size: 1.5rem;
+        font-weight: 700;
+        padding-bottom: 0.5rem;
+        padding-top: 0.75rem;
+      }
+
+      p {
+        padding-bottom: 1rem;
+      }
+    }
+  }
+
+  .finishable-ribbon-img {
+    height: 30%;
+    right: -3%;
+    top: 50%;
+    width: 55%;
+  }
+}

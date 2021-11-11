@@ -1,0 +1,13 @@
+.verso-header {
+  position: relative;
+  word-wrap: break-word;
+
+  #verso-offer-type-picto {
+    left: 0;
+    margin: auto;
+    opacity: 0.6;
+    position: absolute;
+    right: 0;
+    top: -12px;
+  }
+}

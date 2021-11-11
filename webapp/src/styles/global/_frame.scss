@@ -1,0 +1,181 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  -webkit-overflow-scrolling: touch;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  min-height: 100%;
+  overscroll-behavior: contain;
+}
+
+@media screen and (min-width: 500px) {
+  html {
+    background-color: $black;
+  }
+}
+
+body {
+  color: $black;
+  font-family: $family-sans-serif;
+  font-size: rem(16px);
+  line-height: normal;
+  margin: 0 auto;
+  max-height: 100%;
+  max-width: 500px;
+  width: 100%;
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  background-color: transparent;
+  border: 0;
+  color: $white;
+  cursor: pointer;
+  user-select: none;
+
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.3;
+  }
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: $family-sans-serif;
+}
+
+a,
+a:link,
+a:focus,
+a:active,
+a:visited {
+  text-decoration: none;
+}
+
+/* --------------------------------
+ Séparation horizontale et verticale
+ Avec une bordure en pointillée
+-------------------------------- */
+
+hr[class^='dotted-top-'],
+hr[class^='dotted-left-'],
+hr[class^='dotted-right-'],
+hr[class^='dotted-bottom-'] {
+  @extend .is-block;
+  @extend .no-margin;
+  @extend .no-padding;
+  @extend .no-background;
+  @extend .no-border;
+}
+
+hr[class^='dotted-top-'],
+hr[class^='dotted-bottom-'] {
+  height: 1px;
+  max-height: 1px;
+  max-width: 100%;
+  min-height: 1px;
+  min-width: 100%;
+  width: 100%;
+}
+
+hr[class^='dotted-left-'],
+hr[class^='dotted-right-'] {
+  height: 100%;
+  max-height: 100%;
+  max-width: 1px;
+  min-height: 100%;
+  min-width: 1px;
+  width: 1px;
+}
+
+hr[class^='dotted-top-2x-'],
+hr[class^='dotted-bottom-2x-'] {
+  height: 2px;
+  max-height: 2px;
+  min-height: 2px;
+}
+
+hr[class^='dotted-left-2x-'],
+hr[class^='dotted-right-2x-'] {
+  max-width: 2px;
+  min-width: 2px;
+  width: 2px;
+}
+
+/* -------------------------------------------------
+
+ LAYOUTS
+
+------------------------------------------------- */
+
+img {
+  vertical-align: middle;
+}
+
+.pc-page-view,
+.pc-page-view-main {
+  height: 100%;
+  min-height: 100%;
+  min-width: 100%;
+  width: 100%;
+}
+
+/* -------------------------------------------------
+
+ LAYOUTS
+
+------------------------------------------------- */
+
+.pc-main {
+  @extend .flex-1;
+}
+
+.pc-header {
+  @extend .padded;
+  @extend .text-center;
+  @extend .fs19;
+}
+
+.pc-footer {
+  @extend .p12;
+  @extend .items-center;
+  @extend .flex-columns;
+
+  height: $footer-height;
+  min-height: $footer-height;
+
+  button {
+    display: block;
+    text-align: center;
+    width: auto;
+  }
+
+  button + button {
+    border-left: 2px dotted $white;
+    border-right: 0;
+  }
+}
+
+.pc-text-button {
+  @extend .no-border;
+  @extend .no-select;
+  @extend .no-outline;
+  @extend .no-background;
+}
+
+#root {
+  background-color: $primary;
+  background-image: $linear-gradient-to-right;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}

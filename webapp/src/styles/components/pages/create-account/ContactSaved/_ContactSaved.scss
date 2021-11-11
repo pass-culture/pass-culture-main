@@ -1,0 +1,32 @@
+.contact-saved-page {
+  align-items: center;
+  background-image: url('/id-check-bg.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  text-align: center;
+  color: $white;
+
+  .animation-text-container {
+    align-items: center;
+    display: flex;
+    flex: 10;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+
+    h2 {
+      margin-top: rem(25px);
+      font-style: italic;
+      font-weight: 400;
+    }
+  }
+
+  .redirect-information {
+    flex: 1;
+    font-size: rem(14px);
+  }
+}

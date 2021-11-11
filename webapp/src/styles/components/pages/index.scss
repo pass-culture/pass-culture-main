@@ -1,0 +1,60 @@
+@import 'activation/index.scss';
+@import 'beta-page/index.scss';
+@import 'discovery/index.scss';
+@import 'forgot-password/index.scss';
+@import 'home/index.scss';
+@import 'my-favorites/index.scss';
+@import 'offer/index.scss';
+@import 'my-bookings/index.scss';
+@import 'profile/index.scss';
+@import 'search/index.scss';
+@import 'signin/index.scss';
+@import 'signup/index.scss';
+@import 'tutorials/index.scss';
+@import 'create-account/index.scss';
+@import 'debug/index.scss';
+
+.beta-page {
+  color: $white;
+
+  .pc-main {
+    flex: 0;
+    height: 66%;
+    min-height: 66%;
+  }
+
+  .pc-footer {
+    border-top: 4px dotted $white;
+    height: 33%;
+    min-height: 33%;
+  }
+
+  .pc-footer a,
+  .pc-footer a:hover,
+  .pc-footer a:focus {
+    color: $white;
+    text-decoration: none;
+  }
+
+  .pc-footer .pc-icon {
+    @include rem(38px);
+  }
+}
+
+.react-embed-typeform-container iframe {
+  @extend .is-full-layout;
+}
+
+.mes-informations-title {
+  @extend .is-primary-text;
+
+  font-size: rem(18px);
+  font-weight: 500;
+  margin-left: rem(21px);
+  margin-top: rem(25px);
+  padding-bottom: rem(8px);
+}
+
+.mes-informations-title-container {
+  @extend .dotted-bottom-primary;
+}

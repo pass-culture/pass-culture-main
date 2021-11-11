@@ -1,0 +1,11 @@
+@import 'EligibilityCheck';
+@import 'Eligible';
+@import 'EligibleSoon';
+@import 'IneligibleOverEighteen';
+@import 'IneligibleUnderEighteen';
+@import 'ContactSaved';
+@import 'IdCheckDisabled';
+
+.grecaptcha-badge {
+  visibility: hidden;
+}
