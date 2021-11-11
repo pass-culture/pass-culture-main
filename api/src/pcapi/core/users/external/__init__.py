@@ -75,6 +75,7 @@ def get_user_attributes(user: User) -> UserAttributes:
             for booking in user_bookings
             if booking.dateUsed and booking.stock.offer.productId in TRACKED_PRODUCT_IDS
         },
+        roles=user.roles,
     )
 
 
