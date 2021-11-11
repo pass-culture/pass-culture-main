@@ -1,5 +1,12 @@
 version: 2.1
 
+##################
+#  ORBS
+##################
+# Waiting for third party orbs to be enabled
+# orbs:
+#   skip: theodo/skip@0.1.2
+
 ###################
 #  EXECUTORS
 ###################
@@ -39,7 +46,45 @@ executors:
 ###################
 
 commands:
+  skip_unchanged:
+    parameters:
+      except_branches:
+        default: master,main,production
+        description: Comma-separated list of git branches where we should never skip tests.
+        type: string
+      git_base_branch:
+        default: origin/master
+        description: The branch to compare against when looking for changing.
+        type: string
+      paths:
+        description: The paths to look for changes in.
+        type: string
+    steps:
+      - run: |
+          echo "Skip debugging"
+          echo "--------------"
+          GIT_BASE_BRANCH=<<parameters.git_base_branch>>
+          PATHS=<<parameters.paths>>
+          EXCEPT_BRANCHES=<<parameters.except_branches>>
+          echo "GIT_BASE_BRANCH=$GIT_BASE_BRANCH"
+          echo "PATHS=$PATHS"
+          echo "EXCEPT_BRANCHES=$EXCEPT_BRANCHES"
 
+          BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
+          echo "BRANCH_NAME=$BRANCH_NAME"
+
+          IFS=' ' read -ra paths_arr \<<< "$PATHS"
+          echo "paths_arr=" "${paths_arr[@]}"
+
+          CHANGED_FILES="$(git diff "$GIT_BASE_BRANCH"..."$(git symbolic-ref --short -q HEAD)" --name-only --diff-filter=ACMRT "${paths_arr[@]}")";
+          echo "CHANGED_FILES=$CHANGED_FILES"
+
+          if [[ "$EXCEPT_BRANCHES" == *"${BRANCH_NAME}"* ]] || [ -n "${CHANGED_FILES}" ];
+          then
+              exit 0;
+          fi
+          circleci step halt;
+    description: Skip if no changes to "<< parameters.paths >>"
   authenticate_gcp:
     description: Authenticate to a GCP project
     parameters:
@@ -245,8 +290,8 @@ jobs:
     working_directory: ~/pass-culture
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
+      - skip_unchanged:
+          paths: adage-front
       - run:
           name: Run Unit Test Adage-front
           command: |
