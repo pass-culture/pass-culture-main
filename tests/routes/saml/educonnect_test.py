@@ -55,8 +55,9 @@ class EduconnectTest:
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
         response = client.get("/saml/educonnect/login?redirect=false")
 
-        assert response.status_code == 200
+        assert response.status_code == 204
         assert response.headers["educonnect-redirect"].startswith("https://pr4.educonnect.phm.education.gouv.fr/idp")
+        assert response.headers["Access-Control-Expose-Headers"] == "educonnect-redirect"
 
     @override_settings(IS_PROD=True)
     @override_settings(API_URL_FOR_EDUCONNECT="https://backend.passculture.app")

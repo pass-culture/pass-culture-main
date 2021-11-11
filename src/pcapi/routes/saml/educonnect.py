@@ -31,8 +31,9 @@ def login_educonnect(user: user_models.User) -> Response:
     response = Response()
 
     if not should_redirect:
-        response.status_code = 200
+        response.status_code = 204
         response.headers["educonnect-redirect"] = redirect_url
+        response.headers["Access-Control-Expose-Headers"] = "educonnect-redirect"
     else:
         response = redirect(redirect_url, code=302)
 
