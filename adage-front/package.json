@@ -13,8 +13,7 @@
     "lint:js:fix": "yarn lint:js --fix",
     "lint:scss": "stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",
-    "test:unit": "jest",
-    "prepare": "husky install"
+    "test:unit": "jest"
   },
   "lint-staged": {
     "./public/**/*.svg": "svgo",
@@ -101,7 +100,6 @@
     "file-loader": "6.2.0",
     "fs-extra": "^10.0.0",
     "html-webpack-plugin": "^4.5.0",
-    "husky": "^7.0.0",
     "jest": "^27.0.3",
     "jest-circus": "27.0.6",
     "jest-fetch-mock": "^3.0.3",
