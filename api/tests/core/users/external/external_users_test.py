@@ -19,6 +19,7 @@ from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import EligibilityType
+from pcapi.core.users.models import UserRole
 from pcapi.notifications.push import testing as batch_testing
 
 
@@ -113,6 +114,7 @@ def test_get_user_attributes():
         last_favorite_creation_date=None,
         last_visit_date=None,
         marketing_email_subscription=True,
+        roles=[UserRole.BENEFICIARY],
     )
 
 
