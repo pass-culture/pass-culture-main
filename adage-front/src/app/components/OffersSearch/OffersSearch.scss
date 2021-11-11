@@ -1,0 +1,8 @@
+@import "sass-rem";
+
+.search-results {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin-left: rem(40px);
+}

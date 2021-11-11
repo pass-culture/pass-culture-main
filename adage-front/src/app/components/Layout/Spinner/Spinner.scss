@@ -1,0 +1,40 @@
+.loading-spinner {
+  text-align: center;
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    img,
+    svg {
+      animation: none;
+      margin-bottom: rem(15px);
+    }
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    img,
+    svg {
+      animation: none;
+      margin-bottom: rem(15px);
+    }
+  }
+
+  img,
+  svg {
+    animation: rotation 3s infinite linear;
+    margin-bottom: rem(15px);
+  }
+
+  .content::after {
+    content: attr(data-dots);
+    position: absolute;
+  }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
