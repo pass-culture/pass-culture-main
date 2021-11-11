@@ -6,7 +6,7 @@ Le repo `main` contient les 6 sous-modules suivants :
 - le portail [pro](https://github.com/pass-culture/pass-culture-pro) (React), pour les acteurs culturels
 - la [webapp](https://github.com/pass-culture/pass-culture-browser) (React) : version web de l'application des jeunes,
   remplacée progressivement par l'[app native](https://github.com/pass-culture/pass-culture-app-native/)
-- [adage-front](https://github.com/pass-culture/pass-culture-adage-front) (React), application frontend pour les
+- [adage-front](https://github.com/pass-culture/pass-culture-adage-front) (React, TS), application frontend pour les
   rédacteurs de projets scolaires
 - [doc](https://github.com/pass-culture/pass-culture-doc) : documentation de l'API pour les partenaires du pass Culture
 - [maintenance-api](https://github.com/pass-culture/pc-maintenance) : page de maintenance (HTML)
