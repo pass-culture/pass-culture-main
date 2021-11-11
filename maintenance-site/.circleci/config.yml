@@ -1,0 +1,83 @@
+version: 2.1
+
+###################
+#  EXECUTORS
+###################
+
+executors:
+  node-gcp:
+    docker:
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/node-gcp:14
+        auth:
+          username: _json_key  # default username when using a JSON key file to authenticate
+          password: $GCP_INFRA_KEY
+
+###################
+#  COMMANDS       #
+###################
+
+commands:
+  authenticate_gcp:
+    description: Authenticate to a GCP project
+    parameters:
+      gcp_key_name:
+        type: env_var_name
+    steps:
+      - run: echo ${<< parameters.gcp_key_name >>} > ${HOME}/gcp-key.json
+      - run: gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
+      - run: gcloud --quiet config set project ${GCP_PROJECT}
+
+  push-to-bucket:
+    description: Push maintenance code to the cloudstorage bucket
+    parameters:
+      bucket_name:
+        type: string
+      path:
+        type: string
+    steps:
+      - run: |
+          set +eo pipefail
+          gsutil rsync  -x '.*/\..*|^\..*' -r << parameters.path >> gs://<< parameters.bucket_name >>
+
+  invalidate-cache:
+    description: Invalidate Cache
+    parameters:
+      url_map_name:
+        type: string
+    steps:
+      - run:
+          name: Invalidate cache
+          command: gcloud compute url-maps invalidate-cdn-cache << parameters.url_map_name >> --path "/*"
+
+###################
+#  JOBS
+###################
+jobs:
+  deploy-maintenance-front:
+    executor: node-gcp
+    steps:
+      - checkout
+      - authenticate_gcp:
+          gcp_key_name: GCP_METIER_KEY
+      - push-to-bucket:
+          path: ./
+          bucket_name: ${GCP_PROJECT}-production-maintenance
+      - invalidate-cache:
+          url_map_name: production-maintenance-url-map
+
+###################
+#  WORKFLOWS
+###################
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - deploy-maintenance-front:
+          filters:
+            branches:
+              only:
+                - master
+          context:
+            - GCP
+            - GCP_PROD
