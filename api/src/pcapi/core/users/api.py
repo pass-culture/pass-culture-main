@@ -825,8 +825,7 @@ def get_id_check_validation_step(user: User) -> Optional[BeneficiaryValidationSt
 
 
 def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryValidationStep]:
-    # TODO: Handle switch from underage_beneficiary to beneficiary
-    if user.is_beneficiary or user.eligibility is None:
+    if not user.can_upgrade_beneficiary_role() or user.eligibility is None:
         return None
 
     if user.eligibility == EligibilityType.AGE18:
