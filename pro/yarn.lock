@@ -2185,6 +2185,13 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@babel/runtime@^7.8.7":
+  version "7.16.3"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.16.3.tgz#b86f0db02a04187a3c17caa77de69840165d42d5"
+  integrity sha512-WBwekcqacdY2e9AF/Q7WLFUWmdJGJTkbjqTjoMDgXkVZ3ZRUvOPsLb5KdwISoQVsbP+DQzVZW4Zhci0DvpbNTQ==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
 "@babel/template@^7.10.4", "@babel/template@^7.12.13", "@babel/template@^7.3.3":
   version "7.12.13"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.12.13.tgz#530265be8a2589dbb37523844c5bcb55947fb327"
@@ -2321,7 +2328,7 @@
   resolved "https://registry.yarnpkg.com/@csstools/normalize.css/-/normalize.css-10.1.0.tgz#f0950bba18819512d42f7197e56c518aa491cf18"
   integrity sha512-ij4wRiunFfaJxjB0BdrYHIH8FxBJpOwNPhhAcunlmPdXudL1WQV1qoP9un6JsEBAgQH+7UXyyjh0g7jTxXK6tg==
 
-"@emotion/cache@^10.0.27":
+"@emotion/cache@^10.0.27", "@emotion/cache@^10.0.9":
   version "10.0.29"
   resolved "https://registry.yarnpkg.com/@emotion/cache/-/cache-10.0.29.tgz#87e7e64f412c060102d589fe7c6dc042e6f9d1e0"
   integrity sha512-fU2VtSVlHiF27empSbxi1O2JFdNWZO+2NFHfwO0pxgTep6Xa3uGb+3pVKfLww2l/IBGLNEZl5Xf/++A4wAYDYQ==
@@ -2331,7 +2338,7 @@
     "@emotion/utils" "0.11.3"
     "@emotion/weak-memoize" "0.2.5"
 
-"@emotion/core@^10.1.1":
+"@emotion/core@^10.0.9", "@emotion/core@^10.1.1":
   version "10.1.1"
   resolved "https://registry.yarnpkg.com/@emotion/core/-/core-10.1.1.tgz#c956c1365f2f2481960064bcb8c4732e5fb612c3"
   integrity sha512-ZMLG6qpXR8x031NXD8HJqugy/AZSkAuMxxqB46pmAR7ze47MhNJ56cdoX243QPZdGctrdfo+s08yZTiwaUcRKA==
@@ -2343,7 +2350,7 @@
     "@emotion/sheet" "0.9.4"
     "@emotion/utils" "0.11.3"
 
-"@emotion/css@^10.0.27":
+"@emotion/css@^10.0.27", "@emotion/css@^10.0.9":
   version "10.0.27"
   resolved "https://registry.yarnpkg.com/@emotion/css/-/css-10.0.27.tgz#3a7458198fbbebb53b01b2b87f64e5e21241e14c"
   integrity sha512-6wZjsvYeBhyZQYNrGoR5yPMYbMBNEnanDrqmsqS1mzDm1cOTu12shvl2j4QHNS36UaTE0USIJawCH9C8oW34Zw==
@@ -3197,6 +3204,23 @@
     regenerator-runtime "^0.13.7"
     storybook-addon-outline "^1.4.1"
     ts-dedent "^2.0.0"
+
+"@storybook/addon-knobs@^6.3.1":
+  version "6.3.1"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-knobs/-/addon-knobs-6.3.1.tgz#2115c6f0d5759e4fe73d5f25710f4a94ebd6f0db"
+  integrity sha512-2GGGnQSPXXUhHHYv4IW6pkyQlCPYXKYiyGzfhV7Zhs95M2Ban08OA6KLmliMptWCt7U9tqTO8dB5u0C2cWmCTw==
+  dependencies:
+    copy-to-clipboard "^3.3.1"
+    core-js "^3.8.2"
+    escape-html "^1.0.3"
+    fast-deep-equal "^3.1.3"
+    global "^4.4.0"
+    lodash "^4.17.20"
+    prop-types "^15.7.2"
+    qs "^6.10.0"
+    react-colorful "^5.1.2"
+    react-lifecycles-compat "^3.0.4"
+    react-select "^3.2.0"
 
 "@storybook/addon-links@^6.3.7":
   version "6.3.7"
@@ -8031,6 +8055,14 @@ dom-converter@^0.2:
   dependencies:
     utila "~0.4"
 
+dom-helpers@^5.0.1:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/dom-helpers/-/dom-helpers-5.2.1.tgz#d9400536b2bf8225ad98fe052e029451ac40e902"
+  integrity sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==
+  dependencies:
+    "@babel/runtime" "^7.8.7"
+    csstype "^3.0.2"
+
 dom-scroll-into-view@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/dom-scroll-into-view/-/dom-scroll-into-view-1.0.1.tgz#32abb92f0d8feca6215162aef43e4b449ab8d99c"
@@ -10616,11 +10648,6 @@ humanize-duration@^3.25.0:
   resolved "https://registry.yarnpkg.com/humanize-duration/-/humanize-duration-3.25.2.tgz#5259585b749ecc5ad5a60fb37121aee0e9ab0c5e"
   integrity sha512-zSerjahuzBazDaE8skjMI7Xmrt/EirvW5cDsXgysx8tYIjcgCMnI5Y5985y3LxYeLah9L5cQY3WEw1k7GRWbfg==
 
-husky@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/husky/-/husky-6.0.0.tgz#810f11869adf51604c32ea577edbc377d7f9319e"
-  integrity sha512-SQS2gDTB7tBN486QSoKPKQItZw97BMOd+Kdb6ghfpBc0yXyzrddI0oDV5MkDAbuB4X2mO3/nj60TRMcYxwzZeQ==
-
 iconv-lite@0.4.24, iconv-lite@^0.4.24, iconv-lite@^0.4.4:
   version "0.4.24"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
@@ -12953,6 +12980,11 @@ memfs@^3.1.2:
   integrity sha512-RE0CwmIM3CEvpcdK3rZ19BC4E6hv9kADkMN5rPduRak58cNArWLi/9jFLsa4rhsjfVxMP3v0jO7FHXq7SvFY5Q==
   dependencies:
     fs-monkey "1.0.3"
+
+memoize-one@^5.0.0:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-5.2.1.tgz#8337aa3c4335581839ec01c3d594090cebe8f00e"
+  integrity sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==
 
 memoizerific@^1.11.3:
   version "1.11.3"
@@ -16040,6 +16072,13 @@ react-infinite-scroller@^1.2.4:
   dependencies:
     prop-types "^15.5.8"
 
+react-input-autosize@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-input-autosize/-/react-input-autosize-3.0.0.tgz#6b5898c790d4478d69420b55441fcc31d5c50a85"
+  integrity sha512-nL9uS7jEs/zu8sqwFE5MAPx6pPkNAriACQ2rGLlqmKr2sPGtN7TXTyDdQt4lbNXVx7Uzadb40x8qotIuru6Rhg==
+  dependencies:
+    prop-types "^15.5.8"
+
 react-inspector@^5.1.0:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-5.1.1.tgz#58476c78fde05d5055646ed8ec02030af42953c8"
@@ -16213,6 +16252,20 @@ react-router@^4.3.1:
     prop-types "^15.6.1"
     warning "^4.0.1"
 
+react-select@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/react-select/-/react-select-3.2.0.tgz#de9284700196f5f9b5277c5d850a9ce85f5c72fe"
+  integrity sha512-B/q3TnCZXEKItO0fFN/I0tWOX3WJvi/X2wtdffmwSQVRwg5BpValScTO1vdic9AxlUgmeSzib2hAZAwIUQUZGQ==
+  dependencies:
+    "@babel/runtime" "^7.4.4"
+    "@emotion/cache" "^10.0.9"
+    "@emotion/core" "^10.0.9"
+    "@emotion/css" "^10.0.9"
+    memoize-one "^5.0.0"
+    prop-types "^15.6.0"
+    react-input-autosize "^3.0.0"
+    react-transition-group "^4.3.0"
+
 react-sizeme@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/react-sizeme/-/react-sizeme-3.0.1.tgz#4d12f4244e0e6a0fb97253e7af0314dc7c83a5a0"
@@ -16283,6 +16336,16 @@ react-tracking@^8.1.0:
     core-js "^3.3.2"
     deepmerge "^4.1.1"
     hoist-non-react-statics "^3.3.0"
+
+react-transition-group@^4.3.0:
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-4.4.2.tgz#8b59a56f09ced7b55cbd53c36768b922890d5470"
+  integrity sha512-/RNYfRAMlZwDSr6z4zNKV6xu53/e2BuaBbGhbyYIXTrmgu/bGHzmqOs7mJSJBHy9Ud+ApHx3QjrkKSp1pxvlFg==
+  dependencies:
+    "@babel/runtime" "^7.5.5"
+    dom-helpers "^5.0.1"
+    loose-envify "^1.4.0"
+    prop-types "^15.6.2"
 
 react@^16.10.2, react@^16.5.2, react@^16.9.0:
   version "16.14.0"
