@@ -547,22 +547,22 @@ jobs:
           bucket_name: ${GCP_PROJECT}-<<parameters.app_environment>>-pro
       - invalidate-cache:
           url_map_name: <<parameters.app_environment>>-pro-url-map
-      - run:
-          name: Check deployed version
-          command: |
-            if [[ "<<parameters.app_environment>>" == "testing" ]]; then
-              exit 0
-              circleci step halt;
-            fi
-            COMPONENT_URL="https://pro.$(./scripts/compute_component_partial_url.sh <<parameters.app_environment>>)"
-            ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
-      - run:
-          name: Send failure notification
-          command: |
-            VERSION_TO_DEPLOY=$(git describe --contains)
-            BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *Pro* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
-            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
-          when: on_fail
+      - unless:
+          condition:
+            equal: ["testing", <<parameters.app_environment>>]
+          steps:
+            - run:
+                name: Check deployed version
+                command: |
+                  COMPONENT_URL="https://pro.$(./scripts/compute_component_partial_url.sh <<parameters.app_environment>>)"
+                  ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
+            - run:
+                name: Send failure notification
+                command: |
+                  VERSION_TO_DEPLOY=$(git describe --contains)
+                  BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *Pro* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
+                  curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
+                when: on_fail
 
   deploy-webapp:
     machine:
@@ -590,22 +590,22 @@ jobs:
 
             npm install -g netlify-cli@2.46.0
             netlify deploy -s "${NETLIFY_SITE_ID_WEBAPP}" -a "${NETLIFY_TOKEN}" -d build/ --prod
-      - run:
-          name: Check deployed version
-          command: |
-            if [[ "<<parameters.app_environment>>" == "testing" ]]; then
-              exit 0
-              circleci step halt;
-            fi
-            COMPONENT_URL="https://app.$(./scripts/compute_component_partial_url.sh <<parameters.app_environment>>)"
-            ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
-      - run:
-          name: Send failure notification
-          command: |
-            VERSION_TO_DEPLOY=$(git describe --contains)
-            BOT_MESSAGE="'*"<<parameters.app_environment>>"* : *Webapp* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
-            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
-          when: on_fail
+      - unless:
+          condition:
+            equal: ["testing", <<parameters.app_environment>>]
+          steps:
+            - run:
+                name: Check deployed version
+                command: |
+                  COMPONENT_URL="https://app.$(./scripts/compute_component_partial_url.sh <<parameters.app_environment>>)"
+                  ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
+            - run:
+                name: Send failure notification
+                command: |
+                  VERSION_TO_DEPLOY=$(git describe --contains)
+                  BOT_MESSAGE="'*"<<parameters.app_environment>>"* : *Webapp* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
+                  curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
+                when: on_fail
 
   deploy-adage-front:
     executor: node-gcp-14
@@ -626,17 +626,21 @@ jobs:
           bucket_name: ${GCP_PROJECT}-<<parameters.app_environment>>-adage
       - invalidate-cache:
           url_map_name: <<parameters.app_environment>>-adage-url-map
-      - run:
-          name: Send failure notification
-          command: |
-            if [[ "<<parameters.app_environment>>" == "testing" ]]; then
-              exit 0
-              circleci step halt;
-            fi
-            VERSION_TO_DEPLOY=$(git describe --contains)
-            BOT_MESSAGE="'*"<<parameters.app_environment>>"* : *Adage-front* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
-            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
-          when: on_fail
+      - unless:
+          condition:
+            equal: ["testing", <<parameters.app_environment>>]
+          steps:
+            - run:
+                name: Send failure notification
+                command: |
+                  if [[ "<<parameters.app_environment>>" == "testing" ]]; then
+                    exit 0
+                    circleci step halt;
+                  fi
+                  VERSION_TO_DEPLOY=$(git describe --contains)
+                  BOT_MESSAGE="'*"<<parameters.app_environment>>"* : *Adage-front* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
+                  curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
+                when: on_fail
 
   release-synthesis:
     machine:
