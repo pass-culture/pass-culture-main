@@ -1,4 +1,5 @@
 import { action } from '@storybook/addon-actions'
+import { boolean } from '@storybook/addon-knobs'
 import { Story } from "@storybook/react"
 import { Formik } from 'formik'
 import React from 'react'
@@ -25,6 +26,7 @@ const Template: Story<{ label?: string }> = ({ label }) => (
       return (
         <Select
           {...getFieldProps('categorie')}
+          disabled={boolean('disabled', false)}
           label={label}
           options={mockCategoriesOptions}
         />
