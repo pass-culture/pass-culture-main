@@ -856,6 +856,7 @@ workflows:
                 - production
                 - staging
                 - integration
+          context: Slack
       - tests-api:
           name: "Run core tests after commit"
           pytest_extra_args: "tests/core"
@@ -865,6 +866,7 @@ workflows:
                 - production
                 - staging
                 - integration
+          context: Slack
       - tests-api:
           name: "Run routes tests after commit"
           pytest_extra_args: "tests/routes"
@@ -874,6 +876,7 @@ workflows:
                 - production
                 - staging
                 - integration
+          context: Slack
       - tests-api:
           name: "Run other tests after commit"
           pytest_extra_args: "tests --ignore=tests/core --ignore=tests/routes"
@@ -883,6 +886,7 @@ workflows:
                 - production
                 - staging
                 - integration
+          context: Slack
       - tests-webapp:
           filters:
             branches:
