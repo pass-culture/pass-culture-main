@@ -59,6 +59,7 @@ commands:
       paths:
         description: The paths to look for changes in.
         type: string
+    description: Skip if no changes to "<< parameters.paths >>"
     steps:
       - run: |
           echo "Skip debugging"
@@ -84,7 +85,6 @@ commands:
               exit 0;
           fi
           circleci step halt;
-    description: Skip if no changes to "<< parameters.paths >>"
   authenticate_gcp:
     description: Authenticate to a GCP project
     parameters:
@@ -530,23 +530,31 @@ jobs:
 
   deploy-pro:
     executor: node-gcp-14
+    parameters:
+      app_environment:
+        type: string
+        default: ${CIRCLE_BRANCH}
     steps:
       - checkout
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - build-frontend-app:
-          node_env: ${CIRCLE_BRANCH}
+          node_env: <<parameters.app_environment>>
           build_dir: ./pro
-          yarn_build_subcommand: "build:${CIRCLE_BRANCH}"
+          yarn_build_subcommand: "build:<<parameters.app_environment>>"
       - push-to-bucket:
           build_path: ./pro/build/
-          bucket_name: ${GCP_PROJECT}-${CIRCLE_BRANCH}-pro
+          bucket_name: ${GCP_PROJECT}-<<parameters.app_environment>>-pro
       - invalidate-cache:
-          url_map_name: ${CIRCLE_BRANCH}-pro-url-map
+          url_map_name: <<parameters.app_environment>>-pro-url-map
       - run:
           name: Check deployed version
           command: |
-            COMPONENT_URL="https://pro.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
+            if [[ "<<parameters.app_environment>>" == "testing" ]]; then
+              exit 0
+              circleci step halt;
+            fi
+            COMPONENT_URL="https://pro.$(./scripts/compute_component_partial_url.sh <<parameters.app_environment>>)"
             ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
       - run:
           name: Send failure notification
@@ -699,7 +707,6 @@ workflows:
             - GCP
             - GCP_EHP
           app_version: ${CIRCLE_SHA1}
-
       - deploy-pcapi:
           filters:
             branches:
@@ -723,7 +730,19 @@ workflows:
             - GCP
             - GCP_EHP
           helm_environment: testing
-
+      - deploy-pro:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - tests-pro-unit-tests
+            - tests-pro-e2e-tests
+            - restart-pcapi
+          context:
+            - GCP
+            - GCP_EHP
+          app_environment: testing
   gcp-ehp:
     jobs:
       - build-and-push-image:
