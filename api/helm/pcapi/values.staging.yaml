@@ -560,7 +560,7 @@ secrets:
   - name: WALLET_BALANCES_RECIPIENTS
     version: 2
   - name: WHITELISTED_EMAIL_RECIPIENTS
-    version: 3
+    version: 8
   - name: WHITELISTED_SMS_RECIPIENTS
     version: 2
   - name: REPORT_OFFER_EMAIL_ADDRESS
