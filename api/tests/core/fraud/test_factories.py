@@ -14,6 +14,7 @@ class FactoriesTest:
             (fraud_models.FraudCheckType.DMS, fraud_models.DMSContent),
             (fraud_models.FraudCheckType.JOUVE, fraud_models.JouveContent),
             (fraud_models.FraudCheckType.USER_PROFILING, fraud_models.UserProfilingFraudData),
+            (fraud_models.FraudCheckType.UBBLE, fraud_models.UbbleIdentificationResponse),
         ],
     )
     def test_database_serialization(self, check_type, model_class):
@@ -26,6 +27,7 @@ class FactoriesTest:
             (fraud_models.FraudCheckType.DMS, fraud_factories.DMSContentFactory),
             (fraud_models.FraudCheckType.JOUVE, fraud_factories.JouveContentFactory),
             (fraud_models.FraudCheckType.USER_PROFILING, fraud_factories.UserProfilingFraudDataFactory),
+            (fraud_models.FraudCheckType.UBBLE, fraud_factories.UbbleIdentificationResponseFactory),
         ],
     )
     def test_database_overwrite(self, check_type, factory_class):

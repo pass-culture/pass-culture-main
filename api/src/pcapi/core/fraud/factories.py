@@ -104,10 +104,60 @@ class DMSContentFactory(factory.Factory):
     id_piece_number = factory.Sequence("{}".format)
 
 
+class UbbleIdentificationResponseFactory(factory.Factory):
+    class Meta:
+        model = models.UbbleIdentificationResponse
+        rename = {
+            "created_at": "created-at",
+            "ended_at": "ended-at",
+            "identification_id": "identification-id",
+            "identification_url": "identification-url",
+            "number_of_attempts": "number-of-attempts",
+            "redirect_url": "redirect-url",
+            "started_at": "started-at",
+            "updated_at": "updated-at",
+            "status_updated_at": "status-updated-at",
+            "user_agent": "user-agent",
+            "user_ip_address": "user-ip-address",
+        }
+
+    comment = factory.Faker("sentence", nb_words=3)
+    created_at = factory.Faker("date_time")
+    ended_at = factory.Faker("date_time")
+    identification_id = factory.Faker("pystr")
+    identification_url = factory.Faker("url")
+    number_of_attempts = factory.Faker("pyint")
+    redirect_url = factory.Faker("url")
+    score = factory.Faker("pyfloat")
+    started_at = factory.Faker("date_time")
+    status = factory.Faker("pystr")  # swith to enum
+    updated_at = factory.Faker("date_time")
+    status_updated_at = factory.Faker("date_time")
+    user_agent = factory.Faker("user_agent")
+    user_ip_address = factory.Faker("ipv4")
+    webhook = factory.Faker("url")
+
+
+class EduconnectContentFactory(factory.Factory):
+    class Meta:
+        model = models.EduconnectContent
+
+    class Params:
+        age = 15
+
+    birth_date = factory.LazyAttribute(lambda o: datetime.now() - relativedelta(years=o.age, months=4))
+    educonnect_id = factory.Faker("lexify", text="id-?????????????????")
+    first_name = factory.Faker("first_name")
+    ine_hash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
+    last_name = factory.Faker("last_name")
+
+
 FRAUD_CHECK_TYPE_MODEL_ASSOCIATION = {
     models.FraudCheckType.DMS: DMSContentFactory,
     models.FraudCheckType.JOUVE: JouveContentFactory,
     models.FraudCheckType.USER_PROFILING: UserProfilingFraudDataFactory,
+    models.FraudCheckType.UBBLE: UbbleIdentificationResponseFactory,
+    models.FraudCheckType.EDUCONNECT: EduconnectContentFactory,
 }
 
 
@@ -116,20 +166,20 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
         model = models.BeneficiaryFraudCheck
 
     user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
-    type = factory.LazyAttribute(lambda o: random.choice(list(models.FraudCheckType)))
+    type = factory.LazyAttribute(lambda o: random.choice(list(FRAUD_CHECK_TYPE_MODEL_ASSOCIATION.keys())))
     thirdPartyId = factory.Sequence("ThirdPartyIdentifier-{0}".format)
-    resultContent = factory.SubFactory(JouveContentFactory)
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         """Override the default ``_create`` with our custom call."""
         factory_class = FRAUD_CHECK_TYPE_MODEL_ASSOCIATION.get(kwargs["type"])
         content = {}
-        if factory_class:
-            content = factory_class()
-        if factory_class and not isinstance(kwargs["resultContent"], factory_class._meta.get_model_class()):
-            kwargs["resultContent"] = content
+        if "resultContent" not in kwargs:
+            content = factory_class().dict(by_alias=True)
+        if isinstance(kwargs.get("resultContent"), factory_class._meta.get_model_class()):
+            content = kwargs["resultContent"].dict(by_alias=True)
 
+        kwargs["resultContent"] = content
         return super()._create(model_class, *args, **kwargs)
 
 
@@ -149,20 +199,6 @@ class BeneficiaryFraudReviewFactory(testing.BaseFactory):
     user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
     author = factory.SubFactory(users_factories.AdminFactory)
     reason = factory.Sequence("Fraud validation reason #{0}".format)
-
-
-class EduconnectContentFactory(factory.Factory):
-    class Meta:
-        model = models.EduconnectContent
-
-    class Params:
-        age = 15
-
-    birth_date = factory.LazyAttribute(lambda o: datetime.now() - relativedelta(years=o.age, months=4))
-    educonnect_id = factory.Faker("lexify", text="id-?????????????????")
-    first_name = factory.Faker("first_name")
-    ine_hash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
-    last_name = factory.Faker("last_name")
 
 
 ### TODO: remove after 15-17 test phase ###
