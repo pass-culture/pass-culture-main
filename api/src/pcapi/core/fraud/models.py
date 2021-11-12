@@ -21,6 +21,7 @@ class FraudCheckType(enum.Enum):
     DMS = "dms"
     INTERNAL_REVIEW = "internal_review"
     EDUCONNECT = "educonnect"
+    UBBLE = "ubble"
 
 
 class FraudStatus(enum.Enum):
@@ -199,6 +200,7 @@ FRAUD_CHECK_MAPPING = {
     FraudCheckType.JOUVE: JouveContent,
     FraudCheckType.INTERNAL_REVIEW: InternalReviewFraudData,
     FraudCheckType.EDUCONNECT: EduconnectContent,
+    FraudCheckType.UBBLE: UbbleIdentificationResponse,
 }
 
 
