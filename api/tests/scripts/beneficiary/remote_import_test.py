@@ -12,6 +12,8 @@ from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.payments.models import Deposit
+from pcapi.core.payments.models import DepositType
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
@@ -636,9 +638,7 @@ class RunIntegrationTest:
             dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
         )
 
-        remote_import.run(
-            procedure_id=6712558,
-        )
+        remote_import.run(procedure_id=6712558)
 
         # then
         assert users_models.User.query.count() == 1
@@ -656,6 +656,43 @@ class RunIntegrationTest:
         assert beneficiary_import.beneficiary == user
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert len(push_testing.requests) == 1
+
+    @override_features(FORCE_PHONE_VALIDATION=False)
+    @patch(
+        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+    )
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    def test_import_exunderage_beneficiary(
+        self, get_application_details, get_closed_application_ids_for_demarche_simplifiee
+    ):
+
+        with freezegun.freeze_time(datetime.utcnow() - relativedelta(years=3)):
+            users_factories.UnderageBeneficiaryFactory(
+                email="john.doe@example.com",
+                firstName="john",
+                lastName="doe",
+                dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
+                subscription_age=15,
+            )
+
+        get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
+        get_application_details.side_effect = self._get_details
+
+        remote_import.run(procedure_id=6712558)
+
+        # then
+        assert users_models.User.query.count() == 1
+        user = users_models.User.query.first()
+
+        assert user.has_beneficiary_role
+
+        deposits = Deposit.query.filter_by(user=user).all()
+        age_18_deposit = next(deposit for deposit in deposits if deposit.type == DepositType.GRANT_18)
+
+        assert len(deposits) == 2
+        assert age_18_deposit.amount == 300
+
+        assert BeneficiaryImport.query.count() == 2
 
     @patch(
         "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
