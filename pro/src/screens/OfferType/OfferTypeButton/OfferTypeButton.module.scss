@@ -1,0 +1,38 @@
+.button {
+    background-color: transparent;
+    border: 1px solid $black;
+    border-radius: 8px;
+    padding: rem(32px) rem(16px) rem(16px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: rem(231px);
+    font-size: rem(15px);
+
+    &-radio {
+        display: none;
+    }
+
+    &-check-mark {
+        position: absolute;
+        top: rem(16px);
+        left: rem(16px);
+    }
+
+    &-icon {
+        fill: $black;
+        margin-bottom: rem(12px);
+    }
+
+    &.is-selected {
+        border: 1px solid $primary;
+        font-weight: 700;
+        color: $primary;
+
+        .button-icon {
+            fill: $primary;
+        }
+    }
+}
