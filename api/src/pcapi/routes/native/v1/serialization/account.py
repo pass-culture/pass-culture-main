@@ -304,3 +304,11 @@ class UserProfilingFraudRequest(BaseModel):
                 "L'identifiant de session ne doit être composé exclusivement que de caratères alphanumériques"
             )
         return session_id
+
+
+class IdentificationSessionRequest(BaseModel):
+    redirect_url: str
+
+
+class IdentificationSessionResponse(BaseModel):
+    identification_url: str

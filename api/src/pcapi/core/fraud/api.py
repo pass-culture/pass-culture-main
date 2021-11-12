@@ -183,6 +183,17 @@ def dms_fraud_checks(
     return fraud_items
 
 
+def start_ubble_fraud_check(user: user_models.User, ubble_content: models.UbbleIdentificationResponse) -> None:
+    fraud_check = models.BeneficiaryFraudCheck(
+        user=user,
+        type=models.FraudCheckType.UBBLE,
+        thirdPartyId=str(ubble_content.identification_id),
+        resultContent=ubble_content,
+    )
+    db.session.add(fraud_check)
+    db.session.commit()
+
+
 def on_identity_fraud_check_result(
     user: user_models.User,
     beneficiary_fraud_check: models.BeneficiaryFraudCheck,

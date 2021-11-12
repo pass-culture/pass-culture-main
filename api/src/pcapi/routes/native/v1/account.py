@@ -9,6 +9,7 @@ from pcapi.connectors import user_profiling
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.offers.exceptions import FileSizeExceeded
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
@@ -301,3 +302,11 @@ def profiling_fraud_score(user: User, body: serializers.UserProfilingFraudReques
     else:
         logger.info("Success when profiling user: returned userdata %r", profiling_infos.dict())
         fraud_api.on_user_profiling_result(user, profiling_infos)
+
+
+@blueprint.native_v1.route("/ubble_identification", methods=["POST"])
+@spectree_serialize(api=blueprint.api, response_model=serializers.IdentificationSessionResponse)
+@authenticated_user_required
+def start_identification_session(user: User, body: serializers.IdentificationSessionRequest) -> None:
+    identification_url = subscription_api.start_ubble_workflow(user, body.redirect_url)
+    return serializers.IdentificationSessionResponse(identification_url=identification_url)
