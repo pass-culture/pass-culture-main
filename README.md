@@ -1,36 +1,37 @@
 # pass-culture-main
 
-Le repo `main` contient les 6 sous-modules suivants :
+Le repo `main` contient les 6 projets suivants :
 
-- l'[api](https://github.com/pass-culture/pass-culture-api) (Flask)
-- le portail [pro](https://github.com/pass-culture/pass-culture-pro) (React), pour les acteurs culturels
-- la [webapp](https://github.com/pass-culture/pass-culture-browser) (React) : version web de l'application des jeunes,
+- l'[api](./api/) (Flask)
+- le portail [pro](./pro) (React), pour les acteurs culturels
+- la [webapp](./webapp) (React) : version web de l'application des jeunes,
   remplacée progressivement par l'[app native](https://github.com/pass-culture/pass-culture-app-native/)
-- [adage-front](https://github.com/pass-culture/pass-culture-adage-front) (React, TS), application frontend pour les
+- [adage-front](./adage-front) (React, TS), application frontend pour les
   rédacteurs de projets scolaires
-- [doc](https://github.com/pass-culture/pass-culture-doc) : documentation de l'API pour les partenaires du pass Culture
-- [maintenance-api](https://github.com/pass-culture/pc-maintenance) : page de maintenance (HTML)
+- [doc](./doc) : documentation de l'API pour les partenaires du pass Culture
+- [maintenance-api](./maintenance-ste) : page de maintenance (HTML)
 
 ## Installation
 
 #### Installer les bibliothèques
 
 - Docker
-    - [docker](https://docs.docker.com/install/) (testé avec 19.03.12)
-    - [docker-compose](https://docs.docker.com/compose/install/#install-compose) (testé avec 1.26.2)
+  - [docker](https://docs.docker.com/install/) (testé avec 19.03.12)
+  - [docker-compose](https://docs.docker.com/compose/install/#install-compose) (testé avec 1.26.2)
 - [NVM](https://github.com/creationix/nvm) (Node Version Manager)
-    - `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash`
+  - `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash`
 - [Node](https://nodejs.org/en/download/)
-    - Lancer `nvm install` dans `/pro`, `/webapp` et `/adage-front`
+  - Lancer `nvm install` dans `/pro`, `/webapp` et `/adage-front`
 - [Yarn](https://classic.yarnpkg.com/en/)
-    - `npm install --global yarn` (NPM)
-    - autres méthodes [dans la doc de Yarn](https://classic.yarnpkg.com/lang/en/docs/install/)
+  - `npm install --global yarn` (NPM)
+  - autres méthodes [dans la doc de Yarn](https://classic.yarnpkg.com/lang/en/docs/install/)
 - GPG (outil de (dé)chiffrement)
-    - [GPG Suite](https://gpgtools.org/) (MacOS)
-    - `sudo apt install gpg` (Linux)
+
+  - [GPG Suite](https://gpgtools.org/) (MacOS)
+  - `sudo apt install gpg` (Linux)
 
 - Pour MacOS spécifiquement
-    - CoreUtils: `brew install coreutils`
+  - CoreUtils: `brew install coreutils`
 
 #### Installer les CLI
 
@@ -44,16 +45,15 @@ Il vous faudra une clé SSH sur votre profil GitHub pour pouvoir cloner le repos
 
 1. `git clone git@github.com:pass-culture/pass-culture-main.git pass-culture-main`
 2. `cd pass-culture-main`
-3. `git submodule update --init --recursive`
-4. `./pc symlink`
-5. `pc install`
+3. `./pc symlink`
+4. `pc install`
 
-Les README de chaque sous-module détailleront leurs installations spécifiques.
+Les README de chaque sous-projet détailleront leurs installations spécifiques.
 
 ### Lancer les applications
 
 Voici de brèves instructions pour lancer l'API et les différents frontends via le script `pc`, qui fait appel à
-docker-compose. On trouvera dans le [README](https://github.com/pass-culture/pass-culture-api#readme) d'`api` d'autres
+docker-compose. On trouvera dans le [README](./api#readme) d'`api` d'autres
 manières de lancer le backend.
 
 #### api
@@ -95,9 +95,9 @@ Ces utilisateurs existent également pour le 97, en remplaçant `93` par `97`.
 - Rebuild : `pc rebuild-backend` (reconstruire l'image docker sans cache)
 - Restart : `pc restart-backend` (effacer la base de données, et relancer tous les containers)
 - Reset :
-    - `pc reset-sandbox-db` : si vos serveurs de dev tournent, et que vous souhaitez juste réinitialiser la db
-    - `pc reset-reco-db` : (si vous voulez juste enlever les recommandations et bookings créés en dev par votre
-      navigation)
+  - `pc reset-sandbox-db` : si vos serveurs de dev tournent, et que vous souhaitez juste réinitialiser la db
+  - `pc reset-reco-db` : (si vous voulez juste enlever les recommandations et bookings créés en dev par votre
+    navigation)
 - Restore : `pc restore-db file.pgdump` (restaurer un fichier de dump postgresql (file.pgdump) en local)
 
 #### Troubleshooting:
@@ -146,9 +146,9 @@ poussé sur le repository distant. La CI lance alors des pipelines de tests.
 
 - On n'utilise **pas** de _semantic versioning_
 - On utilise le format `I.P.S`
-    - I => numéro de l'**Itération**
-    - P => incrément de _fix_ en **Production**
-    - S => incrément de _fix_ en **Staging**
+  - I => numéro de l'**Itération**
+  - P => incrément de _fix_ en **Production**
+  - S => incrément de _fix_ en **Staging**
 - En amont de la pose d'un tag, il faut communiquer les migrations de BDD embarquées à l'équipe data pour éviter des
   bugs sur les analytics
 
