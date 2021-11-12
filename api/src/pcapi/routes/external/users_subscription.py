@@ -11,6 +11,7 @@ from pcapi.routes.apis import public_api
 from pcapi.scripts.beneficiary import remote_import
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.validation.routes import dms as dms_validation
+from pcapi.validation.routes import ubble as ubble_validation
 
 
 logger = logging.getLogger(__name__)
@@ -70,3 +71,8 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
     if not user.hasCompletedIdCheck:
         user.hasCompletedIdCheck = True
         repository.save(user)
+
+
+@public_api.route("/webhooks/ubble/application_status", methods=["POST"])
+def ubble_webhook_update_application_status(form: ubble_validation.WebhookRequest) -> None:
+    raise NotImplementedError
