@@ -169,8 +169,7 @@ def process_application(
         fraud_api.on_dms_fraud_check(user, information)
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception("Error on dms fraud check result: %s", exc)
-    # TODO: Handle switch from underage_beneficiary to beneficiary
-    if user.is_beneficiary is True:
+    if user.has_beneficiary_role:
         _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
         return
 
