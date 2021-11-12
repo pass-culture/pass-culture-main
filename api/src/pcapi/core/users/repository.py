@@ -88,7 +88,7 @@ def get_and_lock_user(user_id: int) -> User:
     # older from the SQLAlchemy's session.
     user = User.query.filter_by(id=user_id).populate_existing().with_for_update().one_or_none()
     if not user:
-        raise exceptions.UserDoesNotExist
+        raise exceptions.UserDoesNotExist()
     return user
 
 
