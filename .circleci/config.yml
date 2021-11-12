@@ -7,6 +7,18 @@ version: 2.1
 # orbs:
 #   skip: theodo/skip@0.1.2
 
+orbs:
+  slack: circleci/slack@4.2
+
+##################
+#  PARAMETERS
+##################
+
+parameters:
+  venv_cache_key:
+    type: string
+    default: 'deps1-{{ checksum "/home/circleci/.pyenv/version" }}-{{ checksum "api/requirements.txt" }}'
+
 ###################
 #  EXECUTORS
 ###################
@@ -46,6 +58,19 @@ executors:
 ###################
 
 commands:
+  notify-slack:
+    description: Send notification to Slack
+    parameters:
+      channel:
+        type: string
+      template:
+        type: string
+        default: FAIL_TEMPLATE_1
+    steps:
+      - slack/notify:
+          event: fail
+          channel: << parameters.channel >>
+          template: << parameters.template >>
   skip_unchanged:
     parameters:
       except_branches:
@@ -184,6 +209,69 @@ commands:
 ###################
 
 jobs:
+  quality:
+    parameters:
+      is_nightly_build:
+        type: boolean
+        default: false
+    working_directory: ~/pass-culture
+    docker:
+      - image: cimg/python:3.9.7
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - checkout
+      - skip_unchanged:
+          paths: api
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - restore_cache:
+                key: << pipeline.parameters.venv_cache_key >>
+      - run:
+          name: Install requirements
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt --progress-bar off
+          working_directory: api
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - save_cache:
+                key: << pipeline.parameters.venv_cache_key >>
+                paths:
+                  - "api/venv"
+      - run:
+          name: Install pcapi Python package
+          command: |
+            venv/bin/pip install -e .
+            venv/bin/pip freeze
+          working_directory: api
+      - run:
+          name: Check imports are well organized with isort
+          when: always
+          command: venv/bin/isort . --check-only
+          working_directory: api
+      - run:
+          name: Check code is well formatted with black
+          when: always
+          command: venv/bin/black . --check
+          working_directory: api
+      - run:
+          name: Run pylint
+          when: always
+          command: venv/bin/pylint src tests --jobs=8
+          working_directory: api
+      - when:
+          condition: << parameters.is_nightly_build >>
+          steps:
+            - notify-slack:
+               channel: shérif
+
   tests-script-pc:
     machine:
       image: ubuntu-2004:202101-01
@@ -203,28 +291,110 @@ jobs:
             ./run_tests.sh
 
   tests-api:
-    machine:
-      image: ubuntu-2004:202101-01
+    parameters:
+      is_nightly_build:
+        type: boolean
+        default: false
+      pytest_extra_args:
+        description: "directories to include and ignore"
+        default: "tests"
+        type: string
     working_directory: ~/pass-culture
+    docker:
+      - image: cimg/python:3.9.7
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          DATABASE_URL_TEST: postgresql://pytest:pytest@localhost:5432/pass_culture
+          REDIS_URL: redis://localhost:6379
+      - image: circleci/postgres:12.3-postgis
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          POSTGRES_USER: pytest
+          POSTGRES_PASSWORD: pytest
+          POSTGRES_DB: pass_culture
+      - image: redis
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - skip_unchanged:
           paths: api
-      - run: ./install_lib_ci.sh
-      - run: sudo ./pc symlink
-      - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - restore_cache:
+                key: << pipeline.parameters.venv_cache_key >>
       - run:
-          name: Running API server
+          name: Install requirements
           command: |
-            cd api
-            pc start-backend
-          background: true
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt --progress-bar off
+          working_directory: api
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - save_cache:
+                key: << pipeline.parameters.venv_cache_key >>
+                paths:
+                  - "api/venv"
       - run:
-          name: Running API tests
+          name: Install pcapi Python package
           command: |
-            dockerize -wait http://localhost/health/api -timeout 5m -wait-retry-interval 5s
-            dockerize -wait http://localhost/health/database -timeout 5m -wait-retry-interval 5s
-            echo 'y' | pc test-backend
+            venv/bin/pip install -e .
+            venv/bin/pip freeze
+          working_directory: api
+      - run:
+          name: Install xmlsec1
+          command: sudo apt-get update && sudo apt-get install xmlsec1
+      - run:
+          name: Check for alembic multiple heads
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            if [ ! -z "$(alembic branches)" ]; then echo "Multiple alembic heads found"; exit 1; fi
+          working_directory: api
+      - run:
+          name: Check database and model are aligned
+          command: |
+            RUN_ENV=tests venv/bin/flask install_postgres_extensions
+            RUN_ENV=tests venv/bin/alembic upgrade head
+            RUN_ENV=tests venv/bin/flask install_data
+            RUN_ENV=tests venv/bin/python tests/alembic/check_db_schema.py
+          working_directory: api
+      - when:
+          condition: << parameters.is_nightly_build >>
+          steps:
+            - run:
+                name: Running nightly tests
+                command: >
+                  RUN_ENV=tests venv/bin/pytest tests --durations=10  --cov --cov-report html
+                  --junitxml=test-results/junit.xml
+
+                  venv/bin/coveralls || echo "Encountered an error while running coveralls"
+                working_directory: api
+            - notify-slack:
+                channel: shérif
+      - unless:
+          condition: << parameters.is_nightly_build >>
+          steps:
+            - run:
+                name: Running tests
+                command: >
+                  RUN_ENV=tests venv/bin/pytest << parameters.pytest_extra_args >> --durations=10
+                  --junitxml=test-results/junit.xml
+                working_directory: api
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: htmlcov
 
   tests-webapp:
     machine:
@@ -679,7 +849,34 @@ workflows:
   commit:
     jobs:
       - tests-script-pc
+      - quality:
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
       - tests-api:
+          name: "Run core tests after commit"
+          pytest_extra_args: "tests/core"
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+      - tests-api:
+          name: "Run routes tests after commit"
+          pytest_extra_args: "tests/routes"
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+      - tests-api:
+          name: "Run other tests after commit"
+          pytest_extra_args: "tests --ignore=tests/core --ignore=tests/routes"
           filters:
             branches:
               ignore:
@@ -720,7 +917,10 @@ workflows:
               only:
                 - master
           requires:
-            - tests-api
+            - "Run core tests after commit"
+            - "Run routes tests after commit"
+            - "Run other tests after commit"
+            - quality
           context:
             - GCP
             - GCP_EHP
