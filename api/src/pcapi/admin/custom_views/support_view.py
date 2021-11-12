@@ -21,6 +21,7 @@ import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.subscription import messages as subscription_messages
 import pcapi.core.subscription.api as subscription_api
+import pcapi.core.subscription.exceptions as subscription_exceptions
 import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
@@ -258,7 +259,10 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         )
         if review.review == fraud_models.FraudReviewStatus.OK.value:
             users_api.update_user_information_from_external_source(user, fraud_api.get_source_data(user))
-            subscription_api.activate_beneficiary(user, "fraud_validation")
+            try:
+                subscription_api.activate_beneficiary(user, "fraud_validation")
+            except subscription_exceptions.CannotUpgradeBeneficiaryRole:
+                flask.flash("L'utilisateur est déjà bénéficiaire", "error")
             flask.flash(f"L'utilisateur à été activé comme bénéficiaire {user.firstName} {user.lastName}")
 
         elif review.review == fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS.value:
