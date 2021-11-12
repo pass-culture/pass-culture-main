@@ -1670,3 +1670,19 @@ class ProfilingFraudScoreTest:
             fraud_models.BeneficiaryFraudResult.query.filter(fraud_models.BeneficiaryFraudResult.user == user).count()
             == 0
         )
+
+
+class IdentificationSessionTest:
+    def test_request(self, client, ubble_mock):
+        user = users_factories.UserFactory()
+
+        client.with_token(user.email)
+
+        response = client.post("/native/v1/ubble_identification", json={"redirect_url": "http://example.com/deeplink"})
+
+        assert response.status_code == 200
+        assert len(user.beneficiaryFraudChecks) == 1
+        assert ubble_mock.call_count == 1
+
+        check = user.beneficiaryFraudChecks[0]
+        assert check.type == fraud_models.FraudCheckType.UBBLE
