@@ -147,6 +147,31 @@ def client_fixture(app: Flask):
     return TestClient(app.test_client())
 
 
+@pytest.fixture(name="ubble_mock")
+def ubble_mock(requests_mock):
+    """
+    Mocks all Ubble requests calls to ease test
+    Returns a configured requests mock matcher
+    """
+    # unsure ?
+    from tests.connectors.beneficiaries import ubble_fixtures
+
+    UBBLE_URL = "https://api.example.com/"
+
+    with pcapi.core.testing.override_settings(
+        UBBLE_API_URL=UBBLE_URL,
+        UBBLE_CLIENT_ID="client_id",
+        UBBLE_CLIENT_SECRET="client_secret",
+    ):
+        request_matcher = requests_mock.register_uri(
+            "POST",
+            "https://api.example.com/identifications/",
+            json=ubble_fixtures.UBBLE_IDENTIFICATION_RESPONSE,
+            status_code=201,
+        )
+        yield request_matcher
+
+
 @pytest.fixture(name="cloud_task_client")
 def cloud_task_client_fixture():
     """

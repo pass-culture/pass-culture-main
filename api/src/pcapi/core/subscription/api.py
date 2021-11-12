@@ -1,7 +1,11 @@
 import logging
 from typing import Optional
 
+import flask
+
+from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud import exceptions as fraud_exceptions
+import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails.transactional.users import accepted_as_beneficiary_email
 from pcapi.core.payments import api as payments_api
@@ -156,3 +160,19 @@ def _send_beneficiary_activation_email(user: users_models.User, has_activated_ac
         )
     else:
         accepted_as_beneficiary_email.send_accepted_as_beneficiary_email(user=user)
+
+
+def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
+    response = ubble.start_identification(
+        user_id=user.id,
+        phone_number=user.phoneNumber,
+        birth_date=user.dateOfBirth.date(),
+        first_name=user.firstName,
+        last_name=user.lastName,
+        webhook_url=flask.url_for("Public API.ubble_webhook_update_application_status"),
+        redirect_url=redirect_url,
+        face_required=True,  # TODO(bcalvez): setting ? hardcode ?
+    )
+
+    fraud_api.start_ubble_fraud_check(user, response)
+    return response.redirect_url

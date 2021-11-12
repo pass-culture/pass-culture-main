@@ -170,3 +170,16 @@ class EduconnectFlowTest:
         assert response.status_code == 204
         assert user.roles == [users_models.UserRole.UNDERAGE_BENEFICIARY]
         assert user.deposit.amount == 20
+
+
+@pytest.mark.usefixtures("db_session")
+class UbbleWorkflowTest:
+    def test_start_ubble_workflow(self, ubble_mock):
+        user = users_factories.UserFactory()
+        redirect_url = subscription_api.start_ubble_workflow(user, redirect_url="https://example.com")
+        assert redirect_url is not None
+
+        fraud_check = user.beneficiaryFraudChecks[0]
+        assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        assert fraud_check.thirdPartyId is not None
+        assert fraud_check.resultContent is not None
