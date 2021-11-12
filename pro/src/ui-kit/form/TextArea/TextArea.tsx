@@ -5,6 +5,7 @@ interface ITextAreaProps {
   name: string;
   className?: string;
   disabled?: boolean;
+  placeholder?: string;
   label?: string;
 }
 
@@ -12,6 +13,7 @@ const TextArea = ({
   name,
   className,
   disabled,
+  placeholder,
   label,
 }: ITextAreaProps): JSX.Element => {
   const [field, meta] = useField({ name })
@@ -24,6 +26,7 @@ const TextArea = ({
           {...field}
           className={className}
           disabled={disabled}
+          placeholder={placeholder}
         />
       </label>
       {meta.touched && meta.error ? (
