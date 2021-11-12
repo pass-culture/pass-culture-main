@@ -401,8 +401,6 @@ jobs:
         default: ${APP_VERSION}
     steps:
       - checkout
-      - skip_unchanged:
-          paths: api
       - setup_remote_docker:
           version: 19.03.13
           docker_layer_caching: true
@@ -495,8 +493,6 @@ jobs:
         default: ${APP_VERSION}
     steps:
       - checkout
-      - skip_unchanged:
-          paths: api
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - export_app_version
@@ -636,13 +632,17 @@ jobs:
 
   restart-pcapi:
     executor: gcp-sdk
+    parameters:
+      helm_environment:
+        type: string
+        default: ${CIRCLE_BRANCH}
     steps:
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - run:
           name: Get GKE cluster credentials
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
-      - run: kubectl get deploy -n ${CIRCLE_BRANCH} -o name | xargs  -L 1 kubectl rollout restart -n ${CIRCLE_BRANCH}
+      - run: kubectl get deploy -n <<parameters.helm_environment>> -o name | xargs  -L 1 kubectl rollout restart -n <<parameters.helm_environment>>
 
 ###################
 #  WORKFLOWS
@@ -712,6 +712,17 @@ workflows:
             - GCP_EHP
           helm_environment: testing
           app_version: ${CIRCLE_SHA1}
+      - restart-pcapi:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - deploy-pcapi
+          context:
+            - GCP
+            - GCP_EHP
+          helm_environment: testing
 
   gcp-ehp:
     jobs:
