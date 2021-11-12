@@ -12,6 +12,7 @@ from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.payments.models import Deposit
+from pcapi.core.payments.models import DepositType
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
@@ -116,7 +117,7 @@ def test_marked_subscription_on_hold_when_jouve_subscription_journed_is_paused(_
         create_beneficiary_from_application.execute(APPLICATION_ID)
 
     assert caplog.messages[0] == "User subscription is on hold"
-    assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.SUBSCRIPTION_ON_HOLD
+    assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUBSCRIPTION_ON_HOLD
 
     assert len(mails_testing.outbox) == 0
     assert len(push_testing.requests) == 0
@@ -159,6 +160,32 @@ def test_application_for_native_app_user(app):
     assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": False}
 
     assert len(push_testing.requests) == 1
+
+
+@override_features(FORCE_PHONE_VALIDATION=False)
+@patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
+def test_application_for_ex_underage_user(app):
+    with freezegun.freeze_time(datetime.utcnow() - relativedelta(years=3)):
+        users_factories.UnderageBeneficiaryFactory(
+            email=JOUVE_CONTENT["email"],
+            firstName=JOUVE_CONTENT["firstName"],
+            lastName=JOUVE_CONTENT["lastName"],
+            dateOfBirth=datetime.strptime(JOUVE_CONTENT["birthDateTxt"], "%d/%m/%Y"),
+            subscription_age=15,
+        )
+
+    create_beneficiary_from_application.execute(APPLICATION_ID)
+
+    beneficiary = User.query.one()
+
+    deposits = Deposit.query.filter_by(user=beneficiary).all()
+    assert len(deposits) == 2
+    age_18_deposit = next(deposit for deposit in deposits if deposit.type == DepositType.GRANT_18)
+
+    assert age_18_deposit.amount == 300
+    assert age_18_deposit.source == "dossier jouve [35]"
+    assert age_18_deposit.userId == beneficiary.id
+    assert BeneficiaryImport.query.count() == 2
 
 
 @override_features(FORCE_PHONE_VALIDATION=False)
