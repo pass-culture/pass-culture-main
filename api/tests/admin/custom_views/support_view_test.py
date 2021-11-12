@@ -86,10 +86,11 @@ class BeneficiaryValidationViewTest:
     def test_validation_view_validate_user_from_jouve_data_staging(self, client):
         user = users_factories.UserFactory(isBeneficiary=False, dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
 
+        content = fraud_factories.JouveContentFactory(birthDateTxt=f"{AGE18_ELIGIBLE_BIRTH_DATE:%d/%m/%Y}")
         check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.JOUVE,
-            resultContent__birthDateTxt=f"{AGE18_ELIGIBLE_BIRTH_DATE:%d/%m/%Y}",
+            resultContent=content,
         )
         admin = users_factories.AdminFactory()
         client.with_session_auth(admin.email)
