@@ -204,9 +204,6 @@ def on_identity_fraud_check_result(
 ) -> models.BeneficiaryFraudResult:
     fraud_items: list[models.FraudItem] = []
 
-    fraud_items.append(_check_user_has_no_active_deposit(user))
-    fraud_items.append(_check_user_email_is_validated(user))
-
     if beneficiary_fraud_check.type == models.FraudCheckType.JOUVE:
         fraud_items += jouve_fraud_checks(user, beneficiary_fraud_check)
         eligibilityType = user_models.EligibilityType.AGE18
@@ -220,6 +217,10 @@ def on_identity_fraud_check_result(
         eligibilityType = user_models.EligibilityType.UNDERAGE
     else:
         raise Exception("The fraud_check type is not known")
+
+    fraud_items.append(_check_user_has_no_active_deposit(user, eligibilityType))
+    fraud_items.append(_check_user_email_is_validated(user))
+    fraud_items.append(_check_user_not_already_beneficiary(user, eligibilityType))
 
     fraud_result = validate_frauds(user, fraud_items, eligibilityType)
     if (
@@ -292,15 +293,28 @@ def _whitelisted_ine_fraud_item(ine_hash: str) -> models.FraudItem:
     )
 
 
-def _check_user_has_no_active_deposit(user: user_models.User) -> models.FraudItem:
+def _check_user_has_no_active_deposit(
+    user: user_models.User, eligibility: user_models.EligibilityType
+) -> models.FraudItem:
     if user.has_active_deposit:
-        is_underage = user.age in constants.ELIGIBILITY_UNDERAGE_RANGE
         return models.FraudItem(
             status=models.FraudStatus.KO,
             detail=(
                 "L’utilisateur est déjà bénéfiaire, avec un portefeuille non expiré. "
-                f"Il ne peut pas prétendre au pass culture {'15-17 ans' if is_underage else '18 ans'}"
+                f"Il ne peut pas prétendre au pass culture {'15-17 ans' if eligibility == user_models.EligibilityType.UNDERAGE else '18 ans'}"
             ),
+        )
+    return models.FraudItem(status=models.FraudStatus.OK, detail=None)
+
+
+def _check_user_not_already_beneficiary(
+    user: user_models.User, eligibility: user_models.EligibilityType
+) -> models.FraudItem:
+    if not user.can_upgrade_beneficiary_role(eligibility):
+        return models.FraudItem(
+            status=models.FraudStatus.KO,
+            detail=(f"L’utilisateur est déjà bénéfiaire du pass {eligibility.name}"),
+            reason_code=models.FraudReasonCode.ALREADY_BENEFICIARY,
         )
     return models.FraudItem(status=models.FraudStatus.OK, detail=None)
 
