@@ -37,6 +37,7 @@ from pcapi.core.mails.transactional.users.email_address_change import send_infor
 from pcapi.core.mails.transactional.users.email_confirmation_email import send_email_confirmation_email
 import pcapi.core.payments.api as payment_api
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
 import pcapi.core.subscription.repository as subscription_repository
 from pcapi.core.users import models as users_models
@@ -264,7 +265,11 @@ def validate_phone_number_and_activate_user(user: User, code: str) -> User:
     validate_phone_number(user, code)
 
     if not steps_to_become_beneficiary(user):
-        subscription_api.activate_beneficiary(user)
+        try:
+            subscription_api.activate_beneficiary(user)
+        except subscription_exceptions.CannotUpgradeBeneficiaryRole:
+            # TODO(viconnex): there should not be any case where we activate benficiary after phone validation
+            logger.warning("Trying to activate beneficiary right after phone validation", extra={"user_id": user.id})
 
 
 def update_beneficiary_mandatory_information(

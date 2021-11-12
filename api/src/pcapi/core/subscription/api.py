@@ -9,6 +9,7 @@ import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails.transactional.users import accepted_as_beneficiary_email
 from pcapi.core.payments import api as payments_api
+from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exception
@@ -79,6 +80,9 @@ def activate_beneficiary(
     else:
         eligibility = users_models.EligibilityType.AGE18
 
+    if not user.can_upgrade_beneficiary_role:
+        raise exceptions.CannotUpgradeBeneficiaryRole()
+
     if eligibility == users_models.EligibilityType.UNDERAGE:
         user.add_underage_beneficiary_role()
     elif eligibility == users_models.EligibilityType.AGE18:
@@ -108,11 +112,15 @@ def check_and_activate_beneficiary(
 ) -> users_models.User:
     with pcapi_repository.transaction():
         user = users_repository.get_and_lock_user(userId)
-        # TODO: Handle switch from underage_beneficiary to beneficiary
-        if user.is_beneficiary or not user.hasCompletedIdCheck:
+
+        if not user.hasCompletedIdCheck:
             db.session.rollback()
             return user
-        user = activate_beneficiary(user, deposit_source, has_activated_account)
+        try:
+            user = activate_beneficiary(user, deposit_source, has_activated_account)
+        except subscription_exceptions.CannotUpgradeBeneficiaryRole:
+            db.session.rollback()
+            return user
         return user
 
 

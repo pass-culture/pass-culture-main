@@ -8,3 +8,7 @@ class BeneficiaryImportMissingException(SubscriptionException):
 
 class BeneficiaryFraudResultMissing(SubscriptionException):
     pass
+
+
+class CannotUpgradeBeneficiaryRole(SubscriptionException):
+    pass
