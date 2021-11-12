@@ -395,10 +395,14 @@ jobs:
 
   build-and-push-image:
     executor: gcp-sdk
+    parameters:
+      app_version:
+        type: string
+        default: ${APP_VERSION}
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
+      - skip_unchanged:
+          paths: api
       - setup_remote_docker:
           version: 19.03.13
           docker_layer_caching: true
@@ -410,8 +414,8 @@ jobs:
           gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
           docker build ./api \
             -f ./api/Dockerfile \
-            -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${APP_VERSION}
-          docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${APP_VERSION}
+            -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>>
+          docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>>
       - run:
           name: Send failure notification
           command: |
@@ -424,8 +428,6 @@ jobs:
     executor: gcp-sdk
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
       - setup_remote_docker:
           version: 19.03.13
           docker_layer_caching: true
@@ -452,8 +454,6 @@ jobs:
       NAMESPACE: operations
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - export_chart_version:
@@ -486,10 +486,17 @@ jobs:
     environment:
       HELM_EXPERIMENTAL_OCI: 1
       CHART_NAME: pcapi-chart
+    parameters:
+      helm_environment:
+        type: string
+        default: ${CIRCLE_BRANCH}
+      app_version:
+        type: string
+        default: ${APP_VERSION}
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
+      - skip_unchanged:
+          paths: api
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - export_app_version
@@ -513,15 +520,15 @@ jobs:
             helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${CHART_VERSION} -d tmp/
       - deploy-helm-chart:
           helm_chart_name: pcapi
-          helm_release_name: ${CIRCLE_BRANCH}
-          kubernetes_namespace: ${CIRCLE_BRANCH}
-          helm_values_file: ./api/helm/pcapi/values.${CIRCLE_BRANCH}.yaml
-          app_version: ${APP_VERSION}
+          helm_release_name: <<parameters.helm_environment>>
+          kubernetes_namespace: <<parameters.helm_environment>>
+          helm_values_file: ./api/helm/pcapi/values.<<parameters.helm_environment>>.yaml
+          app_version: <<parameters.app_version>>
       - run:
           name: Send failure notification
           command: |
-            VERSION_TO_DEPLOY=$(git describe --contains)
-            BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *API* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
+            VERSION_TO_DEPLOY=<<parameters.app_version>>
+            BOT_MESSAGE="'*"<<parameters.helm_environment>>"* : *API* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
           when: on_fail
 
@@ -529,8 +536,6 @@ jobs:
     executor: node-gcp-14
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - build-frontend-app:
@@ -562,8 +567,6 @@ jobs:
     working_directory: ~/pass-culture
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
       - run: ./install_lib_ci.sh
       - run:
           name: Build and Deploy WEBAPP
@@ -598,8 +601,6 @@ jobs:
     executor: node-gcp-14
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - build-frontend-app:
@@ -687,6 +688,30 @@ workflows:
                 - production
                 - staging
                 - integration
+      - build-and-push-image:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - tests-api
+          context:
+            - GCP
+            - GCP_EHP
+          app_version: ${CIRCLE_SHA1}
+
+      - deploy-pcapi:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build-and-push-image
+          context:
+            - GCP
+            - GCP_EHP
+          helm_environment: testing
+          app_version: ${CIRCLE_SHA1}
 
   gcp-ehp:
     jobs:
