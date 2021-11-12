@@ -1,0 +1,4 @@
+export enum OfferType {
+    INDIVIDUAL_OR_DUO = 'INDIVIDUAL_OR_DUO',
+    EDUCATIONAL = 'EDUCATIONAL'
+}
