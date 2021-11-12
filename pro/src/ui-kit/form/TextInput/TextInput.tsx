@@ -6,6 +6,7 @@ interface ITextInputProps {
   className?: string;
   disabled?: boolean;
   label?: string;
+  placeholder?: string;
 }
 
 const TextInput = ({ 
@@ -13,6 +14,7 @@ const TextInput = ({
   className,
   disabled,
   label,
+  placeholder,
 }: ITextInputProps): JSX.Element => {
   const [field, meta] = useField({ name, disabled, className })
 
@@ -20,7 +22,10 @@ const TextInput = ({
     <>
       <label>
         {label}
-        <input {...field} />
+        <input
+          {...field}
+          placeholder={placeholder}
+        />
       </label>
       {meta.touched && meta.error ? (
         <div className="error">

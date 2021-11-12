@@ -19,6 +19,7 @@ const Template: Story<{label?: string}> = ({ label }) => (
       <TextInput
         {...getFieldProps('email')}
         label={label}
+        placeholder='input placeholder'
       />
     )}
   </Formik>
