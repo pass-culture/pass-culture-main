@@ -1,4 +1,5 @@
 import { action } from '@storybook/addon-actions'
+import { boolean } from '@storybook/addon-knobs'
 import { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
@@ -19,7 +20,9 @@ const Template: Story<{label?: string}> = ({ label }) => (
       return (
         <TextArea
           {...getFieldProps('description')}
+          disabled={boolean('disabled', false)}
           label={label}
+          placeholder='Description placeholder'
         />
       )}}
   </Formik>
