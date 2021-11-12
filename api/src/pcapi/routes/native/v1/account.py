@@ -173,8 +173,7 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
 @spectree_serialize(api=blueprint.api, response_model=serializers.GetIdCheckTokenResponse)
 @authenticated_user_required
 def get_id_check_token(user: User) -> serializers.GetIdCheckTokenResponse:
-    # TODO: Handle switch from underage_beneficiary to beneficiary
-    if not user.is_eligible or user.is_beneficiary:
+    if not user.can_upgrade_beneficiary_role():
         raise ApiErrors({"code": "USER_NOT_ELIGIBLE"})
     try:
         id_check_token = api.create_id_check_token(user)
