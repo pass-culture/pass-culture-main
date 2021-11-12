@@ -272,6 +272,10 @@ class User(PcObject, Model, NeedsValidationMixin):
         if self.has_admin_role:  # pylint: disable=using-constant-test
             self.roles.remove(UserRole.ADMIN)
 
+    def remove_underage_beneficiary_role(self) -> None:
+        if self.has_underage_beneficiary_role:  # pylint: disable=using-constant-test
+            self.roles.remove(UserRole.UNDERAGE_BENEFICIARY)
+
     def remove_beneficiary_role(self) -> None:
         if self.has_beneficiary_role:  # pylint: disable=using-constant-test
             self.roles.remove(UserRole.BENEFICIARY)
