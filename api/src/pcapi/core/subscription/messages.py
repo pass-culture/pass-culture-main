@@ -8,6 +8,68 @@ from . import models
 
 INBOX_URL = "passculture://openInbox"
 
+DMS_ERROR_MESSAGE_USER_NOT_FOUND = """Bonjour,
+                
+                Nous avons bien reçu ton dossier. Cependant, nous avons remarqué que tu n’es pas passé par l’application  avant de déposer le dossier ou que tu n’utilises pas la même adresse email sur le site Démarches Simplifiées.
+                
+                C’est pour cette raison que tu vas devoir poursuivre ton inscription en passant ton application.
+                
+                Pour cela, il faut :
+                - Télécharger l’application sur ton smartphone
+                - Entrer tes informations personnelles (nom, prénom, date de naissance, mail). Tu recevras alors un mail de confirmation (il peut se cacher dans tes spams, n’hésite pas à vérifier). 
+                - Cliquer sur le lien de validation
+                
+                Une fois ton inscription faite, je t’invite à nous contacter pour que nous puissions t’indiquer les étapes à suivre.
+                
+                Nous te souhaitons une belle journée.
+                
+                L’équipe pass Culture"""
+
+DMS_ERROR_MESSAGE_ERROR_ID_PIECE = """Bonjour,
+            
+            Nous avons bien reçu ton dossier, mais le numéro de pièce d'identité sur le formulaire ne correspond pas à celui indiqué sur ta pièce d'identité.
+            
+            Cet article peut t’aider à le trouver sur ta pièce d'identité : https://aide.passculture.app/fr/articles/5508680-jeunes-ou-puis-je-trouver-le-numero-de-ma-piece-d-identite
+            
+            Peux-tu mettre à jour ton dossier sur le formulaire en ligne ?
+            
+            Pour t'aider à corriger ton dossier, merci de consulter cet article : https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees
+            
+            Merci et à très vite,
+            
+            L'équipe du pass Culture"""
+
+DMS_ERROR_MESSAGE_ERROR_POSTAL_CODE = """Bonjour,
+            
+            Le champ du code postal doit être rempli par 5 chiffres uniquement, sans lettres ni espace. Si tu as saisi ta ville dans le champ du code postal, merci de ne saisir que ces 5 chiffres.
+            
+            Pour corriger ton formulaire, cet article est là pour t'aider : https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees]
+            
+            Très cordialement,
+            
+            L'équipe pass du Culture"""
+
+DMS_ERROR_MESSAGE_DOUBLE_ERROR = """Bonjour,
+                                 
+                                 Nous avons bien reçu ton dossier !
+                                 Cependant, ton dossier ne peut pas être traiter pour la raison suivante :
+                                 Un ou plusieurs champs ont été renseignés au mauvais format : 
+                                 
+                                 - le champ Code Postal
+                                 - le champ Numéro de la pièce d’identité
+                                 
+                                 Pour que ton dossier soit traité, tu dois le modifier en faisant bien attention de remplir correctement toutes les informations (notamment ton code postal sous format 5 chiffres et le numéro de ta pièce d’identité sous format alphanumérique sans espace et sans caractères spéciaux).
+                                 
+                                 Pour avoir plus d’informations sur les étapes de ton inscription sur Démarches Simplifiées, je t’invite à consulter les articles suivants :
+                                 
+                                 Où puis-je trouver le numéro de ma pièce d'identité ? (https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees)
+                                 Comment bien renseigner mon adresse et mon code postal lors de l'inscription ? (https://aide.passculture.app/fr/articles/5508680-jeunes-ou-puis-je-trouver-le-numero-de-ma-piece-d-identite)
+                                 
+                                 
+                                 Nous te souhaitons une belle journée.
+                                 
+                                 L’équipe pass Culture"""
+
 
 def create_message_jouve_manual_review(user: users_models.User, application_id: int) -> None:
     today = datetime.date.today()

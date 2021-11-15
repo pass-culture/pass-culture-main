@@ -42,22 +42,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
             client.send_user_message(
                 raw_data["dossier"]["id"],
                 settings.DMS_INSTRUCTOR_ID,
-                """Bonjour,
-                
-                Nous avons bien reçu ton dossier. Cependant, nous avons remarqué que tu n’es pas passé par l’application  avant de déposer le dossier ou que tu n’utilises pas la même adresse email sur le site Démarches Simplifiées.
-                
-                C’est pour cette raison que tu vas devoir poursuivre ton inscription en passant ton application.
-                
-                Pour cela, il faut :
-                - Télécharger l’application sur ton smartphone
-                - Entrer tes informations personnelles (nom, prénom, date de naissance, mail). Tu recevras alors un mail de confirmation (il peut se cacher dans tes spams, n’hésite pas à vérifier). 
-                - Cliquer sur le lien de validation
-                
-                Une fois ton inscription faite, je t’invite à nous contacter pour que nous puissions t’indiquer les étapes à suivre.
-                
-                Nous te souhaitons une belle journée.
-                
-                L’équipe pass Culture""",
+                subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
             )
         logger.info(
             "User not found for application %d procedure %d email %s",
@@ -65,15 +50,15 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
             form.procedure_id,
             raw_data["dossier"]["usager"]["email"],
             extra={
-                'application_id': raw_data["dossier"]["number"],
-                'dossier_id':form.dossier_id,
-                'procedure_id': form.procedure_id,
-                'user_email': raw_data["dossier"]["usager"]["email"]
-            }
+                "application_id": raw_data["dossier"]["number"],
+                "dossier_id": form.dossier_id,
+                "procedure_id": form.procedure_id,
+                "user_email": raw_data["dossier"]["usager"]["email"],
+            },
         )
         return
     try:
-        application = remote_import.parse_beneficiary_information_graphql(raw_data["dossier"], form.procedure_id)
+        remote_import.parse_beneficiary_information_graphql(raw_data["dossier"], form.procedure_id)
     except remote_import.DMSParsingError as parsing_error:
         if raw_data["dossier"]["state"] == api_demarches_simplifiees.GraphQLApplicationStates.draft.value:
             remote_import.notify_parsing_exception(parsing_error.errors, raw_data["dossier"]["id"], client)
@@ -82,11 +67,11 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
             "Cannot parse DMS application %d in webhook. Errors will be handled in the remote_import cron",
             form.dossier_id,
             extra={
-                'application_id': raw_data["dossier"]["number"],
-                'dossier_id': form.dossier_id,
-                'procedure_id': form.procedure_id,
-                'user_email': raw_data["dossier"]["usager"]["email"]
-            }
+                "application_id": raw_data["dossier"]["number"],
+                "dossier_id": form.dossier_id,
+                "procedure_id": form.procedure_id,
+                "user_email": raw_data["dossier"]["usager"]["email"],
+            },
         )
         return
 
