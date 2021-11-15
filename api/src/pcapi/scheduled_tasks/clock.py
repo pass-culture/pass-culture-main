@@ -243,6 +243,6 @@ def clock() -> None:
 
     scheduler.add_job(pc_recredit_underage_users, "cron", day="*", hour="0")
 
-    scheduler.add_job(price_bookings, "cron", day="*", minute="/10")
+    scheduler.add_job(price_bookings, "cron", day="*", minute="5,15,25,35,45,55")
 
     scheduler.start()
