@@ -45,11 +45,11 @@ describe('src | AppLayout', () => {
     )
   })
 
-  it('should not render domain name banner when coming from old domain name', async () => {
+  it('should render domain name banner when coming from old domain name', async () => {
     // Given
-    Object.defineProperty(document, 'referrer', {
-      value: 'pro.passculture-testing.beta.gouv.fr',
-    })
+    const location = new URL('https://www.example.com?redirect=true')
+    delete window.location
+    window.location = location
 
     // When
     renderApp(props, store)
@@ -60,7 +60,7 @@ describe('src | AppLayout', () => {
         screen.queryByText(content =>
           content.startsWith('Notre nom de domaine évolue !')
         )
-      ).not.toBeInTheDocument()
+      ).toBeInTheDocument()
     )
   })
 })
