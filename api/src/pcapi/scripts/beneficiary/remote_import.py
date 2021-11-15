@@ -98,6 +98,19 @@ def run(procedure_id: int, use_graphql_api: bool = False) -> None:
     )
 
 
+def notify_parsing_exception(parsing_error: DMSParsingError, application_techid: str, client):
+    if "postal_code" in parsing_error:
+        client.send_user_message(
+            application_techid, settings.DMS_INSTRUCTOR_ID, "Il semblerait qu'il y ait une erreur dans le code postal."
+        )
+    if "id_piece_number" in parsing_error:
+        client.send_user_message(
+            application_techid,
+            settings.DMS_INSTRUCTOR_ID,
+            "Il semblerait qu'il y ait une erreur dans la pièce d'identité fournie.",
+        )
+
+
 def process_parsing_exception(exception: Exception, procedure_id: int, application_id: int) -> None:
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s had errors and was ignored: %s",

@@ -140,7 +140,9 @@ class DmsWebhookApplicationTest:
             "state": GraphQLApplicationStates.draft.value,
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
-        execute_query.return_value = make_single_application(12, state="closed", email="toto@exemple.fr", postal_code="67000 Strasbourg", id_piece_number="1234")
+        execute_query.return_value = make_single_application(
+            12, state="closed", email="toto@exemple.fr", postal_code="67000 Strasbourg", id_piece_number="1234"
+        )
 
         client.post(
             f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
@@ -157,3 +159,84 @@ class DmsWebhookApplicationTest:
         client.send_user_message("ApplicationTechnicalId", "InstructorTechId", "Ceci est un message test")
 
         assert client.execute_query.call_count == 1
+
+    @patch.object(DMSGraphQLClient, "execute_query")
+    @patch.object(DMSGraphQLClient, "send_user_message")
+    def test_dms_request_with_unexisting_user(self, send_user_message, execute_query, client):
+
+        execute_query.return_value = make_single_application(
+            12, state=GraphQLApplicationStates.draft.value, email="user@example.com"
+        )
+        form_data = {
+            "procedure_id": "48860",
+            "dossier_id": "6044787",
+            "state": GraphQLApplicationStates.draft.value,
+            "updated_at": "2021-09-30 17:55:58 +0200",
+        }
+        response = client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+        assert response.status_code == 204
+        assert execute_query.call_count == 1
+        assert send_user_message.call_count == 1
+        assert send_user_message.call_args[0][2] == "Il semblerait que cette adresse email n'éxiste pas."
+        breakpoint()
+
+    @patch.object(DMSGraphQLClient, "execute_query")
+    @patch.object(DMSGraphQLClient, "send_user_message")
+    def test_dms_id_piece_number_error(self, send_user_message, execute_query, client):
+        user = users_factories.UserFactory()
+        execute_query.return_value = make_single_application(
+            12,
+            state=GraphQLApplicationStates.draft.value,
+            email=user.email,
+            id_piece_number="jkfejlkfezjlfejkzlfejzflke",
+        )
+        form_data = {
+            "procedure_id": "48860",
+            "dossier_id": "6044787",
+            "state": GraphQLApplicationStates.draft.value,
+            "updated_at": "2021-09-30 17:55:58 +0200",
+        }
+        response = client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+        assert response.status_code == 204
+        assert execute_query.call_count == 1
+        assert send_user_message.call_count == 1
+        assert (
+            send_user_message.call_args[0][2]
+            == "Il semblerait qu'il y ait une erreur dans la pièce d'identité fournie."
+        )
+        breakpoint()
+
+    @patch.object(DMSGraphQLClient, "execute_query")
+    @patch.object(DMSGraphQLClient, "send_user_message")
+    def test_dms_postal_code_error(self, send_user_message, execute_query, client):
+        user = users_factories.UserFactory()
+        execute_query.return_value = make_single_application(
+            12, state=GraphQLApplicationStates.draft.value, email=user.email, postal_code="6700000"
+        )
+        form_data = {
+            "procedure_id": "48860",
+            "dossier_id": "6044787",
+            "state": GraphQLApplicationStates.draft.value,
+            "updated_at": "2021-09-30 17:55:58 +0200",
+        }
+        response = client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+        assert response.status_code == 204
+        assert execute_query.call_count == 1
+        assert send_user_message.call_count == 1
+        assert send_user_message.call_args[0][2] == "Il semblerait qu'il y ait une erreur dans le code postal."
+        breakpoint()
