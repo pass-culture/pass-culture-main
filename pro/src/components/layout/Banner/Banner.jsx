@@ -16,9 +16,10 @@ const Banner = ({
   type,
   closable,
   handleOnClick,
+  className,
 }) => {
   return (
-    <div className={`bi-banner ${type}`}>
+    <div className={`bi-banner ${type} ${className}`}>
       {closable && (
         <button onClick={handleOnClick} type="button">
           x
@@ -46,6 +47,7 @@ const Banner = ({
 
 Banner.defaultProps = {
   children: null,
+  className: '',
   closable: false,
   handleOnClick: null,
   href: null,
@@ -56,6 +58,7 @@ Banner.defaultProps = {
 
 Banner.propTypes = {
   children: PropTypes.node,
+  className: PropTypes.string,
   closable: PropTypes.bool,
   handleOnClick: PropTypes.func,
   href: requiredIfComponentHasProp('linkTitle', 'string'),
