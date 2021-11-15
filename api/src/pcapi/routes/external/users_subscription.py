@@ -1,5 +1,6 @@
 import logging
 
+from pcapi import settings
 from pcapi.connectors import api_demarches_simplifiees
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
@@ -35,22 +36,27 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
     client = api_demarches_simplifiees.DMSGraphQLClient()
     raw_data = client.get_single_application_details(form.dossier_id)
     # todo(bcalvez) Use new IdcheckBackend to correctly convert this data
+    user = find_user_by_email(raw_data["dossier"]["usager"]["email"])
+    if not user:
+        client.send_user_message(
+            raw_data["dossier"]["id"], settings.DMS_INSTRUCTOR_ID, "Il semblerait que cette adresse email n'éxiste pas."
+        )
+        logger.info(
+            "User not found for application %d procedure %d email %s",
+            raw_data["dossier"]["number"],  # application.application_id
+            form.procedure_id,  # application.procedure_id
+            raw_data["dossier"]["usager"]["email"],  # application.email
+        )
+        return
     try:
         application = remote_import.parse_beneficiary_information_graphql(raw_data["dossier"], form.procedure_id)
-    except remote_import.DMSParsingError:
+    except remote_import.DMSParsingError as parsing_error:
+
+        remote_import.notify_parsing_exception(parsing_error.errors, raw_data["dossier"]["id"], client)
+
         logger.info(
             "Cannot parse DMS application %d in webhook. Errors will be handled in the remote_import cron",
             form.dossier_id,
-        )
-        return
-
-    user = find_user_by_email(application.email)
-    if not user:
-        logger.info(
-            "User not found for application %d procedure %d email %s",
-            application.application_id,
-            application.procedure_id,
-            application.email,
         )
         return
 
