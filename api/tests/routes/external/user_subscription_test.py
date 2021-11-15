@@ -131,3 +131,29 @@ class DmsWebhookApplicationTest:
             user.subscriptionMessages[0].userMessage
             == "Ton dossier déposé sur le site Démarches-Simplifiées a été rejeté. Tu n’es malheureusement pas éligible au pass culture."
         )
+
+    @patch.object(DMSGraphQLClient, "execute_query")
+    def test_dms_parsing_error(self, execute_query, client):
+        form_data = {
+            "procedure_id": "48860",
+            "dossier_id": "6044787",
+            "state": GraphQLApplicationStates.draft.value,
+            "updated_at": "2021-09-30 17:55:58 +0200",
+        }
+        execute_query.return_value = make_single_application(12, state="closed", email="toto@exemple.fr", postal_code="67000 Strasbourg", id_piece_number="1234")
+
+        client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+    @patch.object(DMSGraphQLClient, "execute_query")
+    def test_dms_send_user_message(self, execute_query):
+        technical_id = "RandomApplicationId"
+
+        execute_query.return_value = {"dossierEnvoyerMessage": {"message": {"id": technical_id}, "errors": None}}
+        client = DMSGraphQLClient()
+        client.send_user_message("ApplicationTechnicalId", "InstructorTechId", "Ceci est un message test")
+
+        assert client.execute_query.call_count == 1
