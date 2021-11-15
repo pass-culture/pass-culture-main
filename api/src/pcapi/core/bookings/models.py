@@ -79,7 +79,7 @@ class Booking(PcObject, Model):
 
     dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    dateUsed = Column(DateTime, nullable=True)
+    dateUsed = Column(DateTime, nullable=True, index=True)
 
     stockId = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
 
