@@ -179,6 +179,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
     postalCode = sa.Column(sa.String(5), nullable=True)
     publicName = sa.Column(sa.String(255), nullable=False)
+    recreditAmountToShow = sa.Column(sa.Numeric(10, 2), nullable=True)
     roles = sa.Column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(UserRole, native_enum=False, create_constraint=False))),
         nullable=False,
