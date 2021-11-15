@@ -63,5 +63,9 @@
     .field-label {
       @include body();
     }
-  }
+  }  
+}
+
+.venue-domain-name-banner {
+  margin: rem(32px) 0 rem(8px) 0;
 }

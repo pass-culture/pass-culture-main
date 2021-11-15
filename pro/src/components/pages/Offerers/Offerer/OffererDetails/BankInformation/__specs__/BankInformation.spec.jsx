@@ -17,6 +17,7 @@ jest.mock('utils/config', () => ({
 const expectReimbursementBannerToBePresent = wrapper => {
   expect(wrapper.find('Banner').last().props()).toStrictEqual({
     closable: false,
+    className: '',
     handleOnClick: null,
     type: 'notification-info',
     linkTitle: 'En savoir plus sur les remboursements',
@@ -79,6 +80,7 @@ describe('src | Offerer | BankInformation', () => {
     // then
     expect(wrapper.find('Banner').first().props()).toStrictEqual({
       closable: false,
+      className: '',
       handleOnClick: null,
       type: 'attention',
       children: 'Votre dossier est en cours pour cette structure',
