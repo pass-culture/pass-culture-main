@@ -99,15 +99,59 @@ def run(procedure_id: int, use_graphql_api: bool = False) -> None:
 
 
 def notify_parsing_exception(parsing_error: DMSParsingError, application_techid: str, client):
-    if "postal_code" in parsing_error:
-        client.send_user_message(
-            application_techid, settings.DMS_INSTRUCTOR_ID, "Il semblerait qu'il y ait une erreur dans le code postal."
-        )
-    if "id_piece_number" in parsing_error:
+    if "postal_code" in parsing_error and "id_piece_number" in parsing_error:
+        client.send_user_message(application_techid, settings.DMS_INSTRUCTOR_ID,
+                                 """Bonjour,
+                                 
+                                 Nous avons bien reçu ton dossier !
+                                 Cependant, ton dossier ne peut pas être traiter pour la raison suivante :
+                                 Un ou plusieurs champs ont été renseignés au mauvais format : 
+                                 
+                                 - le champ Code Postal
+                                 - le champ Numéro de la pièce d’identité
+                                 
+                                 Pour que ton dossier soit traité, tu dois le modifier en faisant bien attention de remplir correctement toutes les informations (notamment ton code postal sous format 5 chiffres et le numéro de ta pièce d’identité sous format alphanumérique sans espace et sans caractères spéciaux).
+                                 
+                                 Pour avoir plus d’informations sur les étapes de ton inscription sur Démarches Simplifiées, je t’invite à consulter les articles suivants :
+                                 
+                                 Où puis-je trouver le numéro de ma pièce d'identité ? (https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees)
+                                 Comment bien renseigner mon adresse et mon code postal lors de l'inscription ? (https://aide.passculture.app/fr/articles/5508680-jeunes-ou-puis-je-trouver-le-numero-de-ma-piece-d-identite)
+                                 
+                                 
+                                 Nous te souhaitons une belle journée.
+                                 
+                                 L’équipe pass Culture""")
+    elif "postal_code" in parsing_error and "id_piece_number" not in parsing_error:
         client.send_user_message(
             application_techid,
             settings.DMS_INSTRUCTOR_ID,
-            "Il semblerait qu'il y ait une erreur dans la pièce d'identité fournie.",
+            """Bonjour,
+            
+            Le champ du code postal doit être rempli par 5 chiffres uniquement, sans lettres ni espace. Si tu as saisi ta ville dans le champ du code postal, merci de ne saisir que ces 5 chiffres.
+            
+            Pour corriger ton formulaire, cet article est là pour t'aider : https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees]
+            
+            Très cordialement,
+            
+            L'équipe pass du Culture""",
+        )
+    elif "id_piece_number" in parsing_error and "postal_code" not in parsing_error:
+        client.send_user_message(
+            application_techid,
+            settings.DMS_INSTRUCTOR_ID,
+            """Bonjour, 
+            
+            Nous avons bien reçu ton dossier, mais le numéro de pièce d'identité sur le formulaire ne correspond pas à celui indiqué sur ta pièce d'identité.
+            
+            Cet article peut t’aider à le trouver sur ta pièce d'identité : https://aide.passculture.app/fr/articles/5508680-jeunes-ou-puis-je-trouver-le-numero-de-ma-piece-d-identite
+            
+            Peux-tu mettre à jour ton dossier sur le formulaire en ligne ?
+            
+            Pour t'aider à corriger ton dossier, merci de consulter cet article : https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees
+            
+            Merci et à très vite,
+            
+            L'équipe du pass Culture""",
         )
 
 
