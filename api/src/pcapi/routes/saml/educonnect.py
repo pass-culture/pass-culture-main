@@ -44,7 +44,7 @@ def login_educonnect(user: user_models.User) -> Response:
 
 
 @blueprint.saml_blueprint.route("acs", methods=["POST"])
-def on_educonnect_authentication_response() -> Response:
+def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-many-return-statements
     try:
         educonnect_user = educonnect_api.get_educonnect_user(request.form["SAMLResponse"])
     except educonnect_exceptions.ResponseTooOld:
@@ -87,9 +87,13 @@ def on_educonnect_authentication_response() -> Response:
         last_name=educonnect_user.last_name,
     )
 
-    fraud_api.on_educonnect_result(user, educonnect_content)
-
     error_page_base_url = f"{settings.WEBAPP_V2_URL}/idcheck/educonnect/erreur?"
+
+    try:
+        fraud_api.on_educonnect_result(user, educonnect_content)
+    except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
+        return redirect(error_page_base_url, code=302)
+
     try:
         subscription_api.create_beneficiary_import(user, user_models.EligibilityType.UNDERAGE)
     except fraud_exceptions.UserAgeNotValid:
@@ -99,9 +103,11 @@ def on_educonnect_authentication_response() -> Response:
         )
         error_query_param = {"code": "UserAgeNotValid"}
         return redirect(error_page_base_url + urlencode(error_query_param), code=302)
+
     except fraud_exceptions.NotWhitelistedINE:
         error_query_param = {"code": "UserNotWhitelisted"}
         return redirect(error_page_base_url + urlencode(error_query_param), code=302)
+
     except fraud_exceptions.UserAlreadyBeneficiary:
         logger.warning(
             "User already beneficiary",
@@ -109,12 +115,14 @@ def on_educonnect_authentication_response() -> Response:
         )
         error_query_param = {"code": "UserAlreadyBeneficiary"}
         return redirect(error_page_base_url + urlencode(error_query_param), code=302)
+
     except fraud_exceptions.FraudException as e:
         logger.warning(
             "Fraud suspicion after Educonnect authentication: %s",
             e,
             extra={"userId": user.id, "educonnectId": educonnect_user.educonnect_id},
         )
+
     except Exception as e:  # pylint: disable=broad-except
         logger.error("Error while creating BeneficiaryImport from Educonnect: %s", e, extra={"user_id": user.id})
 

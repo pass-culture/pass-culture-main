@@ -8,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 import sqlalchemy
 
 from pcapi.connectors.beneficiaries import jouve_backend
+from pcapi.core.fraud.exceptions import BeneficiaryFraudResultCannotBeDowngraded
 from pcapi.core.users import constants
 from pcapi.core.users import models as user_models
 from pcapi.models.db import db
@@ -48,8 +49,8 @@ def on_educonnect_result(user: user_models.User, educonnect_content: models.Educ
             thirdPartyId=str(educonnect_content.educonnect_id),
             resultContent=educonnect_content.dict(),
         )
-    repository.save(fraud_check)
     on_identity_fraud_check_result(user, fraud_check)
+    repository.save(fraud_check)
 
 
 def on_jouve_result(user: user_models.User, jouve_content: models.JouveContent) -> None:
@@ -561,9 +562,11 @@ def validate_frauds(
 
     if existing_fraud_result:
         fraud_result = existing_fraud_result
-        # ensure we never overwrite a previously validated status
-        if fraud_result.status != models.FraudStatus.OK:
-            fraud_result.status = status
+
+        if fraud_result.status == models.FraudStatus.OK and status != models.FraudStatus.OK:
+            raise BeneficiaryFraudResultCannotBeDowngraded()
+
+        fraud_result.status = status
     else:
         fraud_result = models.BeneficiaryFraudResult(user=user, status=status, eligibilityType=eligibilityType)
     fraud_result.reason = f" {FRAUD_RESULT_REASON_SEPARATOR} ".join(
