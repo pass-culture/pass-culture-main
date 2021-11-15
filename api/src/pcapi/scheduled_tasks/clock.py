@@ -14,6 +14,13 @@ from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import api as users_api
+from pcapi.core.users.external.user_automations import (
+    users_beneficiary_credit_expiration_within_next_3_months_automation,
+)
+from pcapi.core.users.external.user_automations import users_ex_beneficiary_automation
+from pcapi.core.users.external.user_automations import users_inactive_since_30_days_automation
+from pcapi.core.users.external.user_automations import users_one_year_with_pass_automation
+from pcapi.core.users.external.user_automations import users_turned_eighteen_automation
 from pcapi.core.users.repository import get_newly_eligible_users
 from pcapi.domain.user_emails import send_newly_eligible_user_email
 from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
@@ -194,6 +201,36 @@ def price_bookings() -> None:
     finance_api.price_bookings()
 
 
+@cron_context
+@log_cron_with_transaction
+def pc_user_turned_eighteen_automation() -> None:
+    users_turned_eighteen_automation()
+
+
+@cron_context
+@log_cron_with_transaction
+def pc_users_beneficiary_credit_expiration_within_next_3_months_automation() -> None:
+    users_beneficiary_credit_expiration_within_next_3_months_automation()
+
+
+@cron_context
+@log_cron_with_transaction
+def pc_user_ex_beneficiary_automation() -> None:
+    users_ex_beneficiary_automation()
+
+
+@cron_context
+@log_cron_with_transaction
+def pc_users_inactive_since_30_days_automation() -> None:
+    users_inactive_since_30_days_automation()
+
+
+@cron_context
+@log_cron_with_transaction
+def pc_users_one_year_with_pass_automation() -> None:
+    users_one_year_with_pass_automation()
+
+
 @blueprint.cli.command("clock")
 def clock() -> None:
     set_tag("pcapi.app_type", "clock")
@@ -244,5 +281,14 @@ def clock() -> None:
     scheduler.add_job(pc_recredit_underage_users, "cron", day="*", hour="0")
 
     scheduler.add_job(price_bookings, "cron", day="*", minute="5,15,25,35,45,55")
+
+    # Marketing user automations
+    scheduler.add_job(pc_user_turned_eighteen_automation, "cron", day="*", hour="4", minute="0")
+    scheduler.add_job(
+        pc_users_beneficiary_credit_expiration_within_next_3_months_automation, "cron", day="*", hour="4", minute="20"
+    )
+    scheduler.add_job(pc_user_ex_beneficiary_automation, "cron", day="*", hour="4", minute="40")
+    scheduler.add_job(pc_users_inactive_since_30_days_automation, "cron", day="*", hour="5", minute="0")
+    scheduler.add_job(pc_users_one_year_with_pass_automation, "cron", day="1", hour="5", minute="20")
 
     scheduler.start()
