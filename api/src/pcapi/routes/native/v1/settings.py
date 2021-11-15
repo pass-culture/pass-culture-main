@@ -35,6 +35,7 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
         FeatureToggle.WEBAPP_V2_ENABLED,
         FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL,
+        FeatureToggle.ENABLE_UBBLE,
     )
 
     return serializers.SettingsResponse(
@@ -55,4 +56,5 @@ def get_settings() -> serializers.SettingsResponse:
         is_webapp_v2_enabled=features[FeatureToggle.WEBAPP_V2_ENABLED],
         enable_native_eac_individual=features[FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL],
         account_creation_minimum_age=constants.ACCOUNT_CREATION_MINIMUM_AGE,
+        enable_ubble=features[FeatureToggle.ENABLE_UBBLE],
     )
