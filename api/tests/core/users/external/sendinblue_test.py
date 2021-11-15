@@ -4,16 +4,21 @@ from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
+from sib_api_v3_sdk.models.remove_contact_from_list import RemoveContactFromList
 from sib_api_v3_sdk.models.request_contact_import import RequestContactImport
 
 from pcapi import settings
 from pcapi.core.users.external.sendinblue import SendinblueUserUpdateData
+from pcapi.core.users.external.sendinblue import add_contacts_to_list
 from pcapi.core.users.external.sendinblue import build_file_body
 from pcapi.core.users.external.sendinblue import format_user_attributes
 from pcapi.core.users.external.sendinblue import import_contacts_in_sendinblue
 
 from . import common_user_attributes
 
+
+# Do not use this identifier with production account when running skipped tests
+SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID = 18
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
@@ -122,3 +127,69 @@ class BulkImportUsersDataTest:
         expected_young_call.file_body = f"{self.expected_header}\n{self.mikasa_expected_file_body}"
 
         mock_import_contacts.assert_has_calls([call(expected_pro_call), call(expected_young_call)], any_order=True)
+
+    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.process_api.ProcessApi.get_process")
+    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.remove_contact_from_list")
+    def test_add_contacts_to_list(self, mock_remove_contact_from_list, mock_import_contacts, mock_get_process):
+        result = add_contacts_to_list(
+            ["eren.yeager@shinganshina.paradis", "armin.arlert@shinganshina.paradis"],
+            SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID,
+            clear_list_first=True,
+        )
+
+        mock_remove_contact_from_list.assert_called_once_with(
+            SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID, RemoveContactFromList(emails=None, ids=None, all=True)
+        )
+
+        mock_import_contacts.assert_called_once_with(
+            RequestContactImport(
+                file_url=None,
+                file_body="EMAIL\neren.yeager@shinganshina.paradis\narmin.arlert@shinganshina.paradis",
+                list_ids=[SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID],
+                notify_url=None,
+                new_list=None,
+                email_blacklist=False,
+                sms_blacklist=False,
+                update_existing_contacts=True,
+                empty_contacts_attributes=False,
+            )
+        )
+
+        mock_get_process.assert_called()
+
+        assert result is True
+
+    @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
+    def test_add_contacts_to_list_without_mock(self):
+        result = add_contacts_to_list(
+            ["eren.yeager@shinganshina.paradis", "armin.arlert@shinganshina.paradis"],
+            SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID,
+            clear_list_first=True,
+        )
+
+        assert result is True
+
+    def _test_add_many_contacts_to_list_without_mock(self, count: int, prefix: str):
+        # 40 characters per email address
+        test_time = datetime.now().strftime("%y%m%d.%H%M")
+        thousands_emails = (f"test.{prefix}.{test_time}.{i:06d}@example.net" for i in range(1, count + 1))
+
+        result = add_contacts_to_list(
+            thousands_emails,
+            SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID,
+            clear_list_first=True,
+        )
+
+        assert result is True
+
+    @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
+    def test_add_200k_contacts_to_list_without_mock(self):
+        # 200k contacts: a single 8MB import request
+        self._test_add_many_contacts_to_list_without_mock(200000, "200k")
+
+    @pytest.mark.skip(reason="For dev and debug only - this test sends data to sendinblue")
+    def test_add_500k_contacts_to_list_without_mock(self):
+        # 500k contacts: several import requests
+        # Use with caution, test may take 10, 20, 25 minutes...
+        self._test_add_many_contacts_to_list_without_mock(500000, "500k")
