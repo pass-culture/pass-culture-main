@@ -6,6 +6,7 @@ import pytest
 from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
 from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
+from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import factories as users_factories
 from pcapi.models.beneficiary_import import BeneficiaryImport
@@ -135,6 +136,7 @@ class DmsWebhookApplicationTest:
     @patch.object(DMSGraphQLClient, "execute_query")
     @patch.object(DMSGraphQLClient, "send_user_message")
     def test_dms_double_parsing_error(self, send_user_message, execute_query, client):
+        user = users_factories.UserFactory()
         form_data = {
             "procedure_id": "48860",
             "dossier_id": "6044787",
@@ -142,9 +144,12 @@ class DmsWebhookApplicationTest:
             "updated_at": "2021-09-30 17:55:58 +0200",
         }
         execute_query.return_value = make_single_application(
-            12, state="closed", email="toto@exemple.fr", postal_code="wrong_piece", id_piece_number="wrong_id_piece"
+            12,
+            state=GraphQLApplicationStates.draft.value,
+            email=user.email,
+            postal_code="error_postal_code",
+            id_piece_number="error_identity_piece_number",
         )
-
         response = client.post(
             f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
             form=form_data,
@@ -154,28 +159,7 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
-        assert (send_user_message.call_args[0][2]=="""Bonjour,
-                                 
-                                 Nous avons bien reçu ton dossier !
-                                 Cependant, ton dossier ne peut pas être traiter pour la raison suivante :
-                                 Un ou plusieurs champs ont été renseignés au mauvais format : 
-                                 
-                                 - le champ Code Postal
-                                 - le champ Numéro de la pièce d’identité
-                                 
-                                 Pour que ton dossier soit traité, tu dois le modifier en faisant bien attention de remplir correctement toutes les informations (notamment ton code postal sous format 5 chiffres et le numéro de ta pièce d’identité sous format alphanumérique sans espace et sans caractères spéciaux).
-                                 
-                                 Pour avoir plus d’informations sur les étapes de ton inscription sur Démarches Simplifiées, je t’invite à consulter les articles suivants :
-                                 
-                                 Où puis-je trouver le numéro de ma pièce d'identité ? (https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees)
-                                 Comment bien renseigner mon adresse et mon code postal lors de l'inscription ? (https://aide.passculture.app/fr/articles/5508680-jeunes-ou-puis-je-trouver-le-numero-de-ma-piece-d-identite)
-                                 
-                                 
-                                 Nous te souhaitons une belle journée.
-                                 
-                                 L’équipe pass Culture"""
-                )
-
+        assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSAGE_DOUBLE_ERROR
 
     @patch.object(DMSGraphQLClient, "execute_query")
     @patch.object(DMSGraphQLClient, "send_user_message")
@@ -199,25 +183,7 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
-        assert (
-            send_user_message.call_args[0][2]
-            == """Bonjour,
-            
-            Nous avons bien reçu ton dossier. Cependant, nous avons remarqué que tu n’es pas passé par l’application  avant de déposer le dossier ou que tu n’utilises pas la même adresse email sur le site Démarches Simplifiées.
-            
-            C’est pour cette raison que tu vas devoir poursuivre ton inscription en passant ton application.
-            
-            Pour cela, il faut :
-            - Télécharger l’application sur ton smartphone
-            - Entrer tes informations personnelles (nom, prénom, date de naissance, mail). Tu recevras alors un mail de confirmation (il peut se cacher dans tes spams, n’hésite pas à vérifier). 
-            - Cliquer sur le lien de validation
-            
-            Une fois ton inscription faite, je t’invite à nous contacter pour que nous puissions t’indiquer les étapes à suivre.
-            
-            Nous te souhaitons une belle journée.
-            
-            L’équipe pass Culture"""
-        )
+        assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND
 
     @patch.object(DMSGraphQLClient, "execute_query")
     @patch.object(DMSGraphQLClient, "send_user_message")
@@ -227,7 +193,7 @@ class DmsWebhookApplicationTest:
             12,
             state=GraphQLApplicationStates.draft.value,
             email=user.email,
-            id_piece_number="wrong_value",
+            id_piece_number="error_identity_piece_number",
         )
         form_data = {
             "procedure_id": "48860",
@@ -244,29 +210,14 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
-        assert (
-            send_user_message.call_args[0][2]
-            == """Bonjour, 
-            
-            Nous avons bien reçu ton dossier, mais le numéro de pièce d'identité sur le formulaire ne correspond pas à celui indiqué sur ta pièce d'identité.
-            
-            Cet article peut t’aider à le trouver sur ta pièce d'identité : https://aide.passculture.app/fr/articles/5508680-jeunes-ou-puis-je-trouver-le-numero-de-ma-piece-d-identite
-            
-            Peux-tu mettre à jour ton dossier sur le formulaire en ligne ?
-            
-            Pour t'aider à corriger ton dossier, merci de consulter cet article : https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees
-            
-            Merci et à très vite,
-            
-            L'équipe du pass Culture"""
-        )
+        assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSAGE_ERROR_ID_PIECE
 
     @patch.object(DMSGraphQLClient, "execute_query")
     @patch.object(DMSGraphQLClient, "send_user_message")
     def test_dms_postal_code_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
-            12, state=GraphQLApplicationStates.draft.value, email=user.email, postal_code="6700000"
+            12, state=GraphQLApplicationStates.draft.value, email=user.email, postal_code="error_postal_code"
         )
         form_data = {
             "procedure_id": "48860",
@@ -283,15 +234,4 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
-        assert (
-            send_user_message.call_args[0][2]
-            == """Bonjour,
-            
-            Le champ du code postal doit être rempli par 5 chiffres uniquement, sans lettres ni espace. Si tu as saisi ta ville dans le champ du code postal, merci de ne saisir que ces 5 chiffres.
-            
-            Pour corriger ton formulaire, cet article est là pour t'aider : https://aide.passculture.app/fr/articles/5100876-jeunes-ou-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-demarches-simplifiees]
-            
-            Très cordialement,
-            
-            L'équipe pass du Culture"""
-        )
+        assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSAGE_ERROR_POSTAL_CODE
