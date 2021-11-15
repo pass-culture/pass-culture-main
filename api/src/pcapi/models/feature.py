@@ -83,6 +83,7 @@ class FeatureToggle(enum.Enum):
     WEBAPP_HOMEPAGE = "Permettre l affichage de la nouvelle page d accueil de la webapp"
     WEBAPP_SIGNUP = "Permettre aux bénéficiaires de créer un compte"
     WEBAPP_V2_ENABLED = "Utiliser la nouvelle web app (décli web/v2) au lieu de l'ancienne"
+    SHOW_INVOICES_ON_PRO_PORTAL = "Activer l'affichage des remboursements sur le portail pro"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -138,6 +139,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.USE_APP_SEARCH_ON_WEBAPP,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.WEBAPP_V2_ENABLED,
+    FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
 )
 
 if not settings.IS_DEV:
