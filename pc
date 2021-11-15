@@ -555,7 +555,7 @@ elif [[ "$CMD" == "install" ]]; then
     cd $ROOT_PATH/webapp && yarn;
     cd $ROOT_PATH/pro && yarn;
     cd $ROOT_PATH/adage-front && yarn;
-    ./pc install-hooks
+    pc install-hooks
     git checkout -'
 
 # Install pre-push and pre-commit hooks in the api submodule
