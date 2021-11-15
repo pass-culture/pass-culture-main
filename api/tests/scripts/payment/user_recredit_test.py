@@ -128,6 +128,14 @@ class UserRecreditTest:
         assert user_17_already_recredited.deposit.amount == 30
         assert user_17_already_recredited_twice.deposit.amount == 30
 
+        assert user_15.recreditAmountToShow is None
+        assert user_16_not_recredited.recreditAmountToShow is None
+        assert user_16_already_recredited.recreditAmountToShow is None
+        assert user_17_not_recredited.recreditAmountToShow is None
+        assert user_17_only_recredited_at_16.recreditAmountToShow is None
+        assert user_17_already_recredited.recreditAmountToShow is None
+        assert user_17_already_recredited_twice.recreditAmountToShow is None
+
         with freeze_time("2020, 5, 2"):
             recredit_underage_users()
 
@@ -149,6 +157,14 @@ class UserRecreditTest:
         assert user_17_already_recredited.deposit.amount == 30
         assert user_17_already_recredited_twice.deposit.amount == 30
 
+        assert user_15.recreditAmountToShow is None
+        assert user_16_not_recredited.recreditAmountToShow == 30
+        assert user_16_already_recredited.recreditAmountToShow is None
+        assert user_17_not_recredited.recreditAmountToShow == 30
+        assert user_17_only_recredited_at_16.recreditAmountToShow == 30
+        assert user_17_already_recredited.recreditAmountToShow is None
+        assert user_17_already_recredited_twice.recreditAmountToShow is None
+
     def test_recredit_around_the_year(self):
         with freeze_time("2015-05-01"):
             user_activated_at_15 = user_factories.UnderageBeneficiaryFactory(subscription_age=15)
@@ -158,6 +174,9 @@ class UserRecreditTest:
         assert user_activated_at_15.deposit.amount == 20
         assert user_activated_at_16.deposit.amount == 30
         assert user_activated_at_17.deposit.amount == 30
+        assert user_activated_at_15.recreditAmountToShow is None
+        assert user_activated_at_16.recreditAmountToShow is None
+        assert user_activated_at_17.recreditAmountToShow is None
 
         # recredit the following year
         with freeze_time("2016-05-01"):
@@ -166,6 +185,9 @@ class UserRecreditTest:
         assert user_activated_at_15.deposit.amount == 50
         assert user_activated_at_16.deposit.amount == 60
         assert user_activated_at_17.deposit.amount == 30
+        assert user_activated_at_15.recreditAmountToShow == 30
+        assert user_activated_at_16.recreditAmountToShow == 30
+        assert user_activated_at_17.recreditAmountToShow is None
 
         # recrediting the day after does not affect the amount
         with freeze_time("2016-05-02"):
@@ -174,6 +196,9 @@ class UserRecreditTest:
         assert user_activated_at_15.deposit.amount == 50
         assert user_activated_at_16.deposit.amount == 60
         assert user_activated_at_17.deposit.amount == 30
+        assert user_activated_at_15.recreditAmountToShow == 30
+        assert user_activated_at_16.recreditAmountToShow == 30
+        assert user_activated_at_17.recreditAmountToShow is None
 
         # recredit the following year
         with freeze_time("2017-05-01"):
@@ -182,3 +207,6 @@ class UserRecreditTest:
         assert user_activated_at_15.deposit.amount == 80
         assert user_activated_at_16.deposit.amount == 60
         assert user_activated_at_17.deposit.amount == 30
+        assert user_activated_at_15.recreditAmountToShow == 30
+        assert user_activated_at_16.recreditAmountToShow == 30  # Was not reset
+        assert user_activated_at_17.recreditAmountToShow is None

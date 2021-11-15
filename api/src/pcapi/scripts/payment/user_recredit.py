@@ -7,7 +7,7 @@ from sqlalchemy.orm import joinedload
 from pcapi.core.payments import models as payments_models
 import pcapi.core.payments.conf as deposit_conf
 from pcapi.core.users import models as users_models
-from pcapi.repository import repository
+from pcapi.models import db
 from pcapi.repository import transaction
 
 
@@ -42,18 +42,17 @@ def recredit_underage_users() -> None:
     users_to_recredit = [
         user for user in users if has_celebrated_their_birthday_since_activation(user) and not has_been_recredited(user)
     ]
-    recredits = [
-        payments_models.Recredit(
-            depositId=user.deposit.id,
-            deposit=user.deposit,
-            amount=deposit_conf.RECREDIT_TYPE_AMOUNT_MAPPING[deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age]],
-            recreditType=deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age],
-        )
-        for user in users_to_recredit
-    ]
     with transaction():
-        for recredit in recredits:
+        for user in users_to_recredit:
+            recredit = payments_models.Recredit(
+                deposit=user.deposit,
+                amount=deposit_conf.RECREDIT_TYPE_AMOUNT_MAPPING[deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age]],
+                recreditType=deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age],
+            )
             recredit.deposit.amount += recredit.amount
+            user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
 
-        repository.save(*recredits)
+            db.session.add(user)
+            db.session.add(recredit)
+
     logger.info("Recredited %s underage users deposits", len(users_to_recredit))
