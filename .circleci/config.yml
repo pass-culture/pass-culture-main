@@ -18,6 +18,9 @@ parameters:
   venv_cache_key:
     type: string
     default: 'deps1-{{ checksum "/home/circleci/.pyenv/version" }}-{{ checksum "api/requirements.txt" }}'
+  pro_cache_key:
+    type: string
+    default: 'yarn-packages-{{ checksum "pro/yarn.lock" }}'
 
 ###################
 #  EXECUTORS
@@ -209,7 +212,7 @@ commands:
 ###################
 
 jobs:
-  quality:
+  quality-api:
     parameters:
       is_nightly_build:
         type: boolean
@@ -474,6 +477,48 @@ jobs:
           command: |
             export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
+
+  quality-pro:
+    machine:
+      image: ubuntu-2004:202101-01
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - skip_unchanged:
+          paths: pro
+      - run: ./install_lib_ci.sh
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - restore_cache:
+                name: Restore Yarn Package Cache
+                key: << pipeline.parameters.pro_cache_key >>
+      - run:
+          name: Install dependencies
+          working_directory: pro
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install
+            yarn install
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - save_cache:
+                name: Save Yarn Package Cache
+                key: << pipeline.parameters.pro_cache_key >>
+                paths:
+                  - ~/.cache/yarn
+      - run:
+          name: Running linter
+          working_directory: pro
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install
+            yarn lint:js
 
   tests-pro-unit-tests:
     machine:
@@ -849,7 +894,15 @@ workflows:
   commit:
     jobs:
       - tests-script-pc
-      - quality:
+      - quality-pro:
+          filters:
+              branches:
+                ignore:
+                  - production
+                  - staging
+                  - integration
+          context: Slack
+      - quality-api:
           filters:
             branches:
               ignore:
@@ -924,7 +977,7 @@ workflows:
             - "Run core tests after commit"
             - "Run routes tests after commit"
             - "Run other tests after commit"
-            - quality
+            - quality-api
           context:
             - GCP
             - GCP_EHP
@@ -958,6 +1011,7 @@ workflows:
               only:
                 - master
           requires:
+            - quality-pro
             - tests-pro-unit-tests
             - tests-pro-e2e-tests
             - restart-pcapi
