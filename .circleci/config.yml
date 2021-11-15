@@ -21,6 +21,9 @@ parameters:
   pro_cache_key:
     type: string
     default: 'yarn-packages-{{ checksum "pro/yarn.lock" }}'
+  webapp_cache_key:
+    type: string
+    default: 'yarn-packages-{{ checksum "webapp/yarn.lock" }}'
 
 ###################
 #  EXECUTORS
@@ -520,6 +523,48 @@ jobs:
             nvm install
             yarn lint:js
 
+  quality-webapp:
+    machine:
+      image: ubuntu-2004:202101-01
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - skip_unchanged:
+          paths: webapp
+      - run: ./install_lib_ci.sh
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - restore_cache:
+                name: Restore Yarn Package Cache
+                key: << pipeline.parameters.webapp_cache_key >>
+      - run:
+          name: Install dependencies
+          working_directory: webapp
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install
+            yarn install
+      - unless:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - save_cache:
+                name: Save Yarn Package Cache
+                key: << pipeline.parameters.webapp_cache_key >>
+                paths:
+                  - ~/.cache/yarn
+      - run:
+          name: Running linter
+          working_directory: webapp
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install
+            yarn lint:js
+
   tests-pro-unit-tests:
     machine:
       image: ubuntu-2004:202101-01
@@ -902,6 +947,14 @@ workflows:
                   - staging
                   - integration
           context: Slack
+      - quality-webapp:
+          filters:
+              branches:
+                ignore:
+                  - production
+                  - staging
+                  - integration
+          context: Slack
       - quality-api:
           filters:
             branches:
@@ -1025,6 +1078,7 @@ workflows:
               only:
                 - master
           requires:
+            - quality-webapp
             - tests-webapp
             - restart-pcapi
           context:
