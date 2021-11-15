@@ -24,3 +24,7 @@ class DuplicateUser(FraudException):
 
 class NotWhitelistedINE(FraudException):
     pass
+
+
+class BeneficiaryFraudResultCannotBeDowngraded(FraudException):
+    pass

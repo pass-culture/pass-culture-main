@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 import pytest
 
 import pcapi.core.fraud.api as fraud_api
+import pcapi.core.fraud.exceptions as fraud_exceptions
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.testing import override_features
@@ -375,32 +376,19 @@ class CommonFraudCheckTest:
     def test_user_validation_is_beneficiary(self, fraud_check_type):
         user = users_factories.BeneficiaryGrant18Factory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
-        fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
-        assert (
-            "L’utilisateur est déjà bénéfiaire, avec un portefeuille non expiré. Il ne peut pas prétendre au pass culture 18 ans"
-            in fraud_result.reason
-        )
-        assert fraud_result.status == fraud_models.FraudStatus.KO
+        with pytest.raises(fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded):
+            fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
-    @pytest.mark.parametrize(
-        "age",
-        [15, 16, 17],
-    )
-    def test_underage_user_validation_is_beneficiary(self, age):
+    def test_underage_user_validation_is_beneficiary(self):
         user = users_factories.UnderageBeneficiaryFactory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.EDUCONNECT,
             user=user,
-            resultContent=fraud_factories.EduconnectContentFactory(age=age),
+            resultContent=fraud_factories.EduconnectContentFactory(),
         )
-        fraud_result = fraud_api.on_identity_fraud_check_result(user, fraud_check)
-
-        assert (
-            "L’utilisateur est déjà bénéfiaire, avec un portefeuille non expiré. Il ne peut pas prétendre au pass culture 15-17 ans"
-            in fraud_result.reason
-        )
-        assert fraud_result.status == fraud_models.FraudStatus.KO
+        with pytest.raises(fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded):
+            fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
     @pytest.mark.parametrize(
         "fraud_check_type",
@@ -451,13 +439,12 @@ class CommonFraudCheckTest:
     def test_previously_validated_user_with_retry(self, fraud_check_type):
         # The user is already beneficiary, and has already done all the checks but
         # for any circumstances, someone is trying to redo the validation
+        # an error should be raised
         user = users_factories.BeneficiaryGrant18Factory()
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
-        fraud_result = fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
 
-        fraud_api.on_identity_fraud_check_result(user, fraud_check)
-
-        assert fraud_result.status == fraud_models.FraudStatus.OK
+        with pytest.raises(fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded):
+            fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -539,6 +526,7 @@ class EduconnectFraudTest:
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
 
         # If the user logs in again with another educonnect account, update the fraud check
+        fraud_factories.IneHashWhitelistFactory(ine_hash="0000")
         fraud_api.on_educonnect_result(
             user,
             fraud_models.EduconnectContent(

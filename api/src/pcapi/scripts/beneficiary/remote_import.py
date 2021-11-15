@@ -10,6 +10,7 @@ from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
 from pcapi.connectors.api_demarches_simplifiees import GraphQLApplicationStates
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
 import pcapi.core.fraud.api as fraud_api
+import pcapi.core.fraud.exceptions as fraud_exceptions
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.messages as subscription_messages
@@ -167,6 +168,8 @@ def process_application(
         return
     try:
         fraud_api.on_dms_fraud_check(user, information)
+    except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
+        logger.warning("Trying to downgrade a BeneficiaryFraudResult status already OK", extra={"user_id": user.id})
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception("Error on dms fraud check result: %s", exc)
     if user.has_beneficiary_role:
