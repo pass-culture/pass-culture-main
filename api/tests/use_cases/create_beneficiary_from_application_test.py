@@ -253,29 +253,6 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
     assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
 
 
-@override_features(FORCE_PHONE_VALIDATION=False)
-@patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
-def test_cannot_save_beneficiary_if_email_is_already_taken(app):
-    # Given
-    email = "rennes@example.org"
-    users_factories.BeneficiaryGrant18Factory(email=email, id=4)
-
-    # When
-    create_beneficiary_from_application.execute(APPLICATION_ID)
-
-    # Then
-    user = User.query.one()
-    assert user.id == 4
-
-    beneficiary_import = BeneficiaryImport.query.one()
-    assert beneficiary_import.currentStatus == ImportStatus.REJECTED
-    assert beneficiary_import.applicationId == APPLICATION_ID
-    assert beneficiary_import.beneficiary == user
-    assert beneficiary_import.detail == f"Email {email} is already taken."
-
-    assert push_testing.requests == []
-
-
 @freezegun.freeze_time("2021-10-30 09:00:00")
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
 def test_cannot_save_beneficiary_if_duplicate(app):
