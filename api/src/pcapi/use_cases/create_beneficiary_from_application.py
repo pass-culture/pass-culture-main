@@ -2,6 +2,7 @@ import logging
 
 from pcapi.connectors.beneficiaries import jouve_backend
 from pcapi.core.fraud.api import on_jouve_result
+from pcapi.core.fraud.exceptions import BeneficiaryFraudResultCannotBeDowngraded
 from pcapi.core.mails.transactional.users.fraud_suspicion_email import send_fraud_suspicion_email
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.domain import user_emails as old_user_emails
@@ -69,6 +70,11 @@ class CreateBeneficiaryFromApplication:
 
         try:
             on_jouve_result(preexisting_account, jouve_content)
+        except BeneficiaryFraudResultCannotBeDowngraded:
+            logger.warning(
+                "Trying to downgrade a BeneficiaryFraudResult status already OK",
+                extra={"user_id": preexisting_account.id},
+            )
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception("Error on jouve result: %s", exc)
 
