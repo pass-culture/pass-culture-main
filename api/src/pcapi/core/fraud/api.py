@@ -32,23 +32,22 @@ USER_PROFILING_RISK_MAPPING = {
 
 
 def on_educonnect_result(user: user_models.User, educonnect_content: models.EduconnectContent) -> None:
-    if (
-        models.BeneficiaryFraudCheck.query.filter(
-            models.BeneficiaryFraudCheck.user == user,
-            models.BeneficiaryFraudCheck.type == models.FraudCheckType.EDUCONNECT,
-        ).count()
-        > 0
-    ):
-        # TODO: figure out if we update the current fraud check, keep the original or allow multiple fraud checks
-        # Currently keeping the first one and ignoring any new one
-        return
 
-    fraud_check = models.BeneficiaryFraudCheck(
-        user=user,
-        type=models.FraudCheckType.EDUCONNECT,
-        thirdPartyId=str(educonnect_content.educonnect_id),
-        resultContent=educonnect_content.dict(),
-    )
+    fraud_check = models.BeneficiaryFraudCheck.query.filter(
+        models.BeneficiaryFraudCheck.user == user,
+        models.BeneficiaryFraudCheck.type == models.FraudCheckType.EDUCONNECT,
+    ).one_or_none()
+
+    if fraud_check:
+        fraud_check.thirdPartyId = str(educonnect_content.educonnect_id)
+        fraud_check.resultContent = educonnect_content.dict()
+    else:
+        fraud_check = models.BeneficiaryFraudCheck(
+            user=user,
+            type=models.FraudCheckType.EDUCONNECT,
+            thirdPartyId=str(educonnect_content.educonnect_id),
+            resultContent=educonnect_content.dict(),
+        )
     repository.save(fraud_check)
     on_identity_fraud_check_result(user, fraud_check)
 

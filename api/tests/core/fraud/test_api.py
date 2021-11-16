@@ -503,6 +503,32 @@ class EduconnectFraudTest:
         }
         assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
 
+        # If the user logs in again with another educonnect account, update the fraud check
+        fraud_api.on_educonnect_result(
+            user,
+            fraud_models.EduconnectContent(
+                birth_date=birth_date,
+                educonnect_id="id-1",
+                first_name="Lucille",
+                ine_hash="0000",
+                last_name="Ellingson",
+            ),
+        )
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            user=user, type=fraud_models.FraudCheckType.EDUCONNECT
+        ).one_or_none()
+        assert fraud_check.userId == user.id
+        assert fraud_check.type == fraud_models.FraudCheckType.EDUCONNECT
+        assert fraud_check.source_data().__dict__ == {
+            "educonnect_id": "id-1",
+            "first_name": "Lucille",
+            "ine_hash": "0000",
+            "last_name": "Ellingson",
+            "birth_date": birth_date,
+        }
+        assert user.beneficiaryFraudResult.status == fraud_models.FraudStatus.OK
+
     @pytest.mark.parametrize("age", [14, 18])
     def test_age_fraud_check_ko(self, age):
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
