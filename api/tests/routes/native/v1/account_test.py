@@ -44,6 +44,7 @@ from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.repository import repository
 from pcapi.routes.native.v1.serialization import account as account_serializers
+from pcapi.scripts.payment.user_recredit import recredit_underage_users
 
 import tests
 from tests.conftest import TestClient
@@ -143,6 +144,7 @@ class AccountTest:
             "hasCompletedIdCheck": None,
             "nextBeneficiaryValidationStep": None,
             "pseudo": "jdo",
+            "recreditAmountToShow": None,
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
             "subscriptionMessage": {
@@ -188,6 +190,20 @@ class AccountTest:
         assert response.json["pseudo"] is None
         assert not response.json["isBeneficiary"]
         assert response.json["roles"] == []
+
+    def test_get_user_profile_recredit_amount_to_show(self, app):
+        with freeze_time("2020-01-01"):
+            users_factories.UnderageBeneficiaryFactory(email=self.identifier)
+
+        with freeze_time("2021-01-02"):
+            recredit_underage_users()
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        me_response = test_client.get("/native/v1/me")
+        assert me_response.json["recreditAmountToShow"] == 3000
 
     def test_has_completed_id_check(self, app):
         user = users_factories.UserFactory(email=self.identifier)
