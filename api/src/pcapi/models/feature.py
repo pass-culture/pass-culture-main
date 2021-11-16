@@ -19,7 +19,54 @@ logger = logging.getLogger(__name__)
 
 
 class FeatureToggle(enum.Enum):
+    ALLOW_EMPTY_USER_PROFILING = "Autorise les inscriptions de bénéficiaires sans profile Threat Metrix"
+    ALLOW_IDCHECK_REGISTRATION = "Autoriser les utilisateurs de 18 ans à suivre le parcours d inscription ID Check"
+    ALLOW_IDCHECK_UNDERAGE_REGISTRATION = (
+        "Autoriser les utilisateurs de moins de 15 à 17 ans à suivre le parcours d inscription ID Check"
+    )
+    API_SIRENE_AVAILABLE = "Active les fonctionnalitées liées à l'API Sirene"
+    AUTO_ACTIVATE_DIGITAL_BOOKINGS = (
+        "Activer (marquer comme utilisée) les réservations dès leur création pour les offres digitales"
+    )
     BENEFICIARIES_IMPORT = "Permettre limport des comptes jeunes depuis DMS"
+    BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
+    DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
+    ENABLE_ACTIVATION_CODES = "Permet la création de codes d'activation"
+    ENABLE_DMS_GRAPHQL_API = "Utilise l'API GraphQL de DMS"
+    ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE = "Utiliser la nouvelle règle de détection d'utilisateur en doublon"
+    ENABLE_EDUCONNECT_AUTHENTICATION = "Active l'authentification via educonnect sur l'app native"
+    ENABLE_INE_WHITELIST_FILTER = "Active le filtre sur les INE whitelistés"
+    ENABLE_ID_CHECK_RETENTION = "Active le mode bassin de retention dans Id Check V2"
+    ENABLE_IDCHECK_FRAUD_CONTROLS = "Active les contrôles de sécurité en sortie du process ID Check"
+    ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION = (
+        "Active le champ isbn obligatoire lors de la création d'offre de type LIVRE_EDITION"
+    )
+    ENABLE_NATIVE_APP_RECAPTCHA = "Active le reCaptacha sur l'API native"
+    ENABLE_NATIVE_EAC_INDIVIDUAL = "Active l'EAC individuel sur l'app native"
+    ENABLE_NATIVE_ID_CHECK_VERSION = "Utilise la version d'ID-Check intégrée à l'application native"
+    ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING = (
+        "Active le mode debug Firebase pour l'Id Check intégrée à l'application native"
+    )
+    ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
+    ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS = (
+        "Utiliser Sendinblue pour envoyer les emails transactionnels (Ceux qui ont été migrés)"
+    )
+    ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"  # TODO (viconnex) remove when FORCE_PHONE_VALIDATION is released in production
+    ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
+    ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM = (
+        "Active le nouveau parcours de création d'offres avec les offres collectives"
+    )
+    ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
+    ENABLE_VENUE_WITHDRAWAL_DETAILS = "Active les modalités de retrait sur la page lieu"
+    ENFORCE_BANK_INFORMATION_WITH_SIRET = "Forcer les informations banquaires à être liées à un SIRET."
+    FORCE_PHONE_VALIDATION = "Forcer la validation du numéro de téléphone pour devenir bénéficiaire"
+    ID_CHECK_ADDRESS_AUTOCOMPLETION = "Autocomplétion de l'adresse lors du parcours IDCheck"
+    IMPROVE_BOOKINGS_PERF = "Améliore les performances pour la page pro des réservations"
+    OFFER_VALIDATION_MOCK_COMPUTATION = "Active le calcul automatique de validation d'offre depuis le nom de l'offre"
+    PAUSE_JOUVE_SUBSCRIPTION = "Mettre en pause les inscriptions depuis JOUVE"
+    PERF_VENUE_STATS = "Permet de basculer vers une nouvelle implémentation performante de la page d'accueil pro contenant les indicateurs statistiques par venue"
+    PRICE_BOOKINGS = "Active la valorisation des réservations"
+    PRO_REIMBURSEMENTS_FILTERS = "Permet de filtrer la liste de remboursements"
     QR_CODE = "Permettre la validation dune contremarque via QR code"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
     SYNCHRONIZE_BANK_INFORMATION = (
@@ -29,59 +76,12 @@ class FeatureToggle(enum.Enum):
     SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION = "Permettre limport journalier des résumés des livres"
     SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS = "Permettre limport journalier des couvertures de livres"
     UPDATE_BOOKING_USED = "Permettre la validation automatique des contremarques 48h après la fin de lévènement"
-    WEBAPP_SIGNUP = "Permettre aux bénéficiaires de créer un compte"
-    API_SIRENE_AVAILABLE = "Active les fonctionnalitées liées à l'API Sirene"
-    WEBAPP_HOMEPAGE = "Permettre l affichage de la nouvelle page d accueil de la webapp"
-    ALLOW_IDCHECK_REGISTRATION = "Autoriser les utilisateurs de 18 ans à suivre le parcours d inscription ID Check"
-    ALLOW_IDCHECK_UNDERAGE_REGISTRATION = (
-        "Autoriser les utilisateurs de moins de 15 à 17 ans à suivre le parcours d inscription ID Check"
-    )
-    ENABLE_NATIVE_APP_RECAPTCHA = "Active le reCaptacha sur l'API native"
-    OFFER_VALIDATION_MOCK_COMPUTATION = "Active le calcul automatique de validation d'offre depuis le nom de l'offre"
-    AUTO_ACTIVATE_DIGITAL_BOOKINGS = (
-        "Activer (marquer comme utilisée) les réservations dès leur création pour les offres digitales"
-    )
-    ENABLE_ACTIVATION_CODES = "Permet la création de codes d'activation"
-    ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"  # TODO (viconnex) remove when FORCE_PHONE_VALIDATION is released in production
-    FORCE_PHONE_VALIDATION = "Forcer la validation du numéro de téléphone pour devenir bénéficiaire"
-    ENABLE_NATIVE_ID_CHECK_VERSION = "Utilise la version d'ID-Check intégrée à l'application native"
-    ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
-    ENABLE_IDCHECK_FRAUD_CONTROLS = "Active les contrôles de sécurité en sortie du process ID Check"
-    DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
-    ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING = (
-        "Active le mode debug Firebase pour l'Id Check intégrée à l'application native"
-    )
-    ENABLE_ID_CHECK_RETENTION = "Active le mode bassin de retention dans Id Check V2"
-    ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION = (
-        "Active le champ isbn obligatoire lors de la création d'offre de type LIVRE_EDITION"
-    )
     USE_APP_SEARCH_ON_NATIVE_APP = "Utiliser App Search au lieu d'Algolia sur l'app native"
     USE_APP_SEARCH_ON_WEBAPP = "Utiliser App Search au lieu d'Algolia sur la webapp"
-    ID_CHECK_ADDRESS_AUTOCOMPLETION = "Autocomplétion de l'adresse lors du parcours IDCheck"
     USER_PROFILING_FRAUD_CHECK = "Détection de la fraude basée sur le profil de l'utilisateur"
-    BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
-    ENABLE_VENUE_WITHDRAWAL_DETAILS = "Active les modalités de retrait sur la page lieu"
-    PERF_VENUE_STATS = "Permet de basculer vers une nouvelle implémentation performante de la page d'accueil pro contenant les indicateurs statistiques par venue"
+    WEBAPP_HOMEPAGE = "Permettre l affichage de la nouvelle page d accueil de la webapp"
+    WEBAPP_SIGNUP = "Permettre aux bénéficiaires de créer un compte"
     WEBAPP_V2_ENABLED = "Utiliser la nouvelle web app (décli web/v2) au lieu de l'ancienne"
-    PRO_REIMBURSEMENTS_FILTERS = "Permet de filtrer la liste de remboursements"
-    ENABLE_NATIVE_EAC_INDIVIDUAL = "Active l'EAC individuel sur l'app native"
-    ENABLE_DMS_GRAPHQL_API = "Utilise l'API GraphQL de DMS"
-    ENABLE_EDUCONNECT_AUTHENTICATION = "Active l'authentification via educonnect sur l'app native"
-    ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS = (
-        "Utiliser Sendinblue pour envoyer les emails transactionnels (Ceux qui ont été migrés)"
-    )
-    ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE = "Utiliser la nouvelle règle de détection d'utilisateur en doublon"
-    ENFORCE_BANK_INFORMATION_WITH_SIRET = "Forcer les informations banquaires à être liées à un SIRET."
-    ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
-    PAUSE_JOUVE_SUBSCRIPTION = "Mettre en pause les inscriptions depuis JOUVE"
-    IMPROVE_BOOKINGS_PERF = "Améliore les performances pour la page pro des réservations"
-    ENABLE_INE_WHITELIST_FILTER = "Active le filtre sur les INE whitelistés"
-    ALLOW_EMPTY_USER_PROFILING = "Autorise les inscriptions de bénéficiaires sans profile Threat Metrix"
-    PRICE_BOOKINGS = "Active la valorisation des réservations"
-    ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
-    ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM = (
-        "Active le nouveau parcours de création d'offres avec les offres collectives"
-    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -110,32 +110,32 @@ class Feature(PcObject, Model, DeactivableMixin):
 
 
 FEATURES_DISABLED_BY_DEFAULT = (
+    FeatureToggle.ALLOW_EMPTY_USER_PROFILING,
     FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION,
-    FeatureToggle.FORCE_PHONE_VALIDATION,
-    FeatureToggle.ENABLE_NEW_VENUE_PAGES,
-    FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
+    FeatureToggle.ENABLE_DMS_GRAPHQL_API,
+    FeatureToggle.ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE,
+    FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION,
     FeatureToggle.ENABLE_ID_CHECK_RETENTION,
     FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION,
+    FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
+    FeatureToggle.ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM,
+    FeatureToggle.ENABLE_NEW_VENUE_PAGES,
+    FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
+    FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS,
+    FeatureToggle.ENABLE_UBBLE,
+    FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS,
+    FeatureToggle.ENFORCE_BANK_INFORMATION_WITH_SIRET,
+    FeatureToggle.IMPROVE_BOOKINGS_PERF,
+    FeatureToggle.FORCE_PHONE_VALIDATION,
+    FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
+    FeatureToggle.PAUSE_JOUVE_SUBSCRIPTION,
+    FeatureToggle.PERF_VENUE_STATS,
+    FeatureToggle.PRICE_BOOKINGS,
+    FeatureToggle.PRO_REIMBURSEMENTS_FILTERS,
     FeatureToggle.USE_APP_SEARCH_ON_NATIVE_APP,
     FeatureToggle.USE_APP_SEARCH_ON_WEBAPP,
-    FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
-    FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS,
-    FeatureToggle.PERF_VENUE_STATS,
     FeatureToggle.WEBAPP_V2_ENABLED,
-    FeatureToggle.PRO_REIMBURSEMENTS_FILTERS,
-    FeatureToggle.ENABLE_DMS_GRAPHQL_API,
-    FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION,
-    FeatureToggle.ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE,
-    FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS,
-    FeatureToggle.ENFORCE_BANK_INFORMATION_WITH_SIRET,
-    FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
-    FeatureToggle.IMPROVE_BOOKINGS_PERF,
-    FeatureToggle.PAUSE_JOUVE_SUBSCRIPTION,
-    FeatureToggle.ALLOW_EMPTY_USER_PROFILING,
-    FeatureToggle.PRICE_BOOKINGS,
-    FeatureToggle.ENABLE_UBBLE,
-    FeatureToggle.ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM,
 )
 
 if not settings.IS_DEV:
