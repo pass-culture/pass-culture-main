@@ -10,6 +10,15 @@
     &-buttons {
         display: flex;
         align-items: center;
+
+        &-button:first-of-type {
+            margin-right: rem(24px)
+        }
+    }
+
+    &-content {
+        width: min-width;
+        margin-bottom: rem(56px);
     }
 }
 
@@ -23,15 +32,5 @@
         &:first-of-type {
             margin-right: rem(24px)
         }
-    }
-}
-
-.offer-type-buttons {
-    display: flex;
-    align-items: center;
-    margin-bottom: rem(56px);
-
-    &-button:first-of-type {
-        margin-right: rem(24px)
     }
 }
