@@ -307,8 +307,8 @@ class UserProfilingFraudRequest(BaseModel):
 
 
 class IdentificationSessionRequest(BaseModel):
-    redirect_url: str
+    redirectUrl: str
 
 
 class IdentificationSessionResponse(BaseModel):
-    identification_url: str
+    identificationUrl: str

@@ -1678,7 +1678,7 @@ class IdentificationSessionTest:
 
         client.with_token(user.email)
 
-        response = client.post("/native/v1/ubble_identification", json={"redirect_url": "http://example.com/deeplink"})
+        response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 200
         assert len(user.beneficiaryFraudChecks) == 1
