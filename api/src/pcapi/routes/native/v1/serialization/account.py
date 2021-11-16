@@ -166,30 +166,30 @@ class SubscriptionMessage(BaseModel):
 
 
 class UserProfileResponse(BaseModel):
-    id: int
+    allowed_eligibility_check_methods: Optional[list[EligibilityCheckMethods]]
     booked_offers: dict[str, int]
-    domains_credit: Optional[DomainsCredit]
     dateOfBirth: Optional[datetime.date]
     deposit_expiration_date: Optional[datetime.datetime]
-    deposit_version: Optional[int]
     deposit_type: Optional[DepositType]
+    deposit_version: Optional[int]
+    domains_credit: Optional[DomainsCredit]
     eligibility: Optional[EligibilityType]
     eligibility_end_datetime: Optional[datetime.datetime]
     eligibility_start_datetime: Optional[datetime.datetime]
     email: str
     firstName: Optional[str]
     hasCompletedIdCheck: Optional[bool]
-    lastName: Optional[str]
-    next_beneficiary_validation_step: Optional[BeneficiaryValidationStep]
-    subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
-    subscriptionMessage: Optional[SubscriptionMessage]
+    id: int
     isBeneficiary: bool
-    roles: list[UserRole]
+    lastName: Optional[str]
+    needsToFillCulturalSurvey: bool
+    next_beneficiary_validation_step: Optional[BeneficiaryValidationStep]
     phoneNumber: Optional[str]
     publicName: Optional[str] = Field(None, alias="pseudo")
-    needsToFillCulturalSurvey: bool
+    roles: list[UserRole]
     show_eligible_card: bool
-    allowed_eligibility_check_methods: Optional[list[EligibilityCheckMethods]]
+    subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
+    subscriptionMessage: Optional[SubscriptionMessage]
 
     class Config:
         orm_mode = True
