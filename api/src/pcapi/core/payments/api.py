@@ -100,9 +100,33 @@ def bulk_create_payment_statuses(payment_query, status: TransactionStatus, detai
     db.session.commit()
 
 
-def create_reimbursement_rule(offerer_id, subcategories, rate, start_date, end_date=None):
+def create_offerer_reimbursement_rule(offerer_id, subcategories, rate, start_date, end_date=None):
+    return _create_reimbursement_rule(
+        offerer_id=offerer_id,
+        subcategories=subcategories,
+        rate=rate,
+        start_date=start_date,
+        end_date=end_date,
+    )
+
+
+def _create_reimbursement_rule(
+    offerer_id=None, offer_id=None, subcategories=None, rate=None, amount=None, start_date=None, end_date=None
+):
+    subcategories = subcategories or []
+    if not (bool(offerer_id) ^ bool(offer_id)):
+        raise ValueError("Must provider offer or offerer (but not both)")
+    if not (bool(rate) ^ bool(amount)):
+        raise ValueError("Must provider rate or amount (but not both)")
+    if not (bool(rate) or not bool(offerer_id)):
+        raise ValueError("Rate must be specified only with an offerere (not with an offer)")
+    if not (bool(amount) or not bool(offer_id)):
+        raise ValueError("Amount must be specified only with an offer (not with an offerer)")
+    if not start_date:
+        raise ValueError("Start date must be provided")
     rule = CustomReimbursementRule(
         offererId=offerer_id,
+        offerId=offer_id,
         subcategories=subcategories,
         rate=rate,
         timespan=(start_date, end_date),

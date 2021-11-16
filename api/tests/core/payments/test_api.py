@@ -138,13 +138,13 @@ class BulkCreatePaymentStatusesTest:
         assert {s.detail for s in statuses} == {"something"}
 
 
-class CreateReimbursementRuleTest:
+class CreateOffererReimbursementRuleTest:
     @freeze_time("2021-10-01 00:00:00")
     def test_create_rule(self):
         offerer = offerers_factories.OffererFactory()
         start = pytz.utc.localize(datetime.today() + timedelta(days=1))
         end = pytz.utc.localize(datetime.today() + timedelta(days=2))
-        rule = api.create_reimbursement_rule(
+        rule = api.create_offerer_reimbursement_rule(
             offerer.id, subcategories=["VOD"], rate=0.8, start_date=start, end_date=end
         )
 
@@ -161,7 +161,7 @@ class CreateReimbursementRuleTest:
         offerer = offerers_factories.OffererFactory()
         start = (datetime.today() + timedelta(days=1)).astimezone(pytz.utc)
         with pytest.raises(exceptions.UnknownSubcategoryForReimbursementRule):
-            api.create_reimbursement_rule(offerer.id, subcategories=["UNKNOWN"], rate=0.8, start_date=start)
+            api.create_offerer_reimbursement_rule(offerer.id, subcategories=["UNKNOWN"], rate=0.8, start_date=start)
 
 
 class EditReimbursementRuleTest:

@@ -192,7 +192,7 @@ class CustomReimbursementRuleView(BaseAdminView):
         )
         rate = Decimal(form.rate.data / 100).quantize(Decimal("0.01"))
         try:
-            rule = payments_api.create_reimbursement_rule(
+            rule = payments_api.create_offerer_reimbursement_rule(
                 offerer_id=int(form.offerer.data),
                 subcategories=form.subcategories.data,
                 rate=rate,
