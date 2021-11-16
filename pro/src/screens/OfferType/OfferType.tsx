@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useState } from 'react'
+import React, { useState, useReducer } from 'react'
 import { Link } from 'react-router-dom'
 
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
@@ -10,6 +10,13 @@ import { SubmitButton } from 'ui-kit'
 import { OFFER_TYPES } from './constants'
 import styles from './OfferType.module.scss'
 import OfferTypeButton from './OfferTypeButton'
+import {
+  FAILURE_ACTION,
+  FETCH_ACTION,
+  initialState,
+  reducer,
+  SUCCESS_ACTION,
+} from './utils/fetchEligibilityReducer'
 
 const { INDIVIDUAL_OR_DUO, EDUCATIONAL } = OFFER_TYPES
 
@@ -21,6 +28,7 @@ const OfferType = ({
   fetchCanOffererCreateEducationalOffer
 }: IOfferTypeProps): JSX.Element => {
   const [offerType, setOfferType] = useState(INDIVIDUAL_OR_DUO)
+  const [{ hasBeenCalled, isEligible, isLoading }, dispatch] = useReducer(reducer, initialState)
 
   const getNextPageHref = () => {
     if (offerType === INDIVIDUAL_OR_DUO) {
@@ -28,6 +36,20 @@ const OfferType = ({
     }
 
     return '/offres/eac/creation'
+  }
+
+  const handleEducationalClick = async () => {
+    setOfferType(EDUCATIONAL)
+
+    if (!hasBeenCalled){
+      dispatch(FETCH_ACTION)
+      try {
+        await fetchIsOffererEligibleToEAC()
+        dispatch(SUCCESS_ACTION)
+      } catch (e) {
+        dispatch(FAILURE_ACTION)
+      }
+    }
   }
 
   return (
@@ -53,7 +75,7 @@ const OfferType = ({
           className={styles['offer-type-buttons-button']}
           isSelected={offerType === EDUCATIONAL}
           label="Une offre à destination d'un groupe scolaire"
-          onClick={() => setOfferType(EDUCATIONAL)}
+          onClick={handleEducationalClick}
         />
       </div>
       <div className={styles['offer-type-actions']}>
@@ -65,8 +87,8 @@ const OfferType = ({
         </Link>
         <SubmitButton
           className={cn(styles['offer-type-actions-action'], "primary-button")}
-          disabled={false}
-          isLoading={false}
+          disabled={isEligible === false || isLoading}
+          isLoading={isLoading}
           onClick={getNextPageHref}
         >
           Étape suivante
