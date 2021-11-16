@@ -102,8 +102,8 @@ def get_educonnect_user(saml_response: str) -> models.EduconnectUser:
 
     try:
         return models.EduconnectUser(
-            connection_datetime=datetime.strptime(educonnect_identity[_get_field_oid("6")][0], "%Y-%m-%d %H:%M:%S.%f"),
             birth_date=datetime.strptime(educonnect_identity[_get_field_oid("67")][0], "%Y-%m-%d").date(),
+            connection_datetime=datetime.strptime(educonnect_identity[_get_field_oid("6")][0], "%Y-%m-%d %H:%M:%S.%f"),
             educonnect_id=educonnect_identity[_get_field_oid("57")][0],
             first_name=educonnect_identity["givenName"][0],
             ine_hash=educonnect_identity[_get_field_oid("64")][0],
