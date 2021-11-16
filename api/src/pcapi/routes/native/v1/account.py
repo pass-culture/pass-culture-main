@@ -308,5 +308,5 @@ def profiling_fraud_score(user: User, body: serializers.UserProfilingFraudReques
 @spectree_serialize(api=blueprint.api, response_model=serializers.IdentificationSessionResponse)
 @authenticated_user_required
 def start_identification_session(user: User, body: serializers.IdentificationSessionRequest) -> None:
-    identification_url = subscription_api.start_ubble_workflow(user, body.redirect_url)
-    return serializers.IdentificationSessionResponse(identification_url=identification_url)
+    identification_url = subscription_api.start_ubble_workflow(user, body.redirectUrl)
+    return serializers.IdentificationSessionResponse(identificationUrl=identification_url)
