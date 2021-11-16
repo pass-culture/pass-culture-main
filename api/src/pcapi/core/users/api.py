@@ -989,3 +989,8 @@ def update_notification_subscription(
 
     if not subscriptions.marketing_push:
         push_notifications.delete_user_attributes(user.id)
+
+
+def reset_recredit_amount_to_show(user: User) -> None:
+    user.recreditAmountToShow = None
+    repository.save(user)

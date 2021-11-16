@@ -596,6 +596,18 @@ class UserProfileUpdateTest:
             "url": f"https://api.example.com/1.0/fake_android_api_key/data/users/{user.id}",
         }
 
+    def test_update_user_profile_reset_recredit_amount_to_show(self, app):
+        user = users_factories.UnderageBeneficiaryFactory(email=self.identifier, recreditAmountToShow=30)
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post("/native/v1/reset_recredit_amount_to_show")
+
+        assert response.status_code == 200
+        assert user.recreditAmountToShow is None
+
 
 class CulturalSurveyTest:
     identifier = "email@example.com"
