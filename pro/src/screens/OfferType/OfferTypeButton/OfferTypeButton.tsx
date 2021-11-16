@@ -11,6 +11,7 @@ interface IOfferTypeButton {
   label: string;
   onClick?: () => void;
   className?: string;
+  disabled?: boolean;
 }
 
 const OfferTypeButton = ({
@@ -19,13 +20,25 @@ const OfferTypeButton = ({
   label,
   onClick,
   className,
+  disabled = false,
 }: IOfferTypeButton): JSX.Element => (
-  <label className={cn(styles.button, { [styles['is-selected']]: isSelected }, className)}>
+  <label className={
+    cn(
+      styles.button,
+      {
+        [styles['is-selected']]: isSelected,
+        [styles['is-disabled']]: disabled
+      },
+      className
+    )
+  }
+  >
     {isSelected ? <TickIcon className={styles['button-check-mark']} /> : null}
     <Icon className={styles['button-icon']} />
     <input
       checked={isSelected}
       className={styles['button-radio']}
+      disabled={disabled}
       name='offer-type'
       onClick={onClick}
       type='radio'

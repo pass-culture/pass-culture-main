@@ -75,6 +75,7 @@ const OfferType = ({
           <OfferTypeButton
             Icon={LibraryIcon}
             className={styles['offer-type-buttons-button']}
+            disabled={isEligible === false}
             isSelected={offerType === EDUCATIONAL}
             label="Une offre à destination d'un groupe scolaire"
             onClick={handleEducationalClick}
@@ -98,7 +99,7 @@ const OfferType = ({
         </Link>
         <SubmitButton
           className={cn(styles['offer-type-actions-action'], "primary-button")}
-          disabled={isEligible === false || isLoading}
+          disabled={isEligible === false}
           isLoading={isLoading}
           onClick={getNextPageHref}
         >

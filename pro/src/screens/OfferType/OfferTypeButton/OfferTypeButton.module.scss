@@ -19,6 +19,7 @@
         position: absolute;
         top: rem(16px);
         left: rem(16px);
+        fill: $primary
     }
 
     &-icon {
@@ -33,6 +34,20 @@
 
         .button-icon {
             fill: $primary;
+        }
+    }
+
+    &.is-disabled {
+        background-color: $grey-light;
+        color: $grey-dark;
+        border-color: $grey-dark;
+
+        .button-icon {
+            fill: $grey-dark;
+        }
+
+        .button-check-mark {
+            fill: $grey-dark;
         }
     }
 }
