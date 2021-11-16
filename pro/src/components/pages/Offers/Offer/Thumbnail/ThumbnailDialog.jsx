@@ -6,7 +6,6 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
-import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import { IMPORT_TAB_ID } from 'components/pages/Offers/Offer/Thumbnail/_constants'
 import Advices from 'components/pages/Offers/Offer/Thumbnail/Advices/Advices'
 import Credit from 'components/pages/Offers/Offer/Thumbnail/Credit/Credit'
@@ -15,6 +14,7 @@ import ImportFromComputer from 'components/pages/Offers/Offer/Thumbnail/ImportFr
 import ImportFromURL from 'components/pages/Offers/Offer/Thumbnail/ImportFromURL/ImportFromURL'
 import ImportTab from 'components/pages/Offers/Offer/Thumbnail/ImportTab/ImportTab'
 import Preview from 'components/pages/Offers/Offer/Thumbnail/Preview/Preview'
+import DialogBox from 'new_components/DialogBox/DialogBox'
 
 const ThumbnailDialog = ({
   offerId,

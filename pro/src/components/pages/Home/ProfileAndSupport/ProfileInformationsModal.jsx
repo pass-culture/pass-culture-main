@@ -5,7 +5,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { DialogBox } from 'components/layout/DialogBox/DialogBox'
+import DialogBox from 'new_components/DialogBox/DialogBox'
 
 import ProfileForm from './ProfileForm'
 
