@@ -17,6 +17,7 @@ class SettingsResponse(BaseModel):
     enable_id_check_retention: bool
     enable_native_eac_individual: bool
     enable_phone_validation: bool
+    enable_underage_generalisation: bool
     id_check_address_autocompletion: bool
     is_recaptcha_enabled: bool
     is_webapp_v2_enabled: bool

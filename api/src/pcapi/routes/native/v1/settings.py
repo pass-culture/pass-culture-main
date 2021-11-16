@@ -48,6 +48,7 @@ def get_settings() -> serializers.SettingsResponse:
         enable_native_id_check_version=features[FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERSION],
         enable_native_eac_individual=features[FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL],
         enable_ubble=features[FeatureToggle.ENABLE_UBBLE],
+        enable_underage_generalisation=features[FeatureToggle.ENABLE_UNDERAGE_GENERALISATION],
         id_check_address_autocompletion=features[FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION],
         is_recaptcha_enabled=features[FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA],
         is_webapp_v2_enabled=features[FeatureToggle.WEBAPP_V2_ENABLED],
