@@ -79,6 +79,9 @@ class FeatureToggle(enum.Enum):
     ALLOW_EMPTY_USER_PROFILING = "Autorise les inscriptions de bénéficiaires sans profile Threat Metrix"
     PRICE_BOOKINGS = "Active la valorisation des réservations"
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
+    ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM = (
+        "Active le nouveau parcours de création d'offres avec les offres collectives"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -132,6 +135,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ALLOW_EMPTY_USER_PROFILING,
     FeatureToggle.PRICE_BOOKINGS,
     FeatureToggle.ENABLE_UBBLE,
+    FeatureToggle.ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM,
 )
 
 if not settings.IS_DEV:
