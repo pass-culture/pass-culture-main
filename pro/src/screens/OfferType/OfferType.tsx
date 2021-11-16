@@ -32,7 +32,7 @@ const OfferType = (): JSX.Element => {
         Créer une nouvelle offre
       </h1>
       <h2 className={styles['offer-type-description']}>
-        Quel type d'offre souhaitez-vous proposer ?
+        Quel type d’offre souhaitez-vous proposer ?
       </h2>
       <div className={styles['offer-type-buttons']}>
         <OfferTypeButton
