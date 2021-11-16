@@ -2,9 +2,11 @@ import datetime
 
 from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.bookings.factories import UsedEducationalBookingFactory
+from pcapi.core.bookings.factories import UsedIndividualBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.offers.factories import EducationalEventStockFactory
+from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VenueFactory
@@ -168,6 +170,19 @@ def create_industrial_educational_bookings() -> None:
                 stock=EducationalEventStockFactory(
                     quantity=100,
                     price=1200,
+                    beginningDatetime=now - datetime.timedelta(days=10),
+                    bookingLimitDatetime=now - datetime.timedelta(days=10),
+                    offer__venue=venue_reimbursements,
+                ),
+            )
+
+            # Here are individual booking data to make it easier for PO to review the correct generation of the csv listing payments
+            # FIXME (gvanneste, 2021-11-16) : delete the factory below when user stories has been reviewed by PO on testing
+            UsedIndividualBookingFactory(
+                cancellation_limit_date=now - datetime.timedelta(days=15),
+                dateUsed=now - datetime.timedelta(6),
+                status=BookingStatus.USED,
+                stock=EventStockFactory(
                     beginningDatetime=now - datetime.timedelta(days=10),
                     bookingLimitDatetime=now - datetime.timedelta(days=10),
                     offer__venue=venue_reimbursements,
