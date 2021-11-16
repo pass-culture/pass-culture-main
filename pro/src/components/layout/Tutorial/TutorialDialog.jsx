@@ -5,8 +5,8 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
-import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import { TUTO_DIALOG_LABEL_ID } from 'components/layout/Tutorial/_constants'
+import  DialogBox  from 'new_components/DialogBox/DialogBox'
 
 import * as pcapi from '../../../repository/pcapi/pcapi'
 

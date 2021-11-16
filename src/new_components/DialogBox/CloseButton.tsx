@@ -1,13 +1,12 @@
-/*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
-
-import PropTypes from 'prop-types'
 import React from 'react'
 
 import { ReactComponent as CloseDialogIcon } from 'icons/close-dialog.svg'
 
-const CloseButton = ({ onCloseClick }) => (
+interface ICloseButtonProps {
+  onCloseClick?: () => void;
+}
+
+const CloseButton = ({ onCloseClick }: ICloseButtonProps): JSX.Element => (
   <button
     className="dialog-box-close"
     onClick={onCloseClick}
@@ -17,9 +16,5 @@ const CloseButton = ({ onCloseClick }) => (
     <CloseDialogIcon />
   </button>
 )
-
-CloseButton.propTypes = {
-  onCloseClick: PropTypes.func.isRequired,
-}
 
 export default CloseButton

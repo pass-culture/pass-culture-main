@@ -1,8 +1,4 @@
-/*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
-
-.provider-import-confirmation-dialog {
+.confirm-dialog {
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -10,7 +6,7 @@
   max-width: rem(532px);
   text-align: center;
 
-  .title {
+  &-title {
     @include gabarit();
 
     margin-top: rem(24px);
@@ -21,7 +17,7 @@
     width: 124px;
   }
 
-  .explanation {
+  &-explanation {
     margin-top: rem(24px);
   }
 
@@ -34,16 +30,16 @@
     }
   }
 
-  .actions {
+  &-actions {
     display: flex;
     margin-top: rem(80px);
 
     button {
       padding: 0 rem(80px);
-    }
 
-    .confirm {
-      margin-left: rem(24px);
+      &:last-child {
+        margin-left: rem(24px);
+      }
     }
   }
 }
