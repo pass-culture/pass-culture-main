@@ -6,6 +6,9 @@ import typing
 from typing import Optional
 
 from pcapi import settings
+from pcapi.connectors.api_adage import AdageException
+from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
+from pcapi.connectors.api_adage import get_adage_offerer
 from pcapi.core import object_storage
 from pcapi.core import search
 from pcapi.core.mails import MailServiceException
@@ -17,6 +20,7 @@ from pcapi.core.offerers.models import VenueContact
 from pcapi.core.offerers.models import VenueType
 from pcapi.core.offerers.repository import find_offerer_by_siren
 from pcapi.core.offerers.repository import find_offerer_by_validation_token
+from pcapi.core.offerers.repository import find_siren_by_offerer_id
 from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer
@@ -260,3 +264,13 @@ def save_venue_banner(user: User, venue: Venue, content: bytes, content_type: st
     venue.bannerMeta = {"content_type": content_type, "file_name": file_name, "author_id": user.id}
 
     repository.save(venue)
+
+
+def can_offerer_create_educational_offer(offerer_id: str) -> bool:
+    siren = find_siren_by_offerer_id(offerer_id)
+    try:
+        response = get_adage_offerer(siren)
+        if len(response) == 0:
+            raise CulturalPartnerNotFoundException("No venue has been found for the selected siren")
+    except (CulturalPartnerNotFoundException, AdageException) as exception:
+        raise exception
