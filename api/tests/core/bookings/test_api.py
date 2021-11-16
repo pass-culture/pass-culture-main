@@ -377,19 +377,24 @@ class CancelByBeneficiaryTest:
         stock = offers_factories.StockFactory(offer__bookingEmail="offerer@example.com")
         booking = booking_factories.IndividualBookingFactory.create_batch(20, stock=stock)[0]
 
-        queries = 1  # select booking
-        queries += 1  # select stock for update
-        queries += 1  # refresh booking
+        queries = 1  # select stock for update
+        queries += 1  # select booking
         queries += 3  # update stock ; update booking ; release savepoint
-        queries += 8  # (update batch attributes): select booking ; individualBooking ; user ; user.bookings ; deposit ; user_offerer ; favorites ; stock
+        queries += 8  # (update batch attributes): select booking ; individualBooking ; user ; user_offerer ; user.bookings ;  favorites ; deposit ; stock
+        queries += 1  # select booking
         queries += 1  # select offer
         queries += 2  # insert email ; release savepoint
-        queries += 4  # (TODO: optimize) select booking ; stock ; offer ; user
+        queries += 3  # (TODO: optimize) select booking ; stock ; offer
         queries += 1  # select bookings of same stock with users joinedloaded to avoid N+1 requests
         queries += 2  # select venue ; offerer
+        queries += 1  # select individual_booking
+        queries += 1  # select user
         queries += 2  # insert email ; release savepoint
+
+        individual_booking = booking.individualBooking
+        user = individual_booking.user
         with assert_num_queries(queries):
-            api.cancel_booking_by_beneficiary(booking.individualBooking.user, booking)
+            api.cancel_booking_by_beneficiary(user, booking)
 
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
