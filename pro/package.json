@@ -12,7 +12,7 @@
     "build:testing": "env-cmd -f .env.testing yarn build",
     "coveralls": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
-    "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx}' --max-warnings=0",
+    "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx,ts,tsx}' --max-warnings=0",
     "lint:js:fix": "yarn lint:js --fix",
     "lint:js:strict": "ESLINT=STRICT_CONFIG eslint --max-warnings=0",
     "lint:js:strict:fix": "yarn lint:js:strict --fix",
@@ -37,7 +37,7 @@
   "lint-staged": {
     "./public/**/*.svg": "svgo",
     "./src/**/*.svg": "svgo",
-    "*.{js,jsx}": [
+    "*.{js,jsx,ts,tsx}": [
       "prettier --write",
       "yarn lint:js:strict:fix"
     ],
