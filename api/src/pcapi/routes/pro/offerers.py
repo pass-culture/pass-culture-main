@@ -6,6 +6,8 @@ from flask_login import current_user
 from flask_login import login_required
 from sqlalchemy.orm import exc as orm_exc
 
+from pcapi.connectors.api_adage import AdageException
+from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core.bookings.repository import get_active_bookings_quantity_for_offerer
 from pcapi.core.bookings.repository import get_validated_bookings_quantity_for_offerer
 from pcapi.core.offerers import api
@@ -173,3 +175,17 @@ def create_offerer(body: CreateOffererQueryModel) -> GetOffererResponseModel:
     user_offerer = api.create_offerer(current_user, body)
 
     return GetOffererResponseModel.from_orm(user_offerer.offerer)
+
+
+@private_api.route("/offerers/<humanized_offerer_id>/eac-eligibility", methods=["GET"])
+@login_required
+@spectree_serialize(on_success_status=204)
+def can_offerer_create_educational_offer(humanized_offerer_id: str):
+    try:
+        api.can_offerer_create_educational_offer(dehumanize(humanized_offerer_id))
+    except CulturalPartnerNotFoundException:
+        logger.info("This offerer has not been found in Adage", extra={"offerer_id": humanized_offerer_id})
+        raise ApiErrors({"offerer": "not found in adage"}, 404)
+    except AdageException:
+        logger.info("Api call failed", extra={"offerer_id": humanized_offerer_id})
+        raise ApiErrors({"adage_api": "error"}, 500)
