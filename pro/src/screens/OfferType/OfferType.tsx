@@ -13,7 +13,13 @@ import OfferTypeButton from './OfferTypeButton'
 
 const { INDIVIDUAL_OR_DUO, EDUCATIONAL } = OFFER_TYPES
 
-const OfferType = (): JSX.Element => {
+interface IOfferTypeProps {
+  fetchCanOffererCreateEducationalOffer: () => void;
+}
+
+const OfferType = ({
+  fetchCanOffererCreateEducationalOffer
+}: IOfferTypeProps): JSX.Element => {
   const [offerType, setOfferType] = useState(INDIVIDUAL_OR_DUO)
 
   const getNextPageHref = () => {
