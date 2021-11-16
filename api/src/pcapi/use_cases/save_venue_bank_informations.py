@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
@@ -41,6 +43,20 @@ class SaveVenueBankInformations:
                 raise error
             return None
 
+        result = self.update_already_processed_bank_information(application_details, venue)
+        if result:
+            return result
+
+        result = self.update_bank_information_for_venue(application_details, venue)
+        if result:
+            return result
+
+        new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
+        return self.bank_informations_repository.save(new_bank_informations)
+
+    def update_already_processed_bank_information(
+        self, application_details: ApplicationDetail, venue: VenueWithBasicInformation
+    ) -> Optional[BankInformations]:
         bank_information_by_application_id = self.bank_informations_repository.get_by_application(
             application_details.application_id
         )
@@ -50,6 +66,11 @@ class SaveVenueBankInformations:
             new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
             return self.bank_informations_repository.update_by_application_id(new_bank_informations)
 
+        return None
+
+    def update_bank_information_for_venue(
+        self, application_details: ApplicationDetail, venue: VenueWithBasicInformation
+    ):
         bank_information_by_venue_id = self.bank_informations_repository.find_by_venue(venue.identifier)
 
         if bank_information_by_venue_id:
@@ -59,8 +80,7 @@ class SaveVenueBankInformations:
             new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
             return self.bank_informations_repository.update_by_venue_id(new_bank_informations)
 
-        new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
-        return self.bank_informations_repository.save(new_bank_informations)
+        return None
 
     def get_referent_venue(self, application_details: ApplicationDetail, offerer: Offerer) -> VenueWithBasicInformation:
         siret = application_details.siret
