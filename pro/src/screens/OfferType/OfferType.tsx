@@ -7,11 +7,11 @@ import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
 import { SubmitButton } from 'ui-kit'
 
-import { OfferType as OfferTypeEnum } from './offerType'
+import { OFFER_TYPES } from './constants'
 import styles from './OfferType.module.scss'
 import OfferTypeButton from './OfferTypeButton'
 
-const { INDIVIDUAL_OR_DUO, EDUCATIONAL } = OfferTypeEnum
+const { INDIVIDUAL_OR_DUO, EDUCATIONAL } = OFFER_TYPES
 
 const OfferType = (): JSX.Element => {
   const [offerType, setOfferType] = useState(INDIVIDUAL_OR_DUO)
