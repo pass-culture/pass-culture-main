@@ -20,3 +20,7 @@ class CannotFindOffererForOfferId(Exception):
 
 class CannotFindOffererUserEmail(Exception):
     pass
+
+
+class CannotFindOffererSiren(Exception):
+    pass

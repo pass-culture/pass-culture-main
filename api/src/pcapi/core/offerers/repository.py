@@ -182,3 +182,12 @@ def get_offerers_by_date_validated(date_validated: datetime.date) -> list[models
     to = datetime.datetime.combine(date_validated, datetime.datetime.max.time())
 
     return models.Offerer.query.filter(models.Offerer.dateValidated.between(from_date, to)).all()
+
+
+def find_siren_by_offerer_id(offerer_id) -> str:
+    siren = models.Offerer.query.filter_by(id=offerer_id).with_entities(models.Offerer.siren).scalar()
+
+    if siren:
+        return siren
+
+    raise exceptions.CannotFindOffererSiren
