@@ -22,9 +22,9 @@ for FILE in $STAGED_FILES; do
 done
 
 echo -e "\033[0;96mRunning isort to organize imports\033[0m\n"
-isort $LINTED_FILES --check-only --quiet
+isort $LINTED_FILES --check-only --quiet --settings-file api/pyproject.toml
 if [[ "$?" != 0 ]]; then
-  isort $LINTED_FILES
+  isort $LINTED_FILES --settings-file api/pyproject.toml
   counter=$((counter + 1))
   echo -e "\n\033[0;91mAdd the corrected files to your commit\033[0m\n"
 else
@@ -32,9 +32,9 @@ else
 fi
 
 echo -e "\n\033[0;96mRunning black to format files\033[0m\n"
-black $LINTED_FILES --check --quiet
+black $LINTED_FILES --check --quiet  --config api/pyproject.toml
 if [[ "$?" != 0 ]]; then
-  black $LINTED_FILES
+  black $LINTED_FILES --config api/pyproject.toml
   counter=$((counter + 1))
   echo -e "\033[0;91mAdd the corrected files to your commit\033[0m\n"
 else
@@ -42,10 +42,10 @@ else
 fi
 
 echo -e "\n\033[0;96mRunning mypy for type checking (non-blocking step)\033[0m\n"
-mypy $LINTED_FILES --pretty --show-error-codes
+mypy $LINTED_FILES --pretty --show-error-codes --config-file api/mypy.ini
 
 echo -e "\n\033[0;96mRunning pylint for code linting\033[0m\n"
-pylint $LINTED_FILES --output-format="colorized" --score=no
+pylint $LINTED_FILES --output-format="colorized" --score=no --rcfile=api/.pylintrc
 if [[ "$?" != 0 ]]; then
   counter=$((counter + 1))
 fi
