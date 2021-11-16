@@ -12,5 +12,7 @@ class EduconnectUser:
     ine_hash: str
     last_name: str
     logout_url: str
+    person_affiliation: Optional[str]
     saml_request_id: str
+    school: Optional[str]
     student_level: Optional[str]
