@@ -98,6 +98,8 @@ class JsonLogEncoder(json.JSONEncoder):
             return float(obj)
         if isinstance(obj, enum.Enum):
             return obj.value
+        if isinstance(obj, set):
+            return list(obj)
         if hasattr(obj, "id"):
             return obj.id
         if isinstance(obj, bytes):
