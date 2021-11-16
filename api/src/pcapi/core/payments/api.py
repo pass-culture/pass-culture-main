@@ -110,6 +110,15 @@ def create_offerer_reimbursement_rule(offerer_id, subcategories, rate, start_dat
     )
 
 
+def create_offer_reimbursement_rule(offer_id, amount, start_date, end_date=None):
+    return _create_reimbursement_rule(
+        offer_id=offer_id,
+        amount=amount,
+        start_date=start_date,
+        end_date=end_date,
+    )
+
+
 def _create_reimbursement_rule(
     offerer_id=None, offer_id=None, subcategories=None, rate=None, amount=None, start_date=None, end_date=None
 ):
@@ -128,7 +137,8 @@ def _create_reimbursement_rule(
         offererId=offerer_id,
         offerId=offer_id,
         subcategories=subcategories,
-        rate=rate,
+        rate=rate,  # only for offerers
+        amount=amount,  # only for offers
         timespan=(start_date, end_date),
     )
     validation.validate_reimbursement_rule(rule)

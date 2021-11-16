@@ -11,6 +11,7 @@ def install_commands(app):
         "pcapi.scripts.full_index_offers",
         "pcapi.scripts.install_data",
         "pcapi.scripts.offerer.commands",
+        "pcapi.scripts.payment.add_custom_offer_reimbursement_rule",
         "pcapi.scripts.payment.banishment_command",
         "pcapi.scripts.payment.generate_payments",
         "pcapi.scripts.provider.check_provider_api",
