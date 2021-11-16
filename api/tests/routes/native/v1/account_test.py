@@ -40,6 +40,7 @@ from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import get_id_check_token
 from pcapi.models import db
 from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.repository import repository
@@ -436,6 +437,8 @@ class AccountCreationTest:
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
             "birthdate": "1960-12-31",
+            "firstName": "John",
+            "lastName": "Doe",
             "notifications": True,
             "token": "gnagna",
             "marketingEmailSubscription": True,
@@ -447,6 +450,8 @@ class AccountCreationTest:
         user = User.query.first()
         assert user is not None
         assert user.email == "john.doe@example.com"
+        assert user.firstName == "John"
+        assert user.lastName == "Doe"
         assert user.get_notification_subscriptions().marketing_email
         assert user.isEmailValidated is False
         mocked_check_recaptcha_token_is_valid.assert_called()
@@ -519,6 +524,46 @@ class AccountCreationTest:
         response = test_client.post("/native/v1/account", json=data)
         assert response.status_code == 400
         assert push_testing.requests == []
+
+    @override_features(**{FeatureToggle.ENABLE_UBBLE.name: True})
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    def test_account_creation_enable_ubble_first_name_missing(self, mocked_check_recaptcha_token_is_valid, app):
+        assert FeatureToggle.ENABLE_UBBLE.is_active()
+        test_client = TestClient(app.test_client())
+        assert User.query.first() is None
+        data = {
+            "email": "John.doe@example.com",
+            "password": "Aazflrifaoi6@",
+            "birthdate": "1960-12-31",
+            "firstName": "",
+            "lastName": "Doe",
+            "notifications": True,
+            "token": "gnagna",
+            "marketingEmailSubscription": True,
+        }
+
+        response = test_client.post("/native/v1/account", json=data)
+        assert response.status_code == 400
+
+    @override_features(**{FeatureToggle.ENABLE_UBBLE.name: True})
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    def test_account_creation_enable_ubble_last_name_missing(self, mocked_check_recaptcha_token_is_valid, app):
+        assert FeatureToggle.ENABLE_UBBLE.is_active()
+        test_client = TestClient(app.test_client())
+        assert User.query.first() is None
+        data = {
+            "email": "John.doe@example.com",
+            "password": "Aazflrifaoi6@",
+            "birthdate": "1960-12-31",
+            "firstName": "John",
+            "lastName": "",
+            "notifications": True,
+            "token": "gnagna",
+            "marketingEmailSubscription": True,
+        }
+
+        response = test_client.post("/native/v1/account", json=data)
+        assert response.status_code == 400
 
 
 class UserProfileUpdateTest:

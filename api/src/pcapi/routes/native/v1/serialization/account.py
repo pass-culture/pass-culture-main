@@ -29,6 +29,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -52,6 +53,8 @@ class AccountRequest(BaseModel):
     email: str
     password: str
     birthdate: datetime.date
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     marketing_email_subscription: Optional[bool] = False
     token: str
     postal_code: Optional[str] = None
@@ -60,6 +63,22 @@ class AccountRequest(BaseModel):
 
     class Config:
         alias_generator = to_camel
+
+    @validator("first_name")
+    def first_name_mandatory(cls, first_name: Optional[str]) -> str:  # pylint: disable=no-self-argument
+        if FeatureToggle.ENABLE_UBBLE.is_active():
+            if not first_name or first_name.isspace():
+                raise ValueError("Le prénom est obligatoire")
+            first_name = first_name.strip()
+        return first_name
+
+    @validator("last_name")
+    def last_name_mandatory(cls, last_name: Optional[str]) -> str:  # pylint: disable=no-self-argument
+        if FeatureToggle.ENABLE_UBBLE.is_active():
+            if not last_name or last_name.isspace():
+                raise ValueError("Le nom est obligatoire")
+            last_name = last_name.strip()
+        return last_name
 
 
 class InstitutionalProjectRedactorAccountRequest(BaseModel):
