@@ -34,39 +34,45 @@ done
 
 if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",isort," ]]
 then
-    echo -e "\033[0;96mRunning isort to organize imports\033[0m\n"
-    isort $LINTED_FILES --check-only --quiet --settings-file api/pyproject.toml
+    echo -ne "\033[0;96mRunning isort to organize imports...\033[0m"
+    isort $LINTED_FILES --check-only --settings-file api/pyproject.toml 2>/dev/null
     if [[ "$?" != 0 ]]; then
-      isort $LINTED_FILES --settings-file api/pyproject.toml
+      edited_files=$(isort $LINTED_FILES --settings-file api/pyproject.toml | sed -E "s/Fixing (.*)/  - \\1/g")
+      # Go up 1 line to overwrite "Running..." line
+      echo -e "\033[1F"
+      echo -e "\033[0;91misort: Add edited files to your commit:"
+      echo -e "${edited_files}\033[0m"
       counter=$((counter + 1))
-      echo -e "\n\033[0;91mAdd the corrected files to your commit\033[0m\n"
     else
-      echo -e "\033[0;92mImports correctly sorted\033[0m\n"
+      echo -e "\033[2K\r\033[0;92misort: Imports correctly sorted\033[0m"
     fi
 fi
 
 if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",black," ]]
 then
-    echo -e "\n\033[0;96mRunning black to format files\033[0m\n"
-    black $LINTED_FILES --check --quiet  --config api/pyproject.toml
+    echo -ne "\033[0;96mRunning black to format files...\033[0m"
+    black $LINTED_FILES --check --quiet --config api/pyproject.toml
     if [[ "$?" != 0 ]]; then
-      black $LINTED_FILES --config api/pyproject.toml
+      edited_files=$(black $LINTED_FILES --config api/pyproject.toml 2>&1 | grep "^reformatted " | sed -E "s/reformatted (.*)/  - \\1/g")
       counter=$((counter + 1))
-      echo -e "\033[0;91mAdd the corrected files to your commit\033[0m\n"
+      # Go up 1 line to overwrite "Running..." line
+      echo -e "\033[1F"
+      echo -e "\033[0;91mblack: Add edited files to your commit:"
+      echo -e "${edited_files}\033[0m"
     else
-      echo -e "\033[0;92mCode correctly formatted\033[0m\n"
+      echo -e "\033[2K\r\033[0;92mblack: Code correctly formatted\033[0m"
     fi
 fi
 
 if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",mypy," ]]
 then
-    echo -e "\n\033[0;96mRunning mypy for type checking (non-blocking step)\033[0m\n"
+    echo -e "\033[0;96mRunning mypy for type checking (non-blocking step)...\033[0m"
     mypy $LINTED_FILES --pretty --show-error-codes --config-file api/mypy.ini
 fi
 
 if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",pylint," ]]
 then
-    echo -e "\n\033[0;96mRunning pylint for code linting\033[0m\n"
+    echo -e "\033[0;96mRunning pylint for code linting...\033[0m"
     pylint $LINTED_FILES --output-format="colorized" --score=no --rcfile=api/.pylintrc
     if [[ "$?" != 0 ]]; then
         counter=$((counter + 1))
@@ -74,6 +80,6 @@ then
 fi
 
 if [[ $counter > 0 ]]; then
-  echo -e "\n\033[0;96mIf you want to bypass it, add --no-verify option when committing.\033[0m\n"
+  echo -e "\033[0;96mIf you want to bypass these checks, add --no-verify option when committing.\033[0m"
   exit 1
 fi
