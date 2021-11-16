@@ -1405,7 +1405,9 @@ ALL_SUBCATEGORIES = (
 )
 ALL_SUBCATEGORIES_DICT = {subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES}
 PERMANENT_SUBCATEGORIES = {
-    subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if not subcategory.can_expire
+    subcategory.id: subcategory
+    for subcategory in ALL_SUBCATEGORIES
+    if not subcategory.can_expire and not subcategory.is_event
 }
 EXPIRABLE_SUBCATEGORIES = {subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.can_expire}
 EVENT_SUBCATEGORIES = {subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES if subcategory.is_event}
