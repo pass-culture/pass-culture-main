@@ -270,7 +270,8 @@ jobs:
           command: venv/bin/pylint src tests --jobs=8
           working_directory: api
       - when:
-          condition: << parameters.is_nightly_build >>
+          condition:
+            equal: [ "master", << pipeline.git.branch >> ]
           steps:
             - notify-slack:
                channel: shérif
@@ -398,6 +399,12 @@ jobs:
           path: test-results
       - store_artifacts:
           path: htmlcov
+      - when:
+          condition:
+            equal: [ "master", << pipeline.git.branch >> ]
+          steps:
+            - notify-slack:
+               channel: shérif
 
   tests-webapp:
     machine:
@@ -450,12 +457,12 @@ jobs:
             yarn test:cafe
       - store_artifacts:
           path: ~/pass-culture/webapp/testcafe_screenshots
-      - run:
-          name: Notify PC Ops Bot
-          when: on_fail
-          command: |
-            export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
-            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
+      - when:
+          condition:
+            equal: [ "master", << pipeline.git.branch >> ]
+          steps:
+            - notify-slack:
+               channel: shérif
 
   tests-adage-front:
     docker:
@@ -471,12 +478,12 @@ jobs:
             cd adage-front
             yarn install
             yarn test:unit
-      - run:
-          name: Notify PC Ops Bot
-          when: on_fail
-          command: |
-            export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
-            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
+      - when:
+          condition:
+            equal: [ "master", << pipeline.git.branch >> ]
+          steps:
+            - notify-slack:
+               channel: shérif
 
   quality-pro:
     machine:
@@ -519,6 +526,12 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm install
             yarn lint:js
+      - when:
+          condition:
+            equal: [ "master", << pipeline.git.branch >> ]
+          steps:
+            - notify-slack:
+               channel: shérif
 
   tests-pro-unit-tests:
     machine:
@@ -538,12 +551,12 @@ jobs:
             nvm install
             yarn install
             yarn test:unit
-      - run:
-          name: Notify PC Ops Bot
-          when: on_fail
-          command: |
-            export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
-            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
+      - when:
+          condition:
+            equal: [ "master", << pipeline.git.branch >> ]
+          steps:
+            - notify-slack:
+               channel: shérif
 
   tests-pro-e2e-tests:
     machine:
@@ -589,12 +602,12 @@ jobs:
             yarn test:cafe
       - store_artifacts:
           path: ~/pass-culture/pro/testcafe_screenshots
-      - run:
-          name: Notify PC Ops Bot
-          when: on_fail
-          command: |
-            export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
-            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
+      - when:
+          condition:
+            equal: [ "master", << pipeline.git.branch >> ]
+          steps:
+            - notify-slack:
+               channel: shérif
 
   tests-perf:
     working_directory: ~
@@ -947,6 +960,7 @@ workflows:
                 - production
                 - staging
                 - integration
+          context: Slack
       - tests-adage-front:
           filters:
             branches:
@@ -954,6 +968,7 @@ workflows:
                 - production
                 - staging
                 - integration
+          context: Slack
       - tests-pro-unit-tests:
           filters:
             branches:
@@ -961,6 +976,7 @@ workflows:
                 - production
                 - staging
                 - integration
+          context: Slack
       - tests-pro-e2e-tests:
           filters:
             branches:
@@ -968,6 +984,7 @@ workflows:
                 - production
                 - staging
                 - integration
+          context: Slack
       - build-and-push-image:
           filters:
             branches:
