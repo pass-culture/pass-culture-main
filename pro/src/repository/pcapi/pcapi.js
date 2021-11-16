@@ -142,6 +142,8 @@ export const getOfferer = offererId => {
   return client.get(`/offerers/${offererId}`)
 }
 
+export const canOffererCreateEducationalOffer = offererId => client.get(`/offerers/${offererId}/eac-eligibility`)
+
 //
 // venues
 //

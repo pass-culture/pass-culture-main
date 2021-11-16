@@ -1,3 +1,4 @@
+import { action } from '@storybook/addon-actions'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router'
@@ -18,7 +19,7 @@ const Template = () => {
         <div className='page-content'>
           <div className='after-notification-content'>
             <Router history={history}>
-              <OfferType />
+              <OfferType fetchCanOffererCreateEducationalOffer={action('fetchCanOffererCreateEducationalOffer')} />
             </Router>
           </div>
         </div>
