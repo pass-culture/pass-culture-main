@@ -186,10 +186,13 @@ class UserProfileResponse(BaseModel):
     next_beneficiary_validation_step: Optional[BeneficiaryValidationStep]
     phoneNumber: Optional[str]
     publicName: Optional[str] = Field(None, alias="pseudo")
+    recreditAmountToShow: Optional[int]
     roles: list[UserRole]
     show_eligible_card: bool
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
     subscriptionMessage: Optional[SubscriptionMessage]
+
+    _convert_recredit_amount_to_show = validator("recreditAmountToShow", pre=True, allow_reuse=True)(convert_to_cent)
 
     class Config:
         orm_mode = True
