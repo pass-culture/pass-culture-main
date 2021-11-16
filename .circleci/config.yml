@@ -68,7 +68,7 @@ commands:
         type: string
       template:
         type: string
-        default: FAIL_TEMPLATE_1
+        default: FAIL_TEMPLATE_2
     steps:
       - slack/notify:
           event: fail
