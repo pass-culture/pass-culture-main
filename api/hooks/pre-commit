@@ -1,5 +1,13 @@
 #!/bin/bash
 
+#
+# To disable some checks, set DISABLED_API_PRE_COMMIT_CHECKS
+# environment variable. For example:
+#
+#     export DISABLED_API_PRE_COMMIT_CHECKS="mypy,pylint"
+#
+
+
 ALEMBIC_STAGED_FILES=$(git diff --staged --name-only -- 'api/src/pcapi/alembic/versions/*.py')
 if [[ "$ALEMBIC_STAGED_FILES" != "" ]]; then
   echo -e "\033[0;96mMigration changes detected: $ALEMBIC_STAGED_FILES \033[0m"
@@ -24,33 +32,45 @@ for FILE in $STAGED_FILES; do
   LINTED_FILES+=" ${FILE}"
 done
 
-echo -e "\033[0;96mRunning isort to organize imports\033[0m\n"
-isort $LINTED_FILES --check-only --quiet --settings-file api/pyproject.toml
-if [[ "$?" != 0 ]]; then
-  isort $LINTED_FILES --settings-file api/pyproject.toml
-  counter=$((counter + 1))
-  echo -e "\n\033[0;91mAdd the corrected files to your commit\033[0m\n"
-else
-  echo -e "\033[0;92mImports correctly sorted\033[0m\n"
+if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",isort," ]]
+then
+    echo -e "\033[0;96mRunning isort to organize imports\033[0m\n"
+    isort $LINTED_FILES --check-only --quiet --settings-file api/pyproject.toml
+    if [[ "$?" != 0 ]]; then
+      isort $LINTED_FILES --settings-file api/pyproject.toml
+      counter=$((counter + 1))
+      echo -e "\n\033[0;91mAdd the corrected files to your commit\033[0m\n"
+    else
+      echo -e "\033[0;92mImports correctly sorted\033[0m\n"
+    fi
 fi
 
-echo -e "\n\033[0;96mRunning black to format files\033[0m\n"
-black $LINTED_FILES --check --quiet  --config api/pyproject.toml
-if [[ "$?" != 0 ]]; then
-  black $LINTED_FILES --config api/pyproject.toml
-  counter=$((counter + 1))
-  echo -e "\033[0;91mAdd the corrected files to your commit\033[0m\n"
-else
-  echo -e "\033[0;92mCode correctly formatted\033[0m\n"
+if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",black," ]]
+then
+    echo -e "\n\033[0;96mRunning black to format files\033[0m\n"
+    black $LINTED_FILES --check --quiet  --config api/pyproject.toml
+    if [[ "$?" != 0 ]]; then
+      black $LINTED_FILES --config api/pyproject.toml
+      counter=$((counter + 1))
+      echo -e "\033[0;91mAdd the corrected files to your commit\033[0m\n"
+    else
+      echo -e "\033[0;92mCode correctly formatted\033[0m\n"
+    fi
 fi
 
-echo -e "\n\033[0;96mRunning mypy for type checking (non-blocking step)\033[0m\n"
-mypy $LINTED_FILES --pretty --show-error-codes --config-file api/mypy.ini
+if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",mypy," ]]
+then
+    echo -e "\n\033[0;96mRunning mypy for type checking (non-blocking step)\033[0m\n"
+    mypy $LINTED_FILES --pretty --show-error-codes --config-file api/mypy.ini
+fi
 
-echo -e "\n\033[0;96mRunning pylint for code linting\033[0m\n"
-pylint $LINTED_FILES --output-format="colorized" --score=no --rcfile=api/.pylintrc
-if [[ "$?" != 0 ]]; then
-  counter=$((counter + 1))
+if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",pylint," ]]
+then
+    echo -e "\n\033[0;96mRunning pylint for code linting\033[0m\n"
+    pylint $LINTED_FILES --output-format="colorized" --score=no --rcfile=api/.pylintrc
+    if [[ "$?" != 0 ]]; then
+        counter=$((counter + 1))
+    fi
 fi
 
 if [[ $counter > 0 ]]; then
