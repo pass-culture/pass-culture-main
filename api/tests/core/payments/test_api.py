@@ -9,6 +9,7 @@ import pytest
 import pytz
 
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.payments import api
 from pcapi.core.payments import exceptions
 from pcapi.core.payments import factories as payments_factories
@@ -162,6 +163,30 @@ class CreateOffererReimbursementRuleTest:
         start = (datetime.today() + timedelta(days=1)).astimezone(pytz.utc)
         with pytest.raises(exceptions.UnknownSubcategoryForReimbursementRule):
             api.create_offerer_reimbursement_rule(offerer.id, subcategories=["UNKNOWN"], rate=0.8, start_date=start)
+
+
+class CreateOfferReimbursementRuleTest:
+    @freeze_time("2021-10-01 00:00:00")
+    def test_create_rule(self):
+        offer = offers_factories.OfferFactory()
+        start = pytz.utc.localize(datetime.today() + timedelta(days=1))
+        end = pytz.utc.localize(datetime.today() + timedelta(days=2))
+        rule = api.create_offer_reimbursement_rule(offer.id, amount=12.34, start_date=start, end_date=end)
+
+        db.session.refresh(rule)
+        assert rule.offer == offer
+        assert rule.amount == Decimal("12.34")
+        assert rule.timespan.lower == datetime(2021, 10, 2, 0, 0)
+        assert rule.timespan.upper == datetime(2021, 10, 3, 0, 0)
+
+    def test_validation(self):
+        # Validation is thoroughly verified in `test_validation.py`.
+        # This is just an integration test.
+        offer = offers_factories.OfferFactory()
+        start = (datetime.today() + timedelta(days=1)).astimezone(pytz.utc)
+        payments_factories.CustomReimbursementRuleFactory(offer=offer, timespan=(start, None))
+        with pytest.raises(exceptions.ConflictingReimbursementRule):
+            api.create_offer_reimbursement_rule(offer.id, amount=12.34, start_date=start)
 
 
 class EditReimbursementRuleTest:
