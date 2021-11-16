@@ -34,7 +34,6 @@ module.exports = {
     '@storybook/addon-essentials',
     'storybook-svgr-react-component',
     '@storybook/addon-a11y',
-    '@storybook/addon-knobs',
   ],
   webpackFinal: config => {
     config.module.rules.push({

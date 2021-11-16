@@ -7,9 +7,9 @@ import PropTypes from 'prop-types'
 import React, { useState, useCallback } from 'react'
 
 
-import ConfirmDialog from "components/layout/ConfirmDialog/ConfirmDialog"
 import Icon from "components/layout/Icon"
 import Spinner from 'components/layout/Spinner'
+import ConfirmDialog from "new_components/ConfirmDialog"
 
 const StocksProviderForm = ({ saveVenueProvider, providerId, siret, venueId }) => {
   const [isCheckingApi, setIsCheckingApi] = useState(false)

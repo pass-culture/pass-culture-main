@@ -8,10 +8,10 @@ import React, { Component } from 'react'
 
 import AppLayout from 'app/AppLayout'
 import Banner from 'components/layout/Banner/Banner'
-import ConfirmDialog from "components/layout/ConfirmDialog/ConfirmDialog"
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
+import ConfirmDialog from "new_components/ConfirmDialog"
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 

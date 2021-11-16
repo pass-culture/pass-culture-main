@@ -1,12 +1,12 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useRef } from 'react'
 
-import { DialogBox } from 'components/layout/DialogBox/DialogBox'
+import DialogBox from 'new_components/DialogBox/DialogBox'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import { ReactComponent as DeletionIcon } from './assets/deletion.svg'
@@ -36,9 +36,10 @@ const DeleteStockDialog = ({
   return (
     <DialogBox
       extraClassNames="delete-stock-dialog"
+      hasCloseButton={false}
+      initialFocusRef={deleteButtonRef}
       labelledBy={DIALOG_LABEL_ID}
       onDismiss={abortStockDeletion}
-      ref={deleteButtonRef}
     >
       <DeletionIcon />
       <h1 id={DIALOG_LABEL_ID}>

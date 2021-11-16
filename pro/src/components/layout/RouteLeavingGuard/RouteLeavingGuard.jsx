@@ -7,7 +7,7 @@ import React, { useCallback, useState, useRef } from 'react'
 import { Redirect } from 'react-router'
 import { Prompt } from 'react-router-dom'
 
-import { DialogBox } from 'components/layout/DialogBox/DialogBox'
+import DialogBox from 'new_components/DialogBox/DialogBox'
 
 const RouteLeavingGuard = ({
   children,
