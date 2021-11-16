@@ -117,7 +117,9 @@ class EduconnectTest:
             "first_name": "Max",
             "last_name": "SENS",
             "logout_url": "https://educonnect.education.gouv.fr/Logout",
+            "person_affiliation": None,
             "saml_request_id": self.request_id,
+            "school": None,
             "student_level": "2212",
             "user_email": self.email,
         }
