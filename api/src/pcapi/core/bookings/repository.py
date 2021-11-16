@@ -795,7 +795,7 @@ def _serialize_booking_recap_legacy(booking: AbstractKeyedTuple) -> BookingRecap
 
 def _serialize_csv_report(query: Query) -> str:
     output = StringIO()
-    writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+    writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(
         (
             "Lieu",

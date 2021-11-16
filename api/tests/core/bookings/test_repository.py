@@ -1806,7 +1806,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        headers, *data = csv.reader(StringIO(bookings_csv))
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert headers == [
             "Lieu",
             "Nom de l’offre",
@@ -1861,7 +1861,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        _, *data = csv.reader(StringIO(bookings_csv))
+        _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 2
 
     def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
@@ -1882,7 +1882,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        _, *data = csv.reader(StringIO(bookings_csv))
+        _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 2
 
     def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture):
@@ -1911,7 +1911,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        headers, *data = csv.reader(StringIO(bookings_csv))
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert headers == [
             "Lieu",
             "Nom de l’offre",
@@ -1973,7 +1973,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        headers, *data = csv.reader(StringIO(bookings_csv))
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert (
@@ -2008,7 +2008,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        headers, *data = csv.reader(StringIO(bookings_csv))
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert (
@@ -2043,7 +2043,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        headers, *data = csv.reader(StringIO(bookings_csv))
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[BookingStatus.USED]
@@ -2079,7 +2079,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        _, *data = csv.reader(StringIO(bookings_csv))
+        _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 2
 
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
@@ -2101,7 +2101,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        _, *data = csv.reader(StringIO(bookings_csv))
+        _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 0
 
     def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
@@ -2129,7 +2129,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        headers, *data = csv.reader(StringIO(bookings_csv))
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Date et heure de réservation"] == str(booking_date.astimezone(tz.gettz("America/Cayenne")))
@@ -2159,7 +2159,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        headers, *data = csv.reader(StringIO(bookings_csv))
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["ISBN"] == "9876543234"
@@ -2218,7 +2218,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        headers, *data = csv.reader(StringIO(bookings_csv))
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 3
         data_dicts = [dict(zip(headers, line)) for line in data]
         assert data_dicts[0]["Lieu"] == venue_for_event.name
@@ -2282,7 +2282,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        headers, *data = csv.reader(StringIO(bookings_csv))
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 3
         data_dicts = [dict(zip(headers, line)) for line in data]
         assert data_dicts[0]["Lieu"] == venue_for_event.publicName
@@ -2305,7 +2305,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        headers, *data = csv.reader(StringIO(bookings_csv))
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Nom de l’offre"] == booking_two.stock.offer.name
@@ -2334,7 +2334,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        headers, *data = csv.reader(StringIO(bookings_csv))
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Contremarque"] == expected_booking.token
@@ -2370,7 +2370,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        headers, *data = csv.reader(StringIO(bookings_csv))
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 2
         data_dicts = [dict(zip(headers, line)) for line in data]
         tokens = [booking["Contremarque"] for booking in data_dicts]
@@ -2401,7 +2401,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        headers, *data = csv.reader(StringIO(bookings_csv))
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Date et heure de réservation"] == str(
@@ -2443,7 +2443,7 @@ class GetCsvReportTest:
         )
 
         # Then
-        headers, *data = csv.reader(StringIO(bookings_csv))
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 2
         data_dicts = [dict(zip(headers, line)) for line in data]
         tokens = [booking["Contremarque"] for booking in data_dicts]
