@@ -113,6 +113,8 @@ def create_account(body: serializers.AccountRequest) -> None:
             email=body.email,
             password=body.password,
             birthdate=body.birthdate,
+            first_name=body.first_name,
+            last_name=body.last_name,
             marketing_email_subscription=body.marketing_email_subscription,
             is_email_validated=False,
             postal_code=body.postal_code,

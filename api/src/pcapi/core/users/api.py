@@ -173,6 +173,8 @@ def create_account(
     email: str,
     password: str,
     birthdate: date,
+    first_name: Optional[str] = None,
+    last_name: Optional[str] = None,
     marketing_email_subscription: bool = False,
     is_email_validated: bool = False,
     send_activation_mail: bool = True,
@@ -192,6 +194,8 @@ def create_account(
         email=email,
         dateOfBirth=datetime.combine(birthdate, datetime.min.time()),
         isEmailValidated=is_email_validated,
+        firstName=first_name,
+        lastName=last_name,
         publicName=VOID_PUBLIC_NAME,  # Required because model validation requires 3+ chars
         hasSeenTutorials=False,
         notificationSubscriptions=asdict(NotificationSubscriptions(marketing_email=marketing_email_subscription)),
