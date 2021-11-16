@@ -55,6 +55,18 @@ def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) 
     return serializers.UserProfileResponse.from_orm(user)
 
 
+@blueprint.native_v1.route("/reset_recredit_amount_to_show", methods=["POST"])
+@spectree_serialize(
+    on_success_status=200,
+    api=blueprint.api,
+)  # type: ignore
+@authenticated_user_required
+def reset_recredit_amount_to_show(user: User) -> None:
+    api.reset_recredit_amount_to_show(user)
+
+    return serializers.UserProfileResponse.from_orm(user)
+
+
 @blueprint.native_v1.route("/beneficiary_information", methods=["PATCH"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_user_required
