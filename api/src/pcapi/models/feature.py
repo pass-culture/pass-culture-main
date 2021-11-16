@@ -51,6 +51,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS = (
         "Utiliser Sendinblue pour envoyer les emails transactionnels (Ceux qui ont été migrés)"
     )
+    ENABLE_UNDERAGE_GENERALISATION = "Active la généralisation du pass Culture 15-17"
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"  # TODO (viconnex) remove when FORCE_PHONE_VALIDATION is released in production
     ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
     ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM = (
@@ -123,6 +124,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
     FeatureToggle.ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS,
     FeatureToggle.ENABLE_UBBLE,
+    FeatureToggle.ENABLE_UNDERAGE_GENERALISATION,
     FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS,
     FeatureToggle.ENFORCE_BANK_INFORMATION_WITH_SIRET,
     FeatureToggle.IMPROVE_BOOKINGS_PERF,
