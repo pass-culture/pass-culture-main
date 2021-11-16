@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pytest
 
+from pcapi.core.offerers.exceptions import CannotFindOffererSiren
 from pcapi.core.offerers.exceptions import CannotFindOffererUserEmail
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
@@ -10,6 +11,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import filter_offerers_with_keywords_string
 from pcapi.core.offerers.repository import find_new_offerer_user_email
 from pcapi.core.offerers.repository import find_offerer_by_validation_token
+from pcapi.core.offerers.repository import find_siren_by_offerer_id
 from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
 from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.core.offerers.repository import get_all_venue_labels
@@ -442,3 +444,14 @@ class HasDigitalVenueWithAtLeastOneOfferTest:
         offers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
         assert not has_digital_venue_with_at_least_one_offer(offerer.id)
+
+
+class GetSirenByOffererIdTest:
+    def test_return_siren_for_offerer_id(self):
+        offerer = offerers_factories.OffererFactory()
+
+        assert find_siren_by_offerer_id(offerer.id) == offerer.siren
+
+    def test_return_error_when_no_siren_found(self):
+        with pytest.raises(CannotFindOffererSiren):
+            find_siren_by_offerer_id(0)
