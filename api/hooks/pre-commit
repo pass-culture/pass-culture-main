@@ -4,8 +4,11 @@ ALEMBIC_STAGED_FILES=$(git diff --staged --name-only -- 'api/src/pcapi/alembic/v
 if [[ "$ALEMBIC_STAGED_FILES" != "" ]]; then
   echo -e "\033[0;96mMigration changes detected: $ALEMBIC_STAGED_FILES \033[0m"
   echo -e "\033[0;96mUpdating alembic_version_conflict_detection.txt \033[0m\n"
-  alembic heads > api/alembic_version_conflict_detection.txt
-  git add api/alembic_version_conflict_detection.txt
+  pushd `pwd`
+  cd api
+  alembic --config alembic.ini heads > alembic_version_conflict_detection.txt
+  git add alembic_version_conflict_detection.txt
+  popd
 fi
 
 counter=0
