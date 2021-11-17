@@ -4,7 +4,6 @@ from typing import Optional
 
 from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import EligibilityType
-from pcapi.core.users.models import UserRole
 
 
 @dataclass
@@ -34,4 +33,4 @@ class UserAttributes:
     marketing_push_subscription: bool
     postal_code: Optional[str]
     products_use_date: dict
-    roles: list[UserRole]
+    roles: list[str]

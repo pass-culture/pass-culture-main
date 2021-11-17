@@ -114,7 +114,7 @@ def test_get_user_attributes():
         last_favorite_creation_date=None,
         last_visit_date=None,
         marketing_email_subscription=True,
-        roles=[UserRole.BENEFICIARY],
+        roles=[UserRole.BENEFICIARY.value],
     )
 
 

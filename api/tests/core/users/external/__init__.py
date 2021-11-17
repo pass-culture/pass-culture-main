@@ -37,5 +37,5 @@ common_user_attributes = UserAttributes(
     postal_code=None,
     products_use_date={"product_brut_x_use": datetime(2021, 5, 6)},
     user_id=1,
-    roles=[UserRole.BENEFICIARY],
+    roles=["BENEFICIARY"],
 )
