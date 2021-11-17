@@ -55,7 +55,6 @@ class EducationalDepositFactory(BaseFactory):
     educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
     educationalYear = factory.SubFactory(EducationalYearFactory)
     amount = 3000
-    dateCreated = datetime.datetime.now()
     isFinal = True
 
 
