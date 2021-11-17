@@ -226,8 +226,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             details_columns=self._details_columns,
             get_value=self.get_detail_value,
             return_url=return_url,
-            has_passed_id_check=fraud_api.has_user_passed_fraud_checks(user),
-            # FIXME(viconnex): should we not check if there is a Fraudcheck of type IdentityCheck ?
+            has_performed_identity_check=fraud_api.has_user_performed_identity_check(user),
         )
 
     @flask_admin.expose("/validate/beneficiary/<user_id>", methods=["POST"])

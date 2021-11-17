@@ -748,6 +748,7 @@ class UpdateBeneficiaryMandatoryInformationTest:
         user = users_factories.UserFactory(
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED, dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE
         )
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.CREATED)
