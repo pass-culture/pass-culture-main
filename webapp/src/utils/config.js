@@ -45,6 +45,7 @@ export const {
   UNIVERSAL_LINK,
   IOS_APP_STORE_ID,
   IOS_APP_ID,
+  WEBAPP_V2_URL,
 } = process.env
 
 export const APP_VERSION = version
