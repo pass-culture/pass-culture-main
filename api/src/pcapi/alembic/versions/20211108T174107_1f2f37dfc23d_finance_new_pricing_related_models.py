@@ -2,9 +2,6 @@
 from alembic import op
 import sqlalchemy as sa
 
-import pcapi.core.finance.models as finance_models
-import pcapi.utils.db as db_utils
-
 
 # revision identifiers, used by Alembic.
 revision = "1f2f37dfc23d"
@@ -14,6 +11,9 @@ depends_on = None
 
 
 def upgrade():
+    import pcapi.core.finance.models as finance_models
+    import pcapi.utils.db as db_utils
+
     op.create_table(
         "pricing",
         sa.Column("id", sa.BigInteger(), autoincrement=True, nullable=False),
