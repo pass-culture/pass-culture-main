@@ -1,3 +1,4 @@
+import dataclasses
 from datetime import datetime
 from decimal import Decimal
 import enum
@@ -174,3 +175,10 @@ class EducationalBooking(PcObject, Model):
             raise exceptions.EducationalBookingAlreadyCancelled()
 
         self.status = EducationalBookingStatus.REFUSED
+
+
+@dataclasses.dataclass
+class AdageApiResult:
+    sent_data: dict
+    response: dict
+    success: bool

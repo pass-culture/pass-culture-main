@@ -19,6 +19,7 @@ from requests.auth import _basic_auth_str
 # `isort: skip_file` above once fixed.
 import pcapi.models
 from pcapi import settings
+import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
 import pcapi.core.search.testing as search_testing
@@ -85,6 +86,7 @@ def clear_outboxes():
         search_testing.reset_search_store()
         sms_notifications_testing.reset_requests()
         users_testing.reset_sendinblue_requests()
+        adage_api_testing.reset_requests()
 
 
 @pytest.fixture(autouse=True)

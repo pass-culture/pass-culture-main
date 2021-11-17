@@ -8,7 +8,7 @@ class AdageException(Exception):
         self.message = message
         self.status_code = status_code
         self.response_text = response_text
-        super().__init__()
+        super().__init__(message)
 
 
 class InstitutionalProjectRedactorNotFoundException(Exception):

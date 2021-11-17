@@ -338,6 +338,7 @@ ADAGE_API_KEY = os.environ.get("ADAGE_API_KEY", None)
 ADAGE_API_URL = os.environ.get("ADAGE_API_URL", None)
 EAC_API_KEY = os.environ.get("EAC_API_KEY", None)
 JWT_ADAGE_PUBLIC_KEY_FILENAME = os.environ.get("JWT_ADAGE_PUBLIC_KEY_FILENAME", "public_key.production")
+ADAGE_BACKEND = os.environ.get("ADAGE_BACKEND", "pcapi.core.educational.adage_backends.adage.AdageHttpNotifier")
 
 # NOTION
 NOTION_TOKEN = os.environ.get("NOTION_TOKEN", "")

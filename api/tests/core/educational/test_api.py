@@ -19,10 +19,14 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalRedactor
+import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.testing import override_settings
+from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
+from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import clean_database
@@ -325,6 +329,45 @@ class BookEducationalOfferTest:
                 "is_event": 1,
             },
         }
+
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    @override_settings(ADAGE_API_KEY="adage-api-key")
+    def test_should_notify_adage_on_educational_prebooking_creation(self):
+        # Given
+        stock = offers_factories.EducationalEventStockFactory(
+            beginningDatetime=datetime.datetime(2021, 5, 15),
+            offer__bookingEmail="test@email.com",
+        )
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_factories.EducationalYearFactory(
+            beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
+        )
+        educational_factories.EducationalYearFactory(
+            beginningDate=datetime.datetime(2021, 9, 1), expirationDate=datetime.datetime(2022, 8, 31)
+        )
+        educational_redactor = educational_factories.EducationalRedactorFactory(
+            email="professeur@example.com",
+            firstName="Fabulous",
+            lastName="Fab",
+        )
+        redactor_informations = RedactorInformation(
+            email=educational_redactor.email,
+            civility=educational_redactor.civility,
+            firstname=educational_redactor.firstName,
+            lastname=educational_redactor.lastName,
+            uai=educational_institution.institutionId,
+        )
+
+        # When
+        booking = educational_api.book_educational_offer(
+            redactor_informations=redactor_informations,
+            stock_id=stock.id,
+        )
+
+        # Then
+        expected_payload = serialize_educational_booking(booking.educationalBooking)
+        assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
+        assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation"
 
     def test_should_create_educational_redactor_when_it_does_not_exist(self):
         # Given
