@@ -2,6 +2,9 @@ from datetime import datetime
 import decimal
 import logging
 
+from pydantic.error_wrappers import ValidationError
+
+from pcapi.connectors.api_adage import AdageException
 from pcapi.core import mails
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
@@ -10,6 +13,7 @@ from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
+import pcapi.core.educational.adage_backends as adage_notifier
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalDeposit
@@ -21,6 +25,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.utils.mailing import build_pc_pro_offer_link
@@ -97,6 +102,26 @@ def book_educational_offer(redactor_informations: RedactorInformation, stock_id:
         mails.send(recipients=[stock.offer.bookingEmail], data=_build_prebooking_mail_data(booking))
 
     search.async_index_offer_ids([stock.offerId])
+
+    try:
+        adage_notifier.notify_prebooking(data=serialize_educational_booking(booking.educationalBooking))
+    except AdageException as adage_error:
+        logger.error(
+            "%s Educational institution will not receive a confirmation email.",
+            adage_error.message,
+            extra={
+                "bookingId": booking.id,
+                "adage status code": adage_error.status_code,
+                "adage response text": adage_error.response_text,
+            },
+        )
+    except ValidationError:
+        logger.exception(
+            "Coulf not notify adage of prebooking, hence send confirmation email to educational institution, as educationalBooking serialization failed.",
+            extra={
+                "bookingId": booking.id,
+            },
+        )
 
     return booking
 
