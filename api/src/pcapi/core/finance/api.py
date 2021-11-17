@@ -4,6 +4,7 @@ import logging
 import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
 
+from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
@@ -287,3 +288,66 @@ def cancel_pricing(booking: bookings_models.Booking, reason: models.PricingLogRe
         db.session.add(pricing)
         db.session.commit()
     return pricing
+
+
+def generate_cashflows_and_payment_files(cutoff: datetime.datetime):
+    generate_cashflows(cutoff)
+    # FIXME (dbaty): generate payment files here.
+
+
+def generate_cashflows(cutoff: datetime.datetime) -> int:
+    """Generate a new CashflowBatch and a new cashflow for each business
+    unit for which there is money to transfer.
+    """
+    batch = models.CashflowBatch(cutoff=cutoff)
+    db.session.add(batch)
+    db.session.flush()
+    batch_id = batch.id  # access _before_ COMMIT to avoid extra SELECT
+    db.session.commit()
+
+    filters = (
+        models.Pricing.status == models.PricingStatus.VALIDATED,
+        models.Pricing.valueDate < cutoff,
+        models.CashflowPricing.pricingId.is_(None),
+    )
+
+    business_unit_ids_and_bank_account_ids = (
+        models.Pricing.query.filter(
+            models.BusinessUnit.bankAccountId.isnot(None),
+            *filters,
+        )
+        .join(models.Pricing.businessUnit)
+        .outerjoin(models.CashflowPricing)
+        .with_entities(models.Pricing.businessUnitId, models.BusinessUnit.bankAccountId)
+        .distinct()
+    )
+    for business_unit_id, bank_account_id in business_unit_ids_and_bank_account_ids:
+        try:
+            with transaction():
+                pricings = models.Pricing.query.outerjoin(models.CashflowPricing).filter(
+                    models.Pricing.businessUnitId == business_unit_id,
+                    *filters,
+                )
+                total = pricings.with_entities(sqla.func.sum(models.Pricing.amount)).scalar()
+                # FIXME: do we want to update Pricing.status? `CASHFLOWED`?!
+                if not total:
+                    continue
+                cashflow = models.Cashflow(
+                    batchId=batch_id,
+                    bankAccountId=bank_account_id,
+                    status=models.CashflowStatus.PENDING,
+                    amount=total,
+                )
+                db.session.add(cashflow)
+                links = [models.CashflowPricing(cashflowId=cashflow.id, pricingId=pricing.id) for pricing in pricings]
+                db.session.bulk_save_objects(links)
+                db.session.commit()
+        except Exception:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
+            logger.exception(
+                "Could not generate cashflows for a business unit",
+                extra={"business_unit": business_unit_id, "batch": batch_id},
+            )
+
+    return batch_id

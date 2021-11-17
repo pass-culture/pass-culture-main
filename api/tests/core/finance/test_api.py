@@ -212,3 +212,89 @@ class PriceBookingsTest:
 
         assert not booking1.pricings
         assert len(booking2.pricings) == 1
+
+
+class GenerateCashflowsTest:
+    def test_basics(self):
+        business_unit1 = factories.BusinessUnitFactory()
+        pricing11 = factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            businessUnit=business_unit1,
+            amount=-1000,
+        )
+        pricing12 = factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            businessUnit=business_unit1,
+            amount=-1000,
+        )
+        pricing2 = factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            amount=-3000,
+        )
+        pricing_no_bank_account = factories.PricingFactory(booking__stock__offer__venue__businessUnit__bankAccount=None)
+        pricing_pending = factories.PricingFactory(status=models.PricingStatus.PENDING)
+        cutoff = datetime.datetime.utcnow()
+        pricing_after_cutoff = factories.PricingFactory()
+
+        batch_id = api.generate_cashflows(cutoff)
+
+        batch = models.CashflowBatch.query.one()
+        assert batch.id == batch_id
+        assert batch.cutoff == cutoff
+        assert models.Cashflow.query.count() == 2
+        assert len(pricing11.cashflows) == 1
+        assert len(pricing12.cashflows) == 1
+        assert pricing11.cashflows[0] == pricing12.cashflows[0]
+        assert pricing11.cashflows[0].amount == -2000
+        assert pricing11.cashflows[0].bankAccount == business_unit1.bankAccount
+        assert pricing2.cashflows[0].amount == -3000
+
+        assert not pricing_no_bank_account.cashflows
+        assert not pricing_pending.cashflows
+        assert not pricing_after_cutoff.cashflows
+
+    def test_no_cashflow_if_total_is_zero(self):
+        business_unit1 = factories.BusinessUnitFactory()
+        _pricing_total_is_zero_1 = factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            businessUnit=business_unit1,
+            amount=-1000,
+        )
+        _pricing_total_is_zero_2 = factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            businessUnit=business_unit1,
+            amount=1000,
+        )
+        _pricing_free_offer = factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            businessUnit=business_unit1,
+            amount=0,
+        )
+        cutoff = datetime.datetime.utcnow()
+        api.generate_cashflows(cutoff)
+        assert models.Cashflow.query.count() == 0
+
+    def test_assert_num_queries(self):
+        business_unit1 = factories.BusinessUnitFactory()
+        factories.PricingFactory(status=models.PricingStatus.VALIDATED, businessUnit=business_unit1)
+        factories.PricingFactory(status=models.PricingStatus.VALIDATED, businessUnit=business_unit1)
+        factories.PricingFactory(status=models.PricingStatus.VALIDATED)
+        cutoff = datetime.datetime.utcnow()
+
+        n_queries = 0
+        n_queries += 1  # insert CashflowBatch
+        n_queries += 1  # commit
+        n_queries += 1  # select business unit and bank account ids to process
+        n_queries += 2 * sum(  # 2 business units
+            (
+                1,  # compute sum of pricings
+                1,  # insert Cashflow
+                1,  # select pricings to...
+                1,  # ... insert CashflowPricing
+                1,  # commit
+            )
+        )
+        with assert_num_queries(n_queries):
+            api.generate_cashflows(cutoff)
+
+        assert models.Cashflow.query.count() == 2
