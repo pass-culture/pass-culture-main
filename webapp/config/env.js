@@ -85,6 +85,7 @@ function getClientEnvironment(publicUrl) {
         TYPEFORM_URL_CULTURAL_PRACTICES_POLL: process.env.TYPEFORM_URL_CULTURAL_PRACTICES_POLL,
         UNIVERSAL_LINK: process.env.UNIVERSAL_LINK,
         URL_FOR_MAINTENANCE: process.env.URL_FOR_MAINTENANCE,
+        WEBAPP_V2_URL: process.env.WEBAPP_V2_URL,
         NAME: name,
         VERSION: version,
       }
