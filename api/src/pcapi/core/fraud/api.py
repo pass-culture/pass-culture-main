@@ -581,8 +581,13 @@ def validate_frauds(
     return fraud_result
 
 
-def has_user_passed_fraud_checks(user: user_models.User) -> bool:
-    return bool(user.beneficiaryFraudResults)
+def has_user_performed_identity_check(user: user_models.User) -> bool:
+    return db.session.query(
+        models.BeneficiaryFraudCheck.query.filter(
+            models.BeneficiaryFraudCheck.user == user,
+            models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
+        ).exists()
+    ).scalar()
 
 
 def is_risky_user_profile(user: user_models.User) -> bool:

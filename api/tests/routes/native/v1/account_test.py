@@ -1419,6 +1419,7 @@ class UpdateBeneficiaryInformationTest:
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
             phoneNumber="+33609080706",
         )
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
@@ -1471,6 +1472,7 @@ class UpdateBeneficiaryInformationTest:
             activity=None,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
         )
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
@@ -1524,6 +1526,7 @@ class UpdateBeneficiaryInformationTest:
             activity=None,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
         )
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
@@ -1572,6 +1575,7 @@ class UpdateBeneficiaryInformationTest:
             postalCode=None,
             activity=None,
         )
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.EDUCONNECT)
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user, eligibilityType=EligibilityType.UNDERAGE)

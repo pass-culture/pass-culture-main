@@ -295,7 +295,7 @@ def update_beneficiary_mandatory_information(
     if (
         not steps_to_become_beneficiary(user)
         # the 2 following checks should be useless
-        and fraud_api.has_user_passed_fraud_checks(user)
+        and fraud_api.has_user_performed_identity_check(user)
         and not fraud_api.is_user_fraudster(user)
     ):
         subscription_api.check_and_activate_beneficiary(user.id)

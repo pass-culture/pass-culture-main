@@ -690,3 +690,18 @@ class EduconnectFraudTest:
             if fraud_check.reason_code == fraud_models.FraudReasonCode.INE_NOT_WHITELISTED
         )
         assert duplicate_ine_check.status == fraud_models.FraudStatus.SUSPICIOUS
+
+
+@pytest.mark.usefixtures("db_session")
+class HasUserPerformedIdentityCheckTest:
+    def test_has_user_performed_identity_check(self):
+        user = users_factories.UserFactory()
+        fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.JOUVE, user=user)
+
+        assert fraud_api.has_user_performed_identity_check(user)
+
+    def test_has_user_performed_identity_check_without_identity_fraud_check(self):
+        user = users_factories.UserFactory()
+        fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.USER_PROFILING, user=user)
+
+        assert not fraud_api.has_user_performed_identity_check(user)
