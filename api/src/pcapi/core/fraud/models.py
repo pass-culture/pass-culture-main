@@ -25,6 +25,9 @@ class FraudCheckType(enum.Enum):
     UBBLE = "ubble"
 
 
+IDENTITY_CHECK_TYPES = [FraudCheckType.JOUVE, FraudCheckType.DMS, FraudCheckType.UBBLE, FraudCheckType.EDUCONNECT]
+
+
 class FraudStatus(enum.Enum):
     OK = "OK"
     KO = "KO"
