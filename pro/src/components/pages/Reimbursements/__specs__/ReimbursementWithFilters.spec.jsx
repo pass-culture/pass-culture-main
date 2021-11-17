@@ -1,12 +1,5 @@
 import '@testing-library/jest-dom'
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-  within,
-} from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, waitForElementToBeRemoved, within, } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryHistory } from 'history'
 import React from 'react'
@@ -55,19 +48,23 @@ const renderReimbursements = (store, props) => {
   )
 
   const getElements = () => ({
+    nav: {
+      refundProof: screen.queryByText('Justificatifs de remboursement'),
+      refundDetails: screen.queryByText('Détails des remboursements'),
+    },
     filters: {
-      venue: screen.getByLabelText('Lieu'),
-      periodStart: screen.getByLabelText('début de la période'),
-      periodEnd: screen.getByLabelText('fin de la période'),
+      venue: screen.queryByLabelText('Lieu'),
+      periodStart: screen.queryByLabelText('début de la période'),
+      periodEnd: screen.queryByLabelText('fin de la période'),
     },
     buttons: {
-      download: screen.getByRole('button', {
+      download: screen.queryByRole('button', {
         name: /Télécharger/i,
       }),
-      display: screen.getByRole('button', {
+      display: screen.queryByRole('button', {
         name: /Afficher/i,
       }),
-      resetFilters: screen.getByRole('button', {
+      resetFilters: screen.queryByRole('button', {
         name: /Réinitialiser les filtres/i,
       }),
     },
@@ -144,6 +141,27 @@ describe('reimbursementsWithFilters', () => {
     props = { currentUser: { isAdmin: false } }
     venues = BASE_VENUES
     pcapi.getVenuesForOfferer.mockResolvedValue(venues)
+  })
+
+  it('should display a new refund proof section when feature flag is up', async () => {
+    store = configureTestStore({
+      data: {
+        users: [{ publicName: 'Damien', isAdmin: false }],
+      },
+      features: {
+        list: [
+          { isActive: true, nameKey: 'SHOW_INVOICES_ON_PRO_PORTAL' },
+        ],
+      },
+    })
+
+    // when
+    const { getElementsOnLoadingComplete } = renderReimbursements(store, props)
+    const { nav } = await getElementsOnLoadingComplete()
+
+    // then
+    expect(nav.refundProof).toBeInTheDocument()
+    expect(nav.refundDetails).toBeInTheDocument()
   })
 
   it('should display the right informations and UI', async () => {
