@@ -216,6 +216,13 @@ class FraudReasonCode(enum.Enum):
     INE_NOT_WHITELISTED = "ine_not_whitelisted"
 
 
+class FraudCheckStatus(enum.Enum):
+    KO = "ko"
+    OK = "ok"
+    SUSPICIOUS = "suspiscious"
+    PENDING = "pending"
+
+
 class BeneficiaryFraudCheck(PcObject, Model):
     __tablename__ = "beneficiary_fraud_check"
 
@@ -232,6 +239,15 @@ class BeneficiaryFraudCheck(PcObject, Model):
     thirdPartyId = sqlalchemy.Column(sqlalchemy.TEXT(), nullable=False)
 
     resultContent = sqlalchemy.Column(sqlalchemy.dialects.postgresql.JSONB)
+
+    status = sqlalchemy.Column(sqlalchemy.Enum(FraudCheckStatus, create_constraint=False), nullable=True)
+
+    reason = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
+
+    reasonCodes = sqlalchemy.Column(
+        sqlalchemy.ARRAY(sqlalchemy.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
+        nullable=True,
+    )
 
     def source_data(self) -> typing.Union[JouveContent, DMSContent, UserProfilingFraudData, EduconnectContent]:
         if self.type not in FRAUD_CHECK_MAPPING:
