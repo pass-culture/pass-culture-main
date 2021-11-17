@@ -59,7 +59,7 @@ def get_user_attributes(user: User) -> UserAttributes:
         first_name=user.firstName,
         has_completed_id_check=user.hasCompletedIdCheck,
         user_id=user.id,
-        is_beneficiary=user.has_beneficiary_role,
+        is_beneficiary=user.is_beneficiary,
         is_eligible=user.is_eligible,
         is_email_validated=user.isEmailValidated,
         is_pro=is_pro_user,
