@@ -1,6 +1,6 @@
 import { action } from '@storybook/addon-actions'
 import { boolean } from '@storybook/addon-knobs'
-import { Story } from "@storybook/react"
+import { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
@@ -14,7 +14,7 @@ export default {
 const mockCategoriesOptions = [
   { value: 'cinema', label: 'Cinéma' },
   { value: 'theatre', label: 'Théatre' },
-  { value: 'musique', label: 'Musique' }
+  { value: 'musique', label: 'Musique' },
 ]
 
 const Template: Story<{ label?: string }> = ({ label }) => (
@@ -30,7 +30,8 @@ const Template: Story<{ label?: string }> = ({ label }) => (
           label={label}
           options={mockCategoriesOptions}
         />
-      )}}
+      )
+    }}
   </Formik>
 )
 

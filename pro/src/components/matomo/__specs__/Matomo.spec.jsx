@@ -1,6 +1,6 @@
 /*
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { mount } from 'enzyme'
 import { createBrowserHistory } from 'history'
@@ -43,7 +43,10 @@ describe('src | components | Matomo', () => {
     renderMatomo(history)
 
     // then
-    expect(fakeMatomo.push).toHaveBeenNthCalledWith(1, ['setCustomUrl', '/router/path'])
+    expect(fakeMatomo.push).toHaveBeenNthCalledWith(1, [
+      'setCustomUrl',
+      '/router/path',
+    ])
   })
 
   it('should push the page title', () => {
@@ -66,7 +69,10 @@ describe('src | components | Matomo', () => {
       renderMatomo(history)
 
       // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'ANONYMOUS on PRO'])
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, [
+        'setUserId',
+        'ANONYMOUS on PRO',
+      ])
     })
 
     it('should reset userId', () => {
@@ -94,7 +100,10 @@ describe('src | components | Matomo', () => {
       renderMatomo(history, store)
 
       // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TY on PRO'])
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, [
+        'setUserId',
+        'TY on PRO',
+      ])
     })
   })
 })

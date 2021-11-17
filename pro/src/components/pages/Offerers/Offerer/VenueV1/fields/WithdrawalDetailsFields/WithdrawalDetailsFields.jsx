@@ -1,9 +1,9 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
@@ -48,23 +48,18 @@ const WithdrawalDetailsFields = props => {
   return (
     <div className="section vp-content-section bank-information">
       <div className="main-list-title title-actions-container">
-        <h2 className="main-list-title-text">
-          Modalités de retrait
-        </h2>
+        <h2 className="main-list-title-text">Modalités de retrait</h2>
       </div>
 
       <p className="bi-subtitle">
-        Les modalités de retrait s’appliqueront par défaut à la création de vos offres. Vous pourrez
-        modifier cette information à l’échelle de l’offre.
+        Les modalités de retrait s’appliqueront par défaut à la création de vos
+        offres. Vous pourrez modifier cette information à l’échelle de l’offre.
       </p>
 
       {!readOnly ? (
         <>
           {isCreatedEntity && <HiddenField name="withdrawalDetails" />}
-          <Field
-            name="withdrawalDetails"
-            render={renderWithdrawalDetails}
-          />
+          <Field name="withdrawalDetails" render={renderWithdrawalDetails} />
           {!isCreatedEntity && (
             <Field
               name="isWithdrawalAppliedOnAllOffers"
@@ -74,9 +69,7 @@ const WithdrawalDetailsFields = props => {
           )}
         </>
       ) : (
-        <span>
-          {initialWithdrawalDetails}
-        </span>
+        <span>{initialWithdrawalDetails}</span>
       )}
     </div>
   )

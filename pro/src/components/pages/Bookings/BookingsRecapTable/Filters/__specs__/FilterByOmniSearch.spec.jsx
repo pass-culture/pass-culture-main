@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 import React from 'react'
@@ -27,14 +27,14 @@ describe('components | FilterByOmniSearch', () => {
     // Then
     expect(select).toHaveLength(1)
     expect(options).toHaveLength(4)
-    expect(options.at(0).text()).toStrictEqual('Offre')
-    expect(options.at(0).prop('value')).toStrictEqual('offre')
-    expect(options.at(1).text()).toStrictEqual('Bénéficiaire')
-    expect(options.at(1).prop('value')).toStrictEqual('bénéficiaire')
-    expect(options.at(2).text()).toStrictEqual('ISBN')
-    expect(options.at(2).prop('value')).toStrictEqual('isbn')
-    expect(options.at(3).text()).toStrictEqual('Contremarque')
-    expect(options.at(3).prop('value')).toStrictEqual('contremarque')
+    expect(options.at(0).text()).toBe('Offre')
+    expect(options.at(0).prop('value')).toBe('offre')
+    expect(options.at(1).text()).toBe('Bénéficiaire')
+    expect(options.at(1).prop('value')).toBe('bénéficiaire')
+    expect(options.at(2).text()).toBe('ISBN')
+    expect(options.at(2).prop('value')).toBe('isbn')
+    expect(options.at(3).text()).toBe('Contremarque')
+    expect(options.at(3).prop('value')).toBe('contremarque')
   })
 
   it('should display the correct placeholder for current option selected', () => {
@@ -43,7 +43,7 @@ describe('components | FilterByOmniSearch', () => {
     const input = wrapper.find('input')
 
     // Then
-    expect(input.prop('placeholder')).toStrictEqual("Rechercher par nom d'offre")
+    expect(input.prop('placeholder')).toBe("Rechercher par nom d'offre")
   })
 
   it('should apply bookingBeneficiary filter when typing keywords for beneficiary name or email', async () => {

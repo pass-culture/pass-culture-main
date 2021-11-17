@@ -31,51 +31,31 @@ const OfferPreview = ({ offerPreviewData }) => {
     offerPreviewData.venueId ? changeVenue() : setVenue(null)
   }, [offerPreviewData.venueId])
 
-  const isDuoEnabled = useMemo(() => offerPreviewData.isEvent && offerPreviewData.isDuo, [
-    offerPreviewData.isDuo,
-    offerPreviewData.isEvent,
-  ])
+  const isDuoEnabled = useMemo(
+    () => offerPreviewData.isEvent && offerPreviewData.isDuo,
+    [offerPreviewData.isDuo, offerPreviewData.isEvent]
+  )
 
   return (
-    <div
-      className="offer-preview"
-      data-testid="offer-preview-section"
-    >
+    <div className="offer-preview" data-testid="offer-preview-section">
       <div className="op-section">
         {offerPreviewData.name && (
-          <div className="title-preview">
-            {offerPreviewData.name}
-          </div>
+          <div className="title-preview">{offerPreviewData.name}</div>
         )}
         <div className="op-options-summary">
           <div className="op-option">
-            <PassCultureSvg
-              aria-hidden
-              className="op-option-ico"
-            />
-            <span className="op-option-text">
-              Type
-            </span>
+            <PassCultureSvg aria-hidden className="op-option-ico" />
+            <span className="op-option-text">Type</span>
           </div>
 
           <div className={`op-option${!isDuoEnabled ? ' disabled' : ''}`}>
-            <DuoSvg
-              aria-hidden
-              className="op-option-ico"
-            />
-            <span className="op-option-text">
-              À deux !
-            </span>
+            <DuoSvg aria-hidden className="op-option-ico" />
+            <span className="op-option-text">À deux !</span>
           </div>
 
           <div className="op-option">
-            <TagSvg
-              aria-hidden
-              className="op-option-ico"
-            />
-            <span className="op-option-text">
-              - - €
-            </span>
+            <TagSvg aria-hidden className="op-option-ico" />
+            <span className="op-option-text">- - €</span>
           </div>
         </div>
         {offerPreviewData.description && (
@@ -86,16 +66,12 @@ const OfferPreview = ({ offerPreviewData }) => {
       </div>
 
       {venue && (
-        <div>
-          {!venue.isVirtual && <VenueDetails physicalVenue={venue} />}
-        </div>
+        <div>{!venue.isVirtual && <VenueDetails physicalVenue={venue} />}</div>
       )}
 
       {offerPreviewData.withdrawalDetails && (
         <div className="op-section">
-          <div className="op-section-title">
-            Modalités de retrait
-          </div>
+          <div className="op-section-title">Modalités de retrait</div>
           <div className="op-section-text">
             {buildPreviewText(offerPreviewData.withdrawalDetails)}
           </div>

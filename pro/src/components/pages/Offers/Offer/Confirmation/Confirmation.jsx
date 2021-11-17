@@ -38,24 +38,21 @@ const Confirmation = ({ isCreatingOffer, location, offer, setOffer }) => {
       {isPendingOffer ? (
         <div>
           <PendingIcon className="oc-pending" />
-          <h2 className="oc-title">
-            Offre en cours de validation
-          </h2>
+          <h2 className="oc-title">Offre en cours de validation</h2>
           <p className="oc-details">
-            Votre offre est en cours de validation par l’équipe pass Culture, nous vérifions
-            actuellement son éligibilité. Cette vérification pourra prendre jusqu’à 72h. Vous
-            recevrez un email de confirmation une fois votre offre validée et disponible à la
-            réservation.
+            Votre offre est en cours de validation par l’équipe pass Culture,
+            nous vérifions actuellement son éligibilité. Cette vérification
+            pourra prendre jusqu’à 72h. Vous recevrez un email de confirmation
+            une fois votre offre validée et disponible à la réservation.
           </p>
         </div>
       ) : (
         <div>
           <ValidateIcon className="oc-validate" />
-          <h2 className="oc-title">
-            Offre créée !
-          </h2>
+          <h2 className="oc-title">Offre créée !</h2>
           <p className="oc-details">
-            Votre offre est désormais disponible à la réservation sur l’application pass Culture.
+            Votre offre est désormais disponible à la réservation sur
+            l’application pass Culture.
           </p>
         </div>
       )}

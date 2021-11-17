@@ -2,11 +2,11 @@ import { useField } from 'formik'
 import React from 'react'
 
 interface ITextAreaProps {
-  name: string;
-  className?: string;
-  disabled?: boolean;
-  placeholder?: string;
-  label?: string;
+  name: string
+  className?: string
+  disabled?: boolean
+  placeholder?: string
+  label?: string
 }
 
 const TextArea = ({
@@ -30,9 +30,7 @@ const TextArea = ({
         />
       </label>
       {meta.touched && meta.error ? (
-        <div className="error">
-          {meta.error}
-        </div>
+        <div className="error">{meta.error}</div>
       ) : null}
     </>
   )

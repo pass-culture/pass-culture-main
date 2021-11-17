@@ -1,6 +1,6 @@
 /*
-* @debt deprecated "Gaël: deprecated usage of redux-saga-data"
-*/
+ * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
+ */
 
 import { watchDataActions } from 'redux-saga-data'
 import { all } from 'redux-saga/effects'

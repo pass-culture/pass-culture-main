@@ -13,7 +13,11 @@ import routes from 'utils/routes_map'
 
 export const renderOffer = async (initialEntries, store) => {
   const defaultStore = configureTestStore({
-    data: { users: [{ email: 'email@example.com', publicName: 'François', isAdmin: false }] },
+    data: {
+      users: [
+        { email: 'email@example.com', publicName: 'François', isAdmin: false },
+      ],
+    },
   })
   let path = ''
 

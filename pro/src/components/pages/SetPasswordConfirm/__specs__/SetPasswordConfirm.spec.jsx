@@ -46,7 +46,9 @@ describe('src | components | pages | SetPassword', () => {
     renderSetPassword(store, history)
 
     // Then
-    expect(screen.getByText('Votre mot de passe a bien été enregistré !')).toBeVisible()
+    expect(
+      screen.getByText('Votre mot de passe a bien été enregistré !')
+    ).toBeVisible()
   })
 
   it('should redirect to login page on link click', async () => {

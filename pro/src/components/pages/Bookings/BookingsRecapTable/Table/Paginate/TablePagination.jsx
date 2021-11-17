@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -17,21 +17,11 @@ const TablePagination = ({
   nextPage,
 }) => (
   <div className="paginate-wrapper">
-    <button
-      disabled={!canPreviousPage}
-      onClick={previousPage}
-      type="button"
-    >
+    <button disabled={!canPreviousPage} onClick={previousPage} type="button">
       <Icon svg="ico-left-arrow" />
     </button>
-    <span>
-      {`Page ${currentPage}/${nbPages}`}
-    </span>
-    <button
-      disabled={!canNextPage}
-      onClick={nextPage}
-      type="button"
-    >
+    <span>{`Page ${currentPage}/${nbPages}`}</span>
+    <button disabled={!canNextPage} onClick={nextPage} type="button">
       <Icon svg="ico-right-arrow" />
     </button>
   </div>

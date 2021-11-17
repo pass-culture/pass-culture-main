@@ -1,13 +1,13 @@
 import '@testing-library/jest-dom'
-import { render, screen } from "@testing-library/react"
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createBrowserHistory } from "history"
-import React from "react"
-import { Provider } from "react-redux"
-import { Router } from "react-router-dom"
+import { createBrowserHistory } from 'history'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { Router } from 'react-router-dom'
 
-import { configureTestStore } from "../../../../../../../store/testUtils"
-import VenueCreation from "../VenueCreation"
+import { configureTestStore } from '../../../../../../../store/testUtils'
+import VenueCreation from '../VenueCreation'
 
 const renderVenueCreation = ({ props }) => {
   const store = configureTestStore()
@@ -24,7 +24,6 @@ const renderVenueCreation = ({ props }) => {
 }
 
 describe('contact form enable in venue creation form', () => {
-
   let push
   let props
 
@@ -69,11 +68,11 @@ describe('contact form enable in venue creation form', () => {
     }
   })
 
-  it('should display contact fields', async ()=> {
+  it('should display contact fields', async () => {
     renderVenueCreation({ props })
-    const contactPhoneNumber = await screen.findByLabelText("Téléphone :")
-    const contactMail = await screen.findByLabelText("Mail :")
-    const contactUrl = await screen.findByLabelText("URL de votre site web :")
+    const contactPhoneNumber = await screen.findByLabelText('Téléphone :')
+    const contactMail = await screen.findByLabelText('Mail :')
+    const contactUrl = await screen.findByLabelText('URL de votre site web :')
 
     expect(contactPhoneNumber).toBeInTheDocument()
     expect(contactMail).toBeInTheDocument()
@@ -82,25 +81,20 @@ describe('contact form enable in venue creation form', () => {
     expect(contactPhoneNumber).toBeEnabled()
     expect(contactMail).toBeEnabled()
     expect(contactUrl).toBeEnabled()
-
   })
 
-  it('should fill contact fields', async ()=> {
+  it('should fill contact fields', async () => {
     renderVenueCreation({ props })
-    const contactPhoneNumber = await screen.findByLabelText("Téléphone :")
-    const contactMail = await screen.findByLabelText("Mail :")
-    const contactUrl = await screen.findByLabelText("URL de votre site web :")
+    const contactPhoneNumber = await screen.findByLabelText('Téléphone :')
+    const contactMail = await screen.findByLabelText('Mail :')
+    const contactUrl = await screen.findByLabelText('URL de votre site web :')
 
     userEvent.paste(contactPhoneNumber, '0606060606')
     userEvent.paste(contactMail, 'test@test.com')
     userEvent.paste(contactUrl, 'https://some-url-test.com')
 
-
     expect(contactUrl).toHaveValue('https://some-url-test.com')
     expect(contactPhoneNumber).toHaveValue('0606060606')
     expect(contactMail).toHaveValue('test@test.com')
   })
-
-
-
 })

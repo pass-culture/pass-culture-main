@@ -17,12 +17,11 @@ import FormSection from '../FormSection'
 import styles from './FormType.module.scss'
 import { buildOptions } from './utils/buildOptions'
 
-
 interface IFormTypeProps {
-    categories: Category[],
-    subCategories: SubCategory[],
-    values: OfferEducationalFormValues,
-    setFieldValue: (name: string, value: unknown) => void;
+  categories: Category[]
+  subCategories: SubCategory[]
+  values: OfferEducationalFormValues
+  setFieldValue: (name: string, value: unknown) => void
 }
 
 const EACOfferCreationType = ({
@@ -31,7 +30,9 @@ const EACOfferCreationType = ({
   values,
   setFieldValue,
 }: IFormTypeProps): JSX.Element => {
-  const subCategoriesForSelectedCategory = subCategories.filter(subCategory => subCategory.categoryId === values.category)
+  const subCategoriesForSelectedCategory = subCategories.filter(
+    subCategory => subCategory.categoryId === values.category
+  )
 
   return (
     <FormSection
@@ -41,34 +42,28 @@ const EACOfferCreationType = ({
       <div className={styles.subsection}>
         <Select
           label={CATEGORY_LABEL}
-          name='category'
+          name="category"
           options={buildOptions(categories)}
         />
       </div>
       <div className={styles.subsection}>
         <Select
           label={SUBCATEGORY_LABEL}
-          name='subCategory'
+          name="subCategory"
           options={buildOptions(subCategoriesForSelectedCategory)}
         />
       </div>
       <div className={styles.subsection}>
-        <TextInput
-          label={TITLE_LABEL}
-          name="title"
-        />
+        <TextInput label={TITLE_LABEL} name="title" />
       </div>
       <div className={styles.subsection}>
-        <TextArea
-          label={DESCRIPTION_LABEL}
-          name='description'
-        />
+        <TextArea label={DESCRIPTION_LABEL} name="description" />
       </div>
       <div className={styles.subsection}>
         <DurationPicker
           label={DURATION_LABEL}
-          name='duration'
-          onChange={(value: number| null) => setFieldValue('duration', value)}
+          name="duration"
+          onChange={(value: number | null) => setFieldValue('duration', value)}
         />
       </div>
     </FormSection>

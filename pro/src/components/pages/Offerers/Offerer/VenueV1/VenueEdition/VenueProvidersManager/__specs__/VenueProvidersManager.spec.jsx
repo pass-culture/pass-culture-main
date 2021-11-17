@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
@@ -88,7 +88,9 @@ describe('src | VenueProvidersManager', () => {
 
       // then
       expect(screen.getByText('Fnac')).toBeInTheDocument()
-      expect(screen.queryByText(DEFAULT_PROVIDER_OPTION.displayName)).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(DEFAULT_PROVIDER_OPTION.displayName)
+      ).not.toBeInTheDocument()
     })
 
     it('should not show import button', async () => {
@@ -166,7 +168,13 @@ describe('src | VenueProvidersManager', () => {
     describe('when selecting a provider', () => {
       it('should display the allocine form when the user choose Allocine onChange', async () => {
         // given
-        providers = [{ id: 'providerId', name: 'Allociné', lastSyncDate: '2020-01-01T10:00:00' }]
+        providers = [
+          {
+            id: 'providerId',
+            name: 'Allociné',
+            lastSyncDate: '2020-01-01T10:00:00',
+          },
+        ]
         pcapi.loadProviders.mockResolvedValue(providers)
         await renderVenueProvidersManager(props)
         const importOffersButton = screen.getByText('Importer des offres')
@@ -174,12 +182,16 @@ describe('src | VenueProvidersManager', () => {
         const providersSelect = screen.getByRole('combobox')
 
         // when
-        fireEvent.change(providersSelect, { target: { value: providers[0].id } })
+        fireEvent.change(providersSelect, {
+          target: { value: providers[0].id },
+        })
 
         // then
         expect(screen.getByText('Prix de vente/place')).toBeInTheDocument()
         expect(screen.getByText('Nombre de places/séance')).toBeInTheDocument()
-        expect(screen.getByText('Accepter les réservations DUO')).toBeInTheDocument()
+        expect(
+          screen.getByText('Accepter les réservations DUO')
+        ).toBeInTheDocument()
       })
 
       it('should display the stock form when the user choose another provider than Allociné', async () => {
@@ -192,7 +204,9 @@ describe('src | VenueProvidersManager', () => {
         const providersSelect = screen.getByRole('combobox')
 
         // when
-        fireEvent.change(providersSelect, { target: { value: providers[0].id } })
+        fireEvent.change(providersSelect, {
+          target: { value: providers[0].id },
+        })
 
         // then
         expect(screen.getByText('Compte')).toBeInTheDocument()

@@ -1,7 +1,7 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ */
 
 import React from 'react'
 import { Field } from 'react-final-form'
@@ -44,7 +44,11 @@ const SirenField = () => (
     format={formatSiren}
     minLength={11}
     name="siren"
-    validate={composeValidators(required, mustHaveTheProperLength, existsInINSEERegistry)}
+    validate={composeValidators(
+      required,
+      mustHaveTheProperLength,
+      existsInINSEERegistry
+    )}
   >
     {({ input, meta }) => {
       return (

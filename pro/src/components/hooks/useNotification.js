@@ -14,10 +14,10 @@ const useNotification = () => {
   }
 
   return {
-    success: (msg) => dispatchNotification(msg, 'success'),
-    error: (msg) => dispatchNotification(msg, 'error'),
-    pending: (msg) => dispatchNotification(msg, 'pending'),
-    information: (msg) => dispatchNotification(msg, 'information'),
+    success: msg => dispatchNotification(msg, 'success'),
+    error: msg => dispatchNotification(msg, 'error'),
+    pending: msg => dispatchNotification(msg, 'pending'),
+    information: msg => dispatchNotification(msg, 'information'),
   }
 }
 

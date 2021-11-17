@@ -17,7 +17,8 @@ const OfferOptions = ({
   const handleOtherRadioInputChange = event => {
     const updatedValues = {}
     if (canOfferBeEducational) {
-      updatedValues['isEducational'] = event.target.value === OFFER_OPTIONS.EDUCATIONAL
+      updatedValues['isEducational'] =
+        event.target.value === OFFER_OPTIONS.EDUCATIONAL
     }
     if (canOfferBeDuo) {
       updatedValues['isDuo'] = event.target.value === OFFER_OPTIONS.DUO
@@ -25,7 +26,8 @@ const OfferOptions = ({
     updateForm(updatedValues)
   }
 
-  const noOptionSelected = !(canOfferBeEducational && isEducational) && !(canOfferBeDuo && isDuo)
+  const noOptionSelected =
+    !(canOfferBeEducational && isEducational) && !(canOfferBeDuo && isDuo)
 
   const isSelectedOptionDisabled =
     (isDuo && isDuoDisabled) || (isEducational && isEducationalDisabled)
@@ -37,7 +39,8 @@ const OfferOptions = ({
         areAllOfferPresentsOfferTypesDisabled && isEducationalDisabled
     }
     if (canOfferBeDuo) {
-      areAllOfferPresentsOfferTypesDisabled = areAllOfferPresentsOfferTypesDisabled && isDuoDisabled
+      areAllOfferPresentsOfferTypesDisabled =
+        areAllOfferPresentsOfferTypesDisabled && isDuoDisabled
     }
 
     return areAllOfferPresentsOfferTypesDisabled
@@ -49,9 +52,7 @@ const OfferOptions = ({
 
   return (
     <section className="form-section">
-      <h3 className="section-title">
-        Autres caractéristiques
-      </h3>
+      <h3 className="section-title">Autres caractéristiques</h3>
 
       {canOfferBeDuo && (
         <div className="form-row">
@@ -84,7 +85,9 @@ const OfferOptions = ({
       <div className="form-row">
         <RadioInput
           checked={noOptionSelected || false}
-          disabled={areAllPresentsOfferOptionsDisabled() || isSelectedOptionDisabled}
+          disabled={
+            areAllPresentsOfferOptionsDisabled() || isSelectedOptionDisabled
+          }
           label="Aucune"
           name="offerOption"
           onChange={handleOtherRadioInputChange}

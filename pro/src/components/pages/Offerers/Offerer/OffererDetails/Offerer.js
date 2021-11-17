@@ -9,7 +9,8 @@ export class Offerer {
     this.name = offerer.name || ''
     this.postalCode = offerer.postalCode || ''
     this.siren = offerer.siren || ''
-    this.demarchesSimplifieesApplicationId = offerer.demarchesSimplifieesApplicationId || ''
+    this.demarchesSimplifieesApplicationId =
+      offerer.demarchesSimplifieesApplicationId || ''
   }
 
   get areBankInformationProvided() {

@@ -1,7 +1,7 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
@@ -42,15 +42,9 @@ class Spinner extends PureComponent {
     const { message } = this.props
 
     return (
-      <div
-        className="loading-spinner"
-        data-testid="spinner"
-      >
+      <div className="loading-spinner" data-testid="spinner">
         <Icon svg="loader-pc" />
-        <div
-          className="content"
-          data-dots={Array(nbDots).fill('.').join('')}
-        >
+        <div className="content" data-dots={Array(nbDots).fill('.').join('')}>
           {message}
         </div>
       </div>

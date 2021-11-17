@@ -1,9 +1,9 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
@@ -51,9 +51,13 @@ class LostPassword extends PureComponent {
   displayPasswordResetErrorMessages = (state, action) => {
     const { showErrorNotification } = this.props
     if (action.payload.errors.newPassword) {
-      this.setState({ newPasswordErrorMessage: action.payload.errors.newPassword[0] })
+      this.setState({
+        newPasswordErrorMessage: action.payload.errors.newPassword[0],
+      })
     } else {
-      showErrorNotification("Une erreur s'est produite, veuillez réessayer ultérieurement.")
+      showErrorNotification(
+        "Une erreur s'est produite, veuillez réessayer ultérieurement."
+      )
     }
   }
 
@@ -131,26 +135,19 @@ class LostPassword extends PureComponent {
       >
         <PageTitle title="Mot de passe perdu" />
         <div className="logo-side">
-          <Logo
-            noLink
-            signPage
-          />
+          <Logo noLink signPage />
         </div>
         <div className="scrollable-content-side">
           <div className="content">
             {change && (
               <section className="hero password-reset">
                 <div className="hero-body">
-                  <h1>
-                    Mot de passe changé !
-                  </h1>
+                  <h1>Mot de passe changé !</h1>
                   <h2>
-                    Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe
+                    Vous pouvez dès à présent vous connecter avec votre nouveau
+                    mot de passe
                   </h2>
-                  <Link
-                    className="primary-link"
-                    to="/connexion"
-                  >
+                  <Link className="primary-link" to="/connexion">
                     Se connecter
                   </Link>
                 </div>
@@ -159,16 +156,12 @@ class LostPassword extends PureComponent {
             {envoye && (
               <section className="hero mail-sent">
                 <div className="hero-body">
-                  <h1>
-                    Merci !
-                  </h1>
+                  <h1>Merci !</h1>
                   <h2>
-                    Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe.
+                    Vous allez recevoir par e-mail les instructions pour définir
+                    un nouveau mot de passe.
                   </h2>
-                  <Link
-                    className="primary-link"
-                    to="/"
-                  >
+                  <Link className="primary-link" to="/">
                     Revenir à l’accueil
                   </Link>
                 </div>
@@ -177,12 +170,8 @@ class LostPassword extends PureComponent {
             {token && (
               <section className="hero password-reset-request-form">
                 <div className="hero-body">
-                  <h1>
-                    Créer un nouveau mot de passe
-                  </h1>
-                  <h2>
-                    Saisissez le nouveau mot de passe
-                  </h2>
+                  <h1>Créer un nouveau mot de passe</h1>
+                  <h2>Saisissez le nouveau mot de passe</h2>
                   <Form onSubmit={this.submitResetPassword}>
                     {({ handleSubmit, errors, values }) => (
                       <form
@@ -194,8 +183,8 @@ class LostPassword extends PureComponent {
                             errors?.newPasswordValue
                               ? errors?.newPasswordValue
                               : newPasswordErrorMessage
-                                ? [newPasswordErrorMessage]
-                                : null
+                              ? [newPasswordErrorMessage]
+                              : null
                           }
                           label="Nouveau mot de passe"
                           name="newPasswordValue"
@@ -217,17 +206,13 @@ class LostPassword extends PureComponent {
             {!token && !envoye && !change && (
               <section className="hero password-reset-request">
                 <div className="hero-body">
-                  <h1>
-                    Mot de passe égaré ?
-                  </h1>
+                  <h1>Mot de passe égaré ?</h1>
                   <h2>
-                    Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez créé votre compte.
+                    Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez
+                    créé votre compte.
                   </h2>
 
-                  <form
-                    noValidate
-                    onSubmit={this.submitResetPasswordRequest}
-                  >
+                  <form noValidate onSubmit={this.submitResetPasswordRequest}>
                     <TextInput
                       label="Adresse e-mail"
                       name="email"

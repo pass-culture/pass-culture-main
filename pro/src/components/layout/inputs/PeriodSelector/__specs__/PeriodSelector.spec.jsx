@@ -18,7 +18,9 @@ describe('components | PeriodSelector', () => {
     )
 
     const startingDateWrapper = screen.getByTestId('period-filter-begin-picker')
-    const startingDateInput = within(startingDateWrapper).getByLabelText('début de la période')
+    const startingDateInput = within(startingDateWrapper).getByLabelText(
+      'début de la période'
+    )
 
     expect(startingDateWrapper.children).toHaveLength(1)
     userEvent.click(startingDateInput)
@@ -27,12 +29,18 @@ describe('components | PeriodSelector', () => {
     const endDateWrapper = screen.getByTestId('period-filter-end-picker')
     const beginCalendar = startingDateWrapper.children[1]
 
-    fireEvent.click(within(beginCalendar).getByLabelText('Choose Thursday, October 21st, 2021'))
+    fireEvent.click(
+      within(beginCalendar).getByLabelText(
+        'Choose Thursday, October 21st, 2021'
+      )
+    )
     expect(endDateWrapper.children).toHaveLength(2)
 
     const endCalendar = endDateWrapper.children[1]
 
-    fireEvent.click(within(endCalendar).getByLabelText('Choose Saturday, October 30th, 2021'))
+    fireEvent.click(
+      within(endCalendar).getByLabelText('Choose Saturday, October 30th, 2021')
+    )
     expect(endDateWrapper.children).toHaveLength(1)
   })
 })

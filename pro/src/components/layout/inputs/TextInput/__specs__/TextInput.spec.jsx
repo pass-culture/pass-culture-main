@@ -1,6 +1,6 @@
 /*
-* @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
-*/
+ * @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
+ */
 
 import '@testing-library/jest-dom'
 import { fireEvent } from '@testing-library/dom'
@@ -29,7 +29,10 @@ describe('src | components | layout | form | TextInput', () => {
 
     // then
     expect(screen.getByLabelText(props.label)).toBeInTheDocument()
-    expect(screen.getByLabelText(props.label)).toHaveAttribute('value', props.value)
+    expect(screen.getByLabelText(props.label)).toHaveAttribute(
+      'value',
+      props.value
+    )
   })
 
   it('should call onChange function when value changes', async () => {
@@ -53,7 +56,9 @@ describe('src | components | layout | form | TextInput', () => {
     render(<TextInput {...props} />)
 
     // then
-    expect(screen.queryByText(`${props.value.length}/${props.maxLength}`)).not.toBeInTheDocument()
+    expect(
+      screen.queryByText(`${props.value.length}/${props.maxLength}`)
+    ).not.toBeInTheDocument()
   })
 
   it('should display remainging characters when input has a max length and ask character count', () => {
@@ -65,6 +70,8 @@ describe('src | components | layout | form | TextInput', () => {
     render(<TextInput {...props} />)
 
     // then
-    expect(screen.getByText(`${props.value.length}/${props.maxLength}`)).toBeInTheDocument()
+    expect(
+      screen.getByText(`${props.value.length}/${props.maxLength}`)
+    ).toBeInTheDocument()
   })
 })

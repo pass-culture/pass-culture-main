@@ -8,21 +8,24 @@ import React from 'react'
 import Icon from 'components/layout/Icon'
 import { requiredIfComponentHasProp } from 'utils/propTypes'
 
-const Banner = ({ icon, href, linkTitle, children, type, closable, handleOnClick }) => {
+const Banner = ({
+  icon,
+  href,
+  linkTitle,
+  children,
+  type,
+  closable,
+  handleOnClick,
+}) => {
   return (
     <div className={`bi-banner ${type}`}>
       {closable && (
-        <button
-          onClick={handleOnClick}
-          type="button"
-        >
+        <button onClick={handleOnClick} type="button">
           x
         </button>
       )}
 
-      <p>
-        {children}
-      </p>
+      <p>{children}</p>
 
       {href && linkTitle && (
         <p>

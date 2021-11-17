@@ -67,7 +67,10 @@ const dataAndOffersRecapReducer = (state = initialState, action) => {
       return { ...state, ...{ users: action.users } }
     case UPDATE_USER: {
       const currentUser = state.users[0]
-      return { ...state, ...{ users: [{ ...currentUser, ...action.userData }] } }
+      return {
+        ...state,
+        ...{ users: [{ ...currentUser, ...action.userData }] },
+      }
     }
     default:
       return dataReducer(state, action)

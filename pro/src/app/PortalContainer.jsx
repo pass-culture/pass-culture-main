@@ -4,10 +4,12 @@ import ReactDOM from 'react-dom'
 // https://fr.reactjs.org/docs/portals.html
 const PortalContainer = ({ children }) => {
   const containerRef = useRef(null)
-  if (containerRef.current === null) containerRef.current = document.createElement('div')
+  if (containerRef.current === null)
+    containerRef.current = document.createElement('div')
 
   useEffect(() => {
-    const portalsRoot = document.getElementById('portals-root') || createPortalsRoot()
+    const portalsRoot =
+      document.getElementById('portals-root') || createPortalsRoot()
     portalsRoot.appendChild(containerRef.current)
 
     return () => portalsRoot.removeChild(containerRef.current)

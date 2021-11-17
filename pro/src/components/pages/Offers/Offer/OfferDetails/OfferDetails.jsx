@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
@@ -23,7 +23,6 @@ import OfferEdition from './OfferEdition'
 import OfferPreview from './OfferPreview'
 import OfferStatusBanner from './OfferStatusBanner'
 import OfferThumbnail from './OfferThumbnail'
-
 
 const OfferDetails = ({
   history,
@@ -54,20 +53,29 @@ const OfferDetails = ({
   const [showThumbnailForm, setShowThumbnailForm] = useState(false)
   const [thumbnailInfo, setThumbnailInfo] = useState({})
   const [thumbnailError, setThumbnailError] = useState(false)
-  const { categories, subCategories } = useSelector(state => state.offers.categories)
+  const { categories, subCategories } = useSelector(
+    state => state.offers.categories
+  )
   const [isLoading, setIsLoading] = useState(!(categories && subCategories))
 
   const notification = useNotification()
   const showErrorNotification = useCallback(
-    () => notification.error('Une ou plusieurs erreurs sont présentes dans le formulaire')
-    , [notification])
+    () =>
+      notification.error(
+        'Une ou plusieurs erreurs sont présentes dans le formulaire'
+      ),
+    [notification]
+  )
 
   useEffect(() => {
     offer?.id && reloadOffer()
   }, [offer?.id, reloadOffer])
 
   useEffect(() => {
-    offerPreviewData.subcategoryId && setShowThumbnailForm(offerPreviewData.subcategoryId !== DEFAULT_FORM_VALUES.subcategoryId)
+    offerPreviewData.subcategoryId &&
+      setShowThumbnailForm(
+        offerPreviewData.subcategoryId !== DEFAULT_FORM_VALUES.subcategoryId
+      )
   }, [setShowThumbnailForm, offerPreviewData.subcategoryId])
 
   useEffect(() => {
@@ -82,7 +90,8 @@ const OfferDetails = ({
 
   const postThumbnail = useCallback(
     async (offerId, thumbnailInfo) => {
-      const offerThumbnailHasBeenUpdated = Object.values(thumbnailInfo).length > 0
+      const offerThumbnailHasBeenUpdated =
+        Object.values(thumbnailInfo).length > 0
       if (offerThumbnailHasBeenUpdated) {
         const { credit, thumbnail, croppingRect, thumbUrl } = thumbnailInfo
 
@@ -228,9 +237,7 @@ const OfferDetails = ({
                 thumbnailError={thumbnailError}
                 url={offer?.thumbUrl}
               />
-              <OfferPreview
-                offerPreviewData={offerPreviewData}
-              />
+              <OfferPreview offerPreviewData={offerPreviewData} />
             </div>
             {offer ? (
               <OfferPreviewLink

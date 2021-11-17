@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import * as PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
@@ -27,21 +27,9 @@ const Preview = ({ preview, setStep, step }) => {
       <div className="tnp-previews">
         <div className="tnp-previews-wrapper">
           <MobileShell />
-          <img
-            alt=""
-            className="tnp-shell"
-            height="515"
-            src={homeShell}
-          />
-          <img
-            alt=""
-            className="tnp-home-preview"
-            height="228"
-            src={preview}
-          />
-          <div>
-            Page d’accueil
-          </div>
+          <img alt="" className="tnp-shell" height="515" src={homeShell} />
+          <img alt="" className="tnp-home-preview" height="228" src={preview} />
+          <div>Page d’accueil</div>
         </div>
         <div className="tnp-previews-wrapper">
           <MobileShell />
@@ -63,9 +51,7 @@ const Preview = ({ preview, setStep, step }) => {
             height="247"
             src={preview}
           />
-          <div>
-            Détails de l’offre
-          </div>
+          <div>Détails de l’offre</div>
         </div>
       </div>
       <div className="tnd-actions">

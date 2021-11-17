@@ -1,6 +1,6 @@
 /*
-* @debt deprecated "Gaël: deprecated usage of redux-saga-data"
-*/
+ * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
+ */
 
 import { applyMiddleware, compose, createStore } from 'redux'
 import { persistReducer, persistStore } from 'redux-persist'
@@ -14,7 +14,8 @@ import rootSaga from './sagas'
 const buildStoreEnhancer = (middlewares = []) => {
   const enhancers = []
 
-  const useDevTools = typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+  const useDevTools =
+    typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
   if (useDevTools) {
     const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     return composeEnhancers(...enhancers, applyMiddleware(...middlewares))

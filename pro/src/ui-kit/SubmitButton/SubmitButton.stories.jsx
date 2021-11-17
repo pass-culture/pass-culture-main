@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import React from 'react'
 
@@ -11,11 +11,7 @@ export default {
   component: SubmitButton,
 }
 
-const Template = args => (
-  <SubmitButton {...args}>
-    {args.children}
-  </SubmitButton>
-)
+const Template = args => <SubmitButton {...args}>{args.children}</SubmitButton>
 
 export const Default = Template.bind({})
 

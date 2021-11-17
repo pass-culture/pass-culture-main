@@ -22,9 +22,9 @@ import {
 import { OfferEducationalFormValues } from './types'
 
 export interface IOfferEducationalProps {
-  educationalCategories: Category[];
-  educationalSubcategories: SubCategory[];
-  initialValues: OfferEducationalFormValues;
+  educationalCategories: Category[]
+  educationalSubcategories: SubCategory[]
+  initialValues: OfferEducationalFormValues
 }
 
 const OfferEducational = ({
@@ -33,20 +33,24 @@ const OfferEducational = ({
   initialValues,
 }: IOfferEducationalProps): JSX.Element => {
   const categoryInitialValue = educationalCategories[0]?.id
-  const subCategoryInitialValue = categoryInitialValue &&
-    educationalSubcategories.find(
-      subCategory => subCategory.categoryId === categoryInitialValue)?.id
-    || ''
+  const subCategoryInitialValue =
+    (categoryInitialValue &&
+      educationalSubcategories.find(
+        subCategory => subCategory.categoryId === categoryInitialValue
+      )?.id) ||
+    ''
 
   return (
     <Formik
       enableReinitialize // so that dynamic initial values can be set when available
-      initialValues={{ 
-        ...initialValues, 
-        category: categoryInitialValue, 
-        subCategory: subCategoryInitialValue, 
+      initialValues={{
+        ...initialValues,
+        category: categoryInitialValue,
+        subCategory: subCategoryInitialValue,
       }}
-      onSubmit={() => {return}}
+      onSubmit={() => {
+        return
+      }}
     >
       {({ values, setFieldValue }) => {
         return (
@@ -73,22 +77,31 @@ const OfferEducational = ({
             />
             <section className={styles['educational-form-actions']}>
               <Link
-                className={cn(styles['educational-form-action'], "secondary-link")}
+                className={cn(
+                  styles['educational-form-action'],
+                  'secondary-link'
+                )}
                 to={computeOffersUrl({})}
               >
                 Annuler et quitter
               </Link>
               <SubmitButton
-                className={cn(styles['educational-form-action'], "primary-button")}
+                className={cn(
+                  styles['educational-form-action'],
+                  'primary-button'
+                )}
                 disabled={false}
                 isLoading={false}
-                onClick={() => {return}}
+                onClick={() => {
+                  return
+                }}
               >
                 Étape suivante
               </SubmitButton>
             </section>
           </div>
-        )}}
+        )
+      }}
     </Formik>
   )
 }

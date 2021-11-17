@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -90,16 +90,15 @@ const ThumbnailDialog = ({
 
   return (
     <DialogBox
-      extraClassNames={step === 1 ? 'thumbnail-dialog tnd-step1' : 'thumbnail-dialog'}
+      extraClassNames={
+        step === 1 ? 'thumbnail-dialog tnd-step1' : 'thumbnail-dialog'
+      }
       hasCloseButton
       labelledBy={DIALOG_LABEL_ID}
       onDismiss={closeModal}
     >
       <header>
-        <h1
-          className="tnd-header"
-          id={DIALOG_LABEL_ID}
-        >
+        <h1 className="tnd-header" id={DIALOG_LABEL_ID}>
           Ajouter une image
         </h1>
       </header>
@@ -128,10 +127,7 @@ const ThumbnailDialog = ({
               />
             )}
             <hr className="tnd-hr" />
-            <Advices
-              hidden={hidden}
-              setHidden={setHidden}
-            />
+            <Advices hidden={hidden} setHidden={setHidden} />
           </>
         )}
         {step === CREDIT_STEP && (
@@ -153,11 +149,7 @@ const ThumbnailDialog = ({
           />
         )}
         {step === PREVIEW_STEP && (
-          <Preview
-            preview={editedThumbnail}
-            setStep={setStep}
-            step={step}
-          />
+          <Preview preview={editedThumbnail} setStep={setStep} step={step} />
         )}
       </>
     </DialogBox>

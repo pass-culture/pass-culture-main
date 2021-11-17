@@ -34,7 +34,9 @@ test('j’ai accès aux informations de mon profil', async t => {
 test('je peux modifier mon profil avec de nouvelles données valides.', async t => {
   const { user } = await fetchSandbox('pro_14_home_profile', 'get_pro_user')
 
-  const modifyProfileButton = Selector('[data-testid="card-profile"] button').withText('Modifier')
+  const modifyProfileButton = Selector(
+    '[data-testid="card-profile"] button'
+  ).withText('Modifier')
   const submitProfileButton = Selector('button').withText('Enregistrer')
 
   const inputFirstname = Selector('input[name="first-name-input"]')

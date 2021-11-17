@@ -1,22 +1,21 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import React from 'react'
 
-
 export interface IProps {
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
-  label: string,
-  name: string,
-  SvgElement?: React.ComponentType | null,
-  checked?: boolean,
-  className?: string,
-  disabled?: boolean,
-  hiddenLabel?: boolean,
-  isInError?: boolean,
-  isLabelDisable?: boolean,
-  subLabel?: string | null,
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  label: string
+  name: string
+  SvgElement?: React.ComponentType | null
+  checked?: boolean
+  className?: string
+  disabled?: boolean
+  hiddenLabel?: boolean
+  isInError?: boolean
+  isLabelDisable?: boolean
+  subLabel?: string | null
 }
 
 const CheckboxInput = ({
@@ -53,9 +52,7 @@ const CheckboxInput = ({
   } = { disabled }
 
   return (
-    <label
-      className={labelClasses.join(' ')}
-    >
+    <label className={labelClasses.join(' ')}>
       <input
         checked={checked}
         className={inputClasses.join(' ')}
@@ -68,9 +65,7 @@ const CheckboxInput = ({
       <span className={textClasses.join(' ')}>
         {label}
         {subLabel && (
-          <span className={subLabelClasses.join(' ')}>
-            {subLabel}
-          </span>
+          <span className={subLabelClasses.join(' ')}>{subLabel}</span>
         )}
       </span>
     </label>

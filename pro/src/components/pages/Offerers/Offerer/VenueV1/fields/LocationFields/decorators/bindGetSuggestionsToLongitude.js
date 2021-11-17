@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import createDecorator from 'final-form-calculate'
 
@@ -13,7 +13,10 @@ const bindGetSuggestionsToLongitude = createDecorator({
       return {}
     }
 
-    const result = await getSuggestionsFromLatitudeAndLongitude(values.latitude, longitude)
+    const result = await getSuggestionsFromLatitudeAndLongitude(
+      values.latitude,
+      longitude
+    )
 
     if (result.error) {
       return {}

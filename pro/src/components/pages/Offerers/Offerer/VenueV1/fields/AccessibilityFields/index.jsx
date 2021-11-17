@@ -1,1 +1,4 @@
-export { default, autoFillNoDisabilityCompliantDecorator } from './AccessibilityFields'
+export {
+  default,
+  autoFillNoDisabilityCompliantDecorator,
+} from './AccessibilityFields'

@@ -33,7 +33,9 @@ const VenueProvidersManager = ({ venue }) => {
 
   const afterVenueProviderEdit = ({ editedVenueProvider }) => {
     const newVenueProviders = venueProviders.map(venueProvider =>
-      venueProvider.id === editedVenueProvider.id ? editedVenueProvider : venueProvider
+      venueProvider.id === editedVenueProvider.id
+        ? editedVenueProvider
+        : venueProvider
     )
     setVenueProviders(newVenueProviders)
   }
@@ -44,9 +46,7 @@ const VenueProvidersManager = ({ venue }) => {
 
   return (
     <div className="venue-providers-manager section">
-      <h2 className="main-list-title">
-        Importation d’offres
-      </h2>
+      <h2 className="main-list-title">Importation d’offres</h2>
 
       {isLoading ? (
         <Spinner />

@@ -1,4 +1,9 @@
-import { IMAGE_TYPE, MAX_IMAGE_SIZE, MIN_IMAGE_HEIGHT, MIN_IMAGE_WIDTH } from './_constants'
+import {
+  IMAGE_TYPE,
+  MAX_IMAGE_SIZE,
+  MIN_IMAGE_HEIGHT,
+  MIN_IMAGE_WIDTH,
+} from './_constants'
 
 const isNotAnImage = file => !IMAGE_TYPE.includes(file.type)
 const isTooBig = file => file.size > MAX_IMAGE_SIZE
@@ -31,7 +36,8 @@ export const constraints = [
   },
   {
     id: 'dimensions',
-    description: 'La taille de l’image doit être au format 6/9, avec une largeur minimale de 400px',
+    description:
+      'La taille de l’image doit être au format 6/9, avec une largeur minimale de 400px',
     asyncValidator: isOfPoorQuality,
   },
 ]

@@ -1,18 +1,24 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen, waitFor, waitForElementToBeRemoved } from "@testing-library/react"
-import { createBrowserHistory } from "history"
-import React from "react"
-import { Provider } from "react-redux"
-import { Router } from "react-router-dom"
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
+import { createBrowserHistory } from 'history'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { Router } from 'react-router-dom'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as usersSelectors from 'store/selectors/data/usersSelectors'
-import { configureTestStore } from "store/testUtils"
+import { configureTestStore } from 'store/testUtils'
 
-import VenueEditon from "../VenueEdition"
+import VenueEditon from '../VenueEdition'
 
 import { getContactInputs } from './helpers'
-
 
 jest.mock('../../fields/LocationFields/utils/fetchAddressData', () => ({
   fetchAddressData: jest.fn(),
@@ -25,14 +31,14 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 jest.mock('utils/config', () => ({
-  DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL: 'foo'
+  DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL: 'foo',
 }))
 
 const renderVenueEdition = async ({
   props,
   storeOverrides = {},
   url = '/structures/AE/lieux/AQ?modification',
-  waitFormRender = true
+  waitFormRender = true,
 }) => {
   const store = configureTestStore(storeOverrides)
   const history = createBrowserHistory()
@@ -47,7 +53,7 @@ const renderVenueEdition = async ({
   )
 
   screen.queryByText('Importation d’offres')
-  waitFormRender && await screen.findByTestId('venue-edition-form')
+  waitFormRender && (await screen.findByTestId('venue-edition-form'))
 
   const spinner = screen.queryByTestId('spinner')
   if (spinner) {
@@ -56,12 +62,11 @@ const renderVenueEdition = async ({
 
   return {
     history,
-    rtlRenderReturn
+    rtlRenderReturn,
   }
 }
 
 describe('test page : VenueEdition', () => {
-
   let push
   let props
 
@@ -75,29 +80,29 @@ describe('test page : VenueEdition', () => {
         mentalDisabilityCompliant: true,
         motorDisabilityCompliant: true,
         visualDisabilityCompliant: true,
-        address: "1 boulevard Poissonnière",
-        bookingEmail: "fake@example.com",
-        city: "Paris",
-        dateCreated: "2021-09-13T14:59:21.661969Z",
-        dateModifiedAtLastProvider: "2021-09-13T14:59:21.661955Z",
-        departementCode: "75",
-        id: "AQ",
+        address: '1 boulevard Poissonnière',
+        bookingEmail: 'fake@example.com',
+        city: 'Paris',
+        dateCreated: '2021-09-13T14:59:21.661969Z',
+        dateModifiedAtLastProvider: '2021-09-13T14:59:21.661955Z',
+        departementCode: '75',
+        id: 'AQ',
         isValidated: true,
         isVirtual: false,
         latitude: 48.91683,
         longitude: 2.43884,
-        managingOffererId: "AM",
+        managingOffererId: 'AM',
         nOffers: 7,
-        name: "Maison de la Brique",
-        postalCode: "75000",
-        publicName: "Maison de la Brique",
-        siret: "22222222311111",
-        venueTypeId: "DE",
+        name: 'Maison de la Brique',
+        postalCode: '75000',
+        publicName: 'Maison de la Brique',
+        siret: '22222222311111',
+        venueTypeId: 'DE',
         contact: {
           email: '',
           phoneNumber: '',
           website: '',
-        }
+        },
       },
       history: {
         location: {
@@ -134,7 +139,10 @@ describe('test page : VenueEdition', () => {
     }
 
     pcapi.loadProviders.mockResolvedValue([
-      { id: 'providerId', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' }
+      {
+        id: 'providerId',
+        name: 'TiteLive Stocks (Epagine / Place des libraires.com)',
+      },
     ])
   })
 
@@ -144,8 +152,12 @@ describe('test page : VenueEdition', () => {
       await renderVenueEdition({ props })
 
       // then
-      expect(screen.queryByRole('link', { name: 'Terminer' })).not.toBeInTheDocument()
-      expect(screen.queryByRole('button', { name: 'Valider' })).toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', { name: 'Terminer' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Valider' })
+      ).toBeInTheDocument()
     })
 
     it('should not render a Form when venue is virtual', async () => {
@@ -157,7 +169,9 @@ describe('test page : VenueEdition', () => {
 
       // then all form section shoudn't be in the document
       expect(screen.queryByText('Informations lieu')).not.toBeInTheDocument()
-      expect(screen.queryByText('Coordonnées bancaires du lieu')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Coordonnées bancaires du lieu')
+      ).not.toBeInTheDocument()
       expect(screen.queryByText('Adresse')).not.toBeInTheDocument()
       expect(screen.queryByText('Accessibilité')).not.toBeInTheDocument()
       expect(screen.queryByText('Contact')).not.toBeInTheDocument()
@@ -171,22 +185,30 @@ describe('test page : VenueEdition', () => {
           list: [
             { isActive: true, nameKey: 'ENFORCE_BANK_INFORMATION_WITH_SIRET' },
           ],
-        }
+        },
       }
 
       // when
       await renderVenueEdition({ props, storeOverrides })
 
       expect(screen.getByText('Informations lieu')).toBeInTheDocument()
-      expect(screen.getByText('Coordonnées bancaires du lieu')).toBeInTheDocument()
+      expect(
+        screen.getByText('Coordonnées bancaires du lieu')
+      ).toBeInTheDocument()
 
       expect(screen.getByLabelText('Nom du lieu :')).toBeDisabled()
       expect(screen.getByLabelText('E-mail :')).toBeDisabled()
       expect(screen.getByText('Offre numérique')).toBeInTheDocument()
       expect(screen.queryByText('SIRET :')).not.toBeInTheDocument()
-      expect(screen.queryByText("Nom d'usage du lieu :")).not.toBeInTheDocument()
-      expect(screen.queryByText('Commentaire (si pas de SIRET) :')).not.toBeInTheDocument()
-      expect(screen.queryByText('Label du Ministère de la Culture ou du CNC')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText("Nom d'usage du lieu :")
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Commentaire (si pas de SIRET) :')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Label du Ministère de la Culture ou du CNC')
+      ).not.toBeInTheDocument()
       expect(screen.queryByText('Description :')).not.toBeInTheDocument()
 
       expect(screen.queryByText('Adresse')).not.toBeInTheDocument()
@@ -211,20 +233,21 @@ describe('test page : VenueEdition', () => {
       })
     })
 
-    it('should display contact fields', async ()=> {
-      props= {
+    it('should display contact fields', async () => {
+      props = {
         ...props,
         venue: {
           ...props.venue,
           contact: {
-            email: "contact@venue.com",
-            website: "https://my@website.com",
-            phoneNumber: "+33102030405",
-          }
+            email: 'contact@venue.com',
+            website: 'https://my@website.com',
+            phoneNumber: '+33102030405',
+          },
         },
       }
       await renderVenueEdition({ props })
-      const { contactPhoneNumber, contactMail, contactUrl } = await getContactInputs()
+      const { contactPhoneNumber, contactMail, contactUrl } =
+        await getContactInputs()
 
       expect(contactPhoneNumber).toBeInTheDocument()
       expect(contactMail).toBeInTheDocument()
@@ -239,24 +262,29 @@ describe('test page : VenueEdition', () => {
       expect(contactMail).toHaveValue(props.venue.contact.email)
     })
 
-    it('should be able to edit contact fields', async ()=> {
-      props= {
+    it('should be able to edit contact fields', async () => {
+      props = {
         ...props,
         venue: {
           ...props.venue,
           contact: {
-            email: "contact@venue.com",
-            website: "https://my@website.com",
-            phoneNumber: "+33102030405",
-          }
+            email: 'contact@venue.com',
+            website: 'https://my@website.com',
+            phoneNumber: '+33102030405',
+          },
         },
       }
       await renderVenueEdition({ props })
-      const { contactPhoneNumber, contactMail, contactUrl, clearAndFillContact } = await getContactInputs()
+      const {
+        contactPhoneNumber,
+        contactMail,
+        contactUrl,
+        clearAndFillContact,
+      } = await getContactInputs()
       const contactInfos = {
-        email:"test@test.com",
-        website:"https://some-url-test.com",
-        phoneNumber: "0606060606",
+        email: 'test@test.com',
+        website: 'https://some-url-test.com',
+        phoneNumber: '0606060606',
       }
       clearAndFillContact(contactInfos)
 
@@ -268,7 +296,7 @@ describe('test page : VenueEdition', () => {
 
       const expectedRequestParams = {
         ...props.venue,
-        contact:  {
+        contact: {
           email: contactInfos.email,
           phoneNumber: contactInfos.phoneNumber,
           website: contactInfos.website,
@@ -287,8 +315,12 @@ describe('test page : VenueEdition', () => {
       await renderVenueEdition({ props })
 
       // then
-      expect(screen.queryByRole('link', { name: 'Terminer' })).not.toBeInTheDocument()
-      expect(screen.queryByRole('button', { name: 'Valider' })).toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', { name: 'Terminer' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Valider' })
+      ).toBeInTheDocument()
     })
 
     it('should be able to edit address field when venue has no SIRET', async () => {
@@ -308,8 +340,15 @@ describe('test page : VenueEdition', () => {
       }
 
       await renderVenueEdition({ props })
-      const addressInput = screen.getByLabelText('Numéro et voie :', { exact: false })
-      await act(async () => await fireEvent.change(addressInput, { target: { value: 'Addresse de test' } }))
+      const addressInput = screen.getByLabelText('Numéro et voie :', {
+        exact: false,
+      })
+      await act(
+        async () =>
+          await fireEvent.change(addressInput, {
+            target: { value: 'Addresse de test' },
+          })
+      )
 
       // then
       expect(screen.getByDisplayValue('Addresse de test')).toBeInTheDocument()
@@ -329,7 +368,11 @@ describe('test page : VenueEdition', () => {
           siret: '12345678901234',
         },
       }
-      const getApplyEmailBookingOnAllOffersLabel = () => screen.queryByText('Utiliser cet email pour me notifier des réservations de toutes les offres déjà postées dans ce lieu.', { exact: false })
+      const getApplyEmailBookingOnAllOffersLabel = () =>
+        screen.queryByText(
+          'Utiliser cet email pour me notifier des réservations de toutes les offres déjà postées dans ce lieu.',
+          { exact: false }
+        )
 
       // when
       await renderVenueEdition({ props })
@@ -337,9 +380,16 @@ describe('test page : VenueEdition', () => {
       // then
       expect(getApplyEmailBookingOnAllOffersLabel()).not.toBeInTheDocument()
 
-      const emailBookingField = screen.getByLabelText('E-mail :', { exact: false })
+      const emailBookingField = screen.getByLabelText('E-mail :', {
+        exact: false,
+      })
       // react-final-form interactions need to be wrap into a act()
-      await act(async () => await fireEvent.change(emailBookingField, { target: { value: 'newbookingemail@example.com' } }))
+      await act(
+        async () =>
+          await fireEvent.change(emailBookingField, {
+            target: { value: 'newbookingemail@example.com' },
+          })
+      )
       expect(getApplyEmailBookingOnAllOffersLabel()).toBeInTheDocument()
     })
 
@@ -352,7 +402,9 @@ describe('test page : VenueEdition', () => {
       // when
       await renderVenueEdition({ props })
 
-      fireEvent.change(await screen.findByLabelText("Téléphone :"), { target: { value: '0101010101' } })
+      fireEvent.change(await screen.findByLabelText('Téléphone :'), {
+        target: { value: '0101010101' },
+      })
       fireEvent.click(screen.queryByRole('button', { name: 'Valider' }))
 
       await waitFor(() => {
@@ -371,21 +423,22 @@ describe('test page : VenueEdition', () => {
       })
     })
 
-    it('should display disabled contact fields', async() => {
-      props= {
+    it('should display disabled contact fields', async () => {
+      props = {
         ...props,
         venue: {
           ...props.venue,
           contact: {
-            email: "contact@venue.com",
-            website: "https://my@website.com",
-            phoneNumber: "+33102030405",
-          }
+            email: 'contact@venue.com',
+            website: 'https://my@website.com',
+            phoneNumber: '+33102030405',
+          },
         },
       }
 
       await renderVenueEdition({ props })
-      const { contactPhoneNumber, contactMail, contactUrl } = await getContactInputs()
+      const { contactPhoneNumber, contactMail, contactUrl } =
+        await getContactInputs()
 
       expect(contactPhoneNumber).toBeInTheDocument()
       expect(contactMail).toBeInTheDocument()
@@ -406,8 +459,12 @@ describe('test page : VenueEdition', () => {
 
       // then
       // todo: check submit button state
-      expect(screen.queryByRole('link', { name: 'Terminer' })).toBeInTheDocument()
-      expect(screen.queryByRole('button', { name: 'Valider' })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', { name: 'Terminer' })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Valider' })
+      ).not.toBeInTheDocument()
     })
 
     describe('create new offer link', () => {
@@ -423,7 +480,10 @@ describe('test page : VenueEdition', () => {
           id: 'CM',
         }
 
-        const { history } = await renderVenueEdition({ props, url: '/structures/APEQ/lieux/CM' })
+        const { history } = await renderVenueEdition({
+          props,
+          url: '/structures/APEQ/lieux/CM',
+        })
         const createOfferLink = screen.getByText('Créer une offre')
 
         // when

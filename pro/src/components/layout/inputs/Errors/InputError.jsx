@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -14,17 +14,9 @@ const InputError = ({ children, name }) => {
       }
     : {}
   return (
-    <span
-      className="it-errors"
-      {...inputErrorExtraProps}
-    >
-      <Icon
-        alt="Une erreur est survenue"
-        svg="ico-notification-error-red"
-      />
-      <pre>
-        {children}
-      </pre>
+    <span className="it-errors" {...inputErrorExtraProps}>
+      <Icon alt="Une erreur est survenue" svg="ico-notification-error-red" />
+      <pre>{children}</pre>
     </span>
   )
 }
@@ -34,7 +26,10 @@ InputError.defaultProps = {
 }
 
 InputError.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
   name: PropTypes.string,
 }
 

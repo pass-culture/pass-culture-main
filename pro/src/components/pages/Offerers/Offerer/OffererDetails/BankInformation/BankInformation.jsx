@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
@@ -26,10 +26,7 @@ const BankInformation = ({ offerer }) => (
           rel="noopener noreferrer"
           target="_blank"
         >
-          <Icon
-            alt=""
-            svg="ico-external-site"
-          />
+          <Icon alt="" svg="ico-external-site" />
           Modifier
         </a>
       )}
@@ -38,23 +35,16 @@ const BankInformation = ({ offerer }) => (
     {offerer.areBankInformationProvided ? (
       <Fragment>
         <p className="bi-subtitle">
-          Les coordonnées bancaires ci-dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :
+          Les coordonnées bancaires ci-dessous seront attribuées à tous les
+          lieux sans coordonnées bancaires propres :
         </p>
         <div className="op-detail">
-          <span>
-            {'IBAN : '}
-          </span>
-          <span>
-            {offerer.iban}
-          </span>
+          <span>{'IBAN : '}</span>
+          <span>{offerer.iban}</span>
         </div>
         <div className="op-detail">
-          <span>
-            {'BIC : '}
-          </span>
-          <span>
-            {offerer.bic}
-          </span>
+          <span>{'BIC : '}</span>
+          <span>{offerer.bic}</span>
         </div>
       </Fragment>
     ) : (

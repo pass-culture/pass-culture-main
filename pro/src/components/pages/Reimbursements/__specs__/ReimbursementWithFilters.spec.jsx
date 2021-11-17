@@ -1,5 +1,12 @@
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen, waitFor, waitForElementToBeRemoved, within, } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryHistory } from 'history'
 import React from 'react'
@@ -14,7 +21,9 @@ import Reimbursements from '../ReimbursementsWithFilters'
 
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
-  getToday: jest.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  getToday: jest
+    .fn()
+    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
@@ -78,7 +87,8 @@ const renderReimbursements = (store, props) => {
     }
 
     return {
-      toHaveInitialValues: async () => await checkValues('allVenues', '15/11/2020', '15/12/2020'),
+      toHaveInitialValues: async () =>
+        await checkValues('allVenues', '15/11/2020', '15/12/2020'),
       toHaveValues: async (venue, perdiodStart, periodEnd) =>
         await checkValues(venue, perdiodStart, periodEnd),
     }
@@ -149,9 +159,7 @@ describe('reimbursementsWithFilters', () => {
         users: [{ publicName: 'Damien', isAdmin: false }],
       },
       features: {
-        list: [
-          { isActive: true, nameKey: 'SHOW_INVOICES_ON_PRO_PORTAL' },
-        ],
+        list: [{ isActive: true, nameKey: 'SHOW_INVOICES_ON_PRO_PORTAL' }],
       },
     })
 
@@ -167,7 +175,8 @@ describe('reimbursementsWithFilters', () => {
   it('should display the right informations and UI', async () => {
     // given
     const { getElementsOnLoadingComplete } = renderReimbursements(store, props)
-    const { filters, buttons, expectFilters } = await getElementsOnLoadingComplete()
+    const { filters, buttons, expectFilters } =
+      await getElementsOnLoadingComplete()
 
     // then
     expect(filters.venue).toBeInTheDocument()
@@ -193,7 +202,8 @@ describe('reimbursementsWithFilters', () => {
   it('should disable buttons if one or both of the period dates are not filled', async () => {
     // given
     const { getElementsOnLoadingComplete } = renderReimbursements(store, props)
-    const { buttons, expectFilters, setPeriodFilters } = await getElementsOnLoadingComplete()
+    const { buttons, expectFilters, setPeriodFilters } =
+      await getElementsOnLoadingComplete()
 
     // when
     setPeriodFilters('', '')
@@ -243,12 +253,8 @@ describe('reimbursementsWithFilters', () => {
   it('should reset filters values when clicking on the button', async () => {
     // given
     const { getElementsOnLoadingComplete } = renderReimbursements(store, props)
-    const {
-      filters,
-      buttons,
-      expectFilters,
-      setPeriodFilters,
-    } = await getElementsOnLoadingComplete()
+    const { filters, buttons, expectFilters, setPeriodFilters } =
+      await getElementsOnLoadingComplete()
 
     // then
     expect(buttons.resetFilters).toBeDisabled()
@@ -259,7 +265,11 @@ describe('reimbursementsWithFilters', () => {
     userEvent.selectOptions(filters.venue, [options[1].value])
 
     // then
-    await expectFilters.toHaveValues(options[1].value, '12/11/1998', '12/12/1999')
+    await expectFilters.toHaveValues(
+      options[1].value,
+      '12/11/1998',
+      '12/12/1999'
+    )
     expect(buttons.resetFilters).toBeEnabled()
 
     // when
@@ -277,14 +287,15 @@ describe('reimbursementsWithFilters', () => {
     // then
     const expectedFirstVirtualOption = `${BASE_VENUES[1].offererName} - Offre numérique`
     const expectedSecondOption = BASE_VENUES[0].publicName
-    expect(options[0].textContent).toStrictEqual('Tous les lieux')
+    expect(options[0].textContent).toBe('Tous les lieux')
     expect(options[1].textContent).toStrictEqual(expectedFirstVirtualOption)
     expect(options[2].textContent).toStrictEqual(expectedSecondOption)
   })
 
   it('should call the right URL and filters when clicking display', async () => {
     // given
-    const { getElementsOnLoadingComplete, mockedHistoryPush } = renderReimbursements(store, props)
+    const { getElementsOnLoadingComplete, mockedHistoryPush } =
+      renderReimbursements(store, props)
     const { buttons, filters } = await getElementsOnLoadingComplete()
 
     // when
@@ -319,6 +330,8 @@ describe('reimbursementsWithFilters', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     // then
-    expect(screen.getByText('Aucun remboursement à afficher')).toBeInTheDocument()
+    expect(
+      screen.getByText('Aucun remboursement à afficher')
+    ).toBeInTheDocument()
   })
 })

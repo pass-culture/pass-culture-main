@@ -4,7 +4,10 @@ export const HTTP_STATUS = {
   FORBIDDEN: 403,
   SERVICE_UNAVAILABLE: 503,
 }
-const NOT_JSON_BODY_RESPONSE_STATUS = [HTTP_STATUS.NO_CONTENT, HTTP_STATUS.SERVICE_UNAVAILABLE]
+const NOT_JSON_BODY_RESPONSE_STATUS = [
+  HTTP_STATUS.NO_CONTENT,
+  HTTP_STATUS.SERVICE_UNAVAILABLE,
+]
 const GET_HTTP_METHOD = 'GET'
 const DELETE_HTTP_METHOD = 'DELETE'
 
@@ -33,7 +36,9 @@ const fetchWithErrorHandler = async (path, options) => {
     if (response.status === HTTP_STATUS.SERVICE_UNAVAILABLE) {
       window.location.href = URL_FOR_MAINTENANCE
     }
-    return Promise.reject(results ? { errors: results, status: response.status } : null)
+    return Promise.reject(
+      results ? { errors: results, status: response.status } : null
+    )
   }
   return Promise.resolve(results)
 }
@@ -54,7 +59,10 @@ export const client = {
     }
   },
   get: async (path, withCredentials = true) => {
-    return await fetchWithErrorHandler(path, buildOptions(GET_HTTP_METHOD, withCredentials))
+    return await fetchWithErrorHandler(
+      path,
+      buildOptions(GET_HTTP_METHOD, withCredentials)
+    )
   },
   post: async (path, data, withCredentials = true) => {
     const options = {
@@ -87,6 +95,9 @@ export const client = {
     return await fetchWithErrorHandler(path, options)
   },
   delete: async (path, withCredentials = true) => {
-    return await fetchWithErrorHandler(path, buildOptions(DELETE_HTTP_METHOD, withCredentials))
+    return await fetchWithErrorHandler(
+      path,
+      buildOptions(DELETE_HTTP_METHOD, withCredentials)
+    )
   },
 }

@@ -9,12 +9,15 @@ export const bulkFakeApiCreateOrEditStock = ({ ...stockIds }) =>
   jest.spyOn(pcapi, 'bulkCreateOrEditStock').mockResolvedValue([stockIds])
 
 export const getFakeApiUserValidatedOfferersNames = ({ ...offerers }) =>
-  jest.spyOn(pcapi, 'getUserValidatedOfferersNames').mockResolvedValue([offerers])
+  jest
+    .spyOn(pcapi, 'getUserValidatedOfferersNames')
+    .mockResolvedValue([offerers])
 
 export const getFakeApiVenuesForOfferer = ({ ...venues }) =>
   jest.spyOn(pcapi, 'getVenuesForOfferer').mockResolvedValue([venues])
 
-export const loadFakeApiOffer = offer => jest.spyOn(pcapi, 'loadOffer').mockResolvedValue(offer)
+export const loadFakeApiOffer = offer =>
+  jest.spyOn(pcapi, 'loadOffer').mockResolvedValue(offer)
 
 export const loadFakeApiStocks = stocks =>
   jest.spyOn(pcapi, 'loadStocks').mockResolvedValue({ stocks })
@@ -650,7 +653,8 @@ export const loadFakeApiCategories = () => {
         id: 'CARTE_MUSEE',
         categoryId: 'MUSEE',
         matchingType: 'ThingType.MUSEES_PATRIMOINE_ABO',
-        proLabel: 'Cartes musées, patrimoine, architecture, arts visuels ou contemporains',
+        proLabel:
+          'Cartes musées, patrimoine, architecture, arts visuels ou contemporains',
         appLabel: 'Cartes musées, patrimoine...',
         searchGroup: 'Visites, expositions',
         isEvent: false,

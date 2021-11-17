@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within storybook"
-*/
+ * @debt directory "Gaël: this file should be migrated within storybook"
+ */
 
 import React from 'react'
 
@@ -29,17 +29,12 @@ const StyleguideBanners = () => {
   return (
     <div>
       <div className="flex-block">
-        <Banner
-          href="#"
-          linkTitle="Lien vers une autre page"
-        >
+        <Banner href="#" linkTitle="Lien vers une autre page">
           Bannière de type 'Attention'
         </Banner>
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {attentionBanner}
-            </code>
+            <code>{attentionBanner}</code>
           </pre>
         </div>
       </div>
@@ -53,9 +48,7 @@ const StyleguideBanners = () => {
         </Banner>
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {informationBanner}
-            </code>
+            <code>{informationBanner}</code>
           </pre>
         </div>
       </div>

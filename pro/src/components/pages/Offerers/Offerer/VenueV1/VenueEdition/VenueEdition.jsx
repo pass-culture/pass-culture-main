@@ -35,7 +35,6 @@ import VenueType from '../ValueObjects/VenueType'
 
 import VenueProvidersManager from './VenueProvidersManager'
 
-
 const VenueEdition = ({
   handleInitialRequest,
   handleSubmitRequest,
@@ -55,7 +54,9 @@ const VenueEdition = ({
 }) => {
   const [isRequestPending, setIsRequestPending] = useState(false)
 
-  const isBankInformationWithSiretActive = useActiveFeature('ENFORCE_BANK_INFORMATION_WITH_SIRET')
+  const isBankInformationWithSiretActive = useActiveFeature(
+    'ENFORCE_BANK_INFORMATION_WITH_SIRET'
+  )
 
   // TODO check that it's execute only once when initialize
   useEffect(() => handleInitialRequest(), [handleInitialRequest])
@@ -70,15 +71,16 @@ const VenueEdition = ({
     setIsRequestPending(false)
   }
 
-  const handleFormSuccess = (formResolver, hasDelayedUpdates) => (_state, action) => {
-    const { id: venueId } = venue
+  const handleFormSuccess =
+    (formResolver, hasDelayedUpdates) => (_state, action) => {
+      const { id: venueId } = venue
 
-    handleSubmitRequestSuccess(action, { hasDelayedUpdates })
-    formResolver()
-    trackModifyVenue(venueId)
-    query.changeToReadOnly(null)
-    setIsRequestPending(false)
-  }
+      handleSubmitRequestSuccess(action, { hasDelayedUpdates })
+      formResolver()
+      trackModifyVenue(venueId)
+      query.changeToReadOnly(null)
+      setIsRequestPending(false)
+    }
 
   const handleOnFormSubmit = formValues => {
     setIsRequestPending(true)
@@ -101,7 +103,11 @@ const VenueEdition = ({
     const { readOnly } = query.context({
       id: venueId,
     })
-    const { siret: initialSiret, isVirtual: initialIsVirtual, withdrawalDetails: initialWithdrawalDetails } = venue || {}
+    const {
+      siret: initialSiret,
+      isVirtual: initialIsVirtual,
+      withdrawalDetails: initialWithdrawalDetails,
+    } = venue || {}
     const canSubmit = getCanSubmit(formProps)
     const { form, handleSubmit, values } = formProps
     const {
@@ -116,7 +122,8 @@ const VenueEdition = ({
 
     const isDirtyFieldBookingEmail = bookingEmail !== venue.bookingEmail
     const siretValidOnModification = initialSiret !== null
-    const fieldReadOnlyBecauseFrozenFormSiret = !readOnly && siretValidOnModification
+    const fieldReadOnlyBecauseFrozenFormSiret =
+      !readOnly && siretValidOnModification
 
     return (
       <form
@@ -125,7 +132,9 @@ const VenueEdition = ({
         onSubmit={handleSubmit}
       >
         <IdentifierFields
-          fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
+          fieldReadOnlyBecauseFrozenFormSiret={
+            fieldReadOnlyBecauseFrozenFormSiret
+          }
           formSiret={formSiret}
           initialSiret={initialSiret}
           isDirtyFieldBookingEmail={isDirtyFieldBookingEmail}
@@ -142,18 +151,21 @@ const VenueEdition = ({
             readOnly={readOnly}
           />
         )}
-        <BankInformation
-          offerer={offerer}
-          venue={venue}
-        />
+        <BankInformation offerer={offerer} venue={venue} />
         {!initialIsVirtual && (
           <>
             <LocationFields
-              fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
+              fieldReadOnlyBecauseFrozenFormSiret={
+                fieldReadOnlyBecauseFrozenFormSiret
+              }
               form={form}
               formIsLocationFrozen={formIsLocationFrozen}
-              formLatitude={formLatitude === '' ? FRANCE_POSITION.latitude : formLatitude}
-              formLongitude={formLongitude === '' ? FRANCE_POSITION.longitude : formLongitude}
+              formLatitude={
+                formLatitude === '' ? FRANCE_POSITION.latitude : formLatitude
+              }
+              formLongitude={
+                formLongitude === '' ? FRANCE_POSITION.longitude : formLongitude
+              }
               readOnly={readOnly}
             />
             <AccessibilityFields
@@ -187,7 +199,7 @@ const VenueEdition = ({
     )
   }
 
-  const getInitialValues = (venue) => {
+  const getInitialValues = venue => {
     let initialValues = { ...venue }
     const accessibilityFieldNames = [
       'audioDisabilityCompliant',
@@ -227,7 +239,11 @@ const VenueEdition = ({
     id: venueId,
   })
 
-  const { id: initialId, isVirtual: initialIsVirtual, name: initialName } = venue || {}
+  const {
+    id: initialId,
+    isVirtual: initialIsVirtual,
+    name: initialName,
+  } = venue || {}
 
   const pageTitle = readOnly ? 'Détails de votre lieu' : 'Modifier votre lieu'
   const actionLink = !!initialId && (
@@ -236,9 +252,7 @@ const VenueEdition = ({
       to={`/offres/creation?lieu=${initialId}&structure=${offererId}`}
     >
       <AddOfferSvg />
-      <span>
-        Créer une offre
-      </span>
+      <span>Créer une offre</span>
     </Link>
   )
 

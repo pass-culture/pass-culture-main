@@ -21,9 +21,11 @@ const PreFilters = ({
   hasResult,
   isTableLoading,
   isDownloadingCSV,
-  wereBookingsRequested
+  wereBookingsRequested,
 }) => {
-  const [selectedPreFilters, setSelectedPreFilters] = useState({ ...appliedPreFilters })
+  const [selectedPreFilters, setSelectedPreFilters] = useState({
+    ...appliedPreFilters,
+  })
   const [venues, setVenues] = useState([])
   const [isLocalLoading, setIsLocalLoading] = useState(false)
 
@@ -37,7 +39,10 @@ const PreFilters = ({
     fetchVenues()
   }, [setIsLocalLoading, setVenues])
 
-  useEffect(() => setSelectedPreFilters({ ...appliedPreFilters }), [appliedPreFilters])
+  useEffect(
+    () => setSelectedPreFilters({ ...appliedPreFilters }),
+    [appliedPreFilters]
+  )
 
   const updateSelectedFilters = useCallback(updatedFilter => {
     setSelectedPreFilters(currentFilters => ({
@@ -55,7 +60,8 @@ const PreFilters = ({
     [applyPreFilters, selectedPreFilters]
   )
 
-  const isRefreshRequired = !isEqual(selectedPreFilters, appliedPreFilters) && wereBookingsRequested
+  const isRefreshRequired =
+    !isEqual(selectedPreFilters, appliedPreFilters) && wereBookingsRequested
   const downloadBookingsFilters = {
     page: 1,
     venueId: selectedPreFilters.offerVenueId,
@@ -84,7 +90,9 @@ const PreFilters = ({
             updateFilters={updateSelectedFilters}
           />
           <FilterByBookingPeriod
-            selectedBookingBeginningDate={selectedPreFilters.bookingBeginningDate}
+            selectedBookingBeginningDate={
+              selectedPreFilters.bookingBeginningDate
+            }
             selectedBookingEndingDate={selectedPreFilters.bookingEndingDate}
             updateFilters={updateSelectedFilters}
           />
@@ -115,8 +123,8 @@ const PreFilters = ({
           className="pf-refresh-message"
           data-testid="refresh-required-message"
         >
-          Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour actualiser votre
-          recherche.
+          Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour
+          actualiser votre recherche.
         </p>
       )}
     </>
@@ -127,7 +135,10 @@ PreFilters.propTypes = {
   appliedPreFilters: PropTypes.shape({
     bookingBeginningDate: PropTypes.instanceOf(Date).isRequired,
     bookingEndingDate: PropTypes.instanceOf(Date).isRequired,
-    offerEventDate: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string]),
+    offerEventDate: PropTypes.oneOfType([
+      PropTypes.instanceOf(Date),
+      PropTypes.string,
+    ]),
     offerVenueId: PropTypes.string.isRequired,
   }).isRequired,
   applyPreFilters: PropTypes.func.isRequired,

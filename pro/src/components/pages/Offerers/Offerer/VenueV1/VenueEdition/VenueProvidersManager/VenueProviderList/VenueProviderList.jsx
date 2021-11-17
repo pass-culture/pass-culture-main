@@ -3,14 +3,17 @@ import React from 'react'
 
 import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 
-import AllocineProviderItem from "../AllocineProviderItem/AllocineProviderItem"
+import AllocineProviderItem from '../AllocineProviderItem/AllocineProviderItem'
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 
-
-const VenueProviderList = ({ afterVenueProviderEdit, venue, venueProviders }) => {
+const VenueProviderList = ({
+  afterVenueProviderEdit,
+  venue,
+  venueProviders,
+}) => {
   return (
     <ul className="provider-list">
-      {venueProviders.map(venueProvider => (
+      {venueProviders.map(venueProvider =>
         isAllocineProvider(venueProvider.provider) ? (
           <AllocineProviderItem
             afterVenueProviderEdit={afterVenueProviderEdit}
@@ -25,13 +28,13 @@ const VenueProviderList = ({ afterVenueProviderEdit, venue, venueProviders }) =>
             venueProvider={venueProvider}
           />
         )
-      ))}
+      )}
     </ul>
   )
 }
 
 VenueProviderList.defaultProps = {
-  venueProviders: []
+  venueProviders: [],
 }
 
 VenueProviderList.propTypes = {

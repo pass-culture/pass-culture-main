@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import * as PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState, useMemo } from 'react'
@@ -47,8 +47,10 @@ const BookingsRecap = ({ location, showNotification }) => {
       }
 
       let filteredBookingsResponse
-      try  {
-        filteredBookingsResponse = await pcapi.loadFilteredBookingsRecap(bookingsFilters)
+      try {
+        filteredBookingsResponse = await pcapi.loadFilteredBookingsRecap(
+          bookingsFilters
+        )
       } catch {
         filteredBookingsResponse = {
           page: 0,
@@ -75,21 +77,30 @@ const BookingsRecap = ({ location, showNotification }) => {
 
       setIsTableLoading(false)
       if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
-        showNotification('information', 'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.')
+        showNotification(
+          'information',
+          'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
+        )
       }
     },
     [showNotification]
   )
 
-  const downloadBookingsCSV = useCallback(async filters => {
-    setIsDownloadingCSV(true)
-    try {
-      await downloadCSVFile(filters)
-    } catch (e) {
-      showNotification('error', "Une erreur s'est produite. Veuillez réessayer ultérieurement.")
-    }
-    setIsDownloadingCSV(false)
-  }, [showNotification])
+  const downloadBookingsCSV = useCallback(
+    async filters => {
+      setIsDownloadingCSV(true)
+      try {
+        await downloadCSVFile(filters)
+      } catch (e) {
+        showNotification(
+          'error',
+          "Une erreur s'est produite. Veuillez réessayer ultérieurement."
+        )
+      }
+      setIsDownloadingCSV(false)
+    },
+    [showNotification]
+  )
 
   useEffect(() => {
     if (location.state?.statuses.length > 0) {
@@ -97,7 +108,8 @@ const BookingsRecap = ({ location, showNotification }) => {
         bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
         bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
         offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
-        offerVenueId: location.state?.venueId || DEFAULT_PRE_FILTERS.offerVenueId,
+        offerVenueId:
+          location.state?.venueId || DEFAULT_PRE_FILTERS.offerVenueId,
       })
     }
   }, [location.state, loadBookingsRecap])
@@ -105,8 +117,10 @@ const BookingsRecap = ({ location, showNotification }) => {
   const werePreFiltersCustomized = useMemo(() => {
     return (
       appliedPreFilters.offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId ||
-      appliedPreFilters.bookingBeginningDate !== DEFAULT_PRE_FILTERS.bookingBeginningDate ||
-      appliedPreFilters.bookingEndingDate !== DEFAULT_PRE_FILTERS.bookingEndingDate ||
+      appliedPreFilters.bookingBeginningDate !==
+        DEFAULT_PRE_FILTERS.bookingBeginningDate ||
+      appliedPreFilters.bookingEndingDate !==
+        DEFAULT_PRE_FILTERS.bookingEndingDate ||
       appliedPreFilters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate
     )
   }, [
@@ -125,9 +139,7 @@ const BookingsRecap = ({ location, showNotification }) => {
     <div className="bookings-page">
       <PageTitle title="Vos réservations" />
       <Titles title="Réservations" />
-      <h2 className="br-title">
-        Affichage des réservations
-      </h2>
+      <h2 className="br-title">Affichage des réservations</h2>
       {werePreFiltersCustomized && (
         <button
           className="tertiary-button reset-filters-link"

@@ -1,6 +1,6 @@
 /*
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 import React from 'react'

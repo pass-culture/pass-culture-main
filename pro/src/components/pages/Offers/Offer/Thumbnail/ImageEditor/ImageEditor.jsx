@@ -26,7 +26,12 @@ export const ImageEditor = ({ image }, ref) => {
     canvasTools.drawArea({
       width: 0,
       color: CROP_BORDER_COLOR,
-      coordinates: [CROP_BORDER_WIDTH, CROP_BORDER_HEIGHT, CANVAS_WIDTH, CANVAS_HEIGHT],
+      coordinates: [
+        CROP_BORDER_WIDTH,
+        CROP_BORDER_HEIGHT,
+        CANVAS_WIDTH,
+        CANVAS_HEIGHT,
+      ],
     })
   }, [])
   const onScaleChange = useCallback(event => {
@@ -50,13 +55,9 @@ export const ImageEditor = ({ image }, ref) => {
           width={CANVAS_WIDTH}
         />
       </div>
-      <label htmlFor="scale">
-        Zoom
-      </label>
+      <label htmlFor="scale">Zoom</label>
       <div className="tnr-scale">
-        <span>
-          min
-        </span>
+        <span>min</span>
         <input
           id="scale"
           max="4"
@@ -66,9 +67,7 @@ export const ImageEditor = ({ image }, ref) => {
           type="range"
           value={scale}
         />
-        <span>
-          max
-        </span>
+        <span>max</span>
       </div>
     </>
   )
@@ -76,5 +75,6 @@ export const ImageEditor = ({ image }, ref) => {
 export default forwardRef(ImageEditor)
 
 ImageEditor.propTypes = {
-  image: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(File)]).isRequired,
+  image: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(File)])
+    .isRequired,
 }

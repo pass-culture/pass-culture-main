@@ -37,14 +37,21 @@ export const DEFAULT_SEARCH_FILTERS = {
   periodEndingDate: ALL_EVENT_PERIODS,
 }
 
-export const ALL_VENUES_OPTION = { displayName: 'Tous les lieux', id: ALL_VENUES }
-export const ALL_CATEGORIES_OPTION = { displayName: 'Toutes', id: ALL_CATEGORIES }
+export const ALL_VENUES_OPTION = {
+  displayName: 'Tous les lieux',
+  id: ALL_VENUES,
+}
+export const ALL_CATEGORIES_OPTION = {
+  displayName: 'Toutes',
+  id: ALL_CATEGORIES,
+}
 const CREATION_MODES_OPTIONS = [
   { displayName: 'Tous les modes', id: ALL_CREATION_MODES },
   { displayName: 'Manuelle', id: 'manual' },
   { displayName: 'Importée', id: 'imported' },
 ]
-export const [DEFAULT_CREATION_MODE, ...CREATION_MODES_FILTERS] = CREATION_MODES_OPTIONS
+export const [DEFAULT_CREATION_MODE, ...CREATION_MODES_FILTERS] =
+  CREATION_MODES_OPTIONS
 export const ADMINS_DISABLED_FILTERS_MESSAGE =
   'Sélectionnez une structure et/ou un lieu pour activer les filtres'
 

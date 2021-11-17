@@ -1,9 +1,12 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
-import { getSiretInformations, validateSiretSize } from '../selectSiretInformations'
+import {
+  getSiretInformations,
+  validateSiretSize,
+} from '../selectSiretInformations'
 
 describe('src | components | pages | Venue | siret | selectSiretInformations', () => {
   beforeEach(() => {
@@ -83,7 +86,10 @@ describe('src | components | pages | Venue | siret | selectSiretInformations', (
       it('should return ’SIRET invalide’', async () => {
         // given
         const siret = '12345678901234'
-        fetch.mockResponseOnce(JSON.stringify({ message: 'no results found' }), { status: 404 })
+        fetch.mockResponseOnce(
+          JSON.stringify({ message: 'no results found' }),
+          { status: 404 }
+        )
 
         // when
         const errorMessage = await getSiretInformations(siret)
@@ -93,7 +99,9 @@ describe('src | components | pages | Venue | siret | selectSiretInformations', (
         expect(fetch.mock.calls[0][0]).toStrictEqual(
           `https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${siret}`
         )
-        expect(errorMessage).toStrictEqual({ values: { error: 'SIRET invalide' } })
+        expect(errorMessage).toStrictEqual({
+          values: { error: 'SIRET invalide' },
+        })
       })
     })
 

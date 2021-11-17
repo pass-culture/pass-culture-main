@@ -33,7 +33,9 @@ export const App = props => {
     const publicRouteList = [...routes, ...routesWithMain].filter(
       route => route.meta && route.meta.public
     )
-    const isPublicRoute = !!publicRouteList.find(route => matchPath(currentPathname, route))
+    const isPublicRoute = !!publicRouteList.find(route =>
+      matchPath(currentPathname, route)
+    )
 
     if (!currentUser) {
       setIsBusy(true)
@@ -43,7 +45,9 @@ export const App = props => {
         },
         handleFail: () => {
           if (!isPublicRoute) {
-            const fromUrl = encodeURIComponent(`${location.pathname}${location.search}`)
+            const fromUrl = encodeURIComponent(
+              `${location.pathname}${location.search}`
+            )
             history.push(`/connexion?de=${fromUrl}`)
           }
           setIsBusy(false)
@@ -75,8 +79,10 @@ export const App = props => {
 }
 
 App.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.shape()), PropTypes.shape()])
-    .isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.shape()),
+    PropTypes.shape(),
+  ]).isRequired,
   featuresAreInitialized: PropTypes.bool.isRequired,
   getCurrentUser: PropTypes.func.isRequired,
   isMaintenanceActivated: PropTypes.bool.isRequired,

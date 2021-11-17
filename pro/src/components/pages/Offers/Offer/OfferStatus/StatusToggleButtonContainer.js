@@ -1,6 +1,6 @@
 /*
-* @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
-*/
+ * @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
+ */
 
 import { connect } from 'react-redux'
 
@@ -12,7 +12,9 @@ const mapDispatchToProps = dispatch => ({
     dispatch(
       showNotification({
         type: 'success',
-        text: `L’offre a bien été ${hasBeenActivated ? 'activée' : 'désactivée'}.`,
+        text: `L’offre a bien été ${
+          hasBeenActivated ? 'activée' : 'désactivée'
+        }.`,
       })
     ),
   notifyError: () =>

@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import '@testing-library/jest-dom'
 import { fireEvent, screen, waitFor } from '@testing-library/react'
@@ -41,9 +41,12 @@ describe('when the user is on the preview step', () => {
     // Given
     renderThumbnail()
     const file = createImageFile()
-    fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-      target: { files: [file] },
-    })
+    fireEvent.change(
+      screen.getByLabelText('Importer une image depuis l’ordinateur'),
+      {
+        target: { files: [file] },
+      }
+    )
     fireEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
 
     // When
@@ -51,21 +54,30 @@ describe('when the user is on the preview step', () => {
 
     // Then
     expect(
-      screen.getByText('Prévisualisation de votre image dans l’application pass Culture')
+      screen.getByText(
+        'Prévisualisation de votre image dans l’application pass Culture'
+      )
     ).toBeInTheDocument()
     expect(screen.getByText('Page d’accueil')).toBeInTheDocument()
     expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-    expect(screen.getByText('Retour', { selector: 'button' })).toBeInTheDocument()
-    expect(screen.getByText('Valider', { selector: 'button' })).toBeInTheDocument()
+    expect(
+      screen.getByText('Retour', { selector: 'button' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Valider', { selector: 'button' })
+    ).toBeInTheDocument()
   })
 
   it('should return to the crop step', async () => {
     // Given
     renderThumbnail()
     const file = createImageFile()
-    fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-      target: { files: [file] },
-    })
+    fireEvent.change(
+      screen.getByLabelText('Importer une image depuis l’ordinateur'),
+      {
+        target: { files: [file] },
+      }
+    )
     fireEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
     fireEvent.click(screen.getByText('Prévisualiser', { selector: 'button' }))
 
@@ -80,12 +92,18 @@ describe('when the user is on the preview step', () => {
     // Given
     const closeModal = jest.fn()
     const setThumbnailInfo = jest.fn()
-    renderThumbnail({ setIsModalOpened: closeModal, setThumbnailInfo: setThumbnailInfo })
+    renderThumbnail({
+      setIsModalOpened: closeModal,
+      setThumbnailInfo: setThumbnailInfo,
+    })
 
     const file = createImageFile()
-    fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-      target: { files: [file] },
-    })
+    fireEvent.change(
+      screen.getByLabelText('Importer une image depuis l’ordinateur'),
+      {
+        target: { files: [file] },
+      }
+    )
 
     fireEvent.change(await screen.findByPlaceholderText('Photographe...'), {
       target: { value: 'Mon crédit' },
@@ -100,7 +118,9 @@ describe('when the user is on the preview step', () => {
     // Then
     await waitFor(() => {
       expect(
-        screen.queryByText('Prévisualisation de votre image dans l’application pass Culture')
+        screen.queryByText(
+          'Prévisualisation de votre image dans l’application pass Culture'
+        )
       ).not.toBeInTheDocument()
     })
     expect(closeModal).toHaveBeenCalledWith(false)
@@ -121,7 +141,10 @@ describe('when the user is on the preview step', () => {
     // Given
     const closeModal = jest.fn()
     const setThumbnailInfo = jest.fn()
-    renderThumbnail({ setIsModalOpened: closeModal, setThumbnailInfo: setThumbnailInfo })
+    renderThumbnail({
+      setIsModalOpened: closeModal,
+      setThumbnailInfo: setThumbnailInfo,
+    })
     pcapi.validateDistantImage.mockResolvedValue({ errors: [], image: '' })
     fireEvent.click(screen.getByText('Utiliser une URL'))
     fireEvent.change(screen.getByLabelText('URL de l’image'), {
@@ -144,7 +167,9 @@ describe('when the user is on the preview step', () => {
     // Then
     await waitFor(() => {
       expect(
-        screen.queryByText('Prévisualisation de votre image dans l’application pass Culture')
+        screen.queryByText(
+          'Prévisualisation de votre image dans l’application pass Culture'
+        )
       ).not.toBeInTheDocument()
     })
     expect(closeModal).toHaveBeenCalledWith(false)

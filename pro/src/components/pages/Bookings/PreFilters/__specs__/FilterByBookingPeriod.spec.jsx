@@ -10,7 +10,9 @@ import PreFilters from '../PreFilters'
 
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
-  getToday: jest.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  getToday: jest
+    .fn()
+    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
@@ -34,7 +36,9 @@ describe('filter bookings by bookings period', () => {
     render(<PreFilters {...props} />)
 
     // Then
-    expect(await screen.findByDisplayValue('15/11/2020')).toBeInTheDocument()
+    await expect(
+      screen.findByDisplayValue('15/11/2020')
+    ).resolves.toBeInTheDocument()
   })
 
   it('should select today as period ending date by default', async () => {
@@ -42,7 +46,9 @@ describe('filter bookings by bookings period', () => {
     render(<PreFilters {...props} />)
 
     // Then
-    expect(await screen.findByDisplayValue('15/12/2020')).toBeInTheDocument()
+    await expect(
+      screen.findByDisplayValue('15/12/2020')
+    ).resolves.toBeInTheDocument()
   })
 
   it('should allow to select period ending date before today', async () => {
@@ -55,7 +61,9 @@ describe('filter bookings by bookings period', () => {
     fireEvent.click(screen.getByText('14'))
 
     // Then
-    expect(await screen.findByDisplayValue('14/12/2020')).toBeInTheDocument()
+    await expect(
+      screen.findByDisplayValue('14/12/2020')
+    ).resolves.toBeInTheDocument()
   })
 
   it('should not allow to select period ending date after today', async () => {
@@ -95,7 +103,9 @@ describe('filter bookings by bookings period', () => {
     fireEvent.click(screen.getByText('14'))
 
     // Then
-    expect(await screen.findByDisplayValue('14/11/2020')).toBeInTheDocument()
+    await expect(
+      screen.findByDisplayValue('14/11/2020')
+    ).resolves.toBeInTheDocument()
   })
 
   it('should not allow to select period beginning date after ending date', async () => {

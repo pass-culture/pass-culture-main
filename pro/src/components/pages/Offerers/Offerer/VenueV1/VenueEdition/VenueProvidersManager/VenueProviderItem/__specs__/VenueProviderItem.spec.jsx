@@ -78,12 +78,17 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
   it('should render provider name and logo', async () => {
     // when
     renderVenueProvidersManager(props)
-    const venueProviderItemTitle = await screen.findByText(titeliveProviderDisplayName)
+    const venueProviderItemTitle = await screen.findByText(
+      titeliveProviderDisplayName
+    )
 
     // then
     expect(venueProviderItemTitle).toBeInTheDocument()
     const providerLogo = screen.getAllByRole('img')[0]
-    expect(providerLogo).toHaveAttribute('src', expect.stringContaining('logo-titeLive.svg'))
+    expect(providerLogo).toHaveAttribute(
+      'src',
+      expect.stringContaining('logo-titeLive.svg')
+    )
   })
 
   it('should display import message when venue provider is not synced yet', async () => {
@@ -99,7 +104,9 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       'Importation en cours. Cette étape peut durer plusieurs dizaines de minutes. Vous pouvez fermer votre navigateur et revenir plus tard.'
     )
     expect(importMessage).toBeInTheDocument()
-    const numberOfOffersLabel = screen.queryByText(`${titeliveVenueProvider.nOffers} offres`)
+    const numberOfOffersLabel = screen.queryByText(
+      `${titeliveVenueProvider.nOffers} offres`
+    )
     expect(numberOfOffersLabel).not.toBeInTheDocument()
   })
 
@@ -122,7 +129,9 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
     await screen.findByText(titeliveProviderDisplayName)
 
     // then
-    const numberOfOffersLabel = screen.getByText(`${titeliveVenueProvider.nOffers} offres`)
+    const numberOfOffersLabel = screen.getByText(
+      `${titeliveVenueProvider.nOffers} offres`
+    )
     expect(numberOfOffersLabel).toBeInTheDocument()
   })
 
@@ -150,6 +159,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
 
     // then
     /*eslint-disable-next-line no-irregular-whitespace*/
-    expect(lastSyncDate.textContent).toMatchInlineSnapshot(`" 01/01/2018 à 01:00"`)
+    expect(lastSyncDate.textContent).toMatchInlineSnapshot(
+      `" 01/01/2018 à 01:00"`
+    )
   })
 })

@@ -1,7 +1,7 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of redux-saga-data"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -34,10 +34,7 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
     <header className="menu-v2">
       <nav>
         <div className="nav-brand">
-          <Logo
-            className="nav-item"
-            isUserAdmin={isUserAdmin}
-          />
+          <Logo className="nav-item" isUserAdmin={isUserAdmin} />
         </div>
 
         <div className="nav-menu">
@@ -50,38 +47,22 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
             Accueil
           </NavLink>
 
-          <NavLink
-            className="nav-item"
-            role="menuitem"
-            to="/guichet"
-          >
+          <NavLink className="nav-item" role="menuitem" to="/guichet">
             <CounterSvg aria-hidden />
             Guichet
           </NavLink>
 
-          <NavLink
-            className="nav-item"
-            role="menuitem"
-            to="/offres"
-          >
+          <NavLink className="nav-item" role="menuitem" to="/offres">
             <OffersSvg aria-hidden />
             Offres
           </NavLink>
 
-          <NavLink
-            className="nav-item"
-            role="menuitem"
-            to="/reservations"
-          >
+          <NavLink className="nav-item" role="menuitem" to="/reservations">
             <BookingsSvg aria-hidden />
             Réservations
           </NavLink>
 
-          <NavLink
-            className="nav-item"
-            role="menuitem"
-            to="/remboursements"
-          >
+          <NavLink className="nav-item" role="menuitem" to="/remboursements">
             <RefundsSvg aria-hidden />
             Remboursements
           </NavLink>

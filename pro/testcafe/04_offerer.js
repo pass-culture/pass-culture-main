@@ -4,7 +4,10 @@ import { getPathname } from './helpers/location'
 import { HOME_URL, navigateToNewOffererAs } from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
-import { getSirenRequestMockAs, getSirenRequestMockWithNoResult } from './helpers/sirenes'
+import {
+  getSirenRequestMockAs,
+  getSirenRequestMockWithNoResult,
+} from './helpers/sirenes'
 
 fixture('Structure,')
 

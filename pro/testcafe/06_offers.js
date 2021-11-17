@@ -3,7 +3,11 @@ import { Selector } from 'testcafe'
 
 import { isElementInViewport } from './helpers/custom_assertions'
 import { getPathname, goBack } from './helpers/location'
-import { navigateToNewOfferAs, navigateToOfferAs, navigateToOffersAs } from './helpers/navigations'
+import {
+  navigateToNewOfferAs,
+  navigateToOfferAs,
+  navigateToOffersAs,
+} from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 
@@ -18,28 +22,47 @@ const venueOption = Selector('.offer-form [name="venueId"] option')
 const categoryOption = Selector('.offer-form [name="categoryId"] option')
 const durationMinutesInput = Selector('.offer-form [name="durationMinutes"]')
 const descriptionInput = Selector('.offer-form [name="description"]')
-const isDuo = Selector('.offer-form [name="offerOption"]').withAttribute('value', 'DUO')
-const isNotDuo = Selector('.offer-form [name="offerOption"]').withAttribute('value', 'NONE')
-const noDisabilityCompliantCheckbox = '.offer-form [name="noDisabilityCompliant"]'
+const isDuo = Selector('.offer-form [name="offerOption"]').withAttribute(
+  'value',
+  'DUO'
+)
+const isNotDuo = Selector('.offer-form [name="offerOption"]').withAttribute(
+  'value',
+  'NONE'
+)
+const noDisabilityCompliantCheckbox =
+  '.offer-form [name="noDisabilityCompliant"]'
 const thumbnailButton = Selector('.of-placeholder')
-const importFromUrlButton = Selector('.thumbnail-dialog .bc-step:not(.active) a')
-const importFromUrlInput = Selector('.thumbnail-dialog .tnf-form input[name="url"]')
+const importFromUrlButton = Selector(
+  '.thumbnail-dialog .bc-step:not(.active) a'
+)
+const importFromUrlInput = Selector(
+  '.thumbnail-dialog .tnf-form input[name="url"]'
+)
 const importFromUrlSubmitButton = Selector('.thumbnail-dialog .tnf-url-button')
-const creditSubmitButton = Selector('.thumbnail-dialog .tnd-actions .primary-button')
-const previewSubmitButton = Selector('.thumbnail-dialog .tnd-actions .primary-button')
-const validateThumbnailButton = Selector('.thumbnail-dialog .tnd-actions .primary-button')
+const creditSubmitButton = Selector(
+  '.thumbnail-dialog .tnd-actions .primary-button'
+)
+const previewSubmitButton = Selector(
+  '.thumbnail-dialog .tnd-actions .primary-button'
+)
+const validateThumbnailButton = Selector(
+  '.thumbnail-dialog .tnd-actions .primary-button'
+)
 const submitButton = Selector('.actions-section .primary-button')
 const navBrandLogoItem = Selector('.nav-brand .logo')
-const exitOfferCreationMessage = Selector('.exit-offer-creation-dialog p').withText(
-  'Voulez-vous quitter la création d’offre ?'
+const exitOfferCreationMessage = Selector(
+  '.exit-offer-creation-dialog p'
+).withText('Voulez-vous quitter la création d’offre ?')
+const exitOfferCreationDialogConfirmButton = Selector(
+  '.exit-offer-creation-dialog .primary-button'
 )
-const exitOfferCreationDialogConfirmButton = Selector('.exit-offer-creation-dialog .primary-button')
 const exitOfferCreationDialogCancelButton = Selector(
   '.exit-offer-creation-dialog .secondary-button'
 )
-const exitOfferCreationDialogQuestion = Selector('.exit-offer-creation-dialog p').withText(
-  'Voulez-vous quitter la création d’offre ?'
-)
+const exitOfferCreationDialogQuestion = Selector(
+  '.exit-offer-creation-dialog p'
+).withText('Voulez-vous quitter la création d’offre ?')
 
 fixture('En étant sur la page des offres,')
 
@@ -109,7 +132,9 @@ test('je peux créer une offre avec des sous-types', async t => {
   const musicTypeInput = Selector('.offer-form [name="musicType"]')
   const musicTypeOption = Selector('.offer-form [name="musicType"] option')
   const musicSubTypeInput = Selector('.offer-form [name="musicSubType"]')
-  const musicSubTypeOption = Selector('.offer-form [name="musicSubType"] option')
+  const musicSubTypeOption = Selector(
+    '.offer-form [name="musicSubType"] option'
+  )
   const eventMusicType = 'Hip-Hop/Rap'
   const eventMusicSubType = 'Rap Alternatif'
   await navigateToNewOfferAs(user, offerer, venue)(t)
@@ -130,7 +155,10 @@ test('je peux créer une offre avec des sous-types', async t => {
     .click(venueOption.withText(venue.name))
     .click(noDisabilityCompliantCheckbox)
     .typeText(durationMinutesInput, '01:30')
-    .typeText(descriptionInput, 'Venez re découvrir PNL en accoustique, sans auto-tune')
+    .typeText(
+      descriptionInput,
+      'Venez re découvrir PNL en accoustique, sans auto-tune'
+    )
     .click(submitButton)
     .expect(getPathname())
     .match(/\/offres\/([A-Z0-9]+)\/stocks$/)
@@ -189,7 +217,9 @@ test("je peux modifier la thumbnail d'une offre", async t => {
     .click(submitButton)
   await t.eval(() => location.reload(true))
   const updatedThumbnail = await offerThumbnail()
-  await t.expect(updatedThumbnail.attributes['src'] === previousThumbnailSrc).notOk()
+  await t
+    .expect(updatedThumbnail.attributes['src'] === previousThumbnailSrc)
+    .notOk()
 })
 
 test("Je suis scrollé sur l'élément incorrect du formulaire d'édition d'offre", async t => {
@@ -379,7 +409,9 @@ test("Je suis redirigé sur la liste des offres si je clique sur retour à parti
 
   const addThingStockButton = Selector('button').withText('Ajouter un stock')
   const priceInput = Selector('input[name="price"]')
-  const validateAndCreateOffer = Selector('button').withText('Valider et créer l’offre')
+  const validateAndCreateOffer = Selector('button').withText(
+    'Valider et créer l’offre'
+  )
 
   await t
     .click(addThingStockButton)
@@ -415,7 +447,9 @@ test('Je suis redirigé sur la liste des offres si je clique sur retour à parti
 
   const addThingStockButton = Selector('button').withText('Ajouter un stock')
   const priceInput = Selector('input[name="price"]')
-  const validateAndCreateOffer = Selector('button').withText('Valider et créer l’offre')
+  const validateAndCreateOffer = Selector('button').withText(
+    'Valider et créer l’offre'
+  )
   const createANewOffer = Selector('a').withText('Créer une nouvelle offre')
 
   await t
@@ -428,7 +462,10 @@ test('Je suis redirigé sur la liste des offres si je clique sur retour à parti
 
   await goBack()
 
-  await t.expect(exitOfferCreationMessage.exists).ok().click(exitOfferCreationDialogConfirmButton)
+  await t
+    .expect(exitOfferCreationMessage.exists)
+    .ok()
+    .click(exitOfferCreationDialogConfirmButton)
 
   await t.expect(getPathname()).eql('/offres')
 })

@@ -31,7 +31,10 @@ const DeleteStockDialog = ({
       .catch(() => notifyDeletionError())
   }, [notifyDeletionError, notifyDeletionSuccess, onDelete, stockId])
 
-  const abortStockDeletion = useCallback(() => setIsDeleting(false), [setIsDeleting])
+  const abortStockDeletion = useCallback(
+    () => setIsDeleting(false),
+    [setIsDeleting]
+  )
 
   return (
     <DialogBox
@@ -42,17 +45,14 @@ const DeleteStockDialog = ({
       onDismiss={abortStockDeletion}
     >
       <DeletionIcon />
-      <h1 id={DIALOG_LABEL_ID}>
-        Voulez-vous supprimer ce stock ?
-      </h1>
+      <h1 id={DIALOG_LABEL_ID}>Voulez-vous supprimer ce stock ?</h1>
       <p>
         {'Ce stock ne sera plus disponible à la réservation et '}
-        <strong>
-          entraînera l’annulation des réservations en cours !
-        </strong>
+        <strong>entraînera l’annulation des réservations en cours !</strong>
       </p>
       <p>
-        L’ensemble des utilisateurs concernés sera automatiquement averti par e-mail.
+        L’ensemble des utilisateurs concernés sera automatiquement averti par
+        e-mail.
       </p>
       <div className="action-buttons">
         <button

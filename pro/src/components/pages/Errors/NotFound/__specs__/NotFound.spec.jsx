@@ -1,6 +1,6 @@
 /*
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { mount } from 'enzyme'
 import React from 'react'
@@ -19,7 +19,7 @@ describe('src | components | pages | NotFound', () => {
 
     // then
     const title = wrapper.find({ children: 'Oh non !' })
-    const subtitle = wrapper.find({ children: "Cette page n’existe pas." })
+    const subtitle = wrapper.find({ children: 'Cette page n’existe pas.' })
     const redirectionLink = wrapper.find('a[href="/accueil"]')
 
     expect(title).toHaveLength(1)

@@ -1,13 +1,16 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 
 import Icon from 'components/layout/Icon'
 
-import { ADMINS_DISABLED_FILTERS_MESSAGE, OFFER_STATUS_LIST } from '../_constants'
+import {
+  ADMINS_DISABLED_FILTERS_MESSAGE,
+  OFFER_STATUS_LIST,
+} from '../_constants'
 import { OffersStatusFiltersModal } from '../OffersStatusFiltersModal/OffersStatusFiltersModal'
 
 const StatusFiltersButton = ({
@@ -35,7 +38,11 @@ const StatusFiltersButton = ({
         <Icon
           alt="Afficher ou masquer le filtre par statut"
           className={isFilteredByStatus ? 'active-status-filter' : undefined}
-          svg={isFilteredByStatus ? 'ico-filter-status-active' : 'ico-filter-status-red'}
+          svg={
+            isFilteredByStatus
+              ? 'ico-filter-status-active'
+              : 'ico-filter-status-red'
+          }
         />
       </button>
       <OffersStatusFiltersModal

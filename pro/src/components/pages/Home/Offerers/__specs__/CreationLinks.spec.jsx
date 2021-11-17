@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import { act, render, screen, within } from '@testing-library/react'
@@ -71,7 +71,7 @@ describe('creationLinks', () => {
       offererName: 'Bar des amis',
       publicName: null,
     }
-    
+
     physicalVenueWithPublicName = {
       id: 'test_venue_id_3',
       isVirtual: false,
@@ -104,7 +104,11 @@ describe('creationLinks', () => {
         name: 'Bar des amis',
         postalCode: '97300',
         siren: '111111111',
-        managedVenues: [virtualVenue, physicalVenue, physicalVenueWithPublicName],
+        managedVenues: [
+          virtualVenue,
+          physicalVenue,
+          physicalVenueWithPublicName,
+        ],
       },
       {
         address: 'RUE DE NIEUPORT',
@@ -153,9 +157,7 @@ describe('creationLinks', () => {
         {
           ...baseOfferers[1],
           hasDigitalVenueAtLeastOneOffer: false,
-          managedVenues: [
-            virtualVenue,
-          ],
+          managedVenues: [virtualVenue],
         },
       ]
       pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
@@ -163,7 +165,9 @@ describe('creationLinks', () => {
 
       // Then
       expect(
-        screen.getByText('Avant de créer votre première offre physique vous devez avoir un lieu')
+        screen.getByText(
+          'Avant de créer votre première offre physique vous devez avoir un lieu'
+        )
       ).toBeInTheDocument()
 
       expect(
@@ -187,10 +191,7 @@ describe('creationLinks', () => {
         {
           ...baseOfferers[0],
           hasDigitalVenueAtLeastOneOffer: false,
-          managedVenues: [
-            physicalVenue,
-            virtualVenue,
-          ],
+          managedVenues: [physicalVenue, virtualVenue],
         },
       ]
       pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
@@ -198,7 +199,9 @@ describe('creationLinks', () => {
 
       // Then
       expect(
-        screen.queryByText('Avant de créer votre première offre physique vous devez avoir un lieu')
+        screen.queryByText(
+          'Avant de créer votre première offre physique vous devez avoir un lieu'
+        )
       ).not.toBeInTheDocument()
 
       expect(
@@ -206,7 +209,7 @@ describe('creationLinks', () => {
           name: 'Créer une offre',
         })
       ).toBeInTheDocument()
-      
+
       expect(
         screen.getByRole('link', {
           name: 'Ajouter un lieu',
@@ -229,9 +232,11 @@ describe('creationLinks', () => {
 
       // Then
       expect(
-        screen.queryByText('Avant de créer votre première offre physique vous devez avoir un lieu')
+        screen.queryByText(
+          'Avant de créer votre première offre physique vous devez avoir un lieu'
+        )
       ).not.toBeInTheDocument()
-      
+
       expect(
         screen.queryByRole('link', {
           name: 'Créer une offre',
@@ -260,7 +265,9 @@ describe('creationLinks', () => {
 
       // Then
       expect(
-        screen.queryByText('Avant de créer votre première offre physique vous devez avoir un lieu')
+        screen.queryByText(
+          'Avant de créer votre première offre physique vous devez avoir un lieu'
+        )
       ).not.toBeInTheDocument()
       expect(
         screen.queryByRole('link', {
@@ -289,23 +296,27 @@ describe('creationLinks', () => {
           'Votre précédente structure a été supprimée. Pour plus d’informations sur la suppression et vos données, veuillez contacter notre support.'
         )
       ).toBeInTheDocument()
-      
+
       expect(
         screen.getByRole('link', { name: 'Ajouter une nouvelle structure' })
       ).toBeInTheDocument()
 
       const offererBanner = screen.getByTestId('offerers-creation-links-card')
-      
+
       expect(
-        within(offererBanner).getByRole('link', { name: 'Contacter le support' })
+        within(offererBanner).getByRole('link', {
+          name: 'Contacter le support',
+        })
       ).toBeInTheDocument()
     })
 
     it('should not display venue creation links', () => {
       expect(
-        screen.queryByText('Avant de créer votre première offre physique vous devez avoir un lieu')
+        screen.queryByText(
+          'Avant de créer votre première offre physique vous devez avoir un lieu'
+        )
       ).not.toBeInTheDocument()
-      
+
       expect(
         screen.queryByRole('link', {
           name: 'Créer une offre',

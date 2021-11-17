@@ -1,7 +1,7 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -37,10 +37,7 @@ class TableWrapper extends React.Component {
     } = this.props
     return (
       <div className="bookings-table-wrapper">
-        <table
-          className="bookings-table"
-          {...getTableProps()}
-        >
+        <table className="bookings-table" {...getTableProps()}>
           <TableHead headerGroups={headerGroups} />
           <TableBody
             page={page}

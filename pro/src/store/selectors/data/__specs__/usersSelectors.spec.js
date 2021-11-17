@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ */
 
 import { selectCurrentUser, selectIsUserAdmin } from '../usersSelectors'
 
@@ -18,7 +18,7 @@ describe('users selectors', () => {
       const result = selectIsUserAdmin(state)
 
       // then
-      expect(result).toStrictEqual(false)
+      expect(result).toBe(false)
     })
 
     it('should return true when state contain an admin user', () => {
@@ -38,7 +38,7 @@ describe('users selectors', () => {
       const result = selectIsUserAdmin(state)
 
       // then
-      expect(result).toStrictEqual(true)
+      expect(result).toBe(true)
     })
 
     it('should return false when state contain no admin user', () => {
@@ -58,7 +58,7 @@ describe('users selectors', () => {
       const result = selectIsUserAdmin(state)
 
       // then
-      expect(result).toStrictEqual(false)
+      expect(result).toBe(false)
     })
   })
 

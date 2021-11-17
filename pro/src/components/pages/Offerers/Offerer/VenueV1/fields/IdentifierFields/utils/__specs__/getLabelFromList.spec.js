@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import getLabelFromList from '../getLabelFromList'
 
@@ -23,7 +23,7 @@ describe('getLabelFromList', () => {
     const result = getLabelFromList(list, searchingId)
 
     // then
-    expect(result).toStrictEqual('-')
+    expect(result).toBe('-')
   })
   it('should return the matching label when id matches', () => {
     // give
@@ -43,6 +43,6 @@ describe('getLabelFromList', () => {
     const result = getLabelFromList(list, searchingId)
 
     // then
-    expect(result).toStrictEqual("Centre d'art et d'essais")
+    expect(result).toBe("Centre d'art et d'essais")
   })
 })

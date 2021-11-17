@@ -1,8 +1,8 @@
 /*
-* @debt deprecated "Gaël: deprecated usage of redux-saga-data"
-* @debt standard "Gaël: prefer hooks for routers (https://reactrouter.com/web/api/Hooks)"
-* @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
-*/
+ * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
+ * @debt standard "Gaël: prefer hooks for routers (https://reactrouter.com/web/api/Hooks)"
+ * @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
+ */
 
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -11,7 +11,10 @@ import { requestData } from 'redux-saga-data'
 
 import { featuresInitialized } from 'store/features/selectors'
 import { loadFeatures } from 'store/features/thunks'
-import { selectCurrentUser, resolveCurrentUser } from 'store/selectors/data/usersSelectors'
+import {
+  selectCurrentUser,
+  resolveCurrentUser,
+} from 'store/selectors/data/usersSelectors'
 import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
 
 import { App } from './App'
@@ -42,4 +45,7 @@ export function mapDispatchToProps(dispatch) {
   }
 }
 
-export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(App)
+export default compose(
+  withRouter,
+  connect(mapStateToProps, mapDispatchToProps)
+)(App)

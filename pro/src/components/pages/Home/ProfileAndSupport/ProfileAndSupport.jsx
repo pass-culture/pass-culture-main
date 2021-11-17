@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useState, useCallback } from 'react'
@@ -31,10 +31,14 @@ export const formatPhoneNumber = phoneNumber => {
     const r = /(\+?[0-9]+)([0-9])([0-9]{8})/g
     const parts = formatedNumber.split(r).slice(1, -1)
 
-    let internationalPrefix, areaPrefix, number, isReginalNumber, isInternationalNumber
+    let internationalPrefix,
+      areaPrefix,
+      number,
+      isReginalNumber,
+      isInternationalNumber
     let isValid = parts.length === 3
     if (isValid) {
-      [internationalPrefix, areaPrefix, number] = parts
+      ;[internationalPrefix, areaPrefix, number] = parts
       isReginalNumber = internationalPrefix === '0'
       isInternationalNumber = /\+[0-9]+/.test(internationalPrefix)
       isValid = isReginalNumber || isInternationalNumber
@@ -63,10 +67,7 @@ const Profile = ({ user }) => {
 
   return (
     <>
-      <h2
-        className="h-section-title"
-        id={STEP_PROFILE_HASH}
-      >
+      <h2 className="h-section-title" id={STEP_PROFILE_HASH}>
         Profil et aide
       </h2>
 
@@ -77,9 +78,7 @@ const Profile = ({ user }) => {
         >
           <div className="h-card-inner">
             <div className="h-card-header-row">
-              <h3 className="h-card-title">
-                Profil
-              </h3>
+              <h3 className="h-card-title">Profil</h3>
               <button
                 className="tertiary-button"
                 onClick={showProfileInfoModal}
@@ -92,33 +91,19 @@ const Profile = ({ user }) => {
             <div className="h-card-content">
               <ul className="h-description-list">
                 <li className="h-dl-row">
-                  <span className="h-dl-title">
-                    Nom :
-                  </span>
-                  <span className="h-dl-description">
-                    {user.lastName}
-                  </span>
+                  <span className="h-dl-title">Nom :</span>
+                  <span className="h-dl-description">{user.lastName}</span>
                 </li>
                 <li className="h-dl-row">
-                  <span className="h-dl-title">
-                    Prénom :
-                  </span>
-                  <span className="h-dl-description">
-                    {user.firstName}
-                  </span>
+                  <span className="h-dl-title">Prénom :</span>
+                  <span className="h-dl-description">{user.firstName}</span>
                 </li>
                 <li className="h-dl-row">
-                  <span className="h-dl-title">
-                    E-mail :
-                  </span>
-                  <span className="h-dl-description">
-                    {user.email}
-                  </span>
+                  <span className="h-dl-title">E-mail :</span>
+                  <span className="h-dl-description">{user.email}</span>
                 </li>
                 <li className="h-dl-row">
-                  <span className="h-dl-title">
-                    Téléphone :
-                  </span>
+                  <span className="h-dl-title">Téléphone :</span>
                   <span className="h-dl-description">
                     {formatPhoneNumber(user.phoneNumber)}
                   </span>

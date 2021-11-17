@@ -35,20 +35,36 @@ export const autoFillNoDisabilityCompliantDecorator = createDecorator(
     field: 'noDisabilityCompliant',
     updates: {
       noDisabilityCompliant: checkNoDisabilityCompliant,
-      audioDisabilityCompliant: setNoDisabilityCompliance('audioDisabilityCompliant'),
-      mentalDisabilityCompliant: setNoDisabilityCompliance('mentalDisabilityCompliant'),
-      motorDisabilityCompliant: setNoDisabilityCompliance('motorDisabilityCompliant'),
-      visualDisabilityCompliant: setNoDisabilityCompliance('visualDisabilityCompliant'),
+      audioDisabilityCompliant: setNoDisabilityCompliance(
+        'audioDisabilityCompliant'
+      ),
+      mentalDisabilityCompliant: setNoDisabilityCompliance(
+        'mentalDisabilityCompliant'
+      ),
+      motorDisabilityCompliant: setNoDisabilityCompliance(
+        'motorDisabilityCompliant'
+      ),
+      visualDisabilityCompliant: setNoDisabilityCompliance(
+        'visualDisabilityCompliant'
+      ),
     },
   },
   {
     field: /(audio|mental|motor|visual)DisabilityCompliant/,
     updates: {
       noDisabilityCompliant: checkNoDisabilityCompliant,
-      audioDisabilityCompliant: initializeEmptyValue('audioDisabilityCompliant'),
-      mentalDisabilityCompliant: initializeEmptyValue('mentalDisabilityCompliant'),
-      motorDisabilityCompliant: initializeEmptyValue('motorDisabilityCompliant'),
-      visualDisabilityCompliant: initializeEmptyValue('visualDisabilityCompliant'),
+      audioDisabilityCompliant: initializeEmptyValue(
+        'audioDisabilityCompliant'
+      ),
+      mentalDisabilityCompliant: initializeEmptyValue(
+        'mentalDisabilityCompliant'
+      ),
+      motorDisabilityCompliant: initializeEmptyValue(
+        'motorDisabilityCompliant'
+      ),
+      visualDisabilityCompliant: initializeEmptyValue(
+        'visualDisabilityCompliant'
+      ),
     },
   },
   {
@@ -81,16 +97,13 @@ const AccessibilityFields = ({ formValues, readOnly, venue }) => {
       <div className="main-list-title title-actions-container">
         <h2 className="main-list-title-text">
           Accessibilité
-          {!readOnly && (
-            <span className="field-asterisk">
-              *
-            </span>
-          )}
+          {!readOnly && <span className="field-asterisk">*</span>}
         </h2>
       </div>
       <p className="bi-subtitle">
-        Les modalités d’accessibilité s’appliqueront par défaut à la création de vos offres. Vous
-        pourrez modifier cette information à l’échelle de l’offre.
+        Les modalités d’accessibilité s’appliqueront par défaut à la création de
+        vos offres. Vous pourrez modifier cette information à l’échelle de
+        l’offre.
       </p>
 
       <p className="vp-subtitle">

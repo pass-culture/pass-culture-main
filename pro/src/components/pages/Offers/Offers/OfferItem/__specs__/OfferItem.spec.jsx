@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import '@testing-library/jest-dom'
 import { within } from '@testing-library/dom'
@@ -68,7 +68,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props)
 
         // then
-        expect(screen.getByAltText("Miniature d'offre")).toHaveAttribute('src', eventOffer.thumbUrl)
+        expect(screen.getByAltText("Miniature d'offre")).toHaveAttribute(
+          'src',
+          eventOffer.thumbUrl
+        )
       })
 
       it('should render an image with an empty url when offer does not have a thumb url', () => {
@@ -133,8 +136,14 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // then
         const offerTitle = screen.queryByText(props.offer.name, 'a')
         expect(offerTitle).toBeInTheDocument()
-        expect(offerTitle).toHaveAttribute('href', `/offres/${props.offer.id}/edition`)
-        expect(offerTitle).toHaveAttribute('title', "Afficher les détails de l'offre")
+        expect(offerTitle).toHaveAttribute(
+          'href',
+          `/offres/${props.offer.id}/edition`
+        )
+        expect(offerTitle).toHaveAttribute(
+          'title',
+          "Afficher les détails de l'offre"
+        )
       })
     })
 
@@ -164,7 +173,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
       renderOfferItem(props)
 
       // then
-      expect(screen.queryByText(props.offer.venue.publicName)).toBeInTheDocument()
+      expect(
+        screen.queryByText(props.offer.venue.publicName)
+      ).toBeInTheDocument()
     })
 
     it('should display the offerer name with "- Offre numérique" when venue is virtual', () => {
@@ -180,7 +191,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
       renderOfferItem(props)
 
       // then
-      expect(screen.queryByText('Gaumont - Offre numérique')).toBeInTheDocument()
+      expect(
+        screen.queryByText('Gaumont - Offre numérique')
+      ).toBeInTheDocument()
     })
 
     it('should display the isbn when given', () => {
@@ -231,7 +244,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should be "illimité" when at least one stock is unlimited', () => {
         // given
-        props.offer.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 'unlimited' }]
+        props.offer.stocks = [
+          { remainingQuantity: 0 },
+          { remainingQuantity: 'unlimited' },
+        ]
 
         // when
         renderOfferItem(props)
@@ -258,7 +274,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should display the beginning date time when only one date', () => {
         // given
-        props.offer.stocks = [{ beginningDatetime: '2021-05-27T20:00:00Z', remainingQuantity: 10 }]
+        props.offer.stocks = [
+          { beginningDatetime: '2021-05-27T20:00:00Z', remainingQuantity: 10 },
+        ]
 
         // when
         renderOfferItem(props)
@@ -269,19 +287,27 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should not display a warning when no stocks are sold out', () => {
         // given
-        props.offer.stocks = [{ remainingQuantity: 'unlimited' }, { remainingQuantity: 13 }]
+        props.offer.stocks = [
+          { remainingQuantity: 'unlimited' },
+          { remainingQuantity: 13 },
+        ]
 
         // when
         renderOfferItem(props)
 
         // then
         const numberOfStocks = screen.getByText('2 dates').closest('span')
-        expect(within(numberOfStocks).queryByRole('img')).not.toBeInTheDocument()
+        expect(
+          within(numberOfStocks).queryByRole('img')
+        ).not.toBeInTheDocument()
       })
 
       it('should not display a warning when all stocks are sold out', () => {
         // given
-        props.offer.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 0 }]
+        props.offer.stocks = [
+          { remainingQuantity: 0 },
+          { remainingQuantity: 0 },
+        ]
         eventOffer.status = 'SOLD_OUT'
 
         // when
@@ -289,14 +315,19 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         // then
         const numberOfStocks = screen.getByText('2 dates').closest('span')
-        expect(within(numberOfStocks).queryByRole('img')).not.toBeInTheDocument()
+        expect(
+          within(numberOfStocks).queryByRole('img')
+        ).not.toBeInTheDocument()
       })
 
       it('should display a warning with number of stocks sold out when at least one stock is sold out', () => {
         // given
         props.offer.stocks = [
           { remainingQuantity: 0, hasBookingLimitDatetimePassed: false },
-          { remainingQuantity: 'unlimited', hasBookingLimitDatetimePassed: false },
+          {
+            remainingQuantity: 'unlimited',
+            hasBookingLimitDatetimePassed: false,
+          },
         ]
 
         // when
@@ -308,7 +339,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
           'src',
           expect.stringContaining('ico-warning-stocks')
         )
-        expect(within(numberOfStocks).queryByText('1 date épuisée')).toBeInTheDocument()
+        expect(
+          within(numberOfStocks).queryByText('1 date épuisée')
+        ).toBeInTheDocument()
       })
 
       it('should pluralize number of stocks sold out when at least two stocks are sold out', () => {
@@ -324,7 +357,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         // then
         const numberOfStocks = screen.getByText('3 dates').closest('span')
-        expect(within(numberOfStocks).queryByText('2 dates épuisées')).toBeInTheDocument()
+        expect(
+          within(numberOfStocks).queryByText('2 dates épuisées')
+        ).toBeInTheDocument()
       })
     })
 
@@ -336,7 +371,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
       renderOfferItem(props)
 
       // Then
-      expect(screen.getByText('My little offer').closest('tr')).toHaveClass('inactive')
+      expect(screen.getByText('My little offer').closest('tr')).toHaveClass(
+        'inactive'
+      )
     })
 
     it('should display the offer greyed when offer has rejected status', () => {
@@ -347,7 +384,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
       renderOfferItem(props)
 
       // Then
-      expect(screen.getByText('My little offer').closest('tr')).toHaveClass('inactive')
+      expect(screen.getByText('My little offer').closest('tr')).toHaveClass(
+        'inactive'
+      )
     })
 
     it('should display the offer greyed when offer is inactive', () => {
@@ -358,7 +397,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
       renderOfferItem(props)
 
       // Then
-      expect(screen.getByText('My little offer').closest('tr')).toHaveClass('inactive')
+      expect(screen.getByText('My little offer').closest('tr')).toHaveClass(
+        'inactive'
+      )
     })
 
     it('should not display the offer greyed when offer is active', () => {
@@ -369,7 +410,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
       renderOfferItem(props)
 
       // Then
-      expect(screen.getByText('My little offer').closest('tr')).not.toHaveClass('inactive')
+      expect(screen.getByText('My little offer').closest('tr')).not.toHaveClass(
+        'inactive'
+      )
     })
   })
 })

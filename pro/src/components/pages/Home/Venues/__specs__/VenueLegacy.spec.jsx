@@ -1,6 +1,6 @@
 /*
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import { act, render, screen, within, waitFor } from '@testing-library/react'
@@ -54,26 +54,36 @@ describe('venues', () => {
 
     // Then
     expect(pcapi.getVenueStats).toHaveBeenCalledWith(props.id)
-    
+
     const [
       activeOffersStat,
       activeBookingsStat,
       validatedBookingsStat,
       outOfStockOffersStat,
     ] = screen.getAllByTestId('venue-stat')
-    
-    await waitFor(() => expect(within(activeOffersStat).getByText('2')).toBeInTheDocument())
-    
-    expect(within(activeOffersStat).getByText('Offres actives')).toBeInTheDocument()
+
+    await waitFor(() =>
+      expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
+    )
+
+    expect(
+      within(activeOffersStat).getByText('Offres actives')
+    ).toBeInTheDocument()
 
     expect(within(activeBookingsStat).getByText('0')).toBeInTheDocument()
-    expect(within(activeBookingsStat).getByText('Réservations en cours')).toBeInTheDocument()
+    expect(
+      within(activeBookingsStat).getByText('Réservations en cours')
+    ).toBeInTheDocument()
 
     expect(within(validatedBookingsStat).getByText('1')).toBeInTheDocument()
-    expect(within(validatedBookingsStat).getByText('Réservations validées')).toBeInTheDocument()
+    expect(
+      within(validatedBookingsStat).getByText('Réservations validées')
+    ).toBeInTheDocument()
 
     expect(within(outOfStockOffersStat).getByText('3')).toBeInTheDocument()
-    expect(within(outOfStockOffersStat).getByText('Offres stocks épuisés')).toBeInTheDocument()
+    expect(
+      within(outOfStockOffersStat).getByText('Offres stocks épuisés')
+    ).toBeInTheDocument()
   })
 
   it('should contain a link for each stats', async () => {
@@ -81,7 +91,9 @@ describe('venues', () => {
     await renderVenue(props, store)
     userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
     const [activeOffersStat] = screen.getAllByTestId('venue-stat')
-    await waitFor(() => expect(within(activeOffersStat).getByText('2')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
+    )
 
     // Then
     expect(screen.getAllByRole('link', { name: 'Voir' })).toHaveLength(4)
@@ -98,23 +110,24 @@ describe('venues', () => {
       validatedBookingsStat,
       outOfStockOffersStat,
     ] = screen.getAllByTestId('venue-stat')
-    
-    await waitFor(() => expect(within(activeOffersStat).getByText('2')).toBeInTheDocument())
 
-    expect(within(activeOffersStat).getByRole('link', { name: 'Voir' })).toHaveAttribute(
-      'href',
-      '/offres?lieu=VENUE01&statut=active'
+    await waitFor(() =>
+      expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
     )
-    const byRole = within(validatedBookingsStat).getByRole('link', { name: 'Voir' })
+
+    expect(
+      within(activeOffersStat).getByRole('link', { name: 'Voir' })
+    ).toHaveAttribute('href', '/offres?lieu=VENUE01&statut=active')
+    const byRole = within(validatedBookingsStat).getByRole('link', {
+      name: 'Voir',
+    })
     expect(byRole).toHaveAttribute('href', '/reservations')
-    expect(within(activeBookingsStat).getByRole('link', { name: 'Voir' })).toHaveAttribute(
-      'href',
-      '/reservations'
-    )
-    expect(within(outOfStockOffersStat).getByRole('link', { name: 'Voir' })).toHaveAttribute(
-      'href',
-      '/offres?lieu=VENUE01&statut=epuisee'
-    )
+    expect(
+      within(activeBookingsStat).getByRole('link', { name: 'Voir' })
+    ).toHaveAttribute('href', '/reservations')
+    expect(
+      within(outOfStockOffersStat).getByRole('link', { name: 'Voir' })
+    ).toHaveAttribute('href', '/offres?lieu=VENUE01&statut=epuisee')
   })
 
   describe('virtual venue section', () => {
@@ -126,7 +139,9 @@ describe('venues', () => {
       await renderVenue(props, store)
       userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
       const [activeOffersStat] = screen.getAllByTestId('venue-stat')
-      await waitFor(() => expect(within(activeOffersStat).getByText('2')).toBeInTheDocument())
+      await waitFor(() =>
+        expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
+      )
 
       // Then
       expect(
@@ -144,10 +159,14 @@ describe('venues', () => {
       await renderVenue(props, store)
       userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
       const [activeOffersStat] = screen.getAllByTestId('venue-stat')
-      await waitFor(() => expect(within(activeOffersStat).getByText('2')).toBeInTheDocument())
+      await waitFor(() =>
+        expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
+      )
 
       // Then
-      expect(screen.getByRole('link', { name: 'Créer une nouvelle offre' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: 'Créer une nouvelle offre' })
+      ).toBeInTheDocument()
     })
 
     it('should display edition venue link', async () => {
@@ -158,7 +177,9 @@ describe('venues', () => {
       await renderVenue(props, store)
       userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
       const [activeOffersStat] = screen.getAllByTestId('venue-stat')
-      await waitFor(() => expect(within(activeOffersStat).getByText('2')).toBeInTheDocument())
+      await waitFor(() =>
+        expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
+      )
 
       // Then
       expect(screen.getByRole('link', { name: 'Modifier' }).href).toBe(

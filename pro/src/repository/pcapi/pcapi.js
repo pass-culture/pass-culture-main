@@ -1,11 +1,17 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ */
 
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
-import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
+import {
+  ALL_OFFERERS,
+  DEFAULT_SEARCH_FILTERS,
+} from 'components/pages/Offers/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
-import { FORMAT_ISO_DATE_ONLY, formatBrowserTimezonedDateAsUTC } from 'utils/date'
+import {
+  FORMAT_ISO_DATE_ONLY,
+  formatBrowserTimezonedDateAsUTC,
+} from 'utils/date'
 import { stringify } from 'utils/query-string'
 
 export const loadFeatures = async () => {
@@ -79,7 +85,10 @@ export const updateOffersActiveStatus = (
   })
 
   if (areAllOffersSelected) {
-    return client.patch('/offers/all-active-status', { ...formattedBody, isActive })
+    return client.patch('/offers/all-active-status', {
+      ...formattedBody,
+      isActive,
+    })
   }
 
   return client.patch('/offers/active-status', { ids, isActive })
@@ -88,7 +97,10 @@ export const updateOffersActiveStatus = (
 const createRequestBody = searchFilters => {
   const body = {}
   Object.keys(DEFAULT_SEARCH_FILTERS).forEach(field => {
-    if (searchFilters[field] && searchFilters[field] !== DEFAULT_SEARCH_FILTERS[field]) {
+    if (
+      searchFilters[field] &&
+      searchFilters[field] !== DEFAULT_SEARCH_FILTERS[field]
+    ) {
       body[field] = searchFilters[field]
     }
   })
@@ -97,11 +109,16 @@ const createRequestBody = searchFilters => {
     body.page = searchFilters.page
   }
 
-  if (searchFilters.periodBeginningDate !== DEFAULT_SEARCH_FILTERS.periodBeginningDate) {
+  if (
+    searchFilters.periodBeginningDate !==
+    DEFAULT_SEARCH_FILTERS.periodBeginningDate
+  ) {
     body.periodBeginningDate = searchFilters.periodBeginningDate
   }
 
-  if (searchFilters.periodEndingDate !== DEFAULT_SEARCH_FILTERS.periodEndingDate) {
+  if (
+    searchFilters.periodEndingDate !== DEFAULT_SEARCH_FILTERS.periodEndingDate
+  ) {
     body.periodEndingDate = searchFilters.periodEndingDate
   }
 
@@ -113,7 +130,9 @@ export const getAllOfferersNames = () => {
 }
 
 export const generateOffererApiKey = async offererId => {
-  return client.post(`/offerers/${offererId}/api_keys`, {}).then(response => response.apiKey)
+  return client
+    .post(`/offerers/${offererId}/api_keys`, {})
+    .then(response => response.apiKey)
 }
 
 export const deleteOffererApiKey = async apiKey => {
@@ -127,7 +146,9 @@ export const getUserValidatedOfferersNames = () => {
 }
 
 export const getValidatedOfferersNames = () => {
-  return client.get('/offerers/names?validated=true').then(response => response.offerersNames)
+  return client
+    .get('/offerers/names?validated=true')
+    .then(response => response.offerersNames)
 }
 
 export const getOfferers = () => {
@@ -142,12 +163,16 @@ export const getOfferer = offererId => {
   return client.get(`/offerers/${offererId}`)
 }
 
-export const canOffererCreateEducationalOffer = offererId => client.get(`/offerers/${offererId}/eac-eligibility`)
+export const canOffererCreateEducationalOffer = offererId =>
+  client.get(`/offerers/${offererId}/eac-eligibility`)
 
 //
 // venues
 //
-export const getVenuesForOfferer = ({ offererId = null, activeOfferersOnly = false } = {}) => {
+export const getVenuesForOfferer = ({
+  offererId = null,
+  activeOfferersOnly = false,
+} = {}) => {
   const request = {}
   if (offererId) {
     if (offererId !== ALL_OFFERERS) request.offererId = offererId
@@ -165,7 +190,8 @@ export const getVenue = venueId => client.get(`/venues/${venueId}`)
 
 export const getVenueStats = venueId => client.get(`/venues/${venueId}/stats`)
 
-export const getOffererWithVenueStats = offererId => client.get(`/offerers/${offererId}/stats`)
+export const getOffererWithVenueStats = offererId =>
+  client.get(`/offerers/${offererId}/stats`)
 
 //
 // types
@@ -206,7 +232,15 @@ export const validateDistantImage = url => {
   return client.post('/offers/thumbnail-url-validation', { url: url })
 }
 
-export const postThumbnail = (offerId, credit, thumb, thumbUrl, x, y, height) => {
+export const postThumbnail = (
+  offerId,
+  credit,
+  thumb,
+  thumbUrl,
+  x,
+  y,
+  height
+) => {
   const body = new FormData()
   body.append('offerId', offerId)
   body.append('credit', credit)
@@ -258,7 +292,9 @@ export const loadProviders = async venueId => {
 }
 
 export const loadVenueProviders = async venueId => {
-  return client.get(`/venueProviders?venueId=${venueId}`).then(response => response.venue_providers)
+  return client
+    .get(`/venueProviders?venueId=${venueId}`)
+    .then(response => response.venue_providers)
 }
 
 //
@@ -291,7 +327,7 @@ export const buildBookingsRecapQuery = ({
   return stringify(params)
 }
 
-export const loadFilteredBookingsRecap = async (filters) => {
+export const loadFilteredBookingsRecap = async filters => {
   const queryParams = buildBookingsRecapQuery(filters)
   return client.get(`/bookings/pro?${queryParams}`)
 }
@@ -300,7 +336,6 @@ export const getFilteredBookingsCSV = async filters => {
   const queryParams = buildBookingsRecapQuery(filters)
   return client.getPlainText(`/bookings/csv?${queryParams}`)
 }
-
 
 //
 // Booking

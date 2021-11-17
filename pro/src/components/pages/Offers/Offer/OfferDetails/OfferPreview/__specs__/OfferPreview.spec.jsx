@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import { act, render, screen } from '@testing-library/react'
@@ -25,7 +25,7 @@ describe('offer preview', () => {
           name: 'Offer title',
           description: 'Offer description',
           withdrawalDetails: 'Offer withdrawal details',
-        }
+        },
       }
 
       // when
@@ -44,7 +44,7 @@ describe('offer preview', () => {
         offerPreviewData: {
           description:
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-        }
+        },
       }
 
       // when
@@ -64,7 +64,7 @@ describe('offer preview', () => {
           name: 'Offer title',
           description: 'Offer description',
           withdrawalDetails: '',
-        }
+        },
       }
 
       // when
@@ -128,7 +128,9 @@ describe('offer preview', () => {
         renderOfferPreview({ props })
 
         // Then
-        expect(await screen.findByText('Mon Lieu - Ma Rue - 11100 - Ma Ville')).toBeInTheDocument()
+        await expect(
+          screen.findByText('Mon Lieu - Ma Rue - 11100 - Ma Ville')
+        ).resolves.toBeInTheDocument()
       })
 
       it('should not display any non given venue field', async () => {
@@ -148,7 +150,9 @@ describe('offer preview', () => {
         renderOfferPreview({ props })
 
         // Then
-        expect(await screen.findByText('Mon Lieu - Ma Ville')).toBeInTheDocument()
+        await expect(
+          screen.findByText('Mon Lieu - Ma Ville')
+        ).resolves.toBeInTheDocument()
       })
     })
 

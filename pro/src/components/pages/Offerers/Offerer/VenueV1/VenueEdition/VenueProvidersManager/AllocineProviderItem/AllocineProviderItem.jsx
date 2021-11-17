@@ -1,15 +1,19 @@
-import PropTypes from "prop-types"
+import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
 
-import AllocineProviderFormDialog from "../AllocineProviderFormDialog/AllocineProviderFormDialog"
+import AllocineProviderFormDialog from '../AllocineProviderFormDialog/AllocineProviderFormDialog'
 import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
-import VenueProviderItem from "../VenueProviderItem/VenueProviderItem"
+import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 
-const AllocineProviderItem = ({ afterVenueProviderEdit, venueProvider, venueDepartmentCode }) => {
+const AllocineProviderItem = ({
+  afterVenueProviderEdit,
+  venueProvider,
+  venueDepartmentCode,
+}) => {
   const [isOpenedFormDialog, setIsOpenedFormDialog] = useState(false)
   const dispatch = useDispatch()
 
@@ -21,7 +25,7 @@ const AllocineProviderItem = ({ afterVenueProviderEdit, venueProvider, venueDepa
           afterVenueProviderEdit({ editedVenueProvider })
           dispatch(
             showNotification({
-              text: "Les modifications ont bien été importées et s’appliqueront aux nouvelles séances créées.",
+              text: 'Les modifications ont bien été importées et s’appliqueront aux nouvelles séances créées.',
               type: 'success',
             })
           )
@@ -46,16 +50,19 @@ const AllocineProviderItem = ({ afterVenueProviderEdit, venueProvider, venueDepa
     setIsOpenedFormDialog(false)
   }, [])
 
-  const onConfirmDialog = useCallback((payload) => {
-    editVenueProvider(payload)
+  const onConfirmDialog = useCallback(
+    payload => {
+      editVenueProvider(payload)
 
-    closeFormDialog()
-  }, [closeFormDialog, editVenueProvider])
+      closeFormDialog()
+    },
+    [closeFormDialog, editVenueProvider]
+  )
 
   const initialValues = {
     price: venueProvider.price,
     quantity: venueProvider.quantity,
-    isDuo: venueProvider.isDuo
+    isDuo: venueProvider.isDuo,
   }
 
   return (
@@ -65,30 +72,23 @@ const AllocineProviderItem = ({ afterVenueProviderEdit, venueProvider, venueDepa
     >
       <>
         <li>
+          <span>{'Prix de vente/place : '}</span>
           <span>
-            {'Prix de vente/place : '}
-          </span>
-          <span>
-            {`${new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(
-              venueProvider.price
-            )}`}
+            {`${new Intl.NumberFormat('fr-FR', {
+              style: 'currency',
+              currency: 'EUR',
+            }).format(venueProvider.price)}`}
           </span>
         </li>
         <li>
-          <span>
-            {'Nombre de places/séance : '}
-          </span>
+          <span>{'Nombre de places/séance : '}</span>
           <span>
             {`${venueProvider.quantity ? venueProvider.quantity : 'Illimité'}`}
           </span>
         </li>
         <li>
-          <span>
-            {'Accepter les offres DUO : '}
-          </span>
-          <span>
-            {`${venueProvider.isDuo ? 'Oui' : 'Non'} `}
-          </span>
+          <span>{'Accepter les offres DUO : '}</span>
+          <span>{`${venueProvider.isDuo ? 'Oui' : 'Non'} `}</span>
         </li>
         <button
           className="primary-button"

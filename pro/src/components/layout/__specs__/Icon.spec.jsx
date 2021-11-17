@@ -1,6 +1,6 @@
 /*
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 import React from 'react'
@@ -38,7 +38,7 @@ describe('src | components | layout | Icon', () => {
       // then
       const image = wrapper.find('img')
       expect(image).toHaveLength(1)
-      expect(image.props().alt).toStrictEqual('Some alternate title')
+      expect(image.props().alt).toBe('Some alternate title')
     })
   })
 })

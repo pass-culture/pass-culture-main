@@ -75,9 +75,15 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
       expect(locationViewer.prop('className')).toBe('field-input field-address')
       expect(locationViewer.prop('disabled')).toBe(true)
       expect(locationViewer.prop('name')).toBe('fake name')
-      expect(locationViewer.prop('onMarkerDragend')).toStrictEqual(expect.any(Function))
-      expect(locationViewer.prop('onSuggestionSelect')).toStrictEqual(expect.any(Function))
-      expect(locationViewer.prop('onTextChange')).toStrictEqual(expect.any(Function))
+      expect(locationViewer.prop('onMarkerDragend')).toStrictEqual(
+        expect.any(Function)
+      )
+      expect(locationViewer.prop('onSuggestionSelect')).toStrictEqual(
+        expect.any(Function)
+      )
+      expect(locationViewer.prop('onTextChange')).toStrictEqual(
+        expect.any(Function)
+      )
       expect(locationViewer.prop('placeholder')).toBe('')
       expect(locationViewer.prop('readOnly')).toBe(true)
       expect(locationViewer.prop('required')).toBe(true)
@@ -98,9 +104,15 @@ describe('src | components | pages | Venue | fields | AddressField', () => {
       expect(locationViewer.prop('className')).toBe('field-input field-address')
       expect(locationViewer.prop('disabled')).toBe(false)
       expect(locationViewer.prop('name')).toBe('fake name')
-      expect(locationViewer.prop('onMarkerDragend')).toStrictEqual(expect.any(Function))
-      expect(locationViewer.prop('onSuggestionSelect')).toStrictEqual(expect.any(Function))
-      expect(locationViewer.prop('onTextChange')).toStrictEqual(expect.any(Function))
+      expect(locationViewer.prop('onMarkerDragend')).toStrictEqual(
+        expect.any(Function)
+      )
+      expect(locationViewer.prop('onSuggestionSelect')).toStrictEqual(
+        expect.any(Function)
+      )
+      expect(locationViewer.prop('onTextChange')).toStrictEqual(
+        expect.any(Function)
+      )
       expect(locationViewer.prop('placeholder')).toBe('fake placeholder')
       expect(locationViewer.prop('readOnly')).toBe(false)
       expect(locationViewer.prop('required')).toBe(false)

@@ -10,27 +10,25 @@ export default {
 }
 
 const Template = () => (
-  <Formik
-    initialValues={{}}
-    onSubmit={action('onSubmit')}
-  >
+  <Formik initialValues={{}} onSubmit={action('onSubmit')}>
     {({ getFieldProps }) => {
       return (
         <>
           <RadioButton
             {...getFieldProps('gender')}
             label="Male"
-            name='gender'
+            name="gender"
             value="male"
-          /> 
+          />
           <RadioButton
             {...getFieldProps('gender')}
             label="Female"
-            name='gender'
+            name="gender"
             value="female"
           />
         </>
-      )}}
+      )
+    }}
   </Formik>
 )
 

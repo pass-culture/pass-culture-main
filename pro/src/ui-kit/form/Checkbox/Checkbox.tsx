@@ -2,10 +2,10 @@ import { useField } from 'formik'
 import React from 'react'
 
 interface ICheckboxProps {
-  name: string;
-  value: string;
-  label: string;
-  className?: string;
+  name: string
+  value: string
+  label: string
+  className?: string
 }
 
 const Checkbox = ({
@@ -19,22 +19,12 @@ const Checkbox = ({
   return (
     <>
       <label>
-        <input
-          {...field}
-          className={className}
-          type="checkbox"
-          value={value}
-        />
+        <input {...field} className={className} type="checkbox" value={value} />
         {label}
       </label>
-      {
-        meta.touched && meta.error ? (
-          <div className="error">
-            {meta.error}
-          </div>
-        )
-          : null
-      }
+      {meta.touched && meta.error ? (
+        <div className="error">{meta.error}</div>
+      ) : null}
     </>
   )
 }

@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -17,10 +17,14 @@ const setDangerousArrayKeyIndex = index => `field_error_${index}`
 const FieldErrors = ({ className, customMessage, meta }) => {
   const showError =
     customMessage ||
-    (meta && meta.touched && (meta.error || (!meta.dirtySinceLastSubmit && meta.submitError)))
+    (meta &&
+      meta.touched &&
+      (meta.error || (!meta.dirtySinceLastSubmit && meta.submitError)))
   let errorMessage =
     (showError &&
-      (customMessage || meta.error || (!meta.dirtySinceLastSubmit && meta.submitError))) ||
+      (customMessage ||
+        meta.error ||
+        (!meta.dirtySinceLastSubmit && meta.submitError))) ||
     null
   // FIXME -> transformation en array plus propre
   // on considére qu'une erreur est soit un string, soit un array

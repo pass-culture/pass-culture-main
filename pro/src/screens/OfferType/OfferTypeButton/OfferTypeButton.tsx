@@ -8,12 +8,14 @@ import { OFFER_TYPES } from '../constants'
 import styles from './OfferTypeButton.module.scss'
 
 interface IOfferTypeButton {
-  isSelected: boolean;
-  Icon: FunctionComponent<SVGProps<SVGSVGElement> & { title?: string | undefined; }>;
-  label: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  className?: string;
-  disabled?: boolean;
+  isSelected: boolean
+  Icon: FunctionComponent<
+    SVGProps<SVGSVGElement> & { title?: string | undefined }
+  >
+  label: string
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  className?: string
+  disabled?: boolean
   value: OFFER_TYPES
 }
 
@@ -26,16 +28,15 @@ const OfferTypeButton = ({
   disabled = false,
   value,
 }: IOfferTypeButton): JSX.Element => (
-  <label className={
-    cn(
+  <label
+    className={cn(
       styles.button,
       {
         [styles['is-selected']]: isSelected,
-        [styles['is-disabled']]: disabled
+        [styles['is-disabled']]: disabled,
       },
       className
-    )
-  }
+    )}
   >
     {isSelected ? <TickIcon className={styles['button-check-mark']} /> : null}
     <Icon className={styles['button-icon']} />
@@ -43,9 +44,9 @@ const OfferTypeButton = ({
       checked={isSelected}
       className={styles['button-radio']}
       disabled={disabled}
-      name='offer-type'
+      name="offer-type"
       onChange={onChange}
-      type='radio'
+      type="radio"
       value={value}
     />
     {label}

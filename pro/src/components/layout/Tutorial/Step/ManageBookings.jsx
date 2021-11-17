@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -15,15 +15,12 @@ import { ReactComponent as UpArrow } from './assets/up-arrow.svg'
 
 const ManageBookings = ({ titleId }) => (
   <>
-    <h1 id={titleId}>
-      Suivre et gérer vos réservations
-    </h1>
+    <h1 id={titleId}>Suivre et gérer vos réservations</h1>
     <section className="mb-content">
-      <span className="first-column">
-        Validez vos contremarques
-      </span>
+      <span className="first-column">Validez vos contremarques</span>
       <span className="third-column">
-        Accédez à la liste de vos réservations et les adresses mails des utilisateurs
+        Accédez à la liste de vos réservations et les adresses mails des
+        utilisateurs
       </span>
       <DownArrow className="first-column" />
       <DownArrow className="third-column" />

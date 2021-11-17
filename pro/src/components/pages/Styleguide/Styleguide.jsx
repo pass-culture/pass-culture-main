@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within storybook"
-*/
+ * @debt directory "Gaël: this file should be migrated within storybook"
+ */
 
 import React from 'react'
 
@@ -25,52 +25,28 @@ const Styleguide = () => (
     <Titles title="Styleguide" />
     <StyleguideAgenda />
 
-    <StyleguideTitle
-      className="sg-titles"
-      componentName="Titres"
-    />
+    <StyleguideTitle className="sg-titles" componentName="Titres" />
     <StyleguideTitles />
 
-    <StyleguideTitle
-      className="sg-buttons"
-      componentName="Boutons"
-    />
+    <StyleguideTitle className="sg-buttons" componentName="Boutons" />
     <StyleguideButtons />
 
-    <StyleguideTitle
-      className="sg-inputtext"
-      componentName="Inputs"
-    />
+    <StyleguideTitle className="sg-inputtext" componentName="Inputs" />
     <StyleguideInputText />
 
-    <StyleguideTitle
-      className="sg-inputtime"
-      componentName="InputDuration"
-    />
+    <StyleguideTitle className="sg-inputtime" componentName="InputDuration" />
     <StyleguideInputDuration />
 
-    <StyleguideTitle
-      className="sg-textarea"
-      componentName="Textarea"
-    />
+    <StyleguideTitle className="sg-textarea" componentName="Textarea" />
     <StyleguideInputTextarea />
 
-    <StyleguideTitle
-      className="sg-select"
-      componentName="Select"
-    />
+    <StyleguideTitle className="sg-select" componentName="Select" />
     <StyleguideSelect />
 
-    <StyleguideTitle
-      className="sg-checkbox"
-      componentName="InputCheckbox"
-    />
+    <StyleguideTitle className="sg-checkbox" componentName="InputCheckbox" />
     <StyleguideCheckboxes />
 
-    <StyleguideTitle
-      className="sg-banner"
-      componentName="Bannière"
-    />
+    <StyleguideTitle className="sg-banner" componentName="Bannière" />
     <StyleguideBanners />
   </AppLayout>
 )

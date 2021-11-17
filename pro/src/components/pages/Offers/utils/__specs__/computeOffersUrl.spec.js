@@ -9,7 +9,7 @@ describe('src | components | pages | Offer | utils | computeOffersUrl', () => {
     const value = computeOffersUrl(offersSearchFilters)
 
     // then
-    expect(value).toStrictEqual('/offres')
+    expect(value).toBe('/offres')
   })
 
   it('should build proper query given offers filters', () => {
@@ -30,7 +30,7 @@ describe('src | components | pages | Offer | utils | computeOffersUrl', () => {
     const value = computeOffersUrl(offersSearchFilters)
 
     // then
-    expect(value).toStrictEqual(
+    expect(value).toBe(
       '/offres?nom=test&structure=AY&lieu=EQ&categorie=CINEMA&statut=all&creation=manuelle&periode-evenement-debut=2020-11-30T00%3A00%3A00%2B01%3A00&periode-evenement-fin=2021-01-07T23%3A59%3A59%2B01%3A00&page=1'
     )
   })

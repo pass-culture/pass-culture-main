@@ -1,6 +1,6 @@
 /*
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-*/
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ */
 
 import '@testing-library/jest-dom'
 import { fireEvent } from '@testing-library/dom'
@@ -15,10 +15,7 @@ const renderCheckboxField = (props, initialValues) => {
     return (
       <form>
         <CheckboxField {...props} />
-        <button
-          onClick={handleSubmit}
-          type="submit"
-        >
+        <button onClick={handleSubmit} type="submit">
           Submit
         </button>
       </form>
@@ -42,51 +39,51 @@ describe('components | CheckboxField', () => {
   }
 
   let defaultInitialValues = {
-    'checkbox-name': false
+    'checkbox-name': false,
   }
 
   it('should have input type checkbox', () => {
-    const initialValues = { ... defaultInitialValues }
+    const initialValues = { ...defaultInitialValues }
     const props = { ...defaultProps }
     renderCheckboxField(props, initialValues)
 
     const checkbox = screen.getByLabelText('Checkbox label')
-    
+
     expect(checkbox).toBeInTheDocument()
     expect(checkbox.id).toStrictEqual(props.id)
     expect(checkbox.name).toStrictEqual(props.name)
     expect(checkbox.checked).toStrictEqual(initialValues[props.name])
-    expect(checkbox.disabled).toStrictEqual(false)
+    expect(checkbox.disabled).toBe(false)
   })
 
   it('should be unchecked', () => {
-    const initialValues = { 
-      ... defaultInitialValues,
+    const initialValues = {
+      ...defaultInitialValues,
       'checkbox-name': false,
     }
     const props = { ...defaultProps }
     renderCheckboxField(props, initialValues)
 
     const checkbox = screen.getByLabelText('Checkbox label')
-    
+
     expect(checkbox.checked).toStrictEqual(initialValues[props.name])
   })
 
   it('should be disabled', () => {
-    const initialValues = { ... defaultInitialValues }
-    const props = { 
+    const initialValues = { ...defaultInitialValues }
+    const props = {
       ...defaultProps,
       disabled: true,
     }
     renderCheckboxField(props, initialValues)
 
     const checkbox = screen.getByLabelText('Checkbox label')
-    
+
     expect(checkbox.disabled).toStrictEqual(props.disabled)
   })
 
   it('should change value on click', () => {
-    const initialValues = { ... defaultInitialValues }
+    const initialValues = { ...defaultInitialValues }
     const props = { ...defaultProps }
     renderCheckboxField(props, initialValues)
 

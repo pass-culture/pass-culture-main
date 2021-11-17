@@ -19,10 +19,7 @@ const Template = args => (
   <Form onSubmit={submitForm}>
     {() => (
       <div className="field-group">
-        <TextField
-          label="Text field label"
-          name="test-text-field"
-        />
+        <TextField label="Text field label" name="test-text-field" />
         <CheckboxField {...args} />
       </div>
     )}

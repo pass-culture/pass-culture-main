@@ -10,16 +10,13 @@ export default {
   component: TextInput,
 }
 
-const Template: Story<{label?: string}> = ({ label }) => (
-  <Formik
-    initialValues={{ email: '' }}
-    onSubmit={action('onSubmit')}
-  >
+const Template: Story<{ label?: string }> = ({ label }) => (
+  <Formik initialValues={{ email: '' }} onSubmit={action('onSubmit')}>
     {({ getFieldProps }) => (
       <TextInput
         {...getFieldProps('email')}
         label={label}
-        placeholder='input placeholder'
+        placeholder="input placeholder"
       />
     )}
   </Formik>

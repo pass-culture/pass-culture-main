@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
@@ -11,12 +11,16 @@ import { updateOffersActiveStatus } from 'repository/pcapi/pcapi'
 
 const computeActivationSuccessMessage = nbSelectedOffers => {
   const successMessage =
-    nbSelectedOffers > 1 ? 'offres ont bien été activées' : 'offre a bien été activée'
+    nbSelectedOffers > 1
+      ? 'offres ont bien été activées'
+      : 'offre a bien été activée'
   return `${nbSelectedOffers} ${successMessage}`
 }
 const computeDeactivationSuccessMessage = nbSelectedOffers => {
   const successMessage =
-    nbSelectedOffers > 1 ? 'offres ont bien été désactivées' : 'offre a bien été désactivée'
+    nbSelectedOffers > 1
+      ? 'offres ont bien été désactivées'
+      : 'offre a bien été désactivée'
   return `${nbSelectedOffers} ${successMessage}`
 }
 
@@ -60,21 +64,23 @@ const ActionsBar = props => {
         ids: selectedOfferIds,
         isActive: isActivating,
       }
-      const body = areAllOffersSelected ? bodyAllActiveStatus : bodySomeActiveStatus
+      const body = areAllOffersSelected
+        ? bodyAllActiveStatus
+        : bodySomeActiveStatus
 
       updateOffersActiveStatus(areAllOffersSelected, body).then(() => {
         refreshOffers({ shouldTriggerSpinner: false })
         areAllOffersSelected
           ? showPendingNotification(
-            isActivating
-              ? computeAllActivationSuccessMessage(nbSelectedOffers)
-              : computeAllDeactivationSuccessMessage(nbSelectedOffers)
-          )
+              isActivating
+                ? computeAllActivationSuccessMessage(nbSelectedOffers)
+                : computeAllDeactivationSuccessMessage(nbSelectedOffers)
+            )
           : showSuccessNotification(
-            isActivating
-              ? computeActivationSuccessMessage(nbSelectedOffers)
-              : computeDeactivationSuccessMessage(nbSelectedOffers)
-          )
+              isActivating
+                ? computeActivationSuccessMessage(nbSelectedOffers)
+                : computeDeactivationSuccessMessage(nbSelectedOffers)
+            )
         handleClose()
         if (!areAllOffersSelected) {
           isActivating
@@ -114,13 +120,8 @@ const ActionsBar = props => {
   }
 
   return (
-    <div
-      className="offers-actions-bar"
-      data-testid="offers-actions-bar"
-    >
-      <span>
-        {computeSelectedOffersLabel()}
-      </span>
+    <div className="offers-actions-bar" data-testid="offers-actions-bar">
+      <span>{computeSelectedOffersLabel()}</span>
 
       <div className="actions-container">
         <button

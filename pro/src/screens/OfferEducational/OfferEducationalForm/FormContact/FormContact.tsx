@@ -14,16 +14,10 @@ const FormContact = (): JSX.Element => {
       title="Contact"
     >
       <div className={styles.subsection}>
-        <TextInput
-          label={PHONE_LABEL}
-          name='phone'
-        />
+        <TextInput label={PHONE_LABEL} name="phone" />
       </div>
       <div className={styles.subsection}>
-        <TextInput
-          label={EMAIL_LABEL}
-          name='email'
-        />
+        <TextInput label={EMAIL_LABEL} name="email" />
       </div>
     </FormSection>
   )

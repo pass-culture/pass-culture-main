@@ -2,5 +2,5 @@ export { default } from './AccessibilityCheckboxList'
 export {
   checkHasNoDisabilityCompliance,
   getAccessibilityValues,
-  getAccessibilityInitialValues
+  getAccessibilityInitialValues,
 } from './helpers'

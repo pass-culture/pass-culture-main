@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
@@ -52,7 +52,8 @@ const DurationInput = ({
 
     const hasFinishedWritingHours = /[0-9]+:/.test(updatedHoursDuration)
     if (hasFinishedWritingHours) {
-      correctedHoursDuration = updatedHoursDuration.match(/[0-9]+:[0-5]?[0-9]?/)[0]
+      correctedHoursDuration =
+        updatedHoursDuration.match(/[0-9]+:[0-5]?[0-9]?/)[0]
       setDurationInHours(correctedHoursDuration)
     } else {
       correctedHoursDuration = updatedHoursDuration.match(/[0-9]*/)[0]
@@ -64,9 +65,7 @@ const DurationInput = ({
     <label className="input-time">
       <div className="labels">
         {label}
-        <span className="itime-sub-label">
-          {subLabel}
-        </span>
+        <span className="itime-sub-label">{subLabel}</span>
       </div>
       <span className={`itime-field-container ${error ? 'error' : ''}`}>
         <input
@@ -81,11 +80,7 @@ const DurationInput = ({
           value={durationInHours}
         />
       </span>
-      {error && (
-        <InputError name={name}>
-          {error}
-        </InputError>
-      )}
+      {error && <InputError name={name}>{error}</InputError>}
     </label>
   )
 }

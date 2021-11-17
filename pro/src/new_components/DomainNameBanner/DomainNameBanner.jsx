@@ -11,10 +11,9 @@ export const DomainNameBanner = ({ handleOnClick }) => {
       linkTitle={"Consulter les Conditions Générales d'Utilisation"}
       type="attention"
     >
-      Notre nom de domaine évolue ! Vous avez été automatiquement redirigé vers&nbsp;
-      <strong>
-        https://passculture.pro
-      </strong>
+      Notre nom de domaine évolue ! Vous avez été automatiquement redirigé
+      vers&nbsp;
+      <strong>https://passculture.pro</strong>
       <br />
       La redirection automatique cessera au 15/01/2022.
     </Banner>

@@ -36,13 +36,16 @@ const OfferLayout = ({ location, match }) => {
     async (offerId, creationMode = false) => {
       const existingOffer = await pcapi.loadOffer(offerId)
       setOffer(existingOffer)
-      setIsCreatingOffer(creationMode || existingOffer.status === OFFER_STATUS_DRAFT)
+      setIsCreatingOffer(
+        creationMode || existingOffer.status === OFFER_STATUS_DRAFT
+      )
     },
     [setOffer]
   )
 
   const reloadOffer = useCallback(
-    async (creationMode = false) => (offer.id ? await loadOffer(offer.id, creationMode) : false),
+    async (creationMode = false) =>
+      offer.id ? await loadOffer(offer.id, creationMode) : false,
     [loadOffer, offer?.id]
   )
 
@@ -68,18 +71,12 @@ const OfferLayout = ({ location, match }) => {
 
   const offerHeader =
     !isCreatingOffer && !location.pathname.includes('/confirmation') ? (
-      <OfferHeader
-        offer={offer}
-        reloadOffer={reloadOffer}
-      />
+      <OfferHeader offer={offer} reloadOffer={reloadOffer} />
     ) : null
 
   return (
     <div className="offer-page">
-      <Titles
-        action={offerHeader}
-        title={pageTitle}
-      />
+      <Titles action={offerHeader} title={pageTitle} />
 
       <Breadcrumb
         activeStep={activeStep}
@@ -89,35 +86,20 @@ const OfferLayout = ({ location, match }) => {
 
       <div className="offer-content">
         <Switch>
-          <Route
-            exact
-            path="/offres/creation"
-          >
+          <Route exact path="/offres/creation">
             <OfferDetails offer={offer} />
           </Route>
-          <Route
-            exact
-            path={`${match.url}/edition`}
-          >
-            <OfferDetails
-              offer={offer}
-              reloadOffer={reloadOffer}
-            />
+          <Route exact path={`${match.url}/edition`}>
+            <OfferDetails offer={offer} reloadOffer={reloadOffer} />
           </Route>
-          <Route
-            exact
-            path={`${match.url}/stocks`}
-          >
+          <Route exact path={`${match.url}/stocks`}>
             <StocksContainer
               location={location}
               offer={offer}
               reloadOffer={reloadOffer}
             />
           </Route>
-          <Route
-            exact
-            path={`${match.url}/confirmation`}
-          >
+          <Route exact path={`${match.url}/confirmation`}>
             <ConfirmationContainer
               isCreatingOffer={isCreatingOffer}
               location={location}

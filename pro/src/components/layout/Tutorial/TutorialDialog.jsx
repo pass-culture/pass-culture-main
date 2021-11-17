@@ -1,12 +1,12 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import { TUTO_DIALOG_LABEL_ID } from 'components/layout/Tutorial/_constants'
-import  DialogBox  from 'new_components/DialogBox/DialogBox'
+import DialogBox from 'new_components/DialogBox/DialogBox'
 
 import * as pcapi from '../../../repository/pcapi/pcapi'
 
@@ -52,7 +52,10 @@ const TutorialDialog = ({ currentUser, setUserHasSeenTuto }) => {
 
   const hasNextStep = getStep(activeStepPosition + 1) !== undefined
   const hasPreviousStep = getStep(activeStepPosition - 1) !== undefined
-  const goToStep = useCallback(newStepPosition => () => setActiveStepPosition(newStepPosition), [])
+  const goToStep = useCallback(
+    newStepPosition => () => setActiveStepPosition(newStepPosition),
+    []
+  )
 
   const activeStep = getStep(activeStepPosition)
 
@@ -63,10 +66,7 @@ const TutorialDialog = ({ currentUser, setUserHasSeenTuto }) => {
       labelledBy={TUTO_DIALOG_LABEL_ID}
       onDismiss={closeTutoDialog}
     >
-      <div
-        className="tutorial"
-        data-testid="tutorial-container"
-      >
+      <div className="tutorial" data-testid="tutorial-container">
         <activeStep.component titleId={TUTO_DIALOG_LABEL_ID} />
 
         <section className="tutorial-footer">

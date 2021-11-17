@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -26,17 +26,9 @@ const TextInput = ({
   <label className="input-text">
     <div className="labels">
       {label}
-      {subLabel && (
-        <span className="it-sub-label">
-          {subLabel}
-        </span>
-      )}
+      {subLabel && <span className="it-sub-label">{subLabel}</span>}
     </div>
-    {longDescription && (
-      <div className="description">
-        {longDescription}
-      </div>
-    )}
+    {longDescription && <div className="description">{longDescription}</div>}
     <input
       className={`it-input ${error ? 'error' : ''}`}
       disabled={disabled}
@@ -50,11 +42,7 @@ const TextInput = ({
       type={type}
       value={value}
     />
-    {error && (
-      <InputError name={name}>
-        {error}
-      </InputError>
-    )}
+    {error && <InputError name={name}>{error}</InputError>}
     {countCharacters && (
       <span className="it-character-count">
         {`${value ? value.length : 0}/${maxLength}`}

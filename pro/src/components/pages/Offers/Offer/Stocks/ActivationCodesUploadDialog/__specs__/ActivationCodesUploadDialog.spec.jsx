@@ -1,11 +1,11 @@
 /*
-* @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 
@@ -53,12 +53,20 @@ describe('activationCodesUploadDialog', () => {
       // When
       await renderActivationCodesUploadDialog(store, props)
 
-      const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
-      const file = new File(['ABH\nJHB\nJHB\nCEG\nCEG'], 'activation_codes.csv', {
-        type: 'text/csv',
-      })
+      const uploadButton = screen.getByLabelText(
+        'Importer un fichier .csv depuis l’ordinateur'
+      )
+      const file = new File(
+        ['ABH\nJHB\nJHB\nCEG\nCEG'],
+        'activation_codes.csv',
+        {
+          type: 'text/csv',
+        }
+      )
 
-      expect(screen.getByTestId('activation-codes-upload-icon-id')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('activation-codes-upload-icon-id')
+      ).toBeInTheDocument()
 
       fireEvent.change(uploadButton, {
         target: {
@@ -67,17 +75,24 @@ describe('activationCodesUploadDialog', () => {
       })
 
       // Then
-      expect(
-        await screen.findByText(/Une erreur s’est produite lors de l’import de votre fichier/i)
-      ).toBeInTheDocument()
+      waitFor(() =>
+        expect(
+          screen.getByText(
+            'Une erreur s’est produite lors de l’import de votre fichier',
+            { exact: false }
+          )
+        ).toBeInTheDocument()
+      )
 
-      expect(
-        await screen.findByText(
+      await expect(
+        screen.findByText(
           'Plusieurs codes identiques ont été trouvés dans le fichier : JHB, CEG.'
         )
-      ).toBeInTheDocument()
+      ).resolves.toBeInTheDocument()
 
-      expect(await screen.getByTestId('activation-codes-upload-error-icon-id')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('activation-codes-upload-error-icon-id')
+      ).toBeInTheDocument()
     })
   })
 })

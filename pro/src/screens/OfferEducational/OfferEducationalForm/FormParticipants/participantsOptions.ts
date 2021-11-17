@@ -6,5 +6,5 @@ export const participantsOptions = [
   { label: 'Lycée - Seconde', value: 'lyceeS' },
   { label: 'Lycée - Première', value: 'lyceeP' },
   { label: 'Lycée - Terminale', value: 'lyceeT' },
-  { label: 'Tous les niveaux', value: 'all' }
+  { label: 'Tous les niveaux', value: 'all' },
 ]

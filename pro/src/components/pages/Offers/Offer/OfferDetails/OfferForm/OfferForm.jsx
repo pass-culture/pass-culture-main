@@ -7,7 +7,13 @@
 
 import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
-import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -35,7 +41,9 @@ import {
   TEXT_INPUT_DEFAULT_VALUE,
 } from '../_constants'
 
-import AccessibilityCheckboxList, { getAccessibilityValues } from './AccessibilityCheckboxList'
+import AccessibilityCheckboxList, {
+  getAccessibilityValues,
+} from './AccessibilityCheckboxList'
 import OfferRefundWarning from './Messages/OfferRefundWarning'
 import WithdrawalReminder from './Messages/WithdrawalReminder'
 import OfferCategories from './OfferCategories'
@@ -109,13 +117,16 @@ const OfferForm = ({
   venues,
 }) => {
   const [offerSubCategory, setOfferSubCategory] = useState(null)
-  const [receiveNotificationEmails, setReceiveNotificationEmails] = useState(false)
+  const [receiveNotificationEmails, setReceiveNotificationEmails] =
+    useState(false)
   const [venue, setVenue] = useState(null)
   const [formValues, setFormValues] = useState({})
   const [venueOptions, setVenueOptions] = useState(
     buildSelectOptionsWithOptionalFields('id', ['publicName', 'name'], venues)
   )
-  const [offerFormFields, setOfferFormFields] = useState(Object.keys(DEFAULT_FORM_VALUES))
+  const [offerFormFields, setOfferFormFields] = useState(
+    Object.keys(DEFAULT_FORM_VALUES)
+  )
   const [formErrors, setFormErrors] = useState(submitErrors)
   const formRef = useRef(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -128,7 +139,9 @@ const OfferForm = ({
   const [mandatoryFields, setMandatoryFields] = useState([...MANDATORY_FIELDS])
 
   const resetMandatoryFields = useCallback(() => {
-    if (MANDATORY_FIELDS.sort().join(' ') !== mandatoryFields.sort().join(' ')) {
+    if (
+      MANDATORY_FIELDS.sort().join(' ') !== mandatoryFields.sort().join(' ')
+    ) {
       setMandatoryFields([...MANDATORY_FIELDS])
     }
   }, [mandatoryFields])
@@ -137,7 +150,9 @@ const OfferForm = ({
     newFormValues =>
       setFormValues(oldFormValues => {
         const updatedFormValues = { ...oldFormValues, ...newFormValues }
-        return isEqual(oldFormValues, updatedFormValues) ? oldFormValues : updatedFormValues
+        return isEqual(oldFormValues, updatedFormValues)
+          ? oldFormValues
+          : updatedFormValues
       }),
     [setFormValues]
   )
@@ -161,11 +176,15 @@ const OfferForm = ({
           motorDisabilityCompliant: venue.motorDisabilityCompliant,
           visualDisabilityCompliant: venue.visualDisabilityCompliant,
         }
-        const haveUnsetAccessibility = Object.values(venueAccessibilities).includes(null)
+        const haveUnsetAccessibility =
+          Object.values(venueAccessibilities).includes(null)
         updatedValues = {
           ...updatedValues,
           ...Object.keys(venueAccessibilities).reduce(
-            (acc, field) => ({ ...acc, [field]: !!venueAccessibilities[field] }),
+            (acc, field) => ({
+              ...acc,
+              [field]: !!venueAccessibilities[field],
+            }),
             {}
           ),
           noDisabilityCompliant: haveUnsetAccessibility
@@ -180,10 +199,18 @@ const OfferForm = ({
 
   useEffect(() => {
     resetMandatoryFields()
-    if (isIsbnRequiredInLivreEditionEnabled && CAN_CREATE_FROM_ISBN_SUBCATEGORIES.includes(offerSubCategory?.id)) {
+    if (
+      isIsbnRequiredInLivreEditionEnabled &&
+      CAN_CREATE_FROM_ISBN_SUBCATEGORIES.includes(offerSubCategory?.id)
+    ) {
       mandatoryFields.push('isbn')
     }
-  }, [offerSubCategory, isIsbnRequiredInLivreEditionEnabled, mandatoryFields, resetMandatoryFields])
+  }, [
+    offerSubCategory,
+    isIsbnRequiredInLivreEditionEnabled,
+    mandatoryFields,
+    resetMandatoryFields,
+  ])
 
   useEffect(() => {
     setFormErrors(submitErrors)
@@ -206,8 +233,8 @@ const OfferForm = ({
       setFormValues({ ...DEFAULT_FORM_VALUES, ...initialValues })
       const accessibilityInitialValues = getAccessibilityValues(initialValues)
       if (
-        'venueId' in initialValues
-        && Object.values(accessibilityInitialValues).includes(null)
+        'venueId' in initialValues &&
+        Object.values(accessibilityInitialValues).includes(null)
       ) {
         setOfferVenue(initialValues.venueId)
       }
@@ -249,7 +276,11 @@ const OfferForm = ({
       }
 
       setVenueOptions(
-        buildSelectOptionsWithOptionalFields('id', ['publicName', 'name'], venuesToShow)
+        buildSelectOptionsWithOptionalFields(
+          'id',
+          ['publicName', 'name'],
+          venuesToShow
+        )
       )
 
       if (venuesToShow.length === 0 && venues.length > 0) {
@@ -283,7 +314,9 @@ const OfferForm = ({
         formValues.venueId &&
         venueOptions.find(showedVenue => showedVenue.id === formValues.venueId)
       ) {
-        const selectedVenue = venues.find(venue => venue.id === formValues.venueId)
+        const selectedVenue = venues.find(
+          venue => venue.id === formValues.venueId
+        )
         if (selectedVenue) {
           setVenue(selectedVenue)
           handleFormUpdate({ offererId: selectedVenue.managingOffererId })
@@ -315,7 +348,8 @@ const OfferForm = ({
     function setBookingEmail() {
       if (!initialValues.bookingEmail) {
         if (
-          (offerSubCategory && offerSubCategory.onlineOfflinePlatform === PLATFORM.ONLINE) ||
+          (offerSubCategory &&
+            offerSubCategory.onlineOfflinePlatform === PLATFORM.ONLINE) ||
           venue?.isVirtual
         ) {
           handleFormUpdate({ bookingEmail: userEmail })
@@ -324,7 +358,14 @@ const OfferForm = ({
         }
       }
     },
-    [initialValues.bookingEmail, venue, offerSubCategory, handleFormUpdate, userEmail, isEdition]
+    [
+      initialValues.bookingEmail,
+      venue,
+      offerSubCategory,
+      handleFormUpdate,
+      userEmail,
+      isEdition,
+    ]
   )
 
   useEffect(
@@ -333,7 +374,8 @@ const OfferForm = ({
 
       if (
         venue.withdrawalDetails &&
-        formValues.withdrawalDetails === DEFAULT_FORM_VALUES['withdrawalDetails']
+        formValues.withdrawalDetails ===
+          DEFAULT_FORM_VALUES['withdrawalDetails']
       ) {
         handleFormUpdate({ withdrawalDetails: venue.withdrawalDetails })
       }
@@ -358,7 +400,7 @@ const OfferForm = ({
   }, [formRef, formErrors])
 
   useEffect(
-    function setParentOfferPreviewData () {
+    function setParentOfferPreviewData() {
       setOfferPreviewData({
         subcategoryId: formValues.subcategoryId,
         description: formValues.description,
@@ -385,14 +427,17 @@ const OfferForm = ({
     event => {
       const selectedOffererId = event.target.value
       if (selectedOffererId !== formValues.offererId) {
-        handleFormUpdate({ offererId: selectedOffererId, venueId: DEFAULT_FORM_VALUES.venueId })
+        handleFormUpdate({
+          offererId: selectedOffererId,
+          venueId: DEFAULT_FORM_VALUES.venueId,
+        })
         setSelectedOfferer(selectedOffererId)
       }
     },
     [formValues.offererId, handleFormUpdate, setSelectedOfferer]
   )
 
-  const isValid = useCallback( () => {
+  const isValid = useCallback(() => {
     let newFormErrors = {}
     const formFields = [...offerFormFields, 'offererId']
 
@@ -422,7 +467,8 @@ const OfferForm = ({
     }
 
     if (!isUrlValid(formValues.externalTicketOfficeUrl)) {
-      newFormErrors['externalTicketOfficeUrl'] = 'Veuillez renseigner une URL valide'
+      newFormErrors['externalTicketOfficeUrl'] =
+        'Veuillez renseigner une URL valide'
     }
 
     setFormErrors(newFormErrors)
@@ -435,7 +481,9 @@ const OfferForm = ({
       setIsSubmitLoading(true)
 
       if (isValid()) {
-        const editableFields = offerFormFields.filter(field => !readOnlyFields.includes(field))
+        const editableFields = offerFormFields.filter(
+          field => !readOnlyFields.includes(field)
+        )
 
         const submittedValuesAccumulator = editableFields.some(editableField =>
           EXTRA_DATA_FIELDS.includes(editableField)
@@ -443,25 +491,32 @@ const OfferForm = ({
           ? { extraData: null }
           : {}
 
-        const submittedValues = editableFields.reduce((submittedValues, fieldName) => {
-          if (!EXTRA_DATA_FIELDS.includes(fieldName)) {
-            const fieldValue =
-              formValues[fieldName] === TEXT_INPUT_DEFAULT_VALUE ? null : formValues[fieldName]
-            submittedValues = {
-              ...submittedValues,
-              [fieldName]: fieldValue,
+        const submittedValues = editableFields.reduce(
+          (submittedValues, fieldName) => {
+            if (!EXTRA_DATA_FIELDS.includes(fieldName)) {
+              const fieldValue =
+                formValues[fieldName] === TEXT_INPUT_DEFAULT_VALUE
+                  ? null
+                  : formValues[fieldName]
+              submittedValues = {
+                ...submittedValues,
+                [fieldName]: fieldValue,
+              }
+            } else if (
+              formValues[fieldName] !== DEFAULT_FORM_VALUES[fieldName]
+            ) {
+              submittedValues.extraData = {
+                ...submittedValues.extraData,
+                [fieldName]: formValues[fieldName],
+              }
             }
-          } else if (formValues[fieldName] !== DEFAULT_FORM_VALUES[fieldName]) {
-            submittedValues.extraData = {
-              ...submittedValues.extraData,
-              [fieldName]: formValues[fieldName],
-            }
-          }
-          // front should check categoryId but do not send to backend
-          delete submittedValues.categoryId
+            // front should check categoryId but do not send to backend
+            delete submittedValues.categoryId
 
-          return submittedValues
-        }, submittedValuesAccumulator)
+            return submittedValues
+          },
+          submittedValuesAccumulator
+        )
 
         if (!receiveNotificationEmails) {
           submittedValues.bookingEmail = null
@@ -494,7 +549,10 @@ const OfferForm = ({
   const handleSingleFormUpdate = useCallback(
     event => {
       const field = event.target.name
-      const value = event.target.type === 'checkbox' ? !formValues[field] : event.target.value
+      const value =
+        event.target.type === 'checkbox'
+          ? !formValues[field]
+          : event.target.value
       handleFormUpdate({ [field]: value })
     },
     [formValues, handleFormUpdate]
@@ -516,9 +574,10 @@ const OfferForm = ({
     [formErrors, handleFormUpdate, setFormErrors]
   )
 
-  const handleDurationChange = useCallback(value => handleFormUpdate({ durationMinutes: value }), [
-    handleFormUpdate,
-  ])
+  const handleDurationChange = useCallback(
+    value => handleFormUpdate({ durationMinutes: value }),
+    [handleFormUpdate]
+  )
 
   const toggleReceiveNotification = useCallback(
     () => setReceiveNotificationEmails(!receiveNotificationEmails),
@@ -538,13 +597,17 @@ const OfferForm = ({
     if (
       isIsbnRequiredInLivreEditionEnabled &&
       isbnErrorMessage &&
-      isbnErrorMessage.includes('Ce produit n’est pas éligible au pass Culture.')
+      isbnErrorMessage.includes(
+        'Ce produit n’est pas éligible au pass Culture.'
+      )
     ) {
       return (
         <>
           {isbnErrorMessage}
           <b>
-            {' Vous pouvez retrouver la liste des catégories de livres qui ne sont pas éligibles au pass Culture sur le lien suivant:'}
+            {
+              ' Vous pouvez retrouver la liste des catégories de livres qui ne sont pas éligibles au pass Culture sur le lien suivant:'
+            }
             <a
               href="https://aide.passculture.app/fr/articles/5394354-acteurs-culturels-quels-sont-les-livres-eligibles-au-pass-culture"
               rel="noopener noreferrer"
@@ -581,10 +644,7 @@ const OfferForm = ({
   }
 
   return (
-    <form
-      className="offer-form"
-      ref={formRef}
-    >
+    <form className="offer-form" ref={formRef}>
       {providerName !== null ? (
         <SynchronizedProviderInformation providerName={providerName} />
       ) : (
@@ -594,12 +654,10 @@ const OfferForm = ({
       )}
 
       <section className="form-section">
-        <h3 className="section-title">
-          Type d’offre
-        </h3>
+        <h3 className="section-title">Type d’offre</h3>
         <p className="section-description">
-          Le type de l’offre permet de la caractériser et de la valoriser au mieux dans
-          l’application.
+          Le type de l’offre permet de la caractériser et de la valoriser au
+          mieux dans l’application.
         </p>
 
         <div className="form-row">
@@ -614,7 +672,9 @@ const OfferForm = ({
               showSubType: formValues.showSubType,
             }}
             getErrorMessage={getErrorMessage}
-            isTypeOfflineButOnlyVirtualVenues={isTypeOfflineButOnlyVirtualVenues}
+            isTypeOfflineButOnlyVirtualVenues={
+              isTypeOfflineButOnlyVirtualVenues
+            }
             readOnlyFields={readOnlyFields}
             subCategories={subCategories}
             updateCategoriesFormValues={handleFormUpdate}
@@ -635,9 +695,7 @@ const OfferForm = ({
         !isTypeOfflineButOnlyVirtualVenues && (
           <Fragment>
             <section className="form-section">
-              <h3 className="section-title">
-                Informations artistiques
-              </h3>
+              <h3 className="section-title">Informations artistiques</h3>
 
               <div className="form-row">
                 <TextInput
@@ -649,7 +707,9 @@ const OfferForm = ({
                   name="name"
                   onChange={handleSingleFormUpdate}
                   required
-                  subLabel={!mandatoryFields.includes('name') ? 'Optionnel' : ''}
+                  subLabel={
+                    !mandatoryFields.includes('name') ? 'Optionnel' : ''
+                  }
                   value={formValues.name}
                 />
               </div>
@@ -663,7 +723,9 @@ const OfferForm = ({
                   name="description"
                   onChange={handleSingleFormUpdate}
                   rows={6}
-                  subLabel={!mandatoryFields.includes('description') ? 'Optionnel' : ''}
+                  subLabel={
+                    !mandatoryFields.includes('description') ? 'Optionnel' : ''
+                  }
                   value={formValues.description}
                 />
               </div>
@@ -675,7 +737,9 @@ const OfferForm = ({
                     label="Intervenant"
                     name="speaker"
                     onChange={handleSingleFormUpdate}
-                    subLabel={!mandatoryFields.includes('speaker') ? 'Optionnel' : ''}
+                    subLabel={
+                      !mandatoryFields.includes('speaker') ? 'Optionnel' : ''
+                    }
                     value={formValues.speaker}
                   />
                 </div>
@@ -689,7 +753,9 @@ const OfferForm = ({
                     label="Auteur"
                     name="author"
                     onChange={handleSingleFormUpdate}
-                    subLabel={!mandatoryFields.includes('author') ? 'Optionnel' : ''}
+                    subLabel={
+                      !mandatoryFields.includes('author') ? 'Optionnel' : ''
+                    }
                     type="text"
                     value={formValues.author}
                   />
@@ -704,7 +770,9 @@ const OfferForm = ({
                     label="Visa d’exploitation"
                     name="visa"
                     onChange={handleSingleFormUpdate}
-                    subLabel={!mandatoryFields.includes('visa') ? 'Optionnel' : ''}
+                    subLabel={
+                      !mandatoryFields.includes('visa') ? 'Optionnel' : ''
+                    }
                     type="text"
                     value={formValues.visa}
                   />
@@ -720,7 +788,9 @@ const OfferForm = ({
                     name="isbn"
                     onChange={handleSingleFormUpdate}
                     required={isIsbnRequiredInLivreEditionEnabled}
-                    subLabel={!mandatoryFields.includes('isbn') ? 'Optionnel' : ''}
+                    subLabel={
+                      !mandatoryFields.includes('isbn') ? 'Optionnel' : ''
+                    }
                     type="text"
                     value={formValues.isbn}
                   />
@@ -735,7 +805,11 @@ const OfferForm = ({
                     label="Metteur en scène"
                     name="stageDirector"
                     onChange={handleSingleFormUpdate}
-                    subLabel={!mandatoryFields.includes('stageDirector') ? 'Optionnel' : ''}
+                    subLabel={
+                      !mandatoryFields.includes('stageDirector')
+                        ? 'Optionnel'
+                        : ''
+                    }
                     type="text"
                     value={formValues.stageDirector}
                   />
@@ -750,7 +824,9 @@ const OfferForm = ({
                     label="Interprète"
                     name="performer"
                     onChange={handleSingleFormUpdate}
-                    subLabel={!mandatoryFields.includes('performer') ? 'Optionnel' : ''}
+                    subLabel={
+                      !mandatoryFields.includes('performer') ? 'Optionnel' : ''
+                    }
                     type="text"
                     value={formValues.performer}
                   />
@@ -767,19 +843,21 @@ const OfferForm = ({
                     name="durationMinutes"
                     onChange={handleDurationChange}
                     placeholder="HH:MM"
-                    subLabel={!mandatoryFields.includes('durationMinutes') ? 'Optionnel' : ''}
+                    subLabel={
+                      !mandatoryFields.includes('durationMinutes')
+                        ? 'Optionnel'
+                        : ''
+                    }
                   />
                 </div>
               )}
             </section>
 
             <section className="form-section">
-              <h3 className="section-title">
-                Informations pratiques
-              </h3>
+              <h3 className="section-title">Informations pratiques</h3>
               <p className="section-description">
-                Les informations pratiques permettent de donner aux utilisateurs des informations
-                sur le retrait de leur commande.
+                Les informations pratiques permettent de donner aux utilisateurs
+                des informations sur le retrait de leur commande.
               </p>
 
               <div className="form-row">
@@ -794,8 +872,12 @@ const OfferForm = ({
                   label="Structure"
                   name="offererId"
                   options={offererOptions}
-                  selectedValue={formValues.offererId || DEFAULT_FORM_VALUES.offererId}
-                  subLabel={!mandatoryFields.includes('offererId') ? 'Optionnel' : ''}
+                  selectedValue={
+                    formValues.offererId || DEFAULT_FORM_VALUES.offererId
+                  }
+                  subLabel={
+                    !mandatoryFields.includes('offererId') ? 'Optionnel' : ''
+                  }
                 />
               </div>
 
@@ -811,8 +893,12 @@ const OfferForm = ({
                   label="Lieu"
                   name="venueId"
                   options={venueOptions}
-                  selectedValue={formValues.venueId || DEFAULT_FORM_VALUES.venueId}
-                  subLabel={!mandatoryFields.includes('venueId') ? 'Optionnel' : ''}
+                  selectedValue={
+                    formValues.venueId || DEFAULT_FORM_VALUES.venueId
+                  }
+                  subLabel={
+                    !mandatoryFields.includes('venueId') ? 'Optionnel' : ''
+                  }
                 />
               </div>
               {displayNoRefundWarning && (
@@ -837,7 +923,11 @@ const OfferForm = ({
                   name="withdrawalDetails"
                   onChange={handleSingleFormUpdate}
                   rows={6}
-                  subLabel={!mandatoryFields.includes('withdrawalDetails') ? 'Optionnel' : ''}
+                  subLabel={
+                    !mandatoryFields.includes('withdrawalDetails')
+                      ? 'Optionnel'
+                      : ''
+                  }
                   value={formValues.withdrawalDetails}
                 />
               </div>
@@ -862,7 +952,9 @@ const OfferForm = ({
                 <div className="form-row">
                   <CheckboxInput
                     checked={formValues.isNational || false}
-                    disabled={readOnlyFields.includes('isNational') ? 'disabled' : ''}
+                    disabled={
+                      readOnlyFields.includes('isNational') ? 'disabled' : ''
+                    }
                     isLabelDisable={isDisabled}
                     label="Rayonnement national"
                     name="isNational"
@@ -873,11 +965,10 @@ const OfferForm = ({
             </section>
 
             <section className="form-section accessibility-section">
-              <h3 className="section-title">
-                Accessibilité
-              </h3>
+              <h3 className="section-title">Accessibilité</h3>
               <p className="section-description">
-                Cette offre est-elle accessible aux publics en situation de handicaps :
+                Cette offre est-elle accessible aux publics en situation de
+                handicaps :
               </p>
               <AccessibilityCheckboxList
                 disabled={isDisabled}
@@ -899,9 +990,7 @@ const OfferForm = ({
             />
 
             <section className="form-section">
-              <h3 className="section-title">
-                Lien de réservation externe
-              </h3>
+              <h3 className="section-title">Lien de réservation externe</h3>
               <p className="section-description">
                 {'Ce lien sera affiché aux utilisateurs ne pouvant pas effectuer la réservation dans l’application. ' +
                   'Nous vous recommandons d’insérer le lien vers votre billetterie ou votre site internet.'}
@@ -912,16 +1001,18 @@ const OfferForm = ({
                 label="URL de redirection externe"
                 name="externalTicketOfficeUrl"
                 onChange={handleSingleFormUpdate}
-                subLabel={!mandatoryFields.includes('externalTicketOfficeUrl') ? 'Optionnel' : ''}
+                subLabel={
+                  !mandatoryFields.includes('externalTicketOfficeUrl')
+                    ? 'Optionnel'
+                    : ''
+                }
                 type="text"
                 value={formValues.externalTicketOfficeUrl}
               />
             </section>
 
             <section className="form-section">
-              <h3 className="section-title">
-                Notifications
-              </h3>
+              <h3 className="section-title">Notifications</h3>
 
               <div className="form-row">
                 <CheckboxInput
@@ -951,13 +1042,10 @@ const OfferForm = ({
               )}
             </section>
           </Fragment>
-      )}
+        )}
 
       <section className="actions-section">
-        <Link
-          className="secondary-link"
-          to={backUrl}
-        >
+        <Link className="secondary-link" to={backUrl}>
           Annuler et quitter
         </Link>
         <SubmitButton

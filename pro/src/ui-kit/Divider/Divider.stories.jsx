@@ -13,13 +13,9 @@ export default {
 
 const Template = args => (
   <div>
-    <p>
-      First text
-    </p>
+    <p>First text</p>
     <Divider {...args} />
-    <p>
-      Second text
-    </p>
+    <p>Second text</p>
   </div>
 )
 

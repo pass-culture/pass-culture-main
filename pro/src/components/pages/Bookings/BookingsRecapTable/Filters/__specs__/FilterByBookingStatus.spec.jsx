@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { mount } from 'enzyme'
 import React from 'react'
@@ -156,7 +156,9 @@ describe('components | FilterByBookingStatus', () => {
       const checkbox = wrapper.find('input').at(0)
 
       // when
-      checkbox.simulate('change', { target: { name: 'validated', checked: false } })
+      checkbox.simulate('change', {
+        target: { name: 'validated', checked: false },
+      })
 
       // then
       expect(props.updateGlobalFilters).toHaveBeenCalledWith({
@@ -170,13 +172,17 @@ describe('components | FilterByBookingStatus', () => {
         ...props,
         bookingStatuses: ['validated'],
       }
-      const wrapper = mount(<FilterByBookingStatus {...propsWithInitialFilter} />)
+      const wrapper = mount(
+        <FilterByBookingStatus {...propsWithInitialFilter} />
+      )
       wrapper.find('img').simulate('focus')
 
       const checkbox = wrapper.find('input').at(0)
 
       // when
-      checkbox.simulate('change', { target: { name: 'validated', checked: true } })
+      checkbox.simulate('change', {
+        target: { name: 'validated', checked: true },
+      })
 
       // then
       expect(props.updateGlobalFilters).toHaveBeenCalledWith({
@@ -190,11 +196,15 @@ describe('components | FilterByBookingStatus', () => {
       wrapper.find('img').simulate('focus')
 
       const validatedStatusCheckbox = wrapper.find('input').at(0)
-      validatedStatusCheckbox.simulate('change', { target: { name: 'validated', checked: false } })
+      validatedStatusCheckbox.simulate('change', {
+        target: { name: 'validated', checked: false },
+      })
       const bookedStatusCheckbox = wrapper.find('input').at(1)
 
       // when
-      bookedStatusCheckbox.simulate('change', { target: { name: 'booked', checked: false } })
+      bookedStatusCheckbox.simulate('change', {
+        target: { name: 'booked', checked: false },
+      })
 
       // then
       expect(props.updateGlobalFilters).toHaveBeenCalledWith({

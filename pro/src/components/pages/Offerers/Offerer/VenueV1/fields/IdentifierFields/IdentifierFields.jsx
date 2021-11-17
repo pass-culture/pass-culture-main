@@ -1,12 +1,12 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
@@ -31,7 +31,6 @@ import siretValidate from './validators/siretValidate'
 const parseSiret = value => {
   return value.replace(/[^[0-9]/g, '')
 }
-
 
 class IdentifierFields extends PureComponent {
   componentDidUpdate() {
@@ -67,16 +66,17 @@ class IdentifierFields extends PureComponent {
   }
 
   /* eslint-disable react/no-unstable-nested-components */
-  handleRender = readOnly => () => readOnly ? null : (
-    <span
-      className="button"
-      data-place="bottom"
-      data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une adresse différente est saisie lors de la création d’une offre)</p>"
-      data-type="info"
-    >
-      <Icon svg="picto-info" />
-    </span>
-  )
+  handleRender = readOnly => () =>
+    readOnly ? null : (
+      <span
+        className="button"
+        data-place="bottom"
+        data-tip="<p>Cette adresse recevra les e-mails de notification de réservation (sauf si une adresse différente est saisie lors de la création d’une offre)</p>"
+        data-type="info"
+      >
+        <Icon svg="picto-info" />
+      </span>
+    )
 
   commentValidate = comment => {
     const { formSiret } = this.props
@@ -128,12 +128,7 @@ class IdentifierFields extends PureComponent {
           Informations lieu
           {!readOnly && (
             <span className="required-fields-hint">
-              Les champs marqués d’un
-              {' '}
-              <span className="required-legend">
-                *
-              </span>
-              {' '}
+              Les champs marqués d’un <span className="required-legend">*</span>{' '}
               sont obligatoires
             </span>
           )}
@@ -147,7 +142,10 @@ class IdentifierFields extends PureComponent {
               name="siret"
               parse={parseSiret}
               readOnly={readOnly || initialSiret !== null}
-              renderValue={this.handleRenderValue(fieldReadOnlyBecauseFrozenFormSiret, readOnly)}
+              renderValue={this.handleRenderValue(
+                fieldReadOnlyBecauseFrozenFormSiret,
+                readOnly
+              )}
               type="siret"
               validate={initialSiret ? undefined : siretValidate}
             />
@@ -198,30 +196,20 @@ class IdentifierFields extends PureComponent {
             })}
           >
             <div className="field-label">
-              <label htmlFor="venue-type">
-                Type de lieu :
-                {' '}
-              </label>
-              <span className="field-asterisk">
-                *
-              </span>
+              <label htmlFor="venue-type">Type de lieu : </label>
+              <span className="field-asterisk">*</span>
             </div>
 
             <div className="field-control">
               {readOnly ? (
-                <div
-                  className="venue-type-label"
-                  id="venue-type"
-                >
+                <div className="venue-type-label" id="venue-type">
                   <span>
                     {venueIsVirtual ? 'Offre numérique' : venueTypeLabel}
                   </span>
                 </div>
               ) : (
                 <div className="control control-select">
-                  <div
-                    className="select"
-                  >
+                  <div className="select">
                     <Field
                       component="select"
                       id="venue-type"
@@ -260,26 +248,20 @@ class IdentifierFields extends PureComponent {
 
               <div className="field-control">
                 {readOnly ? (
-                  <div
-                    className="venue-label-label"
-                    id="venue-label"
-                  >
-                    <span>
-                      {venueLabelText}
-                    </span>
+                  <div className="venue-label-label" id="venue-label">
+                    <span>{venueLabelText}</span>
                   </div>
                 ) : (
                   <div className="control control-select">
-                    <div
-                      className="select"
-                    >
+                    <div className="select">
                       <Field
                         component="select"
                         id="venue-label"
                         name="venueLabelId"
                       >
                         <option value="">
-                          Si votre lieu est labellisé précisez-le en le sélectionnant dans la liste
+                          Si votre lieu est labellisé précisez-le en le
+                          sélectionnant dans la liste
                         </option>
                         {venueLabels.map(venueLabel => (
                           <option

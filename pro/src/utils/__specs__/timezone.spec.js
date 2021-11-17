@@ -8,7 +8,11 @@ describe('formatLocalTimeDateString', () => {
     const dateFormat = 'EEEE d MMMM yyyy, HH:mm'
 
     // when
-    const formattedDate = formatLocalTimeDateString(date, departementCode, dateFormat)
+    const formattedDate = formatLocalTimeDateString(
+      date,
+      departementCode,
+      dateFormat
+    )
 
     // then
     expect(formattedDate).toBe('Thursday 28 February 2019, 22:59')
@@ -21,7 +25,11 @@ describe('formatLocalTimeDateString', () => {
     const dateFormat = 'EEEE d MMMM yyyy, HH:mm'
 
     // when
-    const formattedDate = formatLocalTimeDateString(date, departementCode, dateFormat)
+    const formattedDate = formatLocalTimeDateString(
+      date,
+      departementCode,
+      dateFormat
+    )
 
     // then
     expect(formattedDate).toBe('Thursday 28 February 2019, 18:59')

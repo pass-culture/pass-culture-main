@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen } from '@testing-library/react'
@@ -52,7 +52,10 @@ describe('src | StocksProviderForm', () => {
     }
 
     pcapi.loadVenueProviders.mockResolvedValue([])
-    provider = { id: 'providerId', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' }
+    provider = {
+      id: 'providerId',
+      name: 'TiteLive Stocks (Epagine / Place des libraires.com)',
+    }
     pcapi.loadProviders.mockResolvedValue([provider])
 
     await renderVenueProvidersManager(props)
@@ -70,7 +73,9 @@ describe('src | StocksProviderForm', () => {
     await renderStocksProviderForm()
 
     // then
-    expect(screen.queryByRole('button', { name: 'Importer' })).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Importer' })
+    ).toBeInTheDocument()
     expect(screen.queryByText('Compte')).toBeInTheDocument()
     expect(screen.queryByText(props.venue.siret)).toBeInTheDocument()
   })
@@ -87,13 +92,19 @@ describe('src | StocksProviderForm', () => {
 
       // then
       expect(
-        screen.getByText('Certains ouvrages seront exclus de la synchronisation automatique.')
+        screen.getByText(
+          'Certains ouvrages seront exclus de la synchronisation automatique.'
+        )
       ).toBeInTheDocument()
 
-      const confirmImportButton = screen.getByRole('button', { name: 'Continuer' })
+      const confirmImportButton = screen.getByRole('button', {
+        name: 'Continuer',
+      })
       await fireEvent.click(confirmImportButton)
 
-      expect(screen.getByText('Vérification de votre rattachement')).toBeInTheDocument()
+      expect(
+        screen.getByText('Vérification de votre rattachement')
+      ).toBeInTheDocument()
       expect(pcapi.createVenueProvider).toHaveBeenCalledWith({
         providerId: provider.id,
         venueId: props.venue.id,
@@ -120,15 +131,23 @@ describe('src | StocksProviderForm', () => {
 
       // then
       expect(
-        screen.getByText('Certains ouvrages seront exclus de la synchronisation automatique.')
+        screen.getByText(
+          'Certains ouvrages seront exclus de la synchronisation automatique.'
+        )
       ).toBeInTheDocument()
 
-      const confirmImportButton = screen.getByRole('button', { name: 'Continuer' })
+      const confirmImportButton = screen.getByRole('button', {
+        name: 'Continuer',
+      })
       await fireEvent.click(confirmImportButton)
 
-      const successNotification = await screen.findByText('La synchronisation a bien été initiée.')
+      const successNotification = await screen.findByText(
+        'La synchronisation a bien été initiée.'
+      )
       expect(successNotification).toBeInTheDocument()
-      expect(screen.queryByText('Vérification de votre rattachement')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Vérification de votre rattachement')
+      ).not.toBeInTheDocument()
     })
 
     it('should display a notification and unselect provider if there is something wrong with the server', async () => {
@@ -146,13 +165,19 @@ describe('src | StocksProviderForm', () => {
 
       // then
       expect(
-        screen.getByText('Certains ouvrages seront exclus de la synchronisation automatique.')
+        screen.getByText(
+          'Certains ouvrages seront exclus de la synchronisation automatique.'
+        )
       ).toBeInTheDocument()
 
-      const confirmImportButton = screen.getByRole('button', { name: 'Continuer' })
+      const confirmImportButton = screen.getByRole('button', {
+        name: 'Continuer',
+      })
       await fireEvent.click(confirmImportButton)
 
-      const errorNotification = await screen.findByText(apiError.errors.provider[0])
+      const errorNotification = await screen.findByText(
+        apiError.errors.provider[0]
+      )
       expect(errorNotification).toBeInTheDocument()
       const providersSelect = screen.queryByRole('combobox')
       expect(providersSelect).not.toBeInTheDocument()

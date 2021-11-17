@@ -12,8 +12,10 @@ export const initReCaptchaScript = () => {
 export const getReCaptchaToken = action =>
   new Promise(resolve =>
     window.grecaptcha.ready(function () {
-      window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action }).then(function (token) {
-        resolve(token)
-      })
+      window.grecaptcha
+        .execute(RECAPTCHA_SITE_KEY, { action })
+        .then(function (token) {
+          resolve(token)
+        })
     })
   )

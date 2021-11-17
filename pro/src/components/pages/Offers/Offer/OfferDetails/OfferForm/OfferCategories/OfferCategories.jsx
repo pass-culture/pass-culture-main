@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -28,13 +28,16 @@ const OfferCategories = ({
     categories.filter(category => category.isSelectable)
   )
   const [subCategoriesOptions, setSubCategoriesOptions] = useState(null)
-  const [subCategoryConditionalFields, setSubCategoryConditionalFields] = useState([])
+  const [subCategoryConditionalFields, setSubCategoryConditionalFields] =
+    useState([])
 
   useEffect(
     function onCategoryChange() {
       if (categoriesFormValues.categoryId !== DEFAULT_FORM_VALUES.categoryId) {
         const options = subCategories.filter(
-          subCategory => subCategory.categoryId === categoriesFormValues.categoryId && subCategory.isSelectable
+          subCategory =>
+            subCategory.categoryId === categoriesFormValues.categoryId &&
+            subCategory.isSelectable
         )
         setSubCategoriesOptions(buildSelectOptions('id', 'proLabel', options))
       } else {
@@ -46,10 +49,16 @@ const OfferCategories = ({
 
   useEffect(
     function onSubCategoryChange() {
-      if (categoriesFormValues.subcategoryId !== DEFAULT_FORM_VALUES.subcategoryId) {
+      if (
+        categoriesFormValues.subcategoryId !== DEFAULT_FORM_VALUES.subcategoryId
+      ) {
         const currentSubCategoryConditionalFields = subCategories
-          .find(subCategory => categoriesFormValues.subcategoryId === subCategory.id)
-          .conditionalFields.filter(field => field === 'musicType' || field === 'showType')
+          .find(
+            subCategory => categoriesFormValues.subcategoryId === subCategory.id
+          )
+          .conditionalFields.filter(
+            field => field === 'musicType' || field === 'showType'
+          )
 
         setSubCategoryConditionalFields(currentSubCategoryConditionalFields)
       } else {
@@ -62,9 +71,12 @@ const OfferCategories = ({
   const getDefaultSubCategory = useCallback(
     categoryId => {
       const categorySubCategories = subCategories.filter(
-        subCategory => subCategory.categoryId === categoryId && subCategory.isSelectable
+        subCategory =>
+          subCategory.categoryId === categoryId && subCategory.isSelectable
       )
-      return categorySubCategories.length === 1 ? categorySubCategories[0].id : DEFAULT_FORM_VALUES.categoryId
+      return categorySubCategories.length === 1
+        ? categorySubCategories[0].id
+        : DEFAULT_FORM_VALUES.categoryId
     },
     [subCategories]
   )
@@ -146,7 +158,9 @@ const OfferCategories = ({
           name="categoryId"
           options={categoriesOptions}
           required
-          selectedValue={categoriesFormValues.categoryId || DEFAULT_FORM_VALUES.categoryId}
+          selectedValue={
+            categoriesFormValues.categoryId || DEFAULT_FORM_VALUES.categoryId
+          }
         />
       </div>
 
@@ -164,19 +178,23 @@ const OfferCategories = ({
             name="subcategoryId"
             options={subCategoriesOptions}
             required
-            selectedValue={categoriesFormValues.subcategoryId || DEFAULT_FORM_VALUES.subcategoryId}
+            selectedValue={
+              categoriesFormValues.subcategoryId ||
+              DEFAULT_FORM_VALUES.subcategoryId
+            }
           />
         </div>
       )}
 
-      {!isTypeOfflineButOnlyVirtualVenues && subCategoryConditionalFields.length > 0 && (
-        <SubtypeSelects
-          categoriesFormValues={categoriesFormValues}
-          currentSubCategoryConditionalFields={subCategoryConditionalFields}
-          handleSelection={handleChange}
-          readOnlyFields={readOnlyFields}
-        />
-      )}
+      {!isTypeOfflineButOnlyVirtualVenues &&
+        subCategoryConditionalFields.length > 0 && (
+          <SubtypeSelects
+            categoriesFormValues={categoriesFormValues}
+            currentSubCategoryConditionalFields={subCategoryConditionalFields}
+            handleSelection={handleChange}
+            readOnlyFields={readOnlyFields}
+          />
+        )}
     </>
   )
 }

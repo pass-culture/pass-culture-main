@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -17,21 +17,13 @@ export const VenueDetails = ({ physicalVenue }) => {
 
   return (
     <div className="op-section">
-      <div className="op-section-title">
-        Où ?
-      </div>
-      <div className="op-section-secondary-title">
-        Adresse
-      </div>
+      <div className="op-section-title">Où ?</div>
+      <div className="op-section-secondary-title">Adresse</div>
       <address className="op-section-text op-address">
         {venueDetails.filter(venueDetail => Boolean(venueDetail)).join(' - ')}
       </address>
-      <div className="op-section-secondary-title">
-        Distance
-      </div>
-      <div className="op-section-text">
-        - - km
-      </div>
+      <div className="op-section-secondary-title">Distance</div>
+      <div className="op-section-text">- - km</div>
     </div>
   )
 }

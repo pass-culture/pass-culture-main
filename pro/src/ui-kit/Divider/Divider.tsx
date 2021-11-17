@@ -3,20 +3,19 @@ import React, { FC } from 'react'
 
 import styles from './Divider.module.scss'
 
-
-type Size = 'medium'; 
+type Size = 'medium'
 interface IDividerProps {
-  size?: Size;
-  className?: string;
+  size?: Size
+  className?: string
 }
 
 const Divider: FC<IDividerProps> = ({ size, className }) => {
   const sizeClassName = {
-    medium: styles['divider-medium']
-  }[size || 'medium'] 
+    medium: styles['divider-medium'],
+  }[size || 'medium']
 
   return (
-    <div className={classnames(styles.divider, sizeClassName, className )} />
+    <div className={classnames(styles.divider, sizeClassName, className)} />
   )
 }
 export default Divider

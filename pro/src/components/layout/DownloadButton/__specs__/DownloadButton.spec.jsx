@@ -1,6 +1,6 @@
 /*
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 import React from 'react'
@@ -22,7 +22,7 @@ describe('src | components | Layout | DownloadButton', () => {
 
         // then
         let buttonProps = wrapper.find('button[download]').props()
-        expect(buttonProps.disabled).toStrictEqual(false)
+        expect(buttonProps.disabled).toBe(false)
         expect(buttonProps.className).not.toContain('is-loading')
 
         // when
@@ -30,14 +30,14 @@ describe('src | components | Layout | DownloadButton', () => {
 
         // then
         buttonProps = wrapper.find('button[download]').props()
-        expect(buttonProps.disabled).toStrictEqual(true)
+        expect(buttonProps.disabled).toBe(true)
         expect(buttonProps.className).toContain('is-loading')
 
         // when (in the end of digest)
         setTimeout(() => {
           // then
           buttonProps = wrapper.find('button[download]').props()
-          expect(buttonProps.disabled).toStrictEqual(false)
+          expect(buttonProps.disabled).toBe(false)
           expect(buttonProps.className).not.toContain('is-loading')
           resolve()
         })

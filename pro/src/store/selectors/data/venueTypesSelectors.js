@@ -11,9 +11,13 @@ export const selectVenueTypes = state => {
     venue_types => venue_types.label === 'Autre'
   )
 
-  const autre = venue_types.slice(venue_type_index_of_autre, venue_type_index_of_autre + 1).pop()
+  const autre = venue_types
+    .slice(venue_type_index_of_autre, venue_type_index_of_autre + 1)
+    .pop()
 
-  const venue_type_without_autre = venue_types.filter(venue_types => venue_types.label !== 'Autre')
+  const venue_type_without_autre = venue_types.filter(
+    venue_types => venue_types.label !== 'Autre'
+  )
 
   venue_type_without_autre.sort(sorted_alphabetically_by_label).push(autre)
 

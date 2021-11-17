@@ -1,6 +1,6 @@
 /*
-* @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
-*/
+ * @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
+ */
 
 import { removeWhitespaces } from 'react-final-form-utils'
 

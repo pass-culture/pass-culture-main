@@ -1,11 +1,14 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Breadcrumb, { STYLE_TYPE_TAB, STYLE_TYPE_DEFAULT } from 'components/layout/Breadcrumb'
+import Breadcrumb, {
+  STYLE_TYPE_TAB,
+  STYLE_TYPE_DEFAULT,
+} from 'components/layout/Breadcrumb'
 
 export const STEP_ID_DETAILS = 'details'
 export const STEP_ID_STOCKS = 'stocks'

@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 const MAX_FILE_SIZE = 1048576
 const CARRIAGE_RETURN = '\n'
@@ -31,7 +31,10 @@ export const fileReader = file => {
   })
 }
 
-export const checkAndParseUploadedFile = async ({ fileReader, currentFile }) => {
+export const checkAndParseUploadedFile = async ({
+  fileReader,
+  currentFile,
+}) => {
   if (currentFile.size > MAX_FILE_SIZE) {
     return { errorMessage: 'Le poids du fichier ne doit pas dépasser 1 Mo.' }
   }
@@ -39,7 +42,8 @@ export const checkAndParseUploadedFile = async ({ fileReader, currentFile }) => 
   const fileContent = await fileReader(currentFile)
   if (!fileContent) {
     return {
-      errorMessage: 'Le fichier est vide ou illisible, veuillez réessayer ou contacter le support.',
+      errorMessage:
+        'Le fichier est vide ou illisible, veuillez réessayer ou contacter le support.',
     }
   }
 
@@ -65,7 +69,9 @@ export const checkAndParseUploadedFile = async ({ fileReader, currentFile }) => 
       }
       return acc
     }, {})
-    const codeNonUniques = [...new Set(rows.filter(code => countByCode[code] > 1))]
+    const codeNonUniques = [
+      ...new Set(rows.filter(code => countByCode[code] > 1)),
+    ]
     return {
       errorMessage: `Plusieurs codes identiques ont été trouvés dans le fichier : ${codeNonUniques
         .slice(0, MAX_CODE_DISPLAY)

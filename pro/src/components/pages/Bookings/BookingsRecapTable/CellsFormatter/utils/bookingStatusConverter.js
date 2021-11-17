@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import { FORMAT_DD_MM_YYYY, FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 
@@ -62,5 +62,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
 ]
 
 export function getBookingStatusDisplayInformations(bookingStatus) {
-  return BOOKING_STATUS_DISPLAY_INFORMATIONS.find(({ id }) => bookingStatus.toLowerCase() === id)
+  return BOOKING_STATUS_DISPLAY_INFORMATIONS.find(
+    ({ id }) => bookingStatus.toLowerCase() === id
+  )
 }

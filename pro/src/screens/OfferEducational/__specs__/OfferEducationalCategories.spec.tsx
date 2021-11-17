@@ -5,8 +5,10 @@ import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router'
 
-
-import { getCategoriesSelect, getSubcategoriesSelect } from '../__tests-utils__/eacOfferCreationUtils'
+import {
+  getCategoriesSelect,
+  getSubcategoriesSelect,
+} from '../__tests-utils__/eacOfferCreationUtils'
 import setDefaultProps from '../__tests-utils__/setDefaultProps'
 import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
 
@@ -25,7 +27,7 @@ describe('screens | OfferEducational', () => {
   beforeEach(() => {
     props = setDefaultProps()
   })
-  
+
   it('should display first category and associated subcategories', () => {
     renderEACOfferCreation(props)
 
@@ -41,7 +43,7 @@ describe('screens | OfferEducational', () => {
 
   it('should update subcategories when category changes', () => {
     renderEACOfferCreation(props)
-  
+
     const categoriesSelect = getCategoriesSelect()
     userEvent.selectOptions(categoriesSelect, 'CINEMA')
     expect(categoriesSelect.value).toBe('CINEMA')

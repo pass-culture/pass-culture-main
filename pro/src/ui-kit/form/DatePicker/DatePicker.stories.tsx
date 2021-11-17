@@ -10,19 +10,14 @@ export default {
   component: DatePicker,
 }
 
-const Template: Story<{label?: string}> = ({ label }) => (
+const Template: Story<{ label?: string }> = ({ label }) => (
   <Formik
     initialValues={{ date: new Date().toISOString().split('T')[0] }}
     onSubmit={action('onSubmit')}
   >
     {({ getFieldProps }) => {
-      return (
-        <DatePicker
-          {...getFieldProps('date')}
-          label={label}
-          name='date'
-        />
-      )}}
+      return <DatePicker {...getFieldProps('date')} label={label} name="date" />
+    }}
   </Formik>
 )
 

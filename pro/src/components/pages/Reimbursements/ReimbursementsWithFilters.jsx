@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
@@ -17,7 +17,8 @@ import useActiveFeature from '../../hooks/useActiveFeature'
 
 import ReimbursementsDetails from './ReimbursementsDetails'
 
-const sortByKeyAlphabeticalOrder = keyName => (x, y) => x[keyName].localeCompare(y[keyName])
+const sortByKeyAlphabeticalOrder = keyName => (x, y) =>
+  x[keyName].localeCompare(y[keyName])
 
 const buildAndSortVenueFilterOptions = venues =>
   venues
@@ -36,19 +37,24 @@ const Reimbursements = ({ currentUser }) => {
   const [isRefundDetailsActive, setIsRefundDetailsActive] = useState(false)
   const [venuesOptions, setVenuesOptions] = useState([])
 
-  const showSection = useCallback((sectionId) => () => {
-    if (sectionId === 'refund-proof') {
-      setIsRefundProofActive(true)
-      setIsRefundDetailsActive(false)
-    } else {
-      setIsRefundDetailsActive(true)
-      setIsRefundProofActive(false)
-    }
-  }, [])
+  const showSection = useCallback(
+    sectionId => () => {
+      if (sectionId === 'refund-proof') {
+        setIsRefundProofActive(true)
+        setIsRefundDetailsActive(false)
+      } else {
+        setIsRefundDetailsActive(true)
+        setIsRefundProofActive(false)
+      }
+    },
+    []
+  )
 
   const loadVenues = useCallback(async () => {
     try {
-      const venuesResponse = await pcapi.getVenuesForOfferer({ activeOfferersOnly: true })
+      const venuesResponse = await pcapi.getVenuesForOfferer({
+        activeOfferersOnly: true,
+      })
       const selectOptions = buildAndSortVenueFilterOptions(venuesResponse)
       setVenuesOptions(selectOptions)
       setIsLoading(false)
@@ -75,21 +81,17 @@ const Reimbursements = ({ currentUser }) => {
       {isLoading && <Spinner />}
       {hasNoResults && (
         <div className="no-refunds">
-          <Icon
-            alt=""
-            svg="ico-no-bookings"
-          />
-          <span>
-            Aucun remboursement à afficher
-          </span>
+          <Icon alt="" svg="ico-no-bookings" />
+          <span>Aucun remboursement à afficher</span>
         </div>
       )}
       {hasResults && (
         <>
           <p>
-            Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation
-            d’une contremarque dans le guichet ou à la validation automatique des contremarques
-            d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.
+            Les remboursements s’effectuent tous les 15 jours, rétroactivement
+            suite à la validation d’une contremarque dans le guichet ou à la
+            validation automatique des contremarques d’évènements. Cette page
+            est automatiquement mise à jour à chaque remboursement.
           </p>
           <Banner type="notification-info">
             En savoir plus sur
@@ -112,16 +114,15 @@ const Reimbursements = ({ currentUser }) => {
               Les modalités de remboursement
             </a>
           </Banner>
-          { areInvoicesEnabled ? (
+          {areInvoicesEnabled ? (
             <>
-              <div
-                aria-label="Catégories de remboursement"
-                role="tablist"
-              >
+              <div aria-label="Catégories de remboursement" role="tablist">
                 <button
                   aria-controls="refund-proof"
                   aria-selected={isRefundProofActive}
-                  className={`section-nav ${isRefundProofActive?'is-active':''}`}
+                  className={`section-nav ${
+                    isRefundProofActive ? 'is-active' : ''
+                  }`}
                   id="refund-proof-nav"
                   onClick={showSection('refund-proof')}
                   role="tab"
@@ -132,7 +133,9 @@ const Reimbursements = ({ currentUser }) => {
                 <button
                   aria-controls="refund-details"
                   aria-selected={isRefundDetailsActive}
-                  className={`section-nav ${isRefundDetailsActive?'is-active':''}`}
+                  className={`section-nav ${
+                    isRefundDetailsActive ? 'is-active' : ''
+                  }`}
                   id="refund-details-nav"
                   onClick={showSection('refund-details')}
                   role="tab"
@@ -144,7 +147,7 @@ const Reimbursements = ({ currentUser }) => {
               <div
                 aria-hidden={!isRefundProofActive}
                 aria-labelledby="refund-proof"
-                className={`section ${isRefundProofActive?'is-active':''}`}
+                className={`section ${isRefundProofActive ? 'is-active' : ''}`}
                 id="refund-proof"
                 role="tabpanel"
               >
@@ -156,7 +159,9 @@ const Reimbursements = ({ currentUser }) => {
               </div>
               <div
                 aria-hidden={!isRefundDetailsActive}
-                className={`section ${isRefundDetailsActive?'is-active':''}`}
+                className={`section ${
+                  isRefundDetailsActive ? 'is-active' : ''
+                }`}
                 id="refund-details"
                 role="tabpanel"
               >
@@ -178,12 +183,10 @@ const Reimbursements = ({ currentUser }) => {
   )
 }
 
-
 Reimbursements.propTypes = {
   currentUser: PropTypes.shape({
-    isAdmin: PropTypes.bool.isRequired
+    isAdmin: PropTypes.bool.isRequired,
   }).isRequired,
 }
-
 
 export default Reimbursements

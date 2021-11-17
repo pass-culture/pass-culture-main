@@ -1,8 +1,8 @@
 /*
-* @debt deprecated "Gaël: deprecated usage of redux-saga-data"
-* @debt standard "Gaël: prefer hooks for routers (https://reactrouter.com/web/api/Hooks)"
-* @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
-*/
+ * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
+ * @debt standard "Gaël: prefer hooks for routers (https://reactrouter.com/web/api/Hooks)"
+ * @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
+ */
 
 import get from 'lodash.get'
 import { removeWhitespaces } from 'react-final-form-utils'
@@ -33,7 +33,11 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
       requestData({
         apiPath: '/users/signup/pro',
         method: 'POST',
-        body: { ...payload, siren: removeWhitespaces(siren), publicName: firstName },
+        body: {
+          ...payload,
+          siren: removeWhitespaces(siren),
+          publicName: firstName,
+        },
         name: STATE_ERROR_NAME,
         handleFail: onHandleFail,
         handleSuccess: onHandleSuccess,
@@ -55,4 +59,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
   },
 })
 
-export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(SignupForm)
+export default compose(
+  withRouter,
+  connect(mapStateToProps, mapDispatchToProps)
+)(SignupForm)

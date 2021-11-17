@@ -1,12 +1,17 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ */
 
 import '@testing-library/jest-dom'
 import { screen } from '@testing-library/react'
 
 import { renderOffer } from 'components/pages/Offers/Offer/__specs__/render'
-import { offerFactory, offererFactory, venueFactory, stockFactory } from 'utils/apiFactories'
+import {
+  offerFactory,
+  offererFactory,
+  venueFactory,
+  stockFactory,
+} from 'utils/apiFactories'
 import {
   getFakeApiUserValidatedOfferersNames,
   getFakeApiVenuesForOfferer,
@@ -57,10 +62,14 @@ describe('offer step', () => {
       await renderOffer({ pathname: `/offres/${offer.id}/edition` })
 
       // Then
-      const detailTab = await screen.findByText("Détails de l'offre", { selector: 'a' })
+      const detailTab = await screen.findByText("Détails de l'offre", {
+        selector: 'a',
+      })
       expect(detailTab).toBeInTheDocument()
       expect(detailTab.closest('.bc-step')).toHaveClass('active')
-      expect(screen.getByText('Stock et prix', { selector: 'a' })).toBeInTheDocument()
+      expect(
+        screen.getByText('Stock et prix', { selector: 'a' })
+      ).toBeInTheDocument()
       expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
     })
   })
@@ -70,7 +79,10 @@ describe('stocks step', () => {
   describe('in creation mode', () => {
     it('should display breadcrumb without link', async () => {
       // Given
-      const offer = offerFactory({ status: 'DRAFT', subcategoryId: 'LIVRE_PAPIER' })
+      const offer = offerFactory({
+        status: 'DRAFT',
+        subcategoryId: 'LIVRE_PAPIER',
+      })
       loadFakeApiOffer(offer)
       loadFakeApiStocks([])
 
@@ -98,7 +110,10 @@ describe('stocks step', () => {
     it('should display breadcrumb without "Confirmation" tab', async () => {
       // Given
       const stock = stockFactory()
-      const offer = offerFactory({ status: 'ACTIVE', subcategoryId: 'LIVRE_PAPIER' })
+      const offer = offerFactory({
+        status: 'ACTIVE',
+        subcategoryId: 'LIVRE_PAPIER',
+      })
       loadFakeApiOffer(offer)
       loadFakeApiStocks([stock])
 
@@ -106,7 +121,9 @@ describe('stocks step', () => {
       await renderOffer({ pathname: `/offres/${offer.id}/stocks` })
 
       // Then
-      const detailTab = await screen.findByText("Détails de l'offre", { selector: 'a' })
+      const detailTab = await screen.findByText("Détails de l'offre", {
+        selector: 'a',
+      })
       expect(detailTab).toBeInTheDocument()
       const stockTab = screen.getByText('Stock et prix', { selector: 'a' })
       expect(stockTab).toBeInTheDocument()

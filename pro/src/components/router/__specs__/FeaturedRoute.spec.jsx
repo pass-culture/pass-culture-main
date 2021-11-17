@@ -1,6 +1,6 @@
 /*
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import { act, render, screen } from '@testing-library/react'
@@ -33,11 +33,7 @@ const testInactiveFeature = {
   nameKey: 'TEST_FEATURE',
 }
 
-const Foo = () => (
-  <div>
-    I’m foo component
-  </div>
-)
+const Foo = () => <div>I’m foo component</div>
 
 const renderFeatureRoute = async (props, store) => {
   const routePath = '/test/path'
@@ -46,10 +42,7 @@ const renderFeatureRoute = async (props, store) => {
     await render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[{ pathname: routePath }]}>
-          <FeaturedRoute
-            path={routePath}
-            {...props}
-          />
+          <FeaturedRoute path={routePath} {...props} />
         </MemoryRouter>
       </Provider>
     )
@@ -68,7 +61,9 @@ describe('src | components | router | FeaturedRoute', () => {
     beforeEach(async () => {
       // given
       pcapi.loadFeatures.mockImplementation(() => {
-        return new Promise(resolve => setTimeout(() => resolve([testActiveFeature]), 2000))
+        return new Promise(resolve =>
+          setTimeout(() => resolve([testActiveFeature]), 2000)
+        )
       })
 
       const props = {
@@ -83,7 +78,7 @@ describe('src | components | router | FeaturedRoute', () => {
     it('should render spinner instead of Foo component', async () => {
       // then
       expect(screen.getByText('Chargement en cours')).toBeInTheDocument()
-      expect(screen.queryByText("I’m foo component")).not.toBeInTheDocument()
+      expect(screen.queryByText('I’m foo component')).not.toBeInTheDocument()
     })
 
     it('should call requestGetFeatures', () => {
@@ -113,8 +108,8 @@ describe('src | components | router | FeaturedRoute', () => {
 
     it('should render NotMatch instead of Foo component', () => {
       // then
-      expect(screen.getByText("Cette page n’existe pas.")).toBeInTheDocument()
-      expect(screen.queryByText("I’m foo component")).not.toBeInTheDocument()
+      expect(screen.getByText('Cette page n’existe pas.')).toBeInTheDocument()
+      expect(screen.queryByText('I’m foo component')).not.toBeInTheDocument()
     })
 
     it('should not call requestGetFeatures', () => {
@@ -144,7 +139,7 @@ describe('src | components | router | FeaturedRoute', () => {
 
     it('should render Foo', () => {
       // then
-      expect(screen.getByText("I’m foo component")).toBeInTheDocument()
+      expect(screen.getByText('I’m foo component')).toBeInTheDocument()
     })
 
     it('should not call requestGetFeatures', () => {

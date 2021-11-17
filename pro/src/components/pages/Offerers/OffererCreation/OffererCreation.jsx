@@ -1,8 +1,8 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import createDecorator from 'final-form-calculate'
 import PropTypes from 'prop-types'
@@ -52,10 +52,7 @@ class OffererCreation extends PureComponent {
   render() {
     return (
       <div className="offerer-page">
-        <NavLink
-          className="back-button has-text-primary"
-          to="/accueil"
-        >
+        <NavLink className="back-button has-text-primary" to="/accueil">
           <Icon svg="ico-back" />
           Accueil
         </NavLink>

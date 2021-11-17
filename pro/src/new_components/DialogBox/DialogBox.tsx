@@ -5,12 +5,12 @@ import React from 'react'
 import CloseButton from './CloseButton'
 
 interface IDialogProps {
-  children: React.ReactNode | React.ReactNode[];
-  extraClassNames: string;
-  hasCloseButton: boolean;
-  labelledBy: string;
-  onDismiss?: () => void;
-  initialFocusRef: React.RefObject<HTMLButtonElement>;
+  children: React.ReactNode | React.ReactNode[]
+  extraClassNames: string
+  hasCloseButton: boolean
+  labelledBy: string
+  onDismiss?: () => void
+  initialFocusRef: React.RefObject<HTMLButtonElement>
 }
 
 const DialogBox = ({
@@ -19,20 +19,15 @@ const DialogBox = ({
   hasCloseButton,
   labelledBy,
   onDismiss,
-  initialFocusRef
+  initialFocusRef,
 }: IDialogProps): JSX.Element => (
   <DialogOverlay
     className="dialog-box-overlay"
     initialFocusRef={initialFocusRef}
     onDismiss={onDismiss}
   >
-    <DialogContent
-      aria-labelledby={labelledBy}
-      className="dialog-box-content"
-    >
-      <section className={extraClassNames}>
-        {children}
-      </section>
+    <DialogContent aria-labelledby={labelledBy} className="dialog-box-content">
+      <section className={extraClassNames}>{children}</section>
       {hasCloseButton && <CloseButton onCloseClick={onDismiss} />}
     </DialogContent>
   </DialogOverlay>

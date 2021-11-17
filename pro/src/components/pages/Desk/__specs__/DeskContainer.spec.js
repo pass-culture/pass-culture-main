@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ */
 
 import * as pcapi from 'repository/pcapi/pcapi'
 
@@ -82,7 +82,9 @@ describe('src | DeskContainer', () => {
         },
       }
       // when
-      mergeProps(stateProps, {}, ownProps).trackValidateBookingSuccess('RTgfd67')
+      mergeProps(stateProps, {}, ownProps).trackValidateBookingSuccess(
+        'RTgfd67'
+      )
 
       // then
       expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({

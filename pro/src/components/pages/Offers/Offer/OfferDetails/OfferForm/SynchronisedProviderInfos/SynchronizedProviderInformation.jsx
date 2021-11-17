@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -13,10 +13,7 @@ const SynchronizedProviderInformation = ({ providerName }) => {
 
   return (
     <div className="provider-information">
-      <Icon
-        alt={`Icône de ${providerInfo.name}`}
-        svg={providerInfo.icon}
-      />
+      <Icon alt={`Icône de ${providerInfo.name}`} svg={providerInfo.icon} />
       {providerInfo.synchronizedOfferMessage}
     </div>
   )

@@ -1,13 +1,17 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import { venueNormalizer } from 'utils/normalizers'
 
 import VenueLabel from '../../ValueObjects/VenueLabel'
 import VenueType from '../../ValueObjects/VenueType'
-import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueCreationContainer'
+import {
+  mapDispatchToProps,
+  mapStateToProps,
+  mergeProps,
+} from '../VenueCreationContainer'
 
 jest.mock('../../Notification', () => {
   return jest.fn().mockImplementation(() => 'Some text')
@@ -121,7 +125,10 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
           userOfferers: [],
           venues: [],
           'venue-labels': [
-            { id: 'AE', label: "CAC - Centre d'art contemporain d'intérêt national" },
+            {
+              id: 'AE',
+              label: "CAC - Centre d'art contemporain d'intérêt national",
+            },
             { id: 'AF', label: "Ville et Pays d'art et d'histoire" },
           ],
           users: [
@@ -141,8 +148,14 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
       expect(venueLabel).toBeInstanceOf(VenueLabel)
       expect(props).toMatchObject({
         venueLabels: [
-          new VenueLabel({ id: 'AE', label: "CAC - Centre d'art contemporain d'intérêt national" }),
-          new VenueLabel({ id: 'AF', label: "Ville et Pays d'art et d'histoire" }),
+          new VenueLabel({
+            id: 'AE',
+            label: "CAC - Centre d'art contemporain d'intérêt national",
+          }),
+          new VenueLabel({
+            id: 'AF',
+            label: "Ville et Pays d'art et d'histoire",
+          }),
         ],
       })
     })
@@ -166,7 +179,10 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
   describe('handleInitialRequest', () => {
     it('should dispatch action to update existing venue', () => {
       // when
-      mapDispatchToProps(dispatch, ownProps).handleInitialRequest(jest.fn(), jest.fn())
+      mapDispatchToProps(dispatch, ownProps).handleInitialRequest(
+        jest.fn(),
+        jest.fn()
+      )
 
       // then
       expect(dispatch.mock.calls[0][0]).toStrictEqual({
@@ -261,7 +277,10 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
       }
 
       // when
-      mapDispatchToProps(dispatch, ownProps).handleSubmitRequestSuccess(state, action)
+      mapDispatchToProps(dispatch, ownProps).handleSubmitRequestSuccess(
+        state,
+        action
+      )
 
       // then
       expect(dispatch.mock.calls[0][0]).toStrictEqual({

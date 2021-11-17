@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
@@ -13,7 +13,12 @@ import {
 } from 'components/pages/Offers/Offers/_constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-export const StatusToggleButton = ({ notifyError, notifySuccess, offer, reloadOffer }) => {
+export const StatusToggleButton = ({
+  notifyError,
+  notifySuccess,
+  offer,
+  reloadOffer,
+}) => {
   const toggleOfferActiveStatus = useCallback(() => {
     pcapi
       .updateOffersActiveStatus(false, {
@@ -32,7 +37,9 @@ export const StatusToggleButton = ({ notifyError, notifySuccess, offer, reloadOf
   return (
     <button
       className="tertiary-button with-icon"
-      disabled={[OFFER_STATUS_PENDING, OFFER_STATUS_REJECTED].includes(offer.status)}
+      disabled={[OFFER_STATUS_PENDING, OFFER_STATUS_REJECTED].includes(
+        offer.status
+      )}
       onClick={toggleOfferActiveStatus}
       type="button"
     >

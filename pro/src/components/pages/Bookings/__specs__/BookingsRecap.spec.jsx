@@ -5,7 +5,13 @@
  */
 
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -14,14 +20,16 @@ import { MemoryRouter } from 'react-router'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import { BOOKING_STATUS } from 'components/pages/Bookings/BookingsRecapTable/CellsFormatter/utils/bookingStatusConverter'
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
-import { getVenuesForOfferer, loadFilteredBookingsRecap } from 'repository/pcapi/pcapi'
+import {
+  getVenuesForOfferer,
+  loadFilteredBookingsRecap,
+} from 'repository/pcapi/pcapi'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { bookingRecapFactory, venueFactory } from 'utils/apiFactories'
 import { getNthCallNthArg } from 'utils/testHelpers'
 
 import BookingsRecapContainer from '../BookingsRecapContainer'
-
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
@@ -34,10 +42,17 @@ jest.mock('utils/date', () => ({
   getToday: jest.fn().mockReturnValue(new Date('2020-06-15T12:00:00Z')),
 }))
 
-const renderBookingsRecap = async (props, store = {}, routerState, waitDomReady) => {
+const renderBookingsRecap = async (
+  props,
+  store = {},
+  routerState,
+  waitDomReady
+) => {
   const rtlReturn = render(
     <Provider store={store}>
-      <MemoryRouter initialEntries={[{ pathname: '/reservations', state: routerState }]}>
+      <MemoryRouter
+        initialEntries={[{ pathname: '/reservations', state: routerState }]}
+      >
         <BookingsRecapContainer {...props} />
         <NotificationContainer />
       </MemoryRouter>
@@ -45,7 +60,9 @@ const renderBookingsRecap = async (props, store = {}, routerState, waitDomReady)
   )
 
   const displayBookingsButton = screen.getByRole('button', { name: 'Afficher' })
-  const downloadBookingsCsvButton = screen.getByRole('button', { name: 'Télécharger' })
+  const downloadBookingsCsvButton = screen.getByRole('button', {
+    name: 'Télécharger',
+  })
   const submitFilters = async () => {
     fireEvent.click(displayBookingsButton)
     await waitFor(() => expect(displayBookingsButton).not.toBeDisabled())
@@ -87,7 +104,9 @@ describe('components | BookingsRecap | Pro user', () => {
     }
     store = configureTestStore({
       data: {
-        users: [{ publicName: 'René', isAdmin: false, email: 'rené@example.com' }],
+        users: [
+          { publicName: 'René', isAdmin: false, email: 'rené@example.com' },
+        ],
       },
     })
     venue = venueFactory()
@@ -146,14 +165,18 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     expect(screen.getByLabelText('Lieu')).toHaveValue(venue.id)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).venueId).toBe(venue.id)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate).toStrictEqual(
-      DEFAULT_PRE_FILTERS.bookingBeginningDate
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).venueId).toBe(
+      venue.id
     )
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate).toStrictEqual(
-      DEFAULT_PRE_FILTERS.bookingEndingDate
-    )
-    expect(screen.getByRole('checkbox', { name: 'réservé', checked: true })).toBeInTheDocument()
+    expect(
+      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate
+    ).toStrictEqual(DEFAULT_PRE_FILTERS.bookingBeginningDate)
+    expect(
+      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate
+    ).toStrictEqual(DEFAULT_PRE_FILTERS.bookingEndingDate)
+    expect(
+      screen.getByRole('checkbox', { name: 'réservé', checked: true })
+    ).toBeInTheDocument()
   })
 
   it('should ask user to select a pre-filter before clicking on "Afficher"', async () => {
@@ -185,7 +208,9 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).venueId).toBe(venue.id)
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).venueId).toBe(
+      venue.id
+    )
   })
 
   it('should warn user that his prefilters returned no booking when no bookings where returned by selected pre-filters', async () => {
@@ -221,11 +246,15 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // When
-    const resetButton = await screen.findByText('réinitialiser tous les filtres.')
+    const resetButton = await screen.findByText(
+      'réinitialiser tous les filtres.'
+    )
     fireEvent.click(resetButton)
 
     // Then
-    expect(screen.getByLabelText('Lieu')).toHaveValue(DEFAULT_PRE_FILTERS.offerVenueId)
+    expect(screen.getByLabelText('Lieu')).toHaveValue(
+      DEFAULT_PRE_FILTERS.offerVenueId
+    )
   })
 
   it('should not allow user to reset prefilters when none were applied', async () => {
@@ -243,7 +272,9 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // Then
-    expect(screen.queryByText('Réinitialiser les filtres')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Réinitialiser les filtres')
+    ).not.toBeInTheDocument()
   })
 
   it('should allow user to reset prefilters when some where applied', async () => {
@@ -276,11 +307,15 @@ describe('components | BookingsRecap | Pro user', () => {
     fireEvent.click(resetButton)
 
     // Then
-    expect(screen.getByLabelText('Lieu')).toHaveValue(DEFAULT_PRE_FILTERS.offerVenueId)
-    expect(
-      await screen.findByDisplayValue(defaultBookingPeriodBeginningDateInput)
-    ).toBeInTheDocument()
-    expect(await screen.findByDisplayValue(defaultBookingPeriodEndingDateInput)).toBeInTheDocument()
+    expect(screen.getByLabelText('Lieu')).toHaveValue(
+      DEFAULT_PRE_FILTERS.offerVenueId
+    )
+    await expect(
+      screen.findByDisplayValue(defaultBookingPeriodBeginningDateInput)
+    ).resolves.toBeInTheDocument()
+    await expect(
+      screen.findByDisplayValue(defaultBookingPeriodEndingDateInput)
+    ).resolves.toBeInTheDocument()
   })
 
   it('should ask user to select a pre-filter when user reset them', async () => {
@@ -301,7 +336,9 @@ describe('components | BookingsRecap | Pro user', () => {
     fireEvent.click(resetButton)
 
     // Then
-    expect(screen.queryByText('Réinitialiser les filtres')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Réinitialiser les filtres')
+    ).not.toBeInTheDocument()
     const choosePreFiltersMessage = screen.getByText(
       'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Afficher »'
     )
@@ -313,12 +350,18 @@ describe('components | BookingsRecap | Pro user', () => {
     await renderBookingsRecap(props, store)
 
     // Then
-    expect(screen.getByRole('button', { name: 'Télécharger' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Télécharger' })
+    ).toBeInTheDocument()
   })
 
   it('should fetch API for CSV when clicking on the download button and disable button while its loading', async () => {
     // Given
-    const { submitDownloadFilters } = await renderBookingsRecap(props, store, undefined)
+    const { submitDownloadFilters } = await renderBookingsRecap(
+      props,
+      store,
+      undefined
+    )
 
     // When
     // submit utils method wait for button to become disabled then enabled.
@@ -346,9 +389,12 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitDownloadFilters()
 
     // Then
-    expect(
-      await screen.findByText("Une erreur s'est produite. Veuillez réessayer ultérieurement.", { exact: false })
-    ).toBeInTheDocument()
+    await expect(
+      screen.findByText(
+        "Une erreur s'est produite. Veuillez réessayer ultérieurement.",
+        { exact: false }
+      )
+    ).resolves.toBeInTheDocument()
   })
 
   it('should fetch bookings for the filtered venue as many times as the number of pages', async () => {
@@ -377,16 +423,22 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // Then
-    const secondBookingRecap = await screen.findAllByText(bookings2.stock.offer_name)
+    const secondBookingRecap = await screen.findAllByText(
+      bookings2.stock.offer_name
+    )
     expect(secondBookingRecap).toHaveLength(2)
     const firstBookingRecap = screen.getAllByText(bookings1.stock.offer_name)
     expect(firstBookingRecap).toHaveLength(2)
 
     expect(loadFilteredBookingsRecap).toHaveBeenCalledTimes(2)
     expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).page).toBe(1)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).venueId).toBe(venue.id)
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).venueId).toBe(
+      venue.id
+    )
     expect(getNthCallNthArg(loadFilteredBookingsRecap, 2).page).toBe(2)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 2).venueId).toBe(venue.id)
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 2).venueId).toBe(
+      venue.id
+    )
   })
 
   it('should request bookings of event date requested by user when user clicks on "Afficher"', async () => {
@@ -407,9 +459,9 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).eventDate).toStrictEqual(
-      new Date(2020, 5, 8)
-    )
+    expect(
+      getNthCallNthArg(loadFilteredBookingsRecap, 1).eventDate
+    ).toStrictEqual(new Date(2020, 5, 8))
   })
 
   it('should request bookings of default period when user clicks on "Afficher" without selecting a period', async () => {
@@ -428,12 +480,12 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate).toStrictEqual(
-      DEFAULT_PRE_FILTERS.bookingBeginningDate
-    )
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate).toStrictEqual(
-      DEFAULT_PRE_FILTERS.bookingEndingDate
-    )
+    expect(
+      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate
+    ).toStrictEqual(DEFAULT_PRE_FILTERS.bookingBeginningDate)
+    expect(
+      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate
+    ).toStrictEqual(DEFAULT_PRE_FILTERS.bookingEndingDate)
   })
 
   it('should request bookings of selected period when user clicks on "Afficher"', async () => {
@@ -448,9 +500,8 @@ describe('components | BookingsRecap | Pro user', () => {
     const { submitFilters } = await renderBookingsRecap(props, store)
 
     const bookingPeriodWrapper = screen.getByText('Période de réservation')
-    const [beginningPeriodInput, endingPeriodInput] = within(
-      bookingPeriodWrapper
-    ).getAllByPlaceholderText('JJ/MM/AAAA')
+    const [beginningPeriodInput, endingPeriodInput] =
+      within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')
 
     // When
     fireEvent.click(beginningPeriodInput)
@@ -461,12 +512,12 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate).toStrictEqual(
-      new Date(2020, 4, 10)
-    )
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate).toStrictEqual(
-      new Date(2020, 5, 5)
-    )
+    expect(
+      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate
+    ).toStrictEqual(new Date(2020, 4, 10))
+    expect(
+      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate
+    ).toStrictEqual(new Date(2020, 5, 5))
   })
 
   it('should set default beginning period date when user empties it and clicks on "Afficher"', async () => {
@@ -481,9 +532,8 @@ describe('components | BookingsRecap | Pro user', () => {
     const { submitFilters } = await renderBookingsRecap(props, store)
 
     const bookingPeriodWrapper = screen.getByText('Période de réservation')
-    const [beginningPeriodInput, endingPeriodInput] = within(
-      bookingPeriodWrapper
-    ).getAllByPlaceholderText('JJ/MM/AAAA')
+    const [beginningPeriodInput, endingPeriodInput] =
+      within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')
     fireEvent.click(endingPeriodInput)
     fireEvent.click(screen.getByText('12'))
 
@@ -494,9 +544,9 @@ describe('components | BookingsRecap | Pro user', () => {
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
     const thirtyDaysBeforeEndingDate = new Date(2020, 4, 13)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate).toStrictEqual(
-      thirtyDaysBeforeEndingDate
-    )
+    expect(
+      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate
+    ).toStrictEqual(thirtyDaysBeforeEndingDate)
   })
 
   it('should set default ending period date when user empties it and clicks on "Afficher"', async () => {
@@ -511,9 +561,8 @@ describe('components | BookingsRecap | Pro user', () => {
     const { submitFilters } = await renderBookingsRecap(props, store)
 
     const bookingPeriodWrapper = screen.getByText('Période de réservation')
-    const [beginningPeriodInput, endingPeriodInput] = within(
-      bookingPeriodWrapper
-    ).getAllByPlaceholderText('JJ/MM/AAAA')
+    const [beginningPeriodInput, endingPeriodInput] =
+      within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')
     fireEvent.click(beginningPeriodInput)
     fireEvent.click(screen.getByText('10'))
 
@@ -524,9 +573,9 @@ describe('components | BookingsRecap | Pro user', () => {
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
     const thirtyDaysAfterBeginningDate = new Date(2020, 5, 9)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate).toStrictEqual(
-      thirtyDaysAfterBeginningDate
-    )
+    expect(
+      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate
+    ).toStrictEqual(thirtyDaysAfterBeginningDate)
   })
 
   it('should not be possible to select ending period date greater than today', async () => {
@@ -541,7 +590,8 @@ describe('components | BookingsRecap | Pro user', () => {
     const { submitFilters } = await renderBookingsRecap(props, store)
 
     const bookingPeriodWrapper = screen.getByText('Période de réservation')
-    const endingPeriodInput = within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')[1]
+    const endingPeriodInput =
+      within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')[1]
 
     // When
     fireEvent.click(endingPeriodInput)
@@ -550,9 +600,9 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
-    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate).toStrictEqual(
-      DEFAULT_PRE_FILTERS.bookingEndingDate
-    )
+    expect(
+      getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate
+    ).toStrictEqual(DEFAULT_PRE_FILTERS.bookingEndingDate)
   })
 
   it('should reset bookings recap list when applying filters', async () => {
@@ -587,9 +637,13 @@ describe('components | BookingsRecap | Pro user', () => {
     await submitFilters()
 
     // Then
-    const firstBookingRecap = await screen.findAllByText(booking.stock.offer_name)
+    const firstBookingRecap = await screen.findAllByText(
+      booking.stock.offer_name
+    )
     expect(firstBookingRecap).toHaveLength(2)
-    expect(screen.queryByText(otherVenueBooking.stock.offer_name)).not.toBeInTheDocument()
+    expect(
+      screen.queryByText(otherVenueBooking.stock.offer_name)
+    ).not.toBeInTheDocument()
   })
 
   it('should show notification with information message when there are more than 5 pages', async () => {
@@ -632,7 +686,9 @@ describe('components | BookingsRecap | Pro user', () => {
     await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
 
     // Then
-    await waitFor(() => expect(loadFilteredBookingsRecap).toHaveBeenCalledTimes(5))
+    await waitFor(() =>
+      expect(loadFilteredBookingsRecap).toHaveBeenCalledTimes(5)
+    )
     const informationalMessage = screen.queryByText(
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
     )
@@ -651,7 +707,9 @@ describe('components | BookingsRecap | Pro user', () => {
     )
 
     // Then
-    const informationalMessage = await screen.findByTestId('refresh-required-message')
+    const informationalMessage = await screen.findByTestId(
+      'refresh-required-message'
+    )
     expect(informationalMessage).toBeInTheDocument()
   })
 
@@ -664,7 +722,10 @@ describe('components | BookingsRecap | Pro user', () => {
     )
 
     // When
-    userEvent.selectOptions(screen.getByLabelText('Lieu'), screen.getByText('Tous les lieux'))
+    userEvent.selectOptions(
+      screen.getByLabelText('Lieu'),
+      screen.getByText('Tous les lieux')
+    )
 
     // Then
     const informationalMessage = screen.queryByText(
