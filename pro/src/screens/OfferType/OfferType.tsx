@@ -21,7 +21,7 @@ import {
 
 const { INDIVIDUAL_OR_DUO, EDUCATIONAL } = OFFER_TYPES
 
-interface IOfferTypeProps {
+export interface IOfferTypeProps {
   fetchCanOffererCreateEducationalOffer: () => void;
 }
 
@@ -45,7 +45,7 @@ const OfferType = ({
     if (!hasBeenCalled){
       dispatch(FETCH_ACTION)
       try {
-        await fetchIsOffererEligibleToEAC()
+        await fetchCanOffererCreateEducationalOffer()
         dispatch(SUCCESS_ACTION)
       } catch (e) {
         dispatch(FAILURE_ACTION)
