@@ -23,6 +23,7 @@ describe('my favorites', () => {
         state = {
           bookings: [],
           favorites: [],
+          features: [],
           mediations: [],
           offers: [{ id: 'O1' }],
           stocks: [],
