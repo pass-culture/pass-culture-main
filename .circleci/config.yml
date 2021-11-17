@@ -373,32 +373,14 @@ jobs:
             RUN_ENV=tests venv/bin/flask install_data
             RUN_ENV=tests venv/bin/python tests/alembic/check_db_schema.py
           working_directory: api
-      - when:
-          condition: << parameters.is_nightly_build >>
-          steps:
-            - run:
-                name: Running nightly tests
-                command: >
-                  RUN_ENV=tests venv/bin/pytest tests --durations=10  --cov --cov-report html
-                  --junitxml=test-results/junit.xml
-
-                  venv/bin/coveralls || echo "Encountered an error while running coveralls"
-                working_directory: api
-            - notify-slack:
-                channel: shérif
-      - unless:
-          condition: << parameters.is_nightly_build >>
-          steps:
-            - run:
-                name: Running tests
-                command: >
-                  RUN_ENV=tests venv/bin/pytest << parameters.pytest_extra_args >> --durations=10
-                  --junitxml=test-results/junit.xml
-                working_directory: api
+      - run:
+          name: Running tests
+          command: >
+            RUN_ENV=tests venv/bin/pytest << parameters.pytest_extra_args >> --durations=10
+            --junitxml=test-results/junit.xml
+          working_directory: api
       - store_test_results:
-          path: test-results
-      - store_artifacts:
-          path: htmlcov
+          path: api/test-results
       - when:
           condition:
             equal: [ "master", << pipeline.git.branch >> ]
