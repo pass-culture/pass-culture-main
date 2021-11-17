@@ -170,6 +170,7 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
     user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
     type = models.FraudCheckType.JOUVE
     thirdPartyId = factory.Sequence("ThirdPartyIdentifier-{0}".format)
+    status = models.FraudCheckStatus.PENDING
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
