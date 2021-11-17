@@ -111,11 +111,12 @@ def format_user_attributes(user_attributes: UserAttributes) -> dict:
         if user_attributes.domains_credit
         else None,
         SendinblueAttributes.IS_BENEFICIARY.value: user_attributes.is_beneficiary,
-        SendinblueAttributes.IS_BENEFICIARY_18.value: UserRole.BENEFICIARY in user_attributes.roles,
+        SendinblueAttributes.IS_BENEFICIARY_18.value: UserRole.BENEFICIARY.value in user_attributes.roles,
         SendinblueAttributes.IS_ELIGIBLE.value: user_attributes.is_eligible,
         SendinblueAttributes.IS_EMAIL_VALIDATED.value: user_attributes.is_email_validated,
         SendinblueAttributes.IS_PRO.value: user_attributes.is_pro,
-        SendinblueAttributes.IS_UNDERAGE_BENEFICIARY.value: UserRole.UNDERAGE_BENEFICIARY in user_attributes.roles,
+        SendinblueAttributes.IS_UNDERAGE_BENEFICIARY.value: UserRole.UNDERAGE_BENEFICIARY.value
+        in user_attributes.roles,
         SendinblueAttributes.LAST_BOOKING_DATE.value: user_attributes.last_booking_date,
         SendinblueAttributes.LAST_FAVORITE_CREATION_DATE.value: user_attributes.last_favorite_creation_date,
         SendinblueAttributes.LAST_VISIT_DATE.value: user_attributes.last_visit_date,
