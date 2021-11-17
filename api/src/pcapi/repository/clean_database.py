@@ -5,6 +5,10 @@ from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.educational.models import EducationalYear
+from pcapi.core.finance.models import Cashflow
+from pcapi.core.finance.models import CashflowBatch
+from pcapi.core.finance.models import CashflowLog
+from pcapi.core.finance.models import CashflowPricing
 from pcapi.core.finance.models import Pricing
 from pcapi.core.finance.models import PricingLine
 from pcapi.core.finance.models import PricingLog
@@ -63,6 +67,10 @@ def clean_all_database(*args, **kwargs):
     PaymentStatus.query.delete()
     Payment.query.delete()
     PaymentMessage.query.delete()
+    CashflowPricing.query.delete()
+    CashflowLog.query.delete()
+    Cashflow.query.delete()
+    CashflowBatch.query.delete()
     PricingLine.query.delete()
     PricingLog.query.delete()
     Pricing.query.delete()

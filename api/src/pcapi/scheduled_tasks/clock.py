@@ -12,6 +12,7 @@ from pcapi.core.offerers.repository import get_offerers_by_date_validated
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
+import pcapi.core.payments.utils as payments_utils
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import api as users_api
 from pcapi.core.users.external.user_automations import (
@@ -203,6 +204,19 @@ def price_bookings() -> None:
 
 @cron_context
 @log_cron_with_transaction
+@cron_require_feature(FeatureToggle.PRICE_BOOKINGS)
+def generate_cashflows_and_payment_files() -> None:
+    # FIXME (dbaty, 2011-11-18): once `get_cutoff_as_datetime()` is
+    # only used here (and not by the old payment generation script
+    # anymore), adapt the function to take a `datetime` object and not
+    # a string.
+    last_day = (datetime.date.today() - datetime.timedelta(days=1)).isoformat()
+    cutoff = payments_utils.get_cutoff_as_datetime(last_day)
+    finance_api.generate_cashflows_and_payment_files(cutoff)
+
+
+@cron_context
+@log_cron_with_transaction
 def pc_user_turned_eighteen_automation() -> None:
     users_turned_eighteen_automation()
 
@@ -281,6 +295,8 @@ def clock() -> None:
     scheduler.add_job(pc_recredit_underage_users, "cron", day="*", hour="0")
 
     scheduler.add_job(price_bookings, "cron", day="*", minute="5,15,25,35,45,55")
+
+    scheduler.add_job(generate_cashflows_and_payment_files, "cron", day="1,16", hour="5", minute="0")
 
     # Marketing user automations
     scheduler.add_job(pc_user_turned_eighteen_automation, "cron", day="*", hour="4", minute="0")

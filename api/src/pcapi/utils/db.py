@@ -2,6 +2,8 @@ import enum
 import typing
 
 import sqlalchemy as sqla
+import sqlalchemy.dialects.postgresql.json as sqla_json
+import sqlalchemy.ext.mutable as sqla_mutable
 import sqlalchemy.types as sqla_types
 
 from pcapi.models import db
@@ -82,3 +84,6 @@ class MagicEnum(sqla_types.TypeDecorator):
         if value is None:
             return None
         return self.enum(value)
+
+
+SafeJsonB = sqla_mutable.MutableDict.as_mutable(sqla_json.JSONB)
