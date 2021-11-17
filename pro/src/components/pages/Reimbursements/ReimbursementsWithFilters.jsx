@@ -1,59 +1,21 @@
 /*
 * @debt directory "Gaël: this file should be migrated within the new directory structure"
 */
-import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import AppLayout from 'app/AppLayout'
 import Banner from 'components/layout/Banner/Banner'
-import CsvTableButtonContainer from 'components/layout/CsvTableButton/CsvTableButtonContainer'
-import DownloadButtonContainer from 'components/layout/DownloadButton/DownloadButtonContainer'
 import Icon from 'components/layout/Icon'
-import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
-import Select from 'components/layout/inputs/Select'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { API_URL } from 'utils/config'
-import { getToday, formatBrowserTimezonedDateAsUTC, FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
 import './Reimbursement.scss'
+import useActiveFeature from '../../hooks/useActiveFeature'
 
-const dateFilterFormat = date => formatBrowserTimezonedDateAsUTC(date, FORMAT_ISO_DATE_ONLY)
-
-const today = getToday()
-
-const oneMonthAGo = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate())
-
-const ALL_VENUES_OPTION_ID = 'allVenues'
-
-const INITIAL_FILTERS = {
-  venue: ALL_VENUES_OPTION_ID,
-  periodStart: oneMonthAGo,
-  periodEnd: today,
-}
-
-const INITIAL_CSV_URL = `${API_URL}/reimbursements/csv`
-
-const buildCsvUrlWithParameters = filters => {
-  let url = new URL(INITIAL_CSV_URL)
-
-  if (filters.venue && filters.venue !== ALL_VENUES_OPTION_ID) {
-    url.searchParams.set('venueId', filters.venue)
-  }
-
-  if (filters.periodStart) {
-    url.searchParams.set('reimbursementPeriodBeginningDate', dateFilterFormat(filters.periodStart))
-  }
-
-  if (filters.periodEnd) {
-    url.searchParams.set('reimbursementPeriodEndingDate', dateFilterFormat(filters.periodEnd))
-  }
-
-  return url.toString()
-}
+import ReimbursementsDetails from './ReimbursementsDetails'
 
 const sortByKeyAlphabeticalOrder = keyName => (x, y) => x[keyName].localeCompare(y[keyName])
 
@@ -68,10 +30,21 @@ const buildAndSortVenueFilterOptions = venues =>
     .sort(sortByKeyAlphabeticalOrder('displayName'))
 
 const Reimbursements = ({ currentUser }) => {
+  const areInvoicesEnabled = useActiveFeature('SHOW_INVOICES_ON_PRO_PORTAL')
   const [isLoading, setIsLoading] = useState(true)
+  const [isRefundProofActive, setIsRefundProofActive] = useState(true)
+  const [isRefundDetailsActive, setIsRefundDetailsActive] = useState(false)
   const [venuesOptions, setVenuesOptions] = useState([])
-  const [filters, setFilters] = useState(INITIAL_FILTERS)
-  const [csvUrl, setCsvUrl] = useState(INITIAL_CSV_URL)
+
+  const showSection = useCallback((sectionId) => () => {
+    if (sectionId === 'refund-proof') {
+      setIsRefundProofActive(true)
+      setIsRefundDetailsActive(false)
+    } else {
+      setIsRefundDetailsActive(true)
+      setIsRefundProofActive(false)
+    }
+  }, [])
 
   const loadVenues = useCallback(async () => {
     try {
@@ -84,43 +57,9 @@ const Reimbursements = ({ currentUser }) => {
     }
   }, [setVenuesOptions])
 
-  const setVenueFilter = useCallback(
-    event => {
-      const venueId = event.target.value
-      setFilters(prevFilters => ({ ...prevFilters, venue: venueId }))
-    },
-    [setFilters]
-  )
-
-  const setStartDateFilter = useCallback(
-    startDate => {
-      setFilters(prevFilters => ({ ...prevFilters, periodStart: startDate }))
-    },
-    [setFilters]
-  )
-
-  const setEndDateFilter = useCallback(
-    endDate => {
-      setFilters(prevFilters => ({ ...prevFilters, periodEnd: endDate }))
-    },
-    [setFilters]
-  )
-
-  function resetFilters() {
-    setFilters(INITIAL_FILTERS)
-  }
-
   useEffect(() => {
     loadVenues()
   }, [loadVenues])
-
-  useEffect(() => {
-    setCsvUrl(buildCsvUrlWithParameters(filters))
-  }, [filters])
-
-  const isPeriodFilterSelected = filters.periodStart && filters.periodEnd
-  const requireVenueFilterForAdmin = currentUser.isAdmin && filters.venue === 'allVenues'
-  const shouldDisableButtons = !isPeriodFilterSelected || requireVenueFilterForAdmin
 
   const hasNoResults = !isLoading && !venuesOptions.length
   const hasResults = !isLoading && venuesOptions.length > 0
@@ -173,66 +112,66 @@ const Reimbursements = ({ currentUser }) => {
               Les modalités de remboursement
             </a>
           </Banner>
-
-          <div className="header">
-            <h2 className="header-title">
-              Affichage des remboursements
-            </h2>
-            <button
-              className="tertiary-button reset-filters"
-              disabled={isEqual(filters, INITIAL_FILTERS)}
-              onClick={resetFilters}
-              type="button"
-            >
-              Réinitialiser les filtres
-            </button>
-          </div>
-
-          <div className="filters">
-            <Select
-              defaultOption={{ displayName: 'Tous les lieux', id: ALL_VENUES_OPTION_ID }}
-              handleSelection={setVenueFilter}
-              label="Lieu"
-              name="lieu"
-              options={venuesOptions}
-              selectedValue={filters.venue}
-              size="20"
-            />
-            <PeriodSelector
-              changePeriodBeginningDateValue={setStartDateFilter}
-              changePeriodEndingDateValue={setEndDateFilter}
-              isDisabled={false}
-              label="Période"
-              maxDateEnding={getToday()}
-              periodBeginningDate={filters.periodStart}
-              periodEndingDate={filters.periodEnd}
-              todayDate={getToday()}
-            />
-          </div>
-
-          <div className="button-group">
-            <span className="button-group-separator" />
-            <div className="button-group-buttons">
-              <DownloadButtonContainer
-                filename="remboursements_pass_culture"
-                href={csvUrl}
-                isDisabled={shouldDisableButtons}
-                mimeType="text/csv"
+          { areInvoicesEnabled ? (
+            <>
+              <div
+                aria-label="Catégories de remboursement"
+                role="tablist"
               >
-                Télécharger
-              </DownloadButtonContainer>
-              <CsvTableButtonContainer
-                href={csvUrl}
-                isDisabled={shouldDisableButtons}
+                <button
+                  aria-controls="refund-proof"
+                  aria-selected={isRefundProofActive}
+                  className={`section-nav ${isRefundProofActive?'is-active':''}`}
+                  id="refund-proof-nav"
+                  onClick={showSection('refund-proof')}
+                  role="tab"
+                  type="button"
+                >
+                  Justificatifs de remboursement
+                </button>
+                <button
+                  aria-controls="refund-details"
+                  aria-selected={isRefundDetailsActive}
+                  className={`section-nav ${isRefundDetailsActive?'is-active':''}`}
+                  id="refund-details-nav"
+                  onClick={showSection('refund-details')}
+                  role="tab"
+                  type="button"
+                >
+                  Détails des remboursements
+                </button>
+              </div>
+              <div
+                aria-hidden={!isRefundProofActive}
+                aria-labelledby="refund-proof"
+                className={`section ${isRefundProofActive?'is-active':''}`}
+                id="refund-proof"
+                role="tabpanel"
               >
-                Afficher
-              </CsvTableButtonContainer>
-            </div>
-          </div>
-
-          <p className="format-mention">
-            Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
-          </p>
+                <div className="header">
+                  <h2 className="header-title">
+                    Affichage des justificatifs de remboursement
+                  </h2>
+                </div>
+              </div>
+              <div
+                aria-hidden={!isRefundDetailsActive}
+                className={`section ${isRefundDetailsActive?'is-active':''}`}
+                id="refund-details"
+                role="tabpanel"
+              >
+                <ReimbursementsDetails
+                  isCurrentUserAdmin={currentUser.isAdmin}
+                  venuesOptions={venuesOptions}
+                />
+              </div>
+            </>
+          ) : (
+            <ReimbursementsDetails
+              isCurrentUserAdmin={currentUser.isAdmin}
+              venuesOptions={venuesOptions}
+            />
+          )}
         </>
       )}
     </AppLayout>
