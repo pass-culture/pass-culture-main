@@ -611,8 +611,6 @@ jobs:
         default: ${APP_VERSION}
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
       - setup_remote_docker:
           version: 19.03.13
           docker_layer_caching: true
@@ -638,8 +636,6 @@ jobs:
     executor: gcp-sdk
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
       - setup_remote_docker:
           version: 19.03.13
           docker_layer_caching: true
@@ -666,8 +662,6 @@ jobs:
       NAMESPACE: operations
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - export_chart_version:
@@ -709,8 +703,6 @@ jobs:
         default: ${APP_VERSION}
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - export_app_version
@@ -754,8 +746,6 @@ jobs:
         default: ${CIRCLE_BRANCH}
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - build-frontend-app:
@@ -794,8 +784,6 @@ jobs:
         default: ${CIRCLE_BRANCH}
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
       - run: ./install_lib_ci.sh
       - run:
           name: Build and Deploy WEBAPP
@@ -837,8 +825,6 @@ jobs:
         default: ${CIRCLE_BRANCH}
     steps:
       - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - build-frontend-app:
