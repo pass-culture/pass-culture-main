@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ */
 
 import getSirenInformation from '../getSirenInformation'
 
@@ -13,7 +13,9 @@ describe('getSirenInformations', () => {
     it('should return ’SIREN invalide’', async () => {
       // given
       const siren = '245474278'
-      fetch.mockResponseOnce(JSON.stringify({ message: 'no results found' }), { status: 404 })
+      fetch.mockResponseOnce(JSON.stringify({ message: 'no results found' }), {
+        status: 404,
+      })
 
       // when
       const errorMessage = await getSirenInformation(siren)
@@ -29,7 +31,10 @@ describe('getSirenInformations', () => {
     it('should return ’Service indisponible’ when API siren does not respond', async () => {
       // given
       const siren = '245474278'
-      fetch.mockResponseOnce(JSON.stringify({ message: 'service unavailable' }), { status: 503 })
+      fetch.mockResponseOnce(
+        JSON.stringify({ message: 'service unavailable' }),
+        { status: 503 }
+      )
 
       // when
       const errorMessage = await getSirenInformation(siren)

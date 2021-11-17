@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import createCachedSelector from 're-reselect'
 import { removeWhitespaces } from 'react-final-form-utils'
@@ -31,7 +31,8 @@ const getLocationInformationsFromSiret = async siret => {
     city: établissement.libelle_commune,
     latitude: parseFloat(établissement.latitude) || null,
     longitude: parseFloat(établissement.longitude) || null,
-    name: établissement.enseigne_1 || établissement.unite_legale.denomination || '',
+    name:
+      établissement.enseigne_1 || établissement.unite_legale.denomination || '',
     postalCode: établissement.code_postal,
     ['siret']: établissement.siret,
     sire: établissement.siret,
@@ -66,7 +67,9 @@ export const getSiretInformations = createCachedSelector(
     }
 
     try {
-      const values = await getLocationInformationsFromSiret(siretWithoutWhiteSpaces)
+      const values = await getLocationInformationsFromSiret(
+        siretWithoutWhiteSpaces
+      )
       return { values }
     } catch (e) {
       const error = 'Impossible de vérifier le SIRET saisi.'

@@ -1,6 +1,6 @@
 /*
-* @debt deprecated "Gaël: deprecated usage of redux-saga-data"
-*/
+ * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
+ */
 
 import { put, takeEvery } from 'redux-saga/effects'
 
@@ -25,5 +25,8 @@ export function* fromWatchFailDataActionsMergeErrors(action) {
 }
 
 export function* watchErrorsActions() {
-  yield takeEvery(({ type }) => /FAIL_DATA_(.*)/.test(type), fromWatchFailDataActionsMergeErrors)
+  yield takeEvery(
+    ({ type }) => /FAIL_DATA_(.*)/.test(type),
+    fromWatchFailDataActionsMergeErrors
+  )
 }

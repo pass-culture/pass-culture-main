@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -83,10 +83,7 @@ const FilterByOmniSearch = ({
         onChange={handleOmniSearchCriteriaChange}
       >
         {OMNISEARCH_FILTERS.map(selectOption => (
-          <option
-            key={selectOption.id}
-            value={selectOption.id}
-          >
+          <option key={selectOption.id} value={selectOption.id}>
             {selectOption.selectOptionText}
           </option>
         ))}

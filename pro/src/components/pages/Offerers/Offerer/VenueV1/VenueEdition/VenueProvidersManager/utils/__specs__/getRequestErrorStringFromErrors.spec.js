@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import { getRequestErrorStringFromErrors } from '../getRequestErrorStringFromErrors'
 
@@ -27,7 +27,9 @@ describe('getRequestErrorStringFromErrors', () => {
 
   it('parse hash with arrays', () => {
     expect(getRequestErrorStringFromErrors(objectWithArrays1)).toBe('toto')
-    expect(getRequestErrorStringFromErrors(objectWithArrays2)).toBe('tata toto titi')
+    expect(getRequestErrorStringFromErrors(objectWithArrays2)).toBe(
+      'tata toto titi'
+    )
   })
 
   it('parse empty error', () => {

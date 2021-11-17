@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
@@ -230,12 +230,16 @@ describe('bookings | bookingsStatusCell', () => {
       // Then
       const historyCellReserved = screen.getByText('Réservé : 04/01/2020 20:31')
       expect(historyCellReserved).toBeInTheDocument()
-      const historyCellValidated = screen.getByText('Réservation validée : 05/01/2020 20:31')
+      const historyCellValidated = screen.getByText(
+        'Réservation validée : 05/01/2020 20:31'
+      )
       expect(historyCellValidated).toBeInTheDocument()
       const historyCellReimbursed = screen.getByText('Remboursée : 06/01/2020')
       expect(historyCellReimbursed).toBeInTheDocument()
       const numberOfHistoryItemsDisplayed = screen.getAllByRole('listitem')
-      expect(numberOfHistoryItemsDisplayed).toHaveLength(expectedNumberOfHistoryDates)
+      expect(numberOfHistoryItemsDisplayed).toHaveLength(
+        expectedNumberOfHistoryDates
+      )
     })
   })
 })

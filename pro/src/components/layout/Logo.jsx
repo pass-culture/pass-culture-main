@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
@@ -25,16 +25,11 @@ const Logo = ({ className, noLink, signPage, isUserAdmin }) => {
       to={isUserAdmin ? '/structures' : '/accueil'}
       {...extraProps}
     >
-      <img
-        alt="Logo"
-        src={src}
-      />
+      <img alt="Logo" src={src} />
       {signPage && (
         <div className="logo-subtitle">
           {'L’espace pass Culture des '}
-          <span className="logo-subtitle-highlighted">
-            acteurs culturels
-          </span>
+          <span className="logo-subtitle-highlighted">acteurs culturels</span>
         </div>
       )}
     </NavLink>

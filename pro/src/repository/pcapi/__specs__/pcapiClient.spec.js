@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ */
 
 import fetch from 'jest-fetch-mock'
 
@@ -56,7 +56,9 @@ describe('pcapiClient', () => {
       fetch.mockResponseOnce({ error: 'API error message' }, { status: 403 })
 
       // When
-      await expect(client.getPlainText('/bookings/csv')).rejects.toStrictEqual(new Error('An error happened.'))
+      await expect(client.getPlainText('/bookings/csv')).rejects.toStrictEqual(
+        new Error('An error happened.')
+      )
     })
 
     it('should throw an error if return response status is not 200', async () => {
@@ -103,7 +105,11 @@ describe('pcapiClient', () => {
     it('should return json if return status is ok', async () => {
       // Given
       const oneBooking = {
-        beneficiary: { email: 'user@example.com', firstname: 'First', lastname: 'Last' },
+        beneficiary: {
+          email: 'user@example.com',
+          firstname: 'First',
+          lastname: 'Last',
+        },
         booking_date: '2020-04-12T19:31:12Z',
         booking_is_duo: false,
         booking_status: 'reimbursed',
@@ -116,7 +122,9 @@ describe('pcapiClient', () => {
         total: 1,
         bookings_recap: [oneBooking],
       }
-      fetch.mockResponseOnce(JSON.stringify(paginatedBookingRecapReturned), { status: 200 })
+      fetch.mockResponseOnce(JSON.stringify(paginatedBookingRecapReturned), {
+        status: 200,
+      })
 
       // When
       const response = await client.get('/bookings/pro')

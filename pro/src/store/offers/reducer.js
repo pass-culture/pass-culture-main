@@ -1,4 +1,8 @@
-import { SAVE_SEARCH_FILTERS, SET_CATEGORIES, SAVE_PAGE_NUMBER } from './actions'
+import {
+  SAVE_SEARCH_FILTERS,
+  SET_CATEGORIES,
+  SAVE_PAGE_NUMBER,
+} from './actions'
 
 export const initialState = {
   list: [],
@@ -10,7 +14,10 @@ export const initialState = {
 export const offersReducer = (state = initialState, action) => {
   switch (action.type) {
     case SAVE_SEARCH_FILTERS:
-      return { ...state, searchFilters: { ...state.searchFilters, ...action.filters } }
+      return {
+        ...state,
+        searchFilters: { ...state.searchFilters, ...action.filters },
+      }
 
     case SAVE_PAGE_NUMBER:
       return { ...state, pageNumber: action.pageNumber }

@@ -1,1 +1,1 @@
-export { default } from "./DialogBox"
+export { default } from './DialogBox'

@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
@@ -22,24 +22,17 @@ export const SetPasswordConfirm = props => {
     <Fragment>
       <PageTitle title="Définition du mot de passe" />
       <div className="logo-side">
-        <Logo
-          noLink
-          signPage
-        />
+        <Logo noLink signPage />
       </div>
       <div className="scrollable-content-side">
-        <div
-          className="content"
-          id="override-content-width"
-        >
+        <div className="content" id="override-content-width">
           <section className="password-set-confirm">
             {!displayErrorMessage && (
               <div>
-                <h1>
-                  Votre mot de passe a bien été enregistré !
-                </h1>
+                <h1>Votre mot de passe a bien été enregistré !</h1>
                 <h2>
-                  Vous pouvez dès à présent vous connecter avec votre mot de passe.
+                  Vous pouvez dès à présent vous connecter avec votre mot de
+                  passe.
                 </h2>
 
                 <Link
@@ -52,12 +45,8 @@ export const SetPasswordConfirm = props => {
             )}
             {displayErrorMessage && (
               <div>
-                <h1>
-                  Votre lien a expiré !
-                </h1>
-                <h2>
-                  Veuillez contacter notre support
-                </h2>
+                <h1>Votre lien a expiré !</h1>
+                <h2>Veuillez contacter notre support</h2>
 
                 <a
                   className="primary-link redirection-button"

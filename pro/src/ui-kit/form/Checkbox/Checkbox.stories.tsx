@@ -10,19 +10,17 @@ export default {
 }
 
 const Template = () => (
-  <Formik
-    initialValues={{ accessibility: null }}
-    onSubmit={action('onSubmit')}
-  >
+  <Formik initialValues={{ accessibility: null }} onSubmit={action('onSubmit')}>
     {({ getFieldProps }) => {
       return (
         <Checkbox
           {...getFieldProps('accessibility')}
           label="Accessible"
-          name='accessibility'
+          name="accessibility"
           value="accessible"
         />
-      )}}
+      )
+    }}
   </Formik>
 )
 

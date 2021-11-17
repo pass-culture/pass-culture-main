@@ -68,11 +68,13 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
   ]
 
   const isVenueV2Enabled = useActiveFeature('ENABLE_NEW_VENUE_PAGES')
-  const isBankInformationWithSiretActive = useActiveFeature('ENFORCE_BANK_INFORMATION_WITH_SIRET')
+  const isBankInformationWithSiretActive = useActiveFeature(
+    'ENFORCE_BANK_INFORMATION_WITH_SIRET'
+  )
 
   useEffect(() => {
     if (isStatOpen && !isStatLoaded) {
-      (async () => {
+      ;(async () => {
         const stats = await pcapi.getVenueStats(id)
         setStats({
           activeBookingsQuantity: stats.activeBookingsQuantity.toString(),
@@ -109,16 +111,17 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
     >
       <div className={`h-card h-card-${isVirtual ? 'primary' : 'secondary'}`}>
         <div className="h-card-inner">
-          <div className={`h-card-header-row ${isStatOpen ? 'h-card-is-open' : ''}`}>
+          <div
+            className={`h-card-header-row ${
+              isStatOpen ? 'h-card-is-open' : ''
+            }`}
+          >
             <h3 className="h-card-title">
               <Icon
                 className="h-card-title-ico"
                 svg={isVirtual ? 'ico-screen-play' : 'ico-box'}
               />
-              <span
-                className="title-text"
-                title={publicName || name}
-              >
+              <span className="title-text" title={publicName || name}>
                 {publicName || name}
               </span>
             </h3>
@@ -130,25 +133,18 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
               >
                 {isStatOpen ? (
                   <>
-                    <ClosedEyeSvg />
-                    {' '}
-                    Masquer
+                    <ClosedEyeSvg /> Masquer
                   </>
                 ) : (
                   <>
-                    <OpenedEyeSvg />
-                    {' '}
-                    Afficher
+                    <OpenedEyeSvg /> Afficher
                   </>
                 )}
               </button>
               {(!isVirtual || isBankInformationWithSiretActive) && (
                 <>
                   <span className="button-group-separator" />
-                  <Link
-                    className="tertiary-link"
-                    to={editVenueLink}
-                  >
+                  <Link className="tertiary-link" to={editVenueLink}>
                     <Icon svg="ico-outer-pen" />
                     Modifier
                   </Link>

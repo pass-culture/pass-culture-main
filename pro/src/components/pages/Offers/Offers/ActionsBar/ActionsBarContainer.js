@@ -1,6 +1,6 @@
 /*
-* @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
-*/
+ * @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
+ */
 
 import { connect } from 'react-redux'
 import { compose } from 'redux'
@@ -41,10 +41,16 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
     ...dispatchProps,
     ...ownProps,
     trackActivateOffers: offerIds => {
-      ownProps.tracking.trackEvent({ action: 'activateOffers', names: offerIds })
+      ownProps.tracking.trackEvent({
+        action: 'activateOffers',
+        names: offerIds,
+      })
     },
     trackDeactivateOffers: offerIds => {
-      ownProps.tracking.trackEvent({ action: 'deactivateOffers', names: offerIds })
+      ownProps.tracking.trackEvent({
+        action: 'deactivateOffers',
+        names: offerIds,
+      })
     },
   }
 }

@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen } from '@testing-library/react'
@@ -76,7 +76,9 @@ describe('components | AllocineProviderForm', () => {
     await renderAllocineProviderForm()
 
     // then
-    const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+    const priceField = screen.getByLabelText('Prix de vente/place', {
+      exact: false,
+    })
     expect(priceField).toBeInTheDocument()
     expect(priceField).toHaveAttribute('min', '0')
     expect(priceField).toHaveAttribute('step', '0.01')
@@ -93,7 +95,7 @@ describe('components | AllocineProviderForm', () => {
     expect(quantityField).toHaveAttribute('step', '1')
   })
 
-  describe('import form allocine provider for the first time',  () => {
+  describe('import form allocine provider for the first time', () => {
     beforeEach(async () => {
       createdVenueProvider = {
         id: 'venueProviderId',
@@ -111,7 +113,9 @@ describe('components | AllocineProviderForm', () => {
       await renderAllocineProviderForm()
 
       // then
-      const isDuoCheckbox = screen.getByLabelText(`Accepter les réservations DUO`)
+      const isDuoCheckbox = screen.getByLabelText(
+        `Accepter les réservations DUO`
+      )
       expect(isDuoCheckbox).toBeInTheDocument()
       expect(isDuoCheckbox).toBeChecked()
     })
@@ -121,7 +125,9 @@ describe('components | AllocineProviderForm', () => {
       await renderAllocineProviderForm()
 
       // then
-      const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
+      const offerImportButton = screen.getByRole('button', {
+        name: 'Importer les offres',
+      })
       expect(offerImportButton).toBeInTheDocument()
       expect(offerImportButton).toHaveAttribute('type', 'submit')
       expect(offerImportButton).toBeDisabled()
@@ -130,10 +136,16 @@ describe('components | AllocineProviderForm', () => {
     it('should be able to submit when price field is filled', async () => {
       // given
       await renderAllocineProviderForm()
-      const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
-      const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+      const offerImportButton = screen.getByRole('button', {
+        name: 'Importer les offres',
+      })
+      const priceField = screen.getByLabelText('Prix de vente/place', {
+        exact: false,
+      })
       const quantityField = screen.getByLabelText('Nombre de places/séance')
-      const isDuoCheckbox = screen.getByLabelText(`Accepter les réservations DUO`)
+      const isDuoCheckbox = screen.getByLabelText(
+        `Accepter les réservations DUO`
+      )
 
       // when
       fireEvent.change(priceField, { target: { value: 10 } })
@@ -154,8 +166,12 @@ describe('components | AllocineProviderForm', () => {
     it('should be able to submit when price field is filled to 0', async () => {
       // given
       await renderAllocineProviderForm()
-      const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
-      const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+      const offerImportButton = screen.getByRole('button', {
+        name: 'Importer les offres',
+      })
+      const priceField = screen.getByLabelText('Prix de vente/place', {
+        exact: false,
+      })
 
       // when
       fireEvent.change(priceField, { target: { value: 0 } })
@@ -174,8 +190,12 @@ describe('components | AllocineProviderForm', () => {
     it('should be able to submit when price field is filled with a decimal', async () => {
       // given
       await renderAllocineProviderForm()
-      const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
-      const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+      const offerImportButton = screen.getByRole('button', {
+        name: 'Importer les offres',
+      })
+      const priceField = screen.getByLabelText('Prix de vente/place', {
+        exact: false,
+      })
 
       // when
       fireEvent.change(priceField, { target: { value: 0.42 } })
@@ -194,7 +214,9 @@ describe('components | AllocineProviderForm', () => {
     it('should not be able to submit when quantity is filled but price is not', async () => {
       // given
       await renderAllocineProviderForm()
-      const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
+      const offerImportButton = screen.getByRole('button', {
+        name: 'Importer les offres',
+      })
       const quantityField = screen.getByLabelText('Nombre de places/séance')
 
       // when
@@ -208,15 +230,21 @@ describe('components | AllocineProviderForm', () => {
     it('should display a success notification when venue provider was correctly saved', async () => {
       // given
       await renderAllocineProviderForm()
-      const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
-      const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+      const offerImportButton = screen.getByRole('button', {
+        name: 'Importer les offres',
+      })
+      const priceField = screen.getByLabelText('Prix de vente/place', {
+        exact: false,
+      })
       fireEvent.change(priceField, { target: { value: 10 } })
 
       // when
       fireEvent.click(offerImportButton)
 
       // then
-      const successNotification = await screen.findByText('La synchronisation a bien été initiée.')
+      const successNotification = await screen.findByText(
+        'La synchronisation a bien été initiée.'
+      )
       expect(successNotification).toBeInTheDocument()
     })
 
@@ -228,15 +256,21 @@ describe('components | AllocineProviderForm', () => {
       }
       pcapi.createVenueProvider.mockRejectedValue(apiError)
       await renderAllocineProviderForm()
-      const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
-      const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+      const offerImportButton = screen.getByRole('button', {
+        name: 'Importer les offres',
+      })
+      const priceField = screen.getByLabelText('Prix de vente/place', {
+        exact: false,
+      })
 
       // when
       fireEvent.change(priceField, { target: { value: -10 } })
       await fireEvent.click(offerImportButton)
 
       // then
-      const errorNotification = await screen.findByText(apiError.errors.global[0])
+      const errorNotification = await screen.findByText(
+        apiError.errors.global[0]
+      )
       expect(errorNotification).toBeInTheDocument()
     })
   })
@@ -269,9 +303,13 @@ describe('components | AllocineProviderForm', () => {
       await renderAllocineProviderForm()
 
       // then
-      const saveEditioProvider = screen.getByRole('button', { name: 'Modifier' })
+      const saveEditioProvider = screen.getByRole('button', {
+        name: 'Modifier',
+      })
       expect(saveEditioProvider).toBeInTheDocument()
-      const cancelEditionProvider = screen.getByRole('button', { name: 'Annuler' })
+      const cancelEditionProvider = screen.getByRole('button', {
+        name: 'Annuler',
+      })
       expect(cancelEditionProvider).toBeInTheDocument()
     })
 
@@ -281,7 +319,7 @@ describe('components | AllocineProviderForm', () => {
         ...allocineProvider,
         price: 15,
         quantity: 50,
-        isDuo: false
+        isDuo: false,
       }
       pcapi.loadVenueProviders.mockResolvedValue([allocineProvider])
 
@@ -289,15 +327,21 @@ describe('components | AllocineProviderForm', () => {
       await renderAllocineProviderForm()
 
       // then
-      const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+      const priceField = screen.getByLabelText('Prix de vente/place', {
+        exact: false,
+      })
       expect(priceField).toHaveValue(allocineProvider.price)
 
-      const quantityField = screen.getByLabelText('Nombre de places/séance', { exact: false })
+      const quantityField = screen.getByLabelText('Nombre de places/séance', {
+        exact: false,
+      })
       expect(quantityField).toHaveValue(allocineProvider.quantity)
 
-      const isDuoField = screen.getByLabelText('Accepter les réservations DUO', { exact: false })
+      const isDuoField = screen.getByLabelText(
+        'Accepter les réservations DUO',
+        { exact: false }
+      )
       expect(isDuoField).not.toBeChecked()
-
     })
 
     it('should not be able to submit when price field is not filled', async () => {
@@ -306,11 +350,15 @@ describe('components | AllocineProviderForm', () => {
         ...allocineProvider,
         price: 15,
         quantity: 50,
-        isDuo: false
+        isDuo: false,
       }
       await renderAllocineProviderForm()
-      const saveEditioProvider = screen.getByRole('button', { name: 'Modifier' })
-      const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+      const saveEditioProvider = screen.getByRole('button', {
+        name: 'Modifier',
+      })
+      const priceField = screen.getByLabelText('Prix de vente/place', {
+        exact: false,
+      })
 
       // when
       fireEvent.change(priceField, { target: { value: null } })
@@ -325,28 +373,38 @@ describe('components | AllocineProviderForm', () => {
         ...allocineProvider,
         price: 15,
         quantity: 50,
-        isDuo: false
+        isDuo: false,
       }
       pcapi.loadVenueProviders.mockResolvedValue([allocineProvider])
       const editedAllocineProvider = {
         ...allocineProvider,
         price: 20,
         quantity: 10,
-        isDuo: true
+        isDuo: true,
       }
 
       pcapi.editVenueProvider.mockResolvedValue(editedAllocineProvider)
 
       await renderAllocineProviderForm()
 
-      const saveEditioProvider = screen.getByRole('button', { name: 'Modifier' })
-      const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+      const saveEditioProvider = screen.getByRole('button', {
+        name: 'Modifier',
+      })
+      const priceField = screen.getByLabelText('Prix de vente/place', {
+        exact: false,
+      })
       const quantityField = screen.getByLabelText('Nombre de places/séance')
-      const isDuoCheckbox = screen.getByLabelText(`Accepter les réservations DUO`)
+      const isDuoCheckbox = screen.getByLabelText(
+        `Accepter les réservations DUO`
+      )
 
       // when
-      fireEvent.change(priceField, { target: { value: editedAllocineProvider.price } })
-      fireEvent.change(quantityField, { target: { value: editedAllocineProvider.quantity } })
+      fireEvent.change(priceField, {
+        target: { value: editedAllocineProvider.price },
+      })
+      fireEvent.change(quantityField, {
+        target: { value: editedAllocineProvider.quantity },
+      })
       fireEvent.click(isDuoCheckbox)
       fireEvent.click(saveEditioProvider)
 
@@ -366,21 +424,23 @@ describe('components | AllocineProviderForm', () => {
         ...allocineProvider,
         price: 20,
         quantity: 50,
-        isDuo: false
+        isDuo: false,
       }
       pcapi.loadVenueProviders.mockResolvedValue([allocineProvider])
       const editedAllocineProvider = {
         ...allocineProvider,
         price: 20,
         quantity: null,
-        isDuo: false
+        isDuo: false,
       }
 
       pcapi.editVenueProvider.mockResolvedValue(editedAllocineProvider)
 
       await renderAllocineProviderForm()
 
-      const saveEditioProvider = screen.getByRole('button', { name: 'Modifier' })
+      const saveEditioProvider = screen.getByRole('button', {
+        name: 'Modifier',
+      })
       const quantityField = screen.getByLabelText('Nombre de places/séance')
 
       // when
@@ -403,20 +463,24 @@ describe('components | AllocineProviderForm', () => {
         ...allocineProvider,
         price: 15,
         quantity: 50,
-        isDuo: false
+        isDuo: false,
       }
       pcapi.loadVenueProviders.mockResolvedValue([allocineProvider])
       const editedAllocineProvider = {
         ...allocineProvider,
         price: 20,
         quantity: 50,
-        isDuo: false
+        isDuo: false,
       }
       pcapi.editVenueProvider.mockResolvedValue(editedAllocineProvider)
 
       await renderAllocineProviderForm()
-      const saveEditioProvider = screen.getByRole('button', { name: 'Modifier' })
-      const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+      const saveEditioProvider = screen.getByRole('button', {
+        name: 'Modifier',
+      })
+      const priceField = screen.getByLabelText('Prix de vente/place', {
+        exact: false,
+      })
 
       fireEvent.change(priceField, { target: { value: 10 } })
 
@@ -424,7 +488,9 @@ describe('components | AllocineProviderForm', () => {
       fireEvent.click(saveEditioProvider)
 
       // then
-      const successNotification = await screen.findByText('Les modifications ont bien été importées et s’appliqueront aux nouvelles séances créées.')
+      const successNotification = await screen.findByText(
+        'Les modifications ont bien été importées et s’appliqueront aux nouvelles séances créées.'
+      )
       expect(successNotification).toBeInTheDocument()
     })
 
@@ -434,7 +500,7 @@ describe('components | AllocineProviderForm', () => {
         ...allocineProvider,
         price: 20,
         quantity: 50,
-        isDuo: false
+        isDuo: false,
       }
       pcapi.editVenueProvider.mockResolvedValue(editedAllocineProvider)
       const apiError = {
@@ -443,15 +509,21 @@ describe('components | AllocineProviderForm', () => {
       }
       pcapi.editVenueProvider.mockRejectedValue(apiError)
       await renderAllocineProviderForm()
-      const saveEditioProvider = screen.getByRole('button', { name: 'Modifier' })
-      const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+      const saveEditioProvider = screen.getByRole('button', {
+        name: 'Modifier',
+      })
+      const priceField = screen.getByLabelText('Prix de vente/place', {
+        exact: false,
+      })
 
       // when
       fireEvent.change(priceField, { target: { value: -10 } })
       await fireEvent.click(saveEditioProvider)
 
       // then
-      const errorNotification = await screen.findByText(apiError.errors.global[0])
+      const errorNotification = await screen.findByText(
+        apiError.errors.global[0]
+      )
       expect(errorNotification).toBeInTheDocument()
     })
   })

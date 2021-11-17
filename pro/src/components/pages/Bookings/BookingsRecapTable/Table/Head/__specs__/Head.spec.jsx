@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 import React from 'react'
@@ -22,22 +22,14 @@ describe('components | pages | TableWrapper | TableHead', () => {
             {
               id: 1,
               headerTitle: 'Offres',
-              render: jest.fn(() => (
-                <span>
-                  Offres
-                </span>
-              )),
+              render: jest.fn(() => <span>Offres</span>),
               getHeaderProps: jest.fn(),
               getSortByToggleProps: jest.fn(),
             },
             {
               id: 2,
               headerTitle: 'Beneficiaires',
-              render: jest.fn(() => (
-                <span>
-                  Beneficiaires
-                </span>
-              )),
+              render: jest.fn(() => <span>Beneficiaires</span>),
               getHeaderProps: jest.fn(),
               getSortByToggleProps: jest.fn(),
             },
@@ -78,11 +70,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
             {
               id: 1,
               headerTitle: 'Offres',
-              render: jest.fn(() => (
-                <span>
-                  Offres
-                </span>
-              )),
+              render: jest.fn(() => <span>Offres</span>),
               getHeaderProps: jest.fn(),
               getSortByToggleProps: jest.fn(),
               canSort: true,
@@ -114,11 +102,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
             {
               id: 1,
               headerTitle: 'Offres',
-              render: jest.fn(() => (
-                <span>
-                  Offres
-                </span>
-              )),
+              render: jest.fn(() => <span>Offres</span>),
               getHeaderProps: jest.fn(),
               getSortByToggleProps: jest.fn(),
               canSort: false,
@@ -149,11 +133,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
             {
               id: 1,
               headerTitle: 'Offres',
-              render: jest.fn(() => (
-                <span>
-                  Offres
-                </span>
-              )),
+              render: jest.fn(() => <span>Offres</span>),
               getHeaderProps: jest.fn(),
               getSortByToggleProps: jest.fn(),
               canSort: true,
@@ -186,11 +166,7 @@ describe('components | pages | TableWrapper | TableHead', () => {
             {
               id: 1,
               headerTitle: 'Offres',
-              render: jest.fn(() => (
-                <span>
-                  Offres
-                </span>
-              )),
+              render: jest.fn(() => <span>Offres</span>),
               getHeaderProps: jest.fn(),
               getSortByToggleProps: jest.fn(),
               canSort: true,

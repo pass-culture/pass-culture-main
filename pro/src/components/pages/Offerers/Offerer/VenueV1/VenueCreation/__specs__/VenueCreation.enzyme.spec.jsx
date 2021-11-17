@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
@@ -99,7 +99,9 @@ describe('src | components | pages | Venue', () => {
         const wrapper = shallow(<VenueCreation {...props} />)
 
         // then
-        const title = wrapper.find({ children: 'Ajoutez un lieu où accéder à vos offres.' })
+        const title = wrapper.find({
+          children: 'Ajoutez un lieu où accéder à vos offres.',
+        })
         expect(title).toHaveLength(1)
       })
     })
@@ -162,7 +164,9 @@ describe('src | components | pages | Venue', () => {
           .find('input.field-address')
           .first()
 
-        addressField.simulate('change', { target: { value: 'Addresse de test' } })
+        addressField.simulate('change', {
+          target: { value: 'Addresse de test' },
+        })
 
         wrapper = wrapper.update()
 

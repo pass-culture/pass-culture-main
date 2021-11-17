@@ -55,11 +55,13 @@ const Venue = ({ id, isVirtual, name, offererId, publicName, venueStats }) => {
   ]
 
   const isVenueV2Enabled = useActiveFeature('ENABLE_NEW_VENUE_PAGES')
-  const isBankInformationWithSiretActive = useActiveFeature('ENFORCE_BANK_INFORMATION_WITH_SIRET')
+  const isBankInformationWithSiretActive = useActiveFeature(
+    'ENFORCE_BANK_INFORMATION_WITH_SIRET'
+  )
 
   const showVenueLink = `/structures/${offererId}/lieux/${id}`
   let editVenueLink = `/structures/${offererId}/lieux/${id}`
-  
+
   if (!isVenueV2Enabled) {
     editVenueLink += '?modification'
   }
@@ -74,23 +76,14 @@ const Venue = ({ id, isVirtual, name, offererId, publicName, venueStats }) => {
                 className="h-card-title-ico"
                 svg={isVirtual ? 'ico-screen-play' : 'ico-box'}
               />
-              <Link
-                className="tertiary-link"
-                to={showVenueLink}
-              >
-                <span
-                  className="title-text"
-                  title={publicName || name}
-                >
+              <Link className="tertiary-link" to={showVenueLink}>
+                <span className="title-text" title={publicName || name}>
                   {publicName || name}
                 </span>
               </Link>
             </h3>
             {(!isVirtual || isBankInformationWithSiretActive) && (
-              <Link
-                className="tertiary-link"
-                to={editVenueLink}
-              >
+              <Link className="tertiary-link" to={editVenueLink}>
                 <Icon svg="ico-outer-pen" />
                 Modifier
               </Link>
@@ -111,7 +104,9 @@ const Venue = ({ id, isVirtual, name, offererId, publicName, venueStats }) => {
               >
                 <IcoPlus />
                 <div>
-                  {isVirtual ? 'Créer une nouvelle offre numérique' : 'Créer une nouvelle offre'}
+                  {isVirtual
+                    ? 'Créer une nouvelle offre numérique'
+                    : 'Créer une nouvelle offre'}
                 </div>
               </Link>
             </div>

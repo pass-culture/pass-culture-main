@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import { act, render, screen, fireEvent, waitFor } from '@testing-library/react'
@@ -193,7 +193,9 @@ describe('homepage', () => {
 
     describe('profileAndSupport', () => {
       it('should display section and subsection titles', () => {
-        expect(screen.getByText('Profil et aide', { selector: 'h2' })).toBeInTheDocument()
+        expect(
+          screen.getByText('Profil et aide', { selector: 'h2' })
+        ).toBeInTheDocument()
         expect(screen.getByText('Profil')).toBeInTheDocument()
         expect(screen.getByText('Aide et support')).toBeInTheDocument()
       })
@@ -204,10 +206,18 @@ describe('homepage', () => {
           fireEvent.click(screen.getByText('Modifier', { selector: 'button' }))
 
           // then
-          await expect(screen.findByLabelText('Nom')).resolves.toBeInTheDocument()
-          await expect(screen.findByLabelText('Prénom')).resolves.toBeInTheDocument()
-          await expect(screen.findByLabelText('Email')).resolves.toBeInTheDocument()
-          await expect(screen.findByLabelText('Téléphone')).resolves.toBeInTheDocument()
+          await expect(
+            screen.findByLabelText('Nom')
+          ).resolves.toBeInTheDocument()
+          await expect(
+            screen.findByLabelText('Prénom')
+          ).resolves.toBeInTheDocument()
+          await expect(
+            screen.findByLabelText('Email')
+          ).resolves.toBeInTheDocument()
+          await expect(
+            screen.findByLabelText('Téléphone')
+          ).resolves.toBeInTheDocument()
         })
 
         it('should close the modal when clicking on cancel button', async () => {
@@ -218,7 +228,9 @@ describe('homepage', () => {
           fireEvent.click(screen.getByText('Annuler', { selector: 'button' }))
 
           // then
-          await waitFor(() => expect(screen.queryByLabelText('Nom')).not.toBeInTheDocument())
+          await waitFor(() =>
+            expect(screen.queryByLabelText('Nom')).not.toBeInTheDocument()
+          )
         })
 
         it('should update user info on submit', async () => {
@@ -239,7 +251,9 @@ describe('homepage', () => {
 
           // when
           await act(async () => {
-            await fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+            await fireEvent.click(
+              screen.getByRole('button', { name: 'Enregistrer' })
+            )
           })
 
           // then
@@ -254,7 +268,10 @@ describe('homepage', () => {
         it('should show errors on submit', async () => {
           // given
           pcapi.updateUserInformations.mockRejectedValue({
-            errors: { firstName: ['Prénom en erreur'], email: ['Email en erreur'] },
+            errors: {
+              firstName: ['Prénom en erreur'],
+              email: ['Email en erreur'],
+            },
           })
           fireEvent.click(screen.getByText('Modifier', { selector: 'button' }))
           fireEvent.change(screen.getByLabelText('Prénom'), {
@@ -266,7 +283,9 @@ describe('homepage', () => {
 
           // when
           await act(async () => {
-            await fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+            await fireEvent.click(
+              screen.getByRole('button', { name: 'Enregistrer' })
+            )
           })
 
           // then

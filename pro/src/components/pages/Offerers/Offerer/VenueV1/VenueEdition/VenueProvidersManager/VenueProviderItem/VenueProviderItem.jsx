@@ -14,20 +14,22 @@ import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
-const VenueProviderItem = ({ venueProvider, venueDepartmentCode, children }) => {
-  const { lastSyncDate, nOffers, provider, venueIdAtOfferProvider } = venueProvider
+const VenueProviderItem = ({
+  venueProvider,
+  venueDepartmentCode,
+  children,
+}) => {
+  const { lastSyncDate, nOffers, provider, venueIdAtOfferProvider } =
+    venueProvider
   const providerInfo = getProviderInfo(provider.name)
-  const shouldDisplayProviderInformations = isAllocineProvider(provider) || lastSyncDate
+  const shouldDisplayProviderInformations =
+    isAllocineProvider(provider) || lastSyncDate
 
   return (
     <li className="venue-provider-row">
       <div className="venue-provider-item-info">
         {!!providerInfo && (
-          <Icon
-            height="64px"
-            svg={providerInfo.icon}
-            width="64px"
-          />
+          <Icon height="64px" svg={providerInfo.icon} width="64px" />
         )}
 
         <div className="provider-name-container">
@@ -38,9 +40,7 @@ const VenueProviderItem = ({ venueProvider, venueDepartmentCode, children }) => 
           <div className="venue-id-at-offer-provider-container-with-message">
             <div className="venue-id-at-offer-provider">
               {'Compte : '}
-              <strong>
-                {venueIdAtOfferProvider}
-              </strong>
+              <strong>{venueIdAtOfferProvider}</strong>
             </div>
             <div className="import-label-container">
               {'Importation en cours.' +
@@ -52,16 +52,10 @@ const VenueProviderItem = ({ venueProvider, venueDepartmentCode, children }) => 
           <div className="venue-id-at-offer-provider-container">
             <div className="venue-id-at-offer-provider">
               {'Compte : '}
-              <strong>
-                {venueIdAtOfferProvider}
-              </strong>
+              <strong>{venueIdAtOfferProvider}</strong>
             </div>
             <div className="offers-container-counter">
-              <Icon
-                height="22px"
-                svg="ico-offres-r"
-                width="22px"
-              />
+              <Icon height="22px" svg="ico-offres-r" width="22px" />
               <div className="number-of-offers-label">
                 {pluralize(nOffers, 'offres')}
               </div>
@@ -74,9 +68,7 @@ const VenueProviderItem = ({ venueProvider, venueDepartmentCode, children }) => 
           <ul>
             {lastSyncDate && (
               <li className="venue-informations-sync-item">
-                <span>
-                  {'Dernière synchronisation : '}
-                </span>
+                <span>{'Dernière synchronisation : '}</span>
                 <span data-testid="last-sync-date">
                   &nbsp;
                   {formatLocalTimeDateString(
@@ -96,7 +88,7 @@ const VenueProviderItem = ({ venueProvider, venueDepartmentCode, children }) => 
 }
 
 VenueProviderItem.defaultProps = {
-  children: null
+  children: null,
 }
 
 VenueProviderItem.propTypes = {

@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen } from '@testing-library/react'
@@ -137,7 +137,9 @@ describe('tutorial modal', () => {
           await act(async () => {
             await fireEvent.click(buttonFinish)
           })
-          expect(screen.queryByTestId('tutorial-container')).not.toBeInTheDocument()
+          expect(
+            screen.queryByTestId('tutorial-container')
+          ).not.toBeInTheDocument()
         })
 
         it('should call set has seen tutos function', async () => {

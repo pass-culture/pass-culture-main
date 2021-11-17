@@ -22,14 +22,17 @@ import {
 const { INDIVIDUAL_OR_DUO, EDUCATIONAL } = OFFER_TYPES
 
 export interface IOfferTypeProps {
-  fetchCanOffererCreateEducationalOffer: () => void;
+  fetchCanOffererCreateEducationalOffer: () => void
 }
 
 const OfferType = ({
-  fetchCanOffererCreateEducationalOffer
+  fetchCanOffererCreateEducationalOffer,
 }: IOfferTypeProps): JSX.Element => {
   const [offerType, setOfferType] = useState(INDIVIDUAL_OR_DUO)
-  const [{ hasBeenCalled, isEligible, isLoading }, dispatch] = useReducer(reducer, initialState)
+  const [{ hasBeenCalled, isEligible, isLoading }, dispatch] = useReducer(
+    reducer,
+    initialState
+  )
 
   const getNextPageHref = () => {
     if (offerType === INDIVIDUAL_OR_DUO) {
@@ -39,15 +42,19 @@ const OfferType = ({
     return '/offres/eac/creation'
   }
 
-  const handleOfferTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOfferTypeChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const selectedOfferType = event.target.value as OFFER_TYPES
     setOfferType(selectedOfferType)
   }
 
-  const handleEducationalClick = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEducationalClick = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     handleOfferTypeChange(event)
 
-    if (!hasBeenCalled){
+    if (!hasBeenCalled) {
       dispatch(FETCH_ACTION)
       try {
         await fetchCanOffererCreateEducationalOffer()
@@ -60,11 +67,7 @@ const OfferType = ({
 
   return (
     <div>
-      <h1
-        className={styles['offer-type-title']}
-      >
-        Créer une nouvelle offre
-      </h1>
+      <h1 className={styles['offer-type-title']}>Créer une nouvelle offre</h1>
       <h2 className={styles['offer-type-description']}>
         Quel type d’offre souhaitez-vous proposer ?
       </h2>
@@ -74,7 +77,7 @@ const OfferType = ({
             Icon={UserIcon}
             className={styles['offer-type-buttons-button']}
             isSelected={offerType === INDIVIDUAL_OR_DUO}
-            label='Une offre à destination du grand public'
+            label="Une offre à destination du grand public"
             onChange={handleOfferTypeChange}
             value={INDIVIDUAL_OR_DUO}
           />
@@ -89,23 +92,22 @@ const OfferType = ({
           />
         </div>
         {isEligible === false ? (
-          <Banner
-            href='#'
-            linkTitle='Faire une demande de référencement'
-          >
-            Pour proposer des offres à destination d’un groupe scolaire, vous devez être référencé auprès du ministère de l’Éducation Nationale et du ministère de la Culture.
+          <Banner href="#" linkTitle="Faire une demande de référencement">
+            Pour proposer des offres à destination d’un groupe scolaire, vous
+            devez être référencé auprès du ministère de l’Éducation Nationale et
+            du ministère de la Culture.
           </Banner>
         ) : null}
       </div>
       <div className={styles['offer-type-actions']}>
         <Link
-          className={cn(styles['offer-type-actions-action'], "secondary-link")}
+          className={cn(styles['offer-type-actions-action'], 'secondary-link')}
           to={computeOffersUrl({})}
         >
           Retour
         </Link>
         <SubmitButton
-          className={cn(styles['offer-type-actions-action'], "primary-button")}
+          className={cn(styles['offer-type-actions-action'], 'primary-button')}
           disabled={isEligible === false}
           isLoading={isLoading}
           onClick={getNextPageHref}

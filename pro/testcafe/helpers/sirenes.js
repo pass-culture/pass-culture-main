@@ -1,9 +1,12 @@
 import { RequestMock } from 'testcafe'
 
 export const getSirenRequestMockAs = offerer => {
-  const { address, city, latitude, longitude, name, postalCode, siren } = offerer
+  const { address, city, latitude, longitude, name, postalCode, siren } =
+    offerer
   return RequestMock()
-    .onRequestTo(`https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`)
+    .onRequestTo(
+      `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
+    )
     .respond(
       {
         unite_legale: {
@@ -26,7 +29,9 @@ export const getSirenRequestMockAs = offerer => {
 export const getSiretRequestMockAs = venue => {
   const { address, city, latitude, longitude, name, postalCode, siret } = venue
   return RequestMock()
-    .onRequestTo(`https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${siret}`)
+    .onRequestTo(
+      `https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${siret}`
+    )
     .respond(
       {
         etablissement: {
@@ -46,7 +51,9 @@ export const getSiretRequestMockAs = venue => {
 
 export const getSirenRequestMockWithDefaultValues = () =>
   RequestMock()
-    .onRequestTo(/\/entreprise.data.gouv.fr\/api\/sirene\/v3\/unites_legales\/.*/)
+    .onRequestTo(
+      /\/entreprise.data.gouv.fr\/api\/sirene\/v3\/unites_legales\/.*/
+    )
     .respond(
       {
         unite_legale: {
@@ -72,7 +79,9 @@ export const getSirenRequestMockWithDefaultValues = () =>
 
 export const getSirenRequestMockWithNoResult = () =>
   RequestMock()
-    .onRequestTo(/\/entreprise.data.gouv.fr\/api\/sirene\/v3\/unites_legales\/.*/)
+    .onRequestTo(
+      /\/entreprise.data.gouv.fr\/api\/sirene\/v3\/unites_legales\/.*/
+    )
     .respond({}, 404, {
       'content-type': 'application/json; charset=utf-8',
       'access-control-allow-origin': '*',

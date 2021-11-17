@@ -8,11 +8,16 @@ export const FORMAT_HH_mm = 'HH:mm'
 
 export const getToday = () => new Date()
 
-export const formatBrowserTimezonedDateAsUTC = (date, dateFormat = FORMAT_ISO) =>
-  format(date, dateFormat, { timeZone: 'UTC' })
+export const formatBrowserTimezonedDateAsUTC = (
+  date,
+  dateFormat = FORMAT_ISO
+) => format(date, dateFormat, { timeZone: 'UTC' })
 
 export const toDateStrippedOfTimezone = dateIsoString => {
-  const dateIsoStringWithoutTimezone = dateIsoString.replace(/[+-][0-2]\d:[0-5]\d|Z/, '')
+  const dateIsoStringWithoutTimezone = dateIsoString.replace(
+    /[+-][0-2]\d:[0-5]\d|Z/,
+    ''
+  )
   return new Date(dateIsoStringWithoutTimezone)
 }
 

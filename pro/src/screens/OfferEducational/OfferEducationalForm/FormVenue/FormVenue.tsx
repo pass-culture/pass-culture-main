@@ -14,19 +14,10 @@ const FormVenue = (): JSX.Element => {
       title="Lieu de rattachement de votre offre"
     >
       <div className={styles.subsection}>
-        <Select
-          disabled
-          label={OFFERER_LABEL}
-          name='offerer'
-          options={[]}
-        />
+        <Select disabled label={OFFERER_LABEL} name="offerer" options={[]} />
       </div>
       <div className={styles.subsection}>
-        <Select
-          label={VENUE_LABEL}
-          name='venueId'
-          options={[]}
-        />
+        <Select label={VENUE_LABEL} name="venueId" options={[]} />
       </div>
     </FormSection>
   )

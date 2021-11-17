@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within storybook"
-*/
+ * @debt directory "Gaël: this file should be migrated within storybook"
+ */
 
 import React from 'react'
 
@@ -20,41 +20,29 @@ const StyleguideTitles = () => {
   return (
     <div>
       <div className="flex-block">
-        <h1>
-          Ceci est un titre
-        </h1>
+        <h1>Ceci est un titre</h1>
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {title}
-            </code>
+            <code>{title}</code>
           </pre>
         </div>
       </div>
       <br />
 
       <div className="flex-block">
-        <h2>
-          Ceci est un sous-titre
-        </h2>
+        <h2>Ceci est un sous-titre</h2>
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {subtitle}
-            </code>
+            <code>{subtitle}</code>
           </pre>
         </div>
       </div>
 
       <div className="flex-block">
-        <h3 className="section-title">
-          Ceci est un titre de section
-        </h3>
+        <h3 className="section-title">Ceci est un titre de section</h3>
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {sectionTitle}
-            </code>
+            <code>{sectionTitle}</code>
           </pre>
         </div>
       </div>

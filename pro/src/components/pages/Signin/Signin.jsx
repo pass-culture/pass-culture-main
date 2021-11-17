@@ -1,7 +1,7 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
@@ -68,14 +68,21 @@ class Signin extends PureComponent {
     const { submit } = this.props
     const { emailValue, passwordValue } = this.state
 
-    return submit(emailValue, passwordValue, this.onHandleSuccessRedirect, this.onHandleFail)
+    return submit(
+      emailValue,
+      passwordValue,
+      this.onHandleSuccessRedirect,
+      this.onHandleFail
+    )
   }
 
   render() {
     const { isAccountCreationAvailable } = this.props
     const { isPasswordHidden, emailValue, passwordValue } = this.state
     const isSubmitButtonDisabled = emailValue === '' || passwordValue === ''
-    const accountCreationUrl = isAccountCreationAvailable ? '/inscription' : UNAVAILABLE_ERROR_PAGE
+    const accountCreationUrl = isAccountCreationAvailable
+      ? '/inscription'
+      : UNAVAILABLE_ERROR_PAGE
 
     return (
       <AppLayout
@@ -86,26 +93,18 @@ class Signin extends PureComponent {
       >
         <PageTitle title="Se connecter" />
         <div className="logo-side">
-          <Logo
-            noLink
-            signPage
-          />
+          <Logo noLink signPage />
         </div>
         <section className="scrollable-content-side">
           <div className="content">
-            <h1>
-              Bienvenue sur l’espace dédié aux acteurs culturels
-            </h1>
+            <h1>Bienvenue sur l’espace dédié aux acteurs culturels</h1>
             <h2>
               Et merci de votre participation pour nous aider à l’améliorer !
             </h2>
             <span className="has-text-grey">
               Tous les champs sont obligatoires
             </span>
-            <form
-              noValidate
-              onSubmit={this.handleOnSubmit}
-            >
+            <form noValidate onSubmit={this.handleOnSubmit}>
               <div className="signin-form">
                 <TextInput
                   label="Adresse e-mail"
@@ -118,7 +117,11 @@ class Signin extends PureComponent {
                 />
                 <TextInputWithIcon
                   icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
-                  iconAlt={isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'}
+                  iconAlt={
+                    isPasswordHidden
+                      ? 'Afficher le mot de passe'
+                      : 'Cacher le mot de passe'
+                  }
                   label="Mot de passe"
                   name="password"
                   onChange={this.handleInputPasswordChange}
@@ -137,10 +140,7 @@ class Signin extends PureComponent {
                 </Link>
               </div>
               <div className="field buttons-field">
-                <Link
-                  className="secondary-link"
-                  to={accountCreationUrl}
-                >
+                <Link className="secondary-link" to={accountCreationUrl}>
                   Créer un compte
                 </Link>
                 <button

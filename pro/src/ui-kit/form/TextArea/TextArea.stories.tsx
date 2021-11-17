@@ -11,20 +11,18 @@ export default {
   component: TextArea,
 }
 
-const Template: Story<{label?: string}> = ({ label }) => (
-  <Formik
-    initialValues={{ description: '' }}
-    onSubmit={action('onSubmit')}
-  >
+const Template: Story<{ label?: string }> = ({ label }) => (
+  <Formik initialValues={{ description: '' }} onSubmit={action('onSubmit')}>
     {({ getFieldProps }) => {
       return (
         <TextArea
           {...getFieldProps('description')}
           disabled={boolean('disabled', false)}
           label={label}
-          placeholder='Description placeholder'
+          placeholder="Description placeholder"
         />
-      )}}
+      )
+    }}
   </Formik>
 )
 

@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within storybook"
-*/
+ * @debt directory "Gaël: this file should be migrated within storybook"
+ */
 
 import React, { useState } from 'react'
 
@@ -73,9 +73,7 @@ const StyleguideSelect = () => {
 
   return (
     <div className="styleguide-select">
-      <h3>
-        Select
-      </h3>
+      <h3>Select</h3>
       <div className="flex-block">
         <Select
           defaultOption={defaultOption}
@@ -87,15 +85,11 @@ const StyleguideSelect = () => {
         />
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {selectSnippet}
-            </code>
+            <code>{selectSnippet}</code>
           </pre>
         </div>
       </div>
-      <h3>
-        Select en erreur
-      </h3>
+      <h3>Select en erreur</h3>
       <div className="flex-block">
         <Select
           defaultOption={defaultOption}
@@ -108,9 +102,7 @@ const StyleguideSelect = () => {
         />
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {selectWithErrorSnippet}
-            </code>
+            <code>{selectWithErrorSnippet}</code>
           </pre>
         </div>
       </div>

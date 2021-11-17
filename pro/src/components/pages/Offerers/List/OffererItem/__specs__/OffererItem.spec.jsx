@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
@@ -124,7 +124,9 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
 
           // then
           expect(navLink.text()).toBe('Nouvelle offre numérique')
-          expect(navLink.prop('to')).toBe('/offres/creation?structure=AE&lieu=DY')
+          expect(navLink.prop('to')).toBe(
+            '/offres/creation?structure=AE&lieu=DY'
+          )
         })
       })
 
@@ -179,11 +181,15 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
           </Router>
         )
 
-        const offersCount = wrapper.findWhere(node => node.text() === '42 offres').first()
+        const offersCount = wrapper
+          .findWhere(node => node.text() === '42 offres')
+          .first()
 
         // then
         expect(offersCount).toHaveLength(1)
-        expect(offersCount.find('a').at(0).prop('href')).toBe('/offres?structure=AE')
+        expect(offersCount.find('a').at(0).prop('href')).toBe(
+          '/offres?structure=AE'
+        )
       })
 
       it('should display 0 offer and no link to offers page when offerer has no offers', () => {

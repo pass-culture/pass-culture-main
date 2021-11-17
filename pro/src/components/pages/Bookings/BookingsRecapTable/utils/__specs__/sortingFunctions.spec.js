@@ -1,9 +1,13 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
-import { sortByBeneficiaryName, sortByBookingDate, sortByOfferName } from '../sortingFunctions'
+import {
+  sortByBeneficiaryName,
+  sortByBookingDate,
+  sortByOfferName,
+} from '../sortingFunctions'
 
 describe('utils | sortingFunctions', () => {
   describe('sortByOfferName', () => {

@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ */
 
 import { showNotification } from 'store/reducers/notificationReducer'
 
@@ -139,7 +139,9 @@ describe('src | components | pages | Signup | SignupFormContainer', () => {
         functions.redirectToConfirmation()
 
         // then
-        expect(props.history.replace).toHaveBeenCalledWith('/inscription/confirmation')
+        expect(props.history.replace).toHaveBeenCalledWith(
+          '/inscription/confirmation'
+        )
       })
     })
 

@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -18,22 +18,14 @@ const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
 
   return (
     <div className="section op-content-section">
-      <h2 className="main-list-title">
-        Lieux
-      </h2>
+      <h2 className="main-list-title">Lieux</h2>
       <ul className="main-list venues-list">
         {venues.map(venue => (
-          <VenueItem
-            key={venue.id}
-            venue={venue}
-          />
+          <VenueItem key={venue.id} venue={venue} />
         ))}
       </ul>
       <div className="has-text-centered">
-        <Link
-          className="tertiary-link"
-          to={venueCreationUrl}
-        >
+        <Link className="tertiary-link" to={venueCreationUrl}>
           + Ajouter un lieu
         </Link>
       </div>

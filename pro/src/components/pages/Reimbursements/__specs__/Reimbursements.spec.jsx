@@ -1,6 +1,6 @@
 /*
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 import React from 'react'
@@ -37,8 +37,12 @@ describe('src | components | pages | Reimbursements', () => {
       // then
       const downloadButtonContainer = wrapper.find(DownloadButtonContainer)
       expect(downloadButtonContainer).toHaveLength(1)
-      expect(downloadButtonContainer.prop('filename')).toBe('remboursements_pass_culture')
-      expect(downloadButtonContainer.prop('href')).toBe(`${API_URL}/reimbursements/csv`)
+      expect(downloadButtonContainer.prop('filename')).toBe(
+        'remboursements_pass_culture'
+      )
+      expect(downloadButtonContainer.prop('href')).toBe(
+        `${API_URL}/reimbursements/csv`
+      )
       expect(downloadButtonContainer.prop('mimeType')).toBe('text/csv')
       expect(downloadButtonContainer.prop('children')).toBe(
         'Télécharger la liste des remboursements'
@@ -52,7 +56,9 @@ describe('src | components | pages | Reimbursements', () => {
       // then
       const displayButtonContainer = wrapper.find(DisplayButtonContainer)
       expect(displayButtonContainer).toHaveLength(1)
-      expect(displayButtonContainer.prop('href')).toBe(`${API_URL}/reimbursements/csv`)
+      expect(displayButtonContainer.prop('href')).toBe(
+        `${API_URL}/reimbursements/csv`
+      )
     })
 
     it('should display the Reimbursement Banner', () => {
@@ -67,13 +73,17 @@ describe('src | components | pages | Reimbursements', () => {
       expect(links.at(0).prop('href')).toBe(
         'https://aide.passculture.app/fr/articles/5096833-acteurs-culturels-quel-est-le-calendrier-des-prochains-remboursements'
       )
-      expect(links.at(0).prop('children')).toContain('Les prochains remboursements')
+      expect(links.at(0).prop('children')).toContain(
+        ' Les prochains remboursements'
+      )
       expect(links.at(0).find('Icon').prop('svg')).toBe('ico-external-site')
 
       expect(links.at(1).prop('href')).toBe(
         'https://aide.passculture.app/fr/articles/5096171-acteurs-culturels-comment-determiner-ses-modalites-de-remboursement'
       )
-      expect(links.at(1).prop('children')).toContain('Les modalités de remboursement')
+      expect(links.at(1).prop('children')).toContain(
+        'Les modalités de remboursement'
+      )
       expect(links.at(1).find('Icon').prop('svg')).toBe('ico-external-site')
     })
   })

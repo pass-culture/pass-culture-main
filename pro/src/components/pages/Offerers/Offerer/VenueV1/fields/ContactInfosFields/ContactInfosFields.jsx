@@ -15,9 +15,7 @@ import { validatePhone, validateEmail, validateUrl } from './validators'
 const ContactInfosFields = ({ readOnly }) => (
   <div className="section vp-content-section bank-information">
     <div className="main-list-title title-actions-container">
-      <h2 className="main-list-title-text">
-        Contact
-      </h2>
+      <h2 className="main-list-title-text">Contact</h2>
     </div>
 
     <TextField

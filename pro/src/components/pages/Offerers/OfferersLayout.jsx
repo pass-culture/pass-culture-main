@@ -16,16 +16,10 @@ const OfferersLayout = () => {
 
   return (
     <Switch>
-      <Route
-        exact
-        path={match.path}
-      >
+      <Route exact path={match.path}>
         <OfferersContainer />
       </Route>
-      <Route
-        exact
-        path={`${match.path}/creation`}
-      >
+      <Route exact path={`${match.path}/creation`}>
         <OffererCreationContainer />
       </Route>
       <Route path={`${match.path}/:offererId([A-Z0-9]+)`}>

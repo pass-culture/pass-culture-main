@@ -1,11 +1,11 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import '@testing-library/jest-dom'
 import { shallow } from 'enzyme'
@@ -79,7 +79,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       expect(textFields.at(3).prop('name')).toBe('bookingEmail')
       expect(textFields.at(3).prop('required')).toBe(true)
 
-      expect(textareaField.at(0).prop('label')).toBe('Commentaire (si pas de SIRET) : ')
+      expect(textareaField.at(0).prop('label')).toBe(
+        'Commentaire (si pas de SIRET) : '
+      )
       expect(textareaField.at(0).prop('name')).toBe('comment')
 
       expect(textareaField.at(1).prop('label')).toBe('Description : ')
@@ -132,7 +134,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
 
         // then
         const siretField = wrapper.find(TextField).at(0)
-        expect(siretField.prop('label')).toStrictEqual(
+        expect(siretField.prop('label')).toBe(
           'SIRET du lieu qui accueille vos offres (si applicable) : '
         )
       })
@@ -151,7 +153,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
 
         // then
         const siretField = wrapper.find(TextField).at(0)
-        expect(siretField.prop('label')).toStrictEqual('SIRET : ')
+        expect(siretField.prop('label')).toBe('SIRET : ')
       })
     })
 
@@ -378,7 +380,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         it('should be editable', () => {
           // Given
           props.readOnly = false
-          props.venueTypes = [new VenueType({ id: 'A1', label: "Centre d'art et d'essais" })]
+          props.venueTypes = [
+            new VenueType({ id: 'A1', label: "Centre d'art et d'essais" }),
+          ]
 
           // When
           const wrapper = shallow(<IdentifierFields {...props} />)
@@ -393,7 +397,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         it('should have a list of options with venue types', () => {
           // Given
           props.readOnly = false
-          props.venueTypes = [new VenueType({ id: 'A1', label: "Centre d'art et d'essais" })]
+          props.venueTypes = [
+            new VenueType({ id: 'A1', label: "Centre d'art et d'essais" }),
+          ]
 
           // When
           const wrapper = shallow(<IdentifierFields {...props} />)
@@ -405,7 +411,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           expect(selectField.prop('component')).toBe('select')
 
           const venueTypeOptions = wrapper.find('option')
-          expect(venueTypeOptions.at(0).text()).toBe('Choisissez un type de lieu dans la liste')
+          expect(venueTypeOptions.at(0).text()).toBe(
+            'Choisissez un type de lieu dans la liste'
+          )
           expect(venueTypeOptions.at(1).text()).toBe("Centre d'art et d'essais")
         })
       })
@@ -416,7 +424,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
             // Given
             props.readOnly = true
             props.venueTypeId = null
-            props.venueTypes = [new VenueType({ id: 'A1', label: "Centre d'art et d'essais" })]
+            props.venueTypes = [
+              new VenueType({ id: 'A1', label: "Centre d'art et d'essais" }),
+            ]
 
             // When
             const wrapper = shallow(<IdentifierFields {...props} />)
@@ -434,7 +444,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
             // Given
             props.readOnly = true
             props.venueTypeId = 'A1'
-            props.venueTypes = [new VenueType({ id: 'A1', label: "Centre d'art et d'essais" })]
+            props.venueTypes = [
+              new VenueType({ id: 'A1', label: "Centre d'art et d'essais" }),
+            ]
 
             // When
             const wrapper = shallow(<IdentifierFields {...props} />)
@@ -456,10 +468,14 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         const wrapper = shallow(<IdentifierFields {...props} />)
 
         // then
-        const selectField = wrapper.find(Field).findWhere(node => node.prop('id') === 'venue-type')
+        const selectField = wrapper
+          .find(Field)
+          .findWhere(node => node.prop('id') === 'venue-type')
         expect(selectField.prop('validate')()).toBe('Ce champ est obligatoire')
         const venueTypeOptions = wrapper.find('option')
-        expect(venueTypeOptions.at(0).text()).toBe('Choisissez un type de lieu dans la liste')
+        expect(venueTypeOptions.at(0).text()).toBe(
+          'Choisissez un type de lieu dans la liste'
+        )
       })
     })
 
@@ -505,7 +521,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           expect(selectField.prop('component')).toBe('select')
 
           const venueLabelOptions = selectField.find('option')
-          expect(venueLabelOptions.at(0).text()).toBe('Si votre lieu est labellisé précisez-le en le sélectionnant dans la liste')
+          expect(venueLabelOptions.at(0).text()).toBe(
+            'Si votre lieu est labellisé précisez-le en le sélectionnant dans la liste'
+          )
           expect(venueLabelOptions.at(1).text()).toBe(
             "CAC - Centre d'art contemporain d'intérêt national"
           )
@@ -555,7 +573,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
             const venueLabelText = wrapper
               .findWhere(node => node.prop('id') === 'venue-label')
               .find('span')
-            expect(venueLabelText.text()).toBe("CAC - Centre d'art contemporain d'intérêt national")
+            expect(venueLabelText.text()).toBe(
+              "CAC - Centre d'art contemporain d'intérêt national"
+            )
           })
         })
       })

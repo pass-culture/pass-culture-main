@@ -16,7 +16,9 @@ const contactOkInput = Selector('input[name="contactOk"]')
 const signUpButton = Selector('button').withText('Créer mon compte')
 const acceptCookieButton = Selector('#hs-eu-confirmation-button')
 
-fixture('Création d’un compte utilisateur·trice,').page(`${ROOT_PATH}inscription`)
+fixture('Création d’un compte utilisateur·trice,').page(
+  `${ROOT_PATH}inscription`
+)
 
 test('je peux créer un compte avec un SIREN non existant en base de données, et je suis redirigé·e vers la page de confirmation de l’inscription', async t => {
   await acceptCookieButton()
@@ -38,7 +40,10 @@ test('je peux créer un compte avec un SIREN non existant en base de données, e
 })
 
 test('je peux créer un compte avec un SIREN déjà existant en base de données, et je suis redirigé·e vers la page de confirmation de l’inscription', async t => {
-  const { offerer } = await fetchSandbox('pro_01_signup', 'get_existing_pro_user_with_offerer')
+  const { offerer } = await fetchSandbox(
+    'pro_01_signup',
+    'get_existing_pro_user_with_offerer'
+  )
   await acceptCookieButton()
 
   await t
@@ -69,7 +74,9 @@ test('lorsque je clique sur le lien de validation de création du compte reçu p
 })
 
 test('la balise script pour le tracking HubSpot est présente sur la page', async t => {
-  const trackingScript = Selector('script[src="//js.hs-scripts.com/5119289.js"]')
+  const trackingScript = Selector(
+    'script[src="//js.hs-scripts.com/5119289.js"]'
+  )
 
   await t.expect(trackingScript.exists).ok()
 })

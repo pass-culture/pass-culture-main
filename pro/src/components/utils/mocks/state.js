@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ */
 
 const state = {
   data: {
@@ -550,11 +550,13 @@ const state = {
         value: 'EventType.MUSIQUE',
       },
       {
-        appLabel: 'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
+        appLabel:
+          'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
         id: 5,
         description:
           'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
-        proLabel: 'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
+        proLabel:
+          'Musées — Patrimoine (Expositions, Visites guidées, Activités spécifiques)',
         offlineOnly: true,
         onlineOnly: false,
         sublabel: 'Regarder',

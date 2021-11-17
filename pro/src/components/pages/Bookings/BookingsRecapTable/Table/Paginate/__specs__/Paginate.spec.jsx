@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 import React from 'react'
@@ -35,7 +35,7 @@ describe('components | TablePagination', () => {
       // then
       const buttons = wrapper.find('button').find(Icon)
       const previousButton = buttons.at(0)
-      expect(previousButton.prop('svg')).toStrictEqual('ico-left-arrow')
+      expect(previousButton.prop('svg')).toBe('ico-left-arrow')
       expect(previousButton.prop('disabled')).toBeUndefined()
     })
 
@@ -63,7 +63,7 @@ describe('components | TablePagination', () => {
       const buttons = wrapper.find('button').find(Icon)
       const nextButton = buttons.at(1)
       expect(nextButton).toHaveLength(1)
-      expect(nextButton.prop('svg')).toStrictEqual('ico-right-arrow')
+      expect(nextButton.prop('svg')).toBe('ico-right-arrow')
     })
   })
 

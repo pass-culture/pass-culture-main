@@ -1,7 +1,7 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
@@ -61,9 +61,7 @@ class CsvTable extends PureComponent {
                 <thead>
                   <tr>
                     {headers.map((header, index) => (
-                      <th key={this.buildUniqueKey(index, header)}>
-                        {header}
-                      </th>
+                      <th key={this.buildUniqueKey(index, header)}>{header}</th>
                     ))}
                   </tr>
                 </thead>
@@ -97,9 +95,7 @@ class CsvTable extends PureComponent {
 
         {!hasAtLeastData && !isLoading && (
           <main className="no-data-container">
-            <p>
-              Il n’y a pas de données à afficher.
-            </p>
+            <p>Il n’y a pas de données à afficher.</p>
           </main>
         )}
       </>

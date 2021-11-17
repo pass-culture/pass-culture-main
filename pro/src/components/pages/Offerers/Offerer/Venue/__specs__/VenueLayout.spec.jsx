@@ -1,8 +1,8 @@
 /*
-* @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import { fireEvent } from '@testing-library/dom'
 import '@testing-library/jest-dom'
@@ -20,16 +20,11 @@ const renderVenueLayout = async (offererId, url = '/') => {
 
   await act(async () => {
     await render(
-      <MemoryRouter
-        initialEntries={[{ pathname: url }]}
-        initialIndex={0}
-      >
+      <MemoryRouter initialEntries={[{ pathname: url }]} initialIndex={0}>
         <Route path={basePath}>
           <VenueLayout />
         </Route>
-        <Route>
-          DO NOT MATCH
-        </Route>
+        <Route>DO NOT MATCH</Route>
       </MemoryRouter>
     )
   })
@@ -58,7 +53,9 @@ describe('testing VenueLayout', () => {
     })
 
     it('should display default tab "Informations"', () => {
-      expect(screen.getByText('create venue information form')).toBeInTheDocument()
+      expect(
+        screen.getByText('create venue information form')
+      ).toBeInTheDocument()
     })
 
     it('should navigate to "Gestions" tab on click', async () => {
@@ -67,7 +64,9 @@ describe('testing VenueLayout', () => {
         await fireEvent.click(tabManagement)
       })
 
-      expect(screen.getByText('create venue management form')).toBeInTheDocument()
+      expect(
+        screen.getByText('create venue management form')
+      ).toBeInTheDocument()
     })
   })
 
@@ -81,7 +80,9 @@ describe('testing VenueLayout', () => {
     })
 
     it('should display default tab "Informations"', () => {
-      expect(screen.getByText('create temporary venue information form')).toBeInTheDocument()
+      expect(
+        screen.getByText('create temporary venue information form')
+      ).toBeInTheDocument()
     })
 
     it('should navigate to "Gestions" tab on click', async () => {
@@ -90,7 +91,9 @@ describe('testing VenueLayout', () => {
         await fireEvent.click(tabManagement)
       })
 
-      expect(screen.getByText('create venue management form')).toBeInTheDocument()
+      expect(
+        screen.getByText('create venue management form')
+      ).toBeInTheDocument()
     })
   })
 
@@ -104,7 +107,9 @@ describe('testing VenueLayout', () => {
     })
 
     it('should display default tab "Informations"', () => {
-      expect(screen.getByText('edit venue information form')).toBeInTheDocument()
+      expect(
+        screen.getByText('edit venue information form')
+      ).toBeInTheDocument()
     })
 
     it('should navigate to "Gestions" tab on click', async () => {

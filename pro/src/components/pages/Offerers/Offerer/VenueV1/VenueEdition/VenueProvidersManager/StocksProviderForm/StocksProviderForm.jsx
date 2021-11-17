@@ -1,17 +1,21 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useState, useCallback } from 'react'
 
-
-import Icon from "components/layout/Icon"
+import Icon from 'components/layout/Icon'
 import Spinner from 'components/layout/Spinner'
-import ConfirmDialog from "new_components/ConfirmDialog"
+import ConfirmDialog from 'new_components/ConfirmDialog'
 
-const StocksProviderForm = ({ saveVenueProvider, providerId, siret, venueId }) => {
+const StocksProviderForm = ({
+  saveVenueProvider,
+  providerId,
+  siret,
+  venueId,
+}) => {
   const [isCheckingApi, setIsCheckingApi] = useState(false)
   const [isConfirmDialogOpened, setIsConfirmDialogOpened] = useState(false)
 
@@ -43,23 +47,13 @@ const StocksProviderForm = ({ saveVenueProvider, providerId, siret, venueId }) =
 
   return (
     <>
-      <form
-        className="stocks-provider-form"
-        onSubmit={handleOpenConfirmDialog}
-      >
+      <form className="stocks-provider-form" onSubmit={handleOpenConfirmDialog}>
         <div className="account-section">
-          <div className="account-label">
-            Compte
-          </div>
-          <div className="account-value">
-            {siret}
-          </div>
+          <div className="account-label">Compte</div>
+          <div className="account-value">{siret}</div>
         </div>
         <div className="provider-import-button-container">
-          <button
-            className="secondary-button"
-            type="submit"
-          >
+          <button className="secondary-button" type="submit">
             Importer
           </button>
         </div>
@@ -73,18 +67,15 @@ const StocksProviderForm = ({ saveVenueProvider, providerId, siret, venueId }) =
           title="Certains ouvrages seront exclus de la synchronisation automatique."
         >
           <p>
-            Vous pouvez retrouver la liste des catégories de livres qui sont exclus de la
-            synchronisation automatique en suivant le lien
+            Vous pouvez retrouver la liste des catégories de livres qui sont
+            exclus de la synchronisation automatique en suivant le lien
             <a
               className="tertiary-link"
               href="https://aide.passculture.app/fr/articles/5394935-acteurs-culturels-pourquoi-la-remontee-de-mes-stocks-n-integre-pas-toutes-les-references"
               rel="noopener noreferrer"
               target="_blank"
             >
-              <Icon
-                alt=""
-                svg="ico-external-site-red"
-              />
+              <Icon alt="" svg="ico-external-site-red" />
               FAQ
             </a>
           </p>

@@ -6,7 +6,11 @@ import ReactDOM from 'react-dom'
 import smoothscroll from 'smoothscroll-polyfill'
 
 import Root from 'Root'
-import { ENVIRONMENT_NAME, SENTRY_SERVER_URL, SENTRY_SAMPLE_RATE } from 'utils/config'
+import {
+  ENVIRONMENT_NAME,
+  SENTRY_SERVER_URL,
+  SENTRY_SAMPLE_RATE,
+} from 'utils/config'
 
 import { version } from '../package.json'
 import './styles/index.scss'

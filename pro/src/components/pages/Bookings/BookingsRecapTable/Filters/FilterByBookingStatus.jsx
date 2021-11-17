@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
@@ -28,8 +28,13 @@ function getAvailableBookingStatuses(bookingsRecap) {
   return presentBookingStatues.sort(byStatusTitle)
 }
 
-const FilterByBookingStatus = ({ bookingStatuses, bookingsRecap, updateGlobalFilters }) => {
-  const [bookingStatusFilters, setBookingStatusFilters] = useState(bookingStatuses)
+const FilterByBookingStatus = ({
+  bookingStatuses,
+  bookingsRecap,
+  updateGlobalFilters,
+}) => {
+  const [bookingStatusFilters, setBookingStatusFilters] =
+    useState(bookingStatuses)
   const [isToolTipVisible, setIsToolTipVisible] = useState(false)
   const containerRef = useRef()
 
@@ -50,7 +55,9 @@ const FilterByBookingStatus = ({ bookingStatuses, bookingsRecap, updateGlobalFil
     if (!isSelected) {
       setBookingStatusFilters(previousFilters => [...previousFilters, statusId])
     } else {
-      setBookingStatusFilters(previousFilters => previousFilters.filter(el => el !== statusId))
+      setBookingStatusFilters(previousFilters =>
+        previousFilters.filter(el => el !== statusId)
+      )
     }
   }
 
@@ -82,21 +89,14 @@ const FilterByBookingStatus = ({ bookingStatuses, bookingsRecap, updateGlobalFil
         onFocus={showFilter}
         type="button"
       >
-        <span className="table-head-label">
-          Statut
-        </span>
+        <span className="table-head-label">Statut</span>
 
-        <Icon
-          alt="Filtrer par statut"
-          svg={computeIconSrc()}
-        />
+        <Icon alt="Filtrer par statut" svg={computeIconSrc()} />
       </button>
       <span className="bs-filter">
         {isToolTipVisible && (
           <div className="bs-filter-tooltip">
-            <div className="bs-filter-label">
-              Afficher les statuts
-            </div>
+            <div className="bs-filter-label">Afficher les statuts</div>
             {filteredBookingStatuses.map(bookingStatus => (
               <label key={bookingStatus.value}>
                 <input

@@ -1,45 +1,44 @@
-import { categoriesFactory } from "../../../../__tests-utils__/categoryFactory"
-import { subCategoriesFactory } from "../../../../__tests-utils__/subCategoryFactory"
-import { buildOptions } from "../buildOptions"
+import { categoriesFactory } from '../../../../__tests-utils__/categoryFactory'
+import { subCategoriesFactory } from '../../../../__tests-utils__/subCategoryFactory'
+import { buildOptions } from '../buildOptions'
 
-const mockEducationalCategories = categoriesFactory(
-  [
-    {
-      id: "MUSEE",
-      proLabel: "Musée, patrimoine, architecture, arts visuels",
-    },
-    {
-      id: "CINEMA",
-      proLabel: "Cinéma",
-    }
-  ]
-)
+const mockEducationalCategories = categoriesFactory([
+  {
+    id: 'MUSEE',
+    proLabel: 'Musée, patrimoine, architecture, arts visuels',
+  },
+  {
+    id: 'CINEMA',
+    proLabel: 'Cinéma',
+  },
+])
 
-const mockEducationalSubcategories = subCategoriesFactory(
-  [
-    {
-      id: "CINE_PLEIN_AIR",
-      categoryId: "CINEMA",
-      proLabel: "Cinéma plein air",
-    },
-    {
-      id: "EVENEMENT_CINE",
-      categoryId: "CINEMA",
-      proLabel: "Événement cinématographique",
-    },
-    {
-      id: "VISITE_GUIDEE",
-      categoryId: "MUSEE",
-      proLabel: "Visite guidée",
-    }
-  ]
-)
+const mockEducationalSubcategories = subCategoriesFactory([
+  {
+    id: 'CINE_PLEIN_AIR',
+    categoryId: 'CINEMA',
+    proLabel: 'Cinéma plein air',
+  },
+  {
+    id: 'EVENEMENT_CINE',
+    categoryId: 'CINEMA',
+    proLabel: 'Événement cinématographique',
+  },
+  {
+    id: 'VISITE_GUIDEE',
+    categoryId: 'MUSEE',
+    proLabel: 'Visite guidée',
+  },
+])
 
 describe('buildOptions', () => {
   it('should build options for categories', () => {
     expect(buildOptions(mockEducationalCategories)).toStrictEqual([
-      { value: 'MUSEE', label: 'Musée, patrimoine, architecture, arts visuels' },
-      { value: 'CINEMA', label: 'Cinéma' }
+      {
+        value: 'MUSEE',
+        label: 'Musée, patrimoine, architecture, arts visuels',
+      },
+      { value: 'CINEMA', label: 'Cinéma' },
     ])
   })
 

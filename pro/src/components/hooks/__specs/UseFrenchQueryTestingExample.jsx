@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import React, { Fragment, useEffect, useState } from 'react'
 
@@ -38,30 +38,18 @@ export const UseFrenchQueryTestingExample = () => {
     <>
       {queryParams.map(([queryParamName, queryParamValue]) => (
         <Fragment key={queryParamName}>
-          <div>
-            {`${queryParamName}: ${queryParamValue}`}
-          </div>
+          <div>{`${queryParamName}: ${queryParamValue}`}</div>
           <label>
             {queryParamName}
-            <input
-              onChange={handleChange(queryParamName)}
-              type="text"
-            />
+            <input onChange={handleChange(queryParamName)} type="text" />
           </label>
         </Fragment>
       ))}
-      <button
-        onClick={handleClick()}
-        type="button"
-      >
+      <button onClick={handleClick()} type="button">
         Update query params
       </button>
-      <div>
-        {`Number of query changes: ${queryChangeCount}`}
-      </div>
-      <div>
-        {`Number of setter identities: ${setterIdentityCount}`}
-      </div>
+      <div>{`Number of query changes: ${queryChangeCount}`}</div>
+      <div>{`Number of setter identities: ${setterIdentityCount}`}</div>
     </>
   )
 }

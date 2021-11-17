@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useRef } from 'react'
@@ -35,13 +35,8 @@ const ImageEditorWrapper = ({
 
   return (
     <>
-      <div className="tnd-subtitle">
-        Recadrer votre image
-      </div>
-      <ImageEditor
-        image={image}
-        ref={editorRef}
-      />
+      <div className="tnd-subtitle">Recadrer votre image</div>
+      <ImageEditor image={image} ref={editorRef} />
       <div className="tnd-actions">
         <button
           className="secondary-button"

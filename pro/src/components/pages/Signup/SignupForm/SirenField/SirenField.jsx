@@ -1,7 +1,7 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -46,7 +46,11 @@ const SirenField = props => {
       format={formatSiren}
       minLength={11}
       name="siren"
-      validate={composeValidators(required, mustHaveTheProperLength, existsInINSEERegistry)}
+      validate={composeValidators(
+        required,
+        mustHaveTheProperLength,
+        existsInINSEERegistry
+      )}
     >
       {({ input, meta }) => {
         return (
@@ -61,9 +65,7 @@ const SirenField = props => {
             />
 
             {props.value && (
-              <span className="field-siren-value">
-                {props.value}
-              </span>
+              <span className="field-siren-value">{props.value}</span>
             )}
           </div>
         )

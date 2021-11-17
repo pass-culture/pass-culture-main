@@ -8,16 +8,21 @@ import { OfferEducationalFormValues } from 'screens/OfferEducational/types'
 import { categoriesAndSubCategoriesSelector } from 'store/offers/selectors'
 import { loadCategories } from 'store/offers/thunks'
 
-import { getEducationalCategories, getEducationalSubCategories } from './utils/getEducationalCategories'
+import {
+  getEducationalCategories,
+  getEducationalSubCategories,
+} from './utils/getEducationalCategories'
 
 const OfferEducationalCreation = (): JSX.Element => {
   const dispatch = useDispatch()
   const location = useLocation()
-  const { categories, subCategories } = useSelector(categoriesAndSubCategoriesSelector)
+  const { categories, subCategories } = useSelector(
+    categoriesAndSubCategoriesSelector
+  )
 
   const initialValues: OfferEducationalFormValues = {}
   const { structure, lieu } = queryParamsFromOfferer(location)
-  
+
   if (structure !== null && structure !== '') {
     initialValues.offererId = structure
   }
@@ -25,13 +30,16 @@ const OfferEducationalCreation = (): JSX.Element => {
     initialValues.venueId = lieu
   }
 
-  const educationalCategories = getEducationalCategories(categories, subCategories)
+  const educationalCategories = getEducationalCategories(
+    categories,
+    subCategories
+  )
   const educationalSubcategories = getEducationalSubCategories(subCategories)
 
   useEffect(() => {
     dispatch(loadCategories())
   }, [dispatch])
-  
+
   return (
     <OfferEducationalScreen
       educationalCategories={educationalCategories}

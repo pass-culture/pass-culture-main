@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -15,10 +15,7 @@ const NotificationMessage = ({ venueId, offererId, dispatch }) => {
   return (
     <p>
       {'Lieu créé. Vous pouvez maintenant y '}
-      <Link
-        onClick={handleOnClick(dispatch)}
-        to={createOfferPathname}
-      >
+      <Link onClick={handleOnClick(dispatch)} to={createOfferPathname}>
         créer une offre
       </Link>
       {', ou en importer automatiquement. '}

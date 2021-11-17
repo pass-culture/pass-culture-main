@@ -28,7 +28,10 @@ export const offerFactory = (
   }
 }
 
-export const venueFactory = (customVenue = {}, customOfferer = offererFactory()) => {
+export const venueFactory = (
+  customVenue = {},
+  customOfferer = offererFactory()
+) => {
   const currentVenueId = venueId++
   return {
     address: 'Ma Rue',

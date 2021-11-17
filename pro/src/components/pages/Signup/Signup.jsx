@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useEffect } from 'react'
@@ -28,18 +28,11 @@ const Signup = ({ location }) => {
     >
       <PageTitle title="S’inscrire" />
       <div className="logo-side">
-        <Logo
-          noLink
-          signPage
-        />
+        <Logo noLink signPage />
       </div>
 
       <Switch location={location}>
-        <Route
-          component={SignupFormContainer}
-          exact
-          path="/inscription"
-        />
+        <Route component={SignupFormContainer} exact path="/inscription" />
         <Route
           component={SignupConfirmationContainer}
           path="/inscription/confirmation"

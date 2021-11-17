@@ -23,19 +23,10 @@ const CheckboxField = ({
   const renderCheckbox = useCallback(
     inputProps => {
       return (
-        <label
-          className={cx('checkbox-field', className)}
-          htmlFor={id}
-        >
-          <input
-            {...inputProps}
-            id={id}
-            type="checkbox"
-          />
+        <label className={cx('checkbox-field', className)} htmlFor={id}>
+          <input {...inputProps} id={id} type="checkbox" />
           {SvgElement && <SvgElement aria-hidden />}
-          <span className="input-checkbox-label">
-            {label}
-          </span>
+          <span className="input-checkbox-label">{label}</span>
         </label>
       )
     },
@@ -46,9 +37,7 @@ const CheckboxField = ({
     inputProps => (
       <div className="field is-label-aligned">
         <div className="field-label" />
-        <div className="field-control">
-          {renderCheckbox(inputProps)}
-        </div>
+        <div className="field-control">{renderCheckbox(inputProps)}</div>
       </div>
     ),
     [renderCheckbox]

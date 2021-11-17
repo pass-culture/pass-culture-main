@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow, mount } from 'enzyme'
 import React from 'react'
@@ -48,7 +48,9 @@ describe('src | components | pages | Signin | Signin', () => {
 
     const emailInput = wrapper.find('input[type="email"]')
     const passwordInput = wrapper.find('input[type="password"]')
-    const createAccountLink = wrapper.find({ children: 'Créer un compte' }).at(0)
+    const createAccountLink = wrapper
+      .find({ children: 'Créer un compte' })
+      .at(0)
     const signinButton = wrapper.find({ children: 'Se connecter' })
 
     //then
@@ -109,7 +111,7 @@ describe('src | components | pages | Signin | Signin', () => {
         const createAccountLink = wrapper.find({ children: 'Créer un compte' })
 
         // then
-        expect(createAccountLink.prop('to')).toStrictEqual('/inscription')
+        expect(createAccountLink.prop('to')).toBe('/inscription')
       })
     })
 
@@ -127,10 +129,12 @@ describe('src | components | pages | Signin | Signin', () => {
           </Provider>
         )
 
-        const createAccountLink = wrapper.find({ children: 'Créer un compte' }).at(0)
+        const createAccountLink = wrapper
+          .find({ children: 'Créer un compte' })
+          .at(0)
 
         // then
-        expect(createAccountLink.prop('to')).toStrictEqual('/erreur/indisponible')
+        expect(createAccountLink.prop('to')).toBe('/erreur/indisponible')
       })
     })
   })

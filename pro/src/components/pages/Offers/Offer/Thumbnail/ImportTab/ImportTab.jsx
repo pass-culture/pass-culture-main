@@ -1,13 +1,16 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
 
 import Breadcrumb, { STYLE_TYPE_TAB } from 'components/layout/Breadcrumb'
-import { IMPORT_TAB_ID, URL_TAB_ID } from 'components/pages/Offers/Offer/Thumbnail/_constants'
+import {
+  IMPORT_TAB_ID,
+  URL_TAB_ID,
+} from 'components/pages/Offers/Offer/Thumbnail/_constants'
 
 const ImportTab = ({ activeTab, changeTab, isLoading }) => {
   const steps = [

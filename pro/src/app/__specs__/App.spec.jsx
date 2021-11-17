@@ -1,6 +1,6 @@
 /*
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import { setUser } from '@sentry/browser'
 import '@testing-library/jest-dom'
@@ -15,9 +15,7 @@ const renderApp = async props => {
   await act(async () => {
     await render(
       <App {...props}>
-        <p>
-          Sub component
-        </p>
+        <p>Sub component</p>
       </App>
     )
   })
@@ -72,7 +70,11 @@ describe('src | App', () => {
 
   it('should call Sentry setUser if current user is given', async () => {
     // When
-    await renderApp({ ...props, currentUser: { pk: 'pk_key' }, isMaintenanceActivated: true })
+    await renderApp({
+      ...props,
+      currentUser: { pk: 'pk_key' },
+      isMaintenanceActivated: true,
+    })
 
     // Then
     expect(setUser).toHaveBeenCalledWith({ id: 'pk_key' })

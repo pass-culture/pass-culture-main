@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import React, { useRef } from 'react'
 
@@ -16,9 +16,7 @@ const Homepage = () => {
   return (
     <div className="homepage">
       <PageTitle title="Espace acteurs culturels" />
-      <h1>
-        Bienvenue dans l’espace acteurs culturels
-      </h1>
+      <h1>Bienvenue dans l’espace acteurs culturels</h1>
 
       <HomepageBreadcrumb
         activeStep={STEP_ID_OFFERERS}
@@ -29,10 +27,7 @@ const Homepage = () => {
         <Offerers />
       </section>
 
-      <section
-        className="h-section"
-        ref={profileRef}
-      >
+      <section className="h-section" ref={profileRef}>
         <ProfileAndSupportContainer />
       </section>
     </div>

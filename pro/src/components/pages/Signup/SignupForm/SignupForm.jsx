@@ -1,9 +1,9 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import createDecorator from 'final-form-calculate'
 import PropTypes from 'prop-types'
@@ -139,16 +139,14 @@ class SignupForm extends PureComponent {
     return (
       <section className="sign-up-form-page">
         <div className="content">
-          <h1>
-            Créer votre compte professionnel
-          </h1>
+          <h1>Créer votre compte professionnel</h1>
           <h2>
             Merci de compléter les champs suivants pour créer votre compte.
           </h2>
           <div className="sign-up-operating-procedures">
             <div>
-              Nous vous invitons à prendre connaissance des modalités de fonctionnement avant de
-              renseigner les champs suivants.
+              Nous vous invitons à prendre connaissance des modalités de
+              fonctionnement avant de renseigner les champs suivants.
             </div>
             <a
               className="tertiary-link"
@@ -157,9 +155,7 @@ class SignupForm extends PureComponent {
               target="_blank"
             >
               <Icon svg="ico-external-site" />
-              <span>
-                Fonctionnement du pass Culture pro
-              </span>
+              <span>Fonctionnement du pass Culture pro</span>
             </a>
             <a
               className="tertiary-link"
@@ -168,17 +164,13 @@ class SignupForm extends PureComponent {
               target="_blank"
             >
               <Icon svg="ico-external-site" />
-              <span>
-                Consulter notre centre d’aide
-              </span>
+              <span>Consulter notre centre d’aide</span>
             </a>
           </div>
           <div className="sign-up-tips">
             Tous les champs sont obligatoires sauf mention contraire
           </div>
-          <div>
-            {}
-          </div>
+          <div>{}</div>
           <Form
             decorators={[addressAndDesignationFromSirenDecorator]}
             onSubmit={this.handleSubmit}
@@ -221,10 +213,7 @@ class SignupForm extends PureComponent {
 
                 <SirenField value={values.name} />
 
-                <label
-                  className="sign-up-checkbox"
-                  htmlFor="sign-up-checkbox"
-                >
+                <label className="sign-up-checkbox" htmlFor="sign-up-checkbox">
                   <Field
                     component="input"
                     id="sign-up-checkbox"
@@ -232,20 +221,20 @@ class SignupForm extends PureComponent {
                     type="checkbox"
                   />
                   <span>
-                    J’accepte d’être contacté par e-mail pour recevoir les nouveautés du pass
-                    Culture et contribuer à son amélioration (facultatif)
+                    J’accepte d’être contacté par e-mail pour recevoir les
+                    nouveautés du pass Culture et contribuer à son amélioration
+                    (facultatif)
                   </span>
-                  <FieldErrors customMessage={errors ? errors.contactOk : null} />
+                  <FieldErrors
+                    customMessage={errors ? errors.contactOk : null}
+                  />
                 </label>
                 <LegalInfos
                   className="sign-up-infos-before-signup"
                   title="Créer mon compte"
                 />
                 <div className="buttons-field">
-                  <Link
-                    className="secondary-link"
-                    to="/connexion"
-                  >
+                  <Link className="secondary-link" to="/connexion">
                     J’ai déjà un compte
                   </Link>
                   <button

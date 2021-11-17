@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 export const FRANCE_POSITION = {
   latitude: 46.98025235521883,

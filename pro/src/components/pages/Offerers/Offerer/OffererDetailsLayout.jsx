@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import React from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
@@ -18,10 +18,7 @@ const OffererDetailsLayout = () => {
 
   return (
     <Switch>
-      <Route
-        exact
-        path={`${match.path}`}
-      >
+      <Route exact path={`${match.path}`}>
         <OffererDetailsContainer />
       </Route>
       <Route path={`${match.path}/lieux`}>

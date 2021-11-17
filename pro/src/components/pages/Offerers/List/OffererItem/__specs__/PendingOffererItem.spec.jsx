@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 import React from 'react'
@@ -23,7 +23,9 @@ describe('src | components | pages | Offerers | OffererItem | PendingOffererItem
 
     // then
     const sentence1 = wrapper.find('p')
-    const sentence2 = wrapper.find({ children: 'Rattachement en cours de validation' })
+    const sentence2 = wrapper.find({
+      children: 'Rattachement en cours de validation',
+    })
     expect(sentence1.at(0).text()).toBe(' (SIREN: )')
     expect(sentence2).toHaveLength(1)
   })

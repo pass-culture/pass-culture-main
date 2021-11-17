@@ -8,14 +8,20 @@ import React from 'react'
 
 import { Tag } from 'ui-kit'
 
-import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from '../../../../../utils/date'
+import {
+  FORMAT_DD_MM_YYYY_HH_mm,
+  toDateStrippedOfTimezone,
+} from '../../../../../utils/date'
 
 const BookingOfferCell = ({ offer }) => {
   const eventBeginningDatetime = offer.event_beginning_datetime
   const isbn = offer.offer_isbn
 
   const eventDatetimeFormatted = eventBeginningDatetime
-    ? format(toDateStrippedOfTimezone(eventBeginningDatetime), FORMAT_DD_MM_YYYY_HH_mm)
+    ? format(
+        toDateStrippedOfTimezone(eventBeginningDatetime),
+        FORMAT_DD_MM_YYYY_HH_mm
+      )
     : null
 
   return (
@@ -26,13 +32,9 @@ const BookingOfferCell = ({ offer }) => {
       title={`${offer.offer_name} (ouverture dans un nouvel onglet)`}
     >
       {offer.offer_is_educational && (
-        <Tag className="booking-educational-tag">
-          Offre collective
-        </Tag>
+        <Tag className="booking-educational-tag">Offre collective</Tag>
       )}
-      <div className="booking-offer-name">
-        {offer.offer_name}
-      </div>
+      <div className="booking-offer-name">{offer.offer_name}</div>
       {isbn ||
         (eventBeginningDatetime && (
           <div className="booking-offer-additional-info">

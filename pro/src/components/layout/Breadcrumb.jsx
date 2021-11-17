@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -27,10 +27,7 @@ const Breadcrumb = ({ activeStep, isDisabled, styleType, steps }) => {
             className={`bc-step ${isActive ? 'active' : ''}`}
             key={`breadcrumb-step-${step.id}`}
           >
-            <span
-              className="bcs-label"
-              key={`breadcrumb-step-${step.id}`}
-            >
+            <span className="bcs-label" key={`breadcrumb-step-${step.id}`}>
               {step.url ? (
                 <Link
                   onClick={step.onClick ? step.onClick : null}

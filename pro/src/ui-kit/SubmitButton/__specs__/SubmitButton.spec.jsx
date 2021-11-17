@@ -20,7 +20,9 @@ describe('submit button', () => {
     renderSubmitButton(props)
 
     // Then
-    expect(screen.getByText('Enregistrer', { selector: 'button' })).toBeEnabled()
+    expect(
+      screen.getByText('Enregistrer', { selector: 'button' })
+    ).toBeEnabled()
   })
 
   it('should not display the text value of the button when is loading, and the button should be disabled', () => {

@@ -24,12 +24,14 @@ const DateInput = ({
   return (
     <DatePicker
       className="datetime-input"
-      customInput={(
+      customInput={
         <InputWithCalendar
           ariaLabel={ariaLabel}
-          customClass={`field-date-only${disabled ? ' disabled' : ''}${inError ? ' error' : ''}`}
+          customClass={`field-date-only${disabled ? ' disabled' : ''}${
+            inError ? ' error' : ''
+          }`}
         />
-      )}
+      }
       dateFormat="dd/MM/yyyy"
       disabled={disabled}
       dropdownMode="scroll"

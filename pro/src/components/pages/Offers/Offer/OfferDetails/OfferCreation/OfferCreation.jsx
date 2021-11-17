@@ -27,12 +27,17 @@ const OfferCreation = ({
   const offerersNames = useRef([])
   const [isLoading, setIsLoading] = useState(true)
   const [displayedVenues, setDisplayedVenues] = useState([])
-  const [selectedOfferer, setSelectedOfferer] = useState(initialValues.offererId)
+  const [selectedOfferer, setSelectedOfferer] = useState(
+    initialValues.offererId
+  )
 
-  useEffect(() => setSelectedOfferer(initialValues.offererId), [initialValues.offererId])
+  useEffect(
+    () => setSelectedOfferer(initialValues.offererId),
+    [initialValues.offererId]
+  )
 
   useEffect(() => {
-    (async () => {
+    ;(async () => {
       if (isUserAdmin) {
         const offererResponse = await pcapi.getOfferer(initialValues.offererId)
 
@@ -48,11 +53,15 @@ const OfferCreation = ({
         const offerersResponse = await pcapi.getUserValidatedOfferersNames()
         offerersNames.current = offerersResponse
 
-        const venuesResponse = await pcapi.getVenuesForOfferer({ activeOfferersOnly: true })
+        const venuesResponse = await pcapi.getVenuesForOfferer({
+          activeOfferersOnly: true,
+        })
         venues.current = venuesResponse
 
         const venuesToDisplay = initialValues.offererId
-          ? venuesResponse.filter(venue => venue.managingOffererId === initialValues.offererId)
+          ? venuesResponse.filter(
+              venue => venue.managingOffererId === initialValues.offererId
+            )
           : venuesResponse
 
         setDisplayedVenues(venuesToDisplay)
@@ -64,7 +73,9 @@ const OfferCreation = ({
 
   const filterVenuesForPro = useCallback(() => {
     const venuesToDisplay = selectedOfferer
-      ? venues.current.filter(venue => venue.managingOffererId === selectedOfferer)
+      ? venues.current.filter(
+          venue => venue.managingOffererId === selectedOfferer
+        )
       : venues.current
     setDisplayedVenues(venuesToDisplay)
   }, [selectedOfferer])
@@ -80,8 +91,8 @@ const OfferCreation = ({
   const areAllVenuesVirtual =
     isComingFromOffererPage && selectedOfferer === initialValues.offererId
       ? venues.current
-        .filter(venue => venue.managingOffererId === selectedOfferer)
-        .every(venue => venue.isVirtual)
+          .filter(venue => venue.managingOffererId === selectedOfferer)
+          .every(venue => venue.isVirtual)
       : venues.current.every(venue => venue.isVirtual)
 
   if (isLoading) {

@@ -104,7 +104,9 @@ describe('src | components | pages | Venue | VenueProvidersManager | AllocinePro
 
     // then
     /*eslint-disable-next-line no-irregular-whitespace*/
-    expect(lastSyncDate.textContent).toMatchInlineSnapshot(`" 01/01/2018 à 01:00"`)
+    expect(lastSyncDate.textContent).toMatchInlineSnapshot(
+      `" 01/01/2018 à 01:00"`
+    )
   })
 
   it('should show edit button and open edit dialog when it clicked', async () => {
@@ -116,7 +118,9 @@ describe('src | components | pages | Venue | VenueProvidersManager | AllocinePro
     await screen.findByText(allocineProvider.name)
 
     // then
-    const editAllocineProviderButton = screen.getByText('Modifier les paramètres')
+    const editAllocineProviderButton = screen.getByText(
+      'Modifier les paramètres'
+    )
     expect(editAllocineProviderButton).toBeInTheDocument()
 
     // when

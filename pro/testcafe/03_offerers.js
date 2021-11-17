@@ -4,7 +4,9 @@ import { getPathname } from './helpers/location'
 import { navigateToHomeAs } from './helpers/navigations'
 import { fetchSandbox } from './helpers/sandboxes'
 
-fixture('Lorsque je clique sur le menu, je clique sur le lien pour atteindre mes "structures",')
+fixture(
+  'Lorsque je clique sur le menu, je clique sur le lien pour atteindre mes "structures",'
+)
 
 test('si j’ai une structure validée, je clique sur celle-ci afin d’accéder au détail', async t => {
   const { user, offerer } = await fetchSandbox(

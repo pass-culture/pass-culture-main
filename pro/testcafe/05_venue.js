@@ -1,6 +1,9 @@
 import { Selector } from 'testcafe'
 
-import { navigateToOffererAs, navigateAfterVenueSubmit } from './helpers/navigations'
+import {
+  navigateToOffererAs,
+  navigateAfterVenueSubmit,
+} from './helpers/navigations'
 import { fetchSandbox } from './helpers/sandboxes'
 import { getSiretRequestMockAs } from './helpers/sirenes'
 
@@ -16,7 +19,9 @@ const longitudeInput = Selector('input[name="longitude"]')
 const nameInput = Selector('input[name="name"]')
 const postalCodeInput = Selector('input[name="postalCode"]')
 const siretInput = Selector('input[name="siret"]')
-const audioDisabilityCompliant = Selector('input[name="audioDisabilityCompliant"]')
+const audioDisabilityCompliant = Selector(
+  'input[name="audioDisabilityCompliant"]'
+)
 
 fixture('En étant sur la page de création d’un lieu,')
 

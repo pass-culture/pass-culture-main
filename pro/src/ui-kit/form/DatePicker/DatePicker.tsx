@@ -2,10 +2,10 @@ import { useField } from 'formik'
 import React from 'react'
 
 interface DatePickerProps {
-    name: string;
-    className?: string;
-    disabled?: boolean;
-    label?: string;
+  name: string
+  className?: string
+  disabled?: boolean
+  label?: string
 }
 
 const DatePicker = ({
@@ -27,14 +27,9 @@ const DatePicker = ({
           type="date"
         />
       </label>
-      {
-        meta.touched && meta.error ? (
-          <div className="error">
-            {meta.error}
-          </div>
-        )
-          : null
-      }
+      {meta.touched && meta.error ? (
+        <div className="error">{meta.error}</div>
+      ) : null}
     </>
   )
 }

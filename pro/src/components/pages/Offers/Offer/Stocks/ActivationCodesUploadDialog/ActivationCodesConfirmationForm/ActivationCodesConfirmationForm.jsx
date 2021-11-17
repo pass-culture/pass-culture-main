@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -27,45 +27,41 @@ const ActivationCodesConfirmationForm = ({
     <div className="activation-codes-upload-confirmation-form">
       <div className="activation-codes-upload-information-message">
         <p>
-          Vous êtes sur le point d’ajouter 
-          {' '}
-          {activationCodes.length}
-          {' '}
-          codes d’activation.
+          Vous êtes sur le point d’ajouter {activationCodes.length} codes
+          d’activation.
         </p>
         <p>
-          La quantité disponible pour cette offre sera mise à jour dans vos stocks.
+          La quantité disponible pour cette offre sera mise à jour dans vos
+          stocks.
         </p>
         <p className="expiration-date-information-message">
-          Veuillez ajouter une date de fin de validité. Cette date ne doit pas être antérieure à la
-          date limite de réservation.
+          Veuillez ajouter une date de fin de validité. Cette date ne doit pas
+          être antérieure à la date limite de réservation.
         </p>
       </div>
       <div className="resized-input expiration-datetime-input-container">
         <label className="expiration-datetime-label">
           <div className="labels">
-            Date limite de validité 
-            {' '}
-            <span className="it-sub-label">
-              optionnel
-            </span>
+            Date limite de validité{' '}
+            <span className="it-sub-label">optionnel</span>
           </div>
         </label>
         <DateInput
           ariaLabel="Date limite de validité"
           dateTime={activationCodesExpirationDatetime}
-          minDateTime={bookingLimitDatetime ? getMinimumExpirationDatetime() : null}
+          minDateTime={
+            bookingLimitDatetime ? getMinimumExpirationDatetime() : null
+          }
           onChange={changeActivationCodesExpirationDatetime}
           openingDateTime={today}
         />
       </div>
       <div className="activation-codes-upload-confirmation-message">
         <p>
-          Vous ne pourrez modifier ni la quantité ni la date de validité après import.
+          Vous ne pourrez modifier ni la quantité ni la date de validité après
+          import.
         </p>
-        <p>
-          Souhaitez-vous valider l’opération ?
-        </p>
+        <p>Souhaitez-vous valider l’opération ?</p>
       </div>
       <span className="activation-codes-upload-confirmation-buttons">
         <button

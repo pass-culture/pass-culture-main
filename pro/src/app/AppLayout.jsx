@@ -56,7 +56,9 @@ const AppLayout = props => {
                 'with-padding': backTo,
               })}
             >
-              {shouldDisplayBanner && <DomainNameBanner handleOnClick={closeBanner} />}
+              {shouldDisplayBanner && (
+                <DomainNameBanner handleOnClick={closeBanner} />
+              )}
               {backTo && (
                 <NavLink
                   className="back-button has-text-primary"
@@ -82,8 +84,10 @@ AppLayout.defaultProps = {
 }
 
 AppLayout.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.shape()), PropTypes.shape()])
-    .isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.shape()),
+    PropTypes.shape(),
+  ]).isRequired,
   layoutConfig: PropTypes.shape(),
 }
 

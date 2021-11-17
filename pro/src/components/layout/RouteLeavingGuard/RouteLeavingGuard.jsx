@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useState, useRef } from 'react'
@@ -44,16 +44,10 @@ const RouteLeavingGuard = ({
   }, [])
 
   return isConfirmedNavigation && lastLocation ? (
-    <Redirect
-      push
-      to={lastLocation}
-    />
+    <Redirect push to={lastLocation} />
   ) : (
     <>
-      <Prompt
-        message={handleBlockedNavigation}
-        when={when}
-      />
+      <Prompt message={handleBlockedNavigation} when={when} />
       {isModalVisible && (
         <DialogBox
           extraClassNames={extraClassNames}

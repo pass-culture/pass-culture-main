@@ -6,7 +6,9 @@ import { loadFeatures } from 'store/features/thunks'
 
 const useActiveFeature = featureName => {
   const isActive = useSelector(state => isFeatureActive(state, featureName))
-  const featuresAreInitialized = useSelector(state => featuresInitialized(state))
+  const featuresAreInitialized = useSelector(state =>
+    featuresInitialized(state)
+  )
 
   const dispatch = useDispatch()
   useEffect(() => {

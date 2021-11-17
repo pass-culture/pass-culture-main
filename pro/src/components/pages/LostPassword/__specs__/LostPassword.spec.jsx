@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { mount, shallow } from 'enzyme'
 import React from 'react'
@@ -77,10 +77,14 @@ describe('src | components | pages | LostPassword', () => {
             </MemoryRouter>
           </Provider>
         )
-        wrapper.find('input[type="email"]').simulate('change', { target: { value: 'email' } })
+        wrapper
+          .find('input[type="email"]')
+          .simulate('change', { target: { value: 'email' } })
 
         // then
-        const submitButton = wrapper.find({ children: 'Envoyer' }).find('button')
+        const submitButton = wrapper
+          .find({ children: 'Envoyer' })
+          .find('button')
         expect(submitButton.prop('disabled')).toBe(false)
       })
     })
@@ -92,7 +96,9 @@ describe('src | components | pages | LostPassword', () => {
         wrapper.instance().redirectToResetPasswordRequestSuccessPage()
 
         // then
-        expect(props.history.push).toHaveBeenCalledWith('/mot-de-passe-perdu?envoye=1')
+        expect(props.history.push).toHaveBeenCalledWith(
+          '/mot-de-passe-perdu?envoye=1'
+        )
       })
     })
 
@@ -165,7 +171,9 @@ describe('src | components | pages | LostPassword', () => {
           .simulate('change', { target: { value: 'password' } })
 
         // then
-        const submitButton = wrapper.find({ children: 'Envoyer' }).find('button')
+        const submitButton = wrapper
+          .find({ children: 'Envoyer' })
+          .find('button')
         expect(submitButton.prop('disabled')).toBe(false)
       })
     })
@@ -177,7 +185,9 @@ describe('src | components | pages | LostPassword', () => {
         wrapper.instance().redirectToResetPasswordSuccessPage()
 
         // then
-        expect(props.history.push).toHaveBeenCalledWith('/mot-de-passe-perdu?change=1')
+        expect(props.history.push).toHaveBeenCalledWith(
+          '/mot-de-passe-perdu?change=1'
+        )
       })
     })
 

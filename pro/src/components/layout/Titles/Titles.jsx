@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -8,20 +8,10 @@ import React from 'react'
 const Titles = ({ action, subtitle, title }) => (
   <div className="section hero-section">
     <div className="title-subtitle-link-block">
-      <h1>
-        {title}
-      </h1>
-      {action && (
-        <div className="title-action-links">
-          {action}
-        </div>
-      )}
+      <h1>{title}</h1>
+      {action && <div className="title-action-links">{action}</div>}
     </div>
-    {subtitle && (
-      <h2>
-        {subtitle.toUpperCase()}
-      </h2>
-    )}
+    {subtitle && <h2>{subtitle.toUpperCase()}</h2>}
   </div>
 )
 

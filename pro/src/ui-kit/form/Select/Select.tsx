@@ -2,18 +2,19 @@ import { useField } from 'formik'
 import React from 'react'
 
 type Option = {
-    value: string, label: string
+  value: string
+  label: string
 }
 
 interface ISelectProps {
-  name: string;
-  options: Option[];
-  className?: string;
-  disabled?: boolean;
-  label?: string;
+  name: string
+  options: Option[]
+  className?: string
+  disabled?: boolean
+  label?: string
 }
 
-const Select= ({
+const Select = ({
   name,
   options,
   className,
@@ -26,28 +27,17 @@ const Select= ({
     <>
       <label>
         {label}
-        <select
-          {...field}
-          className={className}
-          disabled={disabled}
-        >
+        <select {...field} className={className} disabled={disabled}>
           {options.map(option => (
-            <option
-              key={option.value}
-              value={option.value}
-            >
+            <option key={option.value} value={option.value}>
               {option.label}
             </option>
           ))}
         </select>
       </label>
-      {
-        meta.touched && meta.error ? (
-          <div className="error">
-            {meta.error}
-          </div>
-        ) : null
-      }
+      {meta.touched && meta.error ? (
+        <div className="error">{meta.error}</div>
+      ) : null}
     </>
   )
 }

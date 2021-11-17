@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 function getScaledCoordinates(coordinates) {
   const scaledCoordinates = [...coordinates]

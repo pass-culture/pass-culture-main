@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { mount, shallow } from 'enzyme'
 import React from 'react'
@@ -58,10 +58,14 @@ describe('components | Filters', () => {
   it('should apply offerName filter when typing keywords', async () => {
     // Given
     const wrapper = mount(<Filters {...props} />)
-    const offerNameInput = wrapper.find({ placeholder: "Rechercher par nom d'offre" })
+    const offerNameInput = wrapper.find({
+      placeholder: "Rechercher par nom d'offre",
+    })
 
     // When
-    await offerNameInput.simulate('change', { target: { value: 'Jurassic Park' } })
+    await offerNameInput.simulate('change', {
+      target: { value: 'Jurassic Park' },
+    })
 
     // Then
     expect(props.updateGlobalFilters).toHaveBeenCalledWith({

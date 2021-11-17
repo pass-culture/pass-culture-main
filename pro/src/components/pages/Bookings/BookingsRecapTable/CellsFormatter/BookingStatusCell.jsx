@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -28,23 +28,21 @@ const BookingStatusCell = ({ bookingRecapInfo }) => {
   }
 
   return (
-    <div className={`booking-status-label booking-status-wrapper ${statusClassName}`}>
+    <div
+      className={`booking-status-label booking-status-wrapper ${statusClassName}`}
+    >
       <Icon svg={icon} />
-      <span>
-        {statusName}
-      </span>
+      <span>{statusName}</span>
       <div className="bs-tooltip">
-        <div className="bs-offer-title">
-          {offerName}
-        </div>
+        <div className="bs-offer-title">{offerName}</div>
         <div className="bs-offer-amount">
           {`Prix : ${amount.replace('.', ',')}`}
         </div>
-        <div className="bs-history-title">
-          Historique
-        </div>
+        <div className="bs-history-title">Historique</div>
         <BookingStatusCellHistory
-          bookingStatusHistory={bookingRecapInfo.original.booking_status_history}
+          bookingStatusHistory={
+            bookingRecapInfo.original.booking_status_history
+          }
         />
       </div>
     </div>

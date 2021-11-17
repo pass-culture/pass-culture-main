@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 /* eslint-disable react/jsx-no-bind */
 import { mount } from 'enzyme'
@@ -32,12 +32,7 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl', 
             <Fragment>
               <Field
                 name="foo"
-                render={({ input }) => (
-                  <input
-                    name="foo"
-                    {...input}
-                  />
-                )}
+                render={({ input }) => <input name="foo" {...input} />}
               />
               <ModifyOrCancelControl
                 form={form}
@@ -51,13 +46,15 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl', 
       )
 
       // when
-      wrapper.find("input[name='foo']").simulate('change', { target: { value: 'bar' } })
+      wrapper
+        .find("input[name='foo']")
+        .simulate('change', { target: { value: 'bar' } })
 
       // when
       setTimeout(() => {
         // then
         wrapper.update()
-        expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('bar')
+        expect(wrapper.find("input[name='foo']").props().value).toBe('bar')
 
         // when
         const cancelButton = wrapper.find('button[type="reset"]')
@@ -65,7 +62,7 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl', 
 
         // then
         const expectedPush = `/accueil?structure=${props.offererId}`
-        expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('')
+        expect(wrapper.find("input[name='foo']").props().value).toBe('')
         expect(history.push).toHaveBeenCalledWith(expectedPush)
 
         // done
@@ -90,12 +87,7 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl', 
           <Fragment>
             <Field
               name="foo"
-              render={({ input }) => (
-                <input
-                  name="foo"
-                  {...input}
-                />
-              )}
+              render={({ input }) => <input name="foo" {...input} />}
             />
             <ModifyOrCancelControl
               form={form}
@@ -109,10 +101,12 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl', 
     )
 
     // when
-    wrapper.find("input[name='foo']").simulate('change', { target: { value: 'bar' } })
+    wrapper
+      .find("input[name='foo']")
+      .simulate('change', { target: { value: 'bar' } })
 
     // then
-    expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('bar')
+    expect(wrapper.find("input[name='foo']").props().value).toBe('bar')
 
     // when
     const cancelButton = wrapper.find('button[type="reset"]')
@@ -120,7 +114,7 @@ describe('src | components | pages | Venue | controls | ModifyOrCancelControl', 
 
     // then
     const expectedPush = `/structures/${props.offererId}/lieux/${props.venueId}`
-    expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('')
+    expect(wrapper.find("input[name='foo']").props().value).toBe('')
     expect(history.push).toHaveBeenCalledWith(expectedPush)
   })
 })

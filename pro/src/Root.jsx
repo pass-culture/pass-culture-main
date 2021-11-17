@@ -16,10 +16,7 @@ const { store, persistor } = configureStore()
 const Root = () => {
   return (
     <Provider store={store}>
-      <PersistGate
-        loading={null}
-        persistor={persistor}
-      >
+      <PersistGate loading={null} persistor={persistor}>
         <BrowserRouter>
           <AppContainer>
             <Switch>
@@ -31,7 +28,9 @@ const Root = () => {
                     key={route.path}
                     path={route.path}
                   >
-                    <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
+                    <AppLayout
+                      layoutConfig={route.meta && route.meta.layoutConfig}
+                    >
                       <route.component />
                     </AppLayout>
                   </FeaturedRoute>

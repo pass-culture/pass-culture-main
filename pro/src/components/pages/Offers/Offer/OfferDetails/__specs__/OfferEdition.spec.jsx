@@ -7,7 +7,14 @@
  */
 
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -54,7 +61,11 @@ const renderOffers = async (props, store, queryParams = '') => {
   await act(async () => {
     await render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[{ pathname: '/offres/ABC12/edition', search: queryParams }]}>
+        <MemoryRouter
+          initialEntries={[
+            { pathname: '/offres/ABC12/edition', search: queryParams },
+          ]}
+        >
           <Route path="/offres/:offerId([A-Z0-9]+)/">
             <>
               <OfferLayoutContainer {...props} />
@@ -77,7 +88,15 @@ describe('offerDetails - Edition', () => {
 
   beforeEach(() => {
     store = configureTestStore({
-      data: { users: [{ publicName: 'François', isAdmin: false, email: 'francois@example.com' }] },
+      data: {
+        users: [
+          {
+            publicName: 'François',
+            isAdmin: false,
+            email: 'francois@example.com',
+          },
+        ],
+      },
     })
 
     venueManagingOfferer = {
@@ -240,23 +259,34 @@ describe('offerDetails - Edition', () => {
         await renderOffers({}, store)
 
         // Then
-        const button = await screen.findByTitle('Modifier l’image', { selector: 'button' })
+        const button = await screen.findByTitle('Modifier l’image', {
+          selector: 'button',
+        })
         const image = await screen.findByAltText('Image de l’offre')
         expect(button).toBeInTheDocument()
-        expect(image).toHaveAttribute('src', 'http://example.net/active-image.png')
+        expect(image).toHaveAttribute(
+          'src',
+          'http://example.net/active-image.png'
+        )
       })
 
       it('should close the modal when user is clicking on close button', async () => {
         // Given
         editedOffer.thumbUrl = 'http://example.net/active-image.png'
         await renderOffers({}, store)
-        userEvent.click(await screen.findByTitle('Modifier l’image', { selector: 'button' }))
+        userEvent.click(
+          await screen.findByTitle('Modifier l’image', { selector: 'button' })
+        )
 
         // When
-        userEvent.click(await screen.findByTitle('Fermer la modale', { selector: 'button' }))
+        userEvent.click(
+          await screen.findByTitle('Fermer la modale', { selector: 'button' })
+        )
 
         // Then
-        expect(screen.getByTitle('Modifier l’image', { selector: 'button' })).toBeInTheDocument()
+        expect(
+          screen.getByTitle('Modifier l’image', { selector: 'button' })
+        ).toBeInTheDocument()
         expect(
           screen.queryByTitle('Fermer la modale', { selector: 'button' })
         ).not.toBeInTheDocument()
@@ -268,10 +298,16 @@ describe('offerDetails - Edition', () => {
         await renderOffers({}, store)
 
         // Then
-        const previewLink = await screen.findByText('Prévisualiser dans l’app', { selector: 'a' })
+        const previewLink = await screen.findByText(
+          'Prévisualiser dans l’app',
+          { selector: 'a' }
+        )
         expect(previewLink).toBeInTheDocument()
         const expectedWebappUri = `offre/details/${editedOffer.id}`
-        expect(previewLink).toHaveAttribute('href', expect.stringContaining(expectedWebappUri))
+        expect(previewLink).toHaveAttribute(
+          'href',
+          expect.stringContaining(expectedWebappUri)
+        )
       })
 
       it("should have a preview link redirecting to the webapp's offer page with mediationId as parameter when an active mediation exists", async () => {
@@ -282,10 +318,16 @@ describe('offerDetails - Edition', () => {
         await renderOffers({}, store)
 
         // Then
-        const previewLink = await screen.findByText('Prévisualiser dans l’app', { selector: 'a' })
+        const previewLink = await screen.findByText(
+          'Prévisualiser dans l’app',
+          { selector: 'a' }
+        )
         expect(previewLink).toBeInTheDocument()
         const expectedWebappUri = `offre/details/`
-        expect(previewLink).toHaveAttribute('href', expect.stringContaining(expectedWebappUri))
+        expect(previewLink).toHaveAttribute(
+          'href',
+          expect.stringContaining(expectedWebappUri)
+        )
       })
     })
 
@@ -295,7 +337,9 @@ describe('offerDetails - Edition', () => {
         await renderOffers({}, store)
 
         // Then
-        expect(screen.getByText('Ajouter une image', { selector: 'button' })).toBeInTheDocument()
+        expect(
+          screen.getByText('Ajouter une image', { selector: 'button' })
+        ).toBeInTheDocument()
       })
 
       it('should open the modal when user clicks on the placeholder', async () => {
@@ -303,10 +347,14 @@ describe('offerDetails - Edition', () => {
         await renderOffers({}, store)
 
         // When
-        userEvent.click(await screen.findByTitle('Ajouter une image', { selector: 'button' }))
+        userEvent.click(
+          await screen.findByTitle('Ajouter une image', { selector: 'button' })
+        )
 
         // Then
-        expect(await screen.findByLabelText('Ajouter une image')).toBeInTheDocument()
+        await expect(
+          screen.findByLabelText('Ajouter une image')
+        ).resolves.toBeInTheDocument()
       })
     })
 
@@ -317,7 +365,9 @@ describe('offerDetails - Edition', () => {
 
         // then
         const offerPreview = screen.getByTestId('offer-preview-section')
-        expect(within(offerPreview).getByText(editedOffer.name)).toBeInTheDocument()
+        expect(
+          within(offerPreview).getByText(editedOffer.name)
+        ).toBeInTheDocument()
       })
 
       it('should display description', async () => {
@@ -326,7 +376,9 @@ describe('offerDetails - Edition', () => {
 
         // then
         const offerPreview = screen.getByTestId('offer-preview-section')
-        expect(within(offerPreview).getByText(editedOffer.description)).toBeInTheDocument()
+        expect(
+          within(offerPreview).getByText(editedOffer.description)
+        ).toBeInTheDocument()
       })
 
       it('should display terms of withdrawal', async () => {
@@ -335,7 +387,9 @@ describe('offerDetails - Edition', () => {
 
         // then
         const offerPreview = screen.getByTestId('offer-preview-section')
-        expect(within(offerPreview).getByText(editedOffer.withdrawalDetails)).toBeInTheDocument()
+        expect(
+          within(offerPreview).getByText(editedOffer.withdrawalDetails)
+        ).toBeInTheDocument()
       })
 
       describe('when fraud detection', () => {
@@ -393,7 +447,9 @@ describe('offerDetails - Edition', () => {
           editedOffer.status = 'REJECTED'
           editedOffer.isActive = false
           pcapi.loadOffer.mockResolvedValue(editedOffer)
-          pcapi.loadCategories.mockResolvedValue(fullConditionalFieldsCategoryResponse)
+          pcapi.loadCategories.mockResolvedValue(
+            fullConditionalFieldsCategoryResponse
+          )
 
           // when
           await renderOffers({}, store)
@@ -422,7 +478,9 @@ describe('offerDetails - Edition', () => {
           editedOffer.status = 'PENDING'
           editedOffer.isActive = true
           pcapi.loadOffer.mockResolvedValue(editedOffer)
-          pcapi.loadCategories.mockResolvedValue(fullConditionalFieldsCategoryResponse)
+          pcapi.loadCategories.mockResolvedValue(
+            fullConditionalFieldsCategoryResponse
+          )
 
           // when
           await renderOffers({}, store)
@@ -450,7 +508,9 @@ describe('offerDetails - Edition', () => {
     it('should change title with typed value', async () => {
       // Given
       await renderOffers(props, store)
-      const titleInput = await screen.findByLabelText("Titre de l'offre", { exact: false })
+      const titleInput = await screen.findByLabelText("Titre de l'offre", {
+        exact: false,
+      })
       userEvent.clear(titleInput)
 
       // When
@@ -515,28 +575,44 @@ describe('offerDetails - Edition', () => {
         ],
       }
 
-      pcapi.loadCategories.mockResolvedValue(fullConditionalFieldsCategoryResponse)
+      pcapi.loadCategories.mockResolvedValue(
+        fullConditionalFieldsCategoryResponse
+      )
 
       // When
       await renderOffers(props, store)
 
       // Then
-      const categoryInput = screen.getByLabelText(fieldLabels.categoryId.label, {
-        exact: fieldLabels.categoryId.exact,
-      })
-      expect(categoryInput).toHaveValue(categories.subcategories[0].categoryId.toString())
+      const categoryInput = screen.getByLabelText(
+        fieldLabels.categoryId.label,
+        {
+          exact: fieldLabels.categoryId.exact,
+        }
+      )
+      expect(categoryInput).toHaveValue(
+        categories.subcategories[0].categoryId.toString()
+      )
 
-      const musicSubTypeInput = screen.getByLabelText(fieldLabels.musicSubType.label, {
-        exact: fieldLabels.musicSubType.exact,
-      })
+      const musicSubTypeInput = screen.getByLabelText(
+        fieldLabels.musicSubType.label,
+        {
+          exact: fieldLabels.musicSubType.exact,
+        }
+      )
       expect(musicSubTypeInput).toHaveValue(editedOffer.musicSubType)
-      const musicTypeInput = screen.getByLabelText(fieldLabels.musicType.label, {
-        exact: fieldLabels.musicType.exact,
-      })
+      const musicTypeInput = screen.getByLabelText(
+        fieldLabels.musicType.label,
+        {
+          exact: fieldLabels.musicType.exact,
+        }
+      )
       expect(musicTypeInput).toHaveValue(editedOffer.musicType)
-      const offererIdInput = screen.getByLabelText(fieldLabels.offererId.label, {
-        exact: fieldLabels.offererId.exact,
-      })
+      const offererIdInput = screen.getByLabelText(
+        fieldLabels.offererId.label,
+        {
+          exact: fieldLabels.offererId.exact,
+        }
+      )
       expect(offererIdInput).toHaveValue(editedOfferVenue.managingOffererId)
       const venueIdInput = screen.getByLabelText(fieldLabels.venueId.label, {
         exact: fieldLabels.venueId.exact,
@@ -547,17 +623,26 @@ describe('offerDetails - Edition', () => {
         exact: fieldLabels.author.exact,
       })
       expect(authorInput).toHaveValue(editedOffer.author)
-      const bookingEmailInput = screen.getByLabelText(fieldLabels.bookingEmail.label, {
-        exact: fieldLabels.bookingEmail.exact,
-      })
+      const bookingEmailInput = screen.getByLabelText(
+        fieldLabels.bookingEmail.label,
+        {
+          exact: fieldLabels.bookingEmail.exact,
+        }
+      )
       expect(bookingEmailInput).toHaveValue(editedOffer.bookingEmail)
-      const descriptionInput = screen.getByLabelText(fieldLabels.description.label, {
-        exact: fieldLabels.description.exact,
-      })
+      const descriptionInput = screen.getByLabelText(
+        fieldLabels.description.label,
+        {
+          exact: fieldLabels.description.exact,
+        }
+      )
       expect(descriptionInput).toHaveValue(editedOffer.description)
-      const durationMinutesInput = screen.getByLabelText(fieldLabels.durationMinutes.label, {
-        exact: fieldLabels.durationMinutes.exact,
-      })
+      const durationMinutesInput = screen.getByLabelText(
+        fieldLabels.durationMinutes.label,
+        {
+          exact: fieldLabels.durationMinutes.exact,
+        }
+      )
       expect(durationMinutesInput).toHaveValue('1:30')
       const isbnInput = screen.getByLabelText(fieldLabels.isbn.label, {
         exact: fieldLabels.isbn.exact,
@@ -599,14 +684,22 @@ describe('offerDetails - Edition', () => {
         exact: fieldLabels.name.exact,
       })
       expect(nameInput).toHaveValue(editedOffer.name)
-      const performerInput = screen.getByLabelText(fieldLabels.performer.label, {
-        exact: fieldLabels.performer.exact,
-      })
+      const performerInput = screen.getByLabelText(
+        fieldLabels.performer.label,
+        {
+          exact: fieldLabels.performer.exact,
+        }
+      )
       expect(performerInput).toHaveValue(editedOffer.extraData.performer)
-      const stageDirectorInput = screen.getByLabelText(fieldLabels.stageDirector.label, {
-        exact: fieldLabels.stageDirector.exact,
-      })
-      expect(stageDirectorInput).toHaveValue(editedOffer.extraData.stageDirector)
+      const stageDirectorInput = screen.getByLabelText(
+        fieldLabels.stageDirector.label,
+        {
+          exact: fieldLabels.stageDirector.exact,
+        }
+      )
+      expect(stageDirectorInput).toHaveValue(
+        editedOffer.extraData.stageDirector
+      )
       const speakerInput = screen.getByLabelText(fieldLabels.speaker.label, {
         exact: fieldLabels.speaker.exact,
       })
@@ -617,7 +710,9 @@ describe('offerDetails - Edition', () => {
           exact: fieldLabels.externalTicketOfficeUrl.exact,
         }
       )
-      expect(externalTicketOfficeUrlInput).toHaveValue(editedOffer.externalTicketOfficeUrl)
+      expect(externalTicketOfficeUrlInput).toHaveValue(
+        editedOffer.externalTicketOfficeUrl
+      )
       const urlInput = screen.getByLabelText(fieldLabels.url.label, {
         exact: fieldLabels.url.exact,
       })
@@ -626,9 +721,12 @@ describe('offerDetails - Edition', () => {
         exact: fieldLabels.visa.exact,
       })
       expect(visaInput).toHaveValue(editedOffer.extraData.visa)
-      const withdrawalDetailsInput = screen.getByLabelText(fieldLabels.withdrawalDetails.label, {
-        exact: fieldLabels.withdrawalDetails.exact,
-      })
+      const withdrawalDetailsInput = screen.getByLabelText(
+        fieldLabels.withdrawalDetails.label,
+        {
+          exact: fieldLabels.withdrawalDetails.exact,
+        }
+      )
       expect(withdrawalDetailsInput).toHaveValue(editedOffer.withdrawalDetails)
     })
 
@@ -675,7 +773,9 @@ describe('offerDetails - Edition', () => {
         ],
       }
 
-      pcapi.loadCategories.mockResolvedValue(fullConditionalFieldsCategoryResponse)
+      pcapi.loadCategories.mockResolvedValue(
+        fullConditionalFieldsCategoryResponse
+      )
 
       // When
       await renderOffers(props, store)
@@ -827,7 +927,9 @@ describe('offerDetails - Edition', () => {
           status: 'ACTIVE',
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
-        const providerInformation = getProviderInfo(editedOffer.lastProvider.name)
+        const providerInformation = getProviderInfo(
+          editedOffer.lastProvider.name
+        )
 
         // When
         await renderOffers(props, store)
@@ -838,8 +940,13 @@ describe('offerDetails - Edition', () => {
         )
         expect(providerBanner).toBeInTheDocument()
         expect(
-          screen.getByRole('img', { name: `Icône de ${providerInformation.name}` })
-        ).toHaveAttribute('src', expect.stringContaining(providerInformation.icon))
+          screen.getByRole('img', {
+            name: `Icône de ${providerInformation.name}`,
+          })
+        ).toHaveAttribute(
+          'src',
+          expect.stringContaining(providerInformation.icon)
+        )
       })
 
       it('should allow edition of accessibility fields and external ticket office url', async () => {
@@ -929,7 +1036,9 @@ describe('offerDetails - Edition', () => {
           ],
         }
 
-        pcapi.loadCategories.mockResolvedValue(fullConditionalFieldsCategoryResponse)
+        pcapi.loadCategories.mockResolvedValue(
+          fullConditionalFieldsCategoryResponse
+        )
 
         // When
         await renderOffers(props, store)
@@ -1044,7 +1153,9 @@ describe('offerDetails - Edition', () => {
           ],
         }
 
-        pcapi.loadCategories.mockResolvedValue(fullConditionalFieldsCategoryResponse)
+        pcapi.loadCategories.mockResolvedValue(
+          fullConditionalFieldsCategoryResponse
+        )
 
         // When
         await renderOffers(props, store)
@@ -1087,9 +1198,10 @@ describe('offerDetails - Edition', () => {
         })
 
         // then
-        expect(screen.getByLabelText('Email auquel envoyer les notifications :').value).toBe(
-          'venue@example.com'
-        )
+        expect(
+          screen.getByLabelText('Email auquel envoyer les notifications :')
+            .value
+        ).toBe('venue@example.com')
       })
     })
   })
@@ -1119,23 +1231,35 @@ describe('offerDetails - Edition', () => {
       fireEvent.click(await screen.findByText("Détails de l'offre"))
 
       // Then
-      expect(await getOfferInputForField('name')).toHaveValue(editValues.name)
+      await expect(getOfferInputForField('name')).resolves.toHaveValue(
+        editValues.name
+      )
 
       const expectedSubCategoryValue = categories.subcategories.find(
         subCat => subCat.id.toString() === editValues.subcategoryId
       ).proLabel
-      expect(await getOfferInputForField('subcategoryId')).toHaveTextContent(
-        expectedSubCategoryValue
-      )
+      await expect(
+        getOfferInputForField('subcategoryId')
+      ).resolves.toHaveTextContent(expectedSubCategoryValue)
 
-      expect(await getOfferInputForField('description')).toHaveTextContent(editValues.description)
-      expect(await getOfferInputForField('withdrawalDetails')).toHaveTextContent(
-        editValues.withdrawalDetails
-      )
-      expect(await getOfferInputForField('audioDisabilityCompliant')).toBeChecked()
-      expect(await getOfferInputForField('visualDisabilityCompliant')).not.toBeChecked()
-      expect(await getOfferInputForField('motorDisabilityCompliant')).toBeChecked()
-      expect(await getOfferInputForField('mentalDisabilityCompliant')).toBeChecked()
+      await expect(
+        getOfferInputForField('description')
+      ).resolves.toHaveTextContent(editValues.description)
+      await expect(
+        getOfferInputForField('withdrawalDetails')
+      ).resolves.toHaveTextContent(editValues.withdrawalDetails)
+      await expect(
+        getOfferInputForField('audioDisabilityCompliant')
+      ).resolves.toBeChecked()
+      await expect(
+        getOfferInputForField('visualDisabilityCompliant')
+      ).resolves.not.toBeChecked()
+      await expect(
+        getOfferInputForField('motorDisabilityCompliant')
+      ).resolves.toBeChecked()
+      await expect(
+        getOfferInputForField('mentalDisabilityCompliant')
+      ).resolves.toBeChecked()
     })
 
     it('should not send not editable fields for non-synchronised offers', async () => {
@@ -1207,7 +1331,9 @@ describe('offerDetails - Edition', () => {
 
       // Then
       expect(submitButton).toBeDisabled()
-      const successNotification = await screen.findByText('Votre offre a bien été modifiée')
+      const successNotification = await screen.findByText(
+        'Votre offre a bien été modifiée'
+      )
       expect(successNotification).toBeInTheDocument()
     })
 
@@ -1461,9 +1587,12 @@ describe('offerDetails - Edition', () => {
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
       await setOfferValues({ receiveNotificationEmails: true })
-      fireEvent.change(screen.getByLabelText('Email auquel envoyer les notifications :'), {
-        target: { value: '' },
-      })
+      fireEvent.change(
+        screen.getByLabelText('Email auquel envoyer les notifications :'),
+        {
+          target: { value: '' },
+        }
+      )
 
       // When
       userEvent.click(screen.getByText('Enregistrer'))
@@ -1472,7 +1601,9 @@ describe('offerDetails - Edition', () => {
       const bookingEmailInput = await findInputErrorForField('bookingEmail')
       expect(bookingEmailInput).toHaveTextContent('Ce champ est obligatoire')
       expect(
-        screen.getByText('Une ou plusieurs erreurs sont présentes dans le formulaire')
+        screen.getByText(
+          'Une ou plusieurs erreurs sont présentes dans le formulaire'
+        )
       ).toBeInTheDocument()
     })
 
@@ -1498,7 +1629,9 @@ describe('offerDetails - Edition', () => {
         status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
-      pcapi.updateOffer.mockRejectedValue({ errors: { name: "Ce nom n'est pas valide" } })
+      pcapi.updateOffer.mockRejectedValue({
+        errors: { name: "Ce nom n'est pas valide" },
+      })
       await renderOffers(props, store)
       await setOfferValues({ name: 'Ce nom serait-il invalide ?' })
 
@@ -1527,7 +1660,9 @@ describe('offerDetails - Edition', () => {
       fireEvent.click(screen.getByText('Enregistrer'))
 
       // Then
-      const successNotification = await screen.findByText('Votre offre a bien été modifiée')
+      const successNotification = await screen.findByText(
+        'Votre offre a bien été modifiée'
+      )
       expect(successNotification).toBeInTheDocument()
     })
   })
@@ -1604,7 +1739,9 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // Then
-      const cancelLink = screen.getByRole('link', { name: 'Annuler et quitter' })
+      const cancelLink = screen.getByRole('link', {
+        name: 'Annuler et quitter',
+      })
       expect(cancelLink).toBeInTheDocument()
       expect(cancelLink).toHaveAttribute('href', '/offres')
     })

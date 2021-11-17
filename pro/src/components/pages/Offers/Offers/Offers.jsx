@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -19,7 +19,11 @@ import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
-import { mapApiToBrowser, mapBrowserToApi, translateQueryParamsToApiParams } from 'utils/translate'
+import {
+  mapApiToBrowser,
+  mapBrowserToApi,
+  translateQueryParamsToApiParams,
+} from 'utils/translate'
 
 import {
   DEFAULT_PAGE,
@@ -35,17 +39,25 @@ import OffersTableBody from './OffersTableBody/OffersTableBody'
 import OffersTableHead from './OffersTableHead/OffersTableHead'
 import SearchFilters from './SearchFilters/SearchFilters'
 
-const Offers = ({ currentUser, getOfferer, query, showInformationNotification }) => {
+const Offers = ({
+  currentUser,
+  getOfferer,
+  query,
+  showInformationNotification,
+}) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
     const searchFiltersInUri = translateQueryParamsToApiParams(query.parse())
     dispatch(
       saveSearchFilters({
-        nameOrIsbn: searchFiltersInUri.nameOrIsbn || DEFAULT_SEARCH_FILTERS.nameOrIsbn,
-        offererId: searchFiltersInUri.offererId || DEFAULT_SEARCH_FILTERS.offererId,
+        nameOrIsbn:
+          searchFiltersInUri.nameOrIsbn || DEFAULT_SEARCH_FILTERS.nameOrIsbn,
+        offererId:
+          searchFiltersInUri.offererId || DEFAULT_SEARCH_FILTERS.offererId,
         venueId: searchFiltersInUri.venueId || DEFAULT_SEARCH_FILTERS.venueId,
-        categoryId: searchFiltersInUri.categoryId || DEFAULT_SEARCH_FILTERS.categoryId,
+        categoryId:
+          searchFiltersInUri.categoryId || DEFAULT_SEARCH_FILTERS.categoryId,
         status: searchFiltersInUri.status
           ? mapBrowserToApi[searchFiltersInUri.status]
           : DEFAULT_SEARCH_FILTERS.status,
@@ -53,9 +65,11 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
           ? mapBrowserToApi[searchFiltersInUri.creationMode]
           : DEFAULT_SEARCH_FILTERS.creationMode,
         periodBeginningDate:
-          searchFiltersInUri.periodBeginningDate || DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+          searchFiltersInUri.periodBeginningDate ||
+          DEFAULT_SEARCH_FILTERS.periodBeginningDate,
         periodEndingDate:
-          searchFiltersInUri.periodEndingDate || DEFAULT_SEARCH_FILTERS.periodEndingDate,
+          searchFiltersInUri.periodEndingDate ||
+          DEFAULT_SEARCH_FILTERS.periodEndingDate,
       })
     )
     dispatch(savePageNumber(Number(searchFiltersInUri.page) || DEFAULT_PAGE))
@@ -64,7 +78,9 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
   const [offersCount, setOffersCount] = useState(0)
   const [currentPageNumber, setCurrentPageNumber] = useState(DEFAULT_PAGE)
   const [pageCount, setPageCount] = useState(null)
-  const [searchFilters, setSearchFilters] = useState({ ...DEFAULT_SEARCH_FILTERS })
+  const [searchFilters, setSearchFilters] = useState({
+    ...DEFAULT_SEARCH_FILTERS,
+  })
   const [offerer, setOfferer] = useState(null)
   const [isStatusFiltersVisible, setIsStatusFiltersVisible] = useState(false)
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
@@ -91,16 +107,20 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
       savedSearchFilters.offererId &&
       savedSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
     ) {
-      getOfferer(savedSearchFilters.offererId).then(offerer => setOfferer(offerer))
+      getOfferer(savedSearchFilters.offererId).then(offerer =>
+        setOfferer(offerer)
+      )
     }
   }, [getOfferer, savedSearchFilters.offererId])
 
   useEffect(() => {
     if (currentUser.isAdmin) {
-      const isVenueFilterSelected = searchFilters.venueId !== DEFAULT_SEARCH_FILTERS.venueId
+      const isVenueFilterSelected =
+        searchFilters.venueId !== DEFAULT_SEARCH_FILTERS.venueId
       const isOffererFilterApplied =
         savedSearchFilters.offererId !== DEFAULT_SEARCH_FILTERS.offererId
-      const isFilterByVenueOrOfferer = isVenueFilterSelected || isOffererFilterApplied
+      const isFilterByVenueOrOfferer =
+        isVenueFilterSelected || isOffererFilterApplied
 
       if (!isFilterByVenueOrOfferer) {
         setSearchFilters(currentSearchFilters => ({
@@ -113,14 +133,20 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
 
   useEffect(
     function updateUrlMatchingState() {
-      let queryParams = Object.keys(savedSearchFilters).reduce((params, field) => {
-        const translatedFilterName = mapApiToBrowser[field]
-        const isFilterSet = savedSearchFilters[field] !== DEFAULT_SEARCH_FILTERS[field]
-        return {
-          ...params,
-          [translatedFilterName]: isFilterSet ? savedSearchFilters[field] : null,
-        }
-      }, {})
+      let queryParams = Object.keys(savedSearchFilters).reduce(
+        (params, field) => {
+          const translatedFilterName = mapApiToBrowser[field]
+          const isFilterSet =
+            savedSearchFilters[field] !== DEFAULT_SEARCH_FILTERS[field]
+          return {
+            ...params,
+            [translatedFilterName]: isFilterSet
+              ? savedSearchFilters[field]
+              : null,
+          }
+        },
+        {}
+      )
 
       const fieldsWithTranslatedValues = ['statut', 'creation']
       fieldsWithTranslatedValues.forEach(field => {
@@ -130,7 +156,8 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
         }
       })
 
-      queryParams.page = savedPageNumber !== DEFAULT_PAGE ? savedPageNumber : null
+      queryParams.page =
+        savedPageNumber !== DEFAULT_PAGE ? savedPageNumber : null
 
       query.change(queryParams)
     },
@@ -153,7 +180,8 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
   }, [])
 
   useEffect(() => {
-    Object.keys(savedSearchFilters).length > 0 && loadAndUpdateOffers(savedSearchFilters)
+    Object.keys(savedSearchFilters).length > 0 &&
+      loadAndUpdateOffers(savedSearchFilters)
   }, [loadAndUpdateOffers, savedSearchFilters])
 
   const applyFilters = useCallback(() => {
@@ -182,15 +210,19 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
     dispatch(saveSearchFilters({ ...updatedFilters }))
   }, [dispatch, searchFilters.status, searchFilters.venueId])
 
-  const refreshOffers = useCallback(() => loadAndUpdateOffers(savedSearchFilters), [
-    loadAndUpdateOffers,
-    savedSearchFilters,
-  ])
+  const refreshOffers = useCallback(
+    () => loadAndUpdateOffers(savedSearchFilters),
+    [loadAndUpdateOffers, savedSearchFilters]
+  )
 
   const hasSearchFilters = useCallback(
     (searchFilters, filterNames = Object.keys(searchFilters)) => {
       return filterNames
-        .map(filterName => searchFilters[filterName] !== { ...DEFAULT_SEARCH_FILTERS }[filterName])
+        .map(
+          filterName =>
+            searchFilters[filterName] !==
+            { ...DEFAULT_SEARCH_FILTERS }[filterName]
+        )
         .includes(true)
     },
     []
@@ -198,13 +230,19 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
 
   const isAdminForbidden = useCallback(
     searchFilters => {
-      return currentUser.isAdmin && !hasSearchFilters(searchFilters, ['venueId', 'offererId'])
+      return (
+        currentUser.isAdmin &&
+        !hasSearchFilters(searchFilters, ['venueId', 'offererId'])
+      )
     },
     [currentUser.isAdmin, hasSearchFilters]
   )
 
   const updateStatusFilter = useCallback(selectedStatus => {
-    setSearchFilters(currentSearchFilters => ({ ...currentSearchFilters, status: selectedStatus }))
+    setSearchFilters(currentSearchFilters => ({
+      ...currentSearchFilters,
+      status: selectedStatus,
+    }))
   }, [])
 
   const onPreviousPageClick = useCallback(() => {
@@ -245,8 +283,8 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
       areAllOffersSelected
         ? []
         : currentPageOffersSubset
-          .filter(offer => !isOfferDisabled(offer.status))
-          .map(offer => offer.id)
+            .filter(offer => !isOfferDisabled(offer.status))
+            .map(offer => offer.id)
     )
 
     toggleSelectAllCheckboxes()
@@ -269,20 +307,20 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
 
   const { isAdmin } = currentUser || {}
   const hasOffers = currentPageOffersSubset.length > 0
-  const userHasNoOffers = !isLoading && !hasOffers && !hasSearchFilters(savedSearchFilters)
+  const userHasNoOffers =
+    !isLoading && !hasOffers && !hasSearchFilters(savedSearchFilters)
 
   const actionLink =
     userHasNoOffers || isAdmin ? null : (
-      <Link
-        className="primary-button with-icon"
-        to="/offres/creation"
-      >
+      <Link className="primary-button with-icon" to="/offres/creation">
         <AddOfferSvg />
         Créer une offre
       </Link>
     )
 
-  const nbSelectedOffers = areAllOffersSelected ? offersCount : selectedOfferIds.length
+  const nbSelectedOffers = areAllOffersSelected
+    ? offersCount
+    : selectedOfferIds.length
 
   const isLastPage = currentPageNumber === pageCount
 
@@ -298,10 +336,7 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
   return (
     <div className="offers-page">
       <PageTitle title="Vos offres" />
-      <Titles
-        action={actionLink}
-        title="Offres"
-      />
+      <Titles action={actionLink} title="Offres" />
       <ActionsBarPortal isVisible={nbSelectedOffers > 0}>
         <ActionsBarContainer
           areAllOffersSelected={areAllOffersSelected}
@@ -316,9 +351,7 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
         <NoOffers />
       ) : (
         <>
-          <h3 className="op-title">
-            Rechercher une offre
-          </h3>
+          <h3 className="op-title">Rechercher une offre</h3>
           {hasSearchFilters(savedSearchFilters) ? (
             <Link
               className="reset-filters-link"
@@ -341,11 +374,7 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
             setSearchFilters={setSearchFilters}
           />
 
-          <div
-            aria-busy={isLoading}
-            aria-live="polite"
-            className="section"
-          >
+          <div aria-busy={isLoading} aria-live="polite" className="section">
             {isLoading ? (
               <Spinner />
             ) : (
@@ -388,9 +417,7 @@ const Offers = ({ currentUser, getOfferer, query, showInformationNotification })
                         svg="ico-left-arrow"
                       />
                     </button>
-                    <span>
-                      {`Page ${currentPageNumber}/${pageCount}`}
-                    </span>
+                    <span>{`Page ${currentPageNumber}/${pageCount}`}</span>
                     <button
                       disabled={isLastPage}
                       onClick={onNextPageClick}

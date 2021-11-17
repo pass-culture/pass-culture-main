@@ -8,7 +8,10 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import { withTracking } from 'components/hocs'
-import { selectCurrentUser, selectIsUserAdmin } from 'store/selectors/data/usersSelectors'
+import {
+  selectCurrentUser,
+  selectIsUserAdmin,
+} from 'store/selectors/data/usersSelectors'
 
 import OfferDetails from './OfferDetails'
 

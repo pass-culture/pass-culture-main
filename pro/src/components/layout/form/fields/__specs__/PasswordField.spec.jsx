@@ -1,6 +1,6 @@
 /*
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-*/
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ */
 
 import '@testing-library/jest-dom'
 import { screen, render, fireEvent } from '@testing-library/react'
@@ -43,10 +43,14 @@ describe('component | PasswordField', () => {
           )}
         </Form>
       )
-      fireEvent.click(screen.getByRole('button', { name: 'Afficher le mot de passe' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Afficher le mot de passe' })
+      )
 
       // When
-      const input = screen.getByRole('textbox', { name: 'labelTest Cacher le mot de passe' })
+      const input = screen.getByRole('textbox', {
+        name: 'labelTest Cacher le mot de passe',
+      })
       fireEvent.change(input, {
         target: { value: 'tutu' },
       })
@@ -65,18 +69,19 @@ describe('component | PasswordField', () => {
         <Form onSubmit={jest.fn}>
           {({ handleSubmit }) => (
             <form onSubmit={handleSubmit}>
-              <PasswordField
-                {...props}
-                errors={['An error']}
-              />
+              <PasswordField {...props} errors={['An error']} />
             </form>
           )}
         </Form>
       )
-      fireEvent.click(screen.getByRole('button', { name: 'Afficher le mot de passe' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Afficher le mot de passe' })
+      )
 
       // When
-      const input = screen.getByRole('textbox', { name: 'labelTest Cacher le mot de passe' })
+      const input = screen.getByRole('textbox', {
+        name: 'labelTest Cacher le mot de passe',
+      })
       fireEvent.change(input, {
         target: { value: 'tutu' },
       })

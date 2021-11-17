@@ -1,14 +1,18 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import { venueNormalizer } from 'utils/normalizers'
 
 import VenueLabel from '../../ValueObjects/VenueLabel'
 import VenueType from '../../ValueObjects/VenueType'
-import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueEditionContainer'
+import {
+  mapDispatchToProps,
+  mapStateToProps,
+  mergeProps,
+} from '../VenueEditionContainer'
 
 window.scroll = () => {}
 
@@ -122,7 +126,10 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
           userOfferers: [],
           venues: [],
           'venue-labels': [
-            { id: 'AE', label: "CAC - Centre d'art contemporain d'intérêt national" },
+            {
+              id: 'AE',
+              label: "CAC - Centre d'art contemporain d'intérêt national",
+            },
             { id: 'AF', label: "Ville et Pays d'art et d'histoire" },
           ],
           users: [
@@ -141,8 +148,14 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
       expect(venueLabel).toBeInstanceOf(VenueLabel)
       expect(props).toMatchObject({
         venueLabels: [
-          new VenueLabel({ id: 'AE', label: "CAC - Centre d'art contemporain d'intérêt national" }),
-          new VenueLabel({ id: 'AF', label: "Ville et Pays d'art et d'histoire" }),
+          new VenueLabel({
+            id: 'AE',
+            label: "CAC - Centre d'art contemporain d'intérêt national",
+          }),
+          new VenueLabel({
+            id: 'AF',
+            label: "Ville et Pays d'art et d'histoire",
+          }),
         ],
       })
     })
@@ -171,7 +184,10 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
   describe('handleInitialRequest', () => {
     it('should dispatch action to update existing venue', () => {
       // when
-      mapDispatchToProps(dispatch, ownProps).handleInitialRequest(jest.fn(), jest.fn())
+      mapDispatchToProps(dispatch, ownProps).handleInitialRequest(
+        jest.fn(),
+        jest.fn()
+      )
 
       // then
       expect(dispatch.mock.calls[0][0]).toStrictEqual({
@@ -283,10 +299,10 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           bic: '12345',
           bookingEmail: 'contact@example.net',
           city: 'Paris',
-          contact:{
-            email: "test@test.com",
-            phoneNumber: "0606060606",
-            website: "https://test.com",
+          contact: {
+            email: 'test@test.com',
+            phoneNumber: '0606060606',
+            website: 'https://test.com',
           },
           comment: 'Commentaire',
           iban: 'BHJ2XRT2C',
@@ -318,10 +334,10 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           bookingEmail: 'contact@example.net',
           city: 'Paris',
           comment: 'Commentaire',
-          contact:{
-            email: "test@test.com",
-            phoneNumber: "0606060606",
-            website: "https://test.com",
+          contact: {
+            email: 'test@test.com',
+            phoneNumber: '0606060606',
+            website: 'https://test.com',
           },
           description: '',
           latitude: '0.0',
@@ -423,26 +439,34 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
       }
 
       // when
-      mapDispatchToProps(dispatch, ownProps).handleSubmitRequestSuccess(action, {
-        hasDelayedUpdates: false,
-      })
+      mapDispatchToProps(dispatch, ownProps).handleSubmitRequestSuccess(
+        action,
+        {
+          hasDelayedUpdates: false,
+        }
+      )
 
       // then
       expect(dispatch.mock.calls[0][0]).toStrictEqual({
-        payload: { text: 'Vos modifications ont bien été prises en compte', type: 'success' },
+        payload: {
+          text: 'Vos modifications ont bien été prises en compte',
+          type: 'success',
+        },
         type: 'SHOW_NOTIFICATION',
       })
 
       // when
-      mapDispatchToProps(dispatch, ownProps).handleSubmitRequestSuccess(action, {
-        hasDelayedUpdates: true,
-      })
+      mapDispatchToProps(dispatch, ownProps).handleSubmitRequestSuccess(
+        action,
+        {
+          hasDelayedUpdates: true,
+        }
+      )
 
       // then
       expect(dispatch.mock.calls[1][0]).toStrictEqual({
         payload: {
-          text:
-            'Vos modifications ont bien été prises en compte, cette opération peut durer plusieurs minutes',
+          text: 'Vos modifications ont bien été prises en compte, cette opération peut durer plusieurs minutes',
           type: 'pending',
         },
         type: 'SHOW_NOTIFICATION',

@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ */
 
 import { mapDispatchToProps } from '../CsvTableContainer'
 
@@ -59,9 +59,9 @@ describe('src | components | layout | CsvTable | CsvTableContainer', () => {
         const { downloadFileOrNotifyAnError } = functions
 
         // when
-        await expect(downloadFileOrNotifyAnError())
-          .rejects
-          .toThrow('Erreur lors du téléchargement des données.')
+        await expect(downloadFileOrNotifyAnError()).rejects.toThrow(
+          'Erreur lors du téléchargement des données.'
+        )
       })
     })
   })

@@ -7,9 +7,7 @@ import PortalContainer from '../PortalContainer'
 const renderPortalContent = testId =>
   render(
     <PortalContainer>
-      <div data-testid={testId}>
-        Some content
-      </div>
+      <div data-testid={testId}>Some content</div>
     </PortalContainer>
   )
 
@@ -17,7 +15,7 @@ describe('src | app | PortalContainer', () => {
   it('should mount children in DOM tree', async () => {
     renderPortalContent('portal-content')
 
-    expect(await screen.findByTestId('portal-content')).toBeVisible()
+    await expect(screen.findByTestId('portal-content')).resolves.toBeVisible()
   })
 
   it('should unmount children when unmounting', async () => {

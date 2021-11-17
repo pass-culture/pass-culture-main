@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useRef, useState } from 'react'
@@ -109,9 +109,13 @@ const ActivationCodesUploadDialog = ({
         {activationCodes.length > 0 && (
           <ActivationCodesConfirmationForm
             activationCodes={activationCodes}
-            activationCodesExpirationDatetime={activationCodesExpirationDatetime}
+            activationCodesExpirationDatetime={
+              activationCodesExpirationDatetime
+            }
             bookingLimitDatetime={bookingLimitDatetime}
-            changeActivationCodesExpirationDatetime={changeActivationCodesExpirationDatetime}
+            changeActivationCodesExpirationDatetime={
+              changeActivationCodesExpirationDatetime
+            }
             clearActivationCodes={clearActivationCodes}
             submitActivationCodes={submitActivationCodes}
             today={today}

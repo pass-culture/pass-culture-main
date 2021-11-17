@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -10,10 +10,7 @@ import StatusToggleButton from 'components/pages/Offers/Offer/OfferStatus/Status
 
 export const OfferHeader = ({ offer, reloadOffer }) => (
   <div className="offer-header">
-    <StatusToggleButton
-      offer={offer}
-      reloadOffer={reloadOffer}
-    />
+    <StatusToggleButton offer={offer} reloadOffer={reloadOffer} />
     <div className="separator" />
     <StatusLabel status={offer.status} />
   </div>

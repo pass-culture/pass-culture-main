@@ -1,8 +1,8 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
@@ -70,9 +70,17 @@ class PasswordField extends PureComponent {
 
     return (
       <TextInputWithIcon
-        error={errors && (meta.touched || meta.modified) ? this.getErrorMessage(errors) : null}
+        error={
+          errors && (meta.touched || meta.modified)
+            ? this.getErrorMessage(errors)
+            : null
+        }
         icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
-        iconAlt={isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'}
+        iconAlt={
+          isPasswordHidden
+            ? 'Afficher le mot de passe'
+            : 'Cacher le mot de passe'
+        }
         label={label}
         name={name}
         onChange={input.onChange}

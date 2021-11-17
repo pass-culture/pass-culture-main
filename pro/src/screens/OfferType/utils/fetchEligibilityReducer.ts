@@ -1,7 +1,7 @@
 type EligibilityState = {
-  hasBeenCalled: boolean;
-  isEligible: boolean | null;
-  isLoading: boolean;
+  hasBeenCalled: boolean
+  isEligible: boolean | null
+  isLoading: boolean
 }
 
 export const initialState: EligibilityState = {
@@ -14,13 +14,16 @@ export const FETCH_ACTION = { type: 'fetch' }
 export const SUCCESS_ACTION = { type: 'success' }
 export const FAILURE_ACTION = { type: 'failure' }
 
-type EligibilityAction = typeof FETCH_ACTION | typeof SUCCESS_ACTION | typeof FAILURE_ACTION
-  
+type EligibilityAction =
+  | typeof FETCH_ACTION
+  | typeof SUCCESS_ACTION
+  | typeof FAILURE_ACTION
+
 export const reducer = (
   state: EligibilityState,
-  action:EligibilityAction
+  action: EligibilityAction
 ): EligibilityState => {
-  switch(action.type) {
+  switch (action.type) {
     case 'fetch':
       return { ...state, hasBeenCalled: true, isLoading: true }
     case 'success':

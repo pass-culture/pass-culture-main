@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ */
 
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -16,7 +16,9 @@ import Desk from '../Desk'
 const renderDesk = props => {
   const store = configureTestStore({
     data: {
-      users: [{ publicName: 'USER', hasSeenProTutorials: true, isAdmin: false }],
+      users: [
+        { publicName: 'USER', hasSeenProTutorials: true, isAdmin: false },
+      ],
     },
   })
 
@@ -54,11 +56,17 @@ describe('src | components | Desk', () => {
     expect(description).toBeInTheDocument()
     const input = screen.getByPlaceholderText('ex : AZE123')
     expect(input).toHaveAttribute('type', 'text')
-    const bookingUser = queryByTextTrimHtml(screen, 'Utilisateur : Fake user name')
+    const bookingUser = queryByTextTrimHtml(
+      screen,
+      'Utilisateur : Fake user name'
+    )
     expect(bookingUser).not.toBeInTheDocument()
     const bookingOffer = queryByTextTrimHtml(screen, 'Offre : Fake offer')
     expect(bookingOffer).not.toBeInTheDocument()
-    const bookingDate = queryByTextTrimHtml(screen, 'Date de l’offre : Permanent')
+    const bookingDate = queryByTextTrimHtml(
+      screen,
+      'Date de l’offre : Permanent'
+    )
     expect(bookingDate).not.toBeInTheDocument()
     const bookingPrice = queryByTextTrimHtml(screen, 'Prix : 40 €')
     expect(bookingPrice).not.toBeInTheDocument()
@@ -74,7 +82,9 @@ describe('src | components | Desk', () => {
       fireEvent.change(tokenInput, { target: { value: '' } })
 
       // then
-      expect(screen.getByRole('button', { name: 'Valider la contremarque' })).toBeDisabled()
+      expect(
+        screen.getByRole('button', { name: 'Valider la contremarque' })
+      ).toBeDisabled()
       expect(screen.getByText('Saisissez une contremarque')).toBeInTheDocument()
     })
 
@@ -87,7 +97,9 @@ describe('src | components | Desk', () => {
       fireEvent.change(tokenInput, { target: { value: 'ABCDE' } })
 
       // then
-      expect(screen.getByRole('button', { name: 'Valider la contremarque' })).toBeDisabled()
+      expect(
+        screen.getByRole('button', { name: 'Valider la contremarque' })
+      ).toBeDisabled()
       expect(screen.getByText('Caractères restants : 1/6')).toBeInTheDocument()
     })
 
@@ -100,8 +112,12 @@ describe('src | components | Desk', () => {
       fireEvent.change(tokenInput, { target: { value: 'ù^`@' } })
 
       // then
-      expect(screen.getByRole('button', { name: 'Valider la contremarque' })).toBeDisabled()
-      expect(screen.getByText('Caractères valides : de A à Z et de 0 à 9')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Valider la contremarque' })
+      ).toBeDisabled()
+      expect(
+        screen.getByText('Caractères valides : de A à Z et de 0 à 9')
+      ).toBeInTheDocument()
     })
   })
 
@@ -110,13 +126,17 @@ describe('src | components | Desk', () => {
     jest.spyOn(props, 'getBooking').mockResolvedValue()
     renderDesk(props)
     const tokenInput = screen.getByLabelText('Contremarque')
-    await waitFor(() => fireEvent.change(tokenInput, { target: { value: 'MEFA01' } }))
+    await waitFor(() =>
+      fireEvent.change(tokenInput, { target: { value: 'MEFA01' } })
+    )
 
     // when
     fireEvent.change(tokenInput, { target: { value: 'MEFA' } })
 
     // then
-    const submitButton = screen.getByRole('button', { name: 'Valider la contremarque' })
+    const submitButton = screen.getByRole('button', {
+      name: 'Valider la contremarque',
+    })
     expect(submitButton).toBeDisabled()
   })
 
@@ -130,13 +150,17 @@ describe('src | components | Desk', () => {
     )
     renderDesk(props)
     const tokenInput = screen.getByLabelText('Contremarque')
-    await waitFor(() => fireEvent.change(tokenInput, { target: { value: 'MEFA01' } }))
+    await waitFor(() =>
+      fireEvent.change(tokenInput, { target: { value: 'MEFA01' } })
+    )
 
     // when
     fireEvent.change(tokenInput, { target: { value: 'MEFA' } })
 
     // then
-    const submitButton = screen.getByRole('button', { name: 'Valider la contremarque' })
+    const submitButton = screen.getByRole('button', {
+      name: 'Valider la contremarque',
+    })
     expect(submitButton).toBeDisabled()
   })
 
@@ -158,17 +182,28 @@ describe('src | components | Desk', () => {
 
       // then
       expect(screen.getByText('Vérification...')).toBeInTheDocument()
-      const submitButton = await screen.findByRole('button', { name: 'Valider la contremarque' })
+      const submitButton = await screen.findByRole('button', {
+        name: 'Valider la contremarque',
+      })
       expect(submitButton).toBeEnabled()
       const responseFromApi = await screen.findByText(
         'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
       )
       expect(responseFromApi).toBeInTheDocument()
-      const bookingUser = await queryByTextTrimHtml(screen, 'Utilisateur : Fake user name')
+      const bookingUser = await queryByTextTrimHtml(
+        screen,
+        'Utilisateur : Fake user name'
+      )
       expect(bookingUser).toBeInTheDocument()
-      const bookingOffer = await queryByTextTrimHtml(screen, 'Offre : Fake offer')
+      const bookingOffer = await queryByTextTrimHtml(
+        screen,
+        'Offre : Fake offer'
+      )
       expect(bookingOffer).toBeInTheDocument()
-      const bookingDate = await queryByTextTrimHtml(screen, 'Date de l’offre : 23/10/2020 - 22h00')
+      const bookingDate = await queryByTextTrimHtml(
+        screen,
+        'Date de l’offre : 23/10/2020 - 22h00'
+      )
       expect(bookingDate).toBeInTheDocument()
       const bookingPrice = await queryByTextTrimHtml(screen, 'Prix : 40 €')
       expect(bookingPrice).toBeInTheDocument()
@@ -218,7 +253,6 @@ describe('src | components | Desk', () => {
       expect(bookingIsbn).not.toBeInTheDocument()
     })
 
-
     it('should display an error message when token validation fails', async () => {
       // given
       jest.spyOn(props, 'getBooking').mockRejectedValue({
@@ -251,7 +285,9 @@ describe('src | components | Desk', () => {
       // then
       const errorMessage = await screen.findByText('token is already validated')
       expect(errorMessage).toBeInTheDocument()
-      const submitButton = await screen.findByRole('button', { name: 'Invalider la contremarque' })
+      const submitButton = await screen.findByRole('button', {
+        name: 'Invalider la contremarque',
+      })
       expect(submitButton).toBeEnabled()
     })
   })
@@ -263,10 +299,14 @@ describe('src | components | Desk', () => {
       jest.spyOn(props, 'validateBooking').mockResolvedValue()
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
-      const submitButton = screen.getByRole('button', { name: 'Valider la contremarque' })
+      const submitButton = screen.getByRole('button', {
+        name: 'Valider la contremarque',
+      })
 
       expect(submitButton).toBeDisabled()
-      await waitFor(() => fireEvent.change(tokenInput, { target: { value: 'MEFA01' } }))
+      await waitFor(() =>
+        fireEvent.change(tokenInput, { target: { value: 'MEFA01' } })
+      )
 
       // when
       expect(submitButton).toBeEnabled()
@@ -289,23 +329,30 @@ describe('src | components | Desk', () => {
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
 
-      const validateTokenButton = screen.getByRole('button', { name: 'Valider la contremarque' })
+      const validateTokenButton = screen.getByRole('button', {
+        name: 'Valider la contremarque',
+      })
       expect(validateTokenButton).toBeDisabled()
 
       fireEvent.change(tokenInput, { target: { value: 'MEFA01' } })
-      const invalidateTokenButton = await screen.findByRole('button', { name: 'Invalider la contremarque' })
-
+      const invalidateTokenButton = await screen.findByRole('button', {
+        name: 'Invalider la contremarque',
+      })
 
       // when
       expect(invalidateTokenButton).toBeEnabled()
       fireEvent.click(invalidateTokenButton)
 
-      const confirmInvalidateTokenButton = await screen.findByRole('button', { name: 'Continuer' })
+      const confirmInvalidateTokenButton = await screen.findByRole('button', {
+        name: 'Continuer',
+      })
       fireEvent.click(confirmInvalidateTokenButton)
 
       // then
       expect(screen.getByText('Invalidation en cours...')).toBeInTheDocument()
-      const responseFromApi = await screen.findByText('Contremarque invalidée !')
+      const responseFromApi = await screen.findByText(
+        'Contremarque invalidée !'
+      )
       expect(responseFromApi).toBeInTheDocument()
       expect(validateTokenButton).toBeDisabled()
     })
@@ -319,8 +366,12 @@ describe('src | components | Desk', () => {
       })
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
-      const submitButton = screen.getByRole('button', { name: 'Valider la contremarque' })
-      await waitFor(() => fireEvent.change(tokenInput, { target: { value: 'MEFA01' } }))
+      const submitButton = screen.getByRole('button', {
+        name: 'Valider la contremarque',
+      })
+      await waitFor(() =>
+        fireEvent.change(tokenInput, { target: { value: 'MEFA01' } })
+      )
 
       // when
       fireEvent.click(submitButton)
@@ -342,19 +393,27 @@ describe('src | components | Desk', () => {
       const tokenInput = screen.getByLabelText('Contremarque')
       fireEvent.change(tokenInput, { target: { value: 'MEFA01' } })
       // then
-      expect(await screen.findByText('token is already validated')).toBeInTheDocument()
+      await expect(
+        screen.findByText('token is already validated')
+      ).resolves.toBeInTheDocument()
       // when
       jest.spyOn(props, 'invalidateBooking').mockRejectedValue({
         errors: { booking: 'cannot invalidate booking' },
         status: 403,
       })
-      const submitButton = await screen.findByRole('button', { name: 'Invalider la contremarque' })
+      const submitButton = await screen.findByRole('button', {
+        name: 'Invalider la contremarque',
+      })
       fireEvent.click(submitButton)
 
-      const confirmInvalidateTokenButton = await screen.findByRole('button', { name: 'Continuer' })
+      const confirmInvalidateTokenButton = await screen.findByRole('button', {
+        name: 'Continuer',
+      })
       fireEvent.click(confirmInvalidateTokenButton)
       // then
-      const responseFromApi = await screen.findByText('cannot invalidate booking')
+      const responseFromApi = await screen.findByText(
+        'cannot invalidate booking'
+      )
       expect(responseFromApi).toBeInTheDocument()
     })
   })
@@ -370,7 +429,9 @@ describe('src | components | Desk', () => {
       { selector: 'p' }
     )
     expect(bannerMessage).toBeInTheDocument()
-    expect(screen.getByText('En savoir plus', { selector: 'a' }).getAttribute('href')).toBe(
+    expect(
+      screen.getByText('En savoir plus', { selector: 'a' }).getAttribute('href')
+    ).toBe(
       'https://aide.passculture.app/fr/articles/5147999-modalites-de-retrait-d-un-bien-dans-ma-structure'
     )
   })

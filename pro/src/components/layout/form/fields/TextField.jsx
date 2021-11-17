@@ -1,20 +1,24 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ */
 
 /* eslint react/function-component-definition: 0 */
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Field } from 'react-final-form'
-import { composeValidators, createParseNumberValue } from 'react-final-form-utils'
+import {
+  composeValidators,
+  createParseNumberValue,
+} from 'react-final-form-utils'
 
 import FieldErrors from '../FieldErrors'
 import getRequiredValidate from '../utils/getRequiredValidate'
 
 function getInputValue(inputType, value) {
-  const isStringifiedNumber = inputType === 'number' && typeof value === 'string'
+  const isStringifiedNumber =
+    inputType === 'number' && typeof value === 'string'
 
   if (isStringifiedNumber) {
     return ''
@@ -32,7 +36,10 @@ function TextField(props) {
       id={props.name}
       name={props.name}
       parse={props.parse || createParseNumberValue(props.type)}
-      validate={composeValidators(props.validate, getRequiredValidate(props.required, props.type))}
+      validate={composeValidators(
+        props.validate,
+        getRequiredValidate(props.required, props.type)
+      )}
     >
       {({ input, meta }) => (
         <div
@@ -43,18 +50,11 @@ function TextField(props) {
           id={props.id}
         >
           {props.label && (
-            <label
-              className={classnames('field-label')}
-              htmlFor={props.name}
-            >
+            <label className={classnames('field-label')} htmlFor={props.name}>
               <span>
-                <span>
-                  {props.label}
-                </span>
+                <span>{props.label}</span>
                 {props.required && !props.readOnly && (
-                  <span className="field-asterisk">
-                    *
-                  </span>
+                  <span className="field-asterisk">*</span>
                 )}
               </span>
             </label>

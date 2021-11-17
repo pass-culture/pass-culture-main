@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import React from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
@@ -14,16 +14,10 @@ const VenueLayout = () => {
   const match = useRouteMatch()
   return (
     <Switch>
-      <Route
-        exact
-        path={`${match.path}/creation`}
-      >
+      <Route exact path={`${match.path}/creation`}>
         <VenueCreationContainer />
       </Route>
-      <Route
-        exact
-        path={`${match.path}/:venueId([A-Z0-9]+)`}
-      >
+      <Route exact path={`${match.path}/:venueId([A-Z0-9]+)`}>
         <VenueEditionContainer />
       </Route>
       <Route>

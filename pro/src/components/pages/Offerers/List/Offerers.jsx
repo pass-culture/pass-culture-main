@@ -1,8 +1,8 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
@@ -88,7 +88,10 @@ class Offerers extends PureComponent {
       })
     }
 
-    this.setState({ isLoading: true, hasMore: true }, loadOfferers(handleSuccess, handleFail))
+    this.setState(
+      { isLoading: true, hasMore: true },
+      loadOfferers(handleSuccess, handleFail)
+    )
   }
 
   handleOnKeywordsSubmit = () => {
@@ -105,17 +108,15 @@ class Offerers extends PureComponent {
     })
     this.forceRenderKey++ // See variable declaration for more information
 
-    if (queryParams[mapApiToBrowser.keywords] !== keywords) resetLoadedOfferers()
+    if (queryParams[mapApiToBrowser.keywords] !== keywords)
+      resetLoadedOfferers()
   }
 
   renderForm = ({ handleSubmit }) => {
     const { keywordsInputValue } = this.state
 
     return (
-      <form
-        className="form-search"
-        onSubmit={handleSubmit}
-      >
+      <form className="form-search" onSubmit={handleSubmit}>
         <TextInput
           label="Rechercher une structure :"
           name="keywords"
@@ -123,10 +124,7 @@ class Offerers extends PureComponent {
           placeholder="Saisissez un ou plusieurs mots complets"
           value={keywordsInputValue}
         />
-        <button
-          className="secondary-button"
-          type="submit"
-        >
+        <button className="secondary-button" type="submit">
           OK
         </button>
       </form>
@@ -148,7 +146,8 @@ class Offerers extends PureComponent {
     const queryParams = query.parse()
     const { hasMore, isLoading } = this.state
 
-    const sectionTitle = offerers.length > 1 ? 'Structures juridiques' : 'Structure juridique'
+    const sectionTitle =
+      offerers.length > 1 ? 'Structures juridiques' : 'Structure juridique'
 
     const initialValues = {
       keywords: queryParams[mapApiToBrowser.keywords],
@@ -164,10 +163,7 @@ class Offerers extends PureComponent {
 
     const actionLink = (
       <span>
-        <Link
-          className="primary-button with-icon"
-          to={offererCreationPageURL}
-        >
+        <Link className="primary-button with-icon" to={offererCreationPageURL}>
           <AddOffererSvg />
           Ajouter une structure
         </Link>
@@ -183,18 +179,10 @@ class Offerers extends PureComponent {
     return (
       <div className="offerers-page">
         <PageTitle title="Vos structures juridiques" />
-        <Titles
-          action={actionLink}
-          title={sectionTitle}
-        />
+        <Titles action={actionLink} title={sectionTitle} />
         <p className="advice">
-          Pour présenter vos offres, vous devez d’abord 
-          {' '}
-          <a href={url}>
-            créer un nouveau lieu
-          </a>
-          {' '}
-          lié à une structure.
+          Pour présenter vos offres, vous devez d’abord{' '}
+          <a href={url}>créer un nouveau lieu</a> lié à une structure.
           <br />
           Sans lieu, vous pouvez uniquement ajouter des offres numériques.
         </p>
@@ -219,15 +207,9 @@ class Offerers extends PureComponent {
         >
           {offerers.map(offerer => {
             return offerer.isValidated && offerer.userHasAccess ? (
-              <OffererItemContainer
-                key={offerer.id}
-                offerer={offerer}
-              />
+              <OffererItemContainer key={offerer.id} offerer={offerer} />
             ) : (
-              <PendingOffererItem
-                key={offerer.siren}
-                offerer={offerer}
-              />
+              <PendingOffererItem key={offerer.siren} offerer={offerer} />
             )
           })}
         </LoadingInfiniteScroll>

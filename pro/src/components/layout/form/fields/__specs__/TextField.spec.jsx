@@ -1,7 +1,7 @@
 /*
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 /* eslint-disable react/jsx-no-bind */
 import { mount } from 'enzyme'
@@ -26,10 +26,7 @@ describe('src | components | layout | form | TextField', () => {
             <form>
               <TextField name="title" />
               <TextField name="text" />
-              <button
-                onClick={handleSubmit}
-                type="submit"
-              >
+              <button onClick={handleSubmit} type="submit">
                 Submit
               </button>
             </form>
@@ -47,7 +44,7 @@ describe('src | components | layout | form | TextField', () => {
 
       // then
       function handleOnSubmit(formValues) {
-        expect(formValues.title).toStrictEqual('J’irai droit au But')
+        expect(formValues.title).toBe('J’irai droit au But')
         expect(formValues.text).toStrictEqual(initialValues.text)
         done()
       }

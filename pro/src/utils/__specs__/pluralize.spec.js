@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ */
 
 import { pluralize } from '../pluralize'
 
@@ -14,7 +14,7 @@ describe('pluralize', () => {
       const pluralizedWord = pluralize(5, wordToPluralize)
 
       // then
-      expect(pluralizedWord).toStrictEqual('5 offres')
+      expect(pluralizedWord).toBe('5 offres')
     })
 
     it('should singularize word if 0 offer', () => {
@@ -25,7 +25,7 @@ describe('pluralize', () => {
       const singularizedWord = pluralize(0, wordToSingularize)
 
       // then
-      expect(singularizedWord).toStrictEqual('0 offre')
+      expect(singularizedWord).toBe('0 offre')
     })
 
     it('should singularize word if 1 offer', () => {
@@ -36,7 +36,7 @@ describe('pluralize', () => {
       const singularizedWord = pluralize(1, wordToSingularize)
 
       // then
-      expect(singularizedWord).toStrictEqual('1 offre')
+      expect(singularizedWord).toBe('1 offre')
     })
   })
 
@@ -49,7 +49,7 @@ describe('pluralize', () => {
       const pluralizedWord = pluralize(5, wordToPluralize, 'x')
 
       // then
-      expect(pluralizedWord).toStrictEqual('5 bijoux')
+      expect(pluralizedWord).toBe('5 bijoux')
     })
 
     it('should singularize word if 0 offer', () => {
@@ -60,7 +60,7 @@ describe('pluralize', () => {
       const singularizedWord = pluralize(0, wordToSingularize)
 
       // then
-      expect(singularizedWord).toStrictEqual('0 bijou')
+      expect(singularizedWord).toBe('0 bijou')
     })
 
     it('should singularize word if 1 offer', () => {
@@ -71,7 +71,7 @@ describe('pluralize', () => {
       const singularizedWord = pluralize(1, wordToSingularize)
 
       // then
-      expect(singularizedWord).toStrictEqual('1 bijou')
+      expect(singularizedWord).toBe('1 bijou')
     })
   })
 })

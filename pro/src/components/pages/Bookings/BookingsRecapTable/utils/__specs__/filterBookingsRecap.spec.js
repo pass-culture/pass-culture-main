@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import { EMPTY_FILTER_VALUE } from '../../Filters/_constants'
 import filterBookingsRecap from '../filterBookingsRecap'
@@ -77,7 +77,9 @@ describe('filterBookingsRecap', () => {
     it('should return list containing only BookingRecap matching keywords', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({})
-      const bookingRecap2 = bookingRecapBuilder({ stock_offer_name: 'Jurrasic Perk' })
+      const bookingRecap2 = bookingRecapBuilder({
+        stock_offer_name: 'Jurrasic Perk',
+      })
       const bookingsRecap = [bookingRecap1, bookingRecap2]
 
       let filters = filtersBuilder({ offerName: 'Merlin' })
@@ -92,7 +94,9 @@ describe('filterBookingsRecap', () => {
     it('should return list containing only BookingRecap matching keywords with different accents', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({})
-      const bookingRecap2 = bookingRecapBuilder({ stock_offer_name: 'Jurrasic Perk' })
+      const bookingRecap2 = bookingRecapBuilder({
+        stock_offer_name: 'Jurrasic Perk',
+      })
       const bookingsRecap = [bookingRecap1, bookingRecap2]
       const filters = filtersBuilder({ offerName: 'Mérlin' })
 
@@ -121,7 +125,9 @@ describe('filterBookingsRecap', () => {
     it('should return list containing only BookingRecap matching keywords with uppercase letters', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({})
-      const bookingRecap2 = bookingRecapBuilder({ stock_offer_name: 'Jurrasic Perk' })
+      const bookingRecap2 = bookingRecapBuilder({
+        stock_offer_name: 'Jurrasic Perk',
+      })
       const bookingsRecap = [bookingRecap1, bookingRecap2]
       const filters = filtersBuilder({ offerName: 'MerlIN' })
 
@@ -138,8 +144,14 @@ describe('filterBookingsRecap', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({ booking_token: 'ABCDEF' })
       const bookingRecap2 = bookingRecapBuilder({ booking_token: 'ZACBGQ' })
-      const bookingRecapWithNoToken = bookingRecapBuilder({ booking_token: null })
-      const bookingsRecap = [bookingRecap1, bookingRecap2, bookingRecapWithNoToken]
+      const bookingRecapWithNoToken = bookingRecapBuilder({
+        booking_token: null,
+      })
+      const bookingsRecap = [
+        bookingRecap1,
+        bookingRecap2,
+        bookingRecapWithNoToken,
+      ]
       const filters = filtersBuilder({ bookingToken: 'abc' })
 
       // when
@@ -153,8 +165,14 @@ describe('filterBookingsRecap', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({ booking_token: 'ABCDEF' })
       const bookingRecap2 = bookingRecapBuilder({ booking_token: 'ZACBGD' })
-      const bookingRecapWithNoToken = bookingRecapBuilder({ booking_token: null })
-      const bookingsRecap = [bookingRecap1, bookingRecap2, bookingRecapWithNoToken]
+      const bookingRecapWithNoToken = bookingRecapBuilder({
+        booking_token: null,
+      })
+      const bookingsRecap = [
+        bookingRecap1,
+        bookingRecap2,
+        bookingRecapWithNoToken,
+      ]
       const filters = filtersBuilder({ bookingToken: 'abc ' })
 
       // when
@@ -168,8 +186,14 @@ describe('filterBookingsRecap', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({ booking_token: 'ABCDEF' })
       const bookingRecap2 = bookingRecapBuilder({ booking_token: 'ZACBGQ' })
-      const bookingRecapWithNoToken = bookingRecapBuilder({ booking_token: null })
-      const bookingsRecap = [bookingRecap1, bookingRecap2, bookingRecapWithNoToken]
+      const bookingRecapWithNoToken = bookingRecapBuilder({
+        booking_token: null,
+      })
+      const bookingsRecap = [
+        bookingRecap1,
+        bookingRecap2,
+        bookingRecapWithNoToken,
+      ]
       const filters = filtersBuilder({ bookingToken: 'aBc' })
 
       // when
@@ -184,7 +208,9 @@ describe('filterBookingsRecap', () => {
     it('should return list containing only BookingRecap matching ISBN keywords', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({ stock_type: 'book' })
-      const bookingRecap2 = bookingRecapBuilder({ stock_offer_isbn: '0864645534' })
+      const bookingRecap2 = bookingRecapBuilder({
+        stock_offer_isbn: '0864645534',
+      })
       const bookingsRecap = [bookingRecap1, bookingRecap2]
       const filters = filtersBuilder({ offerISBN: '9787605639121' })
 
@@ -198,7 +224,9 @@ describe('filterBookingsRecap', () => {
     it('should return list containing only BookingRecap matching ISBN keywords with surrounding space', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({ stock_type: 'book' })
-      const bookingRecap2 = bookingRecapBuilder({ stock_offer_isbn: '0864645534' })
+      const bookingRecap2 = bookingRecapBuilder({
+        stock_offer_isbn: '0864645534',
+      })
       const bookingsRecap = [bookingRecap1, bookingRecap2]
       const filters = filtersBuilder({ offerISBN: '9787605639121  ' })
 
@@ -214,7 +242,9 @@ describe('filterBookingsRecap', () => {
     it('should return list containing only BookingRecap matching beneficiary firstname keywords', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({})
-      const bookingRecap2 = bookingRecapBuilder({ beneficiary_firstname: 'Ludovic' })
+      const bookingRecap2 = bookingRecapBuilder({
+        beneficiary_firstname: 'Ludovic',
+      })
       const bookingsRecap = [bookingRecap1, bookingRecap2]
       const filters = filtersBuilder({ bookingBeneficiary: 'Ludovic' })
 
@@ -228,7 +258,9 @@ describe('filterBookingsRecap', () => {
     it('should return list containing only BookingRecap matching partial beneficiary firstname keywords', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({})
-      const bookingRecap2 = bookingRecapBuilder({ beneficiary_firstname: 'Ludovic' })
+      const bookingRecap2 = bookingRecapBuilder({
+        beneficiary_firstname: 'Ludovic',
+      })
       const bookingsRecap = [bookingRecap1, bookingRecap2]
       const filters = filtersBuilder({ bookingBeneficiary: 'Ludov' })
 
@@ -242,7 +274,9 @@ describe('filterBookingsRecap', () => {
     it('should return list containing only BookingRecap matching beneficiary lastname keywords', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({})
-      const bookingRecap2 = bookingRecapBuilder({ beneficiary_lastname: 'Dupont' })
+      const bookingRecap2 = bookingRecapBuilder({
+        beneficiary_lastname: 'Dupont',
+      })
       const bookingsRecap = [bookingRecap1, bookingRecap2]
       const filters = filtersBuilder({ bookingBeneficiary: 'Dupont' })
 
@@ -256,7 +290,9 @@ describe('filterBookingsRecap', () => {
     it('should return list containing only BookingRecap matching partial beneficiary lastname keywords', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({})
-      const bookingRecap2 = bookingRecapBuilder({ beneficiary_lastname: 'Dupont' })
+      const bookingRecap2 = bookingRecapBuilder({
+        beneficiary_lastname: 'Dupont',
+      })
       const bookingsRecap = [bookingRecap1, bookingRecap2]
       const filters = filtersBuilder({ bookingBeneficiary: 'Dup' })
 
@@ -270,9 +306,13 @@ describe('filterBookingsRecap', () => {
     it('should return list containing only BookingRecap matching beneficiary email keywords', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({})
-      const bookingRecap2 = bookingRecapBuilder({ beneficiary_email: 'ludo@example.com' })
+      const bookingRecap2 = bookingRecapBuilder({
+        beneficiary_email: 'ludo@example.com',
+      })
       const bookingsRecap = [bookingRecap1, bookingRecap2]
-      const filters = filtersBuilder({ bookingBeneficiary: 'sonia.klepi@example.com' })
+      const filters = filtersBuilder({
+        bookingBeneficiary: 'sonia.klepi@example.com',
+      })
 
       // when
       const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
@@ -284,9 +324,13 @@ describe('filterBookingsRecap', () => {
     it('should return list containing only BookingRecap matching partial beneficiary email keywords', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({})
-      const bookingRecap2 = bookingRecapBuilder({ beneficiary_email: 'ludovic@example.com' })
+      const bookingRecap2 = bookingRecapBuilder({
+        beneficiary_email: 'ludovic@example.com',
+      })
       const bookingsRecap = [bookingRecap1, bookingRecap2]
-      const filters = filtersBuilder({ bookingBeneficiary: 'ludovic@example.c' })
+      const filters = filtersBuilder({
+        bookingBeneficiary: 'ludovic@example.c',
+      })
 
       // when
       const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
@@ -315,7 +359,9 @@ describe('filterBookingsRecap', () => {
     it('should return list containing only BookingRecap matching beneficiary lastname firstname in that order', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({})
-      const bookingRecap2 = bookingRecapBuilder({ beneficiary_firstname: 'Ludovic' })
+      const bookingRecap2 = bookingRecapBuilder({
+        beneficiary_firstname: 'Ludovic',
+      })
       const bookingsRecap = [bookingRecap1, bookingRecap2]
       const filters = filtersBuilder({ bookingBeneficiary: 'Klepi Sonia' })
 

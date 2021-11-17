@@ -22,7 +22,9 @@ import AccessibilityFields, {
 } from '../fields/AccessibilityFields'
 import BankInformation from '../fields/BankInformationFields'
 import ContactInfosFields from '../fields/ContactInfosFields'
-import IdentifierFields, { bindGetSiretInformationToSiret } from '../fields/IdentifierFields'
+import IdentifierFields, {
+  bindGetSiretInformationToSiret,
+} from '../fields/IdentifierFields'
 import LocationFields, {
   bindGetSuggestionsToLatitude,
   bindGetSuggestionsToLongitude,
@@ -114,13 +116,11 @@ class VenueCreation extends PureComponent {
       siret: formSiret,
     } = values
 
-    const siretValidOnCreation = formSiret && formatSiret(formSiret).length === 14
+    const siretValidOnCreation =
+      formSiret && formatSiret(formSiret).length === 14
 
     return (
-      <form
-        name="venue"
-        onSubmit={handleSubmit}
-      >
+      <form name="venue" onSubmit={handleSubmit}>
         <IdentifierFields
           fieldReadOnlyBecauseFrozenFormSiret={siretValidOnCreation}
           formSiret={formSiret}
@@ -130,18 +130,19 @@ class VenueCreation extends PureComponent {
           venueTypes={venueTypes}
         />
         {withdrawalDetailActive && (
-          <WithdrawalDetailsFields
-            isCreatedEntity
-            readOnly={readOnly}
-          />
+          <WithdrawalDetailsFields isCreatedEntity readOnly={readOnly} />
         )}
         <BankInformation offerer={offerer} />
         <LocationFields
           fieldReadOnlyBecauseFrozenFormSiret={siretValidOnCreation}
           form={form}
           formIsLocationFrozen={formIsLocationFrozen}
-          formLatitude={formLatitude === '' ? FRANCE_POSITION.latitude : formLatitude}
-          formLongitude={formLongitude === '' ? FRANCE_POSITION.longitude : formLongitude}
+          formLatitude={
+            formLatitude === '' ? FRANCE_POSITION.latitude : formLatitude
+          }
+          formLongitude={
+            formLongitude === '' ? FRANCE_POSITION.longitude : formLongitude
+          }
           readOnly={readOnly}
         />
         <AccessibilityFields />
@@ -200,9 +201,7 @@ class VenueCreation extends PureComponent {
         </NavLink>
         <PageTitle title="Créer un lieu" />
         <Titles title="Lieu" />
-        <p className="advice">
-          Ajoutez un lieu où accéder à vos offres.
-        </p>
+        <p className="advice">Ajoutez un lieu où accéder à vos offres.</p>
 
         {showForm && (
           <Form

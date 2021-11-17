@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { forwardRef, Fragment } from 'react'
@@ -28,8 +28,7 @@ export const ActivationCodeCsvForm = forwardRef(function ActivationCodeCsvForm(
 
       <div className="activation-codes-upload-button-section">
         <label className="primary-button activation-codes-upload-label">
-          Importer un fichier .csv depuis l’ordinateur
-          {' '}
+          Importer un fichier .csv depuis l’ordinateur{' '}
           <input
             accept=".csv"
             className="activation-codes-upload-input"
@@ -40,32 +39,26 @@ export const ActivationCodeCsvForm = forwardRef(function ActivationCodeCsvForm(
           />
         </label>
         <div className="activation-codes-upload-button-caption">
-          <p>
-            Format supporté : CSV
-          </p>
-          <p>
-            Le poids du fichier ne doit pas dépasser 1 Mo
-          </p>
+          <p>Format supporté : CSV</p>
+          <p>Le poids du fichier ne doit pas dépasser 1 Mo</p>
         </div>
       </div>
       <div className="activation-codes-upload-separator" />
       <div className="activation-codes-upload-template-section">
-        <p className="activation-codes-upload-gabarit">
-          Gabarits
-        </p>
+        <p className="activation-codes-upload-gabarit">Gabarits</p>
         <p>
           <a
             className="quaternary-link"
-            href={process.env.PUBLIC_URL + '/csvtemplates/CodesActivations-Gabarit.csv'}
+            href={
+              process.env.PUBLIC_URL +
+              '/csvtemplates/CodesActivations-Gabarit.csv'
+            }
             rel="noopener noreferrer"
             target="_blank"
             type="text/csv"
           >
             <Icon svg="ico-other-download" />
-            <b>
-              Gabarit CSV
-            </b>
-            {' '}
+            <b>Gabarit CSV</b>{' '}
             <span className="activation-codes-upload-gabarit-type-and-size">
               (.csv, 50 ko)
             </span>

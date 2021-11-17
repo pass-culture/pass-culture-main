@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -66,14 +66,18 @@ describe('src | components | pages | SetPassword', () => {
     renderSetPassword(store, history)
 
     // Then
-    expect(screen.getByText('Bienvenue sur l’espace dédié aux acteurs culturels')).toBeVisible()
+    expect(
+      screen.getByText('Bienvenue sur l’espace dédié aux acteurs culturels')
+    ).toBeVisible()
   })
 
   it('should display form validation error on wrong confirmation', async () => {
     // Given
     renderSetPassword(store, history)
     const passwordInput = screen.getByLabelText('Mot de passe')
-    const confirmationPasswordInput = screen.getByLabelText('Confirmer le mot de passe')
+    const confirmationPasswordInput = screen.getByLabelText(
+      'Confirmer le mot de passe'
+    )
     const submitButton = screen.getByText('Envoyer', { selector: 'button' })
 
     // When
@@ -93,7 +97,9 @@ describe('src | components | pages | SetPassword', () => {
     pcapi.setPassword.mockResolvedValue()
     renderSetPassword(store, history)
     const passwordInput = screen.getByLabelText('Mot de passe')
-    const confirmationPasswordInput = screen.getByLabelText('Confirmer le mot de passe')
+    const confirmationPasswordInput = screen.getByLabelText(
+      'Confirmer le mot de passe'
+    )
     const submitButton = screen.getByText('Envoyer', { selector: 'button' })
 
     // When
@@ -112,7 +118,9 @@ describe('src | components | pages | SetPassword', () => {
     pcapi.setPassword.mockResolvedValue()
     renderSetPassword(store, history)
     const passwordInput = screen.getByLabelText('Mot de passe')
-    const confirmationPasswordInput = screen.getByLabelText('Confirmer le mot de passe')
+    const confirmationPasswordInput = screen.getByLabelText(
+      'Confirmer le mot de passe'
+    )
     const submitButton = screen.getByText('Envoyer', { selector: 'button' })
 
     // When
@@ -122,17 +130,23 @@ describe('src | components | pages | SetPassword', () => {
 
     // Then
     await waitFor(() => {
-      expect(history.push).toHaveBeenCalledWith('/creation-de-mot-de-passe-confirmation')
+      expect(history.push).toHaveBeenCalledWith(
+        '/creation-de-mot-de-passe-confirmation'
+      )
     })
   })
 
   it('should display the form error', async () => {
     // Given
     const passwordErrorMessage = 'Ton mot de passe est trop faible'
-    pcapi.setPassword.mockRejectedValue({ errors: { newPassword: [passwordErrorMessage] } })
+    pcapi.setPassword.mockRejectedValue({
+      errors: { newPassword: [passwordErrorMessage] },
+    })
     renderSetPassword(store, history)
     const passwordInput = screen.getByLabelText('Mot de passe')
-    const confirmationPasswordInput = screen.getByLabelText('Confirmer le mot de passe')
+    const confirmationPasswordInput = screen.getByLabelText(
+      'Confirmer le mot de passe'
+    )
     const submitButton = screen.getByText('Envoyer', { selector: 'button' })
 
     // When
@@ -153,10 +167,14 @@ describe('src | components | pages | SetPassword', () => {
 
   it('should display the token error', async () => {
     // Given
-    pcapi.setPassword.mockRejectedValue({ errors: { token: ['token problem'] } })
+    pcapi.setPassword.mockRejectedValue({
+      errors: { token: ['token problem'] },
+    })
     renderSetPassword(store, history)
     const passwordInput = screen.getByLabelText('Mot de passe')
-    const confirmationPasswordInput = screen.getByLabelText('Confirmer le mot de passe')
+    const confirmationPasswordInput = screen.getByLabelText(
+      'Confirmer le mot de passe'
+    )
     const submitButton = screen.getByText('Envoyer', { selector: 'button' })
 
     // When
@@ -174,10 +192,14 @@ describe('src | components | pages | SetPassword', () => {
 
   it('should display the unknown error', async () => {
     // Given
-    pcapi.setPassword.mockRejectedValue({ errors: { unknownField: ['unknown problem'] } })
+    pcapi.setPassword.mockRejectedValue({
+      errors: { unknownField: ['unknown problem'] },
+    })
     renderSetPassword(store, history)
     const passwordInput = screen.getByLabelText('Mot de passe')
-    const confirmationPasswordInput = screen.getByLabelText('Confirmer le mot de passe')
+    const confirmationPasswordInput = screen.getByLabelText(
+      'Confirmer le mot de passe'
+    )
     const submitButton = screen.getByText('Envoyer', { selector: 'button' })
 
     // When

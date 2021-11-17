@@ -1,8 +1,8 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt standard "Gaël: prefer hooks for routers (https://reactrouter.com/web/api/Hooks)"
-* @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt standard "Gaël: prefer hooks for routers (https://reactrouter.com/web/api/Hooks)"
+ * @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
+ */
 
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
@@ -15,7 +15,10 @@ import Stocks from './Stocks'
 
 const mapStateToProps = state => ({
   areActivationCodesEnabled: isFeatureActive(state, 'ENABLE_ACTIVATION_CODES'),
-  autoActivateDigitalBookings: isFeatureActive(state, 'AUTO_ACTIVATE_DIGITAL_BOOKINGS'),
+  autoActivateDigitalBookings: isFeatureActive(
+    state,
+    'AUTO_ACTIVATE_DIGITAL_BOOKINGS'
+  ),
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -42,4 +45,7 @@ const mapDispatchToProps = dispatch => ({
     ),
 })
 
-export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(Stocks)
+export default compose(
+  withRouter,
+  connect(mapStateToProps, mapDispatchToProps)
+)(Stocks)

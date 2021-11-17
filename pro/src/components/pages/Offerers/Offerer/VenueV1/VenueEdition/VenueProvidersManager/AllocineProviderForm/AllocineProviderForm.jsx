@@ -1,22 +1,29 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit } from 'react-final-form-utils'
-import ReactTooltip from "react-tooltip"
+import ReactTooltip from 'react-tooltip'
 
 import NumberField from 'components/layout/form/fields/NumberField'
 import Icon from 'components/layout/Icon'
 import Insert from 'components/layout/Insert/Insert'
 import { CheckboxField } from 'ui-kit'
 
-const AllocineProviderForm = ({ saveVenueProvider, providerId, venueId, isCreatedEntity, initialValues, onCancel }) => {
+const AllocineProviderForm = ({
+  saveVenueProvider,
+  providerId,
+  venueId,
+  isCreatedEntity,
+  initialValues,
+  onCancel,
+}) => {
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
@@ -57,11 +64,8 @@ const AllocineProviderForm = ({ saveVenueProvider, providerId, venueId, isCreate
               <div className="apf-price-section">
                 <div className="price-section-label">
                   <label htmlFor="price">
-                    Prix de vente/place
-                    {' '}
-                    <span className="field-asterisk">
-                      *
-                    </span>
+                    Prix de vente/place{' '}
+                    <span className="field-asterisk">*</span>
                   </label>
                   <span
                     className="apf-tooltip"
@@ -82,10 +86,7 @@ const AllocineProviderForm = ({ saveVenueProvider, providerId, venueId, isCreate
                 />
               </div>
               <div className="apf-quantity-section">
-                <label
-                  className="label-quantity"
-                  htmlFor="quantity"
-                >
+                <label className="label-quantity" htmlFor="quantity">
                   Nombre de places/séance
                 </label>
                 <NumberField
@@ -112,13 +113,12 @@ const AllocineProviderForm = ({ saveVenueProvider, providerId, venueId, isCreate
                 </span>
               </div>
 
-              <Insert
-                className="blue-insert"
-                icon="picto-info-solid-black"
-              >
-                Pour le moment, seules les séances &quot;classiques&quot; peuvent être importées.
+              <Insert className="blue-insert" icon="picto-info-solid-black">
+                Pour le moment, seules les séances &quot;classiques&quot;
+                peuvent être importées.
                 <br />
-                Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront pas d’offres.
+                Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront
+                pas d’offres.
                 <br />
                 Nous travaillons actuellement à l’ajout de séances spécifiques.
               </Insert>
@@ -133,7 +133,7 @@ const AllocineProviderForm = ({ saveVenueProvider, providerId, venueId, isCreate
                     Importer les offres
                   </button>
                 </div>
-              ): (
+              ) : (
                 <div className="actions">
                   <button
                     className="secondary-button"
@@ -171,17 +171,17 @@ const AllocineProviderForm = ({ saveVenueProvider, providerId, venueId, isCreate
 
 AllocineProviderForm.defaultProps = {
   initialValues: {
-    isDuo: true
+    isDuo: true,
   },
   isCreatedEntity: false,
-  onCancel: () => {}
+  onCancel: () => {},
 }
 
 AllocineProviderForm.propTypes = {
   initialValues: PropTypes.shape({
     isDuo: PropTypes.bool,
     price: PropTypes.number,
-    quantity: PropTypes.number
+    quantity: PropTypes.number,
   }),
   isCreatedEntity: PropTypes.bool,
   onCancel: PropTypes.func,

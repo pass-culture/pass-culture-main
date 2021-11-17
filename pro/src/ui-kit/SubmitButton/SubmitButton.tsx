@@ -5,18 +5,18 @@ import { ReactComponent as SpinnerIcon } from './assets/loader.svg'
 import styles from './SubmitButton.module.scss'
 
 interface ISubmitButtonProps {
-  className: string;
-  disabled: boolean;
-  isLoading: boolean;
-  onClick(): void;
+  className: string
+  disabled: boolean
+  isLoading: boolean
+  onClick(): void
 }
 
-const SubmitButton: FC<ISubmitButtonProps> = ({ 
+const SubmitButton: FC<ISubmitButtonProps> = ({
   children = 'Enregistrer',
   className,
   disabled = false,
   isLoading = false,
-  onClick 
+  onClick,
 }) => (
   <button
     className={cx(
@@ -32,6 +32,5 @@ const SubmitButton: FC<ISubmitButtonProps> = ({
     {isLoading ? <SpinnerIcon /> : children}
   </button>
 )
-
 
 export default SubmitButton

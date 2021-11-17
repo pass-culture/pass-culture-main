@@ -1,9 +1,9 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 /* eslint-disable react/prop-types */
 import { mount } from 'enzyme'
@@ -15,9 +15,7 @@ import TablePagination from '../Paginate/TablePagination'
 import TableFrame from '../TableFrame'
 
 const CellMock = ({ offer: { offer_name: offerName } }) => (
-  <span>
-    {offerName}
-  </span>
+  <span>{offerName}</span>
 )
 
 describe('components | TableFrame', () => {
@@ -35,22 +33,14 @@ describe('components | TableFrame', () => {
             {
               id: 1,
               headerTitle: 'Offres',
-              render: jest.fn(() => (
-                <span>
-                  Offres
-                </span>
-              )),
+              render: jest.fn(() => <span>Offres</span>),
               getHeaderProps: jest.fn(),
               getSortByToggleProps: jest.fn(),
             },
             {
               id: 2,
               headerTitle: 'Beneficiaires',
-              render: jest.fn(() => (
-                <span>
-                  Beneficiaires
-                </span>
-              )),
+              render: jest.fn(() => <span>Beneficiaires</span>),
               getHeaderProps: jest.fn(),
               getSortByToggleProps: jest.fn(),
             },

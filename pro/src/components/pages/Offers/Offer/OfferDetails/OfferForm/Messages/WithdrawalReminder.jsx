@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import React from 'react'
 
@@ -15,8 +15,8 @@ const WithdrawalReminder = () => {
       linkTitle={"Consulter les Conditions Générales d'Utilisation"}
       type="notification-info"
     >
-      La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos
-      CGU.
+      La livraison d’article n’est pas autorisée. Pour plus d’informations,
+      veuillez consulter nos CGU.
     </Banner>
   )
 }

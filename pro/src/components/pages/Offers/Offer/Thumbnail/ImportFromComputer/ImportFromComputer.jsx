@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import * as PropTypes from 'prop-types'
 import React, { useCallback, useRef, useState } from 'react'
@@ -17,7 +17,9 @@ const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
 
   const getError = async file => {
     for (const constraint of constraints) {
-      const inError = constraint.asyncValidator ? await constraint.asyncValidator(file) : constraint.validator(file)
+      const inError = constraint.asyncValidator
+        ? await constraint.asyncValidator(file)
+        : constraint.validator(file)
       if (inError) {
         return Promise.resolve(constraint.id)
       }
@@ -42,28 +44,18 @@ const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
 
       if (error === constraint.id) {
         description = (
-          <strong
-            aria-live="assertive"
-            aria-relevant="all"
-          >
+          <strong aria-live="assertive" aria-relevant="all">
             <Icon svg="ico-notification-error-red" />
             {description}
           </strong>
         )
       }
 
-      return (
-        <li key={constraint.id}>
-          {description}
-        </li>
-      )
+      return <li key={constraint.id}>{description}</li>
     })
 
   return (
-    <form
-      action="#"
-      className="tnf-form"
-    >
+    <form action="#" className="tnf-form">
       <ThumbnailSampleIcon />
       <p className="tnf-info">
         Utilisez de préférence un visuel en orientation portrait
@@ -79,9 +71,7 @@ const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
           type="file"
         />
       </label>
-      <ul className="tnf-mandatory">
-        {fileConstraint()}
-      </ul>
+      <ul className="tnf-mandatory">{fileConstraint()}</ul>
     </form>
   )
 }

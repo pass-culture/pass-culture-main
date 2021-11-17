@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -27,11 +27,13 @@ const TextInputWithIcon = ({
   <label className="input-text">
     <div className="labels">
       {label}
-      <span className="it-sub-label">
-        {sublabel}
-      </span>
+      <span className="it-sub-label">{sublabel}</span>
     </div>
-    <div className={`it-with-icon-container ${disabled ? 'disabled' : ''} ${error ? 'error' : ''}`}>
+    <div
+      className={`it-with-icon-container ${disabled ? 'disabled' : ''} ${
+        error ? 'error' : ''
+      }`}
+    >
       <input
         className="it-input-with-icon"
         disabled={disabled}
@@ -42,22 +44,11 @@ const TextInputWithIcon = ({
         type={type}
         value={value}
       />
-      <button
-        className="it-icon"
-        onClick={onIconClick}
-        type="button"
-      >
-        <img
-          alt={iconAlt}
-          src={`${ROOT_PATH}/icons/${icon}.svg`}
-        />
+      <button className="it-icon" onClick={onIconClick} type="button">
+        <img alt={iconAlt} src={`${ROOT_PATH}/icons/${icon}.svg`} />
       </button>
     </div>
-    {error && (
-      <InputError>
-        {error}
-      </InputError>
-    )}
+    {error && <InputError>{error}</InputError>}
   </label>
 )
 

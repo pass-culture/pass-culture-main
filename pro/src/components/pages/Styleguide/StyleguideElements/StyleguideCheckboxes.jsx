@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within storybook"
-*/
+ * @debt directory "Gaël: this file should be migrated within storybook"
+ */
 
 import React, { useCallback, useState } from 'react'
 
@@ -19,7 +19,10 @@ const StyleguideCheckboxes = () => {
     />
   `
 
-  const handleOnChange = useCallback(() => setChecked(() => !checked), [checked])
+  const handleOnChange = useCallback(
+    () => setChecked(() => !checked),
+    [checked]
+  )
 
   return (
     <div className="styleguide-select">
@@ -33,9 +36,7 @@ const StyleguideCheckboxes = () => {
         />
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {checkboxeSnippet}
-            </code>
+            <code>{checkboxeSnippet}</code>
           </pre>
         </div>
       </div>

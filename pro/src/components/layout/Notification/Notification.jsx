@@ -5,7 +5,10 @@
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 
-import { NOTIFICATION_SHOW_DURATION, NOTIFICATION_TRANSITION_DURATION } from './_constants'
+import {
+  NOTIFICATION_SHOW_DURATION,
+  NOTIFICATION_TRANSITION_DURATION,
+} from './_constants'
 import { ReactComponent as ErrorIcon } from './assets/notification-error-white.svg'
 import { ReactComponent as InfoIcon } from './assets/notification-information.svg'
 import { ReactComponent as SuccessIcon } from './assets/notification-success-white.svg'
@@ -48,7 +51,11 @@ const Notification = ({ hideNotification, notification }) => {
 
   if (isInDom) {
     return (
-      <div className={`notification is-${type || 'info'} ${isVisible ? 'show' : 'hide'}`}>
+      <div
+        className={`notification is-${type || 'info'} ${
+          isVisible ? 'show' : 'hide'
+        }`}
+      >
         {iconComponent}
         {text}
       </div>

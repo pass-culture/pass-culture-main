@@ -1,8 +1,8 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
@@ -15,9 +15,7 @@ const OffererCreationForm = ({ backTo, handleSubmit, invalid, pristine }) => {
   const renderAddress = useCallback(
     ({ values }) => (
       <div className="op-detail-creation-form">
-        <span>
-          {'Siège social : '}
-        </span>
+        <span>{'Siège social : '}</span>
         {values.postalCode && (
           <span>
             {`${values.address} - ${values.postalCode} ${values.city}`}
@@ -30,14 +28,8 @@ const OffererCreationForm = ({ backTo, handleSubmit, invalid, pristine }) => {
   const renderName = useCallback(
     ({ values }) => (
       <div className="op-detail-creation-form">
-        <span>
-          {'Désignation : '}
-        </span>
-        {values.name && (
-          <span>
-            {values.name}
-          </span>
-        )}
+        <span>{'Désignation : '}</span>
+        {values.name && <span>{values.name}</span>}
       </div>
     ),
     []
@@ -53,10 +45,7 @@ const OffererCreationForm = ({ backTo, handleSubmit, invalid, pristine }) => {
         </div>
         <div className="offerer-form-validation">
           <div className="control">
-            <Link
-              className="secondary-link"
-              to={backTo}
-            >
+            <Link className="secondary-link" to={backTo}>
               Retour
             </Link>
           </div>

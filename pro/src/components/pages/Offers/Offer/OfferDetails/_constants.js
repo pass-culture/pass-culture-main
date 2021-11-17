@@ -74,7 +74,15 @@ export const EXTRA_DATA_FIELDS = [
   'stageDirector',
   'visa',
 ]
-export const MANDATORY_FIELDS = ['name', 'venueId', 'offererId', 'url', 'bookingEmail', 'categoryId', 'subcategoryId']
+export const MANDATORY_FIELDS = [
+  'name',
+  'venueId',
+  'offererId',
+  'url',
+  'bookingEmail',
+  'categoryId',
+  'subcategoryId',
+]
 
 export const SYNCHRONIZED_OFFER_EDITABLE_FIELDS = {
   ALL_PROVIDERS: [

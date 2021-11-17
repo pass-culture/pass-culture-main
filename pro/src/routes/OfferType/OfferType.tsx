@@ -9,11 +9,16 @@ const OfferType = (): JSX.Element => {
   const location = useLocation()
 
   const { structure } = queryParamsFromOfferer(location)
-  
-  const fetchCanOffererCreateEducationalOffer = () => canOffererCreateEducationalOffer(structure)
+
+  const fetchCanOffererCreateEducationalOffer = () =>
+    canOffererCreateEducationalOffer(structure)
 
   return (
-    <OfferTypeScreen fetchCanOffererCreateEducationalOffer={fetchCanOffererCreateEducationalOffer} />
+    <OfferTypeScreen
+      fetchCanOffererCreateEducationalOffer={
+        fetchCanOffererCreateEducationalOffer
+      }
+    />
   )
 }
 
