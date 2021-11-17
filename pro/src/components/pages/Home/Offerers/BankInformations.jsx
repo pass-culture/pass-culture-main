@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -40,9 +40,9 @@ const BankInformations = ({
             href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
             linkTitle="Renseignez les coordonnées bancaires"
           >
-            Certains de vos lieux ne sont pas rattachés à des coordonnées bancaires. Pour percevoir
-            les remboursements liés aux offres postées dans ces lieux, renseignez les coordonnées
-            bancaires.
+            Certains de vos lieux ne sont pas rattachés à des coordonnées
+            bancaires. Pour percevoir les remboursements liés aux offres postées
+            dans ces lieux, renseignez les coordonnées bancaires.
           </Banner>
         )}
       </div>

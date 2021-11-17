@@ -1,7 +1,7 @@
 /*
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 /* eslint-disable react/jsx-no-bind */
 import { mount } from 'enzyme'
@@ -26,10 +26,7 @@ describe('src | components | layout | form | NumberField', () => {
             <form>
               <NumberField name="bar" />
               <NumberField name="foo" />
-              <button
-                onClick={handleSubmit}
-                type="submit"
-              >
+              <button onClick={handleSubmit} type="submit">
                 Submit
               </button>
             </form>
@@ -47,7 +44,7 @@ describe('src | components | layout | form | NumberField', () => {
 
       // then
       function handleOnSubmit(formValues) {
-        expect(formValues.bar).toStrictEqual(6)
+        expect(formValues.bar).toBe(6)
         expect(formValues.foo).toStrictEqual(initialValues.foo)
         done()
       }
@@ -69,10 +66,7 @@ describe('src | components | layout | form | NumberField', () => {
             <form>
               <NumberField name="bar" />
               <NumberField name="foo" />
-              <button
-                onClick={handleSubmit}
-                type="submit"
-              >
+              <button onClick={handleSubmit} type="submit">
                 Submit
               </button>
             </form>
@@ -90,7 +84,7 @@ describe('src | components | layout | form | NumberField', () => {
 
       // then
       function handleOnSubmit(formValues) {
-        expect(formValues.bar).toStrictEqual(6)
+        expect(formValues.bar).toBe(6)
         expect(formValues.foo).toStrictEqual(initialValues.foo)
         done()
       }

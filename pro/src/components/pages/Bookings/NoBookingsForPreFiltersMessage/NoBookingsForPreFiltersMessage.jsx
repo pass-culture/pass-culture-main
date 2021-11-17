@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -10,9 +10,7 @@ import Icon from 'components/layout/Icon'
 const NoBookingsForPreFiltersMessage = ({ resetPreFilters }) => (
   <div className="br-warning no-bookings-for-pre-filters">
     <Icon svg="ico-search-gray" />
-    <p>
-      Aucune réservation trouvée pour votre recherche.
-    </p>
+    <p>Aucune réservation trouvée pour votre recherche.</p>
     <p>
       {'Veuillez modifier vos filtres et lancer une nouvelle recherche ou '}
       <button

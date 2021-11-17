@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef } from 'react'
@@ -50,13 +50,8 @@ export const OffersStatusFiltersModal = ({
   }
 
   return (
-    <div
-      className="offers-status-filters"
-      ref={modalRef}
-    >
-      <div className="osf-title">
-        Afficher les statuts
-      </div>
+    <div className="offers-status-filters" ref={modalRef}>
+      <div className="osf-title">Afficher les statuts</div>
       <RadioInput
         checked={status === ALL_STATUS}
         label="Tous"
@@ -106,11 +101,7 @@ export const OffersStatusFiltersModal = ({
         onChange={handleStatusFilterChange}
         value="REJECTED"
       />
-      <button
-        className="primary-button"
-        onClick={applyFilters}
-        type="button"
-      >
+      <button className="primary-button" onClick={applyFilters} type="button">
         Appliquer
       </button>
     </div>

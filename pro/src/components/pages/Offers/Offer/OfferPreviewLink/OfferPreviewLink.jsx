@@ -19,7 +19,13 @@ const OfferPreviewLink = ({ offerId, nonHumanizedOfferId }) => {
     event => {
       event.preventDefault()
 
-      window.open(offerPreviewUrl, 'targetWindow', 'toolbar=no,width=375,height=667').focus()
+      window
+        .open(
+          offerPreviewUrl,
+          'targetWindow',
+          'toolbar=no,width=375,height=667'
+        )
+        .focus()
     },
     [offerPreviewUrl]
   )

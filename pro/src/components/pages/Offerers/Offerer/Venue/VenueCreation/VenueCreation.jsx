@@ -1,11 +1,17 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Route, Redirect, Switch, useParams, useRouteMatch } from 'react-router-dom'
+import {
+  Route,
+  Redirect,
+  Switch,
+  useParams,
+  useRouteMatch,
+} from 'react-router-dom'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
@@ -19,7 +25,9 @@ const VenueCreation = ({ isTemporary }) => {
   const pageTitle = isTemporary ? 'Créer un lieu temporaire' : 'Créer un lieu'
 
   const stepName = location.pathname.match(/[a-z]+$/)
-  const activeStep = stepName ? mapPathToStep[stepName[0]] : STEP_ID_INFORMATIONS
+  const activeStep = stepName
+    ? mapPathToStep[stepName[0]]
+    : STEP_ID_INFORMATIONS
 
   return (
     <div>
@@ -33,28 +41,17 @@ const VenueCreation = ({ isTemporary }) => {
       />
 
       <Switch>
-        <Route
-          exact
-          path={`${match.path}/informations`}
-        >
+        <Route exact path={`${match.path}/informations`}>
           <p>
             {isTemporary
               ? 'create temporary venue information form'
               : 'create venue information form'}
           </p>
         </Route>
-        <Route
-          exact
-          path={`${match.path}/gestion`}
-        >
-          <p>
-            create venue management form
-          </p>
+        <Route exact path={`${match.path}/gestion`}>
+          <p>create venue management form</p>
         </Route>
-        <Route
-          exact
-          path={match.path}
-        >
+        <Route exact path={match.path}>
           <Redirect to={`${match.url}/informations`} />
         </Route>
       </Switch>

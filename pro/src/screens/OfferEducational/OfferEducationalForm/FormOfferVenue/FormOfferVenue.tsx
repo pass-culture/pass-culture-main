@@ -18,24 +18,22 @@ const FormOfferVenue = (): JSX.Element => {
       title="Informations pratiques"
     >
       <div className={styles.subsection}>
-        <h4 className={styles.title}>
-          Addresse où aura lieu l’événement
-        </h4>
+        <h4 className={styles.title}>Addresse où aura lieu l’événement</h4>
         <div className={styles['radio-group']}>
           <RadioButton
             label={OFFER_VENUE_OFFERER_LABEL}
-            name='offerVenueId'
-            value='offererVenue'
+            name="offerVenueId"
+            value="offererVenue"
           />
           <RadioButton
             label={OFFER_VENUE_SCHOOL_LABEL}
-            name='offerVenueId'
-            value='school'
+            name="offerVenueId"
+            value="school"
           />
           <RadioButton
             label={OFFER_VENUE_OTHER_LABEL}
-            name='offerVenueId'
-            value='other'
+            name="offerVenueId"
+            value="other"
           />
         </div>
       </div>

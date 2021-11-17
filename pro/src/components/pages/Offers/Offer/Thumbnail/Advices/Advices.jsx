@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
@@ -29,16 +29,13 @@ const Advices = ({ hidden, setHidden }) => {
         Conseils pour votre image
         {hidden ? <ArrowDown /> : <ArrowUp />}
       </button>
-      <div
-        aria-hidden={hidden}
-        className={hidden ? 'tna-hidden' : ''}
-      >
+      <div aria-hidden={hidden} className={hidden ? 'tna-hidden' : ''}>
         <p className="tna-teaser">
-          Pour maximiser vos chances de réservations, choisissez avec soin l’image qui accompagne votre offre. Les ressources suivantes sont à votre disposition :
+          Pour maximiser vos chances de réservations, choisissez avec soin
+          l’image qui accompagne votre offre. Les ressources suivantes sont à
+          votre disposition :
         </p>
-        <p className="tna-title">
-          Banques d’images libres de droits
-        </p>
+        <p className="tna-title">Banques d’images libres de droits</p>
         <ul className="tna-links">
           <li>
             <a
@@ -49,9 +46,7 @@ const Advices = ({ hidden, setHidden }) => {
             >
               <ExternalSite />
               Pexels
-              <span className="tna-links-help">
-                {`${NBSP}(nouvel onglet)`}
-              </span>
+              <span className="tna-links-help">{`${NBSP}(nouvel onglet)`}</span>
             </a>
           </li>
           <li>
@@ -63,9 +58,7 @@ const Advices = ({ hidden, setHidden }) => {
             >
               <ExternalSite />
               Pixabay
-              <span className="tna-links-help">
-                {`${NBSP}(nouvel onglet)`}
-              </span>
+              <span className="tna-links-help">{`${NBSP}(nouvel onglet)`}</span>
             </a>
           </li>
           <li>
@@ -77,15 +70,11 @@ const Advices = ({ hidden, setHidden }) => {
             >
               <ExternalSite />
               Shutterstock
-              <span className="tna-links-help">
-                {`${NBSP}(nouvel onglet)`}
-              </span>
+              <span className="tna-links-help">{`${NBSP}(nouvel onglet)`}</span>
             </a>
           </li>
         </ul>
-        <p className="tna-title">
-          Gabarits
-        </p>
+        <p className="tna-title">Gabarits</p>
         <ul className="tna-links tna-download-links">
           <li>
             <a
@@ -94,9 +83,7 @@ const Advices = ({ hidden, setHidden }) => {
             >
               <Download />
               Gabarit Photoshop
-              <span className="tna-links-help">
-                {`${NBSP}(.psd, 116 Ko)`}
-              </span>
+              <span className="tna-links-help">{`${NBSP}(.psd, 116 Ko)`}</span>
             </a>
           </li>
           <li>
@@ -106,9 +93,7 @@ const Advices = ({ hidden, setHidden }) => {
             >
               <Download />
               Gabarit Illustrator
-              <span className="tna-links-help">
-                {`${NBSP}(.eps, 836 Ko)`}
-              </span>
+              <span className="tna-links-help">{`${NBSP}(.eps, 836 Ko)`}</span>
             </a>
           </li>
         </ul>

@@ -1,4 +1,4 @@
-import { Category } from "custom_types/categories"
+import { Category } from 'custom_types/categories'
 
 type CategoryExtend = Partial<Category> & { id: string }
 
@@ -10,5 +10,6 @@ const categoryFactory = (categoryExtend: CategoryExtend): Category => {
   }
 }
 
-export const categoriesFactory = (categoriesExtend: CategoryExtend[]): Category[] => 
-  categoriesExtend.map(categoryFactory)
+export const categoriesFactory = (
+  categoriesExtend: CategoryExtend[]
+): Category[] => categoriesExtend.map(categoryFactory)

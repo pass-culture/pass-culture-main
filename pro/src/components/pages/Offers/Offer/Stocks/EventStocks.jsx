@@ -5,7 +5,13 @@
  */
 
 import PropTypes from 'prop-types'
-import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { Link } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
@@ -38,7 +44,8 @@ const EventStocks = ({
 }) => {
   const offerId = offer.id
   const [isLoading, setIsLoading] = useState(true)
-  const [isSendingStocksOfferCreation, setIsSendingStocksOfferCreation] = useState(false)
+  const [isSendingStocksOfferCreation, setIsSendingStocksOfferCreation] =
+    useState(false)
   const [stocks, setStocks] = useState([])
   const isOfferSynchronized = Boolean(offer.lastProvider)
   const [formErrors, setFormErrors] = useState({})
@@ -49,10 +56,15 @@ const EventStocks = ({
     (keepCreationStocks = false) => {
       return pcapi.loadStocks(offerId).then(receivedStocks => {
         setStocks(oldStocks => {
-          const stocksOnCreation = keepCreationStocks ? oldStocks.filter(stock => !stock.id) : []
+          const stocksOnCreation = keepCreationStocks
+            ? oldStocks.filter(stock => !stock.id)
+            : []
           return [
             ...stocksOnCreation,
-            ...formatAndSortStocks(receivedStocks.stocks, offer.venue.departementCode),
+            ...formatAndSortStocks(
+              receivedStocks.stocks,
+              offer.venue.departementCode
+            ),
           ]
         })
         setIsLoading(false)
@@ -89,12 +101,21 @@ const EventStocks = ({
   }, [])
 
   const removeStockInCreation = useCallback(
-    key => setStocks(currentStocks => currentStocks.filter(stock => stock.key !== key)),
+    key =>
+      setStocks(currentStocks =>
+        currentStocks.filter(stock => stock.key !== key)
+      ),
     []
   )
 
-  const existingStocks = useMemo(() => stocks.filter(stock => stock.id !== undefined), [stocks])
-  const stocksInCreation = useMemo(() => stocks.filter(stock => stock.id === undefined), [stocks])
+  const existingStocks = useMemo(
+    () => stocks.filter(stock => stock.id !== undefined),
+    [stocks]
+  )
+  const stocksInCreation = useMemo(
+    () => stocks.filter(stock => stock.id === undefined),
+    [stocks]
+  )
 
   const updateStock = useCallback(updatedStockValues => {
     setStocks(currentStocks => {
@@ -119,7 +140,9 @@ const EventStocks = ({
         ? validateCreatedStock(stock, isEvent, isEducational)
         : validateUpdatedStock(stock, isEvent, isEducational)
       const stockHasErrors = Object.keys(stockErrors).length > 0
-      return stockHasErrors ? { ...stocksErrors, [stock.key]: stockErrors } : stocksErrors
+      return stockHasErrors
+        ? { ...stocksErrors, [stock.key]: stockErrors }
+        : stocksErrors
     }, {})
 
     const hasErrors = Object.values(stocksErrors).length > 0
@@ -139,13 +162,22 @@ const EventStocks = ({
 
   const submitStocks = useCallback(() => {
     const updatedStocks = existingStocks.filter(stock => stock.updated)
-    if (areValid([...stocksInCreation, ...updatedStocks], offer.isEvent, offer.isEducational)) {
+    if (
+      areValid(
+        [...stocksInCreation, ...updatedStocks],
+        offer.isEvent,
+        offer.isEducational
+      )
+    ) {
       setIsSendingStocksOfferCreation(true)
       const stocksToCreate = stocksInCreation.map(stockInCreation =>
         createEventStockPayload(stockInCreation, offer.venue.departementCode)
       )
       const stocksToUpdate = updatedStocks.map(updatedStock => {
-        const payload = createEventStockPayload(updatedStock, offer.venue.departementCode)
+        const payload = createEventStockPayload(
+          updatedStock,
+          offer.venue.departementCode
+        )
         payload.id = updatedStock.id
         return payload
       })
@@ -154,7 +186,9 @@ const EventStocks = ({
         .then(() => {
           if (isOfferDraft) {
             reloadOffer(true)
-            showSuccessNotification('Votre offre a bien été créée et vos stocks sauvegardés.')
+            showSuccessNotification(
+              'Votre offre a bien été créée et vos stocks sauvegardés.'
+            )
 
             const queryParams = queryParamsFromOfferer(location)
             let queryString = ''
@@ -210,14 +244,13 @@ const EventStocks = ({
 
       {isDisabled && <OfferStatusBanner status={offer.status} />}
 
-      <h3 className="section-title">
-        Stock et prix
-      </h3>
+      <h3 className="section-title">Stock et prix</h3>
 
       <div className="cancellation-information">
-        Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le
-        faire moins de 48h avant le début de l’événement. Si la date limite de réservation n’est pas
-        encore passée, la place est alors automatiquement remise en vente.
+        Les utilisateurs ont un délai de 48h pour annuler leur réservation mais
+        ne peuvent pas le faire moins de 48h avant le début de l’événement. Si
+        la date limite de réservation n’est pas encore passée, la place est
+        alors automatiquement remise en vente.
       </div>
       {hasNoStock ? (
         <button
@@ -243,29 +276,16 @@ const EventStocks = ({
           <table>
             <thead>
               <tr>
-                <th>
-                  Date
-                </th>
-                <th>
-                  Horaire
-                </th>
-                <th>
-                  Prix
-                </th>
-                <th>
-                  Date limite de réservation
-                </th>
-                <th>
-                  Quantité
-                </th>
-                {(stocksInCreation.length === 0 || existingStocks.length > 0) && (
+                <th>Date</th>
+                <th>Horaire</th>
+                <th>Prix</th>
+                <th>Date limite de réservation</th>
+                <th>Quantité</th>
+                {(stocksInCreation.length === 0 ||
+                  existingStocks.length > 0) && (
                   <Fragment>
-                    <th>
-                      Stock restant
-                    </th>
-                    <th>
-                      Réservations
-                    </th>
+                    <th>Stock restant</th>
+                    <th>Réservations</th>
                   </Fragment>
                 )}
                 <th />
@@ -311,10 +331,7 @@ const EventStocks = ({
           <div className="interval shadow" />
           <section className="actions-section">
             {!isOfferDraft && (
-              <Link
-                className="secondary-link"
-                to={editionOfferLink}
-              >
+              <Link className="secondary-link" to={editionOfferLink}>
                 Annuler et quitter
               </Link>
             )}

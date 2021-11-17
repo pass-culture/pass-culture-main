@@ -14,8 +14,11 @@ const getRequiredValidate = (required, type) => {
     type === 'boolean'
       ? createValidateRequiredBooleanField(errorMessage)
       : createValidateRequiredField(errorMessage, type)
-  const defaultRequiredValidate = (required && validateRequiredField) || undefined
-  const requiredValidate = requiredIsAFunction ? required : defaultRequiredValidate
+  const defaultRequiredValidate =
+    (required && validateRequiredField) || undefined
+  const requiredValidate = requiredIsAFunction
+    ? required
+    : defaultRequiredValidate
   return requiredValidate
 }
 

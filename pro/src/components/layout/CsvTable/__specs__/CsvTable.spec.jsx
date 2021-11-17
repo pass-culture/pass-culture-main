@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 import React from 'react'
@@ -28,7 +28,9 @@ describe('src | components | layout | CsvTable', () => {
       ],
       headers: ['column1', 'column2'],
     }
-    props.downloadFileOrNotifyAnError.mockReturnValue(Promise.resolve().then(() => dataFromCsv))
+    props.downloadFileOrNotifyAnError.mockReturnValue(
+      Promise.resolve().then(() => dataFromCsv)
+    )
   })
 
   describe('render', () => {
@@ -99,7 +101,7 @@ describe('src | components | layout | CsvTable', () => {
       // then
       const noDataContainer = wrapper.find('.no-data-container')
       expect(noDataContainer).toHaveLength(1)
-      expect(noDataContainer.text()).toBe("Il n’y a pas de données à afficher.")
+      expect(noDataContainer.text()).toBe('Il n’y a pas de données à afficher.')
     })
 
     it('should load data from csv when CsvTable component is mounted', async () => {

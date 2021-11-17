@@ -1,7 +1,7 @@
 /*
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 import React from 'react'
@@ -61,7 +61,7 @@ describe('src | components | OffererCreation', () => {
       const title = wrapper.find('Titles').props()
 
       // then
-      expect(title.title).toStrictEqual('Structure')
+      expect(title.title).toBe('Structure')
     })
 
     it('should display offerer creation form', () => {

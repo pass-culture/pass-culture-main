@@ -8,8 +8,10 @@ import { ReactComponent as MentalDisabilitySvg } from 'icons/mental-disability.s
 import { ReactComponent as MotorDisabilitySvg } from 'icons/motor-disability.svg'
 import { ReactComponent as VisualDisabilitySvg } from 'icons/visual-disability.svg'
 
-import { checkHasNoDisabilityCompliance, getAccessibilityValues } from './helpers'
-
+import {
+  checkHasNoDisabilityCompliance,
+  getAccessibilityValues,
+} from './helpers'
 
 const autoFillValues = function (formValues, field, value) {
   let noDisabilityCompliant = formValues.noDisabilityCompliant
@@ -33,16 +35,26 @@ const autoFillValues = function (formValues, field, value) {
     }
   } else {
     disabilityCompliantValues[field] = value
-    noDisabilityCompliant = checkHasNoDisabilityCompliance(disabilityCompliantValues)
+    noDisabilityCompliant = checkHasNoDisabilityCompliance(
+      disabilityCompliantValues
+    )
   }
 
   return { ...disabilityCompliantValues, noDisabilityCompliant }
 }
 
-const AccessibilityCheckboxList = ({ onChange, formValues, isInError, isDisabled, readOnly }) => {
+const AccessibilityCheckboxList = ({
+  onChange,
+  formValues,
+  isInError,
+  isDisabled,
+  readOnly,
+}) => {
   const handleChange = useCallback(
     event => {
-      onChange(autoFillValues(formValues, event.target.name, event.target.checked))
+      onChange(
+        autoFillValues(formValues, event.target.name, event.target.checked)
+      )
     },
     [formValues, onChange]
   )
@@ -100,9 +112,7 @@ const AccessibilityCheckboxList = ({ onChange, formValues, isInError, isDisabled
       />
 
       {isInError && (
-        <InputError>
-          Veuillez cocher au moins une option ci-dessus
-        </InputError>
+        <InputError>Veuillez cocher au moins une option ci-dessus</InputError>
       )}
     </>
   )

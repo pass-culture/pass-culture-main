@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
@@ -26,9 +26,7 @@ const Credit = ({ credit, setCredit, setStep, step }) => {
 
   return (
     <>
-      <div className="tnd-subtitle">
-        Crédit image et droits d’utilisation
-      </div>
+      <div className="tnd-subtitle">Crédit image et droits d’utilisation</div>
 
       <TextInput
         countCharacters
@@ -44,7 +42,8 @@ const Credit = ({ credit, setCredit, setStep, step }) => {
       />
 
       <div className="tnc-explanations">
-        En utilisant ce contenu, je certifie que je suis propriétaire ou que je dispose des autorisations nécessaires pour l’utilisation de celui-ci
+        En utilisant ce contenu, je certifie que je suis propriétaire ou que je
+        dispose des autorisations nécessaires pour l’utilisation de celui-ci
       </div>
 
       <div className="tnd-actions">

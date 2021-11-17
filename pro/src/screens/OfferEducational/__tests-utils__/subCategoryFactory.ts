@@ -1,36 +1,32 @@
 import merge from 'lodash/merge'
 
-import { SubCategory } from "custom_types/categories"
+import { SubCategory } from 'custom_types/categories'
 
 type SubCategoryExtend = Partial<SubCategory> & { id: string }
 
-const categoryFactory = (subCategoryExtend: SubCategoryExtend): SubCategory => 
+const categoryFactory = (subCategoryExtend: SubCategoryExtend): SubCategory =>
   merge(
     {},
     {
-      categoryId: "CINEMA",
-      matchingType: "EventType.CINEMA",
-      proLabel: "Cinéma plein air",
-      appLabel: "Cinéma plein air",
-      searchGroupName: "CINEMA",
+      categoryId: 'CINEMA',
+      matchingType: 'EventType.CINEMA',
+      proLabel: 'Cinéma plein air',
+      appLabel: 'Cinéma plein air',
+      searchGroupName: 'CINEMA',
       isEvent: true,
-      conditionalFields:  [
-        "author",
-        "visa",
-        "stageDirector",
-      ],
+      conditionalFields: ['author', 'visa', 'stageDirector'],
       canExpire: false,
       canBeDuo: true,
       canBeEducational: true,
-      onlineOfflinePlatform: "OFFLINE",
+      onlineOfflinePlatform: 'OFFLINE',
       isDigitalDeposit: false,
       isPhysicalDeposit: false,
-      reimbursementRule: "STANDARD",
+      reimbursementRule: 'STANDARD',
       isSelectable: true,
     },
     subCategoryExtend
   )
 
-
-export const subCategoriesFactory = (subCategoriesExtend: SubCategoryExtend[]): SubCategory[] => 
-  subCategoriesExtend.map(categoryFactory)
+export const subCategoriesFactory = (
+  subCategoriesExtend: SubCategoryExtend[]
+): SubCategory[] => subCategoriesExtend.map(categoryFactory)

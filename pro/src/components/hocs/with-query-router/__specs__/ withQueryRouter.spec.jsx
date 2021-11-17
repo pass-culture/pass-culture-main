@@ -1,7 +1,7 @@
 /*
-* @debt deprecated "Gaël: deprecated usage of withQueryRouter"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt deprecated "Gaël: deprecated usage of withQueryRouter"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 /* eslint-disable */
 import { mount, shallow } from 'enzyme'

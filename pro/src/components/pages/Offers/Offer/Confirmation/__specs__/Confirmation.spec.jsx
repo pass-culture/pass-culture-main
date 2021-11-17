@@ -28,21 +28,21 @@ describe('confirmation page', () => {
 
     // Then
     expect(screen.queryByText('active')).not.toBeInTheDocument()
-    expect(screen.getByText('Offre créée !', { selector: 'h2' })).toBeInTheDocument()
+    expect(
+      screen.getByText('Offre créée !', { selector: 'h2' })
+    ).toBeInTheDocument()
     expect(
       screen.getByText(
         'Votre offre est désormais disponible à la réservation sur l’application pass Culture.',
         { selector: 'p' }
       )
     ).toBeInTheDocument()
-    expect(screen.getByText('Prévisualiser dans l’app', { selector: 'a' })).toHaveAttribute(
-      'href',
-      `http://localhost/offre/details/${offer.id}`
-    )
-    expect(screen.getByText('Créer une nouvelle offre', { selector: 'a' })).toHaveAttribute(
-      'href',
-      '/offres/creation'
-    )
+    expect(
+      screen.getByText('Prévisualiser dans l’app', { selector: 'a' })
+    ).toHaveAttribute('href', `http://localhost/offre/details/${offer.id}`)
+    expect(
+      screen.getByText('Créer une nouvelle offre', { selector: 'a' })
+    ).toHaveAttribute('href', '/offres/creation')
   })
 
   it('should display the rights information when offer is pending', async () => {
@@ -55,21 +55,21 @@ describe('confirmation page', () => {
 
     // Then
     expect(screen.queryByText('active')).not.toBeInTheDocument()
-    expect(screen.getByText('Offre en cours de validation', { selector: 'h2' })).toBeInTheDocument()
+    expect(
+      screen.getByText('Offre en cours de validation', { selector: 'h2' })
+    ).toBeInTheDocument()
     expect(
       screen.getByText(
         'Votre offre est en cours de validation par l’équipe pass Culture, nous vérifions actuellement son éligibilité. Cette vérification pourra prendre jusqu’à 72h. Vous recevrez un email de confirmation une fois votre offre validée et disponible à la réservation.',
         { selector: 'p' }
       )
     ).toBeInTheDocument()
-    expect(screen.getByText('Prévisualiser dans l’app', { selector: 'a' })).toHaveAttribute(
-      'href',
-      `http://localhost/offre/details/${offer.id}`
-    )
-    expect(screen.getByText('Créer une nouvelle offre', { selector: 'a' })).toHaveAttribute(
-      'href',
-      '/offres/creation'
-    )
+    expect(
+      screen.getByText('Prévisualiser dans l’app', { selector: 'a' })
+    ).toHaveAttribute('href', `http://localhost/offre/details/${offer.id}`)
+    expect(
+      screen.getByText('Créer une nouvelle offre', { selector: 'a' })
+    ).toHaveAttribute('href', '/offres/creation')
   })
 
   it('should display right preview link when feature flip is active', async () => {
@@ -94,10 +94,9 @@ describe('confirmation page', () => {
 
     // Then
 
-    expect(screen.getByText('Prévisualiser dans l’app', { selector: 'a' })).toHaveAttribute(
-      'href',
-      `http://localhost/offre/${offer.nonHumanizedId}`
-    )
+    expect(
+      screen.getByText('Prévisualiser dans l’app', { selector: 'a' })
+    ).toHaveAttribute('href', `http://localhost/offre/${offer.nonHumanizedId}`)
   })
 
   it('should redirect to offer edition when the offer is not a draft', async () => {
@@ -107,7 +106,10 @@ describe('confirmation page', () => {
 
     // When
     await renderOffer({
-      pathname: [`/offres/${offer.id}/edition`, `/offres/${offer.id}/confirmation`],
+      pathname: [
+        `/offres/${offer.id}/edition`,
+        `/offres/${offer.id}/confirmation`,
+      ],
     })
 
     // Then
@@ -126,9 +128,8 @@ describe('confirmation page', () => {
     })
 
     // Then
-    expect(screen.getByText('Créer une nouvelle offre', { selector: 'a' })).toHaveAttribute(
-      'href',
-      '/offres/creation?structure=OFFERER1&lieu=VENUE1'
-    )
+    expect(
+      screen.getByText('Créer une nouvelle offre', { selector: 'a' })
+    ).toHaveAttribute('href', '/offres/creation?structure=OFFERER1&lieu=VENUE1')
   })
 })

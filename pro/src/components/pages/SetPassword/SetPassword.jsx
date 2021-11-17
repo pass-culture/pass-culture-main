@@ -1,8 +1,8 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt deprecated "Gaël: deprecated usage of react-final-form"
-* @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form"
+ * @debt deprecated "Gaël: deprecated usage of react-final-form custom fields"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, Fragment, useState } from 'react'
@@ -15,9 +15,12 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
 import { setPassword } from 'repository/pcapi/pcapi'
 
-export const INVALID_FORM_MESSAGE = "Une erreur s'est produite, veuillez corriger le formulaire."
-export const UNKNOWN_ERROR_MESSAGE = "Une erreur s'est produite, veuillez contacter le support."
-export const DIFFERENT_PASSWORDS_ERROR_MESSAGE = 'Les deux mots de passe ne sont pas identiques'
+export const INVALID_FORM_MESSAGE =
+  "Une erreur s'est produite, veuillez corriger le formulaire."
+export const UNKNOWN_ERROR_MESSAGE =
+  "Une erreur s'est produite, veuillez contacter le support."
+export const DIFFERENT_PASSWORDS_ERROR_MESSAGE =
+  'Les deux mots de passe ne sont pas identiques'
 
 export const SetPassword = props => {
   const { currentUser, history, match, showNotification } = props
@@ -84,34 +87,21 @@ export const SetPassword = props => {
     <Fragment>
       <PageTitle title="Définition du mot de passe" />
       <div className="logo-side">
-        <Logo
-          noLink
-          signPage
-        />
+        <Logo noLink signPage />
       </div>
       <div className="scrollable-content-side">
-        <div
-          className="content"
-          id="override-content-width"
-        >
+        <div className="content" id="override-content-width">
           {token && (
             <section className="password-set-request-form">
               <div>
-                <h1>
-                  Bienvenue sur l’espace dédié aux acteurs culturels
-                </h1>
+                <h1>Bienvenue sur l’espace dédié aux acteurs culturels</h1>
                 <h2>
-                  Pour accéder à votre espace, merci de définir votre mot de passe.
+                  Pour accéder à votre espace, merci de définir votre mot de
+                  passe.
                 </h2>
-                <Form
-                  onSubmit={submitSetFirstPassword}
-                  validate={validateForm}
-                >
+                <Form onSubmit={submitSetFirstPassword} validate={validateForm}>
                   {({ handleSubmit, errors }) => (
-                    <form
-                      className="set-password-form"
-                      onSubmit={handleSubmit}
-                    >
+                    <form className="set-password-form" onSubmit={handleSubmit}>
                       <PasswordField
                         errors={getPasswordErrors(errors)}
                         label="Mot de passe"
@@ -134,8 +124,8 @@ export const SetPassword = props => {
                           type="checkbox"
                         />
                         <span>
-                          J’accepte d’être contacté par e-mail pour donner mon avis sur le pass
-                          Culture
+                          J’accepte d’être contacté par e-mail pour donner mon
+                          avis sur le pass Culture
                         </span>
                       </label>
                       <LegalInfos

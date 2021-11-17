@@ -1,10 +1,13 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ */
 
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
-import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
+import {
+  ALL_OFFERERS,
+  DEFAULT_SEARCH_FILTERS,
+} from 'components/pages/Offers/Offers/_constants'
 import {
   getBooking,
   generateOffererApiKey,
@@ -231,9 +234,12 @@ describe('pcapi', () => {
       validateDistantImage(url)
 
       // then
-      expect(client.post).toHaveBeenCalledWith(`/offers/thumbnail-url-validation`, {
-        url: url,
-      })
+      expect(client.post).toHaveBeenCalledWith(
+        `/offers/thumbnail-url-validation`,
+        {
+          url: url,
+        }
+      )
     })
   })
 
@@ -254,7 +260,10 @@ describe('pcapi', () => {
       postThumbnail('AA', 'Mon crédit', file, '', '12', '32', '350')
 
       // then
-      expect(client.postWithFormData).toHaveBeenCalledWith(`/offers/thumbnails`, body)
+      expect(client.postWithFormData).toHaveBeenCalledWith(
+        `/offers/thumbnails`,
+        body
+      )
     })
   })
 
@@ -502,7 +511,9 @@ describe('pcapi', () => {
       invalidateBooking('A5DS6Q')
 
       // Then
-      expect(client.patch).toHaveBeenCalledWith('/v2/bookings/keep/token/A5DS6Q')
+      expect(client.patch).toHaveBeenCalledWith(
+        '/v2/bookings/keep/token/A5DS6Q'
+      )
     })
   })
 })

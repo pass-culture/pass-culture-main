@@ -1,6 +1,6 @@
 /*
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import { render, screen, fireEvent, act } from '@testing-library/react'
@@ -13,33 +13,18 @@ import RouteLeavingGuard from '../RouteLeavingGuard'
 
 const MiniAppTest = () => (
   <div>
-    <Link to="/">
-      Home
-    </Link>
-    <Link to="/about">
-      About
-    </Link>
-    <Link to="/contact">
-      Contact
-    </Link>
+    <Link to="/">Home</Link>
+    <Link to="/about">About</Link>
+    <Link to="/contact">Contact</Link>
     <Switch>
-      <Route
-        exact
-        path="/"
-      >
-        <div>
-          Home page
-        </div>
+      <Route exact path="/">
+        <div>Home page</div>
       </Route>
       <Route path="/about">
-        <div>
-          About page
-        </div>
+        <div>About page</div>
       </Route>
       <Route path="/contact">
-        <div>
-          Contact page
-        </div>
+        <div>Contact page</div>
       </Route>
     </Switch>
   </div>
@@ -50,9 +35,7 @@ const renderRouteLeavingGuard = async (props, history) => {
     await render(
       <Router history={history}>
         <MiniAppTest />
-        <RouteLeavingGuard {...props}>
-          {props.children}
-        </RouteLeavingGuard>
+        <RouteLeavingGuard {...props}>{props.children}</RouteLeavingGuard>
       </Router>
     )
   })
@@ -80,7 +63,9 @@ describe('src | components | layout | RouteLeavingGuard', () => {
     await fireEvent.click(aboutPageLink)
 
     // Then
-    expect(screen.getByText('Voulez-vous quitter la page actuelle ?')).toBeInTheDocument()
+    expect(
+      screen.getByText('Voulez-vous quitter la page actuelle ?')
+    ).toBeInTheDocument()
   })
 
   it("should not display the confirmation model before redirection when it's not activated", async () => {
@@ -93,7 +78,9 @@ describe('src | components | layout | RouteLeavingGuard', () => {
     await fireEvent.click(aboutPageLink)
 
     //Then
-    expect(screen.queryByText('Voulez-vous quitter la page actuelle ?')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Voulez-vous quitter la page actuelle ?')
+    ).not.toBeInTheDocument()
     expect(screen.getByText('About page')).toBeInTheDocument()
   })
 
@@ -149,6 +136,8 @@ describe('src | components | layout | RouteLeavingGuard', () => {
     await fireEvent.click(aboutPageLink)
 
     // Then
-    expect(screen.getByText('Voulez-vous quitter la page actuelle ?')).toBeInTheDocument()
+    expect(
+      screen.getByText('Voulez-vous quitter la page actuelle ?')
+    ).toBeInTheDocument()
   })
 })

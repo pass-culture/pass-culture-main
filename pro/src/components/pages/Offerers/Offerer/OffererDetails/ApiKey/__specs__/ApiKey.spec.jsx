@@ -1,8 +1,8 @@
 /*
-* @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt deprecated "Gaël: deprecated usage of redux-saga-data"
-*/
+ * @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt deprecated "Gaël: deprecated usage of redux-saga-data"
+ */
 
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -13,7 +13,10 @@ import * as reduxSagaData from 'redux-saga-data'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as notificationReducer from 'store/reducers/notificationReducer'
 import { configureTestStore } from 'store/testUtils'
-import { failToGenerateOffererApiKey, generateFakeOffererApiKey } from 'utils/fakeApi'
+import {
+  failToGenerateOffererApiKey,
+  generateFakeOffererApiKey,
+} from 'utils/fakeApi'
 import { offererNormalizer } from 'utils/normalizers'
 
 import ApiKey from '../ApiKeyContainer'
@@ -66,7 +69,9 @@ describe('src | Offerer | ApiKey', () => {
     })
 
     // then
-    expect(screen.getByText('Générer une clé API', { selector: 'button' })).toBeDisabled()
+    expect(
+      screen.getByText('Générer une clé API', { selector: 'button' })
+    ).toBeDisabled()
   })
 
   it('should generate a new key', async () => {
@@ -75,7 +80,9 @@ describe('src | Offerer | ApiKey', () => {
     generateFakeOffererApiKey('new-key')
 
     // when
-    fireEvent.click(screen.getByText('Générer une clé API', { selector: 'button' }))
+    fireEvent.click(
+      screen.getByText('Générer une clé API', { selector: 'button' })
+    )
 
     // then
     await waitFor(() => expect(screen.getByText('new-key')).toBeInTheDocument())
@@ -86,25 +93,34 @@ describe('src | Offerer | ApiKey', () => {
     await renderApiKey()
     jest.spyOn(navigator.clipboard, 'writeText')
     generateFakeOffererApiKey('new-key')
-    fireEvent.click(screen.getByText('Générer une clé API', { selector: 'button' }))
+    fireEvent.click(
+      screen.getByText('Générer une clé API', { selector: 'button' })
+    )
     await waitFor(() => screen.getByText('Copier', { selector: 'button' }))
 
     // when
     fireEvent.click(screen.getByText('Copier', { selector: 'button' }))
 
     // then
-    await waitFor(() => expect(navigator.clipboard.writeText).toHaveBeenCalledWith('new-key'))
+    await waitFor(() =>
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith('new-key')
+    )
   })
 
   it('should display an error when the api call fails', async () => {
     // given
     await renderApiKey()
 
-    const showNotificationSpy = jest.spyOn(notificationReducer, 'showNotification')
+    const showNotificationSpy = jest.spyOn(
+      notificationReducer,
+      'showNotification'
+    )
     failToGenerateOffererApiKey()
 
     // when
-    fireEvent.click(screen.getByText('Générer une clé API', { selector: 'button' }))
+    fireEvent.click(
+      screen.getByText('Générer une clé API', { selector: 'button' })
+    )
 
     // then
     await waitFor(() =>
@@ -117,7 +133,9 @@ describe('src | Offerer | ApiKey', () => {
 
   it('should not delete key on modal dismiss', async () => {
     await renderApiKey()
-    const deleteSpy = jest.spyOn(pcapi, 'deleteOffererApiKey').mockReturnValue(null)
+    const deleteSpy = jest
+      .spyOn(pcapi, 'deleteOffererApiKey')
+      .mockReturnValue(null)
     const requestDataSpy = jest.spyOn(reduxSagaData, 'requestData')
     fireEvent.click(screen.getByText('supprimer'))
 
@@ -133,12 +151,16 @@ describe('src | Offerer | ApiKey', () => {
 
   it('should delete a key on modal confirm', async () => {
     await renderApiKey()
-    const deleteSpy = jest.spyOn(pcapi, 'deleteOffererApiKey').mockReturnValue(null)
+    const deleteSpy = jest
+      .spyOn(pcapi, 'deleteOffererApiKey')
+      .mockReturnValue(null)
     const requestDataSpy = jest.spyOn(reduxSagaData, 'requestData')
     fireEvent.click(screen.getByText('supprimer'))
 
     // when
-    fireEvent.click(screen.getByText('Confirmer la suppression', { selector: 'button' }))
+    fireEvent.click(
+      screen.getByText('Confirmer la suppression', { selector: 'button' })
+    )
 
     // then
     expect(deleteSpy).toHaveBeenCalledWith('key-prefix1')

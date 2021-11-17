@@ -9,7 +9,9 @@ const comonConfig = {
     'plugin:jest/all',
     'plugin:pass-culture/recommended',
     'plugin:react-hooks/recommended',
+    'plugin:prettier/recommended',
   ],
+  parser: '@typescript-eslint/parser',
   env: {
     browser: true,
     es6: true,
@@ -19,14 +21,8 @@ const comonConfig = {
   globals: {
     fixture: 'readonly',
   },
-  parser: '@typescript-eslint/parser',
-  plugins: ['only-warn'],
   rules: {
-    indent: [
-      'warn',
-      2,
-      { ignoredNodes: ['JSXElement'], offsetTernaryExpressions: true, SwitchCase: 1 },
-    ],
+    indent: 'off',
     'import/order': [
       'warn',
       {
@@ -55,7 +51,6 @@ const comonConfig = {
     'react/jsx-curly-brace-presence': [2, { props: 'never', children: 'never' }],
     'react/jsx-filename-extension': [1, { extensions: ['.jsx', '.tsx'] }],
     'react/jsx-fragments': 'off',
-    'react/jsx-indent': [2, 2, { indentLogicalExpressions: true }],
     'react/jsx-indent-props': [2, 2],
     'react/jsx-handler-names': 'off',
     'react/jsx-max-depth': 'off',
@@ -71,7 +66,6 @@ const comonConfig = {
         arrow: 'parens-new-line',
         condition: 'parens-new-line',
         logical: 'parens-new-line',
-        prop: 'parens-new-line',
       },
     ],
     'react/no-set-state': 'off',
@@ -80,6 +74,15 @@ const comonConfig = {
     'react/static-property-placement': 'off',
     'react/jsx-child-element-spacing': 'off',
     semi: ['warn', 'never'],
+    'react/no-unescaped-entities': 'off',
+    'jest/max-nested-describe': [
+      'error',
+      {
+        max: 6,
+      },
+    ],
+    'jest/require-hook': 'off',
+    'no-irregular-whitespace': 'off',
   },
   overrides: [
     {
@@ -96,14 +99,13 @@ const comonConfig = {
     {
       files: ['**/pages/Styleguide/**/*'],
       rules: {
-        'react/no-unescaped-entities': 'off',
         'react/jsx-child-element-spacing': 'off',
       },
     },
     {
       files: ['**/*.ts?(x)'],
       plugins: ['@typescript-eslint/eslint-plugin'],
-      extends: ['plugin:@typescript-eslint/recommended'],
+      extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
       rules: {
         'react/prop-types': 'off',
         'react/require-default-props': 'off',

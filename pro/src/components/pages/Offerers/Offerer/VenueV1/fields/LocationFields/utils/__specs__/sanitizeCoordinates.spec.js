@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import sanitizeCoordinates from '../sanitizeCoordinates'
 
@@ -12,7 +12,7 @@ describe('components | pages | Venue | GeoFields | sanitizeCoordinates', () => 
     // when
     let result = sanitizeCoordinates(input)
     // then
-    expect(result).toStrictEqual(0)
+    expect(result).toBe(0)
   })
   it('should return a number when given an int', () => {
     // given
@@ -38,7 +38,7 @@ describe('components | pages | Venue | GeoFields | sanitizeCoordinates', () => 
     // when
     let result = sanitizeCoordinates(input)
     // then
-    expect(result).toStrictEqual(32.2)
+    expect(result).toBe(32.2)
     expect(typeof result).toBe('number')
   })
   it('should translate french notation (coma) to english (dot)', () => {
@@ -47,7 +47,7 @@ describe('components | pages | Venue | GeoFields | sanitizeCoordinates', () => 
     // when
     let result = sanitizeCoordinates(input)
     // then
-    expect(result).toStrictEqual(32.2)
+    expect(result).toBe(32.2)
     expect(typeof result).toBe('number')
   })
   it('should ignore and remove special chars', () => {
@@ -56,7 +56,7 @@ describe('components | pages | Venue | GeoFields | sanitizeCoordinates', () => 
     // when
     let result = sanitizeCoordinates(input)
     // then
-    expect(result).toStrictEqual(322)
+    expect(result).toBe(322)
     expect(typeof result).toBe('number')
   })
   it('should return negative value for negative string value with dot', () => {

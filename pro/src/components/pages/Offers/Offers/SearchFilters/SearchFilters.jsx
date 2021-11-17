@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import { endOfDay } from 'date-fns'
 import { utcToZonedTime } from 'date-fns-tz'
@@ -13,7 +13,10 @@ import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelect
 import Select from 'components/layout/inputs/Select'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { fetchAllVenuesByProUser, formatAndOrderVenues } from 'repository/venuesService'
+import {
+  fetchAllVenuesByProUser,
+  formatAndOrderVenues,
+} from 'repository/venuesService'
 import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
 
 import {
@@ -41,7 +44,11 @@ const SearchFilters = ({
         id: categories.id,
         displayName: categories.proLabel,
       }))
-      setCategoriesOptions(categoriesOptions.sort((a, b) => a.displayName.localeCompare(b.displayName)))
+      setCategoriesOptions(
+        categoriesOptions.sort((a, b) =>
+          a.displayName.localeCompare(b.displayName)
+        )
+      )
     })
     fetchAllVenuesByProUser(offerer?.id).then(venues =>
       setVenueOptions(formatAndOrderVenues(venues))
@@ -50,7 +57,10 @@ const SearchFilters = ({
 
   const updateSearchFilters = useCallback(
     newSearchFilters => {
-      setSearchFilters(currentSearchFilters => ({ ...currentSearchFilters, ...newSearchFilters }))
+      setSearchFilters(currentSearchFilters => ({
+        ...currentSearchFilters,
+        ...newSearchFilters,
+      }))
     },
     [setSearchFilters]
   )
@@ -116,14 +126,8 @@ const SearchFilters = ({
       {offerer && (
         <span className="offerer-filter">
           {offerer.name}
-          <button
-            onClick={removeOfferer}
-            type="button"
-          >
-            <Icon
-              alt="Supprimer le filtre par structure"
-              svg="ico-close-b"
-            />
+          <button onClick={removeOfferer} type="button">
+            <Icon alt="Supprimer le filtre par structure" svg="ico-close-b" />
           </button>
         </span>
       )}
@@ -190,10 +194,7 @@ const SearchFilters = ({
         </div>
         <div className="search-separator">
           <div className="separator" />
-          <button
-            className="primary-button"
-            type="submit"
-          >
+          <button className="primary-button" type="submit">
             Lancer la recherche
           </button>
           <div className="separator" />

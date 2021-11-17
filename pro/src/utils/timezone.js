@@ -5,8 +5,13 @@ export const formatLocalTimeDateString = (
   departementCode,
   dateFormat = 'EEEE dd/MM/yyyy à HH:mm'
 ) => {
-  const zonedDate = getLocalDepartementDateTimeFromUtc(dateIsoString, departementCode)
-  return format(zonedDate, dateFormat, { timeZone: getDepartmentTimezone(departementCode) })
+  const zonedDate = getLocalDepartementDateTimeFromUtc(
+    dateIsoString,
+    departementCode
+  )
+  return format(zonedDate, dateFormat, {
+    timeZone: getDepartmentTimezone(departementCode),
+  })
 }
 
 export const getLocalDepartementDateTimeFromUtc = (date, departementCode) => {
@@ -17,8 +22,10 @@ export const getLocalDepartementDateTimeFromUtc = (date, departementCode) => {
   }
 }
 
-export const getUtcDateTimeFromLocalDepartement = (zonedDate, departementCode) =>
-  zonedTimeToUtc(zonedDate, getDepartmentTimezone(departementCode))
+export const getUtcDateTimeFromLocalDepartement = (
+  zonedDate,
+  departementCode
+) => zonedTimeToUtc(zonedDate, getDepartmentTimezone(departementCode))
 
 // Cayenne              UTC          Paris                St Denis
 //    | ---------------- | ----------- | --------------------|

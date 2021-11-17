@@ -1,7 +1,7 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -11,9 +11,8 @@ import Banner from 'components/layout/Banner/Banner'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
-import ConfirmDialog from "new_components/ConfirmDialog"
+import ConfirmDialog from 'new_components/ConfirmDialog'
 import { formatLocalTimeDateString } from 'utils/timezone'
-
 
 class Desk extends Component {
   constructor(props) {
@@ -43,10 +42,10 @@ class Desk extends Component {
     !booking.datetime
       ? 'Permanent'
       : formatLocalTimeDateString(
-        booking.datetime,
-        booking.venueDepartementCode,
-        "dd/MM/yyyy - HH'h'mm"
-      )
+          booking.datetime,
+          booking.venueDepartementCode,
+          "dd/MM/yyyy - HH'h'mm"
+        )
 
   firstErrorMessageFromApi = body => Object.keys(body)[0]
 
@@ -137,9 +136,9 @@ class Desk extends Component {
       return {
         canCheckTheToken: false,
         level: '',
-        message: `Caractères restants : ${this.TOKEN_MAX_LENGTH - token.length}/${
-          this.TOKEN_MAX_LENGTH
-        }`,
+        message: `Caractères restants : ${
+          this.TOKEN_MAX_LENGTH - token.length
+        }/${this.TOKEN_MAX_LENGTH}`,
       }
     }
 
@@ -206,7 +205,7 @@ class Desk extends Component {
     this.setState({ openDialog: false })
   }
 
-  openDeskConfirmDialog = (event) => {
+  openDeskConfirmDialog = event => {
     event.preventDefault()
     this.setState({ openDialog: true })
   }
@@ -214,16 +213,17 @@ class Desk extends Component {
     this.setState({ openDialog: false })
   }
 
-
   render() {
-    const { booking, isDisabledButton, isUsedToken, level, message, token } = this.state
+    const { booking, isDisabledButton, isUsedToken, level, message, token } =
+      this.state
 
     return (
       <AppLayout layoutConfig={{ pageName: 'desk' }}>
         <PageTitle title="Guichet" />
         <Titles title="Guichet" />
         <p className="advice">
-          Saisissez les contremarques présentées par les bénéficiaires afin de les valider ou de les invalider.
+          Saisissez les contremarques présentées par les bénéficiaires afin de
+          les valider ou de les invalider.
         </p>
         <form>
           <TextInput
@@ -243,45 +243,27 @@ class Desk extends Component {
               className="booking-summary"
             >
               <div>
-                <div className="desk-label">
-                  {'Utilisateur : '}
-                </div>
-                <div className="desk-value">
-                  {booking.userName}
-                </div>
+                <div className="desk-label">{'Utilisateur : '}</div>
+                <div className="desk-value">{booking.userName}</div>
               </div>
               <div>
-                <div className="desk-label">
-                  {'Offre : '}
-                </div>
-                <div className="desk-value">
-                  {booking.offerName}
-                </div>
+                <div className="desk-label">{'Offre : '}</div>
+                <div className="desk-value">{booking.offerName}</div>
               </div>
               <div>
-                <div className="desk-label">
-                  {'Date de l’offre : '}
-                </div>
+                <div className="desk-label">{'Date de l’offre : '}</div>
                 <div className="desk-value">
                   {this.formattedBookingDate(booking)}
                 </div>
               </div>
               <div>
-                <div className="desk-label">
-                  {'Prix : '}
-                </div>
-                <div className="desk-value">
-                  {`${booking.price} €`}
-                </div>
+                <div className="desk-label">{'Prix : '}</div>
+                <div className="desk-value">{`${booking.price} €`}</div>
               </div>
               {booking.ean13 !== null && (
                 <div>
-                  <div className="desk-label">
-                    {'ISBN : '}
-                  </div>
-                  <div className="desk-value">
-                    {booking.ean13}
-                  </div>
+                  <div className="desk-label">{'ISBN : '}</div>
+                  <div className="desk-value">{booking.ean13}</div>
                 </div>
               )}
             </div>
@@ -306,8 +288,8 @@ class Desk extends Component {
                 title="Voulez-vous vraiment invalider cette contremarque ?"
               >
                 <p>
-                  Cette contremarque a déjà été validée. Si vous l’invalidez, la réservation ne
-                  vous sera pas remboursée.
+                  Cette contremarque a déjà été validée. Si vous l’invalidez, la
+                  réservation ne vous sera pas remboursée.
                 </p>
               </ConfirmDialog>
             )}
@@ -336,7 +318,8 @@ class Desk extends Component {
             type="notification-info"
           >
             <strong>
-              N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque.
+              N’oubliez pas de vérifier l’identité du bénéficiaire avant de
+              valider la contremarque.
             </strong>
             {
               ' Les pièces d’identité doivent impérativement être présentées physiquement. Merci de ne pas accepter les pièces d’identité au format numérique.'

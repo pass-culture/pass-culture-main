@@ -1,6 +1,6 @@
 /*
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import React from 'react'
 

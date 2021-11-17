@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -38,25 +38,25 @@ const OffersTableHead = ({
         </th>
         <th
           className={`th-checkbox-label ${
-            isAdminForbidden(savedSearchFilters) || !areOffersPresent ? 'label-disabled' : ''
+            isAdminForbidden(savedSearchFilters) || !areOffersPresent
+              ? 'label-disabled'
+              : ''
           }`}
         >
           <label
             htmlFor="select-offer-checkbox"
             title={
-              isAdminForbidden(savedSearchFilters) ? ADMINS_DISABLED_FILTERS_MESSAGE : undefined
+              isAdminForbidden(savedSearchFilters)
+                ? ADMINS_DISABLED_FILTERS_MESSAGE
+                : undefined
             }
           >
             {areAllOffersSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
           </label>
         </th>
         <th />
-        <th>
-          Lieu
-        </th>
-        <th>
-          Stock
-        </th>
+        <th>Lieu</th>
+        <th>Stock</th>
         <th className="th-with-filter">
           <StatusFiltersButton
             applyFilters={applyFilters}

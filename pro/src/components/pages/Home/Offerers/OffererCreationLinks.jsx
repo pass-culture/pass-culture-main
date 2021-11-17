@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import React from 'react'
 import { Link } from 'react-router-dom'
@@ -11,26 +11,19 @@ const OffererCreationLinks = () => (
     data-testid="offerers-creation-links-card"
   >
     <div className="h-card-inner">
-      <h3 className="h-card-title">
-        Structures
-      </h3>
+      <h3 className="h-card-title">Structures</h3>
 
       <div className="h-card-content">
         <p>
-          Votre précédente structure a été supprimée. Pour plus d’informations sur la suppression et vos données, veuillez contacter notre support.
+          Votre précédente structure a été supprimée. Pour plus d’informations
+          sur la suppression et vos données, veuillez contacter notre support.
         </p>
 
         <div className="actions-container">
-          <Link
-            className="primary-link"
-            to="/structures/creation"
-          >
+          <Link className="primary-link" to="/structures/creation">
             Ajouter une nouvelle structure
           </Link>
-          <a
-            className="secondary-link"
-            href="mailto:support@passculture.app"
-          >
+          <a className="secondary-link" href="mailto:support@passculture.app">
             Contacter le support
           </a>
         </div>

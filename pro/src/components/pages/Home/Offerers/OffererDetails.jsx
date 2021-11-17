@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
@@ -43,10 +43,7 @@ const OffererDetails = ({
   }, [selectedOfferer])
 
   return (
-    <div
-      className="h-card h-card-secondary"
-      data-testid="offerrer-wrapper"
-    >
+    <div className="h-card h-card-secondary" data-testid="offerrer-wrapper">
       <div className={`h-card-inner${isExpanded ? '' : ' h-no-bottom'}`}>
         <div className="od-header">
           <Select
@@ -92,11 +89,7 @@ const OffererDetails = ({
               Modifier
             </Link>
           ) : (
-            <button
-              className="tertiary-button"
-              disabled
-              type="button"
-            >
+            <button className="tertiary-button" disabled type="button">
               <Icon svg="ico-outer-pen" />
               Modifier
             </button>
@@ -120,27 +113,21 @@ const OffererDetails = ({
                   <div className="h-card-content">
                     <ul className="h-description-list">
                       <li className="h-dl-row">
-                        <span className="h-dl-title">
-                          Siren :
-                        </span>
+                        <span className="h-dl-title">Siren :</span>
                         <span className="h-dl-description">
                           {selectedOfferer.siren}
                         </span>
                       </li>
 
                       <li className="h-dl-row">
-                        <span className="h-dl-title">
-                          Désignation :
-                        </span>
+                        <span className="h-dl-title">Désignation :</span>
                         <span className="h-dl-description">
                           {selectedOfferer.name}
                         </span>
                       </li>
 
                       <li className="h-dl-row">
-                        <span className="h-dl-title">
-                          {'Siège social : '}
-                        </span>
+                        <span className="h-dl-title">{'Siège social : '}</span>
                         <address className="od-address">
                           {selectedOfferer.address}
                           {selectedOfferer.hasMissingBankInformation && <br />}
@@ -152,15 +139,17 @@ const OffererDetails = ({
                 </div>
                 {(selectedOfferer.hasMissingBankInformation ||
                   hasRejectedOrDraftOffererBankInformations) && (
-                    <div className="h-card-col">
-                      <BankInformations
-                        hasMissingBankInformation={selectedOfferer.hasMissingBankInformation}
-                        hasRejectedOrDraftOffererBankInformations={
-                          hasRejectedOrDraftOffererBankInformations
-                        }
-                        offerer={selectedOfferer}
-                      />
-                    </div>
+                  <div className="h-card-col">
+                    <BankInformations
+                      hasMissingBankInformation={
+                        selectedOfferer.hasMissingBankInformation
+                      }
+                      hasRejectedOrDraftOffererBankInformations={
+                        hasRejectedOrDraftOffererBankInformations
+                      }
+                      offerer={selectedOfferer}
+                    />
+                  </div>
                 )}
               </div>
             )}

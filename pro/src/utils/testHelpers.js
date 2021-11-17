@@ -1,6 +1,6 @@
 /*
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import { render } from '@testing-library/react'
 import omit from 'lodash.omit'
@@ -15,12 +15,15 @@ export const queryCallbacks = {
   queryByTextWithChildren: (searchString, leafOnly = true) => {
     return (_content, node) => {
       const hasText = node =>
-        node.textContent === searchString || node.textContent.match(searchString)
+        node.textContent === searchString ||
+        node.textContent.match(searchString)
       const nodeHasText = hasText(node)
 
       // Parent node also have 'searchString' as textContent.
       // We only wanna return true for the leafs.
-      const childrenDontHaveText = Array.from(node.children).every(child => !hasText(child))
+      const childrenDontHaveText = Array.from(node.children).every(
+        child => !hasText(child)
+      )
 
       return nodeHasText && (!leafOnly || childrenDontHaveText)
     }
@@ -43,10 +46,17 @@ export function renderWithStyles(ui, options = {}) {
     let stylesData = `
     @import 'src/styles/variables/index';
     ${options.stylesheet ? `@import 'src/styles/${options.stylesheet}';` : ''}
-    ${options.componentStylesheet ? `@import 'src/${options.componentStylesheet}';` : ''}
+    ${
+      options.componentStylesheet
+        ? `@import 'src/${options.componentStylesheet}';`
+        : ''
+    }
     `
 
-    const styles = sass.renderSync({ data: stylesData, outputStyle: 'compressed' })
+    const styles = sass.renderSync({
+      data: stylesData,
+      outputStyle: 'compressed',
+    })
 
     const styleElement = document.createElement('style')
     styleElement.innerHTML = styles.css.toString()
@@ -64,7 +74,10 @@ export function renderWithStyles(ui, options = {}) {
   Think of it as a custom implementation of react-testing-library's waitFor that
   also works for Enzyme.
 */
-export async function enzymeWaitFor(callback, { interval = 50, timeout = 1000 } = {}) {
+export async function enzymeWaitFor(
+  callback,
+  { interval = 50, timeout = 1000 } = {}
+) {
   await act(async function () {
     const startTime = Date.now()
 

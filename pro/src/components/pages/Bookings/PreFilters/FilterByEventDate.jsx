@@ -16,16 +16,15 @@ registerLocale('fr', fr)
 const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
   function handleOfferDateChange(offerEventDate) {
     updateFilters({
-      offerEventDate: offerEventDate ? offerEventDate : DEFAULT_PRE_FILTERS.offerEventDate,
+      offerEventDate: offerEventDate
+        ? offerEventDate
+        : DEFAULT_PRE_FILTERS.offerEventDate,
     })
   }
 
   return (
     <div className="pf-offer-date">
-      <label
-        className="pf-offer-date-label"
-        htmlFor="select-filter-date"
-      >
+      <label className="pf-offer-date-label" htmlFor="select-filter-date">
         Date de l’évènement
       </label>
       <div className="pf-offer-date-picker">
@@ -44,7 +43,9 @@ const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
           }
           placeholderText="JJ/MM/AAAA"
           selected={
-            selectedOfferDate === DEFAULT_PRE_FILTERS.offerEventDate ? '' : selectedOfferDate
+            selectedOfferDate === DEFAULT_PRE_FILTERS.offerEventDate
+              ? ''
+              : selectedOfferDate
           }
         />
       </div>
@@ -53,7 +54,8 @@ const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
 }
 
 FilterByEventDate.propTypes = {
-  selectedOfferDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]).isRequired,
+  selectedOfferDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string])
+    .isRequired,
   updateFilters: PropTypes.func.isRequired,
 }
 

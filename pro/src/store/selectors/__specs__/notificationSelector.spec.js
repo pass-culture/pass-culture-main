@@ -15,7 +15,9 @@ describe('src | selectors | notification', () => {
 
     it('should return notification details when notification is stored', () => {
       // given
-      const state = { notification: { type: 'success', text: 'My success message' } }
+      const state = {
+        notification: { type: 'success', text: 'My success message' },
+      }
 
       // when
       const notification = notificationSelector(state)

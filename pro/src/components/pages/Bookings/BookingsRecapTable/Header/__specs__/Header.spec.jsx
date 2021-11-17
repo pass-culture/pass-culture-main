@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
@@ -79,6 +79,8 @@ describe("bookings recap table's header", () => {
     renderHeader(props)
 
     // Then
-    expect(screen.getByText('Chargement des réservations...')).toBeInTheDocument()
+    expect(
+      screen.getByText('Chargement des réservations...')
+    ).toBeInTheDocument()
   })
 })

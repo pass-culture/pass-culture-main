@@ -18,7 +18,10 @@ import {
   validateUpdatedStock,
 } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
 import StockItemContainer from 'components/pages/Offers/Offer/Stocks/StockItem/StockItemContainer'
-import { LIVRE_PAPIER_SUBCATEGORY_ID, OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
+import {
+  LIVRE_PAPIER_SUBCATEGORY_ID,
+  OFFER_STATUS_DRAFT,
+} from 'components/pages/Offers/Offers/_constants'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { SubmitButton } from 'ui-kit'
@@ -42,18 +45,22 @@ const ThingStocks = ({
 }) => {
   const offerId = offer.id
   const [isLoading, setIsLoading] = useState(true)
-  const [enableSubmitButtonSpinner, setEnableSubmitButtonSpinner] = useState(false)
+  const [enableSubmitButtonSpinner, setEnableSubmitButtonSpinner] =
+    useState(false)
   const [formErrors, setFormErrors] = useState({})
   const isOfferDraft = offer.status === OFFER_STATUS_DRAFT
   const editionOfferLink = `/offres/${offerId}/edition`
   const [stock, setStock] = useState(null)
-  const displayExpirationDatetime = stock && stock.activationCodesExpirationDatetime !== null
+  const displayExpirationDatetime =
+    stock && stock.activationCodesExpirationDatetime !== null
   const loadStocks = useCallback(() => {
     return pcapi.loadStocks(offerId).then(receivedStocks => {
       if (!receivedStocks.stocks.length) {
         setStock(null)
       } else {
-        setStock(formatStock(receivedStocks.stocks[0], offer.venue.departementCode))
+        setStock(
+          formatStock(receivedStocks.stocks[0], offer.venue.departementCode)
+        )
       }
       setIsLoading(false)
     })
@@ -142,7 +149,9 @@ const ThingStocks = ({
                 }`
               )
             } else {
-              showSuccessNotification('Votre offre a bien été créée et vos stocks sauvegardés.')
+              showSuccessNotification(
+                'Votre offre a bien été créée et vos stocks sauvegardés.'
+              )
             }
 
             const queryParams = queryParamsFromOfferer(location)
@@ -205,21 +214,21 @@ const ThingStocks = ({
 
       {isDisabled && <OfferStatusBanner status={offer.status} />}
 
-      <h3 className="section-title">
-        Stock et prix
-      </h3>
+      <h3 className="section-title">Stock et prix</h3>
 
       <div className="cancellation-information">
         {(!offer.isDigital || !autoActivateDigitalBookings) &&
-         `Les utilisateurs ont ${offer.subcategoryId === LIVRE_PAPIER_SUBCATEGORY_ID ? '10' : '30'} jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.`}
+          `Les utilisateurs ont ${
+            offer.subcategoryId === LIVRE_PAPIER_SUBCATEGORY_ID ? '10' : '30'
+          } jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.`}
         {offer.isDigital &&
           autoActivateDigitalBookings &&
           'Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée.'}
       </div>
       {areActivationCodesEnabled && offer.isDigital && (
         <div className="activation-codes-information">
-          Pour ajouter des codes d’activation, veuillez passer par le menu ··· et choisir l’option
-          correspondante.
+          Pour ajouter des codes d’activation, veuillez passer par le menu ···
+          et choisir l’option correspondante.
         </div>
       )}
       {hasNoStock ? (
@@ -236,28 +245,14 @@ const ThingStocks = ({
         <table>
           <thead>
             <tr>
-              <th>
-                Prix
-              </th>
-              <th>
-                Date limite de réservation
-              </th>
-              {displayExpirationDatetime && (
-                <th>
-                  Date limite de validité
-                </th>
-              )}
-              <th>
-                Quantité
-              </th>
+              <th>Prix</th>
+              <th>Date limite de réservation</th>
+              {displayExpirationDatetime && <th>Date limite de validité</th>}
+              <th>Quantité</th>
               {!inCreateMode && (
                 <Fragment>
-                  <th>
-                    Stock restant
-                  </th>
-                  <th>
-                    Réservations
-                  </th>
+                  <th>Stock restant</th>
+                  <th>Réservations</th>
                 </Fragment>
               )}
               <th />
@@ -300,10 +295,7 @@ const ThingStocks = ({
           <div className="interval shadow" />
           <section className="actions-section">
             {!isOfferDraft && (
-              <Link
-                className="secondary-link"
-                to={editionOfferLink}
-              >
+              <Link className="secondary-link" to={editionOfferLink}>
                 Annuler et quitter
               </Link>
             )}

@@ -1,9 +1,9 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import {
@@ -56,7 +56,7 @@ const renderHomePage = () => {
       ],
     },
   })
-  
+
   const utils = render(
     <Provider store={store}>
       <MemoryRouter>
@@ -70,10 +70,12 @@ const renderHomePage = () => {
     const offerer = screen.queryByTestId('offerrer-wrapper')
     const venues = screen.queryAllByTestId('venue-wrapper')
 
-    const selectOfferer = (offererName) => {
-      userEvent.selectOptions(within(offerer).getByDisplayValue('Bar des amis'), offererName)
+    const selectOfferer = offererName => {
+      userEvent.selectOptions(
+        within(offerer).getByDisplayValue('Bar des amis'),
+        offererName
+      )
     }
-
 
     return {
       offerer,
@@ -177,7 +179,11 @@ describe('offererDetailsLegacy', () => {
         name: 'Bar des amis',
         postalCode: '97300',
         siren: '111111111',
-        managedVenues: [virtualVenue, physicalVenue, physicalVenueWithPublicName],
+        managedVenues: [
+          virtualVenue,
+          physicalVenue,
+          physicalVenueWithPublicName,
+        ],
       },
     ]
     firstOffererByAlphabeticalOrder = baseOfferers[1]
@@ -202,7 +208,9 @@ describe('offererDetailsLegacy', () => {
     const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
     fireEvent.click(showButton)
 
-    expect(screen.getByDisplayValue(firstOffererByAlphabeticalOrder.name)).toBeInTheDocument()
+    expect(
+      screen.getByDisplayValue(firstOffererByAlphabeticalOrder.name)
+    ).toBeInTheDocument()
   })
 
   it('should not warn user when offerer is validated', async () => {
@@ -215,7 +223,9 @@ describe('offererDetailsLegacy', () => {
     fireEvent.click(showButton)
 
     // Then
-    expect(screen.queryByText('Votre structure est en cours de validation')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Votre structure est en cours de validation')
+    ).not.toBeInTheDocument()
   })
 
   it('should display first offerer informations', async () => {
@@ -226,10 +236,17 @@ describe('offererDetailsLegacy', () => {
 
     const selectedOfferer = firstOffererByAlphabeticalOrder
     expect(screen.getByText(selectedOfferer.siren)).toBeInTheDocument()
-    expect(screen.getByText(selectedOfferer.name, { selector: 'span' })).toBeInTheDocument()
-    expect(screen.getByText(selectedOfferer.address, { exact: false })).toBeInTheDocument()
     expect(
-      screen.getByText(`${selectedOfferer.postalCode} ${selectedOfferer.city}`, { exact: false })
+      screen.getByText(selectedOfferer.name, { selector: 'span' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(selectedOfferer.address, { exact: false })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        `${selectedOfferer.postalCode} ${selectedOfferer.city}`,
+        { exact: false }
+      )
     ).toBeInTheDocument()
   })
 
@@ -243,14 +260,18 @@ describe('offererDetailsLegacy', () => {
     const virtualVenueTitle = screen.getByText('Offres numériques')
     expect(virtualVenueTitle).toBeInTheDocument()
 
-    const physicalVenueTitle = screen.getByText(selectedOfferer.managedVenues[1].name)
+    const physicalVenueTitle = screen.getByText(
+      selectedOfferer.managedVenues[1].name
+    )
     expect(physicalVenueTitle).toBeInTheDocument()
     const physicalVenueContainer = physicalVenueTitle.closest('div')
     expect(
       within(physicalVenueContainer).getByText('Modifier', { exact: false })
     ).toBeInTheDocument()
 
-    const secondOfflineVenueTitle = screen.getByText(selectedOfferer.managedVenues[2].publicName)
+    const secondOfflineVenueTitle = screen.getByText(
+      selectedOfferer.managedVenues[2].publicName
+    )
     expect(secondOfflineVenueTitle).toBeInTheDocument()
   })
 
@@ -259,12 +280,12 @@ describe('offererDetailsLegacy', () => {
     firstOffererByAlphabeticalOrder = {
       ...firstOffererByAlphabeticalOrder,
       hasDigitalVenueAtLeastOneOffer: false,
-      managedVenues : [
+      managedVenues: [
         {
           ...virtualVenue,
         },
         physicalVenue,
-      ]
+      ],
     }
     pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
 
@@ -274,7 +295,9 @@ describe('offererDetailsLegacy', () => {
 
     // Then
     expect(venues).toHaveLength(1)
-    expect(within(venues[0]).queryByText('Offre numérique')).not.toBeInTheDocument()
+    expect(
+      within(venues[0]).queryByText('Offre numérique')
+    ).not.toBeInTheDocument()
   })
 
   describe('when selected offerer change', () => {
@@ -317,20 +340,29 @@ describe('offererDetailsLegacy', () => {
       pcapi.getOfferer.mockResolvedValue(newSelectedOfferer)
 
       selectOfferer(newSelectedOfferer.name)
-      const { offerer : newOfferer } = await waitForElements()
+      const { offerer: newOfferer } = await waitForElements()
 
-      const showButton = within(newOfferer).getByRole('button', { name: 'Afficher' })
+      const showButton = within(newOfferer).getByRole('button', {
+        name: 'Afficher',
+      })
       fireEvent.click(showButton)
     })
 
     it('should change displayed offerer informations', async () => {
       expect(screen.getByText(newSelectedOfferer.siren)).toBeInTheDocument()
-      expect(screen.getByText(newSelectedOfferer.name, { selector: 'span' })).toBeInTheDocument()
-      expect(screen.getByText(newSelectedOfferer.address, { exact: false })).toBeInTheDocument()
       expect(
-        screen.getByText(`${newSelectedOfferer.postalCode} ${newSelectedOfferer.city}`, {
-          exact: false,
-        })
+        screen.getByText(newSelectedOfferer.name, { selector: 'span' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(newSelectedOfferer.address, { exact: false })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          `${newSelectedOfferer.postalCode} ${newSelectedOfferer.city}`,
+          {
+            exact: false,
+          }
+        )
       ).toBeInTheDocument()
     })
 
@@ -338,7 +370,9 @@ describe('offererDetailsLegacy', () => {
       const virtualVenueTitle = screen.getByText('Offres numériques')
       expect(virtualVenueTitle).toBeInTheDocument()
 
-      const physicalVenueTitle = screen.getByText(newSelectedOfferer.managedVenues[1].name)
+      const physicalVenueTitle = screen.getByText(
+        newSelectedOfferer.managedVenues[1].name
+      )
       expect(physicalVenueTitle).toBeInTheDocument()
       const physicalVenueContainer = physicalVenueTitle.closest('div')
       expect(
@@ -373,7 +407,9 @@ describe('offererDetailsLegacy', () => {
       // When
       const { waitForElements } = renderHomePage()
       const { offerer } = await waitForElements()
-      const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
+      const showButton = within(offerer).getByRole('button', {
+        name: 'Afficher',
+      })
       fireEvent.click(showButton)
 
       // Then
@@ -381,7 +417,9 @@ describe('offererDetailsLegacy', () => {
         name: 'Renseignez les coordonnées bancaires',
       })
       expect(link).toBeInTheDocument()
-      const warningIcons = screen.getAllByAltText('Informations bancaires manquantes')
+      const warningIcons = screen.getAllByAltText(
+        'Informations bancaires manquantes'
+      )
       let nbWarningIcons = 0
       nbWarningIcons += 1 // in offerers header
       nbWarningIcons += 1 // in bank account card title
@@ -395,7 +433,9 @@ describe('offererDetailsLegacy', () => {
       })
       const { waitForElements } = renderHomePage()
       const { offerer } = await waitForElements()
-      const warningIcons = within(offerer).queryByAltText('Informations bancaires manquantes')
+      const warningIcons = within(offerer).queryByAltText(
+        'Informations bancaires manquantes'
+      )
       expect(warningIcons).not.toBeInTheDocument()
     })
 
@@ -406,16 +446,23 @@ describe('offererDetailsLegacy', () => {
           hasMissingBankInformation: false,
           bic: '',
           iban: '',
-          demarchesSimplifieesApplicationId: 'demarchesSimplifieesApplication_fake_id',
+          demarchesSimplifieesApplicationId:
+            'demarchesSimplifieesApplication_fake_id',
         },
       ]
       pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
       const { waitForElements } = renderHomePage()
       const { offerer } = await waitForElements()
-      const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
+      const showButton = within(offerer).getByRole('button', {
+        name: 'Afficher',
+      })
       fireEvent.click(showButton)
-      expect(screen.getByRole('link', { name: 'Voir le dossier' })).toBeInTheDocument()
-      const warningIcons = within(offerer).queryByAltText('Informations bancaires manquantes')
+      expect(
+        screen.getByRole('link', { name: 'Voir le dossier' })
+      ).toBeInTheDocument()
+      const warningIcons = within(offerer).queryByAltText(
+        'Informations bancaires manquantes'
+      )
       expect(warningIcons).not.toBeInTheDocument()
     })
   })
@@ -433,7 +480,7 @@ describe('offererDetailsLegacy', () => {
         offererName: 'Bar des amis',
         publicName: null,
       }
-      
+
       offererWithNoPhysicalVenues = {
         ...firstOffererByAlphabeticalOrder,
         managedVenues: [virtualVenue],
@@ -454,12 +501,18 @@ describe('offererDetailsLegacy', () => {
       const { offerer } = await waitForElements()
 
       // Then
-      expect(within(offerer).getByText(offererWithNoPhysicalVenues.siren)).toBeInTheDocument()
       expect(
-        within(offerer).getByText(offererWithNoPhysicalVenues.name, { selector: 'span' })
+        within(offerer).getByText(offererWithNoPhysicalVenues.siren)
       ).toBeInTheDocument()
       expect(
-        within(offerer).getByText(offererWithNoPhysicalVenues.address, { exact: false })
+        within(offerer).getByText(offererWithNoPhysicalVenues.name, {
+          selector: 'span',
+        })
+      ).toBeInTheDocument()
+      expect(
+        within(offerer).getByText(offererWithNoPhysicalVenues.address, {
+          exact: false,
+        })
       ).toBeInTheDocument()
       expect(
         within(offerer).getByText(
@@ -473,18 +526,26 @@ describe('offererDetailsLegacy', () => {
       // Given
       const { waitForElements } = renderHomePage()
       const { offerer } = await waitForElements()
-      const hideButton = within(offerer).getByRole('button', { name: 'Masquer' })
+      const hideButton = within(offerer).getByRole('button', {
+        name: 'Masquer',
+      })
 
       // When
       fireEvent.click(hideButton)
 
       //Then
       const selectedOffererAddress = `${offererWithNoPhysicalVenues.address} ${offererWithNoPhysicalVenues.postalCode} ${offererWithNoPhysicalVenues.city}`
-      expect(within(offerer).queryByText(offererWithNoPhysicalVenues.siren)).not.toBeInTheDocument()
       expect(
-        within(offerer).queryByText(offererWithNoPhysicalVenues.name, { selector: 'span' })
+        within(offerer).queryByText(offererWithNoPhysicalVenues.siren)
       ).not.toBeInTheDocument()
-      expect(within(offerer).queryByText(selectedOffererAddress)).not.toBeInTheDocument()
+      expect(
+        within(offerer).queryByText(offererWithNoPhysicalVenues.name, {
+          selector: 'span',
+        })
+      ).not.toBeInTheDocument()
+      expect(
+        within(offerer).queryByText(selectedOffererAddress)
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -531,29 +592,43 @@ describe('offererDetailsLegacy', () => {
 
       // Then
       const selectedOffererAddress = `${offererWithPhysicalVenues.address} ${offererWithPhysicalVenues.postalCode} ${offererWithPhysicalVenues.city}`
-      expect(within(offerer).queryByText(offererWithPhysicalVenues.siren)).not.toBeInTheDocument()
       expect(
-        within(offerer).queryByText(offererWithPhysicalVenues.name, { selector: 'span' })
+        within(offerer).queryByText(offererWithPhysicalVenues.siren)
       ).not.toBeInTheDocument()
-      expect(within(offerer).queryByText(selectedOffererAddress)).not.toBeInTheDocument()
+      expect(
+        within(offerer).queryByText(offererWithPhysicalVenues.name, {
+          selector: 'span',
+        })
+      ).not.toBeInTheDocument()
+      expect(
+        within(offerer).queryByText(selectedOffererAddress)
+      ).not.toBeInTheDocument()
     })
 
     it('should show offerer informations on click on show button', async () => {
       // Given
       const { waitForElements } = renderHomePage()
       const { offerer } = await waitForElements()
-      const showButton = within(offerer).getByRole('button', { name: 'Afficher' })
+      const showButton = within(offerer).getByRole('button', {
+        name: 'Afficher',
+      })
 
       // When
       fireEvent.click(showButton)
 
       //Then
-      expect(within(offerer).getByText(offererWithPhysicalVenues.siren)).toBeInTheDocument()
       expect(
-        within(offerer).getByText(offererWithPhysicalVenues.name, { selector: 'span' })
+        within(offerer).getByText(offererWithPhysicalVenues.siren)
       ).toBeInTheDocument()
       expect(
-        within(offerer).getByText(offererWithPhysicalVenues.address, { exact: false })
+        within(offerer).getByText(offererWithPhysicalVenues.name, {
+          selector: 'span',
+        })
+      ).toBeInTheDocument()
+      expect(
+        within(offerer).getByText(offererWithPhysicalVenues.address, {
+          exact: false,
+        })
       ).toBeInTheDocument()
       expect(
         within(offerer).getByText(
@@ -595,7 +670,9 @@ describe('offererDetailsLegacy', () => {
       const { offerer } = await waitForElements()
 
       // Then
-      expect(within(offerer).getByText('Informations pratiques')).toBeInTheDocument()
+      expect(
+        within(offerer).getByText('Informations pratiques')
+      ).toBeInTheDocument()
     })
 
     it('should allow user to add venue and offer', async () => {
@@ -604,15 +681,22 @@ describe('offererDetailsLegacy', () => {
       await waitForElements()
 
       // Then
-      expect(screen.getByRole('link', { name: 'Créer un lieu' })).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: 'Créer une offre' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: 'Créer un lieu' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: 'Créer une offre' })
+      ).toBeInTheDocument()
     })
   })
 
   describe('when user attachment to offerer is not yet validated', () => {
     beforeEach(() => {
       pcapi.getAllOfferersNames.mockResolvedValue([
-        { name: firstOffererByAlphabeticalOrder.name, id: firstOffererByAlphabeticalOrder.id },
+        {
+          name: firstOffererByAlphabeticalOrder.name,
+          id: firstOffererByAlphabeticalOrder.id,
+        },
         { name: baseOfferers[0].name, id: baseOfferers[0].id },
       ])
       pcapi.getOfferer.mockRejectedValue({ status: 403 })
@@ -624,7 +708,9 @@ describe('offererDetailsLegacy', () => {
       await waitForElements()
 
       // Then
-      expect(screen.getByText('Votre structure est en cours de validation')).toBeInTheDocument()
+      expect(
+        screen.getByText('Votre structure est en cours de validation')
+      ).toBeInTheDocument()
     })
 
     it('should not allow user to view offerer informations', async () => {
@@ -632,8 +718,12 @@ describe('offererDetailsLegacy', () => {
       const { waitForElements } = renderHomePage()
       await waitForElements()
       // Then
-      expect(screen.queryByText('Informations pratiques')).not.toBeInTheDocument()
-      expect(screen.queryByText('Coordonnées bancaires')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Informations pratiques')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Coordonnées bancaires')
+      ).not.toBeInTheDocument()
     })
 
     it('should not allow user to update offerer informations', async () => {
@@ -642,7 +732,9 @@ describe('offererDetailsLegacy', () => {
       await waitForElements()
 
       // Then
-      const [offererUpdateButton] = screen.getAllByRole('button', { name: 'Modifier' })
+      const [offererUpdateButton] = screen.getAllByRole('button', {
+        name: 'Modifier',
+      })
       expect(offererUpdateButton).toBeInTheDocument()
       expect(offererUpdateButton).toBeDisabled()
     })
@@ -653,7 +745,9 @@ describe('offererDetailsLegacy', () => {
       await waitForElements()
 
       // Then
-      expect(screen.queryByRole('link', { name: 'Créer un lieu' })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', { name: 'Créer un lieu' })
+      ).not.toBeInTheDocument()
       expect(
         screen.queryByRole('link', { name: 'Créer une offre' })
       ).not.toBeInTheDocument()
@@ -663,7 +757,10 @@ describe('offererDetailsLegacy', () => {
       // Given
       pcapi.getAllOfferersNames.mockResolvedValue([
         { name: baseOfferers[0].name, id: baseOfferers[0].id },
-        { name: firstOffererByAlphabeticalOrder.name, id: firstOffererByAlphabeticalOrder.id },
+        {
+          name: firstOffererByAlphabeticalOrder.name,
+          id: firstOffererByAlphabeticalOrder.id,
+        },
       ])
       pcapi.getOfferer
         .mockResolvedValueOnce({
@@ -676,9 +773,12 @@ describe('offererDetailsLegacy', () => {
       await waitForElements()
 
       // When
-      fireEvent.change(screen.getByDisplayValue(firstOffererByAlphabeticalOrder.name), {
-        target: { value: baseOfferers[0].id },
-      })
+      fireEvent.change(
+        screen.getByDisplayValue(firstOffererByAlphabeticalOrder.name),
+        {
+          target: { value: baseOfferers[0].id },
+        }
+      )
 
       // Then
       expect(pcapi.getOfferer).toHaveBeenCalledTimes(2)
@@ -686,11 +786,16 @@ describe('offererDetailsLegacy', () => {
       await waitForElementToBeRemoved(() =>
         screen.getByRole('heading', { level: 3, name: 'Offres numériques' })
       )
-      const previouslySelectedOfferersPhysicalVenueName = screen.queryByRole('heading', {
-        level: 3,
-        name: physicalVenue.name,
-      })
-      expect(previouslySelectedOfferersPhysicalVenueName).not.toBeInTheDocument()
+      const previouslySelectedOfferersPhysicalVenueName = screen.queryByRole(
+        'heading',
+        {
+          level: 3,
+          name: physicalVenue.name,
+        }
+      )
+      expect(
+        previouslySelectedOfferersPhysicalVenueName
+      ).not.toBeInTheDocument()
     })
   })
 })

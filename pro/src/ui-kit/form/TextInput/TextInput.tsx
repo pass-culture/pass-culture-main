@@ -2,14 +2,14 @@ import { useField } from 'formik'
 import React from 'react'
 
 interface ITextInputProps {
-  name: string;
-  className?: string;
-  disabled?: boolean;
-  label?: string;
-  placeholder?: string;
+  name: string
+  className?: string
+  disabled?: boolean
+  label?: string
+  placeholder?: string
 }
 
-const TextInput = ({ 
+const TextInput = ({
   name,
   className,
   disabled,
@@ -22,15 +22,10 @@ const TextInput = ({
     <>
       <label>
         {label}
-        <input
-          {...field}
-          placeholder={placeholder}
-        />
+        <input {...field} placeholder={placeholder} />
       </label>
       {meta.touched && meta.error ? (
-        <div className="error">
-          {meta.error}
-        </div>
+        <div className="error">{meta.error}</div>
       ) : null}
     </>
   )

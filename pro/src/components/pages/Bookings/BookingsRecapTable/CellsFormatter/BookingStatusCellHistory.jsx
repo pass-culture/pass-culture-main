@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import { format } from 'date-fns-tz'
 import PropTypes from 'prop-types'
@@ -12,10 +12,14 @@ import { getBookingStatusDisplayInformations } from './utils/bookingStatusConver
 
 const BookingStatusCellHistory = ({ bookingStatusHistory }) => {
   const bookingsStatusHistoryItems = bookingStatusHistory.map(item => {
-    const displayInfoFromStatus = getBookingStatusDisplayInformations(item.status)
+    const displayInfoFromStatus = getBookingStatusDisplayInformations(
+      item.status
+    )
     return (
       <li key={displayInfoFromStatus.status}>
-        <span className={`colored-disc ${displayInfoFromStatus.historyClassName}`} />
+        <span
+          className={`colored-disc ${displayInfoFromStatus.historyClassName}`}
+        />
         {`${displayInfoFromStatus.label} : ${computeDateForStatus(
           item,
           displayInfoFromStatus.dateFormat
@@ -25,13 +29,13 @@ const BookingStatusCellHistory = ({ bookingStatusHistory }) => {
   })
 
   function computeDateForStatus(item, dateFormat) {
-    return item.date ? format(toDateStrippedOfTimezone(item.date), dateFormat) : '-'
+    return item.date
+      ? format(toDateStrippedOfTimezone(item.date), dateFormat)
+      : '-'
   }
 
   return (
-    <div className="booking-status-history">
-      {bookingsStatusHistoryItems}
-    </div>
+    <div className="booking-status-history">{bookingsStatusHistoryItems}</div>
   )
 }
 

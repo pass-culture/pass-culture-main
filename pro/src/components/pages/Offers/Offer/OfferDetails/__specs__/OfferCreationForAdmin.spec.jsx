@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import '@testing-library/jest-dom'
 import { act, render, screen } from '@testing-library/react'
@@ -30,7 +30,11 @@ const renderOffers = async (props, store, queryParams = null) => {
   await act(async () => {
     await render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[{ pathname: '/offres/creation', search: queryParams }]}>
+        <MemoryRouter
+          initialEntries={[
+            { pathname: '/offres/creation', search: queryParams },
+          ]}
+        >
           <Route path="/offres/">
             <>
               <OfferLayoutContainer {...props} />
@@ -51,7 +55,9 @@ describe('offerDetails - Creation - admin user', () => {
   let venues
 
   beforeEach(() => {
-    store = configureTestStore({ data: { users: [{ publicName: 'François', isAdmin: true }] } })
+    store = configureTestStore({
+      data: { users: [{ publicName: 'François', isAdmin: true }] },
+    })
 
     props = {
       setShowThumbnailForm: jest.fn(),

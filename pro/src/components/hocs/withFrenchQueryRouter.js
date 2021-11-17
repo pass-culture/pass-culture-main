@@ -1,6 +1,6 @@
 /*
-* @debt deprecated "Gaël: deprecated usage of withQueryRouter"
-*/
+ * @debt deprecated "Gaël: deprecated usage of withQueryRouter"
+ */
 
 import { withQueryRouter } from 'components/hocs/with-query-router/withQueryRouter'
 

@@ -7,11 +7,7 @@ export default {
   component: Tag,
 }
 
-const Template = args => (
-  <Tag {...args}>
-    {args.children}
-  </Tag>
-)
+const Template = args => <Tag {...args}>{args.children}</Tag>
 
 export const Default = Template.bind({})
 

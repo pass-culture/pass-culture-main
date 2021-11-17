@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt directory "Gaël: this file should be migrated within storybook"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt directory "Gaël: this file should be migrated within storybook"
+ */
 
 import React from 'react'
 
@@ -112,9 +112,7 @@ const StyleguideInputText = () => {
 
   return (
     <div>
-      <h3>
-        Champs textuel
-      </h3>
+      <h3>Champs textuel</h3>
       <div className="flex-block">
         <TextInput
           label="Intitulé"
@@ -128,9 +126,7 @@ const StyleguideInputText = () => {
         />
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {inputTextEnabled}
-            </code>
+            <code>{inputTextEnabled}</code>
           </pre>
         </div>
       </div>
@@ -147,16 +143,12 @@ const StyleguideInputText = () => {
         />
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {inputTextDisabled}
-            </code>
+            <code>{inputTextDisabled}</code>
           </pre>
         </div>
       </div>
       <hr />
-      <h3>
-        Champs textuel en erreur
-      </h3>
+      <h3>Champs textuel en erreur</h3>
       <div className="flex-block">
         <TextInput
           error="Ce champs comporte une erreur"
@@ -170,15 +162,11 @@ const StyleguideInputText = () => {
         />
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {inputTextWithError}
-            </code>
+            <code>{inputTextWithError}</code>
           </pre>
         </div>
       </div>
-      <h3>
-        Champs textuel avec icône
-      </h3>
+      <h3>Champs textuel avec icône</h3>
       <div className="flex-block">
         <div>
           <TextInputWithIcon
@@ -195,9 +183,7 @@ const StyleguideInputText = () => {
         </div>
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {inputWithIconEnabled}
-            </code>
+            <code>{inputWithIconEnabled}</code>
           </pre>
         </div>
       </div>
@@ -217,16 +203,12 @@ const StyleguideInputText = () => {
         </div>
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {inputWithIconDisabled}
-            </code>
+            <code>{inputWithIconDisabled}</code>
           </pre>
         </div>
       </div>
       <hr />
-      <h3>
-        Champs avec icône en erreur
-      </h3>
+      <h3>Champs avec icône en erreur</h3>
       <div className="flex-block">
         <div>
           <TextInputWithIcon
@@ -242,16 +224,12 @@ const StyleguideInputText = () => {
         </div>
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {inputWithErrorMessage}
-            </code>
+            <code>{inputWithErrorMessage}</code>
           </pre>
         </div>
       </div>
       <hr />
-      <h3>
-        Champs avec compte de caractères
-      </h3>
+      <h3>Champs avec compte de caractères</h3>
       <div className="flex-block">
         <TextInput
           countCharacters
@@ -266,9 +244,7 @@ const StyleguideInputText = () => {
         />
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {inputTextWithCaracterCount}
-            </code>
+            <code>{inputTextWithCaracterCount}</code>
           </pre>
         </div>
       </div>

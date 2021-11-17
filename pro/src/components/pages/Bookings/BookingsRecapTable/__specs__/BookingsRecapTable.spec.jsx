@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { mount, shallow } from 'enzyme'
 import React from 'react'
@@ -214,7 +214,9 @@ describe('components | BookingsRecapTable', () => {
 
     // Then
     const sixthHeader = wrapper.find('th').at(5)
-    expect(sixthHeader.find('img').prop('src')).toContain('ico-filter-status-black.svg')
+    expect(sixthHeader.find('img').prop('src')).toContain(
+      'ico-filter-status-black.svg'
+    )
   })
 
   it('should render the expected table rows', () => {
@@ -274,7 +276,11 @@ describe('components | BookingsRecapTable', () => {
     const beneficiaryCell = wrapper.find(BeneficiaryCell)
     expect(beneficiaryCell).toHaveLength(1)
     expect(beneficiaryCell.props()).toStrictEqual({
-      beneficiaryInfos: { email: 'sonia.klepi@example.com', firstname: 'Sonia', lastname: 'Klepi' },
+      beneficiaryInfos: {
+        email: 'sonia.klepi@example.com',
+        firstname: 'Sonia',
+        lastname: 'Klepi',
+      },
     })
     const bookingDateCell = wrapper.find(BookingDateCell)
     expect(bookingDateCell).toHaveLength(1)
@@ -503,7 +509,11 @@ describe('components | BookingsRecapTable', () => {
     const beneficiaryCell = wrapper.find(BeneficiaryCell)
     expect(beneficiaryCell).toHaveLength(1)
     expect(beneficiaryCell.props()).toStrictEqual({
-      beneficiaryInfos: { email: 'sonia.klepi@example.com', firstname: 'Sonia', lastname: 'Klepi' },
+      beneficiaryInfos: {
+        email: 'sonia.klepi@example.com',
+        firstname: 'Sonia',
+        lastname: 'Klepi',
+      },
     })
     const bookingDateCell = wrapper.find(BookingDateCell)
     expect(bookingDateCell).toHaveLength(1)
@@ -703,7 +713,9 @@ describe('components | BookingsRecapTable', () => {
       isLoading: false,
     }
     const wrapper = mount(<BookingsRecapTable {...props} />)
-    const input = wrapper.find(Filters).find({ placeholder: "Rechercher par nom d'offre" })
+    const input = wrapper
+      .find(Filters)
+      .find({ placeholder: "Rechercher par nom d'offre" })
 
     // When
     input.simulate('change', { target: { value: 'not findable' } })
@@ -758,8 +770,12 @@ describe('components | BookingsRecapTable', () => {
     filterBookingsRecap.mockReturnValue([])
     const wrapper = mount(<BookingsRecapTable {...props} />)
 
-    const offerNameInput = wrapper.find(Filters).find({ placeholder: "Rechercher par nom d'offre" })
-    await offerNameInput.simulate('change', { target: { value: 'not findable' } })
+    const offerNameInput = wrapper
+      .find(Filters)
+      .find({ placeholder: "Rechercher par nom d'offre" })
+    await offerNameInput.simulate('change', {
+      target: { value: 'not findable' },
+    })
 
     const noFilteredBookings = wrapper.find(NoFilteredBookings)
     const displayAllBookingsButton = noFilteredBookings.find({
@@ -770,7 +786,9 @@ describe('components | BookingsRecapTable', () => {
     await displayAllBookingsButton.simulate('click')
 
     // Then
-    const offerName = wrapper.find(Filters).find({ placeholder: "Rechercher par nom d'offre" })
+    const offerName = wrapper
+      .find(Filters)
+      .find({ placeholder: "Rechercher par nom d'offre" })
     expect(offerName.text()).toBe('')
   })
 
@@ -846,13 +864,16 @@ describe('components | BookingsRecapTable', () => {
     wrapper.setProps(updatedProps)
 
     // Then
-    expect(filterBookingsRecap).toHaveBeenCalledWith(updatedProps.bookingsRecap, {
-      bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingStatus: ALL_BOOKING_STATUS,
-      bookingToken: EMPTY_FILTER_VALUE,
-      offerISBN: EMPTY_FILTER_VALUE,
-      offerName: EMPTY_FILTER_VALUE,
-    })
+    expect(filterBookingsRecap).toHaveBeenCalledWith(
+      updatedProps.bookingsRecap,
+      {
+        bookingBeneficiary: EMPTY_FILTER_VALUE,
+        bookingStatus: ALL_BOOKING_STATUS,
+        bookingToken: EMPTY_FILTER_VALUE,
+        offerISBN: EMPTY_FILTER_VALUE,
+        offerName: EMPTY_FILTER_VALUE,
+      }
+    )
   })
 
   it('should redirect to first page when applying filters', async () => {
@@ -932,7 +953,7 @@ describe('components | BookingsRecapTable', () => {
 
     // then
     const table = wrapper.find(TableFrame)
-    expect(table.prop('currentPage')).toStrictEqual(0)
+    expect(table.prop('currentPage')).toBe(0)
   })
 
   it('should filter bookings on render', () => {

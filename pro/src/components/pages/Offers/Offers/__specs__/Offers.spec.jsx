@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ */
 
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen } from '@testing-library/react'
@@ -43,8 +43,8 @@ const renderOffers = (props, store) => {
 
 const categoriesAndSubcategories = {
   categories: [
-    { id: "CINEMA", proLabel: "Cinéma" },
-    { id: "JEU", proLabel: "Jeux" },
+    { id: 'CINEMA', proLabel: 'Cinéma' },
+    { id: 'JEU', proLabel: 'Jeux' },
   ],
   subcategories: [],
 }
@@ -61,7 +61,9 @@ jest.mock('repository/pcapi/pcapi', () => ({
 
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
-  getToday: jest.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  getToday: jest
+    .fn()
+    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 describe('src | components | pages | Offers | Offers', () => {
@@ -89,7 +91,12 @@ describe('src | components | pages | Offers | Offers', () => {
   beforeEach(() => {
     change = jest.fn()
     parse = jest.fn().mockReturnValue({})
-    currentUser = { id: 'EY', isAdmin: false, name: 'Current User', publicName: 'USER' }
+    currentUser = {
+      id: 'EY',
+      isAdmin: false,
+      name: 'Current User',
+      publicName: 'USER',
+    }
     store = configureTestStore({
       data: {
         users: [currentUser],
@@ -134,7 +141,9 @@ describe('src | components | pages | Offers | Offers', () => {
       renderOffers(props, store)
 
       // Then
-      expect(await screen.findByText('Lieu', { selector: 'th' })).toBeInTheDocument()
+      await expect(
+        screen.findByText('Lieu', { selector: 'th' })
+      ).resolves.toBeInTheDocument()
       expect(screen.getByText('Stock', { selector: 'th' })).toBeInTheDocument()
     })
 
@@ -177,7 +186,8 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       await screen.findByText(firstOffer.name)
-      const selectAllOffersCheckbox = screen.queryByLabelText('Tout sélectionner')
+      const selectAllOffersCheckbox =
+        screen.queryByLabelText('Tout sélectionner')
       expect(selectAllOffersCheckbox).toBeInTheDocument()
       expect(selectAllOffersCheckbox).not.toBeChecked()
       expect(selectAllOffersCheckbox).not.toBeDisabled()
@@ -186,7 +196,10 @@ describe('src | components | pages | Offers | Offers', () => {
     describe('total number of offers', () => {
       it('should display total number of offers in plural if multiple offers', async () => {
         // Given
-        pcapi.loadFilteredOffers.mockResolvedValueOnce([...offersRecap, offerFactory()])
+        pcapi.loadFilteredOffers.mockResolvedValueOnce([
+          ...offersRecap,
+          offerFactory(),
+        ])
 
         // When
         renderOffers(props, store)
@@ -228,14 +241,19 @@ describe('src | components | pages | Offers | Offers', () => {
         const expectedSelectOptions = [
           { id: [ALL_VENUES_OPTION.id], value: ALL_VENUES_OPTION.displayName },
           { id: [proVenues[0].id], value: proVenues[0].name },
-          { id: [proVenues[1].id], value: `${proVenues[1].offererName} - Offre numérique` },
+          {
+            id: [proVenues[1].id],
+            value: `${proVenues[1].offererName} - Offre numérique`,
+          },
         ]
 
         // When
         renderOffers(props, store)
 
         // Then
-        const defaultOption = screen.getByDisplayValue(expectedSelectOptions[0].value)
+        const defaultOption = screen.getByDisplayValue(
+          expectedSelectOptions[0].value
+        )
         expect(defaultOption).toBeInTheDocument()
 
         const firstVenueOption = await screen.findByRole('option', {
@@ -251,16 +269,23 @@ describe('src | components | pages | Offers | Offers', () => {
 
       it('should render venue filter with given venue selected', async () => {
         // Given
-        const expectedSelectOptions = [{ id: [proVenues[0].id], value: proVenues[0].name }]
-        jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: proVenues[0].id })
+        const expectedSelectOptions = [
+          { id: [proVenues[0].id], value: proVenues[0].name },
+        ]
+        jest
+          .spyOn(props.query, 'parse')
+          .mockReturnValue({ lieu: proVenues[0].id })
 
         // When
         await renderOffers(props, store)
 
         // Then
-        let venueSelect = screen.getByDisplayValue(expectedSelectOptions[0].value, {
-          selector: 'select[name="lieu"]',
-        })
+        let venueSelect = screen.getByDisplayValue(
+          expectedSelectOptions[0].value,
+          {
+            selector: 'select[name="lieu"]',
+          }
+        )
         expect(venueSelect).toBeInTheDocument()
       })
 
@@ -274,7 +299,9 @@ describe('src | components | pages | Offers | Offers', () => {
 
       it('should render creation mode filter with given creation mode selected', async () => {
         // Given
-        jest.spyOn(props.query, 'parse').mockReturnValue({ creation: 'importee' })
+        jest
+          .spyOn(props.query, 'parse')
+          .mockReturnValue({ creation: 'importee' })
 
         // When
         renderOffers(props, store)
@@ -322,15 +349,19 @@ describe('src | components | pages | Offers | Offers', () => {
           renderOffers(props, store)
 
           // Then
-          expect(await screen.findByText('Statut')).toBeInTheDocument()
-          expect(screen.queryByText('Afficher les statuts')).not.toBeInTheDocument()
+          await expect(screen.findByText('Statut')).resolves.toBeInTheDocument()
+          expect(
+            screen.queryByText('Afficher les statuts')
+          ).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Tous')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Active')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Inactive')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Épuisée')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Expirée')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Appliquer')).not.toBeInTheDocument()
-          expect(screen.queryByLabelText('Validation en attente')).not.toBeInTheDocument()
+          expect(
+            screen.queryByLabelText('Validation en attente')
+          ).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Refusée')).not.toBeInTheDocument()
         })
 
@@ -339,7 +370,11 @@ describe('src | components | pages | Offers | Offers', () => {
           renderOffers(props, store)
 
           // When
-          fireEvent.click(await screen.findByAltText('Afficher ou masquer le filtre par statut'))
+          fireEvent.click(
+            await screen.findByAltText(
+              'Afficher ou masquer le filtre par statut'
+            )
+          )
 
           // Then
           expect(screen.queryByText('Afficher les statuts')).toBeInTheDocument()
@@ -348,15 +383,23 @@ describe('src | components | pages | Offers | Offers', () => {
           expect(screen.getByLabelText('Inactive')).not.toBeChecked()
           expect(screen.getByLabelText('Épuisée')).not.toBeChecked()
           expect(screen.getByLabelText('Expirée')).not.toBeChecked()
-          expect(screen.getByLabelText('Validation en attente')).not.toBeChecked()
+          expect(
+            screen.getByLabelText('Validation en attente')
+          ).not.toBeChecked()
           expect(screen.getByLabelText('Refusée')).not.toBeChecked()
-          expect(screen.queryByText('Appliquer', { selector: 'button' })).toBeInTheDocument()
+          expect(
+            screen.queryByText('Appliquer', { selector: 'button' })
+          ).toBeInTheDocument()
         })
 
         it('should filter offers given status filter when clicking on "Appliquer"', async () => {
           // Given
           renderOffers(props, store)
-          fireEvent.click(await screen.findByAltText('Afficher ou masquer le filtre par statut'))
+          fireEvent.click(
+            await screen.findByAltText(
+              'Afficher ou masquer le filtre par statut'
+            )
+          )
           fireEvent.click(screen.getByLabelText('Expirée'))
 
           // When
@@ -378,10 +421,19 @@ describe('src | components | pages | Offers | Offers', () => {
         it('should hide status filters when clicking outside the modal', async () => {
           // Given
           renderOffers(props, store)
-          fireEvent.click(await screen.findByAltText('Afficher ou masquer le filtre par statut'))
+          fireEvent.click(
+            await screen.findByAltText(
+              'Afficher ou masquer le filtre par statut'
+            )
+          )
 
           // When
-          fireEvent.click(screen.getByRole('heading', { name: 'Rechercher une offre', level: 3 }))
+          fireEvent.click(
+            screen.getByRole('heading', {
+              name: 'Rechercher une offre',
+              level: 3,
+            })
+          )
 
           // Then
           expect(screen.queryByText('Afficher les statuts')).toBeNull()
@@ -389,11 +441,17 @@ describe('src | components | pages | Offers | Offers', () => {
 
         it('should indicate that no offers match selected filters', async () => {
           // Given
-          pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap).mockResolvedValueOnce([])
+          pcapi.loadFilteredOffers
+            .mockResolvedValueOnce(offersRecap)
+            .mockResolvedValueOnce([])
           renderOffers(props, store)
 
           // When
-          fireEvent.click(await screen.findByAltText('Afficher ou masquer le filtre par statut'))
+          fireEvent.click(
+            await screen.findByAltText(
+              'Afficher ou masquer le filtre par statut'
+            )
+          )
           fireEvent.click(screen.getByLabelText('Expirée'))
           fireEvent.click(screen.getByText('Appliquer'))
 
@@ -412,7 +470,9 @@ describe('src | components | pages | Offers | Offers', () => {
           await renderOffers(props, store)
 
           // Then
-          const noOffersText = await screen.findByText("Vous n’avez pas encore créé d’offre.")
+          const noOffersText = await screen.findByText(
+            'Vous n’avez pas encore créé d’offre.'
+          )
           expect(noOffersText).toBeInTheDocument()
         })
       })
@@ -454,7 +514,10 @@ describe('src | components | pages | Offers | Offers', () => {
           it('should reset and disable status filter when venue filter is deselected', async () => {
             // Given
             const { id: venueId, name: venueName } = proVenues[0]
-            props.query.parse.mockReturnValueOnce({ lieu: venueId, statut: 'inactive' })
+            props.query.parse.mockReturnValueOnce({
+              lieu: venueId,
+              statut: 'inactive',
+            })
             await renderOffers(props, store)
             fireEvent.change(screen.getByDisplayValue(venueName), {
               target: { value: ALL_VENUES },
@@ -517,11 +580,16 @@ describe('src | components | pages | Offers | Offers', () => {
             // Given
             const offerer = { name: 'La structure', id: 'EF' }
             props.getOfferer.mockResolvedValueOnce(offerer)
-            props.query.parse.mockReturnValueOnce({ structure: offerer.id, statut: 'inactive' })
+            props.query.parse.mockReturnValueOnce({
+              structure: offerer.id,
+              statut: 'inactive',
+            })
             await renderOffers(props, store)
 
             // When
-            await fireEvent.click(screen.getByAltText('Supprimer le filtre par structure'))
+            await fireEvent.click(
+              screen.getByAltText('Supprimer le filtre par structure')
+            )
 
             // Then
             const statusFiltersIcon = screen.getByAltText(
@@ -553,7 +621,9 @@ describe('src | components | pages | Offers | Offers', () => {
             await renderOffers(props, store)
 
             // When
-            await fireEvent.click(screen.getByAltText('Supprimer le filtre par structure'))
+            await fireEvent.click(
+              screen.getByAltText('Supprimer le filtre par structure')
+            )
 
             // Then
             const statusFiltersIcon = screen.getByAltText(
@@ -580,7 +650,10 @@ describe('src | components | pages | Offers | Offers', () => {
             })
 
             // When
-            userEvent.selectOptions(screen.getByLabelText('Lieu'), venueOptionToSelect)
+            userEvent.selectOptions(
+              screen.getByLabelText('Lieu'),
+              venueOptionToSelect
+            )
 
             // Then
             const statusFiltersIcon = screen.getByAltText(
@@ -624,7 +697,9 @@ describe('src | components | pages | Offers | Offers', () => {
             renderOffers(props, store)
 
             // Then
-            const selectAllOffersCheckbox = await screen.findByLabelText('Tout sélectionner')
+            const selectAllOffersCheckbox = await screen.findByLabelText(
+              'Tout sélectionner'
+            )
             expect(selectAllOffersCheckbox).toBeDisabled()
           })
 
@@ -639,7 +714,8 @@ describe('src | components | pages | Offers | Offers', () => {
             })
 
             // Then
-            const selectAllOffersCheckbox = screen.getByLabelText('Tout sélectionner')
+            const selectAllOffersCheckbox =
+              screen.getByLabelText('Tout sélectionner')
             expect(selectAllOffersCheckbox).not.toBeDisabled()
           })
 
@@ -648,12 +724,16 @@ describe('src | components | pages | Offers | Offers', () => {
             renderOffers(props, store)
 
             // When
-            fireEvent.change(await screen.findByDisplayValue('Tous les lieux'), {
-              target: { value: 'JI' },
-            })
+            fireEvent.change(
+              await screen.findByDisplayValue('Tous les lieux'),
+              {
+                target: { value: 'JI' },
+              }
+            )
 
             // Then
-            const selectAllOffersCheckbox = screen.getByLabelText('Tout sélectionner')
+            const selectAllOffersCheckbox =
+              screen.getByLabelText('Tout sélectionner')
             expect(selectAllOffersCheckbox).toBeDisabled()
           })
 
@@ -665,7 +745,9 @@ describe('src | components | pages | Offers | Offers', () => {
             renderOffers(props, store)
 
             // Then
-            const selectAllOffersCheckbox = await screen.findByLabelText('Tout sélectionner')
+            const selectAllOffersCheckbox = await screen.findByLabelText(
+              'Tout sélectionner'
+            )
             expect(selectAllOffersCheckbox).not.toBeDisabled()
           })
 
@@ -677,7 +759,9 @@ describe('src | components | pages | Offers | Offers', () => {
             renderOffers(props, store)
 
             // Then
-            const selectAllOffersCheckbox = await screen.findByLabelText('Tout sélectionner')
+            const selectAllOffersCheckbox = await screen.findByLabelText(
+              'Tout sélectionner'
+            )
             expect(selectAllOffersCheckbox).not.toBeDisabled()
           })
         })
@@ -709,9 +793,15 @@ describe('src | components | pages | Offers | Offers', () => {
 
         // Then
         await screen.findByText(offers[0].name)
-        expect(screen.queryByTestId(`select-offer-${offers[0].id}`)).toBeDisabled()
-        expect(screen.queryByTestId(`select-offer-${offers[1].id}`)).toBeDisabled()
-        expect(screen.queryByTestId(`select-offer-${offers[2].id}`)).toBeEnabled()
+        expect(
+          screen.queryByTestId(`select-offer-${offers[0].id}`)
+        ).toBeDisabled()
+        expect(
+          screen.queryByTestId(`select-offer-${offers[1].id}`)
+        ).toBeDisabled()
+        expect(
+          screen.queryByTestId(`select-offer-${offers[2].id}`)
+        ).toBeEnabled()
       })
     })
   })
@@ -740,9 +830,12 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should load offers with written offer name filter', async () => {
       // Given
       renderOffers(props, store)
-      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'), {
-        target: { value: 'Any word' },
-      })
+      fireEvent.change(
+        screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'),
+        {
+          target: { value: 'Any word' },
+        }
+      )
 
       // When
       fireEvent.click(screen.getByText('Lancer la recherche'))
@@ -763,7 +856,9 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should load offers with selected venue filter', async () => {
       // Given
       await renderOffers(props, store)
-      const firstVenueOption = await screen.findByRole('option', { name: proVenues[0].name })
+      const firstVenueOption = await screen.findByRole('option', {
+        name: proVenues[0].name,
+      })
       const venueSelect = screen.getByLabelText('Lieu')
       userEvent.selectOptions(venueSelect, firstVenueOption)
 
@@ -786,10 +881,15 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should load offers with selected type filter', async () => {
       // Given
       await renderOffers(props, store)
-      const firstTypeOption = await screen.findByRole('option', { name: 'Cinéma' })
-      const typeSelect = screen.getByDisplayValue(ALL_CATEGORIES_OPTION.displayName, {
-        selector: 'select[name="type"]',
+      const firstTypeOption = await screen.findByRole('option', {
+        name: 'Cinéma',
       })
+      const typeSelect = screen.getByDisplayValue(
+        ALL_CATEGORIES_OPTION.displayName,
+        {
+          selector: 'select[name="type"]',
+        }
+      )
       userEvent.selectOptions(typeSelect, firstTypeOption)
 
       // When
@@ -811,9 +911,13 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should load offers with selected creation mode filter', () => {
       // Given
       renderOffers(props, store)
-      const creationModeSelect = screen.getByDisplayValue(DEFAULT_CREATION_MODE.displayName)
+      const creationModeSelect = screen.getByDisplayValue(
+        DEFAULT_CREATION_MODE.displayName
+      )
       const importedCreationMode = CREATION_MODES_FILTERS[1].id
-      fireEvent.change(creationModeSelect, { target: { value: importedCreationMode } })
+      fireEvent.change(creationModeSelect, {
+        target: { value: importedCreationMode },
+      })
 
       // When
       fireEvent.click(screen.getByText('Lancer la recherche'))
@@ -882,9 +986,12 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should properly format received date', async () => {
       // Given
       renderOffers(props, store)
-      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'), {
-        target: { value: 'Any word' },
-      })
+      fireEvent.change(
+        screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'),
+        {
+          target: { value: 'Any word' },
+        }
+      )
 
       // When
       await fireEvent.click(screen.getByText('Lancer la recherche'))
@@ -905,9 +1012,12 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should set new date value on filters', async () => {
       // Given
       renderOffers(props, store)
-      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'), {
-        target: { value: 'Any word' },
-      })
+      fireEvent.change(
+        screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'),
+        {
+          target: { value: 'Any word' },
+        }
+      )
 
       // When
       await fireEvent.click(screen.getByText('Lancer la recherche'))
@@ -960,7 +1070,9 @@ describe('src | components | pages | Offers | Offers', () => {
       offersRecap = Array.from({ length: 11 }, offerFactory)
       pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
       renderOffers(props, store)
-      const nextPageIcon = await screen.findByAltText('Aller à la page suivante')
+      const nextPageIcon = await screen.findByAltText(
+        'Aller à la page suivante'
+      )
 
       // When
       fireEvent.click(nextPageIcon)
@@ -984,9 +1096,12 @@ describe('src | components | pages | Offers | Offers', () => {
       await renderOffers(props, store)
 
       // When
-      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'), {
-        target: { value: 'AnyWord' },
-      })
+      fireEvent.change(
+        screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'),
+        {
+          target: { value: 'AnyWord' },
+        }
+      )
       await fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
@@ -1006,7 +1121,9 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should store search value', async () => {
       // Given
       await renderOffers(props, store)
-      const searchInput = screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN')
+      const searchInput = screen.getByPlaceholderText(
+        'Rechercher par nom d’offre ou par ISBN'
+      )
 
       // When
       fireEvent.change(searchInput, { target: { value: 'search string' } })
@@ -1030,9 +1147,12 @@ describe('src | components | pages | Offers | Offers', () => {
       await renderOffers(props, store)
 
       // When
-      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'), {
-        target: { value: ALL_OFFERS },
-      })
+      fireEvent.change(
+        screen.getByPlaceholderText('Rechercher par nom d’offre ou par ISBN'),
+        {
+          target: { value: ALL_OFFERS },
+        }
+      )
       await fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
@@ -1052,7 +1172,9 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should have venue value when user filters by venue', async () => {
       // Given
       await renderOffers(props, store)
-      const firstVenueOption = await screen.findByRole('option', { name: proVenues[0].name })
+      const firstVenueOption = await screen.findByRole('option', {
+        name: proVenues[0].name,
+      })
       const venueSelect = screen.getByLabelText('Lieu')
 
       // When
@@ -1075,16 +1197,23 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
-      pcapi.loadCategories.mockResolvedValue({ categories: [
-        { id: 'test_id_1', proLabel: 'My test value' },
-        { id: 'test_id_2', proLabel: 'My second test value' },
-      ] })
+      pcapi.loadCategories.mockResolvedValue({
+        categories: [
+          { id: 'test_id_1', proLabel: 'My test value' },
+          { id: 'test_id_2', proLabel: 'My second test value' },
+        ],
+      })
 
       await renderOffers(props, store)
-      const firstTypeOption = await screen.findByRole('option', { name: 'My test value' })
-      const typeSelect = screen.getByDisplayValue(ALL_CATEGORIES_OPTION.displayName, {
-        selector: 'select[name="categorie"]',
+      const firstTypeOption = await screen.findByRole('option', {
+        name: 'My test value',
       })
+      const typeSelect = screen.getByDisplayValue(
+        ALL_CATEGORIES_OPTION.displayName,
+        {
+          selector: 'select[name="categorie"]',
+        }
+      )
 
       // When
       userEvent.selectOptions(typeSelect, firstTypeOption)
@@ -1106,9 +1235,13 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should have status value when user filters by status', async () => {
       // Given
-      props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', status: 'ACTIVE' }]
+      props.offers = [
+        { id: 'KE', availabilityMessage: 'Pas de stock', status: 'ACTIVE' },
+      ]
       renderOffers(props, store)
-      fireEvent.click(await screen.findByAltText('Afficher ou masquer le filtre par statut'))
+      fireEvent.click(
+        await screen.findByAltText('Afficher ou masquer le filtre par statut')
+      )
       fireEvent.click(screen.getByLabelText('Épuisée'))
 
       // When
@@ -1130,9 +1263,13 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should have status value be removed when user ask for all status', async () => {
       // Given
-      props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', status: 'ACTIVE' }]
+      props.offers = [
+        { id: 'KE', availabilityMessage: 'Pas de stock', status: 'ACTIVE' },
+      ]
       await renderOffers(props, store)
-      fireEvent.click(await screen.findByAltText('Afficher ou masquer le filtre par statut'))
+      fireEvent.click(
+        await screen.findByAltText('Afficher ou masquer le filtre par statut')
+      )
       fireEvent.click(screen.getByLabelText('Tous'))
 
       // When
@@ -1172,7 +1309,9 @@ describe('src | components | pages | Offers | Offers', () => {
       await renderOffers(props, store)
 
       // When
-      await fireEvent.click(screen.getByAltText('Supprimer le filtre par structure'))
+      await fireEvent.click(
+        screen.getByAltText('Supprimer le filtre par structure')
+      )
 
       // Then
       expect(screen.queryByText('La structure')).not.toBeInTheDocument()
@@ -1245,7 +1384,9 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledTimes(1)
-      expect(await screen.findByText(offers[10].name)).toBeInTheDocument()
+      await expect(
+        screen.findByText(offers[10].name)
+      ).resolves.toBeInTheDocument()
       expect(screen.queryByText(offers[0].name)).not.toBeInTheDocument()
     })
 
@@ -1255,7 +1396,9 @@ describe('src | components | pages | Offers | Offers', () => {
       pcapi.loadFilteredOffers.mockResolvedValueOnce(offers)
       renderOffers(props, store)
       const nextIcon = await screen.findByAltText('Aller à la page suivante')
-      const previousIcon = await screen.findByAltText('Aller à la page précédente')
+      const previousIcon = await screen.findByAltText(
+        'Aller à la page précédente'
+      )
       await fireEvent.click(nextIcon)
 
       // When
@@ -1263,7 +1406,9 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledTimes(1)
-      expect(await screen.findByText(offers[0].name)).toBeInTheDocument()
+      await expect(
+        screen.findByText(offers[0].name)
+      ).resolves.toBeInTheDocument()
       expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
     })
 
@@ -1275,7 +1420,9 @@ describe('src | components | pages | Offers | Offers', () => {
       renderOffers(props, store)
 
       // Then
-      const previousIcon = await screen.findByAltText('Aller à la page précédente')
+      const previousIcon = await screen.findByAltText(
+        'Aller à la page précédente'
+      )
       expect(previousIcon.closest('button')).toBeDisabled()
     })
 
@@ -1317,7 +1464,9 @@ describe('src | components | pages | Offers | Offers', () => {
         renderOffers(props, store)
 
         // Then
-        expect(await screen.findByText('Page 1/20')).toBeInTheDocument()
+        await expect(
+          screen.findByText('Page 1/20')
+        ).resolves.toBeInTheDocument()
       })
 
       it('should not display the 201st offer', async () => {
@@ -1333,7 +1482,9 @@ describe('src | components | pages | Offers | Offers', () => {
 
         // Then
         expect(screen.getByText(offersRecap[199].name)).toBeInTheDocument()
-        expect(screen.queryByText(offersRecap[200].name)).not.toBeInTheDocument()
+        expect(
+          screen.queryByText(offersRecap[200].name)
+        ).not.toBeInTheDocument()
       })
 
       it('should inform user on the last page there is more offers to fetch', async () => {
@@ -1373,7 +1524,9 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(actionBar).not.toBeVisible()
 
       // When
-      const checkbox = await screen.findByTestId(`select-offer-${offersRecap[0].id}`)
+      const checkbox = await screen.findByTestId(
+        `select-offer-${offersRecap[0].id}`
+      )
       await fireEvent.click(checkbox)
 
       // Then
@@ -1395,7 +1548,9 @@ describe('src | components | pages | Offers | Offers', () => {
         fireEvent.click(await screen.findByLabelText('Tout sélectionner'))
 
         // Then
-        expect(screen.queryByLabelText('Tout désélectionner')).toBeInTheDocument()
+        expect(
+          screen.queryByLabelText('Tout désélectionner')
+        ).toBeInTheDocument()
       })
 
       it('should check all validated offers checkboxes', async () => {
@@ -1418,10 +1573,18 @@ describe('src | components | pages | Offers | Offers', () => {
 
         renderOffers(props, store)
 
-        const firstOfferCheckbox = await screen.findByTestId(`select-offer-${offers[0].id}`)
-        const secondOfferCheckbox = await screen.findByTestId(`select-offer-${offers[1].id}`)
-        const thirdOfferCheckbox = await screen.findByTestId(`select-offer-${offers[2].id}`)
-        const fourthOfferCheckbox = await screen.findByTestId(`select-offer-${offers[3].id}`)
+        const firstOfferCheckbox = await screen.findByTestId(
+          `select-offer-${offers[0].id}`
+        )
+        const secondOfferCheckbox = await screen.findByTestId(
+          `select-offer-${offers[1].id}`
+        )
+        const thirdOfferCheckbox = await screen.findByTestId(
+          `select-offer-${offers[2].id}`
+        )
+        const fourthOfferCheckbox = await screen.findByTestId(
+          `select-offer-${offers[3].id}`
+        )
 
         // When
         fireEvent.click(screen.getByLabelText('Tout sélectionner'))
@@ -1446,12 +1609,19 @@ describe('src | components | pages | Offers | Offers', () => {
 
   describe('should reset filters', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
-      pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap).mockResolvedValueOnce([])
+      pcapi.loadFilteredOffers
+        .mockResolvedValueOnce(offersRecap)
+        .mockResolvedValueOnce([])
       await renderOffers(props, store)
-      const firstVenueOption = await screen.findByRole('option', { name: proVenues[0].name })
-      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
-        selector: 'select[name="lieu"]',
+      const firstVenueOption = await screen.findByRole('option', {
+        name: proVenues[0].name,
       })
+      const venueSelect = screen.getByDisplayValue(
+        ALL_VENUES_OPTION.displayName,
+        {
+          selector: 'select[name="lieu"]',
+        }
+      )
       userEvent.selectOptions(venueSelect, firstVenueOption)
 
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledTimes(1)
@@ -1476,12 +1646,19 @@ describe('src | components | pages | Offers | Offers', () => {
     })
 
     it('when clicking on "Réinitialiser les filtres"', async () => {
-      pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap).mockResolvedValueOnce([])
+      pcapi.loadFilteredOffers
+        .mockResolvedValueOnce(offersRecap)
+        .mockResolvedValueOnce([])
       await renderOffers(props, store)
-      const venueOptionToSelect = await screen.findByRole('option', { name: proVenues[0].name })
-      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
-        selector: 'select[name="lieu"]',
+      const venueOptionToSelect = await screen.findByRole('option', {
+        name: proVenues[0].name,
       })
+      const venueSelect = screen.getByDisplayValue(
+        ALL_VENUES_OPTION.displayName,
+        {
+          selector: 'select[name="lieu"]',
+        }
+      )
       userEvent.selectOptions(venueSelect, venueOptionToSelect)
 
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledTimes(1)

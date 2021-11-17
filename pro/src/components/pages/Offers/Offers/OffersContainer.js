@@ -1,7 +1,7 @@
 /*
-* @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
-* @debt deprecated "Gaël: deprecated usage of withQueryRouter"
-*/
+ * @debt standard "Gaël: prefer useSelector hook vs connect for redux (https://react-redux.js.org/api/hooks)"
+ * @debt deprecated "Gaël: deprecated usage of withQueryRouter"
+ */
 
 import { connect } from 'react-redux'
 import { compose } from 'redux'
@@ -30,4 +30,7 @@ export const mapDispatchToProps = dispatch => ({
     ),
 })
 
-export default compose(withQueryRouter(), connect(mapStateToProps, mapDispatchToProps))(Offers)
+export default compose(
+  withQueryRouter(),
+  connect(mapStateToProps, mapDispatchToProps)
+)(Offers)

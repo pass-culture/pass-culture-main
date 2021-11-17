@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
@@ -21,9 +21,7 @@ const BankInformation = ({ venue, offerer }) => {
   return (
     <div className="section vp-content-section bank-information">
       <div className="main-list-title title-actions-container">
-        <h2 className="main-list-title-text">
-          Coordonnées bancaires du lieu
-        </h2>
+        <h2 className="main-list-title-text">Coordonnées bancaires du lieu</h2>
 
         {(venueHasBankInformation || offererHasBankInformation) && (
           <a
@@ -32,30 +30,23 @@ const BankInformation = ({ venue, offerer }) => {
             rel="noopener noreferrer"
             target="_blank"
           >
-            <Icon
-              alt=""
-              svg="ico-external-site"
-            />
+            <Icon alt="" svg="ico-external-site" />
             Modifier
           </a>
         )}
       </div>
 
       {venueHasBankInformation ? (
-        <BicIbanFields
-          bic={venue.bic}
-          iban={venue.iban}
-        />
+        <BicIbanFields bic={venue.bic} iban={venue.iban} />
       ) : (
         <div>
           {offererHasBankInformation && (
-            <BicIbanFields
-              bic={offerer.bic}
-              iban={offerer.iban}
-            />
+            <BicIbanFields bic={offerer.bic} iban={offerer.iban} />
           )}
           {venueHasApplicationId && (
-            <ApplicationBanner applicationId={venue.demarchesSimplifieesApplicationId} />
+            <ApplicationBanner
+              applicationId={venue.demarchesSimplifieesApplicationId}
+            />
           )}
           {!offererHasBankInformation && !venueHasApplicationId && (
             <Fragment>
@@ -66,7 +57,8 @@ const BankInformation = ({ venue, offerer }) => {
                 href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
                 linkTitle="Renseignez les coordonnées bancaires du lieu"
               >
-                Renseignez vos coordonnées bancaires pour ce lieu pour être remboursé de vos offres éligibles
+                Renseignez vos coordonnées bancaires pour ce lieu pour être
+                remboursé de vos offres éligibles
               </Banner>
             </Fragment>
           )}

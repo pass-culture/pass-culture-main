@@ -39,7 +39,9 @@ describe('src | Offerer | BankInformation', () => {
     })
 
     // when
-    const wrapper = shallow(<BankInformation offerer={offererWithBankInformation} />)
+    const wrapper = shallow(
+      <BankInformation offerer={offererWithBankInformation} />
+    )
 
     // then
     const bankInstructions = wrapper.find({
@@ -70,7 +72,9 @@ describe('src | Offerer | BankInformation', () => {
     })
 
     // when
-    const wrapper = shallow(<BankInformation offerer={offererWithoutBankInformation} />)
+    const wrapper = shallow(
+      <BankInformation offerer={offererWithoutBankInformation} />
+    )
 
     // then
     expect(wrapper.find('Banner').first().props()).toStrictEqual({

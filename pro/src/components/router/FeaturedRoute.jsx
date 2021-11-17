@@ -28,19 +28,10 @@ const FeaturedRoute = props => {
   }
 
   if (!isActive) {
-    return (
-      <Route
-        component={NotMatch}
-        path={path}
-      />
-    )
+    return <Route component={NotMatch} path={path} />
   }
 
-  return (
-    <Route {...routeProps}>
-      {children}
-    </Route>
-  )
+  return <Route {...routeProps}>{children}</Route>
 }
 
 FeaturedRoute.defaultProps = {

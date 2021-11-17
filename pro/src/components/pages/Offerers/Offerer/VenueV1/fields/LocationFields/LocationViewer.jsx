@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 /* eslint-disable react/prop-types */
 import classnames from 'classnames'
@@ -42,7 +42,10 @@ class LocationViewer extends PureComponent {
       suggestions: [],
     }
     this.refmarker = React.createRef()
-    this.onDebouncedFetchSuggestions = debounce(this.fetchSuggestions, props.debounceTimeout)
+    this.onDebouncedFetchSuggestions = debounce(
+      this.fetchSuggestions,
+      props.debounceTimeout
+    )
   }
 
   static getDerivedStateFromProps = (newProps, state) => {
@@ -54,10 +57,14 @@ class LocationViewer extends PureComponent {
     const nextPosition = {
       latitude: latitude || newProps.defaultInitialPosition.latitude,
       longitude: longitude || newProps.defaultInitialPosition.longitude,
-      zoom: hasCoordinates ? newProps.zoom : newProps.defaultInitialPosition.zoom,
+      zoom: hasCoordinates
+        ? newProps.zoom
+        : newProps.defaultInitialPosition.zoom,
     }
     const isInputValueEmpty = newProps.value === ''
-    const nextInputValue = isInputValueEmpty ? '' : newProps.value || state.inputValue
+    const nextInputValue = isInputValueEmpty
+      ? ''
+      : newProps.value || state.inputValue
     const nextStateWithPositionAndInputValue = {
       inputValue: nextInputValue,
       position: nextPosition,
@@ -86,7 +93,8 @@ class LocationViewer extends PureComponent {
     if (readOnly) {
       return
     }
-    const { lat: latitude, lng: longitude } = this.refmarker.current.leafletElement.getLatLng()
+    const { lat: latitude, lng: longitude } =
+      this.refmarker.current.leafletElement.getLatLng()
 
     this.setState({
       marker: {
@@ -179,39 +187,39 @@ class LocationViewer extends PureComponent {
     // NOTE: CANNOT EXPRESS THIS WITH AWAIT ASYNC
     // BECAUSE this.props cannot be found in that case...
     // weird
-    getSuggestionsFromAddressAndMaxSuggestions(address, maxSuggestions).then(result => {
-      if (result.error) {
-        return
-      }
+    getSuggestionsFromAddressAndMaxSuggestions(address, maxSuggestions).then(
+      result => {
+        if (result.error) {
+          return
+        }
 
-      const hasNoData = result.data.length === 0
-      if (hasNoData) {
+        const hasNoData = result.data.length === 0
+        if (hasNoData) {
+          this.setState({
+            isLoading: false,
+          })
+          return
+        }
+
+        const defaultSuggestion = {
+          label: placeholder,
+          placeholder: true,
+          id: 'placeholder',
+        }
+
+        const suggestions = result.data.concat(defaultSuggestion)
         this.setState({
           isLoading: false,
+          suggestions,
         })
-        return
       }
-
-      const defaultSuggestion = {
-        label: placeholder,
-        placeholder: true,
-        id: 'placeholder',
-      }
-
-      const suggestions = result.data.concat(defaultSuggestion)
-      this.setState({
-        isLoading: false,
-        suggestions,
-      })
-    })
+    )
   }
 
   renderSuggestionsMenu = suggestionElements => {
     const empty = suggestionElements.length === 0
     return (
-      <div className={classnames('menu', { empty })}>
-        {suggestionElements}
-      </div>
+      <div className={classnames('menu', { empty })}>{suggestionElements}</div>
     )
   }
 
@@ -231,7 +239,8 @@ class LocationViewer extends PureComponent {
   onHandleGetItemValue = value => value.label
 
   renderInput() {
-    const { className, id, name, placeholder, readOnly, required, value } = this.props
+    const { className, id, name, placeholder, readOnly, required, value } =
+      this.props
     const { inputValue, isLoading, suggestions } = this.state
 
     if (readOnly) {
@@ -267,12 +276,7 @@ class LocationViewer extends PureComponent {
           value={value || inputValue}
           wrapperProps={{ className: 'input-wrapper' }}
         />
-        {isLoading && (
-          <button
-            className="button is-loading"
-            type="button"
-          />
-        )}
+        {isLoading && <button className="button is-loading" type="button" />}
       </Fragment>
     )
   }

@@ -9,7 +9,9 @@ const inputUserEmail = Selector('input[type="email"]')
 const forgotPasswordLink = Selector('#lostPasswordLink')
 const sendTokenButton = Selector('.password-reset-request button')
 const pageH1 = Selector('h1')
-const submitNewPasswordButton = Selector('.password-reset-request-form .submit-button')
+const submitNewPasswordButton = Selector(
+  '.password-reset-request-form .submit-button'
+)
 const userNewPasswordInput = Selector('input[name="newPasswordValue"]')
 
 fixture('En étant déconnecté de l’application').page(`${ROOT_PATH}connexion`)
@@ -18,7 +20,10 @@ test('je clique sur "mot de passe égaré", je remplis le formulaire avec une ad
   // given
   const {
     user: { email },
-  } = await fetchSandbox('pro_11_lost_password', 'get_pro_validated_no_reset_password_token_user')
+  } = await fetchSandbox(
+    'pro_11_lost_password',
+    'get_pro_validated_no_reset_password_token_user'
+  )
   await t
     .click(forgotPasswordLink)
     .expect(getPathname())
@@ -43,12 +48,21 @@ test('je clique sur le lien reçu par e-mail, je saisis mon nouveau mot de passe
   // given
   const {
     user: { resetPasswordToken },
-  } = await fetchSandbox('pro_11_lost_password', 'get_pro_validated_with_reset_password_token_user')
+  } = await fetchSandbox(
+    'pro_11_lost_password',
+    'get_pro_validated_with_reset_password_token_user'
+  )
   await t.navigateTo(`/mot-de-passe-perdu?token=${resetPasswordToken}`)
 
   // when
-  await t.typeText(userNewPasswordInput, 'user@AZERTY123').click(submitNewPasswordButton)
+  await t
+    .typeText(userNewPasswordInput, 'user@AZERTY123')
+    .click(submitNewPasswordButton)
 
   // then
-  await t.expect(getPathname()).eql('/mot-de-passe-perdu').expect(getUrlParams()).eql('?change=1')
+  await t
+    .expect(getPathname())
+    .eql('/mot-de-passe-perdu')
+    .expect(getUrlParams())
+    .eql('?change=1')
 })

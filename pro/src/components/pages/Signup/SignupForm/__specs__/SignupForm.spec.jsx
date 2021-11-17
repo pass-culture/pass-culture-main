@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { mount } from 'enzyme'
 import { createBrowserHistory } from 'history'
@@ -36,7 +36,9 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const signUpFormTitle = wrapper.find({ children: 'Créer votre compte professionnel' })
+      const signUpFormTitle = wrapper.find({
+        children: 'Créer votre compte professionnel',
+      })
       expect(signUpFormTitle).toHaveLength(1)
     })
 
@@ -50,7 +52,8 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
       // then
       const signUpFormSubTitle = wrapper.find({
-        children: 'Merci de compléter les champs suivants pour créer votre compte.',
+        children:
+          'Merci de compléter les champs suivants pour créer votre compte.',
       })
       expect(signUpFormSubTitle).toHaveLength(1)
     })
@@ -82,7 +85,9 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const helpCenterLink = wrapper.find({ children: 'Consulter notre centre d’aide' }).parent('a')
+      const helpCenterLink = wrapper
+        .find({ children: 'Consulter notre centre d’aide' })
+        .parent('a')
       expect(helpCenterLink).toHaveLength(1)
       expect(helpCenterLink.prop('href')).toBe(
         'https://aide.passculture.app/fr/articles/5095632-comment-creer-un-compte-d-acteur-partenaire'
@@ -98,9 +103,13 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const cguLink = wrapper.find({ children: 'Conditions Générales d’Utilisation' }).parent('a')
+      const cguLink = wrapper
+        .find({ children: 'Conditions Générales d’Utilisation' })
+        .parent('a')
       expect(cguLink).toHaveLength(1)
-      expect(cguLink.prop('href')).toBe('https://pass.culture.fr/cgu-professionnels/')
+      expect(cguLink.prop('href')).toBe(
+        'https://pass.culture.fr/cgu-professionnels/'
+      )
     })
 
     it('should display an external link to GDPR chart', () => {
@@ -112,9 +121,13 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const gdprLink = wrapper.find({ children: 'Charte des Données Personnelles' }).parent('a')
+      const gdprLink = wrapper
+        .find({ children: 'Charte des Données Personnelles' })
+        .parent('a')
       expect(gdprLink).toHaveLength(1)
-      expect(gdprLink.prop('href')).toBe('https://pass.culture.fr/donnees-personnelles/')
+      expect(gdprLink.prop('href')).toBe(
+        'https://pass.culture.fr/donnees-personnelles/'
+      )
     })
 
     it('should display a mail to support', () => {
@@ -126,9 +139,13 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const mailToSupportLink = wrapper.find({ children: 'contactez notre support.' }).parent('a')
+      const mailToSupportLink = wrapper
+        .find({ children: 'contactez notre support.' })
+        .parent('a')
       expect(mailToSupportLink).toHaveLength(1)
-      expect(mailToSupportLink.prop('href')).toBe('mailto:support@passculture.app')
+      expect(mailToSupportLink.prop('href')).toBe(
+        'mailto:support@passculture.app'
+      )
     })
 
     it('should render a disabled submit button when required inputs are not filled', () => {
@@ -233,7 +250,9 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
       // then
       const field = wrapper.find('label').at(4)
-      expect(field.text()).toBe('Téléphone (utilisé uniquement par l’équipe du pass Culture)')
+      expect(field.text()).toBe(
+        'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
+      )
       const input = field.find('input')
       expect(input.prop('name')).toBe('phoneNumber')
       expect(input.prop('placeholder')).toBe('Mon numéro de téléphone')
@@ -267,7 +286,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       // then
       const field = wrapper.find('label').at(6)
       expect(field.text()).toBe(
-        "J’accepte d’être contacté par e-mail pour recevoir les nouveautés du pass Culture et contribuer à son amélioration (facultatif)"
+        'J’accepte d’être contacté par e-mail pour recevoir les nouveautés du pass Culture et contribuer à son amélioration (facultatif)'
       )
       const input = field.find('input')
       expect(input.prop('name')).toBe('contactOk')
@@ -301,7 +320,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       // then
       const link = wrapper.find(Link)
       expect(link).toHaveLength(1)
-      expect(link.prop('to')).toStrictEqual('/connexion')
+      expect(link.prop('to')).toBe('/connexion')
     })
 
     it('should render a SubmitButton component with the right props', () => {

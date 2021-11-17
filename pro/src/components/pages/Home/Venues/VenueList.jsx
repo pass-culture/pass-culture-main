@@ -1,13 +1,17 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
 
 import Venue from 'components/pages/Home/Venues/VenueLegacy'
 
-export const VenueList = ({ physicalVenues, selectedOffererId, virtualVenue }) => (
+export const VenueList = ({
+  physicalVenues,
+  selectedOffererId,
+  virtualVenue,
+}) => (
   <div className="h-venue-list">
     {virtualVenue && (
       <Venue

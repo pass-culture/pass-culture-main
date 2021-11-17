@@ -16,7 +16,11 @@ export const formatAndOrderVenues = venues => {
   const sortAlphabeticallyByDisplayName = (a, b) => {
     let aDisplayName = a.displayName.toLowerCase()
     let bDisplayName = b.displayName.toLowerCase()
-    return aDisplayName < bDisplayName ? -1 : aDisplayName > bDisplayName ? 1 : 0
+    return aDisplayName < bDisplayName
+      ? -1
+      : aDisplayName > bDisplayName
+      ? 1
+      : 0
   }
 
   return venues

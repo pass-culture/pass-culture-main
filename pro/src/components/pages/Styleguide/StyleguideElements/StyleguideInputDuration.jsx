@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within storybook"
-*/
+ * @debt directory "Gaël: this file should be migrated within storybook"
+ */
 
 import React from 'react'
 
@@ -43,9 +43,7 @@ const StyleguideInputDuration = () => {
 
   return (
     <div>
-      <h3>
-        Champs de durée
-      </h3>
+      <h3>Champs de durée</h3>
       <div className="flex-block">
         <DurationInput
           label="Intitulé"
@@ -56,16 +54,12 @@ const StyleguideInputDuration = () => {
         />
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {inputDurationEnabled}
-            </code>
+            <code>{inputDurationEnabled}</code>
           </pre>
         </div>
       </div>
       <br />
-      <h3>
-        Champs de durée read only
-      </h3>
+      <h3>Champs de durée read only</h3>
       <div className="flex-block">
         <DurationInput
           label="Intitulé"
@@ -77,17 +71,13 @@ const StyleguideInputDuration = () => {
         />
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {inputDurationReadOnly}
-            </code>
+            <code>{inputDurationReadOnly}</code>
           </pre>
         </div>
       </div>
       <br />
       <hr />
-      <h3>
-        Champs de durée en erreur
-      </h3>
+      <h3>Champs de durée en erreur</h3>
       <div className="flex-block">
         <DurationInput
           error="Ce champs comporte une erreur"
@@ -99,9 +89,7 @@ const StyleguideInputDuration = () => {
         />
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {inputDurationWithError}
-            </code>
+            <code>{inputDurationWithError}</code>
           </pre>
         </div>
       </div>

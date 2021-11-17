@@ -1,6 +1,6 @@
 /*
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 import React from 'react'
@@ -42,12 +42,16 @@ describe('src | components | pages | Signup', () => {
     wrapper.update()
 
     // then
-    await enzymeWaitFor(() => expect(campaignTracker.signUp).toHaveBeenCalledTimes(1))
+    await enzymeWaitFor(() =>
+      expect(campaignTracker.signUp).toHaveBeenCalledTimes(1)
+    )
 
     // when rerender
     wrapper.setProps(props)
 
     // then
-    await enzymeWaitFor(() => expect(campaignTracker.signUp).toHaveBeenCalledTimes(1))
+    await enzymeWaitFor(() =>
+      expect(campaignTracker.signUp).toHaveBeenCalledTimes(1)
+    )
   })
 })

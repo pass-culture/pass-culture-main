@@ -16,7 +16,9 @@ export const getAccessibilityValues = values => {
 }
 
 export const checkHasNoDisabilityCompliance = values => {
-  const disabilityCompliantValues = Object.values(getAccessibilityValues(values))
+  const disabilityCompliantValues = Object.values(
+    getAccessibilityValues(values)
+  )
   const unknownDisabilityCompliance = disabilityCompliantValues.includes(null)
   const hasDisabilityCompliance = disabilityCompliantValues.includes(true)
   if (hasDisabilityCompliance || unknownDisabilityCompliance) {
@@ -26,7 +28,10 @@ export const checkHasNoDisabilityCompliance = values => {
   return true
 }
 
-export const getAccessibilityInitialValues = ({ offer = null, venue = null }) => {
+export const getAccessibilityInitialValues = ({
+  offer = null,
+  venue = null,
+}) => {
   const emptyAccessibility = {
     audioDisabilityCompliant: null,
     mentalDisabilityCompliant: null,
@@ -34,11 +39,16 @@ export const getAccessibilityInitialValues = ({ offer = null, venue = null }) =>
     visualDisabilityCompliant: null,
   }
 
-  let accessibility = offer ? getAccessibilityValues(offer) : { ...emptyAccessibility }
+  let accessibility = offer
+    ? getAccessibilityValues(offer)
+    : { ...emptyAccessibility }
   if (Object.values(accessibility).includes(null)) {
-    accessibility = venue ? getAccessibilityValues(venue) : { ...emptyAccessibility }
+    accessibility = venue
+      ? getAccessibilityValues(venue)
+      : { ...emptyAccessibility }
   }
-  accessibility.noDisabilityCompliant = checkHasNoDisabilityCompliance(accessibility)
+  accessibility.noDisabilityCompliant =
+    checkHasNoDisabilityCompliance(accessibility)
   accessibility = Object.keys(accessibility).reduce(
     (acc, fieldName) => ({ ...acc, [fieldName]: !!accessibility[fieldName] }),
     {}

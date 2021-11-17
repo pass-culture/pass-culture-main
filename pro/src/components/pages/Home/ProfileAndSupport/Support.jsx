@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import React from 'react'
 
@@ -10,9 +10,7 @@ const Support = () => {
   return (
     <div className="h-support h-card h-card-secondary-hover">
       <div className="h-card-inner">
-        <h3 className="h-card-title">
-          Aide et support
-        </h3>
+        <h3 className="h-card-title">Aide et support</h3>
 
         <div className="h-card-content">
           <ul className="hs-link-list">
@@ -38,10 +36,7 @@ const Support = () => {
                 target="_blank"
               >
                 <div className="ico-container">
-                  <Icon
-                    className="ico-mail"
-                    svg="ico-mail"
-                  />
+                  <Icon className="ico-mail" svg="ico-mail" />
                 </div>
                 Contacter le support
               </a>

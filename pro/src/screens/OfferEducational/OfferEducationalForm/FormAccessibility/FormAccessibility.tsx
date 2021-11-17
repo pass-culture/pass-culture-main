@@ -18,11 +18,10 @@ const FormAccessibility = (): JSX.Element => {
           <Checkbox
             key={value}
             label={label}
-            name='accessibility'
+            name="accessibility"
             value={value}
           />
         ))}
-
       </div>
     </FormSection>
   )

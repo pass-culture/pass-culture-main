@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import * as PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
@@ -35,7 +35,11 @@ export const SubtypeSelects = ({
 
       setSubTypesOptions(prevOptions => ({
         ...prevOptions,
-        musicSubType: buildSelectOptions('code', 'label', selectedMusicTypeChildren),
+        musicSubType: buildSelectOptions(
+          'code',
+          'label',
+          selectedMusicTypeChildren
+        ),
       }))
     } else {
       setSubTypesOptions(prevOptions => ({
@@ -53,7 +57,11 @@ export const SubtypeSelects = ({
 
       setSubTypesOptions(prevOptions => ({
         ...prevOptions,
-        showSubType: buildSelectOptions('code', 'label', selectedShowTypeChildren),
+        showSubType: buildSelectOptions(
+          'code',
+          'label',
+          selectedShowTypeChildren
+        ),
       }))
     } else {
       setSubTypesOptions(prevOptions => ({
@@ -78,7 +86,9 @@ export const SubtypeSelects = ({
             name="musicType"
             options={subTypesOptions.musicType}
             required
-            selectedValue={categoriesFormValues.musicType || DEFAULT_FORM_VALUES.musicType}
+            selectedValue={
+              categoriesFormValues.musicType || DEFAULT_FORM_VALUES.musicType
+            }
             subLabel="Optionnel"
           />
         </div>
@@ -97,7 +107,10 @@ export const SubtypeSelects = ({
             name="musicSubType"
             options={subTypesOptions.musicSubType}
             required
-            selectedValue={categoriesFormValues.musicSubType || DEFAULT_FORM_VALUES.musicSubType}
+            selectedValue={
+              categoriesFormValues.musicSubType ||
+              DEFAULT_FORM_VALUES.musicSubType
+            }
             sublabel="Optionnel"
           />
         </div>
@@ -116,7 +129,9 @@ export const SubtypeSelects = ({
             name="showType"
             options={subTypesOptions.showType}
             required
-            selectedValue={categoriesFormValues.showType || DEFAULT_FORM_VALUES.showType}
+            selectedValue={
+              categoriesFormValues.showType || DEFAULT_FORM_VALUES.showType
+            }
             subLabel="Optionnel"
           />
         </div>
@@ -135,7 +150,10 @@ export const SubtypeSelects = ({
             name="showSubType"
             options={subTypesOptions.showSubType}
             required
-            selectedValue={categoriesFormValues.showSubType || DEFAULT_FORM_VALUES.showSubType}
+            selectedValue={
+              categoriesFormValues.showSubType ||
+              DEFAULT_FORM_VALUES.showSubType
+            }
             sublabel="Optionnel"
           />
         </div>
@@ -151,7 +169,8 @@ SubtypeSelects.propTypes = {
     showType: PropTypes.string,
     showSubType: PropTypes.string,
   }).isRequired,
-  currentSubCategoryConditionalFields: PropTypes.arrayOf(PropTypes.string).isRequired,
+  currentSubCategoryConditionalFields: PropTypes.arrayOf(PropTypes.string)
+    .isRequired,
   handleSelection: PropTypes.func.isRequired,
   readOnlyFields: PropTypes.arrayOf(PropTypes.string).isRequired,
 }

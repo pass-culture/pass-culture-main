@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -47,9 +47,15 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     renderActionsBar(props)
 
     // then
-    expect(screen.queryByText('Activer', { selector: 'button' })).toBeInTheDocument()
-    expect(screen.queryByText('Désactiver', { selector: 'button' })).toBeInTheDocument()
-    expect(screen.queryByText('Annuler', { selector: 'button' })).toBeInTheDocument()
+    expect(
+      screen.queryByText('Activer', { selector: 'button' })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('Désactiver', { selector: 'button' })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('Annuler', { selector: 'button' })
+    ).toBeInTheDocument()
   })
 
   it('should say how many offers are selected when only 1 offer is selected', () => {
@@ -96,10 +102,18 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(false, expectedBody)
+        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(
+          false,
+          expectedBody
+        )
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
-        expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })
-        expect(props.trackActivateOffers).toHaveBeenCalledWith(['testId1', 'testId2'])
+        expect(props.refreshOffers).toHaveBeenCalledWith({
+          shouldTriggerSpinner: false,
+        })
+        expect(props.trackActivateOffers).toHaveBeenCalledWith([
+          'testId1',
+          'testId2',
+        ])
       })
     })
 
@@ -113,7 +127,9 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(props.showSuccessNotification).toHaveBeenCalledWith('1 offre a bien été activée')
+        expect(props.showSuccessNotification).toHaveBeenCalledWith(
+          '1 offre a bien été activée'
+        )
       })
     })
 
@@ -126,7 +142,9 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(props.showSuccessNotification).toHaveBeenCalledWith('2 offres ont bien été activées')
+        expect(props.showSuccessNotification).toHaveBeenCalledWith(
+          '2 offres ont bien été activées'
+        )
       })
     })
   })
@@ -145,10 +163,18 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(false, expectedBody)
+        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(
+          false,
+          expectedBody
+        )
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
-        expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })
-        expect(props.trackDeactivateOffers).toHaveBeenCalledWith(['testId1', 'testId2'])
+        expect(props.refreshOffers).toHaveBeenCalledWith({
+          shouldTriggerSpinner: false,
+        })
+        expect(props.trackDeactivateOffers).toHaveBeenCalledWith([
+          'testId1',
+          'testId2',
+        ])
       })
     })
 
@@ -162,7 +188,9 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(props.showSuccessNotification).toHaveBeenCalledWith('1 offre a bien été désactivée')
+        expect(props.showSuccessNotification).toHaveBeenCalledWith(
+          '1 offre a bien été désactivée'
+        )
       })
     })
 
@@ -211,9 +239,14 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(true, expectedBody)
+        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(
+          true,
+          expectedBody
+        )
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
-        expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })
+        expect(props.refreshOffers).toHaveBeenCalledWith({
+          shouldTriggerSpinner: false,
+        })
         expect(props.showPendingNotification).toHaveBeenCalledWith(
           'Les offres sont en cours d’activation, veuillez rafraichir dans quelques instants'
         )
@@ -238,9 +271,14 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(true, expectedBody)
+        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(
+          true,
+          expectedBody
+        )
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
-        expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })
+        expect(props.refreshOffers).toHaveBeenCalledWith({
+          shouldTriggerSpinner: false,
+        })
         expect(props.showPendingNotification).toHaveBeenCalledWith(
           'Les offres sont en cours de désactivation, veuillez rafraichir dans quelques instants'
         )

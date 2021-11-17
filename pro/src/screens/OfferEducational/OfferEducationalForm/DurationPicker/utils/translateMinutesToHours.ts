@@ -1,4 +1,6 @@
-export const translateMinutesToHours = (durationInMinutes: number | null): string => {
+export const translateMinutesToHours = (
+  durationInMinutes: number | null
+): string => {
   if (durationInMinutes === null || durationInMinutes === undefined) {
     return ''
   }

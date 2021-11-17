@@ -24,7 +24,9 @@ describe('components | PeriodSelector', () => {
     // Given
     const selectedDate = new Date('2020-05-20')
     const wrapper = shallow(<PeriodSelector {...props} />)
-    const beginningDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
+    const beginningDateInput = wrapper
+      .find({ placeholderText: 'JJ/MM/AAAA' })
+      .at(0)
 
     // When
     beginningDateInput.simulate('change', selectedDate)
@@ -37,7 +39,9 @@ describe('components | PeriodSelector', () => {
     // Given
     const selectedDate = new Date('2020-05-20')
     const wrapper = shallow(<PeriodSelector {...props} />)
-    const endingDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(1)
+    const endingDateInput = wrapper
+      .find({ placeholderText: 'JJ/MM/AAAA' })
+      .at(1)
 
     // When
     endingDateInput.simulate('change', selectedDate)
@@ -53,10 +57,14 @@ describe('components | PeriodSelector', () => {
     const wrapper = shallow(<PeriodSelector {...props} />)
 
     // When
-    const bookingBeginningDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
+    const bookingBeginningDateInput = wrapper
+      .find({ placeholderText: 'JJ/MM/AAAA' })
+      .at(0)
 
     // Then
-    expect(bookingBeginningDateInput.prop('maxDate')).toStrictEqual(selectedDate)
+    expect(bookingBeginningDateInput.prop('maxDate')).toStrictEqual(
+      selectedDate
+    )
   })
 
   it('should not allow to select ending date inferior to beginning date value', async () => {
@@ -66,7 +74,9 @@ describe('components | PeriodSelector', () => {
     const wrapper = shallow(<PeriodSelector {...props} />)
 
     // When
-    const bookingEndingDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(1)
+    const bookingEndingDateInput = wrapper
+      .find({ placeholderText: 'JJ/MM/AAAA' })
+      .at(1)
 
     // Then
     expect(bookingEndingDateInput.prop('minDate')).toStrictEqual(selectedDate)

@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen } from '@testing-library/react'
@@ -13,7 +13,11 @@ describe('useFrenchQuery', () => {
   it('should translate french query param to english', () => {
     // When
     render(
-      <MemoryRouter initialEntries={[{ pathname: '/accueil', search: '?structure=AY&lieu=BC' }]}>
+      <MemoryRouter
+        initialEntries={[
+          { pathname: '/accueil', search: '?structure=AY&lieu=BC' },
+        ]}
+      >
         <UseFrenchQueryTestingExample />
       </MemoryRouter>
     )
@@ -26,14 +30,22 @@ describe('useFrenchQuery', () => {
   it('should allow update on french query params from english', () => {
     // Given
     render(
-      <MemoryRouter initialEntries={[{ pathname: '/accueil', search: '?structure=AY&lieu=BC' }]}>
+      <MemoryRouter
+        initialEntries={[
+          { pathname: '/accueil', search: '?structure=AY&lieu=BC' },
+        ]}
+      >
         <UseFrenchQueryTestingExample />
       </MemoryRouter>
     )
 
     // When
-    fireEvent.change(screen.getByLabelText('offererId'), { target: { value: 'DE' } })
-    fireEvent.change(screen.getByLabelText('venueId'), { target: { value: 'FG' } })
+    fireEvent.change(screen.getByLabelText('offererId'), {
+      target: { value: 'DE' },
+    })
+    fireEvent.change(screen.getByLabelText('venueId'), {
+      target: { value: 'FG' },
+    })
     fireEvent.click(screen.getByRole('button', { name: 'Update query params' }))
 
     // Then
@@ -46,7 +58,11 @@ describe('useFrenchQuery', () => {
   it('should not trigger renders when query did not change', () => {
     // When
     render(
-      <MemoryRouter initialEntries={[{ pathname: '/accueil', search: '?structure=AY&lieu=BC' }]}>
+      <MemoryRouter
+        initialEntries={[
+          { pathname: '/accueil', search: '?structure=AY&lieu=BC' },
+        ]}
+      >
         <UseFrenchQueryTestingExample />
       </MemoryRouter>
     )
@@ -58,12 +74,18 @@ describe('useFrenchQuery', () => {
   it('should guarantee that setter function identity is stable and won’t change on re-renders to avoid unwanted side effects', () => {
     // When
     render(
-      <MemoryRouter initialEntries={[{ pathname: '/accueil', search: '?structure=AY&lieu=BC' }]}>
+      <MemoryRouter
+        initialEntries={[
+          { pathname: '/accueil', search: '?structure=AY&lieu=BC' },
+        ]}
+      >
         <UseFrenchQueryTestingExample />
       </MemoryRouter>
     )
 
     // Then
-    expect(screen.getByText('Number of setter identities: 1')).toBeInTheDocument()
+    expect(
+      screen.getByText('Number of setter identities: 1')
+    ).toBeInTheDocument()
   })
 })

@@ -16,9 +16,12 @@ export const resolveCurrentUser = userFromRequest => {
   return userFromRequest
 }
 
-export const selectIsUserAdmin = createSelector(selectCurrentUser, currentUser => {
-  if (!currentUser) {
-    return false
+export const selectIsUserAdmin = createSelector(
+  selectCurrentUser,
+  currentUser => {
+    if (!currentUser) {
+      return false
+    }
+    return currentUser.isAdmin
   }
-  return currentUser.isAdmin
-})
+)

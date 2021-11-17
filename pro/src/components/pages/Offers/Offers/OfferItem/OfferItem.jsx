@@ -41,22 +41,29 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
   const stockSize = stocks ? stocks.length : null
   const isOfferEditable = offer ? offer.isEditable : null
   const isOfferInactiveOrExpiredOrDisabled =
-    !offer.isActive || offer.hasBookingLimitDatetimesPassed || isOfferDisabled(offer.status)
+    !offer.isActive ||
+    offer.hasBookingLimitDatetimesPassed ||
+    isOfferDisabled(offer.status)
   const shouldShowSoldOutWarning =
-    computeNumberOfSoldOutStocks(stocks) > 0 && offer.status !== OFFER_STATUS_SOLD_OUT
+    computeNumberOfSoldOutStocks(stocks) > 0 &&
+    offer.status !== OFFER_STATUS_SOLD_OUT
 
   const getDateInformations = () => {
     return stockSize === 1
       ? formatLocalTimeDateString(
-        stocks[0].beginningDatetime,
-        venue.departementCode,
-        'dd/MM/yyyy HH:mm'
-      )
+          stocks[0].beginningDatetime,
+          venue.departementCode,
+          'dd/MM/yyyy HH:mm'
+        )
       : pluralize(stockSize, 'date')
   }
 
   return (
-    <tr className={`offer-item ${isOfferInactiveOrExpiredOrDisabled ? 'inactive' : ''} offer-row`}>
+    <tr
+      className={`offer-item ${
+        isOfferInactiveOrExpiredOrDisabled ? 'inactive' : ''
+      } offer-row`}
+    >
       <td className="select-column">
         <input
           checked={isSelected}
@@ -74,17 +81,12 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
           title="Afficher les détails de l'offre"
           to={`/offres/${offer.id}/edition`}
         >
-          <Thumb
-            alt="Miniature d'offre"
-            url={offer.thumbUrl}
-          />
+          <Thumb alt="Miniature d'offre" url={offer.thumbUrl} />
         </Link>
       </td>
       <td className="title-column">
         {offer.isEducational && (
-          <Tag className="educational-tag">
-            Offre collective
-          </Tag>
+          <Tag className="educational-tag">Offre collective</Tag>
         )}
         <Link
           className="name"
@@ -105,24 +107,21 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
                 />
                 <span className="sold-out-dates">
                   <Icon svg="ico-warning-stocks" />
-                  {pluralize(computeNumberOfSoldOutStocks(stocks), 'date épuisée')}
+                  {pluralize(
+                    computeNumberOfSoldOutStocks(stocks),
+                    'date épuisée'
+                  )}
                 </span>
               </div>
             )}
           </span>
         )}
-        {offer.productIsbn && (
-          <div className="isbn">
-            {offer.productIsbn}
-          </div>
-        )}
+        {offer.productIsbn && <div className="isbn">{offer.productIsbn}</div>}
       </td>
       <td className="venue-column">
         {venue && computeVenueDisplayName(venue)}
       </td>
-      <td className="stock-column">
-        {computeRemainingStockValue(stocks)}
-      </td>
+      <td className="stock-column">{computeRemainingStockValue(stocks)}</td>
       <td className="status-column">
         <StatusLabel status={offer.status} />
       </td>
@@ -137,10 +136,7 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
       </td>
       <td className="edit-column">
         {isOfferEditable && (
-          <Link
-            className="secondary-link"
-            to={`/offres/${offer.id}/edition`}
-          >
+          <Link className="secondary-link" to={`/offres/${offer.id}/edition`}>
             <Icon svg="ico-pen" />
           </Link>
         )}

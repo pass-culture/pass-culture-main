@@ -1,7 +1,7 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
@@ -20,7 +20,11 @@ import { NB_BOOKINGS_PER_PAGE } from './NB_BOOKINGS_PER_PAGE'
 import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
 import TableFrame from './Table/TableFrame'
 import filterBookingsRecap from './utils/filterBookingsRecap'
-import { sortByBeneficiaryName, sortByBookingDate, sortByOfferName } from './utils/sortingFunctions'
+import {
+  sortByBeneficiaryName,
+  sortByBookingDate,
+  sortByOfferName,
+} from './utils/sortingFunctions'
 
 const FIRST_PAGE_INDEX = 0
 
@@ -64,7 +68,9 @@ class BookingsRecapTable extends Component {
           headerTitle: 'Réservation',
           accessor: 'booking_date',
           /* eslint-disable react/no-unstable-nested-components */
-          Cell: ({ value }) => <BookingDateCell bookingDateTimeIsoString={value} />,
+          Cell: ({ value }) => (
+            <BookingDateCell bookingDateTimeIsoString={value} />
+          ),
           className: 'column-booking-date',
           defaultCanSort: true,
           sortType: sortByBookingDate,

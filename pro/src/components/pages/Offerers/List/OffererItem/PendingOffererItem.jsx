@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -11,15 +11,10 @@ const PendingOffererItem = ({ offerer }) => (
   <li className="offerer-item pending">
     <div className="list-content">
       <p>
-        <span className="name">
-          {offerer.name}
-        </span>
+        <span className="name">{offerer.name}</span>
         {` (SIREN: ${formatSirenOrSiret(offerer.siren)})`}
       </p>
-      <p
-        className="validating-status"
-        id="offerer-item-validation"
-      >
+      <p className="validating-status" id="offerer-item-validation">
         Rattachement en cours de validation
       </p>
     </div>

@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
@@ -8,7 +8,8 @@ import React from 'react'
 
 import BookingStatusCellHistory from '../BookingStatusCellHistory'
 
-const renderBookingStatusCellHistory = props => render(<BookingStatusCellHistory {...props} />)
+const renderBookingStatusCellHistory = props =>
+  render(<BookingStatusCellHistory {...props} />)
 
 describe('bookings status history cell', () => {
   it('should display the corresponding status and date when the offer is booked', () => {
@@ -62,7 +63,9 @@ describe('bookings status history cell', () => {
       renderBookingStatusCellHistory(props)
 
       // Then
-      expect(screen.getByText('Réservation validée : 05/01/2020 20:31')).toBeInTheDocument()
+      expect(
+        screen.getByText('Réservation validée : 05/01/2020 20:31')
+      ).toBeInTheDocument()
     })
     it('for reimbursed status', () => {
       // Given
@@ -96,7 +99,9 @@ describe('bookings status history cell', () => {
       renderBookingStatusCellHistory(props)
 
       // Then
-      expect(screen.getByText('Réservation confirmée : 06/01/2020 20:31')).toBeInTheDocument()
+      expect(
+        screen.getByText('Réservation confirmée : 06/01/2020 20:31')
+      ).toBeInTheDocument()
     })
   })
 

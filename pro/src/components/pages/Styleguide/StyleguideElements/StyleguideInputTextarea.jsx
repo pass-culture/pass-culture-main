@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within storybook"
-*/
+ * @debt directory "Gaël: this file should be migrated within storybook"
+ */
 
 import React from 'react'
 
@@ -61,9 +61,7 @@ const StyleguideInputTextarea = () => {
 
   return (
     <div>
-      <h3>
-        Champs textuel
-      </h3>
+      <h3>Champs textuel</h3>
       <div className="flex-block">
         <div className="it-content">
           <TextareaInput
@@ -77,9 +75,7 @@ const StyleguideInputTextarea = () => {
         </div>
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {inputTextareaEnabled}
-            </code>
+            <code>{inputTextareaEnabled}</code>
           </pre>
         </div>
       </div>
@@ -96,16 +92,12 @@ const StyleguideInputTextarea = () => {
         </div>
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {inputTextareaDisabled}
-            </code>
+            <code>{inputTextareaDisabled}</code>
           </pre>
         </div>
       </div>
       <hr />
-      <h3>
-        Champs textuel en erreur
-      </h3>
+      <h3>Champs textuel en erreur</h3>
       <div className="flex-block">
         <div className="it-content">
           <TextareaInput
@@ -120,16 +112,12 @@ const StyleguideInputTextarea = () => {
         </div>
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {inputTextareaWithError}
-            </code>
+            <code>{inputTextareaWithError}</code>
           </pre>
         </div>
       </div>
       <br />
-      <h3>
-        Champs avec compte de caractères
-      </h3>
+      <h3>Champs avec compte de caractères</h3>
       <div className="flex-block">
         <div className="it-content">
           <TextareaInput
@@ -145,9 +133,7 @@ const StyleguideInputTextarea = () => {
         </div>
         <div className="it-description">
           <pre className="it-icon-snippet">
-            <code>
-              {inputTextareaWithCaracterCount}
-            </code>
+            <code>{inputTextareaWithCaracterCount}</code>
           </pre>
         </div>
       </div>

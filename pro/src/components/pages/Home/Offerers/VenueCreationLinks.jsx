@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -10,7 +10,11 @@ import { Link } from 'react-router-dom'
 import { isAPISireneAvailable } from 'store/features/selectors'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
-const VenueCreationLinks = ({ hasPhysicalVenue, hasVirtualOffers, offererId }) => {
+const VenueCreationLinks = ({
+  hasPhysicalVenue,
+  hasVirtualOffers,
+  offererId,
+}) => {
   const isVenueCreationAvailable = useSelector(isAPISireneAvailable)
 
   const venueCreationUrl = isVenueCreationAvailable
@@ -25,7 +29,7 @@ const VenueCreationLinks = ({ hasPhysicalVenue, hasVirtualOffers, offererId }) =
       >
         {!hasPhysicalVenue ? 'Créer un lieu' : 'Ajouter un lieu'}
       </Link>
-      
+
       <Link
         className="secondary-link"
         to={`/offres/creation?structure=${offererId}`}
@@ -36,18 +40,14 @@ const VenueCreationLinks = ({ hasPhysicalVenue, hasVirtualOffers, offererId }) =
   )
 
   const renderCard = () => (
-    <div
-      className="h-card"
-      data-testid="offerers-creation-links-card"
-    >
+    <div className="h-card" data-testid="offerers-creation-links-card">
       <div className="h-card-inner">
-        <h3 className="h-card-title">
-          Lieux
-        </h3>
+        <h3 className="h-card-title">Lieux</h3>
 
         <div className="h-card-content">
           <p>
-            Avant de créer votre première offre physique vous devez avoir un lieu
+            Avant de créer votre première offre physique vous devez avoir un
+            lieu
           </p>
           {renderLinks({ insideCard: true })}
         </div>
@@ -57,7 +57,9 @@ const VenueCreationLinks = ({ hasPhysicalVenue, hasVirtualOffers, offererId }) =
 
   return (
     <div className="venue-banner">
-      {!(hasPhysicalVenue || hasVirtualOffers) ? renderCard() : renderLinks({ insideCard: false })}
+      {!(hasPhysicalVenue || hasVirtualOffers)
+        ? renderCard()
+        : renderLinks({ insideCard: false })}
     </div>
   )
 }

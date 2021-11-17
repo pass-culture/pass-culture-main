@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import { addDays, subDays } from 'date-fns'
 import PropTypes from 'prop-types'
@@ -45,9 +45,14 @@ const FilterByBookingPeriod = ({
 }
 
 FilterByBookingPeriod.propTypes = {
-  selectedBookingBeginningDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string])
-    .isRequired,
-  selectedBookingEndingDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]).isRequired,
+  selectedBookingBeginningDate: PropTypes.oneOfType([
+    PropTypes.shape(),
+    PropTypes.string,
+  ]).isRequired,
+  selectedBookingEndingDate: PropTypes.oneOfType([
+    PropTypes.shape(),
+    PropTypes.string,
+  ]).isRequired,
   updateFilters: PropTypes.func.isRequired,
 }
 

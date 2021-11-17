@@ -1,22 +1,23 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
 
-const InternalBanner = ({ extraClassName, href, linkTitle, subtitle, type }) => {
+const InternalBanner = ({
+  extraClassName,
+  href,
+  linkTitle,
+  subtitle,
+  type,
+}) => {
   return (
     <div className={`bi-banner ${type} ${extraClassName}`}>
-      <p>
-        {subtitle}
-      </p>
+      <p>{subtitle}</p>
 
       <p>
-        <a
-          className="bi-link tertiary-link"
-          href={href}
-        >
+        <a className="bi-link tertiary-link" href={href}>
           {linkTitle}
         </a>
       </p>

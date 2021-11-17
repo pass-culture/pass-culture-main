@@ -16,27 +16,31 @@ export default (state = initialState, action = {}) => {
         offerId: '',
         venueId: '',
       })
-    case action.type === 'BOOKING_SUMMARY_UPDATE_VENUE_ID' && action.payload === 'all':
+    case action.type === 'BOOKING_SUMMARY_UPDATE_VENUE_ID' &&
+      action.payload === 'all':
       return Object.assign({}, state, {
         bookingsFrom: '',
         bookingsTo: '',
         offerId: '',
         venueId: action.payload,
       })
-    case action.type === 'BOOKING_SUMMARY_UPDATE_VENUE_ID' && action.payload !== 'all':
+    case action.type === 'BOOKING_SUMMARY_UPDATE_VENUE_ID' &&
+      action.payload !== 'all':
       return Object.assign({}, state, {
         bookingsFrom: '',
         bookingsTo: '',
         offerId: '',
         venueId: action.payload,
       })
-    case action.type === 'BOOKING_SUMMARY_UPDATE_OFFER_ID' && action.payload === 'all':
+    case action.type === 'BOOKING_SUMMARY_UPDATE_OFFER_ID' &&
+      action.payload === 'all':
       return Object.assign({}, state, {
         bookingsFrom: '',
         bookingsTo: '',
         offerId: action.payload,
       })
-    case action.type === 'BOOKING_SUMMARY_UPDATE_OFFER_ID' && action.payload !== 'all':
+    case action.type === 'BOOKING_SUMMARY_UPDATE_OFFER_ID' &&
+      action.payload !== 'all':
       return Object.assign({}, state, {
         offerId: action.payload,
       })

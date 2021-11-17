@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import React from 'react'
 
@@ -22,9 +22,10 @@ const Reimbursements = () => (
     <PageTitle title="Vos remboursements" />
     <Titles title="Remboursements" />
     <p>
-      Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une
-      contremarque dans le guichet ou à la validation automatique des contremarques d’évènements.
-      Cette page est automatiquement mise à jour à chaque remboursement.
+      Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à
+      la validation d’une contremarque dans le guichet ou à la validation
+      automatique des contremarques d’évènements. Cette page est automatiquement
+      mise à jour à chaque remboursement.
     </p>
     <Banner type="notification-info">
       En savoir plus sur
@@ -34,9 +35,7 @@ const Reimbursements = () => (
         rel="noopener noreferrer"
         target="_blank"
       >
-        <Icon svg="ico-external-site" />
-        {' '}
-        Les prochains remboursements
+        <Icon svg="ico-external-site" /> Les prochains remboursements
       </a>
       <a
         className="bi-link tertiary-link"
@@ -49,7 +48,8 @@ const Reimbursements = () => (
       </a>
     </Banner>
     <p>
-      Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
+      Le fichier est au format CSV, compatible avec tous les tableurs et
+      éditeurs de texte.
     </p>
     <hr />
     <div className="flex-end">

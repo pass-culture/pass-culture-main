@@ -1,11 +1,16 @@
 /*
-* @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
-* @debt rtl "Gaël: bad use of act in testing library"
-*/
+ * @debt rtl "Gaël: this file contains eslint error(s) based on eslint-testing-library plugin"
+ * @debt rtl "Gaël: bad use of act in testing library"
+ */
 
 import { fireEvent } from '@testing-library/dom'
 import '@testing-library/jest-dom'
-import { act, render, screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  act,
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -42,7 +47,9 @@ describe('offerLayout', () => {
   let store
 
   beforeEach(() => {
-    store = configureTestStore({ data: { users: [{ publicName: 'François', isAdmin: false }] } })
+    store = configureTestStore({
+      data: { users: [{ publicName: 'François', isAdmin: false }] },
+    })
     props = {}
   })
 
@@ -70,7 +77,9 @@ describe('offerLayout', () => {
       await renderOfferDetails(props, store)
 
       // Then
-      const title = await screen.findByText('Éditer une offre', { selector: 'h1' })
+      const title = await screen.findByText('Éditer une offre', {
+        selector: 'h1',
+      })
       expect(title).toBeInTheDocument()
     })
 
@@ -78,7 +87,11 @@ describe('offerLayout', () => {
       // Given
       pcapi.updateOffersActiveStatus.mockResolvedValue()
       pcapi.loadOffer
-        .mockResolvedValueOnce({ ...editedOffer, isActive: false, status: 'INACTIVE' })
+        .mockResolvedValueOnce({
+          ...editedOffer,
+          isActive: false,
+          status: 'INACTIVE',
+        })
         .mockResolvedValue({ ...editedOffer, isActive: true, status: 'ACTIVE' })
       await renderOfferDetails(props, store)
 
@@ -90,17 +103,31 @@ describe('offerLayout', () => {
         ids: [editedOffer.id],
         isActive: true,
       })
-      await waitForElementToBeRemoved(() => screen.getByRole('button', { name: 'Activer' }))
-      expect(screen.getByText('L’offre a bien été activée.')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Désactiver' })).toBeInTheDocument()
+      await waitForElementToBeRemoved(() =>
+        screen.getByRole('button', { name: 'Activer' })
+      )
+      expect(
+        screen.getByText('L’offre a bien été activée.')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Désactiver' })
+      ).toBeInTheDocument()
     })
 
     it('should allow to deactivate active offer', async () => {
       // Given
       pcapi.updateOffersActiveStatus.mockResolvedValue()
       pcapi.loadOffer
-        .mockResolvedValueOnce({ ...editedOffer, isActive: true, status: 'ACTIVE' })
-        .mockResolvedValue({ ...editedOffer, isActive: false, status: 'INACTIVE' })
+        .mockResolvedValueOnce({
+          ...editedOffer,
+          isActive: true,
+          status: 'ACTIVE',
+        })
+        .mockResolvedValue({
+          ...editedOffer,
+          isActive: false,
+          status: 'INACTIVE',
+        })
       await renderOfferDetails(props, store)
 
       // When
@@ -111,14 +138,24 @@ describe('offerLayout', () => {
         ids: [editedOffer.id],
         isActive: false,
       })
-      await waitForElementToBeRemoved(() => screen.getByRole('button', { name: 'Désactiver' }))
-      expect(screen.getByText('L’offre a bien été désactivée.')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Activer' })).toBeInTheDocument()
+      await waitForElementToBeRemoved(() =>
+        screen.getByRole('button', { name: 'Désactiver' })
+      )
+      expect(
+        screen.getByText('L’offre a bien été désactivée.')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Activer' })
+      ).toBeInTheDocument()
     })
 
     it('should not allow to deactivate pending offer', async () => {
       // Given
-      pcapi.loadOffer.mockResolvedValue({ ...editedOffer, status: 'PENDING', isActive: true })
+      pcapi.loadOffer.mockResolvedValue({
+        ...editedOffer,
+        status: 'PENDING',
+        isActive: true,
+      })
 
       // When
       await renderOfferDetails(props, store)
@@ -129,7 +166,11 @@ describe('offerLayout', () => {
 
     it('should not allow to deactivate rejected offer', async () => {
       // Given
-      pcapi.loadOffer.mockResolvedValue({ ...editedOffer, status: 'REJECTED', isActive: false })
+      pcapi.loadOffer.mockResolvedValue({
+        ...editedOffer,
+        status: 'REJECTED',
+        isActive: false,
+      })
 
       // When
       await renderOfferDetails(props, store)
@@ -148,11 +189,17 @@ describe('offerLayout', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Désactiver' }))
 
       // Then
+      await expect(
+        screen.findByText(
+          'Une erreur est survenue, veuillez réessayer ultérieurement.'
+        )
+      ).resolves.toBeInTheDocument()
       expect(
-        await screen.findByText('Une erreur est survenue, veuillez réessayer ultérieurement.')
+        screen.getByRole('button', { name: 'Désactiver' })
       ).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Désactiver' })).toBeInTheDocument()
-      expect(screen.queryByRole('button', { name: 'Activer' })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Activer' })
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -174,7 +221,9 @@ describe('offerLayout', () => {
       await renderOfferDetails(props, store)
 
       // Then
-      expect(screen.getByText('Nouvelle offre', { selector: 'h1' })).toBeInTheDocument()
+      expect(
+        screen.getByText('Nouvelle offre', { selector: 'h1' })
+      ).toBeInTheDocument()
     })
   })
 })

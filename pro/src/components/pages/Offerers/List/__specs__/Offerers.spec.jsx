@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 import React from 'react'
@@ -75,7 +75,7 @@ describe('src | components | Offerers', () => {
         const titles = wrapper.find('Titles').props()
 
         // then
-        expect(titles.title).toStrictEqual('Structure juridique')
+        expect(titles.title).toBe('Structure juridique')
       })
 
       it('should display Structures juridiques when many offerers', () => {
@@ -88,7 +88,7 @@ describe('src | components | Offerers', () => {
         const titles = wrapper.find('Titles').props()
 
         // then
-        expect(titles.title).toStrictEqual('Structures juridiques')
+        expect(titles.title).toBe('Structures juridiques')
       })
     })
 
@@ -143,7 +143,12 @@ describe('src | components | Offerers', () => {
         describe('when the offerer is not active', () => {
           it('should render a pending offerer item', () => {
             // given
-            const offerer = { id: 'B2', siren: '1431', isValidated: false, userHasAccess: true }
+            const offerer = {
+              id: 'B2',
+              siren: '1431',
+              isValidated: false,
+              userHasAccess: true,
+            }
             props.offerers = [offerer]
 
             // when
@@ -159,7 +164,12 @@ describe('src | components | Offerers', () => {
         describe('when the user does not have access', () => {
           it('should render a pending offerer item', () => {
             // given
-            const offerer = { id: 'B2', siren: '1431', isValidated: true, userHasAccess: false }
+            const offerer = {
+              id: 'B2',
+              siren: '1431',
+              isValidated: true,
+              userHasAccess: false,
+            }
             props.offerers = [offerer]
 
             // when

@@ -6,11 +6,9 @@ export default {
   title: 'components/ConfirmDialog',
   component: ConfirmDialog,
 }
-const Template = args =>  (
+const Template = args => (
   <ConfirmDialog {...args}>
-    <p>
-      lorem ipsum dolor sit amet
-    </p>
+    <p>lorem ipsum dolor sit amet</p>
   </ConfirmDialog>
 )
 

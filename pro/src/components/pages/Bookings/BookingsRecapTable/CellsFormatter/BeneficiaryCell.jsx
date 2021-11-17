@@ -6,21 +6,22 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 const BeneficiaryCell = ({ beneficiaryInfos }) => {
-  const beneficiaryName = [beneficiaryInfos.lastname, beneficiaryInfos.firstname].join(' ').trim()
+  const beneficiaryName = [
+    beneficiaryInfos.lastname,
+    beneficiaryInfos.firstname,
+  ]
+    .join(' ')
+    .trim()
 
   return (
     <div>
       {beneficiaryName !== '' && (
         <div data-testid="booking-cell-beneficiary-name">
-          <span>
-            {beneficiaryName}
-          </span>
+          <span>{beneficiaryName}</span>
           <br />
         </div>
       )}
-      <span className="beneficiary-subtitle">
-        {beneficiaryInfos.email}
-      </span>
+      <span className="beneficiary-subtitle">{beneficiaryInfos.email}</span>
       <br />
       {beneficiaryInfos.phonenumber && (
         <span className="beneficiary-subtitle">

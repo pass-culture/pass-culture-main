@@ -8,7 +8,11 @@ describe('src | selectors | data | venuesSelectors', () => {
         const store = {
           data: {
             'venue-labels': [
-              { id: 1, label: "CNAREP - Centre national des arts de la rue et de l'espace public" },
+              {
+                id: 1,
+                label:
+                  "CNAREP - Centre national des arts de la rue et de l'espace public",
+              },
               { id: 2, label: 'PNC - Pôle national du cirque' },
               { id: 3, label: 'Opéra national en région' },
               { id: 4, label: 'ONP - Opéra National de Paris' },
@@ -21,7 +25,11 @@ describe('src | selectors | data | venuesSelectors', () => {
 
         // Then
         expect(venue_labels).toStrictEqual([
-          { id: 1, label: "CNAREP - Centre national des arts de la rue et de l'espace public" },
+          {
+            id: 1,
+            label:
+              "CNAREP - Centre national des arts de la rue et de l'espace public",
+          },
           { id: 4, label: 'ONP - Opéra National de Paris' },
           { id: 3, label: 'Opéra national en région' },
           { id: 2, label: 'PNC - Pôle national du cirque' },

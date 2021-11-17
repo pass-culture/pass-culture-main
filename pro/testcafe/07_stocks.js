@@ -20,14 +20,18 @@ test("Je peux créer un stock pour un événement en passant par la page de l'of
     'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_no_stock'
   )
-  const stocksAnchor = Selector(`a[href^="/offres/${offer.id}/stocks"]`).withText('Stock et prix')
+  const stocksAnchor = Selector(
+    `a[href^="/offres/${offer.id}/stocks"]`
+  ).withText('Stock et prix')
 
   const dateInput = Selector('.react-datepicker-wrapper').nth(0)
   const hourInput = Selector('.react-datepicker-wrapper').nth(1)
   const datePickerLastDay = Selector(
     '.react-datepicker__week:last-child .react-datepicker__day:last-child'
   )
-  const hourPickerLastHour = Selector('.react-datepicker__time-list-item:last-child')
+  const hourPickerLastHour = Selector(
+    '.react-datepicker__time-list-item:last-child'
+  )
   await navigateToOfferAs(user, offer, createUserRole(user))(t)
 
   await t.click(stocksAnchor).click(addEventStockButton)
@@ -65,7 +69,9 @@ test('Je peux modifier un stock pour un événement', async t => {
   const datePickerLastDay = Selector(
     '.react-datepicker__week:last-child .react-datepicker__day:last-child'
   )
-  const hourPickerLastHour = Selector('.react-datepicker__time-list-item:last-child')
+  const hourPickerLastHour = Selector(
+    '.react-datepicker__time-list-item:last-child'
+  )
   await navigateToStocksAs(user, offer, createUserRole(user))(t)
 
   await t
@@ -108,8 +114,12 @@ test('Je peux supprimer un stock pour un événement', async t => {
   )
   await navigateToStocksAs(user, offer, createUserRole(user))(t)
   const deleteButton = Selector('td').find('button')
-  const deleteButtonConfirmation = Selector('.action-buttons').find('button').withText('Supprimer')
-  const deleteSuccess = Selector('.notification.is-success').withText('Le stock a été supprimé.')
+  const deleteButtonConfirmation = Selector('.action-buttons')
+    .find('button')
+    .withText('Supprimer')
+  const deleteSuccess = Selector('.notification.is-success').withText(
+    'Le stock a été supprimé.'
+  )
 
   await t
     .click(deleteButton)

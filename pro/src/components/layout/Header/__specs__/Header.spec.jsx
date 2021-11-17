@@ -43,7 +43,10 @@ describe('navigation menu', () => {
       renderHeader({ isUserAdmin: false, isStyleguideActive: false })
 
       // Then
-      expect(screen.getByText('Accueil').closest('a')).toHaveAttribute('href', '/accueil')
+      expect(screen.getByText('Accueil').closest('a')).toHaveAttribute(
+        'href',
+        '/accueil'
+      )
     })
 
     it('should redirect to /structures when user is admin', () => {
@@ -51,7 +54,10 @@ describe('navigation menu', () => {
       renderHeader({ isUserAdmin: true, isStyleguideActive: false })
 
       // Then
-      expect(screen.getByText('Accueil').closest('a')).toHaveAttribute('href', '/structures')
+      expect(screen.getByText('Accueil').closest('a')).toHaveAttribute(
+        'href',
+        '/structures'
+      )
     })
   })
 })

@@ -9,8 +9,13 @@ import VenueProviderForm from '../VenueProviderForm'
 
 const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
   const [isCreationMode, setIsCreationMode] = useState(false)
-  const [selectedProvider, setSelectedProvider] = useState(DEFAULT_PROVIDER_OPTION)
-  const providersOptions = useMemo(() => buildSelectOptions('id', 'name', providers), [providers])
+  const [selectedProvider, setSelectedProvider] = useState(
+    DEFAULT_PROVIDER_OPTION
+  )
+  const providersOptions = useMemo(
+    () => buildSelectOptions('id', 'name', providers),
+    [providers]
+  )
 
   const setCreationMode = useCallback(() => setIsCreationMode(true), [])
 
@@ -21,8 +26,12 @@ const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
 
   const handleChange = useCallback(
     event => {
-      const selectedProvider = providers.find(provider => provider.id === event.target.value)
-      setSelectedProvider(selectedProvider ? selectedProvider : DEFAULT_PROVIDER_OPTION)
+      const selectedProvider = providers.find(
+        provider => provider.id === event.target.value
+      )
+      setSelectedProvider(
+        selectedProvider ? selectedProvider : DEFAULT_PROVIDER_OPTION
+      )
     },
     [providers]
   )
@@ -44,9 +53,7 @@ const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
         type="button"
       >
         <AddOfferSvg />
-        <span>
-          Importer des offres
-        </span>
+        <span>Importer des offres</span>
       </button>
     </div>
   )

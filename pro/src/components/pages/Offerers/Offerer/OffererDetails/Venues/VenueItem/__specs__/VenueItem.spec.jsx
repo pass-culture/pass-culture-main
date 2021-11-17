@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { mount } from 'enzyme'
 import { createBrowserHistory } from 'history'
@@ -75,7 +75,9 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
 
         // then
         expect(navLink.text()).toBe(' Créer une offre')
-        expect(navLink.at(0).prop('to')).toBe('/offres/creation?lieu=AAA&structure=ABC')
+        expect(navLink.at(0).prop('to')).toBe(
+          '/offres/creation?lieu=AAA&structure=ABC'
+        )
       })
     })
 

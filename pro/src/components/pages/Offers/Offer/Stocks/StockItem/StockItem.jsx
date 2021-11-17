@@ -1,9 +1,9 @@
 /*
-* @debt complexity "Gaël: file over 300 lines"
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file over 300 lines"
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import { isAfter } from 'date-fns'
 import PropTypes from 'prop-types'
@@ -43,18 +43,26 @@ const StockItem = ({
   const today = getLocalDepartementDateTimeFromUtc(getToday(), departmentCode)
 
   const [isDeleting, setIsDeleting] = useState(false)
-  const [beginningDate, setBeginningDate] = useState(initialStock.beginningDatetime)
-  const [beginningTime, setBeginningTime] = useState(initialStock.beginningDatetime)
+  const [beginningDate, setBeginningDate] = useState(
+    initialStock.beginningDatetime
+  )
+  const [beginningTime, setBeginningTime] = useState(
+    initialStock.beginningDatetime
+  )
   const [bookingLimitDatetime, setBookingLimitDatetime] = useState(
     initialStock.bookingLimitDatetime
   )
   const [price, setPrice] = useState(initialStock.price)
   const [totalQuantity, setTotalQuantity] = useState(initialStock.quantity)
-  const [isActivationCodesDialogOpen, setIsActivationCodesDialogOpen] = useState(false)
-  const [activationCodes, setActivationCodes] = useState(initialStock.activationCodes || [])
-  const [activationCodesExpirationDatetime, setActivationCodesExpirationDatetime] = useState(
-    initialStock.activationCodesExpirationDatetime
+  const [isActivationCodesDialogOpen, setIsActivationCodesDialogOpen] =
+    useState(false)
+  const [activationCodes, setActivationCodes] = useState(
+    initialStock.activationCodes || []
   )
+  const [
+    activationCodesExpirationDatetime,
+    setActivationCodesExpirationDatetime,
+  ] = useState(initialStock.activationCodesExpirationDatetime)
 
   const hasActivationCodes = isNewStock
     ? activationCodes.length > 0
@@ -130,15 +138,19 @@ const StockItem = ({
     }
   }, [])
 
-  const changeBookingLimitDatetime = useCallback(dateTime => setBookingLimitDatetime(dateTime), [])
+  const changeBookingLimitDatetime = useCallback(
+    dateTime => setBookingLimitDatetime(dateTime),
+    []
+  )
 
   const changeActivationCodesExpirationDatetime = useCallback(
     expirationDatetime => {
       setActivationCodesExpirationDatetime(expirationDatetime)
       if (expirationDatetime !== null) {
-        const maximumBookingLimitDatetime = getMaximumBookingLimitDatetimeFromExpirationDatetime(
-          expirationDatetime
-        )
+        const maximumBookingLimitDatetime =
+          getMaximumBookingLimitDatetimeFromExpirationDatetime(
+            expirationDatetime
+          )
 
         if (bookingLimitDatetime === null) {
           setBookingLimitDatetime(maximumBookingLimitDatetime)
@@ -150,7 +162,10 @@ const StockItem = ({
 
   const changePrice = useCallback(event => setPrice(event.target.value), [])
 
-  const changeTotalQuantity = useCallback(event => setTotalQuantity(event.target.value), [])
+  const changeTotalQuantity = useCallback(
+    event => setTotalQuantity(event.target.value),
+    []
+  )
 
   const askDeletionConfirmation = useCallback(() => setIsDeleting(true), [])
 
@@ -161,15 +176,20 @@ const StockItem = ({
   }, [changeActivationCodesExpirationDatetime])
 
   const totalQuantityValue = totalQuantity !== null ? totalQuantity : ''
-  const computedRemainingQuantity = totalQuantityValue - initialStock.bookingsQuantity
-  const remainingQuantityValue = totalQuantityValue !== '' ? computedRemainingQuantity : 'Illimité'
-  const isEventStockEditable = initialStock.updated || isAfter(beginningDate, today)
+  const computedRemainingQuantity =
+    totalQuantityValue - initialStock.bookingsQuantity
+  const remainingQuantityValue =
+    totalQuantityValue !== '' ? computedRemainingQuantity : 'Illimité'
+  const isEventStockEditable =
+    initialStock.updated || isAfter(beginningDate, today)
   const isOfferSynchronized = lastProvider !== null
   const isOfferSynchronizedWithAllocine = isAllocineProvider(lastProvider)
   const isThingStockEditable = !isOfferSynchronized
-  const isStockEditable = isNewStock || (isEvent ? isEventStockEditable : isThingStockEditable)
+  const isStockEditable =
+    isNewStock || (isEvent ? isEventStockEditable : isThingStockEditable)
   const isStockDeletable =
-    isNewStock || (isEvent ? initialStock.isEventDeletable : !isOfferSynchronized)
+    isNewStock ||
+    (isEvent ? initialStock.isEventDeletable : !isOfferSynchronized)
 
   const computeStockTitle = useCallback(() => {
     if (initialStock.id && !isEventStockEditable) {
@@ -198,7 +218,9 @@ const StockItem = ({
 
   const getMaximumBookingLimitDatetime = useCallback(() => {
     if (activationCodesExpirationDatetime !== null) {
-      return getMaximumBookingLimitDatetimeFromExpirationDatetime(activationCodesExpirationDatetime)
+      return getMaximumBookingLimitDatetimeFromExpirationDatetime(
+        activationCodesExpirationDatetime
+      )
     }
 
     return beginningDate
@@ -215,7 +237,9 @@ const StockItem = ({
             <DateInput
               ariaLabel="Date de l’événement"
               dateTime={beginningDate}
-              disabled={isOfferDisabled || isOfferSynchronized || !isStockEditable}
+              disabled={
+                isOfferDisabled || isOfferSynchronized || !isStockEditable
+              }
               inError={'beginningDate' in errors}
               minDateTime={today}
               onChange={changeBeginningDate}
@@ -226,7 +250,9 @@ const StockItem = ({
             <TimeInput
               ariaLabel="Heure de l’événement"
               dateTime={beginningTime}
-              disabled={isOfferDisabled || isOfferSynchronized || !isStockEditable}
+              disabled={
+                isOfferDisabled || isOfferSynchronized || !isStockEditable
+              }
               inError={'beginningTime' in errors}
               onChange={changeBeginningHour}
             />
@@ -292,19 +318,19 @@ const StockItem = ({
           value={totalQuantityValue}
         />
       </td>
-      <td>
-        {!isNewStock && remainingQuantityValue}
-      </td>
-      <td>
-        {!isNewStock && initialStock.bookingsQuantity}
-      </td>
+      <td>{!isNewStock && remainingQuantityValue}</td>
+      <td>{!isNewStock && initialStock.bookingsQuantity}</td>
       <td className="action-column">
         {isActivationCodesEnabled ? (
           <StockItemOptionsMenu
             canAddActivationCodes={isDigital}
             deleteButtonTitle={computeStockDeleteButtonTitle()}
-            deleteStock={isNewStock ? removeNewStockLine : askDeletionConfirmation}
-            disableDeleteButton={isOfferDisabled || !isStockDeletable || isDeleting}
+            deleteStock={
+              isNewStock ? removeNewStockLine : askDeletionConfirmation
+            }
+            disableDeleteButton={
+              isOfferDisabled || !isStockDeletable || isDeleting
+            }
             hasActivationCodes={hasActivationCodes}
             isNewStock={isNewStock}
             isOfferDisabled={isOfferDisabled}
@@ -332,9 +358,13 @@ const StockItem = ({
         {isActivationCodesDialogOpen && (
           <ActivationCodesUploadDialog
             activationCodes={activationCodes}
-            activationCodesExpirationDatetime={activationCodesExpirationDatetime}
+            activationCodesExpirationDatetime={
+              activationCodesExpirationDatetime
+            }
             bookingLimitDatetime={bookingLimitDatetime}
-            changeActivationCodesExpirationDatetime={changeActivationCodesExpirationDatetime}
+            changeActivationCodesExpirationDatetime={
+              changeActivationCodesExpirationDatetime
+            }
             closeDialog={closeActivationCodesDialog}
             setActivationCodes={setActivationCodes}
             today={today}

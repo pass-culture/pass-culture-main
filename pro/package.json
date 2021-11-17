@@ -138,14 +138,15 @@
     "dotenv-expand": "^5.1.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.5",
-    "eslint": "^7.11.0",
+    "eslint": "^7.29.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-config-react-app": "^6.0.0",
     "eslint-plugin-flowtype": "^5.2.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^24.1.0",
     "eslint-plugin-jsx-a11y": "^6.3.1",
-    "eslint-plugin-only-warn": "^1.0.2",
     "eslint-plugin-pass-culture": "./eslint-plugin-pass-culture",
+    "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-testing-library": "^3.9.2",
@@ -173,7 +174,7 @@
     "postcss-preset-env": "^6.7.0",
     "postcss-safe-parser": "^5.0.2",
     "prepend-file": "^2.0.0",
-    "prettier": "^2.1.2",
+    "prettier": "^2.4.1",
     "react-dev-utils": "^11.0.0",
     "react-refresh": "^0.10.0",
     "resolve": "^1.20.0",
@@ -219,8 +220,5 @@
     "presets": [
       "react-app"
     ]
-  },
-  "eslintConfig": {
-    "extends": "react-app"
   }
 }

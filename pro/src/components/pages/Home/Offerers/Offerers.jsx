@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
@@ -39,7 +39,11 @@ const Offerers = () => {
     function fetchData() {
       const { offererId } = query
       pcapi.getAllOfferersNames().then(receivedOffererNames => {
-        const initialOffererOptions = buildSelectOptions('id', 'name', receivedOffererNames)
+        const initialOffererOptions = buildSelectOptions(
+          'id',
+          'name',
+          receivedOffererNames
+        )
         if (initialOffererOptions.length > 0) {
           setSelectedOffererId(offererId || initialOffererOptions[0].id)
           setOffererOptions([
@@ -63,8 +67,12 @@ const Offerers = () => {
       .getOfferer(selectedOffererId)
       .then(receivedOfferer => {
         setSelectedOfferer(receivedOfferer)
-        setPhysicalVenues(receivedOfferer.managedVenues.filter(venue => !venue.isVirtual))
-        const virtualVenue = receivedOfferer.managedVenues.find(venue => venue.isVirtual)
+        setPhysicalVenues(
+          receivedOfferer.managedVenues.filter(venue => !venue.isVirtual)
+        )
+        const virtualVenue = receivedOfferer.managedVenues.find(
+          venue => venue.isVirtual
+        )
         setVirtualVenue(virtualVenue)
         setIsUserOffererValidated(true)
       })
@@ -120,7 +128,11 @@ const Offerers = () => {
           <VenueList
             physicalVenues={physicalVenues}
             selectedOffererId={selectedOfferer.id}
-            virtualVenue={selectedOfferer.hasDigitalVenueAtLeastOneOffer ? virtualVenue : null}
+            virtualVenue={
+              selectedOfferer.hasDigitalVenueAtLeastOneOffer
+                ? virtualVenue
+                : null
+            }
           />
         </>
       )}
@@ -130,7 +142,9 @@ const Offerers = () => {
       {isUserOffererValidated && (
         <VenueCreationLinks
           hasPhysicalVenue={physicalVenues.length > 0}
-          hasVirtualOffers={!!virtualVenue && !!selectedOfferer.hasDigitalVenueAtLeastOneOffer}
+          hasVirtualOffers={
+            !!virtualVenue && !!selectedOfferer.hasDigitalVenueAtLeastOneOffer
+          }
           offererId={selectedOfferer ? selectedOfferer.id : null}
         />
       )}

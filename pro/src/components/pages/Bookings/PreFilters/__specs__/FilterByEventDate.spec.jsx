@@ -1,6 +1,6 @@
 /*
-* @debt rtl "Gaël: migration from enzyme to RTL"
-*/
+ * @debt rtl "Gaël: migration from enzyme to RTL"
+ */
 
 import { shallow } from 'enzyme'
 import React from 'react'
@@ -36,6 +36,8 @@ describe('components | FilterByEventDate', () => {
     await offerDateInput.simulate('change', selectedDate)
 
     // Then
-    expect(props.updateFilters).toHaveBeenCalledWith({ offerEventDate: selectedDate })
+    expect(props.updateFilters).toHaveBeenCalledWith({
+      offerEventDate: selectedDate,
+    })
   })
 })

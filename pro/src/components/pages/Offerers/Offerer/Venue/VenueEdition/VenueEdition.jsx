@@ -1,10 +1,16 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import React from 'react'
-import { Route, Redirect, Switch, useParams, useRouteMatch } from 'react-router-dom'
+import {
+  Route,
+  Redirect,
+  Switch,
+  useParams,
+  useRouteMatch,
+} from 'react-router-dom'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
@@ -17,7 +23,9 @@ const VenueEdition = () => {
   const match = useRouteMatch()
 
   const stepName = location.pathname.match(/[a-z]+$/)
-  const activeStep = stepName ? mapPathToStep[stepName[0]] : STEP_ID_INFORMATIONS
+  const activeStep = stepName
+    ? mapPathToStep[stepName[0]]
+    : STEP_ID_INFORMATIONS
 
   return (
     <div>
@@ -32,20 +40,13 @@ const VenueEdition = () => {
 
       <Switch>
         <Route path={`${match.path}/informations`}>
-          <p>
-            edit venue information form
-          </p>
+          <p>edit venue information form</p>
         </Route>
         <Route path={`${match.path}/gestion`}>
-          <p>
-            edit venue management form
-          </p>
+          <p>edit venue management form</p>
         </Route>
 
-        <Route
-          exact
-          path={match.path}
-        >
+        <Route exact path={match.path}>
           <Redirect to={`${match.url}/informations`} />
         </Route>
       </Switch>

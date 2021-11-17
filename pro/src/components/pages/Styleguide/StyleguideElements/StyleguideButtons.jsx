@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within storybook"
-*/
+ * @debt directory "Gaël: this file should be migrated within storybook"
+ */
 
 import React, { useCallback, useState } from 'react'
 
@@ -10,21 +10,14 @@ import { SubmitButton } from 'ui-kit'
 const StyleguideButtons = () => {
   const primaryButton = (
     <div className="flex-block">
-      <button
-        className="primary-link"
-        type="button"
-      >
+      <button className="primary-link" type="button">
         Primary Button
       </button>
       <div>
         classe
-        <span className="class-name">
-          {' .primary-button '}
-        </span>
+        <span className="class-name">{' .primary-button '}</span>
         (boutons) ou
-        <span className="class-name">
-          {' .primary-link '}
-        </span>
+        <span className="class-name">{' .primary-link '}</span>
         (liens)
       </div>
     </div>
@@ -32,21 +25,14 @@ const StyleguideButtons = () => {
 
   const secondaryButton = (
     <div className="flex-block">
-      <button
-        className="secondary-button"
-        type="button"
-      >
+      <button className="secondary-button" type="button">
         Secondary Button
       </button>
       <div>
         classe
-        <span className="class-name">
-          {' .secondary-button '}
-        </span>
+        <span className="class-name">{' .secondary-button '}</span>
         (boutons) ou
-        <span className="class-name">
-          {' .secondary-link '}
-        </span>
+        <span className="class-name">{' .secondary-link '}</span>
         (liens)
       </div>
     </div>
@@ -61,15 +47,11 @@ const StyleguideButtons = () => {
         target="_blank"
       >
         <Icon svg="ico-external-site" />
-        <span>
-          Tertiary Link
-        </span>
+        <span>Tertiary Link</span>
       </a>
       <div>
         classe
-        <span className="class-name">
-          {' .tertiary-link '}
-        </span>
+        <span className="class-name">{' .tertiary-link '}</span>
         (liens)
       </div>
     </div>
@@ -84,15 +66,11 @@ const StyleguideButtons = () => {
         target="_blank"
       >
         <Icon svg="ico-external-site" />
-        <span>
-          Quaternary Link
-        </span>
+        <span>Quaternary Link</span>
       </a>
       <div>
         classe
-        <span className="class-name">
-          {' .quaternary-link '}
-        </span>
+        <span className="class-name">{' .quaternary-link '}</span>
         (liens)
       </div>
     </div>
@@ -112,17 +90,12 @@ const StyleguideButtons = () => {
   const handleOnClick = useCallback(() => setIsLoading(true), [])
   const SubmitButtonSample = (
     <div className="flex-block">
-      <SubmitButton
-        isLoading={isLoading}
-        onClick={handleOnClick}
-      >
+      <SubmitButton isLoading={isLoading} onClick={handleOnClick}>
         Submit Button
       </SubmitButton>
       <div className="it-description">
         <pre className="it-icon-snippet">
-          <code>
-            {submitButtonSnippet}
-          </code>
+          <code>{submitButtonSnippet}</code>
         </pre>
       </div>
     </div>

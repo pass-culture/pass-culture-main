@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ */
 
 import {
   selectVenues,
@@ -48,9 +48,9 @@ describe('src | selectors | data | venuesSelectors', () => {
         }
         const offererId = 'ZZ'
 
-        expect(selectPhysicalVenuesByOffererId(store, offererId)).toStrictEqual([
-          { id: 'AE', managingOffererId: 'ZZ', isVirtual: false },
-        ])
+        expect(selectPhysicalVenuesByOffererId(store, offererId)).toStrictEqual(
+          [{ id: 'AE', managingOffererId: 'ZZ', isVirtual: false }]
+        )
       })
     })
 
@@ -246,7 +246,9 @@ describe('src | selectors | data | venuesSelectors', () => {
         },
       ]
 
-      expect(nonVirtualVenuesToDisplay).toStrictEqual(nonVirtualVenuesListExpected)
+      expect(nonVirtualVenuesToDisplay).toStrictEqual(
+        nonVirtualVenuesListExpected
+      )
     })
 
     it('should return an empty list of offer when state is not initialized', () => {
@@ -260,7 +262,9 @@ describe('src | selectors | data | venuesSelectors', () => {
 
       // then
       const nonVirtualVenuesListExpected = []
-      expect(nonVirtualVenuesToDisplay).toStrictEqual(nonVirtualVenuesListExpected)
+      expect(nonVirtualVenuesToDisplay).toStrictEqual(
+        nonVirtualVenuesListExpected
+      )
     })
   })
 })

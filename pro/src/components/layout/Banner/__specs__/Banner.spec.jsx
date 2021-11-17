@@ -16,11 +16,7 @@ describe('src | components | layout | Banner', () => {
       const message = 'message'
 
       // when
-      render(
-        <Banner {...props}>
-          {message}
-        </Banner>
-      )
+      render(<Banner {...props}>{message}</Banner>)
 
       // then
       expect(screen.getByText(message)).toBeInTheDocument()
@@ -37,11 +33,7 @@ describe('src | components | layout | Banner', () => {
       const message = 'message'
 
       // when
-      render(
-        <Banner {...props}>
-          {message}
-        </Banner>
-      )
+      render(<Banner {...props}>{message}</Banner>)
 
       // then
       expect(screen.getByText(message).closest('div')).toHaveAttribute(
@@ -56,11 +48,7 @@ describe('src | components | layout | Banner', () => {
       props.type = 'notification-info'
 
       // when
-      render(
-        <Banner {...props}>
-          {message}
-        </Banner>
-      )
+      render(<Banner {...props}>{message}</Banner>)
 
       // then
       expect(screen.getByText(message).closest('div')).toHaveAttribute(

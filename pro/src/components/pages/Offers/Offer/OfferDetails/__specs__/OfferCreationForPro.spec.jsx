@@ -7,7 +7,13 @@
  */
 
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -51,7 +57,9 @@ jest.mock('utils/windowMatchMedia', () => ({
 const renderOffers = async (props, store, queryParams = null) => {
   const rtlRenderReturn = render(
     <Provider store={store}>
-      <MemoryRouter initialEntries={[{ pathname: '/offres/creation', search: queryParams }]}>
+      <MemoryRouter
+        initialEntries={[{ pathname: '/offres/creation', search: queryParams }]}
+      >
         <Route path={['/offres/creation', '/offres/:offerId([A-Z0-9]+)']}>
           <>
             <OfferLayoutContainer {...props} />
@@ -86,7 +94,13 @@ describe('offerDetails - Creation - pro user', () => {
         ],
       },
       data: {
-        users: [{ publicName: 'François', isAdmin: false, email: 'francois@example.com' }],
+        users: [
+          {
+            publicName: 'François',
+            isAdmin: false,
+            email: 'francois@example.com',
+          },
+        ],
       },
     })
     props = {
@@ -186,7 +200,9 @@ describe('offerDetails - Creation - pro user', () => {
       await renderOffers(props, store)
 
       // Then
-      expect(screen.getByText('Type d’offre', { selector: '.section-title' })).toBeInTheDocument()
+      expect(
+        screen.getByText('Type d’offre', { selector: '.section-title' })
+      ).toBeInTheDocument()
     })
 
     it('should not display a placeholder for preview', async () => {
@@ -239,11 +255,12 @@ describe('offerDetails - Creation - pro user', () => {
               'Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de vos structures.'
             )
           ).toBeInTheDocument()
-          expect(screen.getByRole('link',{ name: '+ Ajouter un lieu' })).toHaveAttribute(
-            'href',
-            '/structures//lieux/creation'
-          )
-          expect(screen.queryByLabelText('Type de spectacle')).not.toBeInTheDocument()
+          expect(
+            screen.getByRole('link', { name: '+ Ajouter un lieu' })
+          ).toHaveAttribute('href', '/structures//lieux/creation')
+          expect(
+            screen.queryByLabelText('Type de spectacle')
+          ).not.toBeInTheDocument()
         })
 
         it('should not inform user about venue creation if at least one non virtual venue', async () => {
@@ -260,8 +277,12 @@ describe('offerDetails - Creation - pro user', () => {
               'Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de vos structures.'
             )
           ).not.toBeInTheDocument()
-          expect(screen.queryByRole('link', { name: '+ Ajouter un lieu' })).not.toBeInTheDocument()
-          expect(await screen.findByLabelText('Genre musical', { exact: false })).toBeInTheDocument()
+          expect(
+            screen.queryByRole('link', { name: '+ Ajouter un lieu' })
+          ).not.toBeInTheDocument()
+          await expect(
+            screen.findByLabelText('Genre musical', { exact: false })
+          ).resolves.toBeInTheDocument()
         })
       })
 
@@ -304,7 +325,9 @@ describe('offerDetails - Creation - pro user', () => {
               'Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de vos structures.'
             )
           ).not.toBeInTheDocument()
-          expect(screen.queryByRole('link', { name: '+ Ajouter un lieu' })).not.toBeInTheDocument()
+          expect(
+            screen.queryByRole('link', { name: '+ Ajouter un lieu' })
+          ).not.toBeInTheDocument()
         })
 
         it("should pre-fill booking notification email field with user's email", async () => {
@@ -329,9 +352,10 @@ describe('offerDetails - Creation - pro user', () => {
           setOfferValues({ receiveNotificationEmails: true })
 
           // Then
-          expect(screen.getByLabelText('Email auquel envoyer les notifications :').value).toBe(
-            'francois@example.com'
-          )
+          expect(
+            screen.getByLabelText('Email auquel envoyer les notifications :')
+              .value
+          ).toBe('francois@example.com')
         })
       })
 
@@ -362,7 +386,9 @@ describe('offerDetails - Creation - pro user', () => {
               'Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de vos structures.'
             )
           ).not.toBeInTheDocument()
-          expect(screen.queryByRole('link', { name: '+ Ajouter un lieu' })).not.toBeInTheDocument()
+          expect(
+            screen.queryByRole('link', { name: '+ Ajouter un lieu' })
+          ).not.toBeInTheDocument()
         })
       })
 
@@ -375,7 +401,9 @@ describe('offerDetails - Creation - pro user', () => {
         setOfferValues({ subcategoryId: 'SEANCE_CINE' })
 
         // Then
-        expect(screen.getByText('Ajouter une image', { selector: 'button' })).toBeInTheDocument()
+        expect(
+          screen.getByText('Ajouter une image', { selector: 'button' })
+        ).toBeInTheDocument()
       })
 
       describe('offer preview', () => {
@@ -386,12 +414,16 @@ describe('offerDetails - Creation - pro user', () => {
           setOfferValues({ subcategoryId: 'SEANCE_CINE' })
 
           // when
-          const titleInput = await screen.findByLabelText("Titre de l'offre", { exact: false })
+          const titleInput = await screen.findByLabelText("Titre de l'offre", {
+            exact: false,
+          })
           userEvent.type(titleInput, 'Mon joli titre')
 
           // then
           const offerPreview = screen.getByTestId('offer-preview-section')
-          expect(within(offerPreview).getByText('Mon joli titre')).toBeInTheDocument()
+          expect(
+            within(offerPreview).getByText('Mon joli titre')
+          ).toBeInTheDocument()
         })
 
         it('should display description when input is filled', async () => {
@@ -401,12 +433,16 @@ describe('offerDetails - Creation - pro user', () => {
           setOfferValues({ subcategoryId: 'SEANCE_CINE' })
 
           // when
-          const descriptionInput = await screen.findByLabelText('Description', { exact: false })
+          const descriptionInput = await screen.findByLabelText('Description', {
+            exact: false,
+          })
           userEvent.type(descriptionInput, 'Ma jolie description')
 
           // then
           const offerPreview = screen.getByTestId('offer-preview-section')
-          expect(within(offerPreview).getByText('Ma jolie description')).toBeInTheDocument()
+          expect(
+            within(offerPreview).getByText('Ma jolie description')
+          ).toBeInTheDocument()
         })
 
         it('should display terms of withdrawal when input is filled', async () => {
@@ -416,14 +452,19 @@ describe('offerDetails - Creation - pro user', () => {
           setOfferValues({ subcategoryId: 'SEANCE_CINE' })
 
           // when
-          const withdrawalInput = await screen.findByLabelText('Informations de retrait', {
-            exact: false,
-          })
+          const withdrawalInput = await screen.findByLabelText(
+            'Informations de retrait',
+            {
+              exact: false,
+            }
+          )
           userEvent.type(withdrawalInput, 'Mes jolies modalités')
 
           // then
           const offerPreview = screen.getByTestId('offer-preview-section')
-          expect(within(offerPreview).getByText('Mes jolies modalités')).toBeInTheDocument()
+          expect(
+            within(offerPreview).getByText('Mes jolies modalités')
+          ).toBeInTheDocument()
         })
 
         it("should display disabled 'isDuo' icon for offers that aren't event", async () => {
@@ -451,14 +492,21 @@ describe('offerDetails - Creation - pro user', () => {
               })
 
               // When
-              userEvent.selectOptions(screen.getByLabelText('Lieu'), physicalVenue.id)
+              userEvent.selectOptions(
+                screen.getByLabelText('Lieu'),
+                physicalVenue.id
+              )
               await sidebarDisplayed()
 
               // Then
               const offerPreview = screen.getByTestId('offer-preview-section')
               expect(within(offerPreview).getByText('Où ?')).toBeInTheDocument()
-              expect(within(offerPreview).getByText('Adresse')).toBeInTheDocument()
-              expect(within(offerPreview).getByText('Distance')).toBeInTheDocument()
+              expect(
+                within(offerPreview).getByText('Adresse')
+              ).toBeInTheDocument()
+              expect(
+                within(offerPreview).getByText('Distance')
+              ).toBeInTheDocument()
             })
 
             it("should display venue's public name if provided", async () => {
@@ -475,16 +523,23 @@ describe('offerDetails - Creation - pro user', () => {
               })
 
               // When
-              userEvent.selectOptions(screen.getByLabelText('Lieu'), physicalVenue.id)
+              userEvent.selectOptions(
+                screen.getByLabelText('Lieu'),
+                physicalVenue.id
+              )
               await sidebarDisplayed()
 
               // Then
               const offerPreview = screen.getByTestId('offer-preview-section')
               expect(
-                within(offerPreview).getByText(physicalVenue.publicName, { exact: false })
+                within(offerPreview).getByText(physicalVenue.publicName, {
+                  exact: false,
+                })
               ).toBeInTheDocument()
               expect(
-                within(offerPreview).queryByText(physicalVenue.name, { exact: false })
+                within(offerPreview).queryByText(physicalVenue.name, {
+                  exact: false,
+                })
               ).not.toBeInTheDocument()
             })
 
@@ -506,7 +561,9 @@ describe('offerDetails - Creation - pro user', () => {
               // Then
               const offerPreview = screen.getByTestId('offer-preview-section')
               expect(
-                within(offerPreview).getByText(physicalVenue.name, { exact: false })
+                within(offerPreview).getByText(physicalVenue.name, {
+                  exact: false,
+                })
               ).toBeInTheDocument()
             })
 
@@ -532,7 +589,9 @@ describe('offerDetails - Creation - pro user', () => {
               // Then
               const offerPreview = screen.getByTestId('offer-preview-section')
               const expectedFormattedAddress = `${physicalVenue.name} - ${physicalVenue.address} - ${physicalVenue.postalCode} - ${physicalVenue.city}`
-              expect(within(offerPreview).getByText(expectedFormattedAddress)).toBeInTheDocument()
+              expect(
+                within(offerPreview).getByText(expectedFormattedAddress)
+              ).toBeInTheDocument()
             })
           })
 
@@ -555,9 +614,15 @@ describe('offerDetails - Creation - pro user', () => {
 
               // Then
               const offerPreview = screen.getByTestId('offer-preview-section')
-              expect(within(offerPreview).queryByText('Où ?')).not.toBeInTheDocument()
-              expect(within(offerPreview).queryByText('Adresse')).not.toBeInTheDocument()
-              expect(within(offerPreview).queryByText('Distance')).not.toBeInTheDocument()
+              expect(
+                within(offerPreview).queryByText('Où ?')
+              ).not.toBeInTheDocument()
+              expect(
+                within(offerPreview).queryByText('Adresse')
+              ).not.toBeInTheDocument()
+              expect(
+                within(offerPreview).queryByText('Distance')
+              ).not.toBeInTheDocument()
             })
           })
 
@@ -582,9 +647,15 @@ describe('offerDetails - Creation - pro user', () => {
 
               // Then
               const offerPreview = screen.getByTestId('offer-preview-section')
-              expect(within(offerPreview).queryByText('Où ?')).not.toBeInTheDocument()
-              expect(within(offerPreview).queryByText('Adresse')).not.toBeInTheDocument()
-              expect(within(offerPreview).queryByText('Distance')).not.toBeInTheDocument()
+              expect(
+                within(offerPreview).queryByText('Où ?')
+              ).not.toBeInTheDocument()
+              expect(
+                within(offerPreview).queryByText('Adresse')
+              ).not.toBeInTheDocument()
+              expect(
+                within(offerPreview).queryByText('Distance')
+              ).not.toBeInTheDocument()
             })
           })
         })
@@ -600,16 +671,29 @@ describe('offerDetails - Creation - pro user', () => {
 
         // Then
         expect(
-          screen.getByRole('heading', { name: 'Informations artistiques', level: 3 })
+          screen.getByRole('heading', {
+            name: 'Informations artistiques',
+            level: 3,
+          })
         ).toBeInTheDocument()
         expect(
-          screen.getByRole('heading', { name: 'Informations pratiques', level: 3 })
+          screen.getByRole('heading', {
+            name: 'Informations pratiques',
+            level: 3,
+          })
         ).toBeInTheDocument()
-        expect(screen.getByRole('heading', { name: 'Accessibilité', level: 3 })).toBeInTheDocument()
         expect(
-          screen.getByRole('heading', { name: 'Lien de réservation externe', level: 3 })
+          screen.getByRole('heading', { name: 'Accessibilité', level: 3 })
         ).toBeInTheDocument()
-        expect(screen.getByRole('heading', { name: 'Notifications', level: 3 })).toBeInTheDocument()
+        expect(
+          screen.getByRole('heading', {
+            name: 'Lien de réservation externe',
+            level: 3,
+          })
+        ).toBeInTheDocument()
+        expect(
+          screen.getByRole('heading', { name: 'Notifications', level: 3 })
+        ).toBeInTheDocument()
       })
 
       it('should display "Autres caractéristiques" section if offer can be duo or educational', async () => {
@@ -622,7 +706,10 @@ describe('offerDetails - Creation - pro user', () => {
 
         // Then
         expect(
-          screen.getByRole('heading', { name: 'Autres caractéristiques', level: 3 })
+          screen.getByRole('heading', {
+            name: 'Autres caractéristiques',
+            level: 3,
+          })
         ).toBeInTheDocument()
       })
 
@@ -636,7 +723,10 @@ describe('offerDetails - Creation - pro user', () => {
 
         // Then
         expect(
-          screen.queryByRole('heading', { name: 'Autres caractéristiques', level: 3 })
+          screen.queryByRole('heading', {
+            name: 'Autres caractéristiques',
+            level: 3,
+          })
         ).not.toBeInTheDocument()
       })
 
@@ -650,7 +740,9 @@ describe('offerDetails - Creation - pro user', () => {
         setOfferValues({ receiveNotificationEmails: true })
 
         // Then
-        const bookingEmailInput = screen.getByLabelText('Email auquel envoyer les notifications :')
+        const bookingEmailInput = screen.getByLabelText(
+          'Email auquel envoyer les notifications :'
+        )
         expect(bookingEmailInput).toBeInTheDocument()
       })
 
@@ -663,7 +755,9 @@ describe('offerDetails - Creation - pro user', () => {
         setOfferValues({ subcategoryId: 'CONCERT' })
 
         // Then
-        const externalTicketOfficeUrlInput = await getOfferInputForField('externalTicketOfficeUrl')
+        const externalTicketOfficeUrlInput = await getOfferInputForField(
+          'externalTicketOfficeUrl'
+        )
         expect(externalTicketOfficeUrlInput).toBeInTheDocument()
       })
 
@@ -714,8 +808,12 @@ describe('offerDetails - Creation - pro user', () => {
           // Then
           expect(screen.getByDisplayValue(offerers[0].name)).toBeInTheDocument()
           expect(screen.getByDisplayValue(venues[0].name)).toBeInTheDocument()
-          expect(screen.queryByDisplayValue(venues[1].name)).not.toBeInTheDocument()
-          expect(screen.queryByDisplayValue(venues[2].name)).not.toBeInTheDocument()
+          expect(
+            screen.queryByDisplayValue(venues[1].name)
+          ).not.toBeInTheDocument()
+          expect(
+            screen.queryByDisplayValue(venues[2].name)
+          ).not.toBeInTheDocument()
         })
 
         it('should select offerer when there is only one option', async () => {
@@ -819,9 +917,15 @@ describe('offerDetails - Creation - pro user', () => {
           await sidebarDisplayed()
 
           // Then
-          expect(within(offerPreview).getByText(venues[0].name)).toBeInTheDocument()
-          expect(within(offerPreview).queryByText(venues[1].name)).not.toBeInTheDocument()
-          expect(within(offerPreview).queryByText(venues[2].name)).not.toBeInTheDocument()
+          expect(
+            within(offerPreview).getByText(venues[0].name)
+          ).toBeInTheDocument()
+          expect(
+            within(offerPreview).queryByText(venues[1].name)
+          ).not.toBeInTheDocument()
+          expect(
+            within(offerPreview).queryByText(venues[2].name)
+          ).not.toBeInTheDocument()
         })
 
         it('should display all venues when unselecting offerer', async () => {
@@ -854,7 +958,9 @@ describe('offerDetails - Creation - pro user', () => {
           await sidebarDisplayed()
 
           // Then
-          expect(screen.getByLabelText('Structure')).toHaveDisplayValue(offerers[0].name)
+          expect(screen.getByLabelText('Structure')).toHaveDisplayValue(
+            offerers[0].name
+          )
         })
 
         it('should warn user if selected offerer has no physical venues but physical type is selected', async () => {
@@ -964,7 +1070,9 @@ describe('offerDetails - Creation - pro user', () => {
           setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
 
           // Then
-          await waitFor(() => expect(screen.getByLabelText('Lieu')).toBeInTheDocument())
+          await waitFor(() =>
+            expect(screen.getByLabelText('Lieu')).toBeInTheDocument()
+          )
           const venueIdError = queryInputErrorForField('venueId')
           expect(venueIdError).toBeNull()
         })
@@ -974,7 +1082,9 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // then
-          expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith({ activeOfferersOnly: true })
+          expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith({
+            activeOfferersOnly: true,
+          })
         })
 
         it('should display venues publicName instead of name if exists', async () => {
@@ -1019,7 +1129,9 @@ describe('offerDetails - Creation - pro user', () => {
             setOfferValues({ musicType: '501' })
 
             // Then
-            const musicSubTypeInput = await getOfferInputForField('musicSubType')
+            const musicSubTypeInput = await getOfferInputForField(
+              'musicSubType'
+            )
             expect(musicSubTypeInput).toBeInTheDocument()
           })
 
@@ -1053,7 +1165,9 @@ describe('offerDetails - Creation - pro user', () => {
             setOfferValues({ subcategoryId: 'CONCERT' })
 
             // Then
-            expect(screen.queryByLabelText('Sous genre', { exact: false })).not.toBeInTheDocument()
+            expect(
+              screen.queryByLabelText('Sous genre', { exact: false })
+            ).not.toBeInTheDocument()
           })
         })
 
@@ -1156,7 +1270,9 @@ describe('offerDetails - Creation - pro user', () => {
             setOfferValues({ subcategoryId: 'SEANCE_CINE' })
 
             // Then
-            const stageDirectorInput = await getOfferInputForField('stageDirector')
+            const stageDirectorInput = await getOfferInputForField(
+              'stageDirector'
+            )
             expect(stageDirectorInput).toBeInTheDocument()
           })
         })
@@ -1315,7 +1431,9 @@ describe('offerDetails - Creation - pro user', () => {
         it("should pre-fill booking notification email field with user's email when category is ONLINE_OR_OFFLINE", async () => {
           // Given
           await renderOffers(props, store)
-          await waitFor(() => expect(pcapi.loadCategories).toHaveBeenCalledTimes(1))
+          await waitFor(() =>
+            expect(pcapi.loadCategories).toHaveBeenCalledTimes(1)
+          )
 
           // When
           setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
@@ -1324,9 +1442,10 @@ describe('offerDetails - Creation - pro user', () => {
           setOfferValues({ offererId: offerers[0].id })
 
           // Then
-          expect(screen.getByLabelText('Email auquel envoyer les notifications :').value).toBe(
-            'francois@example.com'
-          )
+          expect(
+            screen.getByLabelText('Email auquel envoyer les notifications :')
+              .value
+          ).toBe('francois@example.com')
         })
       })
 
@@ -1407,7 +1526,10 @@ describe('offerDetails - Creation - pro user', () => {
           await setOfferValues({ subcategoryId: 'CINE_VENTE_DISTANCE' })
 
           // Then
-          const duoInput = screen.queryByLabelText('Accepter les réservations "duo"', { exact: false })
+          const duoInput = screen.queryByLabelText(
+            'Accepter les réservations "duo"',
+            { exact: false }
+          )
           expect(duoInput).not.toBeInTheDocument()
         })
       })
@@ -1428,9 +1550,10 @@ describe('offerDetails - Creation - pro user', () => {
           const informationsPratiquesSection = within(
             screen.getByText('Informations pratiques').closest('section')
           )
-          const withdrawalModalitiesReminder = informationsPratiquesSection.getByText(
-            'La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU.'
-          )
+          const withdrawalModalitiesReminder =
+            informationsPratiquesSection.getByText(
+              'La livraison d’article n’est pas autorisée. Pour plus d’informations, veuillez consulter nos CGU.'
+            )
           expect(withdrawalModalitiesReminder).toBeInTheDocument()
         })
 
@@ -1447,9 +1570,10 @@ describe('offerDetails - Creation - pro user', () => {
 
           // Then
           await waitFor(() =>
-            expect(screen.getByLabelText('Email auquel envoyer les notifications :').value).toBe(
-              venues[0].bookingEmail
-            )
+            expect(
+              screen.getByLabelText('Email auquel envoyer les notifications :')
+                .value
+            ).toBe(venues[0].bookingEmail)
           )
         })
       })
@@ -1461,10 +1585,9 @@ describe('offerDetails - Creation - pro user', () => {
         await renderOffers(props, store)
 
         // Then
-        expect(await screen.findByText('Annuler et quitter', { selector: 'a' })).toHaveAttribute(
-          'href',
-          '/offres'
-        )
+        await expect(
+          screen.findByText('Annuler et quitter', { selector: 'a' })
+        ).resolves.toHaveAttribute('href', '/offres')
       })
     })
 
@@ -1493,7 +1616,7 @@ describe('offerDetails - Creation - pro user', () => {
         status: 'DRAFT',
         venue: {
           departementCode: 93,
-        }
+        },
       })
       pcapi.loadStocks.mockResolvedValue({ stocks: [] })
     })
@@ -1574,7 +1697,6 @@ describe('offerDetails - Creation - pro user', () => {
       setOfferValues(offerValues)
       await sidebarDisplayed()
 
-
       // When
       await userEvent.click(screen.getByText('Étape suivante'))
 
@@ -1630,9 +1752,13 @@ describe('offerDetails - Creation - pro user', () => {
 
       // Then
       await waitFor(() =>
-        expect(screen.getByRole('heading', { name: 'Stock et prix', level: 3 })).toBeInTheDocument()
+        expect(
+          screen.getByRole('heading', { name: 'Stock et prix', level: 3 })
+        ).toBeInTheDocument()
       )
-      expect(screen.getByRole('heading', { name: 'Nouvelle offre', level: 1 })).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', { name: 'Nouvelle offre', level: 1 })
+      ).toBeInTheDocument()
     })
 
     it('should show errors for mandatory fields', async () => {
@@ -1672,7 +1798,8 @@ describe('offerDetails - Creation - pro user', () => {
       expect(performerError).toBeNull()
       const isDuoError = queryInputErrorForField('isDuo')
       expect(isDuoError).toBeNull()
-      const withdrawalDetailsError = queryInputErrorForField('withdrawalDetails')
+      const withdrawalDetailsError =
+        queryInputErrorForField('withdrawalDetails')
       expect(withdrawalDetailsError).toBeNull()
       const bookingEmailInput = queryInputErrorForField('bookingEmail')
       expect(bookingEmailInput).toBeNull()
@@ -1799,7 +1926,9 @@ describe('offerDetails - Creation - pro user', () => {
         mentalDisabilityCompliant: false,
       }
 
-      pcapi.createOffer.mockRejectedValue({ errors: { name: "Ce nom n'est pas valide" } })
+      pcapi.createOffer.mockRejectedValue({
+        errors: { name: "Ce nom n'est pas valide" },
+      })
       await renderOffers(props, store)
 
       setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
@@ -1876,7 +2005,11 @@ describe('offerDetails - Creation - pro user', () => {
 
       jest.spyOn(Object, 'values').mockReturnValue(['item'])
       pcapi.postThumbnail.mockRejectedValue({
-        errors: { errors: ['Utilisez une image plus grande (supérieure à 400px par 400px)'] },
+        errors: {
+          errors: [
+            'Utilisez une image plus grande (supérieure à 400px par 400px)',
+          ],
+        },
       })
       const createdOffer = {
         ...offerValues,
@@ -1949,16 +2082,22 @@ describe('offerDetails - Creation - pro user', () => {
 
       // Then
       expect(
-        screen.getByText('Support physique (DVD, Bluray...)', { selector: 'option' })
+        screen.getByText('Support physique (DVD, Bluray...)', {
+          selector: 'option',
+        })
       ).toBeInTheDocument()
       expect(
         screen.queryByText('Carte cinéma illimité', { selector: 'option' })
       ).not.toBeInTheDocument()
       expect(
-        screen.queryByText('Sous-catégorie non sélectionnable', { selector: 'option' })
+        screen.queryByText('Sous-catégorie non sélectionnable', {
+          selector: 'option',
+        })
       ).not.toBeInTheDocument()
       expect(screen.getByLabelText('Sous-catégorie')).toBeInTheDocument()
-      expect(screen.queryByText('Informations artistiques')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Informations artistiques')
+      ).not.toBeInTheDocument()
     })
 
     it('should display information artistique when sub category is set', async () => {
@@ -1981,7 +2120,9 @@ describe('offerDetails - Creation - pro user', () => {
       setOfferValues({ categoryId: 'BEAUX_ARTS' })
 
       // Then
-      expect(screen.getByDisplayValue('Matériel arts créatifs')).toBeInTheDocument()
+      expect(
+        screen.getByDisplayValue('Matériel arts créatifs')
+      ).toBeInTheDocument()
     })
 
     it('should display musicType and musicSubType dropdown when I select right category', async () => {
@@ -2009,11 +2150,15 @@ describe('offerDetails - Creation - pro user', () => {
       setOfferValues({ subcategoryId: 'SPECTACLE_REPRESENTATION' })
 
       // Then
-      expect(await getOfferInputForField('showType')).toBeInTheDocument()
+      await expect(
+        getOfferInputForField('showType')
+      ).resolves.toBeInTheDocument()
 
       setOfferValues({ showType: '100' })
 
-      expect(await getOfferInputForField('showSubType')).toBeInTheDocument()
+      await expect(
+        getOfferInputForField('showSubType')
+      ).resolves.toBeInTheDocument()
     })
   })
 })

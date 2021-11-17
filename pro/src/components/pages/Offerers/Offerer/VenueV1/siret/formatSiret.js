@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ */
 
 import { removeWhitespaces } from 'react-final-form-utils'
 
@@ -17,6 +17,8 @@ export const formatSiret = string => {
 
   const siren = value.substring(0, 9)
   const nic = value.substring(9)
-  const sirenWithThreeBatchesOfThreeNumbers = (siren.match(/.{1,3}/g) || []).join(' ')
+  const sirenWithThreeBatchesOfThreeNumbers = (
+    siren.match(/.{1,3}/g) || []
+  ).join(' ')
   return `${sirenWithThreeBatchesOfThreeNumbers} ${nic}`.trim()
 }

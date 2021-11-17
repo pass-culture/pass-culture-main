@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within storybook"
-*/
+ * @debt directory "Gaël: this file should be migrated within storybook"
+ */
 
 import React from 'react'
 
@@ -8,66 +8,42 @@ const StyleguideAgenda = () => {
   return (
     <ul>
       <li>
-        <a
-          className="tertiary-link"
-          href="#sg-titles"
-        >
+        <a className="tertiary-link" href="#sg-titles">
           Titres
         </a>
       </li>
       <li>
-        <a
-          className="tertiary-link"
-          href="#sg-buttons"
-        >
+        <a className="tertiary-link" href="#sg-buttons">
           Boutons
         </a>
       </li>
       <li>
-        <a
-          className="tertiary-link"
-          href="#sg-inputtext"
-        >
+        <a className="tertiary-link" href="#sg-inputtext">
           Inputs texte
         </a>
       </li>
       <li>
-        <a
-          className="tertiary-link"
-          href="#sg-inputtime"
-        >
+        <a className="tertiary-link" href="#sg-inputtime">
           Inputs de durée
         </a>
       </li>
       <li>
-        <a
-          className="tertiary-link"
-          href="#sg-textarea"
-        >
+        <a className="tertiary-link" href="#sg-textarea">
           Textarea
         </a>
       </li>
       <li>
-        <a
-          className="tertiary-link"
-          href="#sg-select"
-        >
+        <a className="tertiary-link" href="#sg-select">
           Select
         </a>
       </li>
       <li>
-        <a
-          className="tertiary-link"
-          href="#sg-checkbox"
-        >
+        <a className="tertiary-link" href="#sg-checkbox">
           Checkboxes
         </a>
       </li>
       <li>
-        <a
-          className="tertiary-link"
-          href="#sg-banner"
-        >
+        <a className="tertiary-link" href="#sg-banner">
           Bannières
         </a>
       </li>

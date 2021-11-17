@@ -13,9 +13,7 @@ const renderApp = async (props, store) => {
     <Provider store={store}>
       <MemoryRouter>
         <AppLayout {...props}>
-          <p>
-            Sub component
-          </p>
+          <p>Sub component</p>
         </AppLayout>
       </MemoryRouter>
     </Provider>
@@ -28,7 +26,9 @@ describe('src | AppLayout', () => {
 
   beforeEach(() => {
     props = {}
-    store = configureTestStore({ data: { users: [{ publicName: 'François', isAdmin: false }] } })
+    store = configureTestStore({
+      data: { users: [{ publicName: 'François', isAdmin: false }] },
+    })
   })
 
   it('should not render domain name banner when arriving from new domain name', async () => {
@@ -38,14 +38,18 @@ describe('src | AppLayout', () => {
     // Then
     await waitFor(() =>
       expect(
-        screen.queryByText(content => content.startsWith('Notre nom de domaine évolue !'))
+        screen.queryByText(content =>
+          content.startsWith('Notre nom de domaine évolue !')
+        )
       ).not.toBeInTheDocument()
     )
   })
 
   it('should not render domain name banner when coming from old domain name', async () => {
     // Given
-    Object.defineProperty(document, 'referrer', { value: 'pro.passculture-testing.beta.gouv.fr' })
+    Object.defineProperty(document, 'referrer', {
+      value: 'pro.passculture-testing.beta.gouv.fr',
+    })
 
     // When
     renderApp(props, store)
@@ -53,7 +57,9 @@ describe('src | AppLayout', () => {
     // Then
     await waitFor(() =>
       expect(
-        screen.queryByText(content => content.startsWith('Notre nom de domaine évolue !'))
+        screen.queryByText(content =>
+          content.startsWith('Notre nom de domaine évolue !')
+        )
       ).not.toBeInTheDocument()
     )
   })

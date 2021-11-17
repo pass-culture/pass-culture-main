@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -50,7 +50,9 @@ export const OFFER_STATUS_PROPERTIES = {
 
 const StatusLabel = ({ status }) => {
   return (
-    <span className={`op-offer-status ${OFFER_STATUS_PROPERTIES[status].className}`}>
+    <span
+      className={`op-offer-status ${OFFER_STATUS_PROPERTIES[status].className}`}
+    >
       <Icon svg={OFFER_STATUS_PROPERTIES[status].icon} />
       {OFFER_STATUS_PROPERTIES[status].label}
     </span>

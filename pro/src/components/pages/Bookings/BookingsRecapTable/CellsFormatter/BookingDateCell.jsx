@@ -1,12 +1,16 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import { format } from 'date-fns'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
+import {
+  FORMAT_DD_MM_YYYY,
+  FORMAT_HH_mm,
+  toDateStrippedOfTimezone,
+} from 'utils/date'
 
 const BookingDateCell = ({ bookingDateTimeIsoString }) => {
   const bookingDate = toDateStrippedOfTimezone(bookingDateTimeIsoString)
@@ -15,13 +19,9 @@ const BookingDateCell = ({ bookingDateTimeIsoString }) => {
 
   return (
     <div>
-      <span>
-        {bookingDateDay}
-      </span>
+      <span>{bookingDateDay}</span>
       <br />
-      <span className="booking-date-subtitle">
-        {bookingDateHour}
-      </span>
+      <span className="booking-date-subtitle">{bookingDateHour}</span>
     </div>
   )
 }

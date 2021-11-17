@@ -1,10 +1,14 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ */
 
 import state from 'components/utils/mocks/state'
 
-import { mapStateToProps, mapDispatchToProps, createApiPath } from '../OfferersContainer'
+import {
+  mapStateToProps,
+  mapDispatchToProps,
+  createApiPath,
+} from '../OfferersContainer'
 
 describe('src | components | pages | Offerers | OfferersContainer', () => {
   describe('mapStateToProps', () => {
@@ -132,7 +136,10 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
 
       it('should request for all offerers by default', () => {
         // when
-        mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
+        mapDispatchToProps(dispatch, ownProps).loadOfferers(
+          handleSuccess,
+          handleFail
+        )
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
@@ -164,7 +171,10 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
           })
 
           // when
-          mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
+          mapDispatchToProps(dispatch, ownProps).loadOfferers(
+            handleSuccess,
+            handleFail
+          )
 
           // then
           expect(dispatch).toHaveBeenCalledWith({
@@ -197,7 +207,10 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
           })
 
           // when
-          mapDispatchToProps(dispatch, ownProps).loadOfferers(handleSuccess, handleFail)
+          mapDispatchToProps(dispatch, ownProps).loadOfferers(
+            handleSuccess,
+            handleFail
+          )
 
           // then
           expect(dispatch).toHaveBeenCalledWith({
@@ -228,7 +241,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
           const result = createApiPath(loadOffererKeyWords)
 
           // then
-          expect(result).toStrictEqual('/offerers')
+          expect(result).toBe('/offerers')
         })
 
         describe('when there is one keyword', () => {
@@ -240,7 +253,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
             const result = createApiPath(loadOffererParameters)
 
             // then
-            expect(result).toStrictEqual('/offerers?keywords=example')
+            expect(result).toBe('/offerers?keywords=example')
           })
         })
 
@@ -253,7 +266,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
             const result = createApiPath(loadOffererParameters)
 
             // then
-            expect(result).toStrictEqual('/offerers?keywords=example+keyword')
+            expect(result).toBe('/offerers?keywords=example+keyword')
           })
         })
       })

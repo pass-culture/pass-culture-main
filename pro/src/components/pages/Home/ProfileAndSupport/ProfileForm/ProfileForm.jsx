@@ -15,7 +15,9 @@ const ProfileForm = ({ onCancel, onSuccess, initialValues }) => {
   const [lastName, setLastName] = useState(initialValues.lastName || '')
   const [firstName, setFirstName] = useState(initialValues.firstName || '')
   const [email, setEmail] = useState(initialValues.email || '')
-  const [phoneNumber, setPhoneNumber] = useState(initialValues.phoneNumber || '')
+  const [phoneNumber, setPhoneNumber] = useState(
+    initialValues.phoneNumber || ''
+  )
   const [formErrors, setFormErrors] = useState({})
 
   const notification = useNotification()
@@ -82,17 +84,10 @@ const ProfileForm = ({ onCancel, onSuccess, initialValues }) => {
           value={phoneNumber}
         />
         <div className="actions-group">
-          <button
-            className="secondary-button"
-            onClick={onCancel}
-            type="button"
-          >
+          <button className="secondary-button" onClick={onCancel} type="button">
             Annuler
           </button>
-          <button
-            className="primary-button"
-            type="submit"
-          >
+          <button className="primary-button" type="submit">
             Enregistrer
           </button>
         </div>

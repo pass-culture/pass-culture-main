@@ -1,8 +1,8 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
@@ -11,11 +11,13 @@ import useNotification from 'components/hooks/useNotification'
 import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import DialogBox from 'new_components/DialogBox/DialogBox'
-import { deleteOffererApiKey, generateOffererApiKey } from 'repository/pcapi/pcapi'
+import {
+  deleteOffererApiKey,
+  generateOffererApiKey,
+} from 'repository/pcapi/pcapi'
 /* @debt duplicated "Gaël: delete icon import and regroup buttons within one component"*/
 import { ReactComponent as SpinnerIcon } from 'ui-kit/SubmitButton/assets/loader.svg'
 import { ENV_WORDING } from 'utils/config'
-
 
 import { ReactComponent as DeleteSvg } from './assets/illus-delete.svg'
 
@@ -77,9 +79,7 @@ const ApiKey = ({
   return (
     <div className="section op-content-section api-key">
       <div className="main-list-title">
-        <h2 className="main-list-title-text">
-          Gestion des clés API
-        </h2>
+        <h2 className="main-list-title-text">Gestion des clés API</h2>
       </div>
       <Banner
         href="https://www.notion.so/passcultureapp/pass-Culture-Int-grations-techniques-231e16685c9a438b97bdcd7737cdd4d1"
@@ -91,10 +91,10 @@ const ApiKey = ({
           {'API '}
           {ENV_WORDING}
         </div>
-        <div className={`counter${isMaxAllowedReached ? ' counter--error' : ''}`}>
-          {generatedKeysCount}
-          /
-          {maxAllowedApiKeys}
+        <div
+          className={`counter${isMaxAllowedReached ? ' counter--error' : ''}`}
+        >
+          {generatedKeysCount}/{maxAllowedApiKeys}
         </div>
       </div>
       <div className="info">
@@ -107,10 +107,7 @@ const ApiKey = ({
       <div className="list">
         {savedApiKeys.map(savedApiKey => {
           return (
-            <div
-              className="item"
-              key={savedApiKey}
-            >
+            <div className="item" key={savedApiKey}>
               <span className="text">
                 {savedApiKey}
                 ********
@@ -121,22 +118,15 @@ const ApiKey = ({
                 type="button"
               >
                 <Icon svg="ico-trash" />
-                <span>
-                  supprimer
-                </span>
+                <span>supprimer</span>
               </button>
             </div>
           )
         })}
         {newlyGeneratedKeys.map(newKey => {
           return (
-            <div
-              className="item"
-              key={newKey}
-            >
-              <span className="text text--new-key">
-                {newKey}
-              </span>
+            <div className="item" key={newKey}>
+              <span className="text text--new-key">{newKey}</span>
               <button
                 className="primary-button action"
                 onClick={copyKey(newKey)}
@@ -150,13 +140,15 @@ const ApiKey = ({
       </div>
       {!!newlyGeneratedKeys.length && (
         <Banner>
-          Veuillez copier cette clé et la stocker dans un endroit sûr car vous ne pourrez plus la
-          visualiser entièrement ici.
+          Veuillez copier cette clé et la stocker dans un endroit sûr car vous
+          ne pourrez plus la visualiser entièrement ici.
         </Banner>
       )}
       <button
         className={`generate ${
-          isGeneratingKey ? 'primary-button submit-button loading-spinner' : 'secondary-button'
+          isGeneratingKey
+            ? 'primary-button submit-button loading-spinner'
+            : 'secondary-button'
         }`}
         disabled={isMaxAllowedReached || isGeneratingKey}
         onClick={generateApiKey}
@@ -176,13 +168,11 @@ const ApiKey = ({
           </div>
           <div className="explanation">
             <p>
-              Attention, si vous supprimez cette clé, et qu’aucune autre n’a été générée, cela
-              entraînera une rupture du service.
+              Attention, si vous supprimez cette clé, et qu’aucune autre n’a été
+              générée, cela entraînera une rupture du service.
             </p>
             <br />
-            <p>
-              Cette action est irréversible.
-            </p>
+            <p>Cette action est irréversible.</p>
           </div>
           <div className="actions">
             <button

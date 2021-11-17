@@ -15,14 +15,14 @@ const TimeInput = ({ ariaLabel, disabled, inError, onChange, dateTime }) => {
   return (
     <DatePicker
       className="datetime-input"
-      customInput={(
+      customInput={
         <InputWithCalendar
           ariaLabel={ariaLabel}
-          customClass={`field-date-only without-icon${disabled ? ' disabled' : ''}${
-            inError ? ' error' : ''
-          }`}
+          customClass={`field-date-only without-icon${
+            disabled ? ' disabled' : ''
+          }${inError ? ' error' : ''}`}
         />
-      )}
+      }
       dateFormat="HH:mm"
       disabled={disabled}
       dropdownMode="scroll"

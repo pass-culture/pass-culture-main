@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -16,14 +16,20 @@ export const buildSelectOptions = (idField, valueField, data) => {
     .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
 }
 
-export const buildSelectOptionsWithOptionalFields = (idField, valueFields, data) => {
+export const buildSelectOptionsWithOptionalFields = (
+  idField,
+  valueFields,
+  data
+) => {
   return data
     .map(item => {
       const [desiredValueField, defaultValueField] = valueFields
 
       return {
         id: item[idField].toString(),
-        displayName: item[desiredValueField] ? item[desiredValueField] : item[defaultValueField],
+        displayName: item[desiredValueField]
+          ? item[desiredValueField]
+          : item[defaultValueField],
       }
     })
     .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
@@ -42,16 +48,9 @@ const Select = ({
   subLabel,
 }) => (
   <div className="input-select">
-    <label
-      className="labels"
-      htmlFor={name}
-    >
+    <label className="labels" htmlFor={name}>
       {label}
-      {subLabel && (
-        <span className="it-sub-label">
-          {subLabel}
-        </span>
-      )}
+      {subLabel && <span className="it-sub-label">{subLabel}</span>}
     </label>
     <select
       className={`${error ? 'error' : ''}`}
@@ -64,24 +63,15 @@ const Select = ({
       value={selectedValue || defaultOption.id}
     >
       {defaultOption && (
-        <option value={defaultOption.id}>
-          {defaultOption.displayName}
-        </option>
+        <option value={defaultOption.id}>{defaultOption.displayName}</option>
       )}
       {options.map(option => (
-        <option
-          key={option.id}
-          value={option.id}
-        >
+        <option key={option.id} value={option.id}>
           {option.displayName}
         </option>
       ))}
     </select>
-    {error && (
-      <InputError name={name}>
-        {error}
-      </InputError>
-    )}
+    {error && <InputError name={name}>{error}</InputError>}
   </div>
 )
 

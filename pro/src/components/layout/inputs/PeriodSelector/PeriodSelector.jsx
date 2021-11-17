@@ -22,7 +22,8 @@ const PeriodSelector = ({
   todayDate,
 }) => {
   const endDateInput = useRef(null)
-  const focusEndDate = () => endDateInput.current && endDateInput.current.setOpen(true)
+  const focusEndDate = () =>
+    endDateInput.current && endDateInput.current.setOpen(true)
 
   return (
     <div className="period-filter">
@@ -35,12 +36,14 @@ const PeriodSelector = ({
           >
             <DatePicker
               className="period-filter-input"
-              customInput={(
+              customInput={
                 <InputWithCalendar
                   ariaLabel="début de la période"
-                  customClass={`field-date-only field-date-begin ${isDisabled ? 'disabled' : ''}`}
+                  customClass={`field-date-only field-date-begin ${
+                    isDisabled ? 'disabled' : ''
+                  }`}
                 />
-              )}
+              }
               dateFormat="dd/MM/yyyy"
               disabled={isDisabled}
               dropdownMode="select"
@@ -61,12 +64,14 @@ const PeriodSelector = ({
           >
             <DatePicker
               className="period-filter-input"
-              customInput={(
+              customInput={
                 <InputWithCalendar
                   ariaLabel="fin de la période"
-                  customClass={`field-date-only field-date-end ${isDisabled ? 'disabled' : ''}`}
+                  customClass={`field-date-only field-date-end ${
+                    isDisabled ? 'disabled' : ''
+                  }`}
                 />
-              )}
+              }
               dateFormat="dd/MM/yyyy"
               disabled={isDisabled}
               dropdownMode="select"

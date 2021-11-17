@@ -9,7 +9,10 @@ import userEvent from '@testing-library/user-event'
 
 export const fieldLabels = {
   author: { label: 'Auteur', exact: false },
-  bookingEmail: { label: 'Email auquel envoyer les notifications :', exact: false },
+  bookingEmail: {
+    label: 'Email auquel envoyer les notifications :',
+    exact: false,
+  },
   description: { label: 'Description', exact: false },
   durationMinutes: { label: 'Durée', exact: false },
   externalTicketOfficeUrl: { label: /URL de redirection externe/, exact: true },
@@ -27,7 +30,10 @@ export const fieldLabels = {
   musicSubType: { label: 'Sous genre', exact: false },
   offererId: { label: 'Structure', exact: true },
   performer: { label: 'Interprète', exact: false },
-  receiveNotificationEmails: { label: 'Être notifié par email des réservations', exact: true },
+  receiveNotificationEmails: {
+    label: 'Être notifié par email des réservations',
+    exact: true,
+  },
   showSubType: { label: 'Sous type', exact: false },
   showType: { label: 'Type de spectacle', exact: false },
   stageDirector: { label: 'Metteur en scène', exact: false },
@@ -90,13 +96,15 @@ export const setOfferValues = values => {
     if (fieldName === 'extraData') {
       modifiedInputs[fieldName] = setOfferValues(values.extraData)
     } else {
-      modifiedInputs[fieldName] = setFormValueForField(fieldName, values[fieldName])
+      modifiedInputs[fieldName] = setFormValueForField(
+        fieldName,
+        values[fieldName]
+      )
     }
   }
 
   return Promise.resolve(modifiedInputs)
 }
-
 
 export const sidebarDisplayed = async () => {
   await screen.findByText('Ajouter une image')

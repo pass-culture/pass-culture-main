@@ -18,15 +18,9 @@ const ProfileInformationsModal = ({ hideProfileInfoModal, user }) => {
   }
 
   return (
-    <DialogBox
-      labelledBy="modal-profile"
-      onDismiss={hideProfileInfoModal}
-    >
+    <DialogBox labelledBy="modal-profile" onDismiss={hideProfileInfoModal}>
       <div className="profile-info-modal">
-        <h1
-          className="pi-title"
-          id="modal-profile"
-        >
+        <h1 className="pi-title" id="modal-profile">
           Profil
         </h1>
         <ProfileForm

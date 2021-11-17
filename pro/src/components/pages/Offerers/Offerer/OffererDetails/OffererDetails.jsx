@@ -1,7 +1,7 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-* @debt standard "Gaël: migration from classes components to function components"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ * @debt standard "Gaël: migration from classes components to function components"
+ */
 
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
@@ -37,52 +37,37 @@ class OffererDetails extends PureComponent {
           Accueil
         </NavLink>
         <PageTitle title="Détails de votre structure" />
-        <Titles
-          subtitle={offerer.name}
-          title="Structure"
-        />
+        <Titles subtitle={offerer.name} title="Structure" />
         <p className="op-teaser">
-          Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
+          Détails de la structure rattachée, des lieux et des fournisseurs de
+          ses offres.
         </p>
         <div className="section op-content-section">
-          <h2 className="main-list-title">
-            Informations structure
-          </h2>
+          <h2 className="main-list-title">Informations structure</h2>
           <div className="op-detail">
-            <span>
-              {'SIREN : '}
-            </span>
-            <span>
-              {offerer.formattedSiren}
-            </span>
+            <span>{'SIREN : '}</span>
+            <span>{offerer.formattedSiren}</span>
           </div>
           <div className="op-detail">
-            <span>
-              {'Désignation : '}
-            </span>
-            <span>
-              {offerer.name}
-            </span>
+            <span>{'Désignation : '}</span>
+            <span>{offerer.name}</span>
           </div>
           <div className="op-detail">
-            <span>
-              {'Siège social : '}
-            </span>
+            <span>{'Siège social : '}</span>
             <span>
               {`${offerer.address} - ${offerer.postalCode} ${offerer.city}`}
             </span>
           </div>
         </div>
-        {offerer.areBankInformationProvided && <BankInformation offerer={offerer} />}
+        {offerer.areBankInformationProvided && (
+          <BankInformation offerer={offerer} />
+        )}
         <ApiKey
           maxAllowedApiKeys={offerer.apiKey.maxAllowed}
           offererId={offerer.id}
           savedApiKeys={offerer.apiKey.savedApiKeys}
         />
-        <VenuesContainer
-          offererId={offerer.id}
-          venues={venues}
-        />
+        <VenuesContainer offererId={offerer.id} venues={venues} />
       </div>
     )
   }

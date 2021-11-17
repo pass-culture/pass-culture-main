@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -17,7 +17,8 @@ const buildLinkIdFromVenue = ({ publicName, name }) => {
 }
 
 const VenueItem = ({ venue }) => {
-  const { address, city, id, managingOffererId, name, postalCode, publicName } = venue || {}
+  const { address, city, id, managingOffererId, name, postalCode, publicName } =
+    venue || {}
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
 
   return (
@@ -27,10 +28,7 @@ const VenueItem = ({ venue }) => {
       </div>
       <div className="list-content">
         <p className="name">
-          <Link
-            id={`a-${buildLinkIdFromVenue(venue)}`}
-            to={showPath}
-          >
+          <Link id={`a-${buildLinkIdFromVenue(venue)}`} to={showPath}>
             {publicName || name}
           </Link>
         </p>
@@ -45,10 +43,7 @@ const VenueItem = ({ venue }) => {
             </Link>
           </li>
           <li>
-            <Dotdotdot
-              clamp={2}
-              className="has-text-grey"
-            >
+            <Dotdotdot clamp={2} className="has-text-grey">
               {`${address} ${postalCode} ${city}`}
             </Dotdotdot>
           </li>

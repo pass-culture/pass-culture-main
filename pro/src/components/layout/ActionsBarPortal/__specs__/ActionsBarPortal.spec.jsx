@@ -9,9 +9,7 @@ import ActionsBarPortal from '../ActionsBarPortal'
 const renderActionsBar = props => {
   return renderWithStyles(
     <ActionsBarPortal {...props}>
-      <div>
-        actionsBar content
-      </div>
+      <div>actionsBar content</div>
     </ActionsBarPortal>,
     {
       stylesheet: 'components/layout/ActionsBarPortal/_ActionsBarPortal',

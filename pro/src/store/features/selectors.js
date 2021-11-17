@@ -5,7 +5,9 @@ export const isFeatureActive = (state, featureName) => {
 
   const features = state.features.list
   if (features) {
-    const currentFeature = features.find(feature => feature.nameKey === featureName)
+    const currentFeature = features.find(
+      feature => feature.nameKey === featureName
+    )
     if (currentFeature) {
       return currentFeature.isActive
     }
@@ -15,4 +17,5 @@ export const isFeatureActive = (state, featureName) => {
 
 export const featuresInitialized = state => state.features.initialized
 
-export const isAPISireneAvailable = state => isFeatureActive(state, 'API_SIRENE_AVAILABLE')
+export const isAPISireneAvailable = state =>
+  isFeatureActive(state, 'API_SIRENE_AVAILABLE')

@@ -11,7 +11,14 @@ import { ReactComponent as ThumbnailSampleIcon } from 'components/pages/Offers/O
 import * as pcapi from 'repository/pcapi/pcapi'
 import { SubmitButton } from 'ui-kit'
 
-const ImportFromURL = ({ isLoading, setIsLoading, setStep, setPreviewBase64, setURL, step }) => {
+const ImportFromURL = ({
+  isLoading,
+  setIsLoading,
+  setStep,
+  setPreviewBase64,
+  setURL,
+  step,
+}) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true)
   const [error, setError] = useState('')
   const [localUrl, setLocalUrl] = useState('')
@@ -61,10 +68,7 @@ const ImportFromURL = ({ isLoading, setIsLoading, setStep, setPreviewBase64, set
   )
 
   return (
-    <form
-      action="#"
-      className="tnf-form"
-    >
+    <form action="#" className="tnf-form">
       <ThumbnailSampleIcon />
       <p className="tnf-info">
         Utilisez de préférence un visuel en orientation portrait

@@ -1,6 +1,6 @@
 /*
-* @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
-*/
+ * @debt complexity "Gaël: the file contains eslint error(s) based on our new config"
+ */
 
 import * as pcapi from 'repository/pcapi/pcapi'
 
@@ -22,14 +22,18 @@ describe('venuesService', () => {
           isVirtual: false,
         },
       ])
-      jest.spyOn(pcapi, 'getVenuesForOfferer').mockImplementation(() => mockJsonPromise)
+      jest
+        .spyOn(pcapi, 'getVenuesForOfferer')
+        .mockImplementation(() => mockJsonPromise)
     })
 
     it('should return list of venues', async () => {
       // When
       const venues = await fetchAllVenuesByProUser()
       // Then
-      expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith({ offererId: null })
+      expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith({
+        offererId: null,
+      })
       expect(venues).toHaveLength(1)
       expect(venues[0]).toStrictEqual({
         id: 'AE',
@@ -43,7 +47,9 @@ describe('venuesService', () => {
       await fetchAllVenuesByProUser('A4')
 
       // Then
-      expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith({ offererId: 'A4' })
+      expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith({
+        offererId: 'A4',
+      })
     })
 
     it('should return empty paginatedBookingsRecap when an error occurred', async () => {
@@ -62,8 +68,18 @@ describe('venuesService', () => {
     it('should sort venues alphabetically', () => {
       // given
       const venues = [
-        { id: 'AF', name: 'Librairie Fnac', offererName: 'gilbert Joseph', isVirtual: false },
-        { id: 'AE', name: 'Offre numérique', offererName: 'gilbert Joseph', isVirtual: true },
+        {
+          id: 'AF',
+          name: 'Librairie Fnac',
+          offererName: 'gilbert Joseph',
+          isVirtual: false,
+        },
+        {
+          id: 'AE',
+          name: 'Offre numérique',
+          offererName: 'gilbert Joseph',
+          isVirtual: true,
+        },
       ]
 
       // when
@@ -85,7 +101,12 @@ describe('venuesService', () => {
     it('should format venue option with "offerer name - offre numérique" when venue is virtual', () => {
       // given
       const venues = [
-        { id: 'AE', name: 'Offre numérique', offererName: 'gilbert Joseph', isVirtual: true },
+        {
+          id: 'AE',
+          name: 'Offre numérique',
+          offererName: 'gilbert Joseph',
+          isVirtual: true,
+        },
       ]
 
       // when
@@ -115,7 +136,7 @@ describe('venuesService', () => {
       const computedVenueDisplayName = computeVenueDisplayName(venue)
 
       // then
-      expect(computedVenueDisplayName).toStrictEqual('Librairie Fnac')
+      expect(computedVenueDisplayName).toBe('Librairie Fnac')
     })
 
     it('should give venue public name when venue is not virtual and has a public name', () => {
@@ -132,7 +153,7 @@ describe('venuesService', () => {
       const computedVenueDisplayName = computeVenueDisplayName(venue)
 
       // then
-      expect(computedVenueDisplayName).toStrictEqual('Ma petite librairie')
+      expect(computedVenueDisplayName).toBe('Ma petite librairie')
     })
 
     it('should give the offerer name with "- Offre numérique" when venue is virtual', () => {
@@ -148,7 +169,7 @@ describe('venuesService', () => {
       const computedVenueDisplayName = computeVenueDisplayName(venue)
 
       // then
-      expect(computedVenueDisplayName).toStrictEqual('gilbert Joseph - Offre numérique')
+      expect(computedVenueDisplayName).toBe('gilbert Joseph - Offre numérique')
     })
   })
 })

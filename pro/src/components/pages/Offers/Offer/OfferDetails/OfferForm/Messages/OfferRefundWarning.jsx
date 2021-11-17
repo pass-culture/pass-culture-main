@@ -1,7 +1,7 @@
 /*
-* @debt complexity "Gaël: file nested too deep in directory structure"
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt complexity "Gaël: file nested too deep in directory structure"
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import React from 'react'
 
@@ -15,8 +15,9 @@ const OfferRefundWarning = () => {
       linkTitle={"Consulter les Conditions Générales d'Utilisation"}
       type="attention"
     >
-      Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les
-      catégories éligibles au remboursement, merci de consulter les CGU.
+      Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus
+      d’informations sur les catégories éligibles au remboursement, merci de
+      consulter les CGU.
     </Banner>
   )
 }

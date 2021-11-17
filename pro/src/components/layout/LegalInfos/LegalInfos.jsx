@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -9,9 +9,7 @@ import Icon from '../Icon'
 
 export const LegalInfos = ({ title, className }) => (
   <div className={`legal-infos ${className}`}>
-    <span>
-      {`En cliquant sur ${title}, vous acceptez nos `}
-    </span>
+    <span>{`En cliquant sur ${title}, vous acceptez nos `}</span>
     <a
       className="quaternary-link"
       href="https://pass.culture.fr/cgu-professionnels/"
@@ -19,13 +17,9 @@ export const LegalInfos = ({ title, className }) => (
       target="_blank"
     >
       <Icon svg="ico-external-site-red" />
-      <span>
-        Conditions Générales d’Utilisation
-      </span>
+      <span>Conditions Générales d’Utilisation</span>
     </a>
-    <span>
-      {' ainsi que notre '}
-    </span>
+    <span>{' ainsi que notre '}</span>
     <a
       className="quaternary-link"
       href="https://pass.culture.fr/donnees-personnelles/"
@@ -33,9 +27,7 @@ export const LegalInfos = ({ title, className }) => (
       target="_blank"
     >
       <Icon svg="ico-external-site-red" />
-      <span>
-        Charte des Données Personnelles
-      </span>
+      <span>Charte des Données Personnelles</span>
     </a>
     <span>
       {
@@ -49,9 +41,7 @@ export const LegalInfos = ({ title, className }) => (
       target="_blank"
     >
       <Icon svg="ico-email-red" />
-      <span>
-        contactez notre support.
-      </span>
+      <span>contactez notre support.</span>
     </a>
   </div>
 )

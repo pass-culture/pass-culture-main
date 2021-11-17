@@ -34,21 +34,24 @@ describe('bookings beneficiary cell', () => {
     ${'Reda'} | ${'Khteur'} | ${'Khteur Reda'}
     ${'Reda'} | ${null}     | ${'Reda'}
     ${null}   | ${'Khteur'} | ${'Khteur'}
-  `('should display the right formatted user name', ({ firstName, lastName, expectedResult }) => {
-    // Given
-    const props = {
-      beneficiaryInfos: {
-        firstname: firstName,
-        lastname: lastName,
-        email: 'laurentdurond@example.com',
-      },
-    }
-    // When
-    renderBeneficiaryCell(props)
+  `(
+    'should display the right formatted user name',
+    ({ firstName, lastName, expectedResult }) => {
+      // Given
+      const props = {
+        beneficiaryInfos: {
+          firstname: firstName,
+          lastname: lastName,
+          email: 'laurentdurond@example.com',
+        },
+      }
+      // When
+      renderBeneficiaryCell(props)
 
-    // Then
-    expect(screen.getByText(expectedResult)).toBeInTheDocument()
-  })
+      // Then
+      expect(screen.getByText(expectedResult)).toBeInTheDocument()
+    }
+  )
 
   it('should not display beneficiary name part when no first nor last name is given', () => {
     // Given
@@ -64,6 +67,8 @@ describe('bookings beneficiary cell', () => {
     renderBeneficiaryCell(props)
 
     // Then
-    expect(screen.queryByTestId('booking-cell-beneficiary-name')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('booking-cell-beneficiary-name')
+    ).not.toBeInTheDocument()
   })
 })

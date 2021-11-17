@@ -1,13 +1,18 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
 
 import OfferItem from '../OfferItem/OfferItem'
 
-const OffersTableBody = ({ areAllOffersSelected, offers, selectOffer, selectedOfferIds }) => (
+const OffersTableBody = ({
+  areAllOffersSelected,
+  offers,
+  selectOffer,
+  selectedOfferIds,
+}) => (
   <tbody className="offers-list">
     {offers.map(offer => (
       <OfferItem

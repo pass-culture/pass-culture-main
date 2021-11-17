@@ -1,6 +1,6 @@
 /*
-* @debt directory "Gaël: this file should be migrated within the new directory structure"
-*/
+ * @debt directory "Gaël: this file should be migrated within the new directory structure"
+ */
 
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -24,17 +24,10 @@ const TextareaInput = ({
 }) => {
   const textareaValue = [undefined, null].includes(value) ? '' : value
   return (
-    <label
-      className="input-textarea"
-      htmlFor={name}
-    >
+    <label className="input-textarea" htmlFor={name}>
       <div className="labels">
         {label}
-        {subLabel && (
-          <span className="it-sub-label">
-            {subLabel}
-          </span>
-        )}
+        {subLabel && <span className="it-sub-label">{subLabel}</span>}
       </div>
       <Textarea
         className={`it-input ${error ? 'error' : ''}`}
@@ -48,11 +41,7 @@ const TextareaInput = ({
         rows={rows}
         value={textareaValue}
       />
-      {error && (
-        <InputError name={name}>
-          {error}
-        </InputError>
-      )}
+      {error && <InputError name={name}>{error}</InputError>}
       {countCharacters && (
         <span className="it-character-count">
           {`${textareaValue ? textareaValue.length : 0}/${maxLength}`}

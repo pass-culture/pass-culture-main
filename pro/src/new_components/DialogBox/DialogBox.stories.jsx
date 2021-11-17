@@ -6,11 +6,9 @@ export default {
   title: 'components/DialogBox',
   component: DialogBox,
 }
-const Template = args =>  (
+const Template = args => (
   <DialogBox {...args}>
-    <p>
-      lorem ipsum dolor sit amet
-    </p>
+    <p>lorem ipsum dolor sit amet</p>
   </DialogBox>
 )
 
