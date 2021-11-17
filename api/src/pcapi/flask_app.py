@@ -177,7 +177,7 @@ def _non_printable(seq):
 
 def _set_python_prompt():
     env = settings.ENV
-    if env in ("production", "development"):
+    if env in "production":
         color = "\x1b[1;49;31m"  # red
     elif env == "staging":
         color = "\x1b[1;49;35m"  # purple
