@@ -6,15 +6,20 @@
 import { mount } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { Link, Router } from 'react-router-dom'
+
+import { configureTestStore } from 'store/testUtils'
 
 import VenueItem from '../VenueItem'
 
 describe('src | components | pages | OffererCreation | VenueItem', () => {
   let props
   let history
+  let store
 
   beforeEach(() => {
+    store = configureTestStore({})
     props = {
       venue: {
         id: 'AAA',
@@ -31,9 +36,11 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
       it('should render link to see venue details with venue name when no public name provided', () => {
         // given
         const wrapper = mount(
-          <Router history={history}>
-            <VenueItem {...props} />
-          </Router>
+          <Provider store={store}>
+            <Router history={history}>
+              <VenueItem {...props} />
+            </Router>
+          </Provider>
         )
         const venueName = wrapper.find('.name')
         const navLink = venueName.find(Link)
@@ -50,9 +57,11 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
 
         // when
         const wrapper = mount(
-          <Router history={history}>
-            <VenueItem {...props} />
-          </Router>
+          <Provider store={store}>
+            <Router history={history}>
+              <VenueItem {...props} />
+            </Router>
+          </Provider>
         )
         const venueName = wrapper.find('.name')
         const navLink = venueName.find(Link)
@@ -66,9 +75,11 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
     describe('create new offer in the venue link', () => {
       it('should redirect to offer creation page', () => {
         const wrapper = mount(
-          <Router history={history}>
-            <VenueItem {...props} />
-          </Router>
+          <Provider store={store}>
+            <Router history={history}>
+              <VenueItem {...props} />
+            </Router>
+          </Provider>
         )
         const actions = wrapper.find('.actions')
         const navLink = actions.find(Link)
@@ -84,9 +95,11 @@ describe('src | components | pages | OffererCreation | VenueItem', () => {
     describe('see venue details link', () => {
       it('should redirect to venue details page', () => {
         const wrapper = mount(
-          <Router history={history}>
-            <VenueItem {...props} />
-          </Router>
+          <Provider store={store}>
+            <Router history={history}>
+              <VenueItem {...props} />
+            </Router>
+          </Provider>
         )
         const caret = wrapper.find('.caret')
         const navLink = caret.find(Link)
