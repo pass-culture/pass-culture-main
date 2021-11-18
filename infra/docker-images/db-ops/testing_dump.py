@@ -7,4 +7,4 @@ ehp = cloudsqlpostgresinstance.CloudSQLPostgresInstanceFactory.create(
     region=env_vars.SOURCE_INSTANCE_REGION,
 )
 
-ehp.export_dump(database_name="pcapi-testing", dump_uri="gs://%s/testing.gz" % env_vars.DUMP_BUCKET)
+ehp.export_dump(database_name="pcapi-testing", dump_uri="gs://%s/pcapi-testing.gz" % env_vars.DUMP_BUCKET)
