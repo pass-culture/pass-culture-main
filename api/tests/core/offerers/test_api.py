@@ -186,10 +186,31 @@ class EditVenueTest:
             "city": venue.city,
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,
         }
+        contact_data = venues_serialize.VenueContactModel(
+            email=venue.contact.email,
+            phone_number=venue.contact.phone_number,
+            social_medias=venue.contact.social_medias,
+            website=venue.contact.website,
+        )
 
         # nothing has changed => nothing to save nor update
         with assert_num_queries(0):
-            offerers_api.update_venue(venue, **venue_data)
+            offerers_api.update_venue(venue, contact_data, **venue_data)
+
+    def test_update_only_venue_contact(self, app):
+        user_offerer = offers_factories.UserOffererFactory(
+            user__email="user.pro@test.com",
+        )
+        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+        contact_data = venues_serialize.VenueContactModel(email="other.contact@venue.com", phone_number="0788888888")
+
+        offerers_api.update_venue(venue, contact_data)
+
+        venue = offerers_models.Venue.query.get(venue.id)
+        assert venue.contact
+        assert venue.contact.phone_number == contact_data.phone_number
+        assert venue.contact.email == contact_data.email
 
 
 class EditVenueContactTest:
@@ -198,7 +219,11 @@ class EditVenueContactTest:
             user__email="user.pro@test.com",
         )
         venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        contact_data = offerers_factories.VenueContactFactory.build(venue=None)
+        contact_data = venues_serialize.VenueContactModel(
+            email="contact@venue.com",
+            phone_number="+33766778899",
+            social_medias={"instagram": "https://instagram.com/@venue"},
+        )
 
         venue = offerers_api.upsert_venue_contact(venue, contact_data)
 

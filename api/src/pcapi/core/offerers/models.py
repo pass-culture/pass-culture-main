@@ -334,6 +334,11 @@ class VenueContact(PcObject, Model):
             f"social_medias={self.social_medias!r})"
         )
 
+    def field_exists_and_has_changed(self, field: str, value: typing.Any) -> typing.Any:
+        if field not in type(self).__table__.columns:
+            raise ValueError(f"Unknown field {field} for model {type(self)}")
+        return getattr(self, field) != value
+
 
 @listens_for(Venue, "before_insert")
 def before_insert(mapper, connect, self):
