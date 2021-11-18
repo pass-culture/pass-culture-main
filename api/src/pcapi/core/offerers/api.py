@@ -65,14 +65,15 @@ def update_venue(venue: Venue, contact_data: venues_serialize.VenueContactModel 
     validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
 
-    if not modifications:
-        return venue
-
     validation.check_venue_edition(modifications, venue)
-    venue.populate_from_dict(modifications)
 
     if contact_data:
         upsert_venue_contact(venue, contact_data)
+
+    if not modifications:
+        return venue
+
+    venue.populate_from_dict(modifications)
 
     # TODO: Remove this step when a new stable venue type system is setup
     venue.fill_venue_type_code_from_label()
@@ -95,6 +96,14 @@ def upsert_venue_contact(venue: Venue, contact_data: venues_serialize.VenueConta
     venue_contact = venue.contact
     if not venue_contact:
         venue_contact = VenueContact(venue=venue)
+
+    modifications = {
+        field: value
+        for field, value in contact_data.dict().items()
+        if venue_contact.field_exists_and_has_changed(field, value)
+    }
+    if not modifications:
+        return venue
 
     venue_contact.email = contact_data.email
     venue_contact.website = contact_data.website
