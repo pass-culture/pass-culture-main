@@ -39,8 +39,13 @@ const OfferType = ({
     return '/offres/eac/creation'
   }
 
-  const handleEducationalClick = async () => {
-    setOfferType(EDUCATIONAL)
+  const handleOfferTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedOfferType = event.target.value as OFFER_TYPES
+    setOfferType(selectedOfferType)
+  }
+
+  const handleEducationalClick = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleOfferTypeChange(event)
 
     if (!hasBeenCalled){
       dispatch(FETCH_ACTION)
@@ -70,7 +75,8 @@ const OfferType = ({
             className={styles['offer-type-buttons-button']}
             isSelected={offerType === INDIVIDUAL_OR_DUO}
             label='Une offre à destination du grand public'
-            onClick={() => setOfferType(INDIVIDUAL_OR_DUO)}
+            onChange={handleOfferTypeChange}
+            value={INDIVIDUAL_OR_DUO}
           />
           <OfferTypeButton
             Icon={LibraryIcon}
@@ -78,7 +84,8 @@ const OfferType = ({
             disabled={isEligible === false}
             isSelected={offerType === EDUCATIONAL}
             label="Une offre à destination d'un groupe scolaire"
-            onClick={handleEducationalClick}
+            onChange={handleEducationalClick}
+            value={EDUCATIONAL}
           />
         </div>
         {isEligible === false ? (
