@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import React, { useState, useReducer } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 
 import Banner from 'components/layout/Banner/Banner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
@@ -28,6 +28,8 @@ export interface IOfferTypeProps {
 const OfferType = ({
   fetchCanOffererCreateEducationalOffer,
 }: IOfferTypeProps): JSX.Element => {
+  const history = useHistory()
+  const location = useLocation()
   const [offerType, setOfferType] = useState(INDIVIDUAL_OR_DUO)
   const [{ hasBeenCalled, isEligible, isLoading }, dispatch] = useReducer(
     reducer,
@@ -36,10 +38,16 @@ const OfferType = ({
 
   const getNextPageHref = () => {
     if (offerType === INDIVIDUAL_OR_DUO) {
-      return '/offres/creation'
+      return history.push({
+        pathname: '/offres/creation',
+        search: location.search,
+      })
     }
 
-    return '/offres/eac/creation'
+    return history.push({
+      pathname: '/offre/creation/scolaire',
+      search: location.search,
+    })
   }
 
   const handleOfferTypeChange = (
@@ -108,7 +116,7 @@ const OfferType = ({
         </Link>
         <SubmitButton
           className={cn(styles['offer-type-actions-action'], 'primary-button')}
-          disabled={isEligible === false}
+          disabled={isEligible === false && offerType === EDUCATIONAL}
           isLoading={isLoading}
           onClick={getNextPageHref}
         >

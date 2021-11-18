@@ -5,21 +5,26 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import useFeatureFlagedOfferCreationURL from 'components/hooks/useFeatureFlagedOfferCreationURL'
 import Icon from 'components/layout/Icon'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 
-const NoOffers = () => (
-  <div className="no-search-results">
-    <Icon className="image" svg="ico-ticket-gray" />
+const NoOffers = () => {
+  const offerCreationLink = useFeatureFlagedOfferCreationURL()
 
-    <p className="highlight">Aucune offre</p>
-    <p>Vous n’avez pas encore créé d’offre.</p>
+  return (
+    <div className="no-search-results">
+      <Icon className="image" svg="ico-ticket-gray" />
 
-    <Link className="primary-button with-icon" to="/offres/creation">
-      <AddOfferSvg />
-      Créer ma première offre
-    </Link>
-  </div>
-)
+      <p className="highlight">Aucune offre</p>
+      <p>Vous n’avez pas encore créé d’offre.</p>
+
+      <Link className="primary-button with-icon" to={offerCreationLink}>
+        <AddOfferSvg />
+        Créer ma première offre
+      </Link>
+    </div>
+  )
+}
 
 export default NoOffers

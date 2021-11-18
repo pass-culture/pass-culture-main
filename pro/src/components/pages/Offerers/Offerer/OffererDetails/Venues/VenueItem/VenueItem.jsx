@@ -8,6 +8,7 @@ import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
+import useFeatureFlagedOfferCreationURL from 'components/hooks/useFeatureFlagedOfferCreationURL'
 import Icon from 'components/layout/Icon'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 
@@ -20,6 +21,7 @@ const VenueItem = ({ venue }) => {
   const { address, city, id, managingOffererId, name, postalCode, publicName } =
     venue || {}
   const showPath = `/structures/${managingOffererId}/lieux/${id}`
+  const offerCreationLink = useFeatureFlagedOfferCreationURL()
 
   return (
     <li className="venue-item">
@@ -36,7 +38,7 @@ const VenueItem = ({ venue }) => {
           <li>
             <Link
               className="has-text-primary"
-              to={`/offres/creation?lieu=${id}&structure=${managingOffererId}`}
+              to={`${offerCreationLink}?lieu=${id}&structure=${managingOffererId}`}
             >
               <AddOfferSvg />
               {' Créer une offre'}

@@ -4,22 +4,27 @@
  * @debt rtl "Gaël: migration from enzyme to RTL"
  */
 
-import { mount, shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { Link, Router } from 'react-router-dom'
+
+import { configureTestStore } from 'store/testUtils'
 
 import OffererItem from '../OffererItem'
 
 describe('src | components | pages | Offerers | OffererItem | OffererItem', () => {
   let props
   let history
+  let store
 
   const dispatchMock = jest.fn()
   const parseMock = () => ({ 'mots-cles': null })
   const queryChangeMock = jest.fn()
 
   beforeEach(() => {
+    store = configureTestStore({})
     props = {
       currentUser: {},
       isVenueCreationAvailable: true,
@@ -67,9 +72,11 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
 
         // when
         const wrapper = mount(
-          <Router history={history}>
-            <OffererItem {...props} />
-          </Router>
+          <Provider store={store}>
+            <Router history={history}>
+              <OffererItem {...props} />
+            </Router>
+          </Provider>
         )
         const caret = wrapper.find('.caret')
         const navLink = caret.find(Link)
@@ -90,9 +97,11 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
 
         // when
         const wrapper = mount(
-          <Router history={history}>
-            <OffererItem {...props} />
-          </Router>
+          <Provider store={store}>
+            <Router history={history}>
+              <OffererItem {...props} />
+            </Router>
+          </Provider>
         )
         const createOffer = wrapper.find('.name')
         const navLink = createOffer.find(Link)
@@ -115,9 +124,11 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
           ]
           // when
           const wrapper = mount(
-            <Router history={history}>
-              <OffererItem {...props} />
-            </Router>
+            <Provider store={store}>
+              <Router history={history}>
+                <OffererItem {...props} />
+              </Router>
+            </Provider>
           )
           const createOffer = wrapper.find('#create-offer-action')
           const navLink = createOffer.find(Link)
@@ -145,9 +156,11 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
           ]
           // when
           const wrapper = mount(
-            <Router history={history}>
-              <OffererItem {...props} />
-            </Router>
+            <Provider store={store}>
+              <Router history={history}>
+                <OffererItem {...props} />
+              </Router>
+            </Provider>
           )
           const createOffer = wrapper.find('#create-offer-action')
           const navLink = createOffer.find(Link)
@@ -176,9 +189,11 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
 
         // when
         const wrapper = mount(
-          <Router history={history}>
-            <OffererItem {...props} />
-          </Router>
+          <Provider store={store}>
+            <Router history={history}>
+              <OffererItem {...props} />
+            </Router>
+          </Provider>
         )
 
         const offersCount = wrapper
@@ -208,9 +223,11 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
 
         // when
         const wrapper = mount(
-          <Router history={history}>
-            <OffererItem {...props} />
-          </Router>
+          <Provider store={store}>
+            <Router history={history}>
+              <OffererItem {...props} />
+            </Router>
+          </Provider>
         )
 
         // then
@@ -242,9 +259,11 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
 
         // when
         const wrapper = mount(
-          <Router history={history}>
-            <OffererItem {...props} />
-          </Router>
+          <Provider store={store}>
+            <Router history={history}>
+              <OffererItem {...props} />
+            </Router>
+          </Provider>
         )
         const actions = wrapper.find('#count-venues-action')
         const navLink = actions.find(Link)
@@ -261,9 +280,11 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
 
         // when
         const wrapper = mount(
-          <Router history={history}>
-            <OffererItem {...props} />
-          </Router>
+          <Provider store={store}>
+            <Router history={history}>
+              <OffererItem {...props} />
+            </Router>
+          </Provider>
         )
         const actions = wrapper.find('#count-venues-action')
         const navLink = actions.find(Link)
@@ -285,7 +306,13 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
         }
 
         // when
-        const wrapper = shallow(<OffererItem {...props} />)
+        const wrapper = mount(
+          <Provider store={store}>
+            <Router history={history}>
+              <OffererItem {...props} />
+            </Router>
+          </Provider>
+        )
         const createVenueLink = wrapper.find('#create-venue-action').find(Link)
 
         // then
@@ -303,7 +330,13 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
         }
 
         // when
-        const wrapper = shallow(<OffererItem {...props} />)
+        const wrapper = mount(
+          <Provider store={store}>
+            <Router history={history}>
+              <OffererItem {...props} />
+            </Router>
+          </Provider>
+        )
         const createVenueLink = wrapper.find('#create-venue-action').find(Link)
 
         // then
