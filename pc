@@ -159,6 +159,7 @@ function tag_frontend_component {
   tag_version="v$tag_name"
   cd "$ROOT_PATH"/"$component"
   yarn version --new-version "$tag_name"
+  git add package.json
 }
 
 function open_build_status_page {
@@ -385,13 +386,13 @@ elif [[ "$CMD" == "tag-hotfix" ]]; then
 # Tag new version using main repo
 elif [[ "$CMD" == "tag" ]]; then
   if [[ "$TAG_NAME" ]]; then
+    git stash
     TAG_VERSION="v$TAG_NAME"
 
     # TAG API
     cd "$ROOT_PATH"/api
     echo "$TAG_VERSION" > version.txt
     git add version.txt
-    git commit -m "[API] 🚀 $TAG_VERSION"
 
     # TAG WEBAPP
     tag_frontend_component webapp "$TAG_NAME"
@@ -404,12 +405,14 @@ elif [[ "$CMD" == "tag" ]]; then
 
     # TAG MAIN
     cd "$ROOT_PATH"
+    git commit -m "🚀 $TAG_VERSION"
     git push origin master
     git tag "$TAG_VERSION"
     git push origin "$TAG_VERSION"
 
     echo "New version tagged : $TAG_NAME"
 
+    git stash pop
     exit_success_restoring_branch
   fi
 
