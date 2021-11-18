@@ -551,6 +551,10 @@ secrets:
     version: 2
   - name: TRANSACTIONS_RECIPIENTS
     version: 3
+  - name: UBBLE_CLIENT_ID
+    version: 1
+  - name: UBBLE_CLIENT_SECRET
+    version: 1
   - name: USER_PROFILING_URL
     version: 2
   - name: USER_PROFILING_ORG_ID

@@ -228,7 +228,7 @@ ID_CHECK_MIDDLEWARE_DOMAIN = os.environ.get("ID_CHECK_MIDDLEWARE_DOMAIN", "")
 ID_CHECK_MIDDLEWARE_TOKEN = os.environ.get("ID_CHECK_MIDDLEWARE_TOKEN", "")
 
 # UBBLE
-UBBLE_API_URL = os.environ.get("UBBLE_API_URL")
+UBBLE_API_URL = os.environ.get("UBBLE_API_URL", "https://api.ubble.ai")
 UBBLE_CLIENT_ID = os.environ.get("UBBLE_CLIENT_ID")
 UBBLE_CLIENT_SECRET = os.environ.get("UBBLE_CLIENT_SECRET")
 
