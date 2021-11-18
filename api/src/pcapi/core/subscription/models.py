@@ -12,6 +12,15 @@ from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
 
 
+class SubscriptionStep(enum.Enum):
+    EMAIL_VALIDATION = "email-validation"
+    MAINTENANCE = "maintenance"
+    PHONE_VALIDATION = "phone-validation"
+    PROFILE_COMPLETION = "profile-completion"
+    IDENTITY_CHECK = "identity-check"
+    USER_PROFILING = "user-profiling"
+
+
 @dataclasses.dataclass
 class BeneficiaryPreSubscription:
     activity: str

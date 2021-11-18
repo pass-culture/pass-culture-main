@@ -7,6 +7,7 @@ from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud import exceptions as fraud_exceptions
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.fraud.repository as fraud_repository
 from pcapi.core.mails.transactional.users import accepted_as_beneficiary_email
 from pcapi.core.payments import api as payments_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
@@ -21,6 +22,7 @@ from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import ImportStatus
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 import pcapi.repository as pcapi_repository
 from pcapi.workers import apps_flyer_job
 
@@ -189,3 +191,34 @@ def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
     )
     fraud_api.start_ubble_fraud_check(user, response)
     return response.identification_url
+
+
+# pylint: disable=too-many-return-statements
+def get_next_subscription_step(user: users_models.User) -> Optional[models.SubscriptionStep]:
+    # TODO(viconnex): base the next step on the user.subscriptionState that will be added later on
+    if not user.isEmailValidated:
+        return models.SubscriptionStep.EMAIL_VALIDATION
+
+    if (
+        not user.is_phone_validated
+        and user.eligibility == users_models.EligibilityType.AGE18
+        and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active()
+    ):
+        return models.SubscriptionStep.PHONE_VALIDATION
+
+    if user.eligibility == users_models.EligibilityType.AGE18:
+        user_profiling = fraud_repository.get_last_user_profiling_fraud_check(user)
+
+        if not user_profiling:
+            return models.SubscriptionStep.USER_PROFILING
+
+        if user_profiling.source_data().risk_rating == fraud_models.UserProfilingRiskRating.HIGH:
+            return None
+
+    if not user.address:
+        return models.SubscriptionStep.PROFILE_COMPLETION
+
+    if user.eligibility is not None and not user.hasCompletedIdCheck and user.allowed_eligibility_check_methods:
+        return models.SubscriptionStep.IDENTITY_CHECK
+
+    return None
