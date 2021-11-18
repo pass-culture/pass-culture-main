@@ -5,6 +5,9 @@ from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.educational.models import EducationalYear
+from pcapi.core.finance.models import Pricing
+from pcapi.core.finance.models import PricingLine
+from pcapi.core.finance.models import PricingLog
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
 from pcapi.core.fraud.models import BeneficiaryFraudResult
 from pcapi.core.fraud.models import BeneficiaryFraudReview
@@ -60,6 +63,9 @@ def clean_all_database(*args, **kwargs):
     PaymentStatus.query.delete()
     Payment.query.delete()
     PaymentMessage.query.delete()
+    PricingLine.query.delete()
+    PricingLog.query.delete()
+    Pricing.query.delete()
     CustomReimbursementRule.query.delete()
     Booking.query.delete()
     IndividualBooking.query.delete()
