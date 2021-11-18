@@ -298,7 +298,7 @@ def profiling_fraud_score(user: User, body: serializers.UserProfilingFraudReques
 
     try:
         profiling_infos = handler.get_user_profiling_fraud_data(
-            session_id=body.session_id,
+            session_id=body.sessionId,
             user_id=user.id,
             user_email=user.email,
             birth_date=user.dateOfBirth.date() if user.dateOfBirth else None,
@@ -309,7 +309,7 @@ def profiling_fraud_score(user: User, body: serializers.UserProfilingFraudReques
             line_of_business=user_profiling.LineOfBusiness.B2C,
             # Insert request unique identifier
             transaction_id=get_or_set_correlation_id(),
-            agent_type=user_profiling.AgentType.AGENT_MOBILE,
+            agent_type=body.agentType,
         )
     except user_profiling.BaseUserProfilingException:
         logger.exception("Error while retrieving user profiling infos", exc_info=True)
