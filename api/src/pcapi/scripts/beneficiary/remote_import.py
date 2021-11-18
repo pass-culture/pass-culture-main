@@ -178,7 +178,8 @@ def process_application(
 
     if information.id_piece_number:
         _duplicated_user = users_models.User.query.filter(
-            users_models.User.idPieceNumber == information.id_piece_number
+            users_models.User.idPieceNumber == information.id_piece_number,
+            users_models.User.id != user.id,
         ).first()
         if _duplicated_user:
             subscription_messages.on_duplicate_user(user)
