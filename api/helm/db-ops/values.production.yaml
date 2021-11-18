@@ -30,6 +30,7 @@ workflows:
       SOURCE_PROJECT: passculture-metier-ehp
 
   testing-dump:
+    dependsOn: [backup-ehp]
     script: "/scripts/testing_dump.py"
     envVars:
       ENV: testing
