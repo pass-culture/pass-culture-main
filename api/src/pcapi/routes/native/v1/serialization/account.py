@@ -1,14 +1,18 @@
 import datetime
 from enum import Enum
+from typing import Any
+from typing import Dict
 from typing import Optional
 from uuid import UUID
 
 from dateutil.relativedelta import relativedelta
 import flask
+from pydantic.class_validators import root_validator
 from pydantic.class_validators import validator
 from pydantic.fields import Field
 from sqlalchemy.orm import joinedload
 
+from pcapi.connectors.user_profiling import AgentType
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
@@ -317,15 +321,31 @@ class UploadIdentityDocumentRequest(BaseModel):
 
 
 class UserProfilingFraudRequest(BaseModel):
-    session_id: str
+    # Moving from session_id to sessionId - remove session_id and set sessionId not Optional when app version is forced
+    # to a new minimal version. Also restore previous validator session_id_alphanumerics for sessionId
+    session_id: Optional[str]
+    sessionId: Optional[str]
+    agentType: Optional[AgentType]
 
-    @validator("session_id")
-    def session_id_alphanumerics(cls, session_id: str) -> str:  # pylint: disable=no-self-argument
+    @root_validator()
+    def session_id_alphanumerics(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=no-self-argument
+        session_id = values.get("sessionId") or values.get("session_id")
+        if not session_id:
+            raise ValueError("L'identifiant de session est manquant")
         if not session_id.isalnum():
             raise ValueError(
                 "L'identifiant de session ne doit être composé exclusivement que de caratères alphanumériques"
             )
-        return session_id
+        values["sessionId"] = session_id
+        return values
+
+    @validator("agentType", always=True)
+    def agent_type_validation(cls, agent_type: str) -> str:  # pylint: disable=no-self-argument
+        if agent_type is None:
+            agent_type = AgentType.AGENT_MOBILE
+        if agent_type not in (AgentType.BROWSER_COMPUTER, AgentType.BROWSER_MOBILE, AgentType.AGENT_MOBILE):
+            raise ValueError("agentType est invalide")
+        return agent_type
 
 
 class UserProfilingSessionIdResponse(BaseModel):

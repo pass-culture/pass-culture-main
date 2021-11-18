@@ -1627,6 +1627,25 @@ class ProfilingFraudScoreTest:
         )
         client.with_token(user.email)
 
+        response = client.post(
+            "/native/v1/user_profiling", json={"sessionId": session_id, "agentType": "browser_mobile"}
+        )
+        assert response.status_code == 204
+        assert matcher.call_count == 1
+
+    @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
+    def test_profiling_fraud_score_call_legacy(self, client, requests_mock):
+        # Remove this test after session_id is removed and only sessionId kept
+        user = users_factories.UserFactory()
+        session_id = "arbitrarysessionid"
+        matcher = requests_mock.register_uri(
+            "POST",
+            settings.USER_PROFILING_URL,
+            json=user_profiling_fixtures.CORRECT_RESPONSE,
+            status_code=200,
+        )
+        client.with_token(user.email)
+
         response = client.post("/native/v1/user_profiling", json={"session_id": session_id})
         assert response.status_code == 204
         assert matcher.call_count == 1
@@ -1641,7 +1660,9 @@ class ProfilingFraudScoreTest:
             status_code=500,
         )
         client.with_token(user.email)
-        response = client.post("/native/v1/user_profiling", json={"session_id": "randomsessionid"})
+        response = client.post(
+            "/native/v1/user_profiling", json={"sessionId": "randomsessionid", "agentType": "agent_mobile"}
+        )
         assert response.status_code == 204
         assert matcher.call_count == 1
         assert caplog.record_tuples == [
@@ -1660,7 +1681,9 @@ class ProfilingFraudScoreTest:
         client.with_token(user.email)
 
         with caplog.at_level(logging.INFO):
-            response = client.post("/native/v1/user_profiling", json={"session_id": "randomsessionid"})
+            response = client.post(
+                "/native/v1/user_profiling", json={"sessionId": "randomsessionid", "agentType": "agent_mobile"}
+            )
         assert response.status_code == 204
         assert matcher.call_count == 1
         assert len(caplog.records) >= 2
@@ -1681,7 +1704,9 @@ class ProfilingFraudScoreTest:
             status_code=200,
         )
         client.with_token(user.email)
-        response = client.post("/native/v1/user_profiling", json={"session_id": "gdavmoioeuboaobç!p'è"})
+        response = client.post(
+            "/native/v1/user_profiling", json={"sessionId": "gdavmoioeuboaobç!p'è", "agentType": "agent_mobile"}
+        )
         assert response.status_code == 400
         assert matcher.call_count == 0
 
@@ -1707,7 +1732,7 @@ class ProfilingFraudScoreTest:
         )
         client.with_token(user.email)
 
-        response = client.post("/native/v1/user_profiling", json={"session_id": session_id})
+        response = client.post("/native/v1/user_profiling", json={"sessionId": session_id, "agentType": "agent_mobile"})
 
         assert response.status_code == 204
         assert (
@@ -1741,7 +1766,7 @@ class ProfilingFraudScoreTest:
         client.with_token(user.email)
         session_id = "arbitrarysessionid"
 
-        response = client.post("/native/v1/user_profiling", json={"session_id": session_id})
+        response = client.post("/native/v1/user_profiling", json={"sessionId": session_id, "agentType": "agent_mobile"})
 
         assert response.status_code == 204
         assert (
