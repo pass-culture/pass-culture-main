@@ -22,7 +22,6 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.models import ApiErrors
 from pcapi.models import BeneficiaryImport
-from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import ImportStatus
 import pcapi.notifications.push.testing as push_testing
 from pcapi.scripts.beneficiary import remote_import
@@ -925,15 +924,15 @@ class RunIntegrationTest:
         "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
     )
     @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
-    def test_import_with_existing_id_card(
+    def test_import_with_existing_user_with_the_same_id_number(
         self, get_application_details, get_closed_application_ids_for_demarche_simplifiee, mocker
     ):
-        user = users_factories.UserFactory(
+        existing_user = users_factories.BeneficiaryGrant18Factory(idPieceNumber="1234123412")
+        applicant = users_factories.UserFactory(
             email=self.EMAIL,
             isEmailValidated=True,
             dateOfBirth=self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S"),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            idPieceNumber="1234123412",
         )
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
         get_application_details.side_effect = self._get_details
@@ -946,24 +945,25 @@ class RunIntegrationTest:
 
         # then
         assert process_mock.call_count == 0
-        assert users_models.User.query.count() == 1
-        assert BeneficiaryImport.query.count() == 1
-        user = users_models.User.query.first()
-        fraud_check = user.beneficiaryFraudChecks[0]
+        assert users_models.User.query.count() == 2
+
+        fraud_check = applicant.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
         fraud_content = fraud_models.DMSContent(**fraud_check.resultContent)
-        assert fraud_content.birth_date == user.dateOfBirth.date()
+        assert fraud_content.birth_date == applicant.dateOfBirth.date()
         assert fraud_content.address == "11 Rue du Test"
 
-        beneficiary_import = BeneficiaryImport.query.first()
-        beneficiary_import_status = BeneficiaryImportStatus.query.first()
+        assert len(applicant.beneficiaryImports) == 1
+        beneficiary_import = applicant.beneficiaryImports[0]
+        assert len(beneficiary_import.statuses) == 1
+        beneficiary_import_status = beneficiary_import.statuses[0]
         assert beneficiary_import.source == "demarches_simplifiees"
         assert beneficiary_import.applicationId == 123
-        assert beneficiary_import.beneficiary == user
+        assert beneficiary_import.beneficiary == applicant
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
         assert beneficiary_import_status.beneficiaryImportId == beneficiary_import.id
-        assert beneficiary_import_status.detail == f"Nr de piece déjà utilisé par {user.id}"
-        sub_msg = user.subscriptionMessages[0]
+        assert beneficiary_import_status.detail == f"Nr de piece déjà utilisé par {existing_user.id}"
+        sub_msg = applicant.subscriptionMessages[0]
         assert (
             sub_msg.userMessage
             == "Ce document a déjà été analysé. Vérifie que tu n’as pas créé de compte avec une autre adresse e-mail. Consulte l’e-mail envoyé le 30/10/2021 pour plus d’informations."
