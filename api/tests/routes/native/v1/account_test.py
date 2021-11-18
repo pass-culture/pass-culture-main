@@ -4,6 +4,7 @@ from decimal import Decimal
 from io import BytesIO
 import logging
 from pathlib import Path
+import re
 from unittest.mock import patch
 import uuid
 
@@ -1747,6 +1748,26 @@ class ProfilingFraudScoreTest:
             fraud_models.BeneficiaryFraudResult.query.filter(fraud_models.BeneficiaryFraudResult.user == user).count()
             == 0
         )
+
+
+class ProfilingSessionIdTest:
+    def test_profiling_session_id(self, client):
+        user = users_factories.UserFactory()
+
+        client.with_token(user.email)
+
+        session_ids = set()
+
+        for _ in range(5):
+            response = client.get("/native/v1/user_profiling/session_id")
+
+            assert response.status_code == 200
+            assert re.match("^[A-Za-z0-9_-]{10,128}$", response.json["sessionId"])
+
+            session_ids.add(response.json["sessionId"])
+
+        # Check that all session ids are different
+        assert len(session_ids) == 5
 
 
 class IdentificationSessionTest:

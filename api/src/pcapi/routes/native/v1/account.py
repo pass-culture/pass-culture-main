@@ -1,5 +1,6 @@
 from datetime import datetime
 import logging
+import uuid
 
 from flask import request
 
@@ -315,6 +316,17 @@ def profiling_fraud_score(user: User, body: serializers.UserProfilingFraudReques
     else:
         logger.info("Success when profiling user: returned userdata %r", profiling_infos.dict())
         fraud_api.on_user_profiling_result(user, profiling_infos)
+
+
+@blueprint.native_v1.route("/user_profiling/session_id", methods=["GET"])
+@spectree_serialize(api=blueprint.api, response_model=serializers.UserProfilingSessionIdResponse)
+@authenticated_user_required
+def profiling_session_id(user: User) -> serializers.UserProfilingSessionIdResponse:
+    """
+    Generate a unique hash which will be used as an identifier for user profiling
+    """
+    session_id = str(uuid.uuid4())
+    return serializers.UserProfilingSessionIdResponse(sessionId=session_id)
 
 
 @blueprint.native_v1.route("/ubble_identification", methods=["POST"])
