@@ -328,6 +328,10 @@ class UserProfilingFraudRequest(BaseModel):
         return session_id
 
 
+class UserProfilingSessionIdResponse(BaseModel):
+    sessionId: str
+
+
 class IdentificationSessionRequest(BaseModel):
     redirectUrl: str
 
