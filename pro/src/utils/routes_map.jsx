@@ -17,6 +17,8 @@ import SigninContainer from 'components/pages/Signin/SigninContainer'
 import SignupContainer from 'components/pages/Signup/SignupContainer'
 import SignupValidationContainer from 'components/pages/Signup/SignupValidation/SignupValidationContainer'
 import StyleguideContainer from 'components/pages/Styleguide/StyleguideContainer'
+import OfferEducationalCreation from 'routes/OfferEducationalCreation'
+import OfferType from 'routes/OfferType'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 const RedirectToConnexionComponent = () => <Redirect to="/connexion" />
@@ -153,10 +155,24 @@ const routes = [
     title: 'Structures',
   },
   {
+    component: OfferType,
+    exact: true,
+    featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
+    path: '/offre/creation',
+    title: 'Selection du type d’offre',
+  },
+  {
     component: OfferLayoutContainer,
     exact: false,
     path: ['/offres/creation', '/offres/:offerId([A-Z0-9]+)'],
     title: 'Offre',
+  },
+  {
+    component: OfferEducationalCreation,
+    exact: true,
+    featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
+    path: '/offre/creation/scolaire',
+    title: 'Offre Scolaire',
   },
   {
     component: Offers,

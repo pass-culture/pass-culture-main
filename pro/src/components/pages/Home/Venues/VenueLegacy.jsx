@@ -7,6 +7,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useFeatureFlagedOfferCreationURL from 'components/hooks/useFeatureFlagedOfferCreationURL'
 import Icon from 'components/layout/Icon'
 import { BOOKING_STATUS } from 'components/pages/Bookings/BookingsRecapTable/CellsFormatter/utils/bookingStatusConverter'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
@@ -71,6 +72,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
+  const offerCreationLink = useFeatureFlagedOfferCreationURL()
 
   useEffect(() => {
     if (isStatOpen && !isStatLoaded) {
@@ -164,7 +166,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
                 <div className="h-card-col v-add-offer-link">
                   <Link
                     className="tertiary-link"
-                    to={`/offres/creation?structure=${offererId}&lieu=${id}`}
+                    to={`${offerCreationLink}?structure=${offererId}&lieu=${id}`}
                   >
                     <IcoPlus />
                     <div>
