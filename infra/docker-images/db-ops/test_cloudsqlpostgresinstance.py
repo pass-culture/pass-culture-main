@@ -62,6 +62,7 @@ class TestCloudSQLPostgresInstance(unittest.TestCase):
 
         self.sqladmin_backup_runs_service.get.return_value.execute.side_effect = [
             self.fake_running_sql_backup_run_status,
+            self.fake_running_sql_backup_run_status,
             self.fake_successful_sql_backup_run_status,
             self.fake_successful_sql_backup_run_status,
         ]
@@ -76,6 +77,7 @@ class TestCloudSQLPostgresInstance(unittest.TestCase):
         self.sqladmin_backup_runs_service.insert.return_value.execute.return_value = self.fake_running_sql_backup_run_status
 
         self.sqladmin_backup_runs_service.get.return_value.execute.side_effect = [
+            self.fake_running_sql_backup_run_status,
             self.fake_running_sql_backup_run_status,
             self.fake_failed_sql_backup_run_status,
             self.fake_failed_sql_backup_run_status,
