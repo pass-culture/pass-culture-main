@@ -91,7 +91,7 @@ class CloudSQLPostgresInstance:
                                 ).execute()
 
         self.wait_for_operation(
-            check_if_operation_done_function= lambda: get_backup_operation()["status"] not in ["SUCCESSFUL", "FAILED"],
+            check_if_operation_done_function= lambda: get_backup_operation()["status"] in ["SUCCESSFUL", "FAILED"],
             operation_id=operation["backupContext"]["backupId"],
             check_interval=60
         )
