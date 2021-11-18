@@ -111,20 +111,20 @@ class JouveContent(pydantic.BaseModel):
 
 
 class UbbleIdentificationResponse(pydantic.BaseModel):
-    comment: str
+    comment: typing.Optional[str]
     created_at: datetime.datetime = pydantic.Field(alias="created-at")
-    ended_at: datetime.datetime = pydantic.Field(alias="ended-at")
+    ended_at: typing.Optional[datetime.datetime] = pydantic.Field(alias="ended-at")
     identification_id: str = pydantic.Field(alias="identification-id")
     identification_url: str = pydantic.Field(alias="identification-url")
     number_of_attempts: int = pydantic.Field(alias="number-of-attempts")
     redirect_url: str = pydantic.Field(alias="redirect-url")
-    score: float
-    started_at: datetime.datetime = pydantic.Field(alias="started-at")
+    score: typing.Optional[float]
+    started_at: typing.Optional[datetime.datetime] = pydantic.Field(alias="started-at")
     status: str  # migrate to an enum ?
     updated_at: datetime.datetime = pydantic.Field(alias="updated-at")
     status_updated_at: datetime.datetime = pydantic.Field(alias="status-updated-at")
-    user_agent: str = pydantic.Field(alias="user-agent")
-    user_ip_address: str = pydantic.Field(alias="user-ip-address")
+    user_agent: typing.Optional[str] = pydantic.Field(alias="user-agent")
+    user_ip_address: typing.Optional[str] = pydantic.Field(alias="user-ip-address")
     webhook: str
 
 

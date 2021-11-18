@@ -56,4 +56,4 @@ def start_identification(
         }
     }
     response = session.post(build_url("/identifications/"), json=data)
-    return fraud_models.UbbleIdentificationResponse(**response.json()["attributes"])
+    return fraud_models.UbbleIdentificationResponse(**response.json()["data"]["attributes"])
