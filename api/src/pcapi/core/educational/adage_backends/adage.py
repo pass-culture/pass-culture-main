@@ -16,9 +16,7 @@ class AdageHttpNotifier(AdageNotifier):
     def notify_prebooking(self, data: EducationalBookingResponse) -> AdageApiResult:
         api_response = requests.post(
             self.url,
-            headers={
-                self.header_key: self.api_key,
-            },
+            headers={self.header_key: self.api_key, "Content-type": "application/json"},
             json=data.json(),
         )
 
