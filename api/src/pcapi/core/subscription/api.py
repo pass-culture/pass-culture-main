@@ -183,7 +183,7 @@ def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
         birth_date=user.dateOfBirth.date(),
         first_name=user.firstName,
         last_name=user.lastName,
-        webhook_url=flask.url_for("Public API.ubble_webhook_update_application_status"),
+        webhook_url=flask.url_for("Public API.ubble_webhook_update_application_status", _external=True),
         redirect_url=redirect_url,
         face_required=True,  # TODO(bcalvez): setting ? hardcode ?
     )
