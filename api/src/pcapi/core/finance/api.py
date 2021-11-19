@@ -1,8 +1,15 @@
+import csv
 import datetime
+import decimal
 import logging
+import pathlib
+import tempfile
+import typing
+import zipfile
 
 import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
+import sqlalchemy.sql.functions as sqla_func
 
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
@@ -11,7 +18,10 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.models as payments_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
+from pcapi.models.bank_information import BankInformation
 from pcapi.repository import transaction
+from pcapi.repository import user_queries
+from pcapi.utils import human_ids
 
 from . import exceptions
 from . import models
@@ -307,8 +317,8 @@ def cancel_pricing(booking: bookings_models.Booking, reason: models.PricingLogRe
 
 
 def generate_cashflows_and_payment_files(cutoff: datetime.datetime):
-    generate_cashflows(cutoff)
-    # FIXME (dbaty): generate payment files here.
+    batch_id = generate_cashflows(cutoff)
+    generate_payment_files(batch_id)
 
 
 def generate_cashflows(cutoff: datetime.datetime) -> int:
@@ -367,3 +377,228 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
             )
 
     return batch_id
+
+
+def generate_payment_files(batch_id: int):
+    """Generate all payment files that are related to the requested
+    CashflowBatch and mark all related Cashflow as ``UNDER_REVIEW``.
+    """
+    not_pending_cashflows = models.Cashflow.query.filter(
+        models.Cashflow.batchId == batch_id,
+        models.Cashflow.status != models.CashflowStatus.PENDING,
+    ).count()
+    if not_pending_cashflows:
+        raise ValueError(
+            "Refusing to generate payment files, since some cashflows are not pending",
+            extra={"batch": batch_id, "not_pending": not_pending_cashflows},
+        )
+
+    file_paths = {}
+    file_paths["business_units"] = _generate_business_units_file()
+    file_paths["payments"] = _generate_payments_file(batch_id)
+    file_paths["wallets"] = _generate_wallets_file()
+    logger.info(
+        "Finance files have been generated",
+        extra={"paths": [str(path) for path in file_paths.values()]},
+    )
+
+    db.session.execute(
+        """
+        WITH updated AS (
+          UPDATE cashflow
+          SET status = :under_review
+          WHERE "batchId" = :batch_id AND status = :pending
+          RETURNING id AS cashflow_id
+        )
+        INSERT INTO cashflow_log
+            ("cashflowId", "statusBefore", "statusAfter")
+            SELECT updated.cashflow_id, 'pending', 'under review' FROM updated
+    """,
+        params={
+            "batch_id": batch_id,
+            "pending": models.CashflowStatus.PENDING.value,
+            "under_review": models.CashflowStatus.UNDER_REVIEW.value,
+        },
+    )
+    db.session.commit()
+
+
+def _write_csv(
+    filename: str,
+    header: typing.Iterable,
+    rows: typing.Iterable = None,
+    batched_rows: typing.Iterable = None,
+    row_formatter: typing.Callable[typing.Any, typing.Iterable] = lambda row: row,
+    compress: bool = False,
+) -> pathlib.Path:
+    assert (rows is not None) ^ (batched_rows is not None)
+
+    # Store file in a dedicated directory within "/tmp". It's easier
+    # to clean files in tests that way.
+    path = pathlib.Path(tempfile.mkdtemp()) / f"{filename}.csv"
+    with open(path, "w+") as fp:
+        writer = csv.writer(fp, quoting=csv.QUOTE_NONNUMERIC)
+        writer.writerow(header)
+        if rows is not None:
+            writer.writerows(row_formatter(row) for row in rows)
+        if batched_rows is not None:
+            for rows_ in batched_rows:
+                writer.writerows(row_formatter(row) for row in rows_)
+    if compress:
+        compressed_path = pathlib.Path(str(path) + ".zip")
+        with zipfile.ZipFile(compressed_path, "w") as zfile:
+            zfile.write(path, arcname=path.name)
+        path = compressed_path
+    return path
+
+
+def _generate_business_units_file() -> pathlib.Path:
+    header = (
+        "Identifiant de la BU",
+        "SIRET",
+        "Raison sociale de la BU",
+        "Libellé de la BU",  # actually, the commercial name of the related venue
+        "IBAN",
+        "BIC",
+    )
+    query = (
+        models.BusinessUnit.query.join(models.BusinessUnit.bankAccount)
+        .join(
+            offerers_models.Venue,
+            offerers_models.Venue.siret == models.BusinessUnit.siret,
+        )
+        .order_by(models.BusinessUnit.id)
+        .with_entities(
+            offerers_models.Venue.id.label("venue_id"),
+            models.BusinessUnit.siret.label("business_unit_siret"),
+            models.BusinessUnit.name.label("business_unit_name"),
+            sqla_func.coalesce(
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.name,
+            ).label("venue_name"),
+            BankInformation.iban.label("iban"),
+            BankInformation.bic.label("bic"),
+        )
+    )
+    row_formatter = lambda row: (
+        human_ids.humanize(row.venue_id),
+        row.business_unit_siret,
+        row.business_unit_name,
+        row.venue_name,
+        row.iban,
+        row.bic,
+    )
+    return _write_csv("business_units", header, rows=query, row_formatter=row_formatter)
+
+
+def _generate_payments_file(batch_id: int) -> pathlib.Path:
+    header = [
+        "Identifiant de la BU",
+        "SIRET de la BU",
+        "Libellé de la BU",  # actually, the commercial name of the related venue
+        "Identifiant du lieu",
+        "Libellé du lieu",
+        "Identifiant de l'offre",
+        "Nom de l'offre",
+        "Sous-catégorie de l'offre",
+        "Prix de la réservation",
+        "Type de réservation",
+        "Date de validation",
+        "Identifiant de la valorisation",
+        "Taux de remboursement",
+        "Montant remboursé à l'offreur",
+    ]
+    # We join `Venue` twice: once to get the venue that is related to
+    # the business unit ; and once to get the venue of the offer. To
+    # distinguish them in `with_entities()`, we need aliases.
+    BusinessUnitVenue = sqla_orm.aliased(offerers_models.Venue)
+    OfferVenue = sqla_orm.aliased(offerers_models.Venue)
+    query = (
+        models.Pricing.query.filter_by(status=models.PricingStatus.VALIDATED)
+        .join(models.Pricing.cashflows)
+        .join(models.Pricing.booking)
+        .join(models.Pricing.businessUnit)
+        .join(
+            BusinessUnitVenue,
+            models.BusinessUnit.siret == BusinessUnitVenue.siret,
+        )
+        .join(bookings_models.Booking.stock)
+        .join(offers_models.Stock.offer)
+        .join(offers_models.Offer.venue.of_type(OfferVenue))
+        .join(bookings_models.Booking.offerer)
+        .filter(models.Cashflow.batchId == batch_id)
+        .distinct(models.Pricing.id)
+        .order_by(models.Pricing.id)
+        .with_entities(
+            BusinessUnitVenue.id.label("business_unit_venue_id"),
+            models.BusinessUnit.siret.label("business_unit_siret"),
+            sqla_func.coalesce(
+                BusinessUnitVenue.publicName,
+                BusinessUnitVenue.name,
+            ).label("business_unit_venue_name"),
+            OfferVenue.id.label("offer_venue_id"),
+            OfferVenue.name.label("offer_venue_name"),
+            offers_models.Offer.id.label("offer_id"),
+            offers_models.Offer.name.label("offer_name"),
+            offers_models.Offer.subcategoryId.label("offer_subcategory_id"),
+            bookings_models.Booking.amount.label("booking_amount"),
+            bookings_models.Booking.quantity.label("booking_quantity"),
+            bookings_models.Booking.educationalBookingId.label("educational_booking_id"),
+            bookings_models.Booking.individualBookingId.label("individual_booking_id"),
+            bookings_models.Booking.dateUsed.label("booking_used_date"),
+            models.Pricing.id.label("pricing_id"),
+            models.Pricing.amount.label("pricing_amount"),
+        )
+        # FIXME (dbaty, 2021-11-30): other functions use `yield_per()`
+        # but I am not sure it helps here. We have used
+        # `pcapi.utils.db.get_batches` in the old-style payment code
+        # and that may be what's best here.
+        .yield_per(1000)
+    )
+    return _write_csv(
+        "payment_details",
+        header,
+        rows=query,
+        row_formatter=_payment_details_row_formatter,
+        compress=True,  # it's a large CSV file (> 100 Mb), we should compress it
+    )
+
+
+def _payment_details_row_formatter(sql_row):
+    if sql_row.educational_booking_id is not None:
+        booking_type = "EACC"
+    elif sql_row.individual_booking_id is not None:
+        booking_type = "PC"
+    else:
+        raise ValueError("Unknown booking type (not educational nor individual)")
+
+    booking_total_amount = sql_row.booking_amount * sql_row.booking_quantity
+    reimbursement_rate = decimal.Decimal(-sql_row.pricing_amount / booking_total_amount / 100).quantize(
+        decimal.Decimal("0.01")
+    )
+    reimbursed_amount = decimal.Decimal(-sql_row.pricing_amount / 100).quantize(decimal.Decimal("0.01"))
+    return (
+        human_ids.humanize(sql_row.business_unit_venue_id),
+        sql_row.business_unit_siret,
+        sql_row.business_unit_venue_name,
+        human_ids.humanize(sql_row.offer_venue_id),
+        sql_row.offer_venue_name,
+        sql_row.offer_id,
+        sql_row.offer_name,
+        sql_row.offer_subcategory_id,
+        booking_total_amount,
+        booking_type,
+        sql_row.booking_used_date,
+        sql_row.pricing_id,
+        reimbursement_rate,
+        reimbursed_amount,
+    )
+
+
+def _generate_wallets_file() -> pathlib.Path:
+    # FIXME (dbaty, 2021-12-01): once the old system is removed, inline
+    # `get_all_users_wallet_balances()` into this function.
+    header = ["ID de l'utilisateur", "Solde théorique", "Solde réel"]
+    query = user_queries.get_all_users_wallet_balances()
+    row_formatter = lambda row: (row.user_id, row.current_balance, row.real_balance)
+    return _write_csv("soldes_des_utilisateurs", header, rows=query, row_formatter=row_formatter)

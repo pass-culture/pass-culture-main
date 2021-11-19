@@ -251,9 +251,9 @@ def generate_payment_details_csv(payment_query) -> str:
     return output.getvalue()
 
 
-def generate_wallet_balances_csv(wallet_balances: list[WalletBalance]) -> str:
+def generate_wallet_balances_csv(wallet_balances: list) -> str:
     output = StringIO()
-    csv_lines = [balance.as_csv_row() for balance in wallet_balances]
+    csv_lines = [WalletBalance.as_csv_row(balance) for balance in wallet_balances]
     writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(WalletBalance.CSV_HEADER)
     writer.writerows(csv_lines)
