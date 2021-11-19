@@ -34,3 +34,6 @@ webapp-packed-staging/
 # The `shared` submodule has been removed in https://github.com/pass-culture/pass-culture-main/pull/334
 /shared
 .docker-sync
+
+# Test result output generated when launch tests/run_tests.sh
+tests/result_output.txt
