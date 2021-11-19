@@ -75,40 +75,26 @@ teardown(){
 
     # call with param: symbolic-ref -q HEAD
     mock_set_output "${mock_git}" "bats-tests" 1
+    # Mock to prevent git status --untracked-files=no --porcelain from making the script fail
+    mock_set_output "${mock_git}" "" 2
     # git add version.txt
-    mock_set_output "${mock_git}" "add version.txt" 2
-    # git commit -m "🚀 $TAG_VERSION"
-    mock_set_output "${mock_git}" "commit" 3
-    # git push origin "$current_branch"
-    mock_set_output "${mock_git}" "push current branch" 4
-    # call with param: git tag "$TAG_VERSION"
-    mock_set_output "${mock_git}" "tag-version api" 5
-    # call with param: git push origin "$TAG_VERSION"
-    mock_set_output "${mock_git}" "push tag api" 6
-    # call with param: git push origin "$current_branch"
-    mock_set_output "${mock_git}" "push current-branch webapp" 7
-    # call with param: git push origin "$TAG_VERSION"
-    mock_set_output "${mock_git}" "push tag webapp" 8
-    # call with param: git push origin "$current_branch"
-    mock_set_output "${mock_git}" "push current-branch pro" 9
-    # call with param: git push origin "$TAG_VERSION"
-    mock_set_output "${mock_git}" "push tag pro" 10
-    # call with param: git push origin "$current_branch"
-    mock_set_output "${mock_git}" "push current-branch adage-front" 11
-    # call with param: git push origin "$TAG_VERSION"
-    mock_set_output "${mock_git}" "push tag adage-front" 12
-    # call with param: git add .
-    mock_set_output "${mock_git}" "git add ." 13
+    mock_set_output "${mock_git}" "add version.txt" 3
+    # git add webapp package.json
+    mock_set_output "${mock_git}" "add package.json" 4
+    # git add pro package.json
+    mock_set_output "${mock_git}" "add package.json" 5
+    # git add adage-front package.json
+    mock_set_output "${mock_git}" "add package.json" 6
     # call with param: git commit -m "🚀 $TAG_VERSION"
-    mock_set_output "${mock_git}" "git commit -m 🚀 TAG_VERSION" 14
+    mock_set_output "${mock_git}" "git commit -m 🚀 TAG_VERSION" 7
     # call with param: git push origin master
-    mock_set_output "${mock_git}" "git push origin master" 15
+    mock_set_output "${mock_git}" "git push origin master" 8
     # call with param: git tag "$TAG_VERSION"
-    mock_set_output "${mock_git}" "tag-version main" 16
+    mock_set_output "${mock_git}" "tag-version main" 9
     # call with param: git push origin "$TAG_VERSION"
-    mock_set_output "${mock_git}" "push tag main" 17
+    mock_set_output "${mock_git}" "push tag main" 10
     # call with param: git checkout "$current_branch"
-    mock_set_output "${mock_git}" "git checkout current-branch" 18
+    mock_set_output "${mock_git}" "git checkout current-branch" 11
 
     # Mock yarn
     # call with param: yarn version --new-version "$TAG_NAME"
@@ -129,7 +115,7 @@ teardown(){
     # Then
     echo "Number of calls: $(mock_get_call_num ${mock_git})"
     echo "Number of calls: $(mock_get_call_num ${mock_yarn})"
-    [[ "$(mock_get_call_num ${mock_git})" -eq 18 ]]
+    [[ "$(mock_get_call_num ${mock_git})" -eq 11 ]]
     [[ "$(mock_get_call_num ${mock_yarn})" -eq 3 ]]
 
     # Allow to follow last steps
