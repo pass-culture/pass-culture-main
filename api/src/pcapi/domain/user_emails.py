@@ -28,7 +28,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.emails import beneficiary_activation
-from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
 from pcapi.emails.beneficiary_expired_bookings import build_expired_bookings_recap_email_data_for_beneficiary
 from pcapi.emails.beneficiary_offer_cancellation import (
     retrieve_offerer_booking_recap_email_data_after_user_cancellation,
@@ -69,11 +68,6 @@ def send_individual_booking_confirmation_email_to_offerer(individual_booking: In
         return True
     data = retrieve_data_for_offerer_booking_recap_email(individual_booking)
     return mails.send(recipients=[offerer_booking_email], data=data)
-
-
-def send_individual_booking_confirmation_email_to_beneficiary(individual_booking: IndividualBooking) -> bool:
-    data = retrieve_data_for_beneficiary_booking_confirmation_email(individual_booking)
-    return mails.send(recipients=[individual_booking.user.email], data=data)
 
 
 def send_user_webapp_offer_link_email(user: User, offer: Offer) -> None:
