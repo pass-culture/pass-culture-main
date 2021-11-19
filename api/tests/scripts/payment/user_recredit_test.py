@@ -71,23 +71,32 @@ class UserRecreditTest:
 
     def test_recredit_underage_users(self):
         with freeze_time("2020-01-01"):
-            user_15 = user_factories.UnderageBeneficiaryFactory()
+            deposit_creation_date = datetime.datetime(2019, 7, 31)  # Create deposit before birthday
+            user_15 = user_factories.UnderageBeneficiaryFactory(
+                deposit__dateCreated=deposit_creation_date, subscription_age=15
+            )
             user_16_not_recredited = user_factories.UnderageBeneficiaryFactory(
+                deposit__dateCreated=deposit_creation_date,
                 subscription_age=16,
             )
             user_16_already_recredited = user_factories.UnderageBeneficiaryFactory(
+                deposit__dateCreated=deposit_creation_date,
                 subscription_age=16,
             )
             user_17_not_recredited = user_factories.UnderageBeneficiaryFactory(
+                deposit__dateCreated=deposit_creation_date,
                 subscription_age=17,
             )
             user_17_only_recredited_at_16 = user_factories.UnderageBeneficiaryFactory(
+                deposit__dateCreated=deposit_creation_date,
                 subscription_age=17,
             )
             user_17_already_recredited = user_factories.UnderageBeneficiaryFactory(
+                deposit__dateCreated=deposit_creation_date,
                 subscription_age=17,
             )
             user_17_already_recredited_twice = user_factories.UnderageBeneficiaryFactory(
+                deposit__dateCreated=deposit_creation_date,
                 subscription_age=17,
             )
 
@@ -210,3 +219,14 @@ class UserRecreditTest:
         assert user_activated_at_15.recreditAmountToShow == 30
         assert user_activated_at_16.recreditAmountToShow == 30  # Was not reset
         assert user_activated_at_17.recreditAmountToShow is None
+
+    def test_recredit_when_account_activated_on_the_birthday(self):
+        with freeze_time("2020-05-01"):
+            user = user_factories.UnderageBeneficiaryFactory(subscription_age=16, dateOfBirth=datetime.date(2004, 5, 1))
+            assert user.deposit.amount == 30
+            assert user.recreditAmountToShow is None
+
+            # Should not recredit if the account was created the same day as the birthday
+            recredit_underage_users()
+            assert user.deposit.amount == 30
+            assert user.recreditAmountToShow is None
