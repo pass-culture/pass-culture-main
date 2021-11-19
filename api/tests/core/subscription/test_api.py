@@ -184,3 +184,6 @@ class UbbleWorkflowTest:
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId is not None
         assert fraud_check.resultContent is not None
+
+        ubble_request = ubble_mock.last_request.json()
+        assert ubble_request["data"]["attributes"]["webhook"] == "http://localhost/webhooks/ubble/application_status"
