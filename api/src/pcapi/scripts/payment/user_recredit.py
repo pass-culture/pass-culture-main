@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def has_celebrated_their_birthday_since_activation(user: users_models.User) -> bool:
-    return user.deposit_activation_date is not None and user.deposit_activation_date.date() <= user.latest_birthday
+    return user.deposit_activation_date is not None and user.deposit_activation_date.date() < user.latest_birthday
 
 
 def has_been_recredited(user: users_models.User) -> bool:
