@@ -135,6 +135,21 @@ def _get_latest_birthday(birth_date: date) -> date:
     return previous_year_birthday
 
 
+class SubscriptionState(enum.Enum):
+    ACCOUNT_CREATED = "account_created"
+    BENEFICIARY_15_17 = "beneficiary_15_17"
+    BENEFICIARY_18 = "beneficiary_18"
+    EMAIL_VALIDATED = "email_validated"
+    IDENTITY_CHECK_KO = "identity_check_ko"
+    IDENTITY_CHECK_PENDING = "identity_check_pending"
+    IDENTITY_CHECK_VALIDATED = "identity_check_validated"
+    PHONE_VALIDATED = "phone_validated"
+    PHONE_VALIDATION_KO = "phone_validation_ko"
+    PROFILE_COMPLETED = "profile_completed"
+    REJECTED_BY_ADMIN = "rejected_by_admin"
+    USER_PROFILING_OK = "user_profiling_ok"
+
+
 class User(PcObject, Model, NeedsValidationMixin):
     __tablename__ = "user"
 
@@ -199,7 +214,7 @@ class User(PcObject, Model, NeedsValidationMixin):
         nullable=False,
         server_default="{}",
     )
-
+    subscriptionState = sa.Column(sa.Enum(SubscriptionState, create_constraint=False), nullable=True)
     # FIXME (dbaty, 2020-12-14): once v114 has been deployed, populate
     # existing rows with the empty string and add NOT NULL constraint.
     suspensionReason = sa.Column(sa.Text, nullable=True, default="")
