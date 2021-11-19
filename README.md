@@ -117,11 +117,11 @@ sa BDD locale via `pc restart-backend`. Sinon:
 
 Poser un _tag_ consiste à sélectionner un ensemble de commits et de leur attribuer un numéro de version.
 
-1. Checkout `master` sur tous les submodules
+1. Checkout `master`
 
-- `git submodule foreach git checkout master && git submodule foreach git pull`
+- `git checkout master && git pull`
 
-La seule branche devant être _taggée_ de cette façon est `master`. Pour les hotfixes, [voir plus bas](#hot-fixes).
+La seule branche devant être _taggée_ de cette façon est `master`. Pour les hotfixes, [voir plus bas](#Hotfixes).
 
 2. Lancer la commande
 
@@ -136,7 +136,7 @@ pc -t 138.0.0 tag
 ```
 
 Le fichier `version.txt` de l'API est mis à jours ainsi que les `package.json` de Webapp, Pro et Adage-front. Le tag est
-posé sur les branches locales _checked out_ (de préférence master): Api, Webapp, Pro et adage-front. Il est ensuite
+posé sur la branche locale _checked out_ (master). Il est ensuite
 poussé sur le repository distant. La CI lance alors des pipelines de tests.
 
 3. Sur [CircleCI](https://app.circleci.com/pipelines/github/pass-culture/pass-culture-main), vérifier l'avancement du
@@ -170,21 +170,30 @@ poussé sur le repository distant. La CI lance alors des pipelines de tests.
 Faire un hotfix consiste à créer un nouveau tag à partir du tag précédent avec des commits spécifiques.
 
 1. Vérifier que les commits sont poussés sur `master`, déployés sur testing et validés par les POs
-2. Se placer en local sur le dernier tag
+2. Se placer en local sur le dernier tag. Pour trouver le dernier tag, pull master et lister les tags.
 
-- repo main : `git checkout v{numero_de_version}`
-- repo api : `git checkout v{numero_de_version}`
-- repo pro : `git checkout v{numero_de_version}`
-- repo webapp : `git checkout v{numero_de_version}`
-- repo adage-front : `git checkout v{numero_de_version}`
+- `git checkout master && git pull`
+- `git tags -l | grep {numéro d'itération}`
+- `git checkout v{numero_de_version}`
 
-3. Butiner les commits désirés, sur chaque repo
+3. Butiner les commits désirés
 
 Exemple :
 
 ```
-cd api && git cherry-pick 3e07b9420e93a2a560b2deec1aed2e983fc842e8
-cd ../pro && git cherry-pick c3eaa9395cfa9bc5b48d78256b9693af56cbc1d0
+> git checkout master && git pull
+already up to date
+
+> git tag -l | grep 162
+v162.0.0
+v162.0.1
+
+> git checkout v162.0.1
+Note: switching to 'v162.0.1'.
+You are in 'detached HEAD' state.
+
+> git cherry-pick 3e07b9420e93a2a560b2deec1aed2e983fc842e8
+> git cherry-pick c3eaa9395cfa9bc5b48d78256b9693af56cbc1d0
 ```
 
 4. Lancer la commande de création de tag hot fix :
@@ -193,18 +202,14 @@ cd ../pro && git cherry-pick c3eaa9395cfa9bc5b48d78256b9693af56cbc1d0
 pc -t {numero_de_version_incrémenté} tag-hotfix
 ```
 
+Une branche `hotfix-{numéro de version}` contenant les commits butinés, et un commit `🚀 numéro de version` (`🚀 v162.0.1` par exemple) sera créée, et poussée sur le repository.
 Une fois les tests de la CI passés, on peut déployer ce tag.
 
 5. Supprimer les branches de hotfix une fois les déploiements réussis.
 
 ### Déployer dans l'environnement Testing
 
-Le déploiement se lance automatiquement lors d'un _merge_ sur la branche `master` pour les 4 repos :
-
-- api : [configuration circlecI](api/.circleci/config.yml)
-- pro : [configuration circlecI](pro/.circleci/config.yml)
-- webapp : [configuration circlecI](webapp/.circleci/config.yml)
-- adage-front : [configuration circlecI](adage-front/.circleci/config.yml)
+Le déploiement se lance automatiquement lors d'un _merge_ sur la branche `master`
 
 Pré-requis : installer [jq](https://stedolan.github.io/jq/download/)
 
@@ -218,13 +223,6 @@ Pré-requis : installer [jq](https://stedolan.github.io/jq/download/)
 4. Déploiement du tag en `production`
 5. Déploiement du tag en `integration`
 
-Les 5 repos suivants sont taggés ou déployés simultanément :
-
-- `api`
-- `pro`
-- `webapp`
-- `doc`
-- `adage-front`
 
 Une fois le tag posé, on vérifie que les tests sont bien en succès, puis on lance le déploiement avec la commande
 
