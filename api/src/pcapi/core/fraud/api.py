@@ -4,7 +4,6 @@ import re
 from typing import Optional
 from typing import Union
 
-from dateutil.relativedelta import relativedelta
 import sqlalchemy
 
 from pcapi.connectors.beneficiaries import jouve_backend
@@ -381,7 +380,7 @@ def _get_threshold_id_fraud_item(
 
 
 def _underage_user_fraud_item(birth_date: datetime.date) -> models.FraudItem:
-    age = relativedelta(datetime.date.today(), birth_date).years
+    age = user_models.get_age_from_birth_date(birth_date)
     if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
         return models.FraudItem(
             status=models.FraudStatus.OK,

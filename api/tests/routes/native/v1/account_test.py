@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
@@ -545,16 +546,18 @@ class AccountCreationTest:
         assert push_testing.requests == []
 
     @override_features(**{FeatureToggle.ENABLE_UBBLE.name: True})
+    @pytest.mark.parametrize("age", [15, 16, 17, 18])
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation_enable_ubble_first_name_missing(self, mocked_check_recaptcha_token_is_valid, app):
+    def test_account_creation_enable_ubble_eligible(self, mocked_check_recaptcha_token_is_valid, age, app):
+        date_of_birth = date.today() - relativedelta(years=age, months=6)
         assert FeatureToggle.ENABLE_UBBLE.is_active()
         test_client = TestClient(app.test_client())
         assert User.query.first() is None
         data = {
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
-            "birthdate": "1960-12-31",
-            "firstName": "",
+            "birthdate": date_of_birth.isoformat(),
+            "firstName": "John",
             "lastName": "Doe",
             "notifications": True,
             "token": "gnagna",
@@ -562,27 +565,34 @@ class AccountCreationTest:
         }
 
         response = test_client.post("/native/v1/account", json=data)
-        assert response.status_code == 400
+        assert response.status_code == 204
 
     @override_features(**{FeatureToggle.ENABLE_UBBLE.name: True})
+    @pytest.mark.parametrize("age,expected", [(15, 400), (16, 400), (17, 400), (18, 400), (19, 204), (20, 204)])
+    @pytest.mark.parametrize("missing_value", [None, ""])
+    @pytest.mark.parametrize("missing_key", ["firstName", "lastName"])
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation_enable_ubble_last_name_missing(self, mocked_check_recaptcha_token_is_valid, app):
+    def test_account_creation_enable_ubble_name_missing(
+        self, mocked_check_recaptcha_token_is_valid, missing_key, missing_value, age, expected, app
+    ):
+        date_of_birth = date.today() - relativedelta(years=age, months=6)
         assert FeatureToggle.ENABLE_UBBLE.is_active()
         test_client = TestClient(app.test_client())
         assert User.query.first() is None
         data = {
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
-            "birthdate": "1960-12-31",
+            "birthdate": date_of_birth.isoformat(),
             "firstName": "John",
-            "lastName": "",
+            "lastName": "Doe",
             "notifications": True,
             "token": "gnagna",
             "marketingEmailSubscription": True,
         }
+        data[missing_key] = missing_value
 
         response = test_client.post("/native/v1/account", json=data)
-        assert response.status_code == 400
+        assert response.status_code == expected
 
 
 class UserProfileUpdateTest:
