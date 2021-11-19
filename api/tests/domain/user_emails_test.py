@@ -26,7 +26,6 @@ from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_admin_user_validation_email
 from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_expired_individual_bookings_recap_email_to_offerer
-from pcapi.domain.user_emails import send_individual_booking_confirmation_email_to_beneficiary
 from pcapi.domain.user_emails import send_individual_booking_confirmation_email_to_offerer
 from pcapi.domain.user_emails import send_newly_eligible_user_email
 from pcapi.domain.user_emails import send_offer_validation_status_update_email
@@ -99,27 +98,6 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0].sent_data["To"] == "booking@example.com"
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 780015
-
-
-class SendBookingConfirmationEmailToBeneficiaryTest:
-    @patch(
-        "pcapi.domain.user_emails.retrieve_data_for_beneficiary_booking_confirmation_email",
-        return_value={"MJ-TemplateID": 2942751},
-    )
-    def when_called_calls_send_email(self, mocked_retrieve_data_for_beneficiary_booking_confirmation_email):
-        # Given
-        user = users_factories.BeneficiaryGrant18Factory()
-        booking = booking_factories.IndividualBookingFactory(individualBooking__user=user)
-
-        # When
-        send_individual_booking_confirmation_email_to_beneficiary(booking.individualBooking)
-
-        # Then
-        mocked_retrieve_data_for_beneficiary_booking_confirmation_email.assert_called_once_with(
-            booking.individualBooking
-        )
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 2942751
 
 
 class SendBookingConfirmationEmailToOffererTest:
