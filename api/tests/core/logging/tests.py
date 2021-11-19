@@ -87,6 +87,7 @@ class JsonFormatterTest:
             extra={
                 "decimal": decimal.Decimal("12.34"),
                 "enum": TestingEnum.Foo,
+                "exception": ValueError("Wrong frobulation factor"),
                 "set": {1},
                 "user": user,
                 "bytes": b"encod\xc3\xa9",
@@ -98,6 +99,7 @@ class JsonFormatterTest:
         assert deserialized["extra"] == {
             "decimal": 12.34,
             "enum": "foo",
+            "exception": "Wrong frobulation factor",
             "set": [1],
             "user": 7,
             "bytes": "encodé",
