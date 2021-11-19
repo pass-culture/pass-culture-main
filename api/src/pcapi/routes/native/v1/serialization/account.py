@@ -34,6 +34,8 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
+from pcapi.core.users.models import get_age_from_birth_date
+from pcapi.core.users.models import get_eligibility
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.serialization.utils import to_camel
@@ -69,21 +71,15 @@ class AccountRequest(BaseModel):
     class Config:
         alias_generator = to_camel
 
-    @validator("first_name")
-    def first_name_mandatory(cls, first_name: Optional[str]) -> str:  # pylint: disable=no-self-argument
-        if FeatureToggle.ENABLE_UBBLE.is_active():
-            if not first_name or first_name.isspace():
-                raise ValueError("Le prénom est obligatoire")
-            first_name = first_name.strip()
-        return first_name
-
-    @validator("last_name")
-    def last_name_mandatory(cls, last_name: Optional[str]) -> str:  # pylint: disable=no-self-argument
-        if FeatureToggle.ENABLE_UBBLE.is_active():
-            if not last_name or last_name.isspace():
-                raise ValueError("Le nom est obligatoire")
-            last_name = last_name.strip()
-        return last_name
+    @validator("first_name", "last_name", always=True)
+    def first_and_last_name_mandatory(  # pylint: disable=no-self-argument
+        cls, name: Optional[str], values: dict[str, Any]
+    ) -> str:
+        if FeatureToggle.ENABLE_UBBLE.is_active() and get_eligibility(get_age_from_birth_date(values["birthdate"])):
+            if not name or name.isspace():
+                raise ValueError("Le prénom et le nom sont obligatoires pour tout jeune éligible")
+            name = name.strip()
+        return name
 
 
 class InstitutionalProjectRedactorAccountRequest(BaseModel):
