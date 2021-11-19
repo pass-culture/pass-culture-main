@@ -1816,12 +1816,14 @@ class ProfilingFraudScoreTest:
 
     USER_PROFILING_URL = "https://example.com/path"
 
-    # Remove parametrize() after session_id is removed and only sessionId kept
+    # Remove parametrize() on session_id_key after session_id is removed and only sessionId kept
     @pytest.mark.parametrize("session_id_key", ["sessionId", "session_id"])
+    @pytest.mark.parametrize(
+        "session_id_value", ["b0c9ab58-cdfb-4461-a771-a00683b85bd2", "09cb5fa1c9894252b147de4a37d01f30"]
+    )
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
-    def test_profiling_fraud_score_call(self, client, requests_mock, session_id_key):
+    def test_profiling_fraud_score_call(self, client, requests_mock, session_id_key, session_id_value):
         user = users_factories.UserFactory()
-        session_id = "b0c9ab58-cdfb-4461-a771-a00683b85bd2"
         matcher = requests_mock.register_uri(
             "POST",
             settings.USER_PROFILING_URL,
@@ -1831,7 +1833,7 @@ class ProfilingFraudScoreTest:
         client.with_token(user.email)
 
         response = client.post(
-            "/native/v1/user_profiling", json={session_id_key: session_id, "agentType": "browser_mobile"}
+            "/native/v1/user_profiling", json={session_id_key: session_id_value, "agentType": "browser_mobile"}
         )
         assert response.status_code == 204
         assert matcher.call_count == 1
@@ -1880,8 +1882,9 @@ class ProfilingFraudScoreTest:
         assert fraud_check.userId == user.id
         assert fraud_check.type == fraud_models.FraudCheckType.USER_PROFILING
 
+    @pytest.mark.parametrize("session_id_value", ["gdavmoioeuboaobç!p'è", "", "a" * 150])
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
-    def test_profiling_session_id_invalid(self, client, requests_mock):
+    def test_profiling_session_id_invalid(self, client, requests_mock, session_id_value):
         user = users_factories.UserFactory()
         matcher = requests_mock.register_uri(
             "POST",
@@ -1891,7 +1894,7 @@ class ProfilingFraudScoreTest:
         )
         client.with_token(user.email)
         response = client.post(
-            "/native/v1/user_profiling", json={"sessionId": "gdavmoioeuboaobç!p'è", "agentType": "agent_mobile"}
+            "/native/v1/user_profiling", json={"sessionId": session_id_value, "agentType": "agent_mobile"}
         )
         assert response.status_code == 400
         assert matcher.call_count == 0
