@@ -22,6 +22,9 @@ from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
+from pcapi.core.mails.transactional.users.booking_confirmation_email import (
+    send_individual_booking_confirmation_email_to_beneficiary,
+)
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -132,11 +135,8 @@ def book_offer(
             "Could not send booking confirmation email to offerer",
             extra={"booking": booking.id},
         )
-    if not user_emails.send_individual_booking_confirmation_email_to_beneficiary(individual_booking):
-        logger.warning(
-            "Could not send booking confirmation email to beneficiary",
-            extra={"booking": booking.id},
-        )
+    if not send_individual_booking_confirmation_email_to_beneficiary(individual_booking):
+        logger.warning("Could not send booking=%s confirmation email to beneficiary", booking.id)
 
     search.async_index_offer_ids([stock.offerId])
 
