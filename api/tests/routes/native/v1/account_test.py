@@ -1816,10 +1816,12 @@ class ProfilingFraudScoreTest:
 
     USER_PROFILING_URL = "https://example.com/path"
 
+    # Remove parametrize() after session_id is removed and only sessionId kept
+    @pytest.mark.parametrize("session_id_key", ["sessionId", "session_id"])
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
-    def test_profiling_fraud_score_call(self, client, requests_mock):
+    def test_profiling_fraud_score_call(self, client, requests_mock, session_id_key):
         user = users_factories.UserFactory()
-        session_id = "arbitrarysessionid"
+        session_id = "b0c9ab58-cdfb-4461-a771-a00683b85bd2"
         matcher = requests_mock.register_uri(
             "POST",
             settings.USER_PROFILING_URL,
@@ -1829,25 +1831,8 @@ class ProfilingFraudScoreTest:
         client.with_token(user.email)
 
         response = client.post(
-            "/native/v1/user_profiling", json={"sessionId": session_id, "agentType": "browser_mobile"}
+            "/native/v1/user_profiling", json={session_id_key: session_id, "agentType": "browser_mobile"}
         )
-        assert response.status_code == 204
-        assert matcher.call_count == 1
-
-    @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
-    def test_profiling_fraud_score_call_legacy(self, client, requests_mock):
-        # Remove this test after session_id is removed and only sessionId kept
-        user = users_factories.UserFactory()
-        session_id = "arbitrarysessionid"
-        matcher = requests_mock.register_uri(
-            "POST",
-            settings.USER_PROFILING_URL,
-            json=user_profiling_fixtures.CORRECT_RESPONSE,
-            status_code=200,
-        )
-        client.with_token(user.email)
-
-        response = client.post("/native/v1/user_profiling", json={"session_id": session_id})
         assert response.status_code == 204
         assert matcher.call_count == 1
 
@@ -1921,7 +1906,7 @@ class ProfilingFraudScoreTest:
     )
     def test_fraud_result_on_risky_user_profiling(self, client, requests_mock, risk_rating):
         user = users_factories.UserFactory()
-        session_id = "arbitrarysessionid"
+        session_id = "8663ac09-db2a-46a1-9ccd-49a07d5cd7ae"
         payload = fraud_factories.UserProfilingFraudDataFactory(risk_rating=risk_rating).dict()
         payload["event_datetime"] = payload["event_datetime"].isoformat()  # because datetime is not json serializable
         payload["risk_rating"] = payload["risk_rating"].value  # because Enum is not json serializable
@@ -1965,7 +1950,7 @@ class ProfilingFraudScoreTest:
             status_code=200,
         )
         client.with_token(user.email)
-        session_id = "arbitrarysessionid"
+        session_id = "ffd4ad0f-be8c-4b1e-97ec-0fdd5e4edae0"
 
         response = client.post("/native/v1/user_profiling", json={"sessionId": session_id, "agentType": "agent_mobile"})
 
