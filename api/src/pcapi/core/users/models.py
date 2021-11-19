@@ -97,6 +97,20 @@ class NotificationSubscriptions:
     marketing_email: bool = True
 
 
+def get_age_from_birth_date(birth_date: date) -> int:
+    return relativedelta(date.today(), birth_date).years
+
+
+def get_eligibility(age: int) -> Optional[EligibilityType]:
+    if age == constants.ELIGIBILITY_AGE_18:
+        return EligibilityType.AGE18
+
+    if age in constants.ELIGIBILITY_UNDERAGE_RANGE and FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
+        return EligibilityType.UNDERAGE
+
+    return None
+
+
 # calculate date of latest birthday
 def _get_latest_birthday(birth_date: date) -> date:
     """
@@ -290,7 +304,7 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @property
     def age(self) -> Optional[int]:
-        return relativedelta(date.today(), self.dateOfBirth.date()).years if self.dateOfBirth is not None else None
+        return get_age_from_birth_date(self.dateOfBirth.date()) if self.dateOfBirth is not None else None
 
     @property
     def allowed_eligibility_check_methods(self) -> Optional[list[EligibilityCheckMethods]]:
@@ -341,13 +355,7 @@ class User(PcObject, Model, NeedsValidationMixin):
         if not _is_postal_code_eligible(self.departementCode):
             return None
 
-        if self.age == constants.ELIGIBILITY_AGE_18:
-            return EligibilityType.AGE18
-
-        if self.age in constants.ELIGIBILITY_UNDERAGE_RANGE and FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active():
-            return EligibilityType.UNDERAGE
-
-        return None
+        return get_eligibility(self.age)
 
     @property
     def eligibility_end_datetime(self) -> Optional[datetime]:
