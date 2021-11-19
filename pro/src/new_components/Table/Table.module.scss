@@ -1,0 +1,39 @@
+table {
+  display: flex;
+  flex-direction: column;
+
+  tr {
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
+
+    th {
+      align-items: center;
+      display: flex;
+
+      @include highlight();
+    }
+
+    th:nth-child(2) {
+      width: 220px;
+    }
+
+    th:nth-child(4) {
+      justify-content: flex-end;
+    }
+
+    td,
+    th {
+      padding: 20px 16px;
+      width: 110px;
+    }
+  }
+
+  tr:nth-child(0) {
+    background-color: white;
+  }
+
+  tr:nth-child(n+1):nth-child(odd) {
+    background-color: #f1f1f4;
+  }
+}
