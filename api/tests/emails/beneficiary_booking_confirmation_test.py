@@ -6,8 +6,13 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.mails.transactional.sendinblue_template_ids import SendinblueTransactionalEmailData
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.mails.transactional.users.booking_confirmation_email import (
+    retrieve_data_for_beneficiary_booking_confirmation_email,
+)
 import pcapi.core.offers.factories as offers_factories
-from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
+from pcapi.core.testing import override_features
 from pcapi.utils.human_ids import humanize
 
 
@@ -33,7 +38,7 @@ def make_booking(**kwargs):
     return bookings_factories.IndividualBookingFactory(**attributes)
 
 
-def get_expected_base_email_data(booking, mediation, **overrides):
+def get_expected_base_mailjet_email_data(booking, mediation, **overrides):
     email_data = {
         "MJ-TemplateID": 3094927,
         "MJ-TemplateLanguage": True,
@@ -72,6 +77,7 @@ def get_expected_base_email_data(booking, mediation, **overrides):
 
 
 @freeze_time("2021-10-15 12:48:00")
+@override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
 def test_should_return_event_specific_data_for_email_when_offer_is_an_event():
     booking = bookings_factories.IndividualBookingFactory(
         stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow()
@@ -79,11 +85,12 @@ def test_should_return_event_specific_data_for_email_when_offer_is_an_event():
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
-    expected = get_expected_base_email_data(booking, mediation)
+    expected = get_expected_base_mailjet_email_data(booking, mediation)
     assert email_data == expected
 
 
 @freeze_time("2021-10-15 12:48:00")
+@override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
 def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event():
     booking = booking = bookings_factories.IndividualBookingFactory(
         stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow(), quantity=2
@@ -92,7 +99,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event()
 
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
-    expected = get_expected_base_email_data(
+    expected = get_expected_base_mailjet_email_data(
         booking,
         mediation,
         is_duo_event=1,
@@ -103,6 +110,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event()
 
 
 @freeze_time("2021-10-15 12:48:00")
+@override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
 def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing():
     stock = offers_factories.ThingStockFactory(
         price=23.99,
@@ -114,7 +122,7 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing():
 
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
-    expected = get_expected_base_email_data(
+    expected = get_expected_base_mailjet_email_data(
         booking,
         mediation,
         all_things_not_virtual_thing=1,
@@ -130,6 +138,7 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing():
 
 
 @freeze_time("2021-10-15 12:48:00")
+@override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
 def test_should_use_public_name_when_available():
     booking = bookings_factories.IndividualBookingFactory(
         stock__offer__venue__name="LIBRAIRIE GENERALE UNIVERSITAIRE COLBERT",
@@ -140,7 +149,7 @@ def test_should_use_public_name_when_available():
 
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
-    expected = get_expected_base_email_data(
+    expected = get_expected_base_mailjet_email_data(
         booking,
         mediation,
         venue_name="Librairie Colbert",
@@ -150,6 +159,7 @@ def test_should_use_public_name_when_available():
 
 
 @freeze_time("2021-10-15 12:48:00")
+@override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
 def test_should_return_withdrawal_details_when_available():
     withdrawal_details = "Conditions de retrait spécifiques."
     booking = bookings_factories.IndividualBookingFactory(
@@ -160,7 +170,7 @@ def test_should_return_withdrawal_details_when_available():
 
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
-    expected = get_expected_base_email_data(
+    expected = get_expected_base_mailjet_email_data(
         booking,
         mediation,
         offer_withdrawal_details=withdrawal_details,
@@ -171,6 +181,7 @@ def test_should_return_withdrawal_details_when_available():
 
 @freeze_time("2021-10-15 12:48:00")
 class DigitalOffersTest:
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing(self):
         booking = bookings_factories.IndividualBookingFactory(
             quantity=10,
@@ -184,7 +195,7 @@ class DigitalOffersTest:
 
         email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
-        expected = get_expected_base_email_data(
+        expected = get_expected_base_mailjet_email_data(
             booking,
             mediation,
             all_but_not_virtual_thing=0,
@@ -202,6 +213,7 @@ class DigitalOffersTest:
         )
         assert email_data == expected
 
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     def test_hide_cancellation_policy_on_bookings_with_activation_code(self):
         offer = offers_factories.OfferFactory(
             venue__name="Lieu de l'offreur",
@@ -219,7 +231,7 @@ class DigitalOffersTest:
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
         email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
-        expected = get_expected_base_email_data(
+        expected = get_expected_base_mailjet_email_data(
             booking,
             mediation,
             all_but_not_virtual_thing=0,
@@ -246,6 +258,7 @@ class DigitalOffersTest:
 
         assert email_data == expected
 
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     def test_use_activation_code_instead_of_token_if_possible(self):
         booking = bookings_factories.IndividualBookingFactory(
             individualBooking__user__email="used-email@example.com",
@@ -261,7 +274,7 @@ class DigitalOffersTest:
 
         email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
-        expected = get_expected_base_email_data(
+        expected = get_expected_base_mailjet_email_data(
             booking,
             mediation,
             all_but_not_virtual_thing=0,
@@ -282,6 +295,7 @@ class DigitalOffersTest:
         )
         assert email_data == expected
 
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     def test_add_expiration_date_from_activation_code(self):
         booking = bookings_factories.IndividualBookingFactory(
             quantity=10,
@@ -301,7 +315,7 @@ class DigitalOffersTest:
 
         email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
-        expected = get_expected_base_email_data(
+        expected = get_expected_base_mailjet_email_data(
             booking,
             mediation,
             all_but_not_virtual_thing=0,
@@ -322,12 +336,14 @@ class DigitalOffersTest:
         assert email_data == expected
 
 
+@override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
 def test_should_return_total_price_for_duo_offers():
     booking = bookings_factories.IndividualBookingFactory(quantity=2, stock__price=10)
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
     assert email_data["Vars"]["offer_price"] == "20.00 €"
 
 
+@override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
 def test_digital_offer_without_departement_code_information():
     """
     Test that a user without any postal code information can book a digital
@@ -348,6 +364,7 @@ def test_digital_offer_without_departement_code_information():
 
 @freeze_time("2021-10-15 12:48:00")
 class BooksBookingExpirationDateTest:
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     def test_should_return_new_expiration_delay_data_for_email_when_offer_is_a_book(self):
         booking = bookings_factories.IndividualBookingFactory(
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -358,7 +375,7 @@ class BooksBookingExpirationDateTest:
 
         email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
 
-        expected = get_expected_base_email_data(
+        expected = get_expected_base_mailjet_email_data(
             booking,
             mediation,
             all_things_not_virtual_thing=1,
@@ -369,5 +386,362 @@ class BooksBookingExpirationDateTest:
             offer_name="Super livre",
             can_expire=1,
             expiration_delay=10,
+        )
+        assert email_data == expected
+
+
+##########
+# BELOW SENDINBLUE TEST
+#
+##########
+
+
+def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
+    email_data = SendinblueTransactionalEmailData(
+        template=TransactionalEmail.BOOKING_CONFIRMATION.value,
+        params={
+            "USER_FIRST_NAME": booking.firstName,
+            "BOOKING_DATE": "15 octobre 2021",
+            "BOOKING_HOUR": "14h48",
+            "OFFER_NAME": booking.stock.offer.name,
+            "OFFERER_NAME": booking.offerer.name,
+            "EVENT_DATE": "20 octobre 2021",
+            "EVENT_HOUR": "14h48",
+            "OFFER_PRICE": f"{booking.total_amount} €" if booking.stock.price > 0 else "Gratuit",
+            "OFFER_TOKEN": booking.token,
+            "VENUE_NAME": booking.stock.offer.venue.name,
+            "VENUE_ADDRESS": booking.stock.offer.venue.address,
+            "VENUE_POSTAL_CODE": booking.stock.offer.venue.postalCode,
+            "VENUE_CITY": booking.stock.offer.venue.city,
+            "ALL_BUT_NOT_VIRTUAL_THING": 1,
+            "ALL_THINGS_NOT_VIRTUAL_THING": 0,
+            "IS_EVENT": 1,
+            "IS_SINGLE_EVENT": 1,
+            "IS_DUO_EVENT": 0,
+            "CAN_EXPIRE": 0,
+            "OFFER_ID": humanize(booking.stock.offer.id),
+            "MEDIATION_ID": humanize(mediation.id),
+            "CODE_EXPIRATION_DATE": "",
+            "IS_DIGITAL_BOOKING_WITH_ACTIVATION_CODE_AND_NO_EXPIRATION_DATE": 0,
+            "HAS_OFFER_URL": 0,
+            "DIGITAL_OFFER_URL": "",
+            "OFFER_WITHDRAWAL_DETAILS": "",
+            "EXPIRATION_DELAY": "",
+        },
+    )
+    email_data.params.update(overrides)
+    return email_data
+
+
+@freeze_time("2021-10-15 12:48:00")
+@override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+def test_should_return_event_specific_data_for_email_when_offer_is_an_event_sendinblue():
+    booking = bookings_factories.IndividualBookingFactory(
+        stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow()
+    )
+    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
+
+    expected = get_expected_base_sendinblue_email_data(booking, mediation)
+    assert email_data == expected
+
+
+@freeze_time("2021-10-15 12:48:00")
+@override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event_sendinblue():
+    booking = booking = bookings_factories.IndividualBookingFactory(
+        stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow(), quantity=2
+    )
+    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
+
+    expected = get_expected_base_sendinblue_email_data(
+        booking,
+        mediation,
+        IS_DUO_EVENT=1,
+        IS_SINGLE_EVENT=0,
+        OFFER_PRICE="47.98 €",
+    )
+    assert email_data == expected
+
+
+@freeze_time("2021-10-15 12:48:00")
+@override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing_sendinblue():
+    stock = offers_factories.ThingStockFactory(
+        price=23.99,
+        offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        offer__name="Super bien culturel",
+    )
+    booking = bookings_factories.IndividualBookingFactory(stock=stock, dateCreated=datetime.utcnow())
+    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
+
+    expected = get_expected_base_sendinblue_email_data(
+        booking,
+        mediation,
+        ALL_THINGS_NOT_VIRTUAL_THING=1,
+        EVENT_DATE="",
+        EVENT_HOUR="",
+        IS_EVENT=0,
+        IS_SINGLE_EVENT=0,
+        OFFER_NAME="Super bien culturel",
+        CAN_EXPIRE=1,
+        EXPIRATION_DELAY=30,
+    )
+    assert email_data == expected
+
+
+@freeze_time("2021-10-15 12:48:00")
+@override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+def test_should_use_public_name_when_available_sendinblue():
+    booking = bookings_factories.IndividualBookingFactory(
+        stock__offer__venue__name="LIBRAIRIE GENERALE UNIVERSITAIRE COLBERT",
+        stock__offer__venue__publicName="Librairie Colbert",
+        dateCreated=datetime.utcnow(),
+    )
+    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
+
+    expected = get_expected_base_sendinblue_email_data(
+        booking,
+        mediation,
+        VENUE_NAME="Librairie Colbert",
+        **{key: value for key, value in email_data.params.items() if key != "VENUE_NAME"},
+    )
+    assert email_data == expected
+
+
+@freeze_time("2021-10-15 12:48:00")
+@override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+def test_should_return_withdrawal_details_when_available_sendinblue():
+    withdrawal_details = "Conditions de retrait spécifiques."
+    booking = bookings_factories.IndividualBookingFactory(
+        stock__offer__withdrawalDetails=withdrawal_details,
+        dateCreated=datetime.utcnow(),
+    )
+    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
+
+    expected = get_expected_base_sendinblue_email_data(
+        booking,
+        mediation,
+        OFFER_WITHDRAWAL_DETAILS=withdrawal_details,
+        **{key: value for key, value in email_data.params.items() if key != "OFFER_WITHDRAWAL_DETAILS"},
+    )
+    assert email_data == expected
+
+
+@freeze_time("2021-10-15 12:48:00")
+class DigitalOffersTestSendinblue:
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing_sendinblue(self):
+        booking = bookings_factories.IndividualBookingFactory(
+            quantity=10,
+            stock__price=0,
+            stock__offer__product__subcategoryId=subcategories.VOD.id,
+            stock__offer__product__url="http://example.com",
+            stock__offer__name="Super offre numérique",
+            dateCreated=datetime.utcnow(),
+        )
+        mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
+
+        expected = get_expected_base_sendinblue_email_data(
+            booking,
+            mediation,
+            ALL_BUT_NOT_VIRTUAL_THING=0,
+            ALL_THINGS_NOT_VIRTUAL_THING=0,
+            EVENT_DATE="",
+            EVENT_HOUR="",
+            IS_EVENT=0,
+            IS_SINGLE_EVENT=0,
+            OFFER_NAME="Super offre numérique",
+            OFFER_PRICE="Gratuit",
+            CAN_EXPIRE=0,
+            HAS_OFFER_URL=1,
+            DIGITAL_OFFER_URL="http://example.com",
+            EXPIRATION_DELAY="",
+        )
+        assert email_data == expected
+
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_hide_cancellation_policy_on_bookings_with_activation_code_sendinblue(self):
+        offer = offers_factories.OfferFactory(
+            venue__name="Lieu de l'offreur",
+            venue__managingOfferer__name="Théâtre du coin",
+            product=offers_factories.DigitalProductFactory(name="Super offre numérique", url="http://example.com"),
+        )
+        digital_stock = offers_factories.StockWithActivationCodesFactory()
+        first_activation_code = digital_stock.activationCodes[0]
+        booking = bookings_factories.UsedIndividualBookingFactory(
+            stock__offer=offer,
+            activationCode=first_activation_code,
+            dateCreated=datetime(2018, 1, 1),
+        )
+
+        mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
+        expected = get_expected_base_sendinblue_email_data(
+            booking,
+            mediation,
+            ALL_BUT_NOT_VIRTUAL_THING=0,
+            ALL_THINGS_NOT_VIRTUAL_THING=0,
+            EVENT_DATE="",
+            EVENT_HOUR="",
+            IS_EVENT=0,
+            IS_SINGLE_EVENT=0,
+            OFFER_NAME="Super offre numérique",
+            OFFER_PRICE="10.00 €",
+            OFFER_TOKEN=booking.activationCode.code,
+            CAN_EXPIRE=0,
+            IS_DIGITAL_BOOKING_WITH_ACTIVATION_CODE_AND_NO_EXPIRATION_DATE=1,
+            HAS_OFFER_URL=1,
+            DIGITAL_OFFER_URL="http://example.com",
+            USER_FIRST_NAME="Jeanne",
+            VENUE_ADDRESS="1 boulevard Poissonnière",
+            VENUE_CITY="Paris",
+            VENUE_POSTAL_CODE="75000",
+            BOOKING_DATE="1 janvier 2018",
+            BOOKING_HOUR="01h00",
+            EXPIRATION_DELAY="",
+        )
+
+        assert email_data == expected
+
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_use_activation_code_instead_of_token_if_possible_sendinblue(self):
+        booking = bookings_factories.IndividualBookingFactory(
+            individualBooking__user__email="used-email@example.com",
+            quantity=10,
+            stock__price=0,
+            stock__offer__product__subcategoryId=subcategories.VOD.id,
+            stock__offer__product__url="http://example.com?token={token}&offerId={offerId}&email={email}",
+            stock__offer__name="Super offre numérique",
+            dateCreated=datetime.utcnow(),
+        )
+        offers_factories.ActivationCodeFactory(stock=booking.stock, booking=booking, code="code_toto")
+        mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
+
+        expected = get_expected_base_sendinblue_email_data(
+            booking,
+            mediation,
+            ALL_BUT_NOT_VIRTUAL_THING=0,
+            ALL_THINGS_NOT_VIRTUAL_THING=0,
+            EVENT_DATE="",
+            EVENT_HOUR="",
+            IS_EVENT=0,
+            IS_SINGLE_EVENT=0,
+            OFFER_NAME="Super offre numérique",
+            OFFER_PRICE="Gratuit",
+            CAN_EXPIRE=0,
+            OFFER_TOKEN="code_toto",
+            IS_DIGITAL_BOOKING_WITH_ACTIVATION_CODE_AND_NO_EXPIRATION_DATE=1,
+            CODE_EXPIRATION_DATE="",
+            HAS_OFFER_URL=1,
+            DIGITAL_OFFER_URL=f"http://example.com?token=code_toto&offerId={humanize(booking.stock.offer.id)}&email=used-email@example.com",
+            EXPIRATION_DELAY="",
+        )
+        assert email_data == expected
+
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_add_expiration_date_from_activation_code_sendinblue(self):
+        booking = bookings_factories.IndividualBookingFactory(
+            quantity=10,
+            stock__price=0,
+            stock__offer__product__subcategoryId=subcategories.VOD.id,
+            stock__offer__product__url="http://example.com",
+            stock__offer__name="Super offre numérique",
+            dateCreated=datetime.utcnow(),
+        )
+        offers_factories.ActivationCodeFactory(
+            stock=booking.stock,
+            booking=booking,
+            code="code_toto",
+            expirationDate=datetime(2030, 1, 1),
+        )
+        mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
+
+        expected = get_expected_base_sendinblue_email_data(
+            booking,
+            mediation,
+            ALL_BUT_NOT_VIRTUAL_THING=0,
+            ALL_THINGS_NOT_VIRTUAL_THING=0,
+            EVENT_DATE="",
+            EVENT_HOUR="",
+            IS_EVENT=0,
+            IS_SINGLE_EVENT=0,
+            OFFER_NAME="Super offre numérique",
+            OFFER_PRICE="Gratuit",
+            CAN_EXPIRE=0,
+            OFFER_TOKEN="code_toto",
+            CODE_EXPIRATION_DATE="1 janvier 2030",
+            HAS_OFFER_URL=1,
+            DIGITAL_OFFER_URL="http://example.com",
+            EXPIRATION_DELAY="",
+        )
+        assert email_data == expected
+
+
+@override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+def test_should_return_total_price_for_duo_offers_sendinblue():
+    booking = bookings_factories.IndividualBookingFactory(quantity=2, stock__price=10)
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
+    assert email_data.params["OFFER_PRICE"] == "20.00 €"
+
+
+@override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+def test_digital_offer_without_departement_code_information_sendinblue():
+    """
+    Test that a user without any postal code information can book a digital
+    offer. The booking date information should use the default timezone:
+    metropolitan France.
+    """
+    offer = offers_factories.DigitalOfferFactory()
+    stock = offers_factories.StockFactory(offer=offer)
+    date_created = datetime(2021, 7, 1, 10, 0, 0, tzinfo=timezone.utc)
+    booking = bookings_factories.IndividualBookingFactory(
+        stock=stock, dateCreated=date_created, user__departementCode=None
+    )
+
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
+    assert email_data.params["BOOKING_DATE"] == "1 juillet 2021"
+    assert email_data.params["BOOKING_HOUR"] == "12h00"
+
+
+@freeze_time("2021-10-15 12:48:00")
+class BooksBookingExpirationDateTestSendinblue:
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=True)
+    def test_should_return_new_expiration_delay_data_for_email_when_offer_is_a_book_sendinblue(self):
+        booking = bookings_factories.IndividualBookingFactory(
+            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__name="Super livre",
+            dateCreated=datetime.utcnow(),
+        )
+        mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking.individualBooking)
+
+        expected = get_expected_base_sendinblue_email_data(
+            booking,
+            mediation,
+            ALL_THINGS_NOT_VIRTUAL_THING=1,
+            EVENT_DATE="",
+            EVENT_HOUR="",
+            IS_EVENT=0,
+            IS_SINGLE_EVENT=0,
+            OFFER_NAME="Super livre",
+            CAN_EXPIRE=1,
+            EXPIRATION_DELAY=10,
         )
         assert email_data == expected

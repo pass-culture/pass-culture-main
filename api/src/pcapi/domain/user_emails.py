@@ -7,6 +7,9 @@ from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import IndividualBooking
+from pcapi.core.mails.transactional.users.booking_confirmation_email import (
+    retrieve_data_for_beneficiary_booking_confirmation_email,
+)
 from pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejected import (
     send_duplicate_beneficiary_pre_subscription_rejected_data,
 )
@@ -23,7 +26,6 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.emails import beneficiary_activation
 from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
-from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
 from pcapi.emails.beneficiary_expired_bookings import build_expired_bookings_recap_email_data_for_beneficiary
 from pcapi.emails.beneficiary_offer_cancellation import (
     retrieve_offerer_booking_recap_email_data_after_user_cancellation,
