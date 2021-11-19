@@ -38,3 +38,8 @@ class InvoiceFactory(BaseFactory):
     amount = 1000
     reference = factory.Sequence("{:09}".format)
     url = LazyAttribute(lambda invoice: f"/finance/invoices/{invoice.reference}.pdf")
+
+
+class CashflowBatchFactory(BaseFactory):
+    class Meta:
+        model = models.CashflowBatch

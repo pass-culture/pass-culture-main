@@ -13,7 +13,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def test_integration():
-    booking = bookings_factories.BookingFactory()
+    booking = bookings_factories.IndividualBookingFactory()
     bookings_api.mark_as_used(booking)
     pricing = api.price_booking(booking)
     assert pricing.status == models.PricingStatus.VALIDATED
@@ -22,6 +22,6 @@ def test_integration():
     api.generate_cashflows_and_payment_files(cutoff)
     assert len(pricing.cashflows) == 1
     cashflow = pricing.cashflows[0]
-    assert cashflow.status == models.CashflowStatus.PENDING
+    assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
     db.session.refresh(pricing)
     assert pricing.status == models.PricingStatus.VALIDATED

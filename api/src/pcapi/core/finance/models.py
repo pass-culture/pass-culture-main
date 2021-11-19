@@ -6,13 +6,19 @@ In all models, the amount is in euro cents. It is signed:
 """
 
 import enum
+import typing
 
 import sqlalchemy as sqla
 import sqlalchemy.dialects.postgresql as sqla_psql
 import sqlalchemy.orm as sqla_orm
 
+from pcapi.domain import payments
 from pcapi.models import Model
 import pcapi.utils.db as db_utils
+
+
+if typing.TYPE_CHECKING:
+    import pcapi.core.bookings.models as bookings_models
 
 
 class PricingStatus(enum.Enum):
@@ -165,6 +171,7 @@ class Cashflow(Model):
     bankAccount = sqla_orm.relationship("BankInformation", foreign_keys=[bankAccountId])
 
     batchId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow_batch.id"), index=True, nullable=False)
+    batch = sqla_orm.relationship("CashflowBatch", foreign_keys=[batchId])
 
     # See the note about `amount` at the beginning of this module.
     # The amount cannot be zero.
@@ -182,6 +189,10 @@ class Cashflow(Model):
     pricings = sqla_orm.relationship("Pricing", secondary="cashflow_pricing", back_populates="cashflows")
 
     __table_args__ = (sqla.CheckConstraint('("amount" != 0)', name="non_zero_amount_check"),)
+
+    @property
+    def transaction_label(self) -> str:
+        return payments.make_transaction_label(self.batch.cutoff)
 
 
 class CashflowLog(Model):
