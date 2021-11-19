@@ -1,7 +1,7 @@
 import datetime
 from enum import Enum
+import re
 from typing import Any
-from typing import Dict
 from typing import Optional
 from uuid import UUID
 
@@ -332,17 +332,17 @@ class UploadIdentityDocumentRequest(BaseModel):
 
 class UserProfilingFraudRequest(BaseModel):
     # Moving from session_id to sessionId - remove session_id and set sessionId not Optional when app version is forced
-    # to a new minimal version. Also restore previous validator session_id_alphanumerics for sessionId
+    # to a new minimal version. Also restore a simple validator session_id_alphanumerics for sessionId
     session_id: Optional[str]
     sessionId: Optional[str]
     agentType: Optional[AgentType]
 
     @root_validator()
-    def session_id_alphanumerics(cls, values: Dict[str, Any]) -> Dict[str, Any]:  # pylint: disable=no-self-argument
+    def session_id_alphanumerics(cls, values: dict[str, Any]) -> dict[str, Any]:  # pylint: disable=no-self-argument
         session_id = values.get("sessionId") or values.get("session_id")
         if not session_id:
             raise ValueError("L'identifiant de session est manquant")
-        if not session_id.isalnum():
+        if not re.match(r"^[A-Za-z0-9_-]{1,128}$", session_id):
             raise ValueError(
                 "L'identifiant de session ne doit être composé exclusivement que de caratères alphanumériques"
             )
