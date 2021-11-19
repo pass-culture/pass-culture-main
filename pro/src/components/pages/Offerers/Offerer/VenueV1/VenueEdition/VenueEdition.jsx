@@ -200,6 +200,8 @@ const VenueEdition = ({
     )
   }
 
+  const getVirtualVenueName = () => `${offerer.name} (Offre numérique)`
+
   const getInitialValues = venue => {
     let initialValues = { ...venue }
     const accessibilityFieldNames = [
@@ -213,6 +215,10 @@ const VenueEdition = ({
         delete initialValues[fieldName]
       }
     })
+
+    if (initialValues.isVirtual) {
+      initialValues.name = getVirtualVenueName()
+    }
 
     return initialValues
   }
@@ -264,6 +270,8 @@ const VenueEdition = ({
     return null
   }
 
+  const pageSubtitle = initialIsVirtual ? getVirtualVenueName() : initialName
+
   return (
     <div className="venue-page">
       <NavLink
@@ -276,7 +284,7 @@ const VenueEdition = ({
       <PageTitle title={pageTitle} />
       <Titles
         action={actionLink || undefined}
-        subtitle={initialName}
+        subtitle={pageSubtitle}
         title="Lieu"
       />
       {venue && !initialIsVirtual && <VenueProvidersManager venue={venue} />}
