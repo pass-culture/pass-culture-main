@@ -178,7 +178,7 @@ class UbbleWorkflowTest:
     def test_start_ubble_workflow(self, ubble_mock):
         user = users_factories.UserFactory()
         redirect_url = subscription_api.start_ubble_workflow(user, redirect_url="https://example.com")
-        assert redirect_url is not None
+        assert redirect_url == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"
 
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
