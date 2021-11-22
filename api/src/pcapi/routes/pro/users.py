@@ -40,7 +40,7 @@ def patch_profile(body: PatchProUserBodyModel) -> PatchProUserResponseModel:
     user = current_user._get_current_object()  # get underlying User object from proxy
     # This route should ony be used by "pro" users because it allows
     # to update different infos from `/beneficiaries/current`.
-    if not user.UserOfferers and not user.isAdmin:
+    if not user.has_pro_role and not user.has_admin_role:
         abort(400)
     attributes = body.dict()
     users_api.update_user_info(user, **attributes)
