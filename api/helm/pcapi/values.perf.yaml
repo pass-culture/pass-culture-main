@@ -513,8 +513,6 @@ secrets:
     version: 1
   - name: PAYMENTS_REPORT_RECIPIENTS
     version: 1
-  - name: PC_GOOGLE_KEY_64
-    version: 1
   - name: PROVIDER_FNAC_BASIC_AUTHENTICATION_TOKEN
     version: 1
   - name: RECAPTCHA_SECRET

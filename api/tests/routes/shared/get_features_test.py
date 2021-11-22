@@ -17,7 +17,7 @@ class Returns200Test:
         # then
         assert response.status_code == 200
         feature_name_keys = [feature_dict["nameKey"] for feature_dict in response.json]
-        assert "WEBAPP_SIGNUP" in feature_name_keys
+        assert "QR_CODE" in feature_name_keys
 
     @pytest.mark.usefixtures("db_session")
     def when_user_is_not_logged_in(self, app):

@@ -567,8 +567,6 @@ secrets:
     version: 2
   - name: OVH_USER
     version: 2
-  - name: PC_GOOGLE_KEY_64
-    version: 2
   - name: RECAPTCHA_SECRET
     version: 2
   - name: REDIS_URL
