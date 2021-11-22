@@ -132,7 +132,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
     departementCode = "75"
     firstName = "Jeanne"
     lastName = "Doux"
-    hasCompletedIdCheck = True
+    hasCompletedIdCheck = False
     isEmailValidated = True
     isAdmin = False
     roles = [users_models.UserRole.BENEFICIARY]
