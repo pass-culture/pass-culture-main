@@ -24,13 +24,16 @@ def get_email_backend(send_with_sendinblue: bool) -> str:
 
 
 def send(
-    *, recipients: Iterable[str], data: Union[dict, SendinblueTransactionalEmailData], send_with_sendinblue=False
+    *,
+    recipients: Iterable[str],
+    data: Union[dict, SendinblueTransactionalEmailData],
 ) -> bool:
     """Try to send an e-mail and return whether it was successful."""
     if isinstance(recipients, str):
         if settings.IS_RUNNING_TESTS:
             raise ValueError("Recipients should be a sequence, not a single string.")
         recipients = [recipients]
+    send_with_sendinblue = isinstance(data, SendinblueTransactionalEmailData)
     backend = import_string(get_email_backend(send_with_sendinblue))
     result = backend().send_mail(recipients=recipients, data=data)
     _save_email(result)

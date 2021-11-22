@@ -32,4 +32,4 @@ def get_user_credit_email_data(user: User) -> Union[dict, SendinblueTransactiona
 
 def send_user_credit_email(user: User) -> bool:
     data = get_user_credit_email_data(user)
-    return mails.send(recipients=[user.email], data=data, send_with_sendinblue=True)
+    return mails.send(recipients=[user.email], data=data)
