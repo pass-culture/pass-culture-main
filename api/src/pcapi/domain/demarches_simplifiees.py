@@ -126,6 +126,27 @@ def get_offerer_bank_information_application_details_by_application_id(applicati
     return application_details
 
 
+def parse_raw_bic_data(data: dict) -> dict:
+    result = {
+        "status": data["dossier"]["state"],
+        "updated_at": data["dossier"]["dateDerniereModification"],
+    }
+    ID_TO_NAME_MAPPING = {
+        "Q2hhbXAtNDA3ODg5": "firstname",
+        "Q2hhbXAtNDA3ODkw": "lastname",
+        "Q2hhbXAtNDA3ODky": "phone_number",
+        "Q2hhbXAtMzUyNzIy": "iban",
+        "Q2hhbXAtMzUyNzI3": "bic",
+    }
+    for field in data["dossier"]["champs"]:
+        if field["id"] in ID_TO_NAME_MAPPING:
+            result[ID_TO_NAME_MAPPING[field["id"]]] = field["value"]
+        elif field["id"] == "Q2hhbXAtNzgyODAw":
+            result["siret"] = field["etablissement"]["siret"]
+            result["siren"] = field["etablissement"]["entreprise"]["siren"]
+    return result
+
+
 def get_venue_bank_information_application_details_by_application_id(
     application_id: str, version: int = 1
 ) -> ApplicationDetail:
@@ -155,6 +176,19 @@ def get_venue_bank_information_application_details_by_application_id(
             modification_date=datetime.strptime(response_application_details["dossier"]["updated_at"], DATE_ISO_FORMAT),
         )
         return application_details
+    if version == 2:
+        client = api_demarches_simplifiees.DMSGraphQLClient()
+        raw_data = client.get_bic(int(application_id))
+        data = parse_raw_bic_data(raw_data["data"])
+        return ApplicationDetail(
+            siren=data["siren"],
+            status=data["status"],
+            application_id=int(application_id),
+            iban=data["iban"],
+            bic=data["bic"],
+            siret=data["siret"],
+            modification_date=data["updated_at"],
+        )
     raise ValueError("Unknown version %s" % version)
 
 
