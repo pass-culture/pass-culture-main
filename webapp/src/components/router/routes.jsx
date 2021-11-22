@@ -16,7 +16,6 @@ import OfferContainer from '../pages/offer/OfferContainer'
 import ProfileContainer from '../pages/profile/ProfileContainer'
 import SearchContainer from '../pages/search/SearchContainer'
 import SignInContainer from '../pages/signin/SignInContainer'
-import SignupContainer from '../pages/signup/SignupContainer'
 import TutorialsContainer from '../pages/tutorials/TutorialsContainer'
 import TypeFormContainer from '../pages/typeform/TypeformContainer'
 import DiscoveryRedirectionToHome from '../pages/discovery/DiscoveryRedirectionToHome'
@@ -45,13 +44,6 @@ let routes = [
     exact: true,
     path: '/connexion',
     title: 'Connexion',
-  },
-  {
-    component: SignupContainer,
-    exact: true,
-    featureName: 'WEBAPP_SIGNUP',
-    path: '/inscription',
-    title: 'Inscription',
   },
   {
     component: SignUpFromNativeApp,
