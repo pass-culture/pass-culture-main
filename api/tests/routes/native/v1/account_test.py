@@ -96,7 +96,7 @@ class AccountTest:
         assert response.json["email"] == ["Utilisateur introuvable"]
 
     @freeze_time("2018-06-01")
-    def test_get_user_profile(self, app):
+    def test_get_user_profile(self, client, app):
         USER_DATA = {
             "email": self.identifier,
             "firstName": "john",
@@ -122,11 +122,9 @@ class AccountTest:
         booking = IndividualBookingFactory(individualBooking__user=user, amount=Decimal("123.45"))
         CancelledIndividualBookingFactory(individualBooking__user=user, amount=Decimal("123.45"))
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        client.with_token(self.identifier)
 
-        response = test_client.get("/native/v1/me")
+        response = client.get("/native/v1/me")
 
         EXPECTED_DATA = {
             "allowedEligibilityCheckMethods": ["jouve"],
@@ -146,7 +144,7 @@ class AccountTest:
             "eligibilityStartDatetime": "2015-01-01T00:00:00Z",
             "isBeneficiary": True,
             "roles": ["BENEFICIARY"],
-            "hasCompletedIdCheck": True,
+            "hasCompletedIdCheck": False,
             "nextBeneficiaryValidationStep": None,
             "pseudo": "jdo",
             "recreditAmountToShow": None,

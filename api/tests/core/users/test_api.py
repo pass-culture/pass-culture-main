@@ -697,7 +697,7 @@ class UpdateBeneficiaryMandatoryInformationTest:
         assert user.address == new_address
         assert user.city == new_city
 
-        assert user.hasCompletedIdCheck
+        assert not user.hasCompletedIdCheck
         assert user.has_beneficiary_role
         assert user.deposit
 

@@ -98,6 +98,8 @@ def activate_beneficiary(
 
     deposit = payments_api.create_deposit(user, deposit_source=deposit_source, eligibility=eligibility)
 
+    user.hasCompletedIdCheck = False
+
     db.session.add_all((user, deposit))
     db.session.commit()
     logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit_source})
