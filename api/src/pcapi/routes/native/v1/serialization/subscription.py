@@ -6,7 +6,7 @@ from pcapi.serialization.utils import to_camel
 from . import BaseModel
 
 
-class NextSubscriptionStepRequest(BaseModel):
+class NextSubscriptionStepResponse(BaseModel):
     next_subscription_step: Optional[subscription_models.SubscriptionStep]
 
     class Config:
