@@ -1,6 +1,7 @@
 .tag {
   @include highlight();
 
+  white-space: nowrap;
   border: solid rem(1px) $tertiary;
   border-radius: rem(4px);
   color: $tertiary;
