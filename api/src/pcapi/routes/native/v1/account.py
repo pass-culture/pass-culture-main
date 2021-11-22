@@ -9,6 +9,7 @@ import pydantic
 from pcapi import settings
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import user_profiling
+from pcapi.connectors.beneficiaries import exceptions as beneficiaries_exceptions
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.offers.exceptions import FileSizeExceeded
@@ -401,5 +402,21 @@ def profiling_session_id(user: User) -> serializers.UserProfilingSessionIdRespon
 def start_identification_session(
     user: User, body: serializers.IdentificationSessionRequest
 ) -> serializers.IdentificationSessionResponse:
-    identification_url = subscription_api.start_ubble_workflow(user, body.redirectUrl)
-    return serializers.IdentificationSessionResponse(identificationUrl=identification_url)
+    try:
+        identification_url = subscription_api.start_ubble_workflow(user, body.redirectUrl)
+        return serializers.IdentificationSessionResponse(identificationUrl=identification_url)
+
+    except beneficiaries_exceptions.IdentificationServiceUnavailable:
+        raise ApiErrors(
+            {"code": "IDCHECK_SERVICE_UNAVAILABLE", "message": "Le service d'identification n'est pas joignable"},
+            status_code=503,
+        )
+
+    except beneficiaries_exceptions.IdentificationServiceError:
+        raise ApiErrors(
+            {
+                "code": "IDCHECK_SERVICE_ERROR",
+                "message": "Une erreur s'est produite à l'appel du service d'identification",
+            },
+            status_code=500,
+        )
