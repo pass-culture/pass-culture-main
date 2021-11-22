@@ -2067,3 +2067,27 @@ class IdentificationSessionTest:
         check = user.beneficiaryFraudChecks[0]
         assert check.type == fraud_models.FraudCheckType.UBBLE
         assert response.json["identificationUrl"] == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"
+
+    def test_request_connection_error(self, client, ubble_mock_connection_error):
+        user = users_factories.UserFactory()
+
+        client.with_token(user.email)
+
+        response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
+
+        assert response.status_code == 503
+        assert response.json["code"] == "IDCHECK_SERVICE_UNAVAILABLE"
+        assert len(user.beneficiaryFraudChecks) == 0
+        assert ubble_mock_connection_error.call_count == 1
+
+    def test_request_ubble_http_error_status(self, client, ubble_mock_http_error_status):
+        user = users_factories.UserFactory()
+
+        client.with_token(user.email)
+
+        response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
+
+        assert response.status_code == 500
+        assert response.json["code"] == "IDCHECK_SERVICE_ERROR"
+        assert len(user.beneficiaryFraudChecks) == 0
+        assert ubble_mock_http_error_status.call_count == 1

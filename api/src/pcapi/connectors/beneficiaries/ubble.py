@@ -1,10 +1,15 @@
 import datetime
+import logging
 import urllib.parse
 
 import requests
 
 from pcapi import settings
+from pcapi.connectors.beneficiaries import exceptions
 from pcapi.core.fraud import models as fraud_models
+
+
+logger = logging.getLogger(__name__)
 
 
 def configure_session() -> requests.Session:
@@ -55,5 +60,25 @@ def start_identification(
             },
         }
     }
-    response = session.post(build_url("/identifications/"), json=data)
+
+    try:
+        response = session.post(build_url("/identifications/"), json=data)
+    except IOError as e:
+        # Any exception explicitely raised by requests or urllib3 inherits from IOError
+        logger.exception("Request error while starting Ubble identification: %s", e, extra={"alert": "Ubble error"})
+        raise exceptions.IdentificationServiceUnavailable()
+
+    if not response.ok:
+        # https://ubbleai.github.io/developer-documentation/#errors
+        logger.error(
+            "Error while starting Ubble identification: %s, %s",
+            response.status_code,
+            response.text,
+            extra={"alert": "Ubble error"},
+        )
+        if response.status_code in (410, 429):
+            raise exceptions.IdentificationServiceUnavailable()
+        # Other errors should not happen, so keep them different than Ubble unavailable
+        raise exceptions.IdentificationServiceError()
+
     return fraud_models.UbbleIdentificationResponse(**response.json()["data"]["attributes"])
