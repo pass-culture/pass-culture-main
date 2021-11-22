@@ -20,6 +20,8 @@ IS_STAGING = ENV == "staging"
 IS_PROD = ENV == "production"
 IS_TESTING = ENV == "testing"
 IS_RUNNING_TESTS = os.environ.get("RUN_ENV") == "tests"
+IS_PERFORMANCE_TESTS = bool(os.environ.get("IS_PERFORMANCE_TESTS", False))
+assert not (IS_PROD and IS_PERFORMANCE_TESTS)
 
 # Load configuration files
 env_path = Path(f"./.env.{ENV}")

@@ -148,7 +148,11 @@ def generate_and_save_token(
     assert token_type.name in TokenType.__members__, "Only registered token types are allowed"
 
     expiration_date = datetime.now() + life_time if life_time else None
-    token_value = token_value or secrets.token_urlsafe(32)
+
+    if settings.IS_PERFORMANCE_TESTS:
+        token_value = f"performance-tests_{token_type.value}_{user.id}"
+    else:
+        token_value = token_value or secrets.token_urlsafe(32)
 
     token = Token(user=user, value=token_value, type=token_type, expirationDate=expiration_date)
     repository.save(token)
