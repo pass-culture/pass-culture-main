@@ -1,5 +1,6 @@
 import React from 'react'
 
+import FormLayout from 'new_components/FormLayout'
 import { RadioButton } from 'ui-kit'
 
 import {
@@ -7,19 +8,15 @@ import {
   OFFER_VENUE_OTHER_LABEL,
   OFFER_VENUE_SCHOOL_LABEL,
 } from '../../constants/labels'
-import FormSection from '../FormSection'
-
-import styles from './FormOfferVenue.module.scss'
 
 const FormOfferVenue = (): JSX.Element => {
   return (
-    <FormSection
-      subtitle="Ces informations seront visibles par les établissements scolaires"
+    <FormLayout.Section
+      description="Ces informations seront visibles par les établissements scolaires"
       title="Informations pratiques"
     >
-      <div className={styles.subsection}>
-        <h4 className={styles.title}>Addresse où aura lieu l’événement</h4>
-        <div className={styles['radio-group']}>
+      <FormLayout.SubSection title="Addresse où aura lieu l’événement">
+        <FormLayout.Row>
           <RadioButton
             label={OFFER_VENUE_OFFERER_LABEL}
             name="offerVenueId"
@@ -35,9 +32,9 @@ const FormOfferVenue = (): JSX.Element => {
             name="offerVenueId"
             value="other"
           />
-        </div>
-      </div>
-    </FormSection>
+        </FormLayout.Row>
+      </FormLayout.SubSection>
+    </FormLayout.Section>
   )
 }
 

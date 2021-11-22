@@ -37,3 +37,6 @@ webapp-packed-staging/
 
 # Test result output generated when launch tests/run_tests.sh
 tests/result_output.txt
+
+# misc
+.vscode/

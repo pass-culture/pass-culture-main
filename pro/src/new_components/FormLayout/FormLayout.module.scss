@@ -1,0 +1,53 @@
+.form-layout {
+  max-width: rem(486px);
+
+  &-section {
+    margin-bottom: rem(32px);
+
+    &-header {
+      margin-bottom: rem(24px);
+    }
+
+    &-description {
+      margin-top: rem(16px);
+    }
+  }
+
+  &-sub-section {
+    margin-bottom: rem(32px);
+
+    &-title {
+      margin-bottom: rem(24px);
+    }
+  }
+
+  &-row {
+    margin-bottom: rem(38px);
+    max-width: 100%;
+
+    &.inline-group {
+      display: flex;
+
+      > *:not(:last-child) {
+        flex: 1;
+        margin-right: rem(24px);
+      }
+    }
+  }
+
+  &-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: rem(64px);
+  }
+
+  &-action {
+    flex: 1;
+    margin-left: rem(24px);
+    text-align: center;
+
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+}

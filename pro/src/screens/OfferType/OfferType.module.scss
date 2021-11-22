@@ -1,36 +1,3 @@
-.offer-type {
-    &-title, &-description {
-        margin-bottom: rem(32px);
-    }
-
-    &-description {
-        @include title4();
-    }
-
-    &-buttons {
-        display: flex;
-        align-items: center;
-
-        &-button:first-of-type {
-            margin-right: rem(24px)
-        }
-    }
-
-    &-content {
-        width: min-width;
-        margin-bottom: rem(56px);
-    }
-}
-
-.offer-type-actions {
-    display: flex;
-
-    &-action {
-        width: rem(192px);
-        text-align: center;
-       
-        &:first-of-type {
-            margin-right: rem(24px)
-        }
-    }
+.offer-type-title {
+  margin-bottom: rem(48px);
 }
