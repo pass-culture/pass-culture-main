@@ -199,6 +199,9 @@ def get_next_subscription_step(user: users_models.User) -> Optional[models.Subsc
     if not user.isEmailValidated:
         return models.SubscriptionStep.EMAIL_VALIDATION
 
+    if not user.can_upgrade_beneficiary_role():
+        return None
+
     if (
         not user.is_phone_validated
         and user.eligibility == users_models.EligibilityType.AGE18
