@@ -15,12 +15,12 @@ logger = logging.getLogger(__name__)
 
 @blueprint.native_v1.route("/subscription/next_step", methods=["GET"])
 @spectree_serialize(
-    response_model=serializers.NextSubscriptionStepRequest,
+    response_model=serializers.NextSubscriptionStepResponse,
     on_success_status=200,
     api=blueprint.api,
 )  # type: ignore
 @authenticated_user_required
 def next_subscription_step(
     user: users_models.User,
-) -> Optional[serializers.NextSubscriptionStepRequest]:
-    return serializers.NextSubscriptionStepRequest(next_subscription_step=get_next_subscription_step(user))
+) -> Optional[serializers.NextSubscriptionStepResponse]:
+    return serializers.NextSubscriptionStepResponse(next_subscription_step=get_next_subscription_step(user))
