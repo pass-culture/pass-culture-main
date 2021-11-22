@@ -4,9 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors.api_demarches_simplifiees import DmsApplicationStates
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.domain.demarches_simplifiees import CannotRegisterBankInformation
-from pcapi.domain.demarches_simplifiees import DmsApplicationStates
 from pcapi.domain.demarches_simplifiees import _get_status_from_demarches_simplifiees_application_state
 from pcapi.domain.demarches_simplifiees import get_all_application_ids_for_demarche_simplifiee
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
@@ -26,7 +26,7 @@ from tests.connector_creators.demarches_simplifiees_creators import (
 )
 
 
-@patch("pcapi.domain.demarches_simplifiees.get_all_applications_for_procedure")
+@patch("pcapi.connectors.api_demarches_simplifiees.get_all_applications_for_procedure")
 class GetAllApplicationIdsForBeneficiaryImportTest:
     def setup_method(self):
         self.PROCEDURE_ID = "123456789"
@@ -153,7 +153,7 @@ class GetAllApplicationIdsForBeneficiaryImportTest:
         assert application_ids == [3, 2, 1, 4]
 
 
-@patch("pcapi.domain.demarches_simplifiees.get_all_applications_for_procedure")
+@patch("pcapi.connectors.api_demarches_simplifiees.get_all_applications_for_procedure")
 @patch("pcapi.domain.demarches_simplifiees.get_already_processed_applications_ids")
 class GetClosedApplicationIdsForBeneficiaryImportTest:
     def setup_method(self):
@@ -180,7 +180,7 @@ class GetClosedApplicationIdsForBeneficiaryImportTest:
         assert application_ids == [2]
 
 
-@patch("pcapi.domain.demarches_simplifiees.get_application_details")
+@patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
 class GetOffererBankInformation_applicationDetailsByApplicationIdTest:
     def test_retrieve_and_format_all_fields(self, get_application_details):
         # Given
@@ -228,7 +228,7 @@ class GetOffererBankInformation_applicationDetailsByApplicationIdTest:
         mock_format_raw_iban_and_bic.assert_has_calls([call("F R763000 700011123 45 67890144"), call("SOGeferp")])
 
 
-@patch("pcapi.domain.demarches_simplifiees.get_application_details")
+@patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
 class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
     def test_retrieve_and_format_all_fields_when_with_siret(self, get_application_details):
         # Given

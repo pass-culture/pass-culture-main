@@ -1,7 +1,6 @@
 from typing import Optional
 
 from pcapi import settings
-from pcapi.core.offerers.models import Offerer
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
 from pcapi.domain.bank_information import check_new_bank_information_older_than_saved_one
@@ -12,6 +11,7 @@ from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.domain.bank_informations.bank_informations_repository import BankInformationsRepository
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id
+from pcapi.domain.offerer.offerer import Offerer
 from pcapi.domain.offerer.offerer_repository import OffererRepository
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information import VenueWithBasicInformation
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information_repository import (
@@ -36,7 +36,7 @@ class SaveVenueBankInformations:
         self.venue_repository = venue_repository
         self.bank_informations_repository = bank_informations_repository
 
-    def execute(self, application_id: str, procedure_id: Optional[str] = None):
+    def execute(self, application_id: str, procedure_id: Optional[str] = None) -> Optional[BankInformations]:
         if not procedure_id:
             procedure_id = settings.DMS_VENUE_PROCEDURE_ID
         application_details = get_venue_bank_information_application_details_by_application_id(
@@ -72,7 +72,9 @@ class SaveVenueBankInformations:
         )
 
         if bank_information_by_application_id:
-            check_new_bank_information_older_than_saved_one(bank_information_by_application_id, application_details)
+            check_new_bank_information_older_than_saved_one(
+                bank_information_by_application_id, application_details.modification_date
+            )
             new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
             return self.bank_informations_repository.update_by_application_id(new_bank_informations)
 
@@ -80,12 +82,16 @@ class SaveVenueBankInformations:
 
     def update_bank_information_for_venue(
         self, application_details: ApplicationDetail, venue: VenueWithBasicInformation
-    ):
+    ) -> Optional[BankInformations]:
         bank_information_by_venue_id = self.bank_informations_repository.find_by_venue(venue.identifier)
 
         if bank_information_by_venue_id:
-            check_new_bank_information_older_than_saved_one(bank_information_by_venue_id, application_details)
-            check_new_bank_information_has_a_more_advanced_status(bank_information_by_venue_id, application_details)
+            check_new_bank_information_older_than_saved_one(
+                bank_information_by_venue_id, application_details.modification_date
+            )
+            check_new_bank_information_has_a_more_advanced_status(
+                bank_information_by_venue_id, application_details.status
+            )
 
             new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
             return self.bank_informations_repository.update_by_venue_id(new_bank_informations)

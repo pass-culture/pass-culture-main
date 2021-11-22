@@ -22,7 +22,7 @@ from tests.connector_creators.demarches_simplifiees_creators import (
 
 
 class SaveOffererBankInformationsTest:
-    @patch("pcapi.domain.demarches_simplifiees.get_application_details")
+    @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
     class SaveNewBankInformationsTest:
         def setup_method(self):
             self.save_offerer_bank_informations = SaveOffererBankInformations(
@@ -204,7 +204,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information_count == 0
             assert error.value.args == (f"Unknown Demarches Simplifiées state {unknown_status}",)
 
-    @patch("pcapi.domain.demarches_simplifiees.get_application_details")
+    @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
     class UpdateBankInformationsByApplicationIdTest:
         def setup_method(self):
             self.save_offerer_bank_informations = SaveOffererBankInformations(
@@ -316,7 +316,7 @@ class SaveOffererBankInformationsTest:
                 "Une entrée avec cet identifiant existe déjà dans notre base de données"
             ]
 
-    @patch("pcapi.domain.demarches_simplifiees.get_application_details")
+    @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
     class UpdateBankInformationsByOffererIdTest:
         def setup_method(self):
             self.save_offerer_bank_informations = SaveOffererBankInformations(

@@ -30,7 +30,7 @@ from tests.connector_creators.demarches_simplifiees_creators import (
 
 class SaveVenueBankInformationsTest:
     class SaveBankInformationTest:
-        @patch("pcapi.domain.demarches_simplifiees.get_application_details")
+        @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
         class VenueWithSiretTest:
             def setup_method(self):
                 self.save_venue_bank_informations = SaveVenueBankInformations(
@@ -291,7 +291,7 @@ class SaveVenueBankInformationsTest:
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
 
-        @patch("pcapi.domain.demarches_simplifiees.get_application_details")
+        @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
         class VenueWitoutSiretTest:
             def setup_method(self):
                 self.save_venue_bank_informations = SaveVenueBankInformations(
@@ -551,7 +551,7 @@ class SaveVenueBankInformationsTest:
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
 
-    @patch("pcapi.domain.demarches_simplifiees.get_application_details")
+    @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
     class UpdateBankInformationByApplicationIdTest:
         def setup_method(self):
             self.save_venue_bank_informations = SaveVenueBankInformations(
@@ -660,7 +660,7 @@ class SaveVenueBankInformationsTest:
                 "Une entrée avec cet identifiant existe déjà dans notre base de données"
             ]
 
-    @patch("pcapi.domain.demarches_simplifiees.get_application_details")
+    @patch("pcapi.connectors.api_demarches_simplifiees.get_application_details")
     class UpdateBankInformationByVenueIdTest:
         def setup_method(self):
             self.save_venue_bank_informations = SaveVenueBankInformations(
