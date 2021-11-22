@@ -27,7 +27,7 @@ def get_information_email_change_data(first_name: str) -> Union[dict, Sendinblue
 
 def send_information_email_change_email(user: User) -> bool:
     data = get_information_email_change_data(user.firstName)
-    return mails.send(recipients=[user.email], data=data, send_with_sendinblue=True)
+    return mails.send(recipients=[user.email], data=data)
 
 
 def get_confirmation_email_change_data(
@@ -51,4 +51,4 @@ def get_confirmation_email_change_data(
 
 def send_confirmation_email_change_email(user: User, new_email: str, confirmation_link: str) -> bool:
     data = get_confirmation_email_change_data(user.firstName, confirmation_link)
-    return mails.send(recipients=[new_email], data=data, send_with_sendinblue=True)
+    return mails.send(recipients=[new_email], data=data)
