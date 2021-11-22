@@ -1,24 +1,20 @@
 import { useField } from 'formik'
 import React from 'react'
 
-interface ITextInputProps {
+interface TimePickerProps {
   name: string
   className?: string
   disabled?: boolean
   label?: string
-  placeholder?: string
-  type?: 'text' | 'number'
 }
 
-const TextInput = ({
+const TimePicker = ({
   name,
-  type = 'text',
+  label,
   className,
   disabled,
-  label,
-  placeholder,
-}: ITextInputProps): JSX.Element => {
-  const [field, meta] = useField({ name, disabled })
+}: TimePickerProps): JSX.Element => {
+  const [field, meta] = useField({ name })
 
   return (
     <>
@@ -27,8 +23,8 @@ const TextInput = ({
         <input
           {...field}
           className={className}
-          placeholder={placeholder}
-          type={type}
+          disabled={disabled}
+          type="time"
         />
       </label>
       {meta.touched && meta.error ? (
@@ -38,4 +34,4 @@ const TextInput = ({
   )
 }
 
-export default TextInput
+export default TimePicker

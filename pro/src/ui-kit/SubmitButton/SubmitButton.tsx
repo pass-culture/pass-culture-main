@@ -8,7 +8,7 @@ interface ISubmitButtonProps {
   className: string
   disabled: boolean
   isLoading: boolean
-  onClick(): void
+  onClick?(): void
 }
 
 const SubmitButton: FC<ISubmitButtonProps> = ({
