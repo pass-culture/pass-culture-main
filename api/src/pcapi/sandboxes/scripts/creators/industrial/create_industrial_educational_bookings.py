@@ -77,7 +77,9 @@ def create_industrial_educational_bookings() -> None:
 
     now = datetime.datetime.now(datetime.timezone.utc)
     stocks = []
-    venue = VenueFactory(name="Opéra Royal de Versailles", isPermanent=True)
+    venue = VenueFactory(
+        name="Opéra Royal de Versailles", isPermanent=True, siret="95046949400021", managingOfferer__siren="950469494"
+    )
     UserOffererFactory(validationToken=None, offerer=venue.managingOfferer)
 
     educational_redactor = educational_factories.EducationalRedactorFactory(email="compte.test@education.gouv.fr")
