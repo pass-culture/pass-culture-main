@@ -60,10 +60,16 @@ def beneficiary_fraud_review_formatter(view, context, model, name) -> Markup:
     if model.beneficiaryFraudReview is None:
         return Markup("""<span class="badge badge-secondary">inconnu</span>""")
 
+    reviewer = model.beneficiaryFraudReview.author
+    reviewer_name = f"{reviewer.firstName} {reviewer.lastName}"
+    review_result = model.beneficiaryFraudReview.review
+    badge = result_mapping_class[review_result]
     return Markup(
-        f"<div><span>{model.beneficiaryFraudReview.author.firstName} {model.beneficiaryFraudReview.author.lastName}</span></div>"
-        f"""<span class="badge {result_mapping_class[model.beneficiaryFraudReview.review]}">{model.beneficiaryFraudReview.review.value}</span>"""
-    )
+        """
+          <div><span>{reviewer_name}</span></div>
+          <span class="badge {badge}">{review_result_value}</span>
+        """
+    ).format(reviewer_name=reviewer_name, badge=badge, review_result_value=review_result.value)
 
 
 def beneficiary_fraud_checks_formatter(view, context, model, name) -> Markup:
