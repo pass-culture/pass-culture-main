@@ -83,9 +83,9 @@ api:
     tls:
     - secretName: pcapi-gandi-cert
       hosts:
-      - backend.passculture-integration.beta.gouv.fr
-      - backend.integration.passculture.app
-      - backend.integration.passculture.pro
+        - backend.passculture-integration.beta.gouv.fr
+        - backend.integration.passculture.app
+        - backend.integration.passculture.pro
 
 ### High Latency API deployment ###
 highLatencyApi:
@@ -161,9 +161,9 @@ highLatencyApi:
     tls:
     - secretName: pcapi-gandi-cert
       hosts:
-      - backend.passculture-integration.beta.gouv.fr
-      - backend.integration.passculture.app
-      - backend.integration.passculture.pro
+        - backend.passculture-integration.beta.gouv.fr
+        - backend.integration.passculture.app
+        - backend.integration.passculture.pro
 
 ### Admin deployment ###
 admin:
@@ -211,9 +211,9 @@ admin:
     tls:
     - secretName: pcapi-gandi-cert
       hosts:
-      - backend.passculture-integration.beta.gouv.fr
-      - backend.integration.passculture.app
-      - backend.integration.passculture.pro
+        - backend.passculture-integration.beta.gouv.fr
+        - backend.integration.passculture.app
+        - backend.integration.passculture.pro
 
 ### Worker deployment ###
 workers:
@@ -371,9 +371,9 @@ uploadIdentityDocument:
     tls:
     - secretName: pcapi-gandi-cert
       hosts:
-      - backend.passculture-integration.beta.gouv.fr
-      - backend.integration.passculture.app
-      - backend.integration.passculture.pro
+        - backend.passculture-integration.beta.gouv.fr
+        - backend.integration.passculture.app
+        - backend.integration.passculture.pro
 
 # Deployment for all cloud tasks
 cloudTasks:
@@ -428,9 +428,9 @@ cloudTasks:
     tls:
     - secretName: pcapi-gandi-cert
       hosts:
-      - backend.passculture-integration.beta.gouv.fr
-      - backend.integration.passculture.app
-      - backend.integration.passculture.pro
+        - backend.passculture-integration.beta.gouv.fr
+        - backend.integration.passculture.app
+        - backend.integration.passculture.pro
 
 aide:
   enabled: false
