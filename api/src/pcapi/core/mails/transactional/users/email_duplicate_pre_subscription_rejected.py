@@ -15,7 +15,7 @@ def get_not_eligible_beneficiary_pre_subscription_rejected_data() -> dict:
 
 def send_not_eligible_beneficiary_pre_subscription_rejected_data(email: str) -> bool:
     data = get_not_eligible_beneficiary_pre_subscription_rejected_data()
-    return mails.send(recipients=[email], data=data, send_with_sendinblue=False)
+    return mails.send(recipients=[email], data=data)
 
 
 def get_duplicate_beneficiary_pre_subscription_rejected_data() -> Union[dict, SendinblueTransactionalEmailData]:
@@ -33,4 +33,4 @@ def get_duplicate_beneficiary_pre_subscription_rejected_data() -> Union[dict, Se
 
 def send_duplicate_beneficiary_pre_subscription_rejected_data(email: str) -> bool:
     data = get_duplicate_beneficiary_pre_subscription_rejected_data()
-    return mails.send(recipients=[email], data=data, send_with_sendinblue=True)
+    return mails.send(recipients=[email], data=data)
