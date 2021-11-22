@@ -26,7 +26,7 @@ class synchronizeBankInformationsTest:
         bank_information_job(application_id, provider_name)
 
         # Then
-        mock_save_venue_bank_informations.assert_called_once_with("id")
+        mock_save_venue_bank_informations.assert_called_once_with("id", None)
 
     @patch("pcapi.workers.bank_information_job.save_venue_bank_informations.execute")
     @patch("pcapi.workers.bank_information_job.save_offerer_bank_informations.execute")

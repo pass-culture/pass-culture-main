@@ -1,5 +1,6 @@
 from typing import Optional
 
+from pcapi import settings
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
@@ -19,6 +20,11 @@ from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_informatio
 from pcapi.models.bank_information import BankInformationStatus
 
 
+PROCEDURE_ID_VERSION_MAP = {
+    settings.DMS_VENUE_PROCEDURE_ID: 1,
+}
+
+
 class SaveVenueBankInformations:
     def __init__(
         self,
@@ -30,8 +36,12 @@ class SaveVenueBankInformations:
         self.venue_repository = venue_repository
         self.bank_informations_repository = bank_informations_repository
 
-    def execute(self, application_id: str):
-        application_details = get_venue_bank_information_application_details_by_application_id(application_id)
+    def execute(self, application_id: str, procedure_id: Optional[str] = None):
+        if not procedure_id:
+            procedure_id = settings.DMS_VENUE_PROCEDURE_ID
+        application_details = get_venue_bank_information_application_details_by_application_id(
+            application_id, version=PROCEDURE_ID_VERSION_MAP[procedure_id]
+        )
 
         try:
             siren = application_details.siren

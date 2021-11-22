@@ -11,7 +11,8 @@ def update_venue_demarches_simplifiees_application():
     dms_validation.check_demarches_simplifiees_webhook_token(request.args.get("token"))
     dms_validation.check_demarches_simplifiees_webhook_payload(request)
     application_id = request.form["dossier_id"]
-    bank_information_job.delay(application_id, "venue")
+    procedure_id = request.form["procedure_id"]
+    bank_information_job.delay(application_id, "venue", procedure_id)
     return "", 202
 
 
