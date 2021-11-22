@@ -149,6 +149,10 @@
     <h3>Parcours de validation</h3>
     <table class="table">
       <tr>
+        <th scope="row">Etat du parcours d'inscription</th>
+        <td>{% if model.subscriptionState %} {{ model.subscriptionState.value }} {% else %}Inconnu{% endif %}</td>
+      </tr>
+      <tr>
         <th scope="row">Email validé</th>
         <td>{{ model.isEmailValidated|yesno }}</td>
       </tr>
