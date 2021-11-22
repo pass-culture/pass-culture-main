@@ -54,7 +54,7 @@ class Returns200Test:
             "email": "toto@example.com",
             "externalIds": {},
             "firstName": "Jean",
-            "hasCompletedIdCheck": True,
+            "hasCompletedIdCheck": False,
             "hasPhysicalVenues": False,
             "hasSeenProTutorials": True,
             "id": humanize(user.id),

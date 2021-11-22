@@ -113,7 +113,7 @@ def test_format_sendinblue_user():
         "DEPOSIT_EXPIRATION_DATE": user.deposit_expiration_date,
         "ELIGIBILITY": user.eligibility,
         "FIRSTNAME": "Jeanne",
-        "HAS_COMPLETED_ID_CHECK": True,
+        "HAS_COMPLETED_ID_CHECK": False,
         "INITIAL_CREDIT": Decimal("500.00"),
         "IS_BENEFICIARY": True,
         "IS_BENEFICIARY_18": True,
