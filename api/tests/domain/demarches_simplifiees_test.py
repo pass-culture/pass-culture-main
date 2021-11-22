@@ -12,6 +12,7 @@ from pcapi.domain.demarches_simplifiees import get_all_application_ids_for_demar
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from pcapi.domain.demarches_simplifiees import get_offerer_bank_information_application_details_by_application_id
 from pcapi.domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id
+from pcapi.domain.demarches_simplifiees import parse_raw_bic_data
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.utils.date import DATE_ISO_FORMAT
 
@@ -349,3 +350,144 @@ class GetStatusFromDemarchesSimplifieesApplicationStateTest:
 
         # Then
         assert error.value.args == (f"Unknown Demarches Simplifiées state {state}",)
+
+
+class ParseRawBicDataTest:
+    def test_parsing_works(self):
+        INPUT_DATA = {
+            "dossier": {
+                "champs": [
+                    {"id": "Q2hhbXAtNDA3ODk1", "label": "Mes informations", "stringValue": "", "value": None},
+                    {"id": "Q2hhbXAtNDA3ODg5", "label": "Mon prénom", "stringValue": "John", "value": "John"},
+                    {"id": "Q2hhbXAtNDA3ODkw", "label": "Mon nom", "stringValue": "Doe", "value": "Doe"},
+                    {
+                        "id": "Q2hhbXAtNDA3ODky",
+                        "label": "Mon numéro de téléphone",
+                        "stringValue": "01 02 03 04 05",
+                        "value": "0102030405",
+                    },
+                    {
+                        "id": "Q2hhbXAtODU2NzEz",
+                        "label": "Informations relatives au responsable légal "
+                        "et à ma délégation de gestion financière",
+                        "stringValue": "",
+                        "value": None,
+                    },
+                    {
+                        "file": {
+                            "checksum": "dIUGYwKmurZztL/3bL/m/g==",
+                            "contentType": "application/pdf",
+                            "filename": "test.pdf",
+                            "url": "http://localhost/somefile",
+                        },
+                        "id": "Q2hhbXAtMzUyNzI1",
+                        "label": "Responsable légal de votre structure ou de " "votre lieu",
+                        "stringValue": "",
+                    },
+                    {
+                        "file": {
+                            "checksum": "dIUGYwKmurZztL/3bL/m/g==",
+                            "contentType": "application/pdf",
+                            "filename": "test.pdf",
+                            "url": "http://https://localhost/somefile",
+                        },
+                        "id": "Q2hhbXAtMjA2MTE4Nw==",
+                        "label": "Document d'identité de ce dirigeant (daté, " "certifié conforme et signé)",
+                        "stringValue": "",
+                    },
+                    {
+                        "file": None,
+                        "id": "Q2hhbXAtNzAwNTUy",
+                        "label": "Si vous n'êtes pas le responsable légal " "de votre structure ou de votre lieu",
+                        "stringValue": "",
+                    },
+                    {
+                        "id": "Q2hhbXAtMzUyNzIz",
+                        "label": "Informations sur le lieu à rembourser",
+                        "stringValue": "",
+                        "value": None,
+                    },
+                    {
+                        "etablissement": {
+                            "address": {
+                                "cityCode": "75108",
+                                "cityName": "PARIS 8",
+                                "departmentCode": None,
+                                "departmentName": None,
+                                "geometry": None,
+                                "label": "GAUMONT "
+                                "ALESIA\r\n"
+                                "2 RUE "
+                                "LAMENNAIS\r\n"
+                                "75008 PARIS "
+                                "8\r\n"
+                                "FRANCE",
+                                "postalCode": "75008",
+                                "regionCode": None,
+                                "regionName": None,
+                                "streetAddress": "2 RUE " "LAMENNAIS",
+                                "streetName": "LAMENNAIS",
+                                "streetNumber": "2",
+                                "type": "housenumber",
+                            },
+                            "association": None,
+                            "entreprise": {
+                                "capitalSocial": "38130",
+                                "codeEffectifEntreprise": "12",
+                                "dateCreation": "2001-06-27",
+                                "formeJuridique": "SAS, " "société " "par " "actions " "simplifiée",
+                                "formeJuridiqueCode": "5710",
+                                "inlineAdresse": "2 " "RUE " "LAMENNAIS, " "75008 " "PARIS " "8",
+                                "nom": None,
+                                "nomCommercial": "",
+                                "numeroTvaIntracommunautaire": "FR67438391195",
+                                "prenom": None,
+                                "raisonSociale": "GAUMONT " "ALESIA",
+                                "siren": "438391195",
+                                "siretSiegeSocial": "43839119500056",
+                            },
+                            "libelleNaf": "Projection de films " "cinématographiques",
+                            "naf": "5914Z",
+                            "siegeSocial": True,
+                            "siret": "43839119500056",
+                        },
+                        "id": "Q2hhbXAtNzgyODAw",
+                        "label": "SIRET",
+                        "stringValue": "43839119500056",
+                    },
+                    {"id": "Q2hhbXAtNzAwNTA5", "label": "Vos coordonnées bancaires", "stringValue": "", "value": None},
+                    {
+                        "id": "Q2hhbXAtMzUyNzIy",
+                        "label": "IBAN",
+                        "stringValue": "FR7630001007941234567890185",
+                        "value": "FR7630001007941234567890185",
+                    },
+                    {"id": "Q2hhbXAtMzUyNzI3", "label": "BIC", "stringValue": "QSDFGH8Z", "value": "QSDFGH8Z"},
+                    {
+                        "file": {
+                            "checksum": "dIUGYwKmurZztL/3bL/m/g==",
+                            "contentType": "application/pdf",
+                            "filename": "test.pdf",
+                            "url": "http://localhost/somefile",
+                        },
+                        "id": "Q2hhbXAtODU2ODE4",
+                        "label": "RIB",
+                        "stringValue": "",
+                    },
+                ],
+                "dateDerniereModification": "2021-11-12T14:51:42+01:00",
+                "state": "en_construction",
+            }
+        }
+        result = parse_raw_bic_data(INPUT_DATA)
+        assert result == {
+            "status": "en_construction",
+            "updated_at": "2021-11-12T14:51:42+01:00",
+            "firstname": "John",
+            "lastname": "Doe",
+            "phone_number": "0102030405",
+            "siret": "43839119500056",
+            "siren": "438391195",
+            "iban": "FR7630001007941234567890185",
+            "bic": "QSDFGH8Z",
+        }
