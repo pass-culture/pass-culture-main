@@ -1,19 +1,18 @@
 import React from 'react'
 
+import FormLayout from 'new_components/FormLayout'
 import { Checkbox } from 'ui-kit'
-
-import FormSection from '../FormSection'
 
 import { accessibilityOptions } from './accessibilityOptions'
 import styles from './FormAccessibility.module.scss'
 
 const FormAccessibility = (): JSX.Element => {
   return (
-    <FormSection
-      subtitle="Cette offre est accessibles aux publics en situation de handicap :"
+    <FormLayout.Section
+      description="Cette offre est accessibles aux publics en situation de handicap :"
       title="Accessibilité"
     >
-      <div className={styles['checkbox-group']}>
+      <FormLayout.Row className={styles['checkbox-group']}>
         {accessibilityOptions.map(({ label, value }) => (
           <Checkbox
             key={value}
@@ -22,8 +21,8 @@ const FormAccessibility = (): JSX.Element => {
             value={value}
           />
         ))}
-      </div>
-    </FormSection>
+      </FormLayout.Row>
+    </FormLayout.Section>
   )
 }
 

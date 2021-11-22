@@ -1,16 +1,15 @@
 import React from 'react'
 
+import FormLayout from 'new_components/FormLayout'
 import { Checkbox } from 'ui-kit'
-
-import FormSection from '../FormSection'
 
 import styles from './FormParticipants.module.scss'
 import { participantsOptions } from './participantsOptions'
 
 const FormParticipants = (): JSX.Element => {
   return (
-    <FormSection
-      subtitle="Votre offre s'adresse aux :"
+    <FormLayout.Section
+      description="Votre offre s'adresse aux :"
       title="Informations participants"
     >
       <div className={styles['checkbox-group']}>
@@ -23,7 +22,7 @@ const FormParticipants = (): JSX.Element => {
           />
         ))}
       </div>
-    </FormSection>
+    </FormLayout.Section>
   )
 }
 

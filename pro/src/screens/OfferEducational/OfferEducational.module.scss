@@ -1,24 +1,6 @@
 .educational-form {
-  width: 100%;
-
   &-information {
     margin-bottom: rem(24px);
     font-size: rem(14px);
-}
-
-  &-actions {
-    display: flex;
-    justify-content: center;
-    margin-top: rem(64px);
-  }
-
-  &-action {
-    flex: 1;
-    margin-left: rem(24px);
-    text-align: center;
-
-    &:first-child {
-      margin-left: 0;
-    }
   }
 }

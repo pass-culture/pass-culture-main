@@ -1,0 +1,24 @@
+import cn from 'classnames'
+import React from 'react'
+
+import style from './FormLayout.module.scss'
+import Actions from './FormLayoutActions'
+import Row from './FormLayoutRow'
+import Section from './FormLayoutSection'
+import SubSection from './FormLayoutSubSection'
+
+interface IFormLayoutProps {
+  children: React.ReactNode | React.ReactNode[]
+  className?: string
+}
+
+const FormLayout = ({ children, className }: IFormLayoutProps): JSX.Element => (
+  <div className={cn(style['form-layout'], className)}>{children}</div>
+)
+
+FormLayout.Row = Row
+FormLayout.SubSection = SubSection
+FormLayout.Section = Section
+FormLayout.Actions = Actions
+
+export default FormLayout
