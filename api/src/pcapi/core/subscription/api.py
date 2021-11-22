@@ -187,6 +187,5 @@ def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
         redirect_url=redirect_url,
         face_required=True,  # TODO(bcalvez): setting ? hardcode ?
     )
-
     fraud_api.start_ubble_fraud_check(user, response)
-    return response.redirect_url
+    return response.identification_url

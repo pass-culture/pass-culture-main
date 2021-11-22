@@ -2008,3 +2008,4 @@ class IdentificationSessionTest:
 
         check = user.beneficiaryFraudChecks[0]
         assert check.type == fraud_models.FraudCheckType.UBBLE
+        assert response.json["identificationUrl"] == "https://id.ubble.ai/29d9eca4-dce6-49ed-b1b5-8bb0179493a8"
