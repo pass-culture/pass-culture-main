@@ -119,3 +119,8 @@ class DMSGraphQLClient:
         query = self.build_query("get_single_application_details")
 
         return self.execute_query(query, variables={"applicationNumber": application_id})
+
+    def get_bic(self, dossier_id: int) -> Any:
+        query = self.build_query("pro/get_banking_info_v2")
+        variables = {"dossierNumber": dossier_id}
+        return self.execute_query(query, variables=variables)

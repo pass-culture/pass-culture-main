@@ -1,0 +1,76 @@
+query get_banking_info($dossierNumber: Int!) {
+  dossier(number: $dossierNumber) {
+    state
+    dateDerniereModification
+    champs {
+      ...ChampFragment
+    }
+  }
+}
+
+fragment ChampFragment on Champ {
+  id
+  label
+  stringValue
+  ... on TextChamp {
+    value
+  }
+  ... on PieceJustificativeChamp {
+    file {
+      url
+      checksum
+      contentType
+      filename
+    }
+  }
+  ... on SiretChamp {
+    etablissement {
+      siret
+      naf
+      libelleNaf
+      siegeSocial
+      address {
+        cityCode
+        cityName
+        departmentCode
+        departmentName
+        geometry {
+          coordinates
+          type
+        }
+        label
+        postalCode
+        regionCode
+        regionName
+        streetAddress
+        streetName
+        streetNumber
+        type
+      }
+      association {
+        dateCreation
+        dateDeclaration
+        datePublication
+        objet
+        rna
+        titre
+      }
+      entreprise {
+        capitalSocial
+        codeEffectifEntreprise
+        dateCreation
+        formeJuridique
+        formeJuridiqueCode
+        inlineAdresse
+        nom
+        nomCommercial
+        numeroTvaIntracommunautaire
+        prenom
+        raisonSociale
+        siren
+        siretSiegeSocial
+      }
+    }
+  }
+}
+
