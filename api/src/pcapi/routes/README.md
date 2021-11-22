@@ -11,7 +11,7 @@ Pour faire un feature flipping dans l'API du pass Culture, les étapes suivantes
 exemple :
 
 ```python
-WEBAPP_SIGNUP = 'Permettre aux bénéficiaires de créer un compte'
+ENABLE_FROBULATE = 'Active la frobulation'
 ```
 
 - Dans le package routes, sur les routes qui seront mise à disposition ou non selon l'environnement :
@@ -21,13 +21,9 @@ Utiliser le décorateurs `@feature_required(FeatureToggle.{le nom de la constant
 Exemple :
 
 ```python
-@private_api.route("/users/signup/webapp", methods=["POST"])
-@feature_required(FeatureToggle.WEBAPP_SIGNUP)
-def signup_webapp():
-    objects_to_save = []
-    check_valid_signup_webapp(request)
-
-    new_user = User(from_dict=request.json)
+@private_api.route("/users/frobulate", methods=["POST"])
+@feature_required(FeatureToggle.ENABLE_FROBULATION)
+def frobulate():
     ... code de la route
 ```
 

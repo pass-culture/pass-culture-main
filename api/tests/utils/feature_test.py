@@ -8,10 +8,10 @@ from pcapi.utils.feature import feature_required
 
 @pytest.mark.usefixtures("db_session")
 class FeatureRequiredTest:
-    @override_features(WEBAPP_SIGNUP=True)
+    @override_features(QR_CODE=True)
     def when_feature_is_activated_dont_raise_error(self):
         # given
-        @feature_required(FeatureToggle.WEBAPP_SIGNUP)
+        @feature_required(FeatureToggle.QR_CODE)
         def decorated_function():
             return "expected result"
 
@@ -21,10 +21,10 @@ class FeatureRequiredTest:
         # then
         assert result == "expected result"
 
-    @override_features(WEBAPP_SIGNUP=False)
+    @override_features(QR_CODE=False)
     def when_feature_is_not_activated_raise_an_error(self):
         # given
-        @feature_required(FeatureToggle.WEBAPP_SIGNUP)
+        @feature_required(FeatureToggle.QR_CODE)
         def decorated_function():
             return "expected result"
 
