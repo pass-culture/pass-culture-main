@@ -115,26 +115,34 @@ def get_offerer_bank_information_application_details_by_application_id(applicati
     return application_details
 
 
-def get_venue_bank_information_application_details_by_application_id(application_id: str) -> ApplicationDetail:
-    response_application_details = get_application_details(
-        application_id, procedure_id=settings.DMS_VENUE_PROCEDURE_ID, token=settings.DMS_TOKEN
-    )
+def get_venue_bank_information_application_details_by_application_id(
+    application_id: str, version: int = 1
+) -> ApplicationDetail:
+    if version == 1:
+        response_application_details = get_application_details(
+            application_id, procedure_id=settings.DMS_VENUE_PROCEDURE_ID, token=settings.DMS_TOKEN
+        )
 
-    application_details = ApplicationDetail(
-        siren=response_application_details["dossier"]["entreprise"]["siren"],
-        status=_get_status_from_demarches_simplifiees_application_state(
-            response_application_details["dossier"]["state"]
-        ),
-        application_id=int(response_application_details["dossier"]["id"]),
-        iban=format_raw_iban_and_bic(_find_value_in_fields(response_application_details["dossier"]["champs"], "IBAN")),
-        bic=format_raw_iban_and_bic(_find_value_in_fields(response_application_details["dossier"]["champs"], "BIC")),
-        siret=_find_value_in_fields(response_application_details["dossier"]["champs"], FIELD_FOR_VENUE_WITH_SIRET),
-        venue_name=_find_value_in_fields(
-            response_application_details["dossier"]["champs"], FIELD_FOR_VENUE_WITHOUT_SIRET
-        ),
-        modification_date=datetime.strptime(response_application_details["dossier"]["updated_at"], DATE_ISO_FORMAT),
-    )
-    return application_details
+        application_details = ApplicationDetail(
+            siren=response_application_details["dossier"]["entreprise"]["siren"],
+            status=_get_status_from_demarches_simplifiees_application_state(
+                response_application_details["dossier"]["state"]
+            ),
+            application_id=int(response_application_details["dossier"]["id"]),
+            iban=format_raw_iban_and_bic(
+                _find_value_in_fields(response_application_details["dossier"]["champs"], "IBAN")
+            ),
+            bic=format_raw_iban_and_bic(
+                _find_value_in_fields(response_application_details["dossier"]["champs"], "BIC")
+            ),
+            siret=_find_value_in_fields(response_application_details["dossier"]["champs"], FIELD_FOR_VENUE_WITH_SIRET),
+            venue_name=_find_value_in_fields(
+                response_application_details["dossier"]["champs"], FIELD_FOR_VENUE_WITHOUT_SIRET
+            ),
+            modification_date=datetime.strptime(response_application_details["dossier"]["updated_at"], DATE_ISO_FORMAT),
+        )
+        return application_details
+    raise ValueError("Unknown version %s" % version, extra_data={"application_id": application_id, "version": version})
 
 
 def _has_requested_state(application: dict, states: datetime) -> bool:
