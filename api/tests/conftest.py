@@ -13,6 +13,7 @@ from flask_jwt_extended.utils import create_access_token
 import pytest
 from requests import Response
 from requests.auth import _basic_auth_str
+from requests.exceptions import ConnectionError as RequestConnectionError
 
 # FIXME (dbaty, 2020-02-08): avoid import loop (that occurs when
 # importing `pcapi.core.mails.testing`) when running tests. Remove
@@ -170,6 +171,44 @@ def ubble_mock(requests_mock):
             "https://api.example.com/identifications/",
             json=ubble_fixtures.UBBLE_IDENTIFICATION_RESPONSE,
             status_code=201,
+        )
+        yield request_matcher
+
+
+@pytest.fixture(name="ubble_mock_connection_error")
+def ubble_mock_connection_error(requests_mock):
+    """
+    Mocks Ubble request which returns ConnectionError (ex Max retries exceeded, Timeout)
+    """
+    UBBLE_URL = "https://api.example.com/"
+
+    with pcapi.core.testing.override_settings(
+        UBBLE_API_URL=UBBLE_URL,
+        UBBLE_CLIENT_ID="client_id",
+        UBBLE_CLIENT_SECRET="client_secret",
+    ):
+        request_matcher = requests_mock.register_uri(
+            "POST", "https://api.example.com/identifications/", exc=RequestConnectionError
+        )
+        yield request_matcher
+
+
+@pytest.fixture(name="ubble_mock_http_error_status")
+def ubble_mock_http_error_status(requests_mock):
+    """
+    Mocks Ubble request which returns ConnectionError (ex Max retries exceeded, Timeout)
+    """
+    UBBLE_URL = "https://api.example.com/"
+
+    with pcapi.core.testing.override_settings(
+        UBBLE_API_URL=UBBLE_URL,
+        UBBLE_CLIENT_ID="client_id",
+        UBBLE_CLIENT_SECRET="client_secret",
+    ):
+        request_matcher = requests_mock.register_uri(
+            "POST",
+            "https://api.example.com/identifications/",
+            status_code=401,
         )
         yield request_matcher
 
