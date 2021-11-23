@@ -6,7 +6,7 @@ from pcapi.connectors.api_adage import InstitutionalProjectRedactorNotFoundExcep
 from pcapi.connectors.api_adage import get_institutional_project_redactor_by_email
 from pcapi.connectors.serialization.api_adage_serializers import InstitutionalProjectRedactorResponse
 from pcapi.core.bookings import factories as booking_factories
-import pcapi.core.educational.adage_backends as adage_notifier
+import pcapi.core.educational.adage_backends as adage_client
 from pcapi.core.testing import override_settings
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 
@@ -97,10 +97,10 @@ class GetInstitutionalProjectRedactorByEmailTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class AdageHttpNotiferTest:
+class AdageHttpClientTest:
     @override_settings(ADAGE_API_URL="https://adage-api-url")
     @override_settings(ADAGE_API_KEY="adage-api-key")
-    @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpNotifier")
+    @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
     def test_should_raise_AdageException_when_api_response_status_not_201(self):
         # Given
         booking = booking_factories.EducationalBookingFactory()
@@ -115,14 +115,14 @@ class AdageHttpNotiferTest:
                     },
                     status_code=406,
                 )
-                adage_notifier.notify_prebooking(data=serialize_educational_booking(booking.educationalBooking))
+                adage_client.notify_prebooking(data=serialize_educational_booking(booking.educationalBooking))
 
         # Then
         assert str(exception.value) == "Error posting new prebooking to Adage API."
 
     @override_settings(ADAGE_API_URL="https://adage-api-url")
     @override_settings(ADAGE_API_KEY="adage-api-key")
-    @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpNotifier")
+    @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
     def test_should_not_raise_exception_when_api_response_status_201(self):
         # Given
         booking = booking_factories.EducationalBookingFactory()
@@ -138,7 +138,7 @@ class AdageHttpNotiferTest:
                 json=expected_response,
                 status_code=201,
             )
-            adage_api_result = adage_notifier.notify_prebooking(
+            adage_api_result = adage_client.notify_prebooking(
                 data=serialize_educational_booking(booking.educationalBooking)
             )
 
