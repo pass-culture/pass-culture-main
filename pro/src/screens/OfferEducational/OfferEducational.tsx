@@ -1,4 +1,4 @@
-import { Formik } from 'formik'
+import { useFormik } from 'formik'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
@@ -19,18 +19,19 @@ import {
   FormType,
   FormVenue,
 } from './OfferEducationalForm'
-import { OfferEducationalFormValues } from './types'
 
 export interface IOfferEducationalProps {
   educationalCategories: Category[]
   educationalSubcategories: SubCategory[]
   initialValues: OfferEducationalFormValues
+  onSubmit(values: OfferEducationalFormValues): void
 }
 
 const OfferEducational = ({
   educationalCategories,
   educationalSubcategories,
   initialValues,
+  onSubmit,
 }: IOfferEducationalProps): JSX.Element => {
   const categoryInitialValue = educationalCategories[0]?.id
   const subCategoryInitialValue =
@@ -40,60 +41,55 @@ const OfferEducational = ({
       )?.id) ||
     ''
 
+  const formik = useFormik({
+    initialValues: {
+      ...initialValues,
+      category: categoryInitialValue,
+      subCategory: subCategoryInitialValue,
+    },
+    onSubmit,
+  })
+
   return (
-    <Formik
-      enableReinitialize // so that dynamic initial values can be set when available
-      initialValues={{
-        ...initialValues,
-        category: categoryInitialValue,
-        subCategory: subCategoryInitialValue,
-      }}
-      onSubmit={() => {
-        return
-      }}
-    >
-      {({ values, setFieldValue }) => {
-        return (
-          <FormLayout className={styles['educational-form']}>
-            <p className={styles['educational-form-information']}>
-              Tous les champs sont obligatoires sauf mention contraire.
-            </p>
-            <FormType
-              categories={educationalCategories}
-              setFieldValue={setFieldValue}
-              subCategories={educationalSubcategories}
-              values={values}
-            />
-            <FormVenue />
-            <FormOfferVenue />
-            <FormParticipants />
-            <FormAccessibility />
-            <FormContact />
-            <FormNotifications />
-            <Banner
-              href={CGU_URL}
-              linkTitle="Consulter les Conditions Générales d’Utilisation"
-              type="notification-info"
-            />
-            <FormLayout.Actions>
-              <Link className="secondary-link" to={computeOffersUrl({})}>
-                Annuler et quitter
-              </Link>
-              <SubmitButton
-                className="primary-button"
-                disabled={false}
-                isLoading={false}
-                onClick={() => {
-                  return
-                }}
-              >
-                Étape suivante
-              </SubmitButton>
-            </FormLayout.Actions>
-          </FormLayout>
-        )
-      }}
-    </Formik>
+    <form onSubmit={formik.handleSubmit}>
+      <FormLayout className={styles['educational-form']}>
+        <p className={styles['educational-form-information']}>
+          Tous les champs sont obligatoires sauf mention contraire.
+        </p>
+        <FormType
+          categories={educationalCategories}
+          setFieldValue={formik.setFieldValue}
+          subCategories={educationalSubcategories}
+          values={formik.values}
+        />
+        <FormVenue />
+        <FormOfferVenue />
+        <FormParticipants />
+        <FormAccessibility />
+        <FormContact />
+        <FormNotifications />
+        <Banner
+          href={CGU_URL}
+          linkTitle="Consulter les Conditions Générales d’Utilisation"
+          type="notification-info"
+        />
+        <FormLayout.Actions>
+          <Link className="secondary-link" to={computeOffersUrl({})}>
+            Annuler et quitter
+          </Link>
+          <SubmitButton
+            className="primary-button"
+            disabled={false}
+            isLoading={false}
+            onClick={() => {
+              return
+            }}
+          >
+            Étape suivante
+          </SubmitButton>
+        </FormLayout.Actions>
+      </FormLayout>
+    </form>
   )
 }
 
