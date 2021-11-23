@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { INITIAL_EDUCATIONAL_FORM_VALUES } from 'core/OfferEducational'
+
 import { withPageTemplate } from '../../stories/decorators/withPageTemplate'
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
@@ -46,22 +48,7 @@ const Template = () => (
   <OfferEducational
     educationalCategories={mockEducationalCategories}
     educationalSubcategories={mockEducationalSubcategories}
-    initialValues={{
-      category: '',
-      subCategory: '',
-      title: '',
-      description: '',
-      duration: 0,
-      offererId: '',
-      venueId: '',
-      offererVenueId: '',
-      participants: [],
-      accessibility: '',
-      phone: '',
-      email: '',
-      notifications: false,
-      notificationEmail: '',
-    }}
+    initialValues={INITIAL_EDUCATIONAL_FORM_VALUES}
     onSubmit={() => null}
   />
 )
