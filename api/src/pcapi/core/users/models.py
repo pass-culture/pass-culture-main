@@ -18,6 +18,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.sql import expression
+import transitions
 
 from pcapi import settings
 from pcapi.core.users import constants
@@ -150,7 +151,8 @@ class SubscriptionState(enum.Enum):
     PHONE_VALIDATION_KO = "phone_validation_ko"
     PROFILE_COMPLETED = "profile_completed"
     REJECTED_BY_ADMIN = "rejected_by_admin"
-    USER_PROFILING_OK = "user_profiling_ok"
+    USER_PROFILING_KO = "user_profiling_ko"
+    USER_PROFILING_VALIDATED = "user_profiling_validated"
 
 
 class ActivityEnum(enum.Enum):
@@ -531,6 +533,43 @@ class User(PcObject, Model, NeedsValidationMixin):
         return (eligibility == EligibilityType.UNDERAGE and not self.has_underage_beneficiary_role) or (
             eligibility == EligibilityType.AGE18 and not self.has_beneficiary_role
         )
+
+    @classmethod
+    def init_subscription_state_machine(cls, obj, *args, **kwargs):
+        possible_transitions = [
+            ["validate_email", SubscriptionState.ACCOUNT_CREATED, SubscriptionState.EMAIL_VALIDATED],
+            ["validate_phone", SubscriptionState.EMAIL_VALIDATED, SubscriptionState.PHONE_VALIDATED],
+            ["validate_phone_failed", SubscriptionState.EMAIL_VALIDATED, SubscriptionState.PHONE_VALIDATION_KO],
+            ["profile_user", SubscriptionState.PHONE_VALIDATED, SubscriptionState.USER_PROFILING_VALIDATED],
+            ["profile_user_failed", SubscriptionState.PHONE_VALIDATED, SubscriptionState.USER_PROFILING_KO],
+            [
+                "submit_user_identity",
+                [SubscriptionState.USER_PROFILING_VALIDATED, SubscriptionState.PHONE_VALIDATED],
+                SubscriptionState.IDENTITY_CHECK_PENDING,
+            ],
+            [
+                "validate_user_identity_15_17",
+                SubscriptionState.IDENTITY_CHECK_PENDING,
+                SubscriptionState.BENEFICIARY_15_17,
+            ],
+            ["validate_user_identity_18", SubscriptionState.IDENTITY_CHECK_PENDING, SubscriptionState.BENEFICIARY_18],
+            ["admin_rejection", "*", SubscriptionState.REJECTED_BY_ADMIN],
+        ]
+        machine = None
+        if obj.subscriptionState:
+            initial_state = obj.subscriptionState
+            machine = transitions.Machine(
+                model=obj,
+                states=SubscriptionState,
+                transitions=possible_transitions,
+                model_attribute="subscriptionState",
+                initial=initial_state,
+            )
+        setattr(obj, "_subscriptionStateMachine", machine)
+
+
+sa.event.listen(User, "init", User.init_state_machine)
+sa.event.listen(User, "load", User.init_state_machine)
 
 
 class ExpenseDomain(enum.Enum):
