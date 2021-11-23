@@ -223,7 +223,11 @@ def get_next_subscription_step(user: users_models.User) -> Optional[models.Subsc
     if not user.address:
         return models.SubscriptionStep.PROFILE_COMPLETION
 
-    if user.eligibility is not None and not user.hasCompletedIdCheck and user.allowed_eligibility_check_methods:
+    if (
+        not user.hasCompletedIdCheck
+        and user.allowed_eligibility_check_methods
+        and not user.extraData.get("is_identity_document_uploaded")
+    ):
         return models.SubscriptionStep.IDENTITY_CHECK
 
     return None
