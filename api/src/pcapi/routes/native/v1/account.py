@@ -207,9 +207,8 @@ def create_account(body: serializers.AccountRequest) -> None:
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_user_required
 def has_completed_id_check(user: User) -> None:
-    user.hasCompletedIdCheck = True
-    repository.save(user)
-    update_external_user(user)
+    # TODO(viconnex) remove route when frontend stops calling it
+    return
 
 
 @blueprint.native_v1.route("/resend_email_validation", methods=["POST"])
