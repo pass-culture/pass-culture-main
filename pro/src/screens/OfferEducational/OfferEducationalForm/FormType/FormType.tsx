@@ -2,7 +2,6 @@ import React from 'react'
 
 import { Category, SubCategory } from 'custom_types/categories'
 import FormLayout from 'new_components/FormLayout'
-import { OfferEducationalFormValues } from 'screens/OfferEducational/types'
 import { Select, TextArea, TextInput } from 'ui-kit'
 
 import {

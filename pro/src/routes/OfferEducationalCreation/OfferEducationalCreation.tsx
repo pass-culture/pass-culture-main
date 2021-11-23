@@ -4,7 +4,6 @@ import { useLocation } from 'react-router'
 
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 import OfferEducationalScreen from 'screens/OfferEducational'
-import { OfferEducationalFormValues } from 'screens/OfferEducational/types'
 import { categoriesAndSubCategoriesSelector } from 'store/offers/selectors'
 import { loadCategories } from 'store/offers/thunks'
 
@@ -20,7 +19,23 @@ const OfferEducationalCreation = (): JSX.Element => {
     categoriesAndSubCategoriesSelector
   )
 
-  const initialValues: OfferEducationalFormValues = {}
+  const initialValues: OfferEducationalFormValues = {
+    category: '',
+    subCategory: '',
+    title: '',
+    description: '',
+    duration: 0,
+    offererId: '',
+    venueId: '',
+    offererVenueId: '',
+    participants: [],
+    accessibility: '',
+    phone: '',
+    email: '',
+    notifications: false,
+    notificationEmail: '',
+  }
+
   const { structure, lieu } = queryParamsFromOfferer(location)
 
   if (structure !== null && structure !== '') {
@@ -45,6 +60,9 @@ const OfferEducationalCreation = (): JSX.Element => {
       educationalCategories={educationalCategories}
       educationalSubcategories={educationalSubcategories}
       initialValues={initialValues}
+      onSubmit={(values: OfferEducationalFormValues) => {
+        console.log(JSON.stringify(values, null, 2))
+      }}
     />
   )
 }

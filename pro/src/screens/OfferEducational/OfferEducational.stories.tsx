@@ -46,7 +46,23 @@ const Template = () => (
   <OfferEducational
     educationalCategories={mockEducationalCategories}
     educationalSubcategories={mockEducationalSubcategories}
-    initialValues={{}}
+    initialValues={{
+      category: '',
+      subCategory: '',
+      title: '',
+      description: '',
+      duration: 0,
+      offererId: '',
+      venueId: '',
+      offererVenueId: '',
+      participants: [],
+      accessibility: '',
+      phone: '',
+      email: '',
+      notifications: false,
+      notificationEmail: '',
+    }}
+    onSubmit={() => null}
   />
 )
 
