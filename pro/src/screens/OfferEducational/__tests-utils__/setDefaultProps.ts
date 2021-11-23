@@ -33,7 +33,23 @@ const mockEducationalSubcategories = subCategoriesFactory([
 ])
 
 const defaultProps = (): IOfferEducationalProps => ({
-  initialValues: {},
+  initialValues: {
+    category: '',
+    subCategory: '',
+    title: '',
+    description: '',
+    duration: 0,
+    offererId: '',
+    venueId: '',
+    offererVenueId: '',
+    participants: [],
+    accessibility: '',
+    phone: '',
+    email: '',
+    notifications: false,
+    notificationEmail: '',
+  },
+  onSubmit: jest.fn(),
   educationalCategories: mockEducationalCategories,
   educationalSubcategories: mockEducationalSubcategories,
 })
