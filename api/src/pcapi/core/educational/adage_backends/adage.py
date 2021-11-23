@@ -1,11 +1,13 @@
 from pydantic import parse_obj_as
-import requests
 
 from pcapi import settings
 from pcapi.connectors.api_adage import AdageException
+from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
+from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.models import AdageApiResult
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
+from pcapi.utils import requests
 
 
 class AdageHttpClient(AdageClient):
@@ -28,3 +30,18 @@ class AdageHttpClient(AdageClient):
             )
 
         return AdageApiResult(sent_data=data, response=dict(api_response.json()), success=True)
+
+    def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
+        api_url = f"{self.base_url}/v1/partenaire-culturel/{siren}"
+
+        api_response = requests.get(
+            api_url,
+            headers={self.header_key: self.api_key},
+        )
+
+        if api_response.status_code == 404:
+            raise CulturalPartnerNotFoundException("Requested siren is not a known cultural partner for Adage")
+        if api_response.status_code != 200:
+            raise AdageException("Error getting Adage API", api_response.status_code, api_response.text)
+
+        return parse_obj_as(list[AdageVenue], api_response.json())

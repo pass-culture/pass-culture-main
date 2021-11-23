@@ -1,7 +1,4 @@
-from pydantic import parse_obj_as
-
 from pcapi import settings
-from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.connectors.serialization.api_adage_serializers import InstitutionalProjectRedactorResponse
 from pcapi.utils import requests
 
@@ -38,21 +35,3 @@ def get_institutional_project_redactor_by_email(email: str) -> InstitutionalProj
         raise AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
     return InstitutionalProjectRedactorResponse.parse_obj(api_response.json())
-
-
-def get_adage_offerer(siren: str) -> list[AdageVenue]:
-    api_url = f"{settings.ADAGE_API_URL}/v1/partenaire-culturel/{siren}"
-
-    api_response = requests.get(
-        api_url,
-        headers={
-            "X-omogen-api-key": settings.ADAGE_API_KEY,
-        },
-    )
-
-    if api_response.status_code == 404:
-        raise CulturalPartnerNotFoundException("Requested siren is not a known cultural partner for Adage")
-    if api_response.status_code != 200:
-        raise AdageException("Error getting Adage API", api_response.status_code, api_response.text)
-
-    return parse_obj_as(list[AdageVenue], api_response.json())
