@@ -1,5 +1,7 @@
 from datetime import datetime
+from datetime import timedelta
 import logging
+import typing
 
 from flask import current_app as app
 
@@ -39,6 +41,10 @@ def check_email_update_attempts(user: User) -> None:
         raise exceptions.EmailUpdateLimitReached()
 
 
+def get_no_active_token_key(user: User) -> str:
+    return f"update_email_active_tokens_{user.id}"
+
+
 def check_no_active_token_exists(user: User, expiration_date: datetime) -> None:
     """
     Use a dummy counter to find out whether the user already has an
@@ -48,13 +54,23 @@ def check_no_active_token_exists(user: User, expiration_date: datetime) -> None:
       (expiration_date, the lifetime of the validation token).
     * If not, raise an error because there is already one.
     """
-    key = f"update_email_active_tokens_{user.id}"
+    key = get_no_active_token_key(user)
     count = app.redis_client.incr(key)
 
     if count > 1:
         raise exceptions.EmailUpdateTokenExists()
 
     app.redis_client.expireat(key, expiration_date)
+
+
+def get_active_token_expiration(user) -> typing.Optional[datetime]:
+    key = get_no_active_token_key(user)
+    ttl = app.redis_client.ttl(key)
+
+    if ttl < 0:
+        return None
+
+    return datetime.now() + timedelta(seconds=ttl)
 
 
 def generate_token_expiration_date() -> datetime:

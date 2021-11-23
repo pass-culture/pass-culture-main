@@ -127,6 +127,13 @@ def validate_user_email(body: beneficiaries_serialization.ChangeBeneficiaryEmail
         pass
 
 
+@blueprint.native_v1.route("/profile/token_expiration", methods=["GET"])
+@spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.UpdateEmailTokenExpiration)
+@authenticated_user_required
+def get_email_update_token_expiration_date(user: User) -> serializers.UpdateEmailTokenExpiration:
+    return serializers.UpdateEmailTokenExpiration(expiration=email_api.get_active_token_expiration(user))
+
+
 @blueprint.native_v1.route("/beneficiary_information", methods=["PATCH"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_user_required

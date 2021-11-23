@@ -29,6 +29,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users.api import create_phone_validation_token
 from pcapi.core.users.constants import SuspensionReason
+from pcapi.core.users.email import update as email_update
 from pcapi.core.users.factories import BeneficiaryImportFactory
 from pcapi.core.users.factories import TokenFactory
 from pcapi.core.users.models import EligibilityType
@@ -869,6 +870,42 @@ class ValidateEmailTest:
         )
 
         return client.with_token(email).put("/native/v1/profile/validate_email", json={"token": token})
+
+
+class GetTokenExpirationTest:
+    email = "some@email.com"
+
+    def test_token_expiration(self, app, client):
+        """
+        Setup the active token key with a TTL. Then test that the route
+        returns the expected expiration datetime, with a little error
+        margin: datetimes and redis commands do not have the same time
+        precision (ms vs s) which causes some little difference when
+        deserializing the redis ttl. Note that we absolutely don't need
+        a ms precision here.
+        """
+        user = users_factories.UserFactory(email=self.email)
+
+        expiration_date = datetime.now() + timedelta(hours=15)
+        key = email_update.get_no_active_token_key(user)
+
+        app.redis_client.incr(key)
+        app.redis_client.expireat(key, expiration_date)
+
+        response = client.with_token(user.email).get("/native/v1/profile/token_expiration")
+        assert response.status_code == 200
+
+        expiration = datetime.fromisoformat(response.json["expiration"])
+        delta = abs(expiration - expiration_date)
+        assert delta < timedelta(seconds=2)
+
+    def test_no_token(self, app, client):
+        user = users_factories.UserFactory(email=self.email)
+
+        response = client.with_token(user.email).get("/native/v1/profile/token_expiration")
+
+        assert response.status_code == 200
+        assert response.json["expiration"] is None
 
 
 class CulturalSurveyTest:
