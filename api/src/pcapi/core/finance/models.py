@@ -164,7 +164,7 @@ class Cashflow(Model):
     bankAccountId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=False)
     bankAccount = sqla_orm.relationship("BankInformation", foreign_keys=[bankAccountId])
 
-    batchId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow_batch.id"), nullable=False)
+    batchId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow_batch.id"), index=True, nullable=False)
 
     # See the note about `amount` at the beginning of this module.
     # The amount cannot be zero.
