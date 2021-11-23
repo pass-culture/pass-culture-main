@@ -201,6 +201,7 @@ class UserProfileResponse(BaseModel):
     hasCompletedIdCheck: Optional[bool]
     id: int
     isBeneficiary: bool
+    isEligibleForBeneficiaryUpgrade: bool
     lastName: Optional[str]
     needsToFillCulturalSurvey: bool
     next_beneficiary_validation_step: Optional[BeneficiaryValidationStep]
@@ -258,6 +259,7 @@ class UserProfileResponse(BaseModel):
         user.domains_credit = get_domains_credit(user)
         user.booked_offers = cls._get_booked_offers(user)
         user.next_beneficiary_validation_step = get_next_beneficiary_validation_step(user)
+        user.isEligibleForBeneficiaryUpgrade = user.is_eligible_for_beneficiary_upgrade()
         result = super().from_orm(user)
         result.subscriptionMessage = SubscriptionMessage.from_model(
             subscription_api.get_latest_subscription_message(user)

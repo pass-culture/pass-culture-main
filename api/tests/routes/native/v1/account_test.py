@@ -143,6 +143,7 @@ class AccountTest:
             "eligibilityEndDatetime": "2019-01-01T00:00:00Z",
             "eligibilityStartDatetime": "2015-01-01T00:00:00Z",
             "isBeneficiary": True,
+            "isEligibleForBeneficiaryUpgrade": False,
             "roles": ["BENEFICIARY"],
             "hasCompletedIdCheck": False,
             "nextBeneficiaryValidationStep": None,
