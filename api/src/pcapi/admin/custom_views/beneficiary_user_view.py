@@ -19,6 +19,7 @@ from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
 from pcapi.core.users.api import create_reset_password_token
+from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
@@ -45,7 +46,7 @@ class FilterByDepositTypeEqual(BaseSQLAFilter):
         )
         return current_query.join(current_deposit_by_user).filter(current_deposit_by_user.c.type == value)
 
-    def operation(self):
+    def operation(self) -> str:
         return "equals"
 
     def get_options(self, view):
@@ -65,7 +66,7 @@ class FilterByDepositTypeNotEqual(BaseSQLAFilter):
         )
         return current_query.join(current_deposit_by_user).filter(current_deposit_by_user.c.type != value)
 
-    def operation(self):
+    def operation(self) -> str:
         return "not equal"
 
     def get_options(self, view):
@@ -81,6 +82,30 @@ def beneficiary_deposit_type_formatter(view, context, model, name) -> Markup:
         color=colors[model.deposit_type],
         deposit_type_name=model.deposit_type.name,
     )
+
+
+def beneficiary_total_amount_initial_formatter(view, context, model, name) -> Markup:
+    amount = get_domains_credit(model)
+    all_initial = amount.all.initial if amount else "0"
+    return Markup("<span>{all_initial}&nbsp;&euro;</span>").format(all_initial=all_initial)
+
+
+def beneficiary_total_amount_remaining_formatter(view, context, model, name) -> Markup:
+    amount = get_domains_credit(model)
+    all_remaining = amount.all.remaining if amount else "0"
+    return Markup("<span>{all_remaining}&nbsp;&euro;</span>").format(all_remaining=all_remaining)
+
+
+def beneficiary_physical_remaining_formatter(view, context, model, name) -> Markup:
+    amount = get_domains_credit(model)
+    physical_remaining = amount.physical.remaining if amount and amount.physical else "Pas de plafond"
+    return Markup("<span>{physical_remaining}&nbsp;&euro;</span>").format(physical_remaining=physical_remaining)
+
+
+def beneficiary_digital_remaining_formatter(view, context, model, name) -> Markup:
+    amount = get_domains_credit(model)
+    digital_remaining = amount.digital.remaining if amount and amount.digital else "Pas de plafond"
+    return Markup("<span>{digital_remaining}&nbsp;&euro;</span>").format(digital_remaining=digital_remaining)
 
 
 class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView):
@@ -108,6 +133,49 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         "deposit_version",
         "actions",
     ]
+    column_details_list = [
+        "total_initial",
+        "total_remaining",
+        "digital_remaining",
+        "physical_remaining",
+        "validationToken",
+        "activity",
+        "address",
+        "city",
+        "civility",
+        "culturalSurveyFilledDate",
+        "culturalSurveyId",
+        "dateCreated",
+        "dateOfBirth",
+        "departementCode",
+        "email",
+        "externalIds",
+        "extraData",
+        "firstName",
+        "hasCompletedIdCheck",
+        "hasSeenTutorials",
+        "hasSeenProTutorials",
+        "idPieceNumber",
+        "ineHash",
+        "isActive",
+        "isAdmin",
+        "isBeneficiary",
+        "isEmailValidated",
+        "lastConnectionDate",
+        "lastName",
+        "needsToFillCulturalSurvey",
+        "notificationSubscriptions",
+        "password",
+        "phoneNumber",
+        "phoneValidationStatus",
+        "postalCode",
+        "publicName",
+        "recreditAmountToShow",
+        "roles",
+        "subscriptionState",
+        "suspensionReason",
+    ]
+
     column_labels = dict(
         email="Email",
         isActive="Est activé",
@@ -122,10 +190,15 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         postalCode="Code postal",
         isEmailValidated="Email validé ?",
         has_active_deposit="Dépôt valable ?",
+        total_remaining="Crédit global restant",
+        total_initial="Crédit global disponible",
+        digital_remaining="Crédit digital restant",
+        physical_remaining="Crédit physique restant",
         deposit_type="Type du portefeuille",
         deposit_version="Version du portefeuille",
         needsToFillCulturalSurvey="Doit remplir le questionnaire de pratiques culturelles",
     )
+
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters = [
         "postalCode",
@@ -141,6 +214,11 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
     def column_formatters(self):
         formatters = super().column_formatters
         formatters["deposit_type"] = beneficiary_deposit_type_formatter
+        formatters["total_initial"] = beneficiary_total_amount_initial_formatter
+        formatters["total_remaining"] = beneficiary_total_amount_remaining_formatter
+        formatters["digital_remaining"] = beneficiary_digital_remaining_formatter
+        formatters["physical_remaining"] = beneficiary_physical_remaining_formatter
+
         return formatters
 
     @property
