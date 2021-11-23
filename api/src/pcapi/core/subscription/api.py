@@ -82,7 +82,7 @@ def activate_beneficiary(
     else:
         eligibility = users_models.EligibilityType.AGE18
 
-    if not user.can_upgrade_beneficiary_role:
+    if not user.is_eligible_for_beneficiary_upgrade:
         raise exceptions.CannotUpgradeBeneficiaryRole()
 
     if eligibility == users_models.EligibilityType.UNDERAGE:
@@ -201,7 +201,7 @@ def get_next_subscription_step(user: users_models.User) -> Optional[models.Subsc
     if not user.isEmailValidated:
         return models.SubscriptionStep.EMAIL_VALIDATION
 
-    if not user.can_upgrade_beneficiary_role():
+    if not user.is_eligible_for_beneficiary_upgrade():
         return None
 
     if (
