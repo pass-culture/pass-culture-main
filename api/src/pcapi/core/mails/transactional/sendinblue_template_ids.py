@@ -32,4 +32,4 @@ class TransactionalEmail(Enum):
 @dataclasses.dataclass
 class SendinblueTransactionalEmailData:
     template: Template
-    params: dict
+    params: dict = dataclasses.field(default_factory=dict)

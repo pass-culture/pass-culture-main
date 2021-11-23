@@ -14,7 +14,6 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
     to = [{"email": email} for email in payload.recipients]
     sender = {"email": settings.SUPPORT_EMAIL_ADDRESS, "name": "pass Culture"}
     template_id = payload.template_id
-    params = payload.params
     tags = payload.tags
 
     configuration = sib_api_v3_sdk.Configuration()
@@ -22,8 +21,10 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> bool:
     api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
 
     send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-        to=to, sender=sender, reply_to=sender, template_id=template_id, params=params, tags=tags
+        to=to, sender=sender, reply_to=sender, template_id=template_id, tags=tags
     )
+    if payload.params:  # params cannot be an empty dict in the API
+        send_smtp_email.params = payload.params
 
     try:
         api_instance.send_transac_email(send_smtp_email)

@@ -26,8 +26,7 @@ def get_duplicate_beneficiary_pre_subscription_rejected_data() -> Union[dict, Se
         }
 
     return SendinblueTransactionalEmailData(
-        template=TransactionalEmail.EMAIL_DUPLICATE_BENEFICIARY_PRE_SUBCRIPTION_REJECTED.value,
-        params={},
+        template=TransactionalEmail.EMAIL_DUPLICATE_BENEFICIARY_PRE_SUBCRIPTION_REJECTED.value
     )
 
 
