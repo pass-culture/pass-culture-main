@@ -497,9 +497,8 @@ class User(PcObject, Model, NeedsValidationMixin):
         if not eligibility:
             eligibility = self.eligibility
 
-        return bool(eligibility) and (
-            (eligibility == EligibilityType.UNDERAGE and not self.is_beneficiary)
-            or (eligibility == EligibilityType.AGE18 and not self.has_beneficiary_role)
+        return (eligibility == EligibilityType.UNDERAGE and not self.has_underage_beneficiary_role) or (
+            eligibility == EligibilityType.AGE18 and not self.has_beneficiary_role
         )
 
 
