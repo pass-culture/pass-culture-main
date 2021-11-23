@@ -10,6 +10,7 @@ from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core.bookings.repository import get_active_bookings_quantity_for_offerer
 from pcapi.core.bookings.repository import get_validated_bookings_quantity_for_offerer
+from pcapi.core.finance.repository import get_business_unit_for_offerer_id
 from pcapi.core.offerers import api
 from pcapi.core.offerers.exceptions import ApiKeyCountMaxReached
 from pcapi.core.offerers.exceptions import ApiKeyDeletionDenied
@@ -23,6 +24,7 @@ from pcapi.models import ApiErrors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict
+from pcapi.routes.serialization.finance_serialize import ListBankInformationsResponseModel
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
 from pcapi.routes.serialization.offerers_serialize import GenerateOffererApiKeyResponse
 from pcapi.routes.serialization.offerers_serialize import GetOffererNameResponseModel
@@ -189,3 +191,13 @@ def can_offerer_create_educational_offer(humanized_offerer_id: str):
     except AdageException:
         logger.info("Api call failed", extra={"offerer_id": humanized_offerer_id})
         raise ApiErrors({"adage_api": "error"}, 500)
+
+
+@private_api.route("/offerers/<offerer_id>/business_unit_list", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=ListBankInformationsResponseModel)
+def get_offerer_business_unit_list(offerer_id: str) -> ListBankInformationsResponseModel:
+    check_user_has_access_to_offerer(current_user, offerer_id)
+
+    business_units = get_business_unit_for_offerer_id(offerer_id)
+    return ListBankInformationsResponseModel(__root__=business_units)
