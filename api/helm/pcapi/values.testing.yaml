@@ -185,10 +185,13 @@ signinApi:
     enabled: true
     annotations:
       kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/limit-rpm: "10"
+      nginx.ingress.kubernetes.io/limit-burst-multiplier: "1"
       nginx.ingress.kubernetes.io/use-regex: "true"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
       nginx.ingress.kubernetes.io/proxy-body-size: 10m
       nginx.ingress.kubernetes.io/configuration-snippet: |
+        limit_req_status 429;
         more_set_headers -s 503 'Access-Control-Allow-Headers: AppName,AppVersion,X-Request-ID,Content-Type';
         more_set_headers -s 503 'Access-Control-Allow-Origin: $http_origin';
         more_set_headers -s 503 'Access-Control-Allow-Credentials: true';
