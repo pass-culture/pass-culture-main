@@ -794,7 +794,7 @@ def get_id_check_validation_step(user: User) -> Optional[BeneficiaryValidationSt
 
 
 def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryValidationStep]:
-    if not user.can_upgrade_beneficiary_role():
+    if not user.is_eligible_for_beneficiary_upgrade():
         return None
 
     if user.eligibility == EligibilityType.AGE18:

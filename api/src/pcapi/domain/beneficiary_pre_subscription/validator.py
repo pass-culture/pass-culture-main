@@ -110,7 +110,7 @@ def validate(
         _check_email_is_not_taken(beneficiary_pre_subscription)
     else:
         if (
-            not preexisting_account.can_upgrade_beneficiary_role(eligibility)
+            not preexisting_account.is_eligible_for_beneficiary_upgrade(eligibility)
             or not preexisting_account.isEmailValidated
         ):
             raise BeneficiaryIsADuplicate(f"Email {beneficiary_pre_subscription.email} is already taken.")

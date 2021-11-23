@@ -493,7 +493,7 @@ class User(PcObject, Model, NeedsValidationMixin):
     def has_underage_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
 
-    def can_upgrade_beneficiary_role(self, eligibility: Optional[EligibilityType] = None) -> bool:
+    def is_eligible_for_beneficiary_upgrade(self, eligibility: Optional[EligibilityType] = None) -> bool:
         if not eligibility:
             eligibility = self.eligibility
 

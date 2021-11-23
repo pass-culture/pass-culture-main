@@ -310,7 +310,7 @@ def _check_user_has_no_active_deposit(
 def _check_user_not_already_beneficiary(
     user: user_models.User, eligibility: user_models.EligibilityType
 ) -> models.FraudItem:
-    if not user.can_upgrade_beneficiary_role(eligibility):
+    if not user.is_eligible_for_beneficiary_upgrade(eligibility):
         return models.FraudItem(
             status=models.FraudStatus.KO,
             detail=(f"L’utilisateur est déjà bénéfiaire du pass {eligibility.name}"),
