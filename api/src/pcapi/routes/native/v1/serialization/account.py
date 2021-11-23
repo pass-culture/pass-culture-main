@@ -282,6 +282,10 @@ class ValidateEmailRequest(BaseModel):
     token: str
 
 
+class UpdateEmailTokenExpiration(BaseModel):
+    expiration: Optional[datetime.datetime]
+
+
 class BeneficiaryInformationUpdateRequest(BaseModel):
     activity: ActivityEnum
     address: Optional[str]
