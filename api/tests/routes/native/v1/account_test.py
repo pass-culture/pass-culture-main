@@ -233,17 +233,13 @@ class AccountTest:
         me_response = test_client.get("/native/v1/me")
         assert me_response.json["hasCompletedIdCheck"]
 
-    @pytest.mark.parametrize(
-        "client_version,extra_step", [("1.154.9", "id-check"), ("1.160.0", "beneficiary-information")]
-    )
-    def test_next_beneficiary_validation_step(self, client_version, extra_step, client):
+    def test_next_beneficiary_validation_step(self, client, app):
         user = users_factories.UserFactory(
             email=self.identifier, dateOfBirth=datetime.now() - relativedelta(years=18, days=5)
         )
         client.with_token(user.email)
-        headers = {"app-version": client_version}
 
-        response = client.get("/native/v1/me", headers=headers)
+        response = client.get("/native/v1/me")
 
         assert response.json["nextBeneficiaryValidationStep"] == "phone-validation"
         assert response.status_code == 200
@@ -258,7 +254,7 @@ class AccountTest:
             ),
         )
 
-        response = client.get("/native/v1/me", headers=headers)
+        response = client.get("/native/v1/me")
 
         assert response.status_code == 200
         assert response.json["nextBeneficiaryValidationStep"] == "id-check"
@@ -267,16 +263,15 @@ class AccountTest:
         user.extraData["is_identity_document_uploaded"] = True
         repository.save(user)
 
-        response = client.get("/native/v1/me", headers=headers)
+        response = client.get("/native/v1/me")
 
         assert response.status_code == 200
-        assert response.json["nextBeneficiaryValidationStep"] == extra_step
-        print(headers, extra_step)
+        assert response.json["nextBeneficiaryValidationStep"] == "beneficiary-information"
 
         # Perform final step
         user.add_beneficiary_role()
 
-        response = client.get("/native/v1/me", headers=headers)
+        response = client.get("/native/v1/me")
 
         assert response.status_code == 200
         assert not response.json["nextBeneficiaryValidationStep"]
