@@ -8,7 +8,6 @@ from typing import Optional
 from pcapi import settings
 from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
-from pcapi.connectors.api_adage import get_adage_offerer
 from pcapi.core import object_storage
 from pcapi.core import search
 from pcapi.core.mails import MailServiceException
@@ -276,9 +275,11 @@ def save_venue_banner(user: User, venue: Venue, content: bytes, content_type: st
 
 
 def can_offerer_create_educational_offer(offerer_id: str) -> bool:
+    import pcapi.core.educational.adage_backends as adage_client
+
     siren = find_siren_by_offerer_id(offerer_id)
     try:
-        response = get_adage_offerer(siren)
+        response = adage_client.get_adage_offerer(siren)
         if len(response) == 0:
             raise CulturalPartnerNotFoundException("No venue has been found for the selected siren")
     except (CulturalPartnerNotFoundException, AdageException) as exception:

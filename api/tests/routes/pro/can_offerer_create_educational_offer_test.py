@@ -11,6 +11,7 @@ from tests.conftest import TestClient
 
 @override_settings(ADAGE_API_URL="https://adage-api-url")
 @override_settings(ADAGE_API_KEY="adage-api-key")
+@override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
 @pytest.mark.usefixtures("db_session")
 class CanOffererCreateEducationalOfferTest:
     def test_offerer_can_create_educational_offer(self, app):
