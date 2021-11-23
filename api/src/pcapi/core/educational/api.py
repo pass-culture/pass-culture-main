@@ -13,7 +13,7 @@ from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
-import pcapi.core.educational.adage_backends as adage_notifier
+import pcapi.core.educational.adage_backends as adage_client
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalDeposit
@@ -104,7 +104,7 @@ def book_educational_offer(redactor_informations: RedactorInformation, stock_id:
     search.async_index_offer_ids([stock.offerId])
 
     try:
-        adage_notifier.notify_prebooking(data=serialize_educational_booking(booking.educationalBooking))
+        adage_client.notify_prebooking(data=serialize_educational_booking(booking.educationalBooking))
     except AdageException as adage_error:
         logger.error(
             "%s Educational institution will not receive a confirmation email.",
