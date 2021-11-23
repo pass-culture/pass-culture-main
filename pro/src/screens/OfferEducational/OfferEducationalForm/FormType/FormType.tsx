@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { IOfferEducationalFormValues } from 'core/OfferEducational'
 import { Category, SubCategory } from 'custom_types/categories'
 import FormLayout from 'new_components/FormLayout'
 import { Select, TextArea, TextInput } from 'ui-kit'
@@ -18,7 +19,7 @@ import { buildOptions } from './utils/buildOptions'
 interface IFormTypeProps {
   categories: Category[]
   subCategories: SubCategory[]
-  values: OfferEducationalFormValues
+  values: IOfferEducationalFormValues
   setFieldValue: (name: string, value: unknown) => void
 }
 

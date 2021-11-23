@@ -3,6 +3,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
+import {
+  INITIAL_EDUCATIONAL_FORM_VALUES,
+  IOfferEducationalFormValues,
+} from 'core/OfferEducational'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { categoriesAndSubCategoriesSelector } from 'store/offers/selectors'
 import { loadCategories } from 'store/offers/thunks'
@@ -18,37 +22,21 @@ const OfferEducationalCreation = (): JSX.Element => {
   const { categories, subCategories } = useSelector(
     categoriesAndSubCategoriesSelector
   )
-
-  const initialValues: OfferEducationalFormValues = {
-    category: '',
-    subCategory: '',
-    title: '',
-    description: '',
-    duration: 0,
-    offererId: '',
-    venueId: '',
-    offererVenueId: '',
-    participants: [],
-    accessibility: '',
-    phone: '',
-    email: '',
-    notifications: false,
-    notificationEmail: '',
-  }
-
   const { structure, lieu } = queryParamsFromOfferer(location)
 
-  if (structure !== null && structure !== '') {
-    initialValues.offererId = structure
-  }
-  if (lieu !== null && lieu !== '') {
-    initialValues.venueId = lieu
+  const initialValues: IOfferEducationalFormValues = {
+    ...INITIAL_EDUCATIONAL_FORM_VALUES,
+    offererId: structure
+      ? structure
+      : INITIAL_EDUCATIONAL_FORM_VALUES.offererId,
+    venueId: lieu ? lieu : INITIAL_EDUCATIONAL_FORM_VALUES.venueId,
   }
 
   const educationalCategories = getEducationalCategories(
     categories,
     subCategories
   )
+
   const educationalSubcategories = getEducationalSubCategories(subCategories)
 
   useEffect(() => {
@@ -60,7 +48,7 @@ const OfferEducationalCreation = (): JSX.Element => {
       educationalCategories={educationalCategories}
       educationalSubcategories={educationalSubcategories}
       initialValues={initialValues}
-      onSubmit={(values: OfferEducationalFormValues) => {
+      onSubmit={(values: IOfferEducationalFormValues) => {
         console.log(JSON.stringify(values, null, 2))
       }}
     />

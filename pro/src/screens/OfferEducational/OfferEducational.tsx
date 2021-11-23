@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 
 import Banner from 'components/layout/Banner/Banner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
+import { IOfferEducationalFormValues } from 'core/OfferEducational'
 import { Category, SubCategory } from 'custom_types/categories'
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
@@ -23,8 +24,8 @@ import {
 export interface IOfferEducationalProps {
   educationalCategories: Category[]
   educationalSubcategories: SubCategory[]
-  initialValues: OfferEducationalFormValues
-  onSubmit(values: OfferEducationalFormValues): void
+  initialValues: IOfferEducationalFormValues
+  onSubmit(values: IOfferEducationalFormValues): void
 }
 
 const OfferEducational = ({
