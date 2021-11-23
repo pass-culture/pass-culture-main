@@ -1,4 +1,4 @@
-interface OfferEducationalFormValues {
+export interface IOfferEducationalFormValues {
   category: string
   subCategory: string
   title: string
