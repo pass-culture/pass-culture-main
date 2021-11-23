@@ -21,7 +21,7 @@ class StartIdentificationTest:
             face_required=True,
         )
 
-        assert isinstance(response, fraud_models.UbbleIdentificationResponse)
+        assert isinstance(response, fraud_models.UbbleContent)
         assert ubble_mock.call_count == 1
 
         attributes = ubble_mock.last_request.json()["data"]["attributes"]
@@ -33,7 +33,7 @@ class StartIdentificationTest:
         assert attributes["reference-data"]["last-name"] == "nom"
         assert attributes["webhook"] == "http://webhook/url/"
         assert attributes["redirect_url"] == "http://redirect/url"
-        assert attributes["face_required"] == True
+        assert attributes["face_required"] is True
 
     def test_start_identification_connection_error(self, ubble_mock_connection_error):
         with pytest.raises(exceptions.IdentificationServiceUnavailable):

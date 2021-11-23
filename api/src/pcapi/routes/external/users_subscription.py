@@ -97,5 +97,19 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
 
 
 @public_api.route("/webhooks/ubble/application_status", methods=["POST"])
-def ubble_webhook_update_application_status(form: ubble_validation.WebhookRequest) -> None:
-    raise NotImplementedError
+@ubble_validation.require_ubble_signature
+@spectree_serialize(
+    headers=ubble_validation.WebhookRequestHeaders,
+    on_success_status=200,
+    response_model=ubble_validation.WebhookDummyReponse,
+)
+def ubble_webhook_update_application_status(
+    body: ubble_validation.WebhookRequest,
+) -> ubble_validation.WebhookDummyReponse:
+    fraud_check = fraud_api.get_ubble_fraud_check(body.identification_id)
+    if not fraud_check:
+        raise ValueError(f"no Ubble fraud check found with identification_id {body.identification_id}")
+
+    subscription_api.update_ubble_workflow(fraud_check, body.status)
+
+    return ubble_validation.WebhookDummyReponse()

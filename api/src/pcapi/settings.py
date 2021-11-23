@@ -233,6 +233,7 @@ ID_CHECK_MIDDLEWARE_TOKEN = os.environ.get("ID_CHECK_MIDDLEWARE_TOKEN", "")
 UBBLE_API_URL = os.environ.get("UBBLE_API_URL", "https://api.ubble.ai")
 UBBLE_CLIENT_ID = os.environ.get("UBBLE_CLIENT_ID")
 UBBLE_CLIENT_SECRET = os.environ.get("UBBLE_CLIENT_SECRET")
+UBBLE_WEBHOOK_SECRET = os.environ.get("UBBLE_WEBHOOK_SECRET")
 
 # Test users on staging
 STAGING_TEST_USER_PASSWORD = os.environ.get("STAGING_TEST_USER_PASSWORD", "")
