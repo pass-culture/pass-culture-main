@@ -2,6 +2,7 @@ from datetime import datetime
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
 from freezegun import freeze_time
 import pytest
@@ -9,6 +10,7 @@ import pytest
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import BeneficiaryImport
@@ -187,3 +189,91 @@ class UbbleWorkflowTest:
 
         ubble_request = ubble_mock.last_request.json()
         assert ubble_request["data"]["attributes"]["webhook"] == "http://localhost/webhooks/ubble/application_status"
+
+
+@pytest.mark.usefixtures("db_session")
+class NextSubscriptionStepTest:
+    eighteen_years_ago = datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=1)
+    fiveteen_years_ago = datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=15, months=1)
+
+    def test_next_subscription_step_beneficiary(self):
+        user = users_factories.BeneficiaryGrant18Factory()
+        assert subscription_api.get_next_subscription_step(user) == None
+
+    def test_next_subscription_step_phone_validation(self):
+        user = users_factories.UserFactory(dateOfBirth=self.eighteen_years_ago)
+        assert (
+            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PHONE_VALIDATION
+        )
+
+    def test_next_subscription_step_underage(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.fiveteen_years_ago,
+            address=None,
+        )
+        assert (
+            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
+        )
+
+    def test_next_subscription_step_user_profiling(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.eighteen_years_ago,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            address=None,
+        )
+        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.USER_PROFILING
+
+    def test_next_subscription_step_user_profiling_ko(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.eighteen_years_ago,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            address=None,
+        )
+        content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="high")
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
+        )
+
+        assert subscription_api.get_next_subscription_step(user) == None
+
+    def test_next_subscription_step_profile_completion(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.eighteen_years_ago,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            address=None,
+        )
+        content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
+        )
+
+        assert (
+            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
+        )
+
+    def test_next_subscription_step_identity_check(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.eighteen_years_ago,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            address="3 rue du quai",
+        )
+        content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
+        )
+
+        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.IDENTITY_CHECK
+
+    def test_next_subscription_step_finished(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.eighteen_years_ago,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            address="3 rue du quai",
+            hasCompletedIdCheck=True,
+        )
+        content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
+        )
+
+        assert subscription_api.get_next_subscription_step(user) == None
