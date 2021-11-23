@@ -1,8 +1,12 @@
+from pcapi.core.fraud import models as fraud_models
+
+
 UBBLE_IDENTIFICATION_RESPONSE = {
     "data": {
         "type": "identifications",
         "id": "3191295",
         "attributes": {
+            "score": fraud_models.UbbleScore.INVALID.value,
             "anonymized-at": None,
             "comment": None,
             "created-at": "2021-11-18T18:59:59.273402Z",
@@ -41,6 +45,53 @@ UBBLE_IDENTIFICATION_RESPONSE = {
             "type": "reference-data",
             "id": "119617",
             "attributes": {"last-name": "LastName", "first-name": "FirstName", "birth-date": "2003-10-18"},
+        },
+        {
+            "type": "document-checks",
+            "id": "4997875",
+            "attributes": {
+                "data-extracted-score": fraud_models.UbbleScore.INVALID.value,
+                "expiry-date-score": fraud_models.UbbleScore.INVALID.value,
+                "issue-date-score": None,
+                "live-video-capture-score": None,
+                "mrz-validity-score": fraud_models.UbbleScore.INVALID.value,
+                "mrz-viz-score": fraud_models.UbbleScore.INVALID.value,
+                "ove-back-score": fraud_models.UbbleScore.INVALID.value,
+                "ove-front-score": fraud_models.UbbleScore.INVALID.value,
+                "ove-score": fraud_models.UbbleScore.INVALID.value,
+                "quality-score": fraud_models.UbbleScore.INVALID.value,
+                "score": fraud_models.UbbleScore.INVALID.value,
+                "supported": fraud_models.UbbleScore.INVALID.value,
+                "visual-back-score": fraud_models.UbbleScore.INVALID.value,
+                "visual-front-score": fraud_models.UbbleScore.INVALID.value,
+            },
+            "relationships": {},
+        },
+        {
+            "type": "documents",
+            "id": "4998439",
+            "attributes": {
+                "birth-date": "2003-10-18",
+                "birth-place": None,
+                "document-number": "777777777777",
+                "document-type": "ID",
+                "document-type-detailed": None,
+                "expiry-date": "2031-09-07",
+                "first-name": "FirstName",
+                "gender": "M",
+                "issue-date": None,
+                "issue-place": None,
+                "issuing-state-code": "FRA",
+                "last-name": "LastName",
+                "married-name": None,
+                "media-type": "video",
+                "mrz": "MRZ",
+                "nationality": None,
+                "obtaining-date": None,
+                "personal-number": None,
+                "remarks": None,
+            },
+            "relationships": {},
         },
     ],
 }

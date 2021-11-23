@@ -183,7 +183,7 @@ def _send_beneficiary_activation_email(user: users_models.User, has_activated_ac
 
 
 def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
-    response = ubble.start_identification(
+    content = ubble.start_identification(
         user_id=user.id,
         phone_number=user.phoneNumber,
         birth_date=user.dateOfBirth.date(),
@@ -193,8 +193,27 @@ def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
         redirect_url=redirect_url,
         face_required=True,  # TODO(bcalvez): setting ? hardcode ?
     )
-    fraud_api.start_ubble_fraud_check(user, response)
-    return response.identification_url
+    fraud_api.start_ubble_fraud_check(user, content)
+    return content.identification_url
+
+
+def update_ubble_workflow(
+    fraud_check: fraud_models.BeneficiaryFraudCheck, status: fraud_models.IdentificationStatus
+) -> fraud_models.BeneficiaryFraudCheck:
+    content = ubble.get_content(fraud_check.thirdPartyId)
+    fraud_check.resultContent = content
+    pcapi_repository.repository.save(fraud_check)
+
+    user = fraud_check.user
+
+    if status == fraud_models.IdentificationStatus.PROCESSING:
+        user.hasCompletedIdCheck = True
+        pcapi_repository.repository.save(user)
+
+    elif status == fraud_models.IdentificationStatus.PROCESSED:
+        fraud_api.on_ubble_result(fraud_check)
+
+    return fraud_check
 
 
 # pylint: disable=too-many-return-statements

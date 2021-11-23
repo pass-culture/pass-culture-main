@@ -1,6 +1,8 @@
+import contextlib
 from functools import wraps
 from pathlib import Path
 from pprint import pprint
+import typing
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -13,6 +15,7 @@ import pytest
 from requests import Response
 from requests.auth import _basic_auth_str
 from requests.exceptions import ConnectionError as RequestConnectionError
+import requests_mock
 
 from pcapi import settings
 import pcapi.core.educational.testing as adage_api_testing
@@ -146,7 +149,7 @@ def client_fixture(app: Flask):
 
 
 @pytest.fixture(name="ubble_mock")
-def ubble_mock(requests_mock):
+def ubble_mock(requests_mock):  # pylint: disable=redefined-outer-name
     """
     Mocks all Ubble requests calls to ease test
     Returns a configured requests mock matcher
@@ -171,7 +174,7 @@ def ubble_mock(requests_mock):
 
 
 @pytest.fixture(name="ubble_mock_connection_error")
-def ubble_mock_connection_error(requests_mock):
+def ubble_mock_connection_error(requests_mock):  # pylint: disable=redefined-outer-name
     """
     Mocks Ubble request which returns ConnectionError (ex Max retries exceeded, Timeout)
     """
@@ -189,7 +192,7 @@ def ubble_mock_connection_error(requests_mock):
 
 
 @pytest.fixture(name="ubble_mock_http_error_status")
-def ubble_mock_http_error_status(requests_mock):
+def ubble_mock_http_error_status(requests_mock):  # pylint: disable=redefined-outer-name
     """
     Mocks Ubble request which returns ConnectionError (ex Max retries exceeded, Timeout)
     """
@@ -206,6 +209,18 @@ def ubble_mock_http_error_status(requests_mock):
             status_code=401,
         )
         yield request_matcher
+
+
+@pytest.fixture
+def ubble_mocker() -> typing.Callable:
+    @contextlib.contextmanager
+    def ubble_mock(identification_id: str, response: str, method="get") -> None:  # pylint: disable=redefined-outer-name
+        url = f"{settings.UBBLE_API_URL}/identifications/{identification_id}/"
+        with requests_mock.Mocker() as m:
+            getattr(m, method)(url, text=response)
+            yield
+
+    return ubble_mock
 
 
 @pytest.fixture(name="cloud_task_client")
@@ -261,9 +276,21 @@ class TestClient:
         self._print_spec("GET", route, None, result)
         return result
 
-    def post(self, route: str, json: dict = None, form: dict = None, files: dict = None, headers: dict = None):
+    def post(
+        self,
+        route: str,
+        json: dict = None,
+        raw_json: str = None,
+        form: dict = None,
+        files: dict = None,
+        headers: dict = None,
+    ):
         headers = headers or {}
-        if form or files:
+        if raw_json:
+            result = self.client.post(
+                route, data=raw_json, content_type="application/json", headers={**self.auth_header, **headers}
+            )
+        elif form or files:
             result = self.client.post(route, data=form if form else files, headers={**self.auth_header, **headers})
         else:
             result = self.client.post(route, json=json, headers={**self.auth_header, **headers})

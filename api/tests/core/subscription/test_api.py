@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -18,6 +19,10 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.scripts.beneficiary.remote_import import process_beneficiary_application
+
+from tests.core.subscription.test_factories import IdentificationState
+from tests.core.subscription.test_factories import UbbleIdentificationResponseFactory
+from tests.test_utils import json_default
 
 
 @pytest.mark.usefixtures("db_session")
@@ -205,6 +210,33 @@ class UbbleWorkflowTest:
 
         ubble_request = ubble_mock.last_request.json()
         assert ubble_request["data"]["attributes"]["webhook"] == "http://localhost/webhooks/ubble/application_status"
+
+    @pytest.mark.parametrize(
+        "state, status",
+        [
+            (IdentificationState.INITIATED, fraud_models.IdentificationStatus.INITIATED),
+            (IdentificationState.PROCESSING, fraud_models.IdentificationStatus.PROCESSING),
+            (IdentificationState.VALID, fraud_models.IdentificationStatus.PROCESSED),
+            (IdentificationState.INVALID, fraud_models.IdentificationStatus.PROCESSED),
+            (IdentificationState.UNPROCESSABLE, fraud_models.IdentificationStatus.PROCESSED),
+            (IdentificationState.ABORTED, fraud_models.IdentificationStatus.ABORTED),
+        ],
+    )
+    def test_update_ubble_workflow(self, ubble_mocker, state, status):
+        user = users_factories.UserFactory()
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_models.FraudCheckType.UBBLE, user=user)
+        ubble_response = UbbleIdentificationResponseFactory(identification_state=state)
+
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            updated_fraud_check = subscription_api.update_ubble_workflow(
+                fraud_check, ubble_response.data.attributes.status
+            )
+
+        ubble_content = updated_fraud_check.resultContent
+        assert ubble_content["status"] == status.value
 
 
 @pytest.mark.usefixtures("db_session")
