@@ -209,29 +209,17 @@ class AccountTest:
         me_response = test_client.get("/native/v1/me")
         assert me_response.json["recreditAmountToShow"] == 3000
 
-    def test_has_completed_id_check(self, app):
+    def test_has_completed_id_check(self, client):
         user = users_factories.UserFactory(email=self.identifier)
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        client.with_token(self.identifier)
 
-        response = test_client.post("/native/v1/account/has_completed_id_check")
+        response = client.post("/native/v1/account/has_completed_id_check")
 
         assert response.status_code == 204
 
         db.session.refresh(user)
-        assert user.hasCompletedIdCheck
-
-        # One call should be sent to batch, and one to sendinblue
-        assert len(push_testing.requests) == 1
-        assert len(users_testing.sendinblue_requests) == 1
-
-        sendinblue_data = users_testing.sendinblue_requests[0]
-        assert sendinblue_data["attributes"]["HAS_COMPLETED_ID_CHECK"]
-
-        me_response = test_client.get("/native/v1/me")
-        assert me_response.json["hasCompletedIdCheck"]
+        assert not user.hasCompletedIdCheck
 
     def test_next_beneficiary_validation_step(self, client, app):
         user = users_factories.UserFactory(
