@@ -2,9 +2,9 @@ from datetime import date
 from datetime import datetime
 import random
 import string
+import uuid
 
 from dateutil.relativedelta import relativedelta
-import factory
 from factory.declarations import LazyAttribute
 import factory.fuzzy
 
@@ -108,38 +108,23 @@ class DMSContentFactory(factory.Factory):
     registration_datetime = datetime.utcnow()
 
 
-class UbbleIdentificationResponseFactory(factory.Factory):
+class UbbleContentFactory(factory.Factory):
     class Meta:
-        model = models.UbbleIdentificationResponse
-        rename = {
-            "created_at": "created-at",
-            "ended_at": "ended-at",
-            "identification_id": "identification-id",
-            "identification_url": "identification-url",
-            "number_of_attempts": "number-of-attempts",
-            "redirect_url": "redirect-url",
-            "started_at": "started-at",
-            "updated_at": "updated-at",
-            "status_updated_at": "status-updated-at",
-            "user_agent": "user-agent",
-            "user_ip_address": "user-ip-address",
-        }
+        model = models.UbbleContent
 
-    comment = factory.Faker("sentence", nb_words=3)
-    created_at = factory.Faker("date_time")
-    ended_at = factory.Faker("date_time")
-    identification_id = factory.Faker("pystr")
-    identification_url = factory.Faker("url")
-    number_of_attempts = factory.Faker("pyint")
-    redirect_url = factory.Faker("url")
-    score = factory.Faker("pyfloat")
-    started_at = factory.Faker("date_time")
-    status = factory.Faker("pystr")  # swith to enum
-    updated_at = factory.Faker("date_time")
-    status_updated_at = factory.Faker("date_time")
-    user_agent = factory.Faker("user_agent")
-    user_ip_address = factory.Faker("ipv4")
-    webhook = factory.Faker("url")
+    status = None
+    birth_date = None
+    first_name = None
+    last_name = None
+    document_type = None
+    id_document_number = None
+    score = None
+    comment = None
+    expiry_date_score = None
+    supported = None
+    identification_id = None
+    identification_url = None
+    registration_datetime = None
 
 
 class EduconnectContentFactory(factory.Factory):
@@ -161,7 +146,7 @@ FRAUD_CHECK_TYPE_MODEL_ASSOCIATION = {
     models.FraudCheckType.DMS: DMSContentFactory,
     models.FraudCheckType.JOUVE: JouveContentFactory,
     models.FraudCheckType.USER_PROFILING: UserProfilingFraudDataFactory,
-    models.FraudCheckType.UBBLE: UbbleIdentificationResponseFactory,
+    models.FraudCheckType.UBBLE: UbbleContentFactory,
     models.FraudCheckType.EDUCONNECT: EduconnectContentFactory,
 }
 
@@ -172,7 +157,7 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
 
     user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
     type = models.FraudCheckType.JOUVE
-    thirdPartyId = factory.Sequence("ThirdPartyIdentifier-{0}".format)
+    thirdPartyId = factory.LazyFunction(lambda: str(uuid.uuid4()))
     status = models.FraudCheckStatus.PENDING
 
     @classmethod

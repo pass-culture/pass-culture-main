@@ -132,7 +132,7 @@ def ratelimit_handler(error: Exception) -> tuple[dict, int]:
 
 
 @app.errorhandler(DatabaseError)
-def database_error_handler(error: DatabaseError) -> Response:
+def database_error_handler(error: DatabaseError) -> tuple[dict, int]:
     logger.error(
         "Database error %s with the following query.\n\n🚨🚨🚨🚨🚨 BEFORE COPYING THE QUERY MAKE SURE THERE IS NO SQL INJECTION 🚨🚨🚨🚨🚨🚨\n\n%s;",
         error.__class__.__name__,

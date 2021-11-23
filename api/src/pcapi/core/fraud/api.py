@@ -1,13 +1,15 @@
 import datetime
 import logging
 import re
-from typing import Optional
-from typing import Union
+import typing
 
 from dateutil.relativedelta import relativedelta
+import pydantic
 import sqlalchemy
 
 from pcapi.connectors.beneficiaries import jouve_backend
+from pcapi.core.fraud import exceptions
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.exceptions import BeneficiaryFraudResultCannotBeDowngraded
 from pcapi.core.users import constants
 from pcapi.core.users import models as user_models
@@ -16,7 +18,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
 
-from . import exceptions
 from . import models
 from . import repository as fraud_repository
 
@@ -77,6 +78,10 @@ def on_jouve_result(user: user_models.User, jouve_content: models.JouveContent) 
     on_identity_fraud_check_result(user, fraud_check)
 
 
+def on_ubble_result(fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
+    on_identity_fraud_check_result(fraud_check.user, fraud_check)
+
+
 def on_dms_fraud_check(
     user: user_models.User,
     dms_content: models.DMSContent,
@@ -96,7 +101,7 @@ def on_dms_fraud_check(
 
 def admin_update_identity_fraud_check_result(
     user: user_models.User, id_piece_number: str
-) -> Union[models.BeneficiaryFraudCheck, None]:
+) -> typing.Union[models.BeneficiaryFraudCheck, None]:
     fraud_check = (
         models.BeneficiaryFraudCheck.query.filter(
             models.BeneficiaryFraudCheck.userId == user.id,
@@ -129,7 +134,7 @@ def educonnect_fraud_checks(
 ) -> list[models.FraudItem]:
     educonnect_content = beneficiary_fraud_check.source_data()
     fraud_items = []
-    # TODO: factorise in on_identity_fraud_check_result for the 3 *_fraud_checks
+    # TODO: factorise in on_identity_fraud_check_result for the 4 *_fraud_checks
     fraud_items.append(
         _duplicate_user_fraud_item(
             first_name=educonnect_content.first_name,
@@ -153,7 +158,7 @@ def jouve_fraud_checks(
 
     fraud_items = []
     fraud_items.append(_check_user_phone_is_validated(user))
-    # TODO: factorise in on_identity_fraud_check_result for the 3 *_fraud_checks
+    # TODO: factorise in on_identity_fraud_check_result for the 4 *_fraud_checks
     fraud_items.append(
         _duplicate_user_fraud_item(
             first_name=jouve_content.firstName,
@@ -169,6 +174,44 @@ def jouve_fraud_checks(
     return fraud_items
 
 
+def _ubble_result_fraud_item(content: fraud_models.UbbleContent) -> fraud_models.FraudItem:
+    if content.score == fraud_models.UbbleScore.VALID.value:
+        return fraud_models.FraudItem(status=fraud_models.FraudStatus.OK, detail=f"Ubble score {content.score}")
+
+    return fraud_models.FraudItem(
+        status=fraud_models.FraudStatus.KO,
+        detail=f"Ubble score {content.score}: {content.comment}",
+        reason_code=(
+            fraud_models.FraudReasonCode.ID_CHECK_INVALID
+            if content.score == fraud_models.UbbleScore.INVALID.value
+            else fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
+        ),
+    )
+
+
+def ubble_fraud_checks(
+    user: user_models.User, beneficiary_fraud_check: models.BeneficiaryFraudCheck
+) -> list[models.FraudItem]:
+    content = fraud_models.UbbleContent(**beneficiary_fraud_check.resultContent)
+
+    fraud_items = [
+        _ubble_result_fraud_item(content),
+        # TODO: factorise in on_identity_fraud_check_result for the 4 *_fraud_checks
+        _duplicate_user_fraud_item(
+            first_name=content.first_name,
+            last_name=content.last_name,
+            birth_date=content.birth_date,
+            excluded_user_id=user.id,
+        ),
+        # TODO: décommenter cette ligne après avoir vérifié la regex qui vérifie
+        #  le format de numéro de pièce d'identité
+        # validate_id_piece_number_format_fraud_item(content.id_document_number),
+        _duplicate_id_piece_number_fraud_item(content.id_document_number),
+    ]
+
+    return fraud_items
+
+
 def dms_fraud_checks(
     user: user_models.User, beneficiary_fraud_check: models.BeneficiaryFraudCheck
 ) -> list[models.FraudItem]:
@@ -176,7 +219,7 @@ def dms_fraud_checks(
 
     fraud_items = []
     fraud_items.append(_check_user_phone_is_validated(user))
-    # TODO: factorise in on_identity_fraud_check_result for the 3 *_fraud_checks
+    # TODO: factorise in on_identity_fraud_check_result for the 4 *_fraud_checks
     fraud_items.append(
         _duplicate_user_fraud_item(
             first_name=dms_content.first_name,
@@ -189,7 +232,7 @@ def dms_fraud_checks(
     return fraud_items
 
 
-def start_ubble_fraud_check(user: user_models.User, ubble_content: models.UbbleIdentificationResponse) -> None:
+def start_ubble_fraud_check(user: user_models.User, ubble_content: models.UbbleContent) -> None:
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
         type=models.FraudCheckType.UBBLE,
@@ -200,15 +243,27 @@ def start_ubble_fraud_check(user: user_models.User, ubble_content: models.UbbleI
     db.session.commit()
 
 
+def get_ubble_fraud_check(identification_id: str) -> typing.Optional[models.BeneficiaryFraudCheck]:
+    fraud_check = (
+        models.BeneficiaryFraudCheck.query.filter(models.BeneficiaryFraudCheck.type == models.FraudCheckType.UBBLE)
+        .filter(models.BeneficiaryFraudCheck.thirdPartyId == identification_id)
+        .one_or_none()
+    )
+    return fraud_check
+
+
 def get_eligibility_type(
-    data: Union[models.EduconnectContent, models.JouveContent, models.DMSContent]
-) -> Optional[user_models.EligibilityType]:
+    data: typing.Union[models.EduconnectContent, models.JouveContent, models.DMSContent]
+) -> typing.Optional[user_models.EligibilityType]:
     if isinstance(data, models.EduconnectContent):
         registration_datetime = data.registration_datetime
         birth_date = data.birth_date
     elif isinstance(data, models.JouveContent):
         registration_datetime = data.registrationDate
         birth_date = data.birthDateTxt.date() if data.birthDateTxt else None
+    elif isinstance(data, models.UbbleContent):
+        registration_datetime = data.registration_datetime
+        birth_date = data.birth_date
     elif isinstance(data, models.DMSContent):
         registration_datetime = data.registration_datetime
         birth_date = data.birth_date
@@ -233,11 +288,15 @@ def on_identity_fraud_check_result(
     if beneficiary_fraud_check.type == models.FraudCheckType.JOUVE:
         fraud_items += jouve_fraud_checks(user, beneficiary_fraud_check)
 
+    elif beneficiary_fraud_check.type == models.FraudCheckType.UBBLE:
+        fraud_items += ubble_fraud_checks(user, beneficiary_fraud_check)
+
     elif beneficiary_fraud_check.type == models.FraudCheckType.DMS:
         fraud_items += dms_fraud_checks(user, beneficiary_fraud_check)
 
     elif beneficiary_fraud_check.type == models.FraudCheckType.EDUCONNECT:
         fraud_items += educonnect_fraud_checks(user, beneficiary_fraud_check)
+
     else:
         raise Exception("The fraud_check type is not known")
 
@@ -245,7 +304,7 @@ def on_identity_fraud_check_result(
     fraud_items.append(_check_user_email_is_validated(user))
     fraud_items.append(_check_user_not_already_beneficiary(user, eligibilityType))
 
-    fraud_result = validate_frauds(user, fraud_items, eligibilityType)
+    fraud_result = validate_frauds(user, fraud_items, beneficiary_fraud_check, eligibilityType)
     if (
         beneficiary_fraud_check.type == models.FraudCheckType.JOUVE
         and FeatureToggle.PAUSE_JOUVE_SUBSCRIPTION.is_active()
@@ -256,10 +315,12 @@ def on_identity_fraud_check_result(
     return fraud_result
 
 
-def validate_id_piece_number_format_fraud_item(id_piece_number) -> models.FraudItem:
+def validate_id_piece_number_format_fraud_item(id_piece_number: str) -> models.FraudItem:
     if not id_piece_number or not id_piece_number.strip():
         return models.FraudItem(
-            status=models.FraudStatus.SUSPICIOUS, detail="Le numéro de la pièce d'identité est vide"
+            status=models.FraudStatus.SUSPICIOUS,
+            detail="Le numéro de la pièce d'identité est vide",
+            reason_code=models.FraudReasonCode.EMPTY_ID_PIECE_NUMBER,
         )
 
     regexp = "|".join(
@@ -279,9 +340,11 @@ def validate_id_piece_number_format_fraud_item(id_piece_number) -> models.FraudI
         id_piece_number,
     ):
         return models.FraudItem(
-            status=models.FraudStatus.SUSPICIOUS, detail="Le format du numéro de la pièce d'identité n'est pas valide"
+            status=models.FraudStatus.SUSPICIOUS,
+            detail="Le format du numéro de la pièce d'identité n'est pas valide",
+            reason_code=models.FraudReasonCode.INVALID_ID_PIECE_NUMBER,
         )
-    return models.FraudItem(status=models.FraudStatus.OK, detail=None)
+    return models.FraudItem(status=models.FraudStatus.OK, detail="Le numéro de pièce d'identité est valide")
 
 
 def _duplicate_user_fraud_item(
@@ -297,7 +360,7 @@ def _duplicate_user_fraud_item(
 
     return models.FraudItem(
         status=models.FraudStatus.SUSPICIOUS if duplicate_user else models.FraudStatus.OK,
-        detail=f"Duplicat de l'utilisateur {duplicate_user.id}" if duplicate_user else None,
+        detail=f"Duplicat de l'utilisateur {duplicate_user.id}" if duplicate_user else "Utilisateur non dupliqué",
         reason_code=models.FraudReasonCode.DUPLICATE_USER if duplicate_user else None,
     )
 
@@ -308,7 +371,8 @@ def _duplicate_id_piece_number_fraud_item(document_id_number: str) -> models.Fra
         status=models.FraudStatus.SUSPICIOUS if duplicate_user else models.FraudStatus.OK,
         detail=f"Le n° de cni {document_id_number} est déjà pris par l'utilisateur {duplicate_user.id}"
         if duplicate_user
-        else None,
+        else "Le numéro de CNI n'est pas déjà utilisé",
+        reason_code=models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER if duplicate_user else None,
     )
 
 
@@ -316,7 +380,9 @@ def _duplicate_ine_hash_fraud_item(ine_hash: str) -> models.FraudItem:
     duplicate_user = user_models.User.query.filter(user_models.User.ineHash == ine_hash).first()
     return models.FraudItem(
         status=models.FraudStatus.SUSPICIOUS if duplicate_user else models.FraudStatus.OK,
-        detail=f"L'INE {ine_hash} est déjà pris par l'utilisateur {duplicate_user.id}" if duplicate_user else None,
+        detail=f"L'INE {ine_hash} est déjà pris par l'utilisateur {duplicate_user.id}"
+        if duplicate_user
+        else "L'INE est OK",
         reason_code=models.FraudReasonCode.DUPLICATE_INE if duplicate_user else None,
     )
 
@@ -327,7 +393,7 @@ def _whitelisted_ine_fraud_item(ine_hash: str) -> models.FraudItem:
     return models.FraudItem(
         # TODO: ask if it is considered as KO or SUSPICIOUS
         status=models.FraudStatus.OK if is_ine_whitelisted else models.FraudStatus.SUSPICIOUS,
-        detail=f"L'INE {ine_hash} n'est pas whitelisté" if not is_ine_whitelisted else None,
+        detail=f"L'INE {ine_hash} n'est pas whitelisté" if not is_ine_whitelisted else "L'INE est whitelisté",
         reason_code=models.FraudReasonCode.INE_NOT_WHITELISTED if not is_ine_whitelisted else None,
     )
 
@@ -342,8 +408,9 @@ def _check_user_has_no_active_deposit(
                 "L’utilisateur est déjà bénéfiaire, avec un portefeuille non expiré. "
                 f"Il ne peut pas prétendre au pass culture {'15-17 ans' if eligibility == user_models.EligibilityType.UNDERAGE else '18 ans'}"
             ),
+            reason_code=models.FraudReasonCode.ALREADY_HAS_ACTIVE_DEPOSIT,
         )
-    return models.FraudItem(status=models.FraudStatus.OK, detail=None)
+    return models.FraudItem(status=models.FraudStatus.OK, detail="L'utilisateur n'a pas déjà un deposit actif")
 
 
 def _check_user_not_already_beneficiary(
@@ -355,21 +422,27 @@ def _check_user_not_already_beneficiary(
             detail=(f"L’utilisateur est déjà bénéfiaire du pass {eligibility.name if eligibility is not None else ''}"),
             reason_code=models.FraudReasonCode.ALREADY_BENEFICIARY,
         )
-    return models.FraudItem(status=models.FraudStatus.OK, detail=None)
+    return models.FraudItem(status=models.FraudStatus.OK, detail="L'utilisateur n'est pas déjà bénéficaire")
 
 
 def _check_user_email_is_validated(user: user_models.User) -> models.FraudItem:
     if not user.isEmailValidated:
-        return models.FraudItem(status=models.FraudStatus.KO, detail="L'email de l'utilisateur n'est pas validé")
-    return models.FraudItem(status=models.FraudStatus.OK, detail=None)
+        return models.FraudItem(
+            status=models.FraudStatus.KO,
+            detail="L'email de l'utilisateur n'est pas validé",
+            reason_code=models.FraudReasonCode.EMAIL_NOT_VALIDATED,
+        )
+    return models.FraudItem(status=models.FraudStatus.OK, detail="L'email est validé")
 
 
 def _check_user_phone_is_validated(user: user_models.User) -> models.FraudItem:
     if FeatureToggle.FORCE_PHONE_VALIDATION.is_active() and not user.is_phone_validated:
         return models.FraudItem(
-            status=models.FraudStatus.KO, detail="Le n° de téléphone de l'utilisateur n'est pas validé"
+            status=models.FraudStatus.KO,
+            detail="Le n° de téléphone de l'utilisateur n'est pas validé",
+            reason_code=models.FraudReasonCode.PHONE_NOT_VALIDATED,
         )
-    return models.FraudItem(status=models.FraudStatus.OK, detail=None)
+    return models.FraudItem(status=models.FraudStatus.OK, detail="Le numéro de téléphone est validé")
 
 
 def _id_check_fraud_items(content: models.JouveContent) -> list[models.FraudItem]:
@@ -377,19 +450,47 @@ def _id_check_fraud_items(content: models.JouveContent) -> list[models.FraudItem
         return []
 
     fraud_items = []
-    fraud_items.append(_get_boolean_id_fraud_item(content.birthLocationCtrl, "birthLocationCtrl", False))
-    fraud_items.append(_get_boolean_id_fraud_item(content.bodyBirthDateCtrl, "bodyBirthDateCtrl", False))
-    fraud_items.append(_get_boolean_id_fraud_item(content.bodyNameCtrl, "bodyNameCtrl", False))
-    fraud_items.append(_get_boolean_id_fraud_item(content.bodyPieceNumberCtrl, "bodyPieceNumberCtrl", False))
+    fraud_items.append(
+        _get_boolean_id_fraud_item(
+            content.birthLocationCtrl, "birthLocationCtrl", models.FraudReasonCode.ID_CHECK_INVALID, False
+        )
+    )
+    fraud_items.append(
+        _get_boolean_id_fraud_item(
+            content.bodyBirthDateCtrl, "bodyBirthDateCtrl", models.FraudReasonCode.ID_CHECK_INVALID, False
+        )
+    )
+    fraud_items.append(
+        _get_boolean_id_fraud_item(content.bodyNameCtrl, "bodyNameCtrl", models.FraudReasonCode.ID_CHECK_INVALID, False)
+    )
+    fraud_items.append(
+        _get_boolean_id_fraud_item(
+            content.bodyPieceNumberCtrl, "bodyPieceNumberCtrl", models.FraudReasonCode.ID_CHECK_INVALID, False
+        )
+    )
 
-    fraud_items.append(_get_threshold_id_fraud_item(content.bodyBirthDateLevel, "bodyBirthDateLevel", 100, False))
-    fraud_items.append(_get_threshold_id_fraud_item(content.bodyNameLevel, "bodyNameLevel", 50, False))
-    fraud_items.append(_get_threshold_id_fraud_item(content.bodyPieceNumberLevel, "bodyPieceNumberLevel", 50, False))
+    fraud_items.append(
+        _get_threshold_id_fraud_item(
+            content.bodyBirthDateLevel, "bodyBirthDateLevel", 100, models.FraudReasonCode.ID_CHECK_INVALID, False
+        )
+    )
+    fraud_items.append(
+        _get_threshold_id_fraud_item(
+            content.bodyNameLevel, "bodyNameLevel", 50, models.FraudReasonCode.ID_CHECK_INVALID, False
+        )
+    )
+    fraud_items.append(
+        _get_threshold_id_fraud_item(
+            content.bodyPieceNumberLevel, "bodyPieceNumberLevel", 50, models.FraudReasonCode.ID_CHECK_INVALID, False
+        )
+    )
 
     return fraud_items
 
 
-def _get_boolean_id_fraud_item(value: Optional[str], key: str, is_strict_ko: bool) -> models.FraudItem:
+def _get_boolean_id_fraud_item(
+    value: typing.Optional[str], key: str, fail_reason: models.FraudReasonCode, is_strict_ko: bool
+) -> models.FraudItem:
     # TODO: move those functions when using fraud v2 journey only
     item = jouve_backend.get_boolean_fraud_detection_item(value, key)
 
@@ -400,11 +501,15 @@ def _get_boolean_id_fraud_item(value: Optional[str], key: str, is_strict_ko: boo
     else:
         status = models.FraudStatus.SUSPICIOUS
 
-    return models.FraudItem(status=status, detail=f"Le champ {key} est {value}")
+    return models.FraudItem(
+        status=status,
+        detail=f"Le champ {key} est {value}",
+        reason_code=None if status == models.FraudStatus.OK else fail_reason,
+    )
 
 
 def _get_threshold_id_fraud_item(
-    value: Optional[int], key: str, threshold: int, is_strict_ko: bool
+    value: typing.Optional[int], key: str, threshold: int, fail_reason: models.FraudReasonCode, is_strict_ko: bool
 ) -> models.FraudItem:
     # TODO: move those functions when using fraud v2 journey only
     item = jouve_backend.get_threshold_fraud_detection_item(value, key, threshold)
@@ -415,7 +520,11 @@ def _get_threshold_id_fraud_item(
     else:
         status = models.FraudStatus.SUSPICIOUS
 
-    return models.FraudItem(status=status, detail=f"Le champ {key} a le score {value} (minimum {threshold})")
+    return models.FraudItem(
+        status=status,
+        detail=f"Le champ {key} a le score {value} (minimum {threshold})",
+        reason_code=None if status == models.FraudStatus.OK else fail_reason,
+    )
 
 
 def _underage_user_fraud_item(birth_date: datetime.date) -> models.FraudItem:
@@ -462,7 +571,7 @@ def on_user_profiling_check_result(
         subscription_messages.on_user_subscription_journey_stopped(user)
 
 
-def get_source_data(user: user_models.User) -> models.JouveContent:
+def get_source_data(user: user_models.User) -> pydantic.BaseModel:
     mapped_class = {models.FraudCheckType.DMS: models.DMSContent, models.FraudCheckType.JOUVE: models.JouveContent}
     fraud_check_type = (
         models.BeneficiaryFraudCheck.query.filter(
@@ -478,7 +587,7 @@ def get_source_data(user: user_models.User) -> models.JouveContent:
 def upsert_fraud_result(
     user: user_models.User,
     status: models.FraudStatus,
-    eligibilityType: Optional[user_models.EligibilityType],
+    eligibilityType: typing.Optional[user_models.EligibilityType],
     reason: str = None,
 ) -> models.BeneficiaryFraudResult:
     """
@@ -587,17 +696,48 @@ def handle_document_validation_error(email: str, code: str) -> None:
 
 
 def validate_frauds(
-    user: user_models.User, fraud_items: list[models.FraudItem], eligibilityType: user_models.EligibilityType
+    user: user_models.User,
+    fraud_items: list[models.FraudItem],
+    fraud_check: models.BeneficiaryFraudCheck,
+    eligibilityType: user_models.EligibilityType,
 ) -> models.BeneficiaryFraudResult:
     if all(fraud_item.status == models.FraudStatus.OK for fraud_item in fraud_items):
         status = models.FraudStatus.OK
+        fraud_check_status = models.FraudCheckStatus.OK
     elif any(fraud_item.status == models.FraudStatus.KO for fraud_item in fraud_items):
         status = models.FraudStatus.KO
+        fraud_check_status = models.FraudCheckStatus.KO
     else:
         status = models.FraudStatus.SUSPICIOUS
+        fraud_check_status = models.FraudCheckStatus.SUSPICIOUS
 
-    existing_fraud_result = fraud_repository.get_current_beneficiary_fraud_result(user, eligibilityType)
+    reason = f" {FRAUD_RESULT_REASON_SEPARATOR} ".join(
+        fraud_item.detail for fraud_item in fraud_items if fraud_item.status != models.FraudStatus.OK
+    )
+    reason_codes = [
+        fraud_item.reason_code
+        for fraud_item in fraud_items
+        if fraud_item.status != models.FraudStatus.OK and fraud_item.reason_code is not None
+    ]
 
+    fraud_check.status = fraud_check_status
+    fraud_check.reason = reason
+    fraud_check.reasonCodes = reason_codes
+    repository.save(fraud_check)
+
+    fraud_result = update_or_create_fraud_result(user, status, reason, reason_codes, eligibilityType)
+
+    return fraud_result
+
+
+def update_or_create_fraud_result(
+    user: user_models.User,
+    status: models.FraudStatus,
+    reason: str,
+    reason_codes: list[models.FraudReasonCode],
+    eligibility_type: user_models.EligibilityType,
+):
+    existing_fraud_result = fraud_repository.get_current_beneficiary_fraud_result(user, eligibility_type)
     if existing_fraud_result:
         fraud_result = existing_fraud_result
 
@@ -606,16 +746,9 @@ def validate_frauds(
 
         fraud_result.status = status
     else:
-        fraud_result = models.BeneficiaryFraudResult(user=user, status=status, eligibilityType=eligibilityType)
-    fraud_result.reason = f" {FRAUD_RESULT_REASON_SEPARATOR} ".join(
-        fraud_item.detail for fraud_item in fraud_items if fraud_item.status != models.FraudStatus.OK
-    )
-    fraud_result.reason_codes = [
-        fraud_item.reason_code
-        for fraud_item in fraud_items
-        if fraud_item.status != models.FraudStatus.OK and fraud_item.reason_code is not None
-    ]
-
+        fraud_result = models.BeneficiaryFraudResult(user=user, status=status, eligibilityType=eligibility_type)
+    fraud_result.reason = reason
+    fraud_result.reason_codes = reason_codes
     return fraud_result
 
 
