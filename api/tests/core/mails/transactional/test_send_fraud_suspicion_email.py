@@ -12,8 +12,8 @@ class FraudSuspicionEmailTest:
 
         assert mails_testing.outbox[0].sent_data == {
             "template": {"id_prod": 82, "id_not_prod": 24, "tags": ["jeunes_compte_en_cours_d_analyse"]},
-            "params": {},
             "To": beneficiary_pre_subscription.email,
+            "params": {},
         }
 
     @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
