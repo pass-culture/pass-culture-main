@@ -99,20 +99,32 @@ def get_id_check_token(token_value: str) -> models.Token:
     ).one_or_none()
 
 
-def get_newly_eligible_users(since: date) -> list[User]:
+def _check_age_eligibility(age: int) -> bool:
+    eligibility_range = constants.ELIGIBILITY_UNDERAGE_RANGE
+    eligibility_range.append(constants.ELIGIBILITY_AGE_18)
+    if age in eligibility_range:
+        return True
+    return False
+
+
+def get_newly_eligible_users_by_age(since: date, age: int) -> list[User]:
     """get users that are eligible between `since` (excluded) and now (included) and that have
     created their account before `since`"""
+    if not _check_age_eligibility(age):
+        return []
+
     today = datetime.combine(datetime.today(), datetime.min.time())
     since = datetime.combine(since, datetime.min.time())
+
     eligible_users = (
         User.query.outerjoin(UserOfferer)
         .filter(
             User.is_beneficiary == False,  # not already beneficiary
             User.isAdmin == False,  # not an admin
             UserOfferer.userId.is_(None),  # not a pro
-            User.dateOfBirth > today - relativedelta(years=(constants.ELIGIBILITY_AGE_18 + 1)),  # less than 19yo
-            User.dateOfBirth <= today - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # more than or 18yo
-            User.dateOfBirth > since - relativedelta(years=constants.ELIGIBILITY_AGE_18),  # less than 18yo at since
+            User.dateOfBirth > today - relativedelta(years=(age + 1)),  # less than 19yo
+            User.dateOfBirth <= today - relativedelta(years=age),  # more than or 18yo
+            User.dateOfBirth > since - relativedelta(years=age),  # less than 18yo at since
             User.dateCreated < today,
         )
         .all()

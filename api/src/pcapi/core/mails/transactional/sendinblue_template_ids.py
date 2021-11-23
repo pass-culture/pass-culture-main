@@ -28,6 +28,8 @@ class TransactionalEmail(Enum):
     ACCEPTED_AS_BENEFICIARY = Template(id_prod=96, id_not_prod=25, tags=["jeunes_pass_credite_18"])
     ACCEPTED_AS_EAC_BENEFICIARY = Template(id_prod=257, id_not_prod=27, tags=["jeunes_pass_credite_eac"])
     BOOKING_CONFIRMATION = Template(id_prod=219, id_not_prod=29, tags=["jeunes_reservation_confirmee"])
+    ANNIVERSARY_18_BENEFICIARY = Template(id_prod=78, id_not_prod=32, tags=["anniversaire_18_ans"])
+    ANNIVERSARY_16_17_BENEFICIARY = Template(id_prod=303, id_not_prod=31, tags=["anniversaire_16_17_ans"])
 
 
 @dataclasses.dataclass
