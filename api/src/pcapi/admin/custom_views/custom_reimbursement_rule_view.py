@@ -101,6 +101,18 @@ class EditForm(SecureForm):
     )
 
 
+def format_amount(view, context, model, name):
+    if model.amount is None:
+        return model.amount
+    return f"{model.amount} €".replace(".", ",")
+
+
+def format_rate(view, context, model, name):
+    if model.rate is None:
+        return model.rate
+    return f"{model.rate * 100:.2f} %".replace(".", ",")
+
+
 def format_timespan(view, context, model, name):
     start = pytz.utc.localize(model.timespan.lower).astimezone(payments_utils.ACCOUNTING_TIMEZONE).strftime("%d/%m/%Y")
     if model.timespan.upper:
@@ -159,6 +171,8 @@ class CustomReimbursementRuleView(BaseAdminView):
         "timespan": "Dates d'application",
     }
     column_formatters = {
+        "amount": format_amount,
+        "rate": format_rate,
         "subcategories": format_subcategories,
         "timespan": format_timespan,
     }
