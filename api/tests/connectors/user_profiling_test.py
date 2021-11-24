@@ -94,6 +94,7 @@ def test_get_profiling_data(requests_mock):
     assert profiling_data.bb_bot_score == float(user_profiling_fixtures.CORRECT_RESPONSE["bb_bot_score"])
     assert profiling_data.bb_fraud_rating == user_profiling_fixtures.CORRECT_RESPONSE["bb_fraud_rating"]
     assert profiling_data.bb_fraud_score == float(user_profiling_fixtures.CORRECT_RESPONSE["bb_fraud_score"])
+    assert profiling_data.device_id == user_profiling_fixtures.CORRECT_RESPONSE["device_id"]
     assert profiling_data.digital_id_result == user_profiling_fixtures.CORRECT_RESPONSE["digital_id_result"]
     assert profiling_data.digital_id_trust_score == float(
         user_profiling_fixtures.CORRECT_RESPONSE["digital_id_trust_score"]
