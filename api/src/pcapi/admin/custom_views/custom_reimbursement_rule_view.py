@@ -48,6 +48,11 @@ def get_offerers(offerer_ids: list):
 
 
 class AddForm(SecureForm):
+    class Meta(SecureForm.Meta):
+        # Specify locale to use the comma as the decimal separator for
+        # the `rate` field.
+        locales = ["fr"]
+
     offerer = wtf_fields.StringField(
         "Offreur",
         validators=[wtf_validators.DataRequired()],
@@ -59,9 +64,11 @@ class AddForm(SecureForm):
         size=10,
         choices=SUBCATEGORY_CHOICES,
     )
-    rate = wtf_fields.IntegerField(
+    rate = wtf_fields.DecimalField(
         "Taux de remboursement (%)",
-        description='Un taux de remboursement (en pourcentage), compris entre 0 et 100. Par exemple, pour 95%, saisir "95"',
+        description="Un taux de remboursement (en pourcentage), compris entre 0 et 100. "
+        'Par exemple, pour 95 %, saisir "95". Pour 88,23 %, saisir "88,23".',
+        use_locale=True,
         validators=[
             wtf_validators.DataRequired(),
             wtf_validators.NumberRange(0, 100, message="Le taux doit être compris entre %(min)s et %(max)s."),
@@ -190,7 +197,7 @@ class CustomReimbursementRuleView(BaseAdminView):
             if form.end_date.data
             else None
         )
-        rate = Decimal(form.rate.data / 100).quantize(Decimal("0.01"))
+        rate = Decimal(form.rate.data / 100).quantize(Decimal("0.0001"))
         try:
             rule = payments_api.create_offerer_reimbursement_rule(
                 offerer_id=int(form.offerer.data),
