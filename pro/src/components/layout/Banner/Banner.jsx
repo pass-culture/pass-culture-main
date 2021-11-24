@@ -22,7 +22,7 @@ const Banner = ({
     <div className={`bi-banner ${type} ${className}`}>
       {closable && (
         <button onClick={handleOnClick} type="button">
-          x
+          <Icon svg="icons-close" />
         </button>
       )}
 

@@ -7,7 +7,9 @@ export const DomainNameBanner = ({ handleOnClick }) => {
   const isOnVenuePage = window.location.href.indexOf('lieux') > -1
   return (
     <Banner
-      className={isOnVenuePage ? 'venue-domain-name-banner' : ''}
+      className={
+        isOnVenuePage ? 'venue-domain-name-banner' : 'domain-name-banner'
+      }
       closable
       handleOnClick={handleOnClick}
       linkTitle={"Consulter les Conditions Générales d'Utilisation"}
