@@ -95,7 +95,7 @@ describe('src | components | Details', () => {
       expect(trackV1toV2OfferRedirect).not.toHaveBeenCalledTimes(1)
       jest.advanceTimersByTime(10000)
       expect(toast.error).toHaveBeenCalledWith(
-        "Ce lien n'est plus à jour, tu vas être redirigé vers le nouveau site du pass Culture."
+        `Le pass Culture fait peau neuve. Rendez-vous sur ${process.env.WEBAPP_V2_URL}. Pense à mettre à jour tes favoris !`
       )
       expect(replace).toHaveBeenCalledWith(process.env.WEBAPP_V2_URL)
     })
@@ -127,7 +127,7 @@ describe('src | components | Details', () => {
       expect(trackV1toV2OfferRedirect).not.toHaveBeenCalledTimes(1)
       jest.advanceTimersByTime(10000)
       expect(toast.error).toHaveBeenCalledWith(
-        "Ce lien n'est plus à jour, tu vas être redirigé vers le nouveau site du pass Culture."
+        `Le pass Culture fait peau neuve. Rendez-vous sur ${process.env.WEBAPP_V2_URL}. Pense à mettre à jour tes favoris !`
       )
       expect(replace).toHaveBeenCalledWith(process.env.WEBAPP_V2_URL)
     })
@@ -159,7 +159,7 @@ describe('src | components | Details', () => {
       expect(trackV1toV2HomeRedirect).not.toHaveBeenCalledTimes(1)
       jest.advanceTimersByTime(10000)
       expect(toast.error).toHaveBeenCalledWith(
-        "Ce lien n'est plus à jour, tu vas être redirigé vers le nouveau site du pass Culture, pense à mettre à jour tes favoris."
+        `Le pass Culture fait peau neuve. Rendez-vous sur ${process.env.WEBAPP_V2_URL}. Pense à mettre à jour tes favoris !`
       )
       expect(replace).toHaveBeenCalledWith(`${process.env.WEBAPP_V2_URL}/offre/3183`)
     })

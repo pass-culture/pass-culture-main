@@ -69,7 +69,7 @@ class Details extends PureComponent {
           trackV1toV2OfferRedirect({ url: offerV2Url, offerId: dehumanizedOfferId })
           this.v2Redirect(
             offerV2Url,
-            `Ce lien n'est plus à jour, tu vas être redirigé vers le nouveau site du pass Culture, pense à mettre à jour tes favoris.`,
+            `Le pass Culture fait peau neuve. Rendez-vous sur ${WEBAPP_V2_URL}. Pense à mettre à jour tes favoris !`,
             isInstantRedirect
           )
         }
@@ -81,7 +81,7 @@ class Details extends PureComponent {
           })
           this.v2Redirect(
             WEBAPP_V2_URL,
-            `Ce lien n'est plus à jour, tu vas être redirigé vers le nouveau site du pass Culture.`,
+            `Le pass Culture fait peau neuve. Rendez-vous sur ${WEBAPP_V2_URL}. Pense à mettre à jour tes favoris !`,
             isInstantRedirect
           )
         }
