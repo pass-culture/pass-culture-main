@@ -411,7 +411,7 @@ cloudTasks:
     hosts:
       - host: backend.perf.internal-passculture.app
         paths:
-          - path: /cloud-tasks/(.*)$
+          - path: /cloud-tasks/
     tls:
       - secretName: pcapi-ingress-cert
       hosts:

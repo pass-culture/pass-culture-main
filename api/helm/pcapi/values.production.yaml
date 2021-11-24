@@ -482,13 +482,13 @@ cloudTasks:
     hosts:
       - host: backend.passculture.beta.gouv.fr
         paths:
-          - path: /cloud-tasks/(.*)$
+          - path: /cloud-tasks/
       - host: backend.passculture.app
         paths:
-          - path: /cloud-tasks/(.*)$
+          - path: /cloud-tasks/
       - host: backend.passculture.pro
         paths:
-          - path: /cloud-tasks/(.*)$
+          - path: /cloud-tasks/
     tls:
       - secretName: pcapi-gandi-cert
         hosts:

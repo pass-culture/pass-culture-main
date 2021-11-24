@@ -463,10 +463,10 @@ cloudTasks:
     hosts:
       - host: backend.passculture-testing.beta.gouv.fr
         paths:
-          - path: /cloud-tasks/(.*)$
+          - path: /cloud-tasks/
       - host: backend.testing.passculture.team
         paths:
-          - path: /cloud-tasks/(.*)$
+          - path: /cloud-tasks/
     tls:
       - secretName: pcapi-ingress-cert
         hosts:
