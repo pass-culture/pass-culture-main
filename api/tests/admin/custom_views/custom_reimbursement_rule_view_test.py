@@ -19,7 +19,7 @@ def test_create_rule(mocked_validate_csrf_token, client, app):
     data = dict(
         offerer=offerer.id,
         subcategories=[],
-        rate=80,
+        rate="80,25",
         start_date="2030-10-01",
         end_date="",
     )
@@ -29,7 +29,7 @@ def test_create_rule(mocked_validate_csrf_token, client, app):
     assert response.status_code == 302
     rule = payments_models.CustomReimbursementRule.query.one()
     assert rule.offerer == offerer
-    assert rule.rate == decimal.Decimal("0.8")
+    assert rule.rate == decimal.Decimal("0.8025")
     assert rule.subcategories == []
     assert rule.timespan.lower == datetime.datetime(2030, 9, 30, 22, 0)  # UTC
     assert rule.timespan.upper is None

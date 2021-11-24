@@ -72,7 +72,7 @@ class CustomReimbursementRule(ReimbursementRule, Model):
     amount = sa.Column(sa.Numeric(10, 2), nullable=True)
 
     # rate is between 0 and 1 (included), or NULL if `amount` is set.
-    rate = sa.Column(sa.Numeric(3, 2), nullable=True)
+    rate = sa.Column(sa.Numeric(5, 4), nullable=True)
 
     timespan = sa.Column(postgresql.TSRANGE)
 
