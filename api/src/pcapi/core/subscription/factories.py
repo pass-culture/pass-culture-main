@@ -24,6 +24,7 @@ class BeneficiaryPreSubscriptionFactory(factory.Factory):
     civility: str = "Mme"
     last_name: str = "DURAND"
     phone_number: str = "0123456789"
+    registration_datetime = datetime.datetime(2013, 3, 5)
     source: str = "jouve"
     source_id: str = None
     id_piece_number: str = "140767100016"
