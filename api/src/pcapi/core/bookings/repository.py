@@ -83,7 +83,7 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
                 .filter(func.lower(EducationalBooking.educationalRedactor.email) == sanitize_email(email))
             )
 
-    if offer_id:
+    if offer_id is not None:
         query = query.join(Stock).join(Offer).filter(Offer.id == offer_id)
 
     booking = query.one_or_none()
