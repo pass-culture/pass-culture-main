@@ -159,10 +159,11 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_logged_in_right_email_and_wrong_offer(self, app):
         # Given
+
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
         booking = IndividualBookingFactory(individualBooking__user=user)
 
-        url = f"/bookings/token/{booking.token}?email={user.email}&offer_id={humanize(123)}"
+        url = f"/bookings/token/{booking.token}?email={user.email}&offer_id={humanize(0)}"
 
         # When
         response = TestClient(app.test_client()).get(url)
