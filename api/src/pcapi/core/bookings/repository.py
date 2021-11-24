@@ -48,7 +48,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.utils.date import get_department_timezone
-from pcapi.utils.db import get_batches
 from pcapi.utils.token import random_token
 
 
@@ -813,8 +812,8 @@ def _serialize_csv_report(query: Query) -> str:
             "Date et heure de remboursement",
         )
     )
-    for batch in get_batches(query, Booking.id, 1000):
-        rows = [
+    for booking in query.yield_per(1000):
+        writer.writerow(
             (
                 booking.venueName,
                 booking.offerName,
@@ -830,8 +829,6 @@ def _serialize_csv_report(query: Query) -> str:
                 BOOKING_STATUS_LABELS[booking.status],
                 _serialize_date_with_timezone(booking.reimbursedAt, booking),
             )
-            for booking in batch
-        ]
-        writer.writerows(rows)
+        )
 
     return output.getvalue()
