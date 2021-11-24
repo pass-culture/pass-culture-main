@@ -359,6 +359,9 @@ jobs:
           name: Install xmlsec1
           command: sudo apt-get update && sudo apt-get install xmlsec1
       - run:
+          name: Install weasyprint dependencies
+          command: sudo apt-get install libpango-1.0-0 libpangoft2-1.0-0
+      - run:
           name: Check for alembic multiple heads
           command: |
             python3 -m venv venv
