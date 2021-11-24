@@ -121,6 +121,35 @@ class PostOfferBodyModel(BaseModel):
         extra = "forbid"
 
 
+class PostEducationalOfferBodyModel(BaseModel):
+    venue_id: str
+    subcategory_id: str
+    name: str
+    booking_email: Optional[str]
+    description: Optional[str]
+    duration_minutes: Optional[int]
+    audio_disability_compliant: bool = False
+    mental_disability_compliant: bool = False
+    motor_disability_compliant: bool = False
+    visual_disability_compliant: bool = False
+    extra_data: Any
+
+    @validator("name", pre=True)
+    def validate_name(cls, name, values):  # pylint: disable=no-self-argument
+        check_offer_name_length_is_valid(name)
+        return name
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class CompletedEducationalOfferModel(PostEducationalOfferBodyModel):
+    is_duo: bool = False
+    is_educational: bool = True
+    external_ticket_office_url: Optional[str] = None
+
+
 class PatchOfferBodyModel(BaseModel):
     bookingEmail: Optional[str]
     description: Optional[str]
