@@ -165,6 +165,7 @@ class UserProfilingFraudData(pydantic.BaseModel):
     bb_bot_score: float
     bb_fraud_rating: str
     bb_fraud_score: float
+    device_id: typing.Optional[str]
     digital_id: str
     digital_id_result: str
     digital_id_trust_score: float
