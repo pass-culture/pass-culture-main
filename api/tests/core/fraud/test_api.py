@@ -506,6 +506,7 @@ class EduconnectFraudTest:
                 first_name="Lucy",
                 ine_hash="5ba682c0fc6a05edf07cd8ed0219258f",
                 last_name="Ellingson",
+                registration_datetime=datetime.datetime(2020, 1, 1),
             ),
         )
 
@@ -521,6 +522,7 @@ class EduconnectFraudTest:
             "ine_hash": "5ba682c0fc6a05edf07cd8ed0219258f",
             "last_name": "Ellingson",
             "birth_date": birth_date,
+            "registration_datetime": datetime.datetime(2020, 1, 1),
         }
         assert len(user.beneficiaryFraudResults) == 1
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
@@ -535,6 +537,7 @@ class EduconnectFraudTest:
                 first_name="Lucille",
                 ine_hash="0000",
                 last_name="Ellingson",
+                registration_datetime=datetime.datetime(2020, 1, 1),
             ),
         )
 
@@ -549,6 +552,7 @@ class EduconnectFraudTest:
             "ine_hash": "0000",
             "last_name": "Ellingson",
             "birth_date": birth_date,
+            "registration_datetime": datetime.datetime(2020, 1, 1),
         }
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
 

@@ -47,6 +47,7 @@ class JouveContentFactory(factory.Factory):
     postalCode = "75008"
     posteCodeCtrl = "75"
     serviceCodeCtrl = factory.Faker("pystr")
+    registrationDate = datetime.utcnow()
 
 
 USERPROFILING_RATING = [rating.value for rating in models.UserProfilingRiskRating]
@@ -104,6 +105,7 @@ class DMSContentFactory(factory.Factory):
     activity = "Étudiant"
     address = factory.Faker("address")
     id_piece_number = factory.Sequence(lambda _: "".join(random.choices(string.digits, k=12)))
+    registration_datetime = datetime.utcnow()
 
 
 class UbbleIdentificationResponseFactory(factory.Factory):
@@ -152,6 +154,7 @@ class EduconnectContentFactory(factory.Factory):
     first_name = factory.Faker("first_name")
     ine_hash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
     last_name = factory.Faker("last_name")
+    registration_datetime = datetime.now()
 
 
 FRAUD_CHECK_TYPE_MODEL_ASSOCIATION = {

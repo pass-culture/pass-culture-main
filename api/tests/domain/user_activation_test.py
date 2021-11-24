@@ -66,6 +66,7 @@ class CreateBeneficiaryFromApplicationTest:
             address="11 Rue du Test",
             application_id=123,
             procedure_id=98012,
+            registration_datetime=datetime.datetime(2020, 5, 1),
         )
 
         # when
@@ -104,6 +105,7 @@ class CreateBeneficiaryFromApplicationTest:
             address="11 Rue du Test",
             application_id=123,
             procedure_id=98012,
+            registration_datetime=datetime.datetime(2020, 5, 1),
         )
 
         user = users_api.create_account(

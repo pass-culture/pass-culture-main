@@ -72,6 +72,7 @@ class EduconnectContent(pydantic.BaseModel):
     first_name: str
     ine_hash: str
     last_name: str
+    registration_datetime: datetime.datetime
 
 
 class JouveContent(pydantic.BaseModel):
@@ -101,6 +102,7 @@ class JouveContent(pydantic.BaseModel):
     phoneNumber: typing.Optional[str]
     postalCode: typing.Optional[str]
     posteCodeCtrl: typing.Optional[str]
+    registrationDate: typing.Optional[datetime.datetime]
     serviceCodeCtrl: typing.Optional[str]
 
     _parse_body_birth_date_level = validator("bodyBirthDateLevel", pre=True, allow_reuse=True)(_parse_level)
@@ -108,6 +110,7 @@ class JouveContent(pydantic.BaseModel):
     _parse_body_name_level = validator("bodyNameLevel", pre=True, allow_reuse=True)(_parse_level)
     _parse_body_piece_number_level = validator("bodyPieceNumberLevel", pre=True, allow_reuse=True)(_parse_level)
     _parse_birth_date = validator("birthDateTxt", pre=True, allow_reuse=True)(_parse_date)
+    _parse_registration_date = validator("registrationDate", pre=True, allow_reuse=True)(_parse_date)
 
 
 class UbbleIdentificationResponse(pydantic.BaseModel):
@@ -142,6 +145,7 @@ class DMSContent(pydantic.BaseModel):
     activity: typing.Optional[str]
     address: typing.Optional[str]
     id_piece_number: typing.Optional[str]
+    registration_datetime: datetime.datetime
 
 
 class UserProfilingRiskRating(enum.Enum):
