@@ -33,8 +33,10 @@ class SuspendFraudulentUsersByUserIdsView(BaseCustomAdminView):
         form = SuspendFraudulentUsersByIdsForm()
         fraudulent_users = []
         nb_cancelled_bookings = 0
+        is_user_super_admin = self.check_super_admins()
+
         if request.method == "POST":
-            if not self.check_super_admins():
+            if not is_user_super_admin:
                 flash("Vous n'avez pas les droits pour effectuer cette opération", "error")
                 return redirect(url_for("admin.index"))
             form = SuspendFraudulentUsersByIdsForm(request.form)
@@ -58,6 +60,7 @@ class SuspendFraudulentUsersByUserIdsView(BaseCustomAdminView):
         return self.render(
             "admin/suspend_fraudulent_users_by_user_ids.html",
             form=form,
+            is_user_super_admin=is_user_super_admin,
             fraudulent_users=fraudulent_users,
             nb_fraud_users=len(fraudulent_users),
             nb_cancelled_bookings=nb_cancelled_bookings,
