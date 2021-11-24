@@ -244,7 +244,6 @@ STAGING_TEST_USER_PASSWORD = os.environ.get("STAGING_TEST_USER_PASSWORD", "")
 ALLOCINE_API_KEY = os.environ.get("ALLOCINE_API_KEY")
 FNAC_API_TOKEN = os.environ.get("PROVIDER_FNAC_BASIC_AUTHENTICATION_TOKEN")
 FNAC_API_URL = "https://passculture-fr.ws.fnac.com/api/v1/pass-culture/stocks"
-PROVIDERS_SYNC_WORKERS_POOL_SIZE = int(os.environ.get("SYNC_WORKERS_POOL_SIZE", 5))
 
 
 # DEMARCHES SIMPLIFIEES
