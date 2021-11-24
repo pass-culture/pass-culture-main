@@ -123,7 +123,7 @@ def serialize_educational_booking(educational_booking: EducationalBooking) -> Ed
         },
         UAICode=educational_booking.educationalInstitution.institutionId,
         yearId=educational_booking.educationalYearId,
-        status=get_education_booking_status(educational_booking),
+        status=get_educational_booking_status(educational_booking),
         venueTimezone=venue.timezone,
         totalAmount=booking.total_amount,
         url=offer_webapp_link(offer),
@@ -131,10 +131,16 @@ def serialize_educational_booking(educational_booking: EducationalBooking) -> Ed
     )
 
 
-def get_education_booking_status(
+def get_educational_booking_status(
     educational_booking: EducationalBooking,
 ) -> Union[EducationalBookingStatus, BookingStatus]:
-    if educational_booking.status and not educational_booking.booking.status == BookingStatus.USED:
+    if (
+        educational_booking.booking.status == BookingStatus.USED
+        or educational_booking.booking.status == BookingStatus.REIMBURSED
+    ):
+        return BookingStatus.USED.value
+
+    if educational_booking.status is not None:
         return educational_booking.status.value
 
     return educational_booking.booking.status.value
