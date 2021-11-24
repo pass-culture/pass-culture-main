@@ -106,6 +106,7 @@ def get_subscription_from_content(content: JouveContent) -> BeneficiaryPreSubscr
         last_name=content.lastName,
         phone_number=content.phoneNumber,
         postal_code=content.postalCode,
+        registration_datetime=content.registrationDate,
         source=BeneficiaryImportSources.jouve.value,
         source_id=DEFAULT_JOUVE_SOURCE_ID,
         fraud_fields=fraud_fields,
