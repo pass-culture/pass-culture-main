@@ -107,6 +107,45 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
     return offers_serialize.OfferResponseIdModel.from_orm(offer)
 
 
+@private_api.route("/offers/educational", methods=["POST"])
+@login_required
+@spectree_serialize(response_model=offers_serialize.OfferResponseIdModel, on_success_status=201)  # type: ignore
+def create_educational_offer(
+    body: offers_serialize.PostEducationalOfferBodyModel,
+) -> offers_serialize.OfferResponseIdModel:
+    try:
+        offer = offers_api.create_educational_offer(offer_data=body, user=current_user)
+    except exceptions.UnknownOfferSubCategory as error:
+        logger.info(
+            "Could not create offer: selected subcategory is unknown.",
+            extra={"offer_name": body.name, "venue_id": body.venue_id},
+        )
+        raise ApiErrors(
+            error.errors,
+            status_code=400,
+        )
+    except exceptions.SubCategoryIsInactive as error:
+        logger.info(
+            "Could not create offer: subcategory cannot be selected.",
+            extra={"offer_name": body.name, "venue_id": body.venue_id},
+        )
+        raise ApiErrors(
+            error.errors,
+            status_code=400,
+        )
+    except exceptions.SubcategoryNotEligibleForEducationalOffer as error:
+        logger.info(
+            "Could not create offer: subcategory is not eligible for educational offer.",
+            extra={"offer_name": body.name, "venue_id": body.venue_id},
+        )
+        raise ApiErrors(
+            error.errors,
+            status_code=400,
+        )
+
+    return offers_serialize.OfferResponseIdModel.from_orm(offer)
+
+
 @private_api.route("/offers/active-status", methods=["PATCH"])
 @login_required
 @spectree_serialize(response_model=None, on_success_status=204)  # type: ignore

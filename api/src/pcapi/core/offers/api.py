@@ -55,6 +55,8 @@ from pcapi.models.product import Product
 from pcapi.repository import offer_queries
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.routes.serialization.offers_serialize import CompletedEducationalOfferModel
+from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
@@ -108,7 +110,15 @@ def list_offers_for_pro_user(
     )
 
 
-def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
+def create_educational_offer(offer_data: PostEducationalOfferBodyModel, user: User) -> Offer:
+    completed_data = CompletedEducationalOfferModel(**offer_data.dict(by_alias=True))
+    return create_offer(completed_data, user)
+
+
+def create_offer(
+    offer_data: Union[PostOfferBodyModel, CompletedEducationalOfferModel],
+    user: User,
+) -> Offer:
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(offer_data.subcategory_id)
     venue = load_or_raise_error(Venue, offer_data.venue_id)
     check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
@@ -132,7 +142,9 @@ def _is_able_to_create_book_offer_from_isbn(subcategory: subcategories.Subcatego
     )
 
 
-def _initialize_book_offer_from_template(offer_data: PostOfferBodyModel) -> Offer:
+def _initialize_book_offer_from_template(
+    offer_data: Union[PostOfferBodyModel, CompletedEducationalOfferModel]
+) -> Offer:
     product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(offer_data.extra_data["isbn"])
     extra_data = product.extraData
     extra_data.update(offer_data.extra_data)
@@ -153,7 +165,9 @@ def _initialize_book_offer_from_template(offer_data: PostOfferBodyModel) -> Offe
 
 
 def _initialize_offer_with_new_data(
-    offer_data: PostOfferBodyModel, subcategory: subcategories.Subcategory, venue: Venue
+    offer_data: Union[PostOfferBodyModel, CompletedEducationalOfferModel],
+    subcategory: subcategories.Subcategory,
+    venue: Venue,
 ) -> Offer:
     data = offer_data.dict(by_alias=True)
     product = Product()
@@ -168,7 +182,11 @@ def _initialize_offer_with_new_data(
     return offer
 
 
-def _complete_common_offer_fields(offer: Offer, offer_data: PostOfferBodyModel, venue: Venue) -> None:
+def _complete_common_offer_fields(
+    offer: Offer,
+    offer_data: Union[PostOfferBodyModel, CompletedEducationalOfferModel],
+    venue: Venue,
+) -> None:
     offer.venue = venue
     offer.bookingEmail = offer_data.booking_email
     offer.externalTicketOfficeUrl = offer_data.external_ticket_office_url
@@ -180,7 +198,11 @@ def _complete_common_offer_fields(offer: Offer, offer_data: PostOfferBodyModel, 
     offer.isEducational = offer_data.is_educational
 
 
-def _check_offer_data_is_valid(offer_data: PostOfferBodyModel) -> None:
+def _check_offer_data_is_valid(
+    offer_data: Union[PostOfferBodyModel, CompletedEducationalOfferModel],
+) -> None:
+    # FIXME(cgaunet, 2021-11-24): remove this check once educational choice is removed
+    # from individual offer creation route
     check_offer_not_duo_and_educational(offer_data.is_duo, offer_data.is_educational)
     check_offer_is_eligible_for_educational(offer_data.subcategory_id, offer_data.is_educational)
     check_offer_subcategory_is_valid(offer_data.subcategory_id)
