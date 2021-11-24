@@ -27,7 +27,7 @@ require('../config/env')
 
 function createRedirectFile() {
   try {
-    const disableV1ToV2Redirect = JSON.parse(process.env.DISABLE_V1_TO_V2_REDIRECT || 'false')
+    const disableV1ToV2Redirect = JSON.parse(process.env.DISABLE_V1_TO_V2_REDIRECT)
 
     console.log(
       `Building redirects for ${process.env.NODE_ENV}`,
