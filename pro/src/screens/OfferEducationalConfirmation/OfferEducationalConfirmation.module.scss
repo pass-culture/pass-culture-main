@@ -1,0 +1,35 @@
+.confirmation {
+  text-align: center;
+  margin: auto;
+  max-width: rem(712px);
+
+  &-icon {
+    height: rem(56px);
+    margin-bottom: rem(19px);
+  }
+
+  &-section {
+    margin-bottom: rem(32px);
+
+    &-header {
+      margin-bottom: rem(24px);
+    }
+  }
+
+  &-actions {
+    max-width: rem(486px);
+    margin: rem(64px) auto 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  &-action {
+    flex: 1;
+    margin-left: rem(24px);
+    text-align: center;
+
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+}
