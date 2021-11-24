@@ -11,6 +11,8 @@ export default {
   decorators: [withRouterDecorator, withPageTemplate],
 }
 
-const Template = () => <OfferEducationalConfirmation />
+const Template = () => (
+  <OfferEducationalConfirmation offererId={null} venueId={null} />
+)
 
 export const Default = Template.bind({})
