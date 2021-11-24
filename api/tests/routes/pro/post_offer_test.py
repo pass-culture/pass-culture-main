@@ -124,6 +124,44 @@ class Returns200Test:
         offer = Offer.query.get(offer_id)
         assert offer.isEducational
 
+    def test_create_valid_educational_offer_with_new_route(self, app):
+        # Given
+        venue = offers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "venueId": humanize(venue.id),
+            "bookingEmail": "offer@example.com",
+            "durationMinutes": 60,
+            "name": "La pièce de théâtre",
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "extraData": {"toto": "text"},
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+        }
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        response = client.post("/offers/educational", json=data)
+
+        # Then
+        assert response.status_code == 201
+        offer_id = dehumanize(response.json["id"])
+        offer = Offer.query.get(offer_id)
+        assert offer.isEducational
+        assert offer.bookingEmail == "offer@example.com"
+        assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
+        assert offer.venue == venue
+        assert offer.product.name == "La pièce de théâtre"
+        assert offer.product.owningOfferer == offerer
+        assert offer.audioDisabilityCompliant == False
+        assert offer.mentalDisabilityCompliant == True
+        assert offer.motorDisabilityCompliant == False
+        assert offer.visualDisabilityCompliant == False
+        assert offer.extraData == {"toto": "text"}
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
