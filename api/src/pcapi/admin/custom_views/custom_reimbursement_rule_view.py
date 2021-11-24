@@ -20,6 +20,7 @@ from pcapi.core.categories.categories import ALL_CATEGORIES_DICT
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.api as payments_api
 import pcapi.core.payments.exceptions as payments_exceptions
 import pcapi.core.payments.utils as payments_utils
@@ -107,6 +108,11 @@ def format_amount(view, context, model, name):
     return f"{model.amount} €".replace(".", ",")
 
 
+def format_offerer(view, context, model, name):
+    offerer = model.offerer or model.offer.venue.managingOfferer
+    return offerer.name
+
+
 def format_rate(view, context, model, name):
     if model.rate is None:
         return model.rate
@@ -136,6 +142,18 @@ def format_subcategories(view, context, model, name):
     return markupsafe.Markup(labels)
 
 
+def format_siren(view, context, model, name):
+    offerer = model.offerer or model.offer.venue.managingOfferer
+    return offerer.siren
+
+
+def format_venue(view, context, model, name):
+    if model.offererId:
+        return None
+    venue = model.offer.venue
+    return venue.publicName or venue.name
+
+
 def get_error_message(exception: payments_exceptions.ReimbursementRuleValidationError):
     if isinstance(exception, payments_exceptions.ConflictingReimbursementRule):
         msg = str(exception)
@@ -153,8 +171,9 @@ class CustomReimbursementRuleView(BaseAdminView):
     can_delete = False
     column_list = [
         "id",
-        "offerer.name",
-        "offerer.siren",
+        "offerer",
+        "siren",
+        "venue",
         "offer.name",
         "rate",
         "amount",
@@ -162,8 +181,9 @@ class CustomReimbursementRuleView(BaseAdminView):
         "timespan",
     ]
     column_labels = {
-        "offerer.name": "Offreur",
-        "offerer.siren": "SIREN",
+        "offerer": "Offreur",
+        "siren": "SIREN",
+        "venue": "Lieu",
         "offer.name": "Offre",
         "rate": "Taux de remboursement",
         "amount": "Montant remboursé",
@@ -172,9 +192,12 @@ class CustomReimbursementRuleView(BaseAdminView):
     }
     column_formatters = {
         "amount": format_amount,
+        "offerer": format_offerer,
         "rate": format_rate,
+        "siren": format_siren,
         "subcategories": format_subcategories,
         "timespan": format_timespan,
+        "venue": format_venue,
     }
     column_filters = ["id", "offerer.name", "offer.name"]
 
@@ -194,7 +217,10 @@ class CustomReimbursementRuleView(BaseAdminView):
         return permissions.has_permission(current_user, "add-or-modify-custom-reimbursement-rules")
 
     def get_query(self):
-        return self.model.query.options(joinedload(self.model.offerer), joinedload(self.model.offer))
+        return self.model.query.options(
+            joinedload(self.model.offerer),
+            joinedload(self.model.offer, offers_models.Offer.venue, offerers_models.Venue.managingOfferer),
+        )
 
     def get_create_form(self):
         return AddForm
