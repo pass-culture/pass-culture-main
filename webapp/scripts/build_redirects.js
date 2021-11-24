@@ -71,7 +71,7 @@ function createRedirectFile() {
     })
 
     writeFileSync(redirectFilePath, content, 'utf8')
-    console.log('Redirects created.')
+    console.log(`Redirects created:\n${readFileSync(redirectFilePath, 'utf8')}`)
 
     writeFileSync(versionTxtPath, version, 'utf8')
     console.log('Version copied to version.txt.')
