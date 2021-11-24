@@ -1,3 +1,4 @@
+import datetime
 import logging
 from typing import Optional
 from urllib.parse import urlencode
@@ -98,6 +99,7 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         first_name=educonnect_user.first_name,
         ine_hash=educonnect_user.ine_hash,
         last_name=educonnect_user.last_name,
+        registration_datetime=datetime.datetime.now(),
     )
 
     try:
