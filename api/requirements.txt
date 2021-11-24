@@ -72,6 +72,7 @@ SQLAlchemy==1.3.*
 # FIXME (xordoquy, 2021-08-16): current apscheduler version (3.6.3)
 # does not work with tzlocal 3+.
 tzlocal<3.0.0
+weasyprint
 Werkzeug==1.0.1
 wheel==0.35.1
 WTForms==2.3.3

@@ -31,6 +31,9 @@ pip install -e .
 pip install -r requirements.txt
 ```
 
+La génération de PDF via `weasyprint` nécessite également de suivre
+ces [étapes](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#installation) d'installation.
+
 ### Lancement des tests
 
 **Prérequis au lancement des tests**
