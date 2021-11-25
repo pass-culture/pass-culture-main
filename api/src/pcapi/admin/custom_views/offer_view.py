@@ -575,7 +575,7 @@ class ValidationView(BaseAdminView):
 def yaml_formatter(view, context, model, name) -> Markup:
     value = getattr(model, name)
     yaml_value = yaml.dump(value, indent=4)
-    return Markup("<pre>{}</pre>".format(yaml_value))
+    return Markup("<pre>{}</pre>").format(yaml_value)
 
 
 def user_formatter(view, context, model, name) -> str:
