@@ -1,57 +1,79 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 
+import Spinner from 'components/layout/Spinner'
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 import {
   INITIAL_EDUCATIONAL_FORM_VALUES,
   IOfferEducationalFormValues,
 } from 'core/OfferEducational'
 import OfferEducationalScreen from 'screens/OfferEducational'
-import { categoriesAndSubCategoriesSelector } from 'store/offers/selectors'
-import { loadCategories } from 'store/offers/thunks'
+import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 
-import {
-  getEducationalCategories,
-  getEducationalSubCategories,
-} from './utils/getEducationalCategories'
+import { getCategoriesAdapter, getOfferersAdapter } from './adapters'
+import setInitialFormValues from './utils/setInitialFormValues'
+
+type AsyncScreenProps = Pick<
+  IOfferEducationalProps,
+  'educationalCategories' | 'educationalSubCategories' | 'userOfferers'
+>
 
 const OfferEducationalCreation = (): JSX.Element => {
-  const dispatch = useDispatch()
+  const [isReady, setIsReady] = useState<boolean>(false)
+  const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
+  const [initialValues, setInitialValues] =
+    useState<IOfferEducationalFormValues>(INITIAL_EDUCATIONAL_FORM_VALUES)
   const location = useLocation()
-  const { categories, subCategories } = useSelector(
-    categoriesAndSubCategoriesSelector
-  )
   const { structure, lieu } = queryParamsFromOfferer(location)
 
-  const initialValues: IOfferEducationalFormValues = {
-    ...INITIAL_EDUCATIONAL_FORM_VALUES,
-    offererId: structure
-      ? structure
-      : INITIAL_EDUCATIONAL_FORM_VALUES.offererId,
-    venueId: lieu ? lieu : INITIAL_EDUCATIONAL_FORM_VALUES.venueId,
-  }
-
-  const educationalCategories = getEducationalCategories(
-    categories,
-    subCategories
-  )
-
-  const educationalSubcategories = getEducationalSubCategories(subCategories)
-
   useEffect(() => {
-    dispatch(loadCategories())
-  }, [dispatch])
+    if (!isReady) {
+      const loadData = async () => {
+        const results = await Promise.all([
+          getCategoriesAdapter(null),
+          getOfferersAdapter(null),
+        ])
 
-  return (
+        if (results.some(res => !res.isOk)) {
+          // handle error with notification at some point
+          console.error(results?.find(res => !res.isOk)?.message)
+        }
+
+        const [categories, offerers] = results
+
+        setScreenProps({
+          educationalCategories: categories.payload.educationalCategories,
+          educationalSubCategories: categories.payload.educationalSubCategories,
+          userOfferers: offerers.payload,
+        })
+
+        setInitialValues(values =>
+          setInitialFormValues(
+            values,
+            offerers.payload,
+            structure,
+            lieu,
+            categories.payload
+          )
+        )
+
+        setIsReady(true)
+      }
+
+      loadData()
+    }
+  }, [isReady, lieu, structure])
+
+  return isReady && screenProps ? (
     <OfferEducationalScreen
-      educationalCategories={educationalCategories}
-      educationalSubcategories={educationalSubcategories}
+      {...screenProps}
       initialValues={initialValues}
       onSubmit={(values: IOfferEducationalFormValues) => {
         console.log(JSON.stringify(values, null, 2))
       }}
     />
+  ) : (
+    <Spinner />
   )
 }
 
