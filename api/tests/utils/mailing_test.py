@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timezone
-from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
@@ -21,14 +20,6 @@ from pcapi.utils.mailing import extract_users_information_from_bookings
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
 from pcapi.utils.mailing import make_validation_email_object
-
-from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
-
-
-def get_mocked_response_status_200(entity):
-    response = MagicMock(status_code=200, text="")
-    response.json = MagicMock(return_value=MOCKED_SIREN_ENTREPRISES_API_RETURN)
-    return response
 
 
 def get_by_siren_stub(offerer):
