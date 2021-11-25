@@ -23,9 +23,9 @@ export const DIFFERENT_PASSWORDS_ERROR_MESSAGE =
   'Les deux mots de passe ne sont pas identiques'
 
 export const SetPassword = props => {
-  const { currentUser, history, match, showNotification } = props
+  const { currentUser, history, location, match, showNotification } = props
 
-  redirectLoggedUser(history, currentUser)
+  redirectLoggedUser(history, location, currentUser)
 
   const redirectOnTokenError = useCallback(() => {
     history.push('/creation-de-mot-de-passe-confirmation?error=unvalid-link')
@@ -158,6 +158,7 @@ SetPassword.defaultProps = {
 SetPassword.propTypes = {
   currentUser: PropTypes.shape(),
   history: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
   showNotification: PropTypes.func.isRequired,
 }

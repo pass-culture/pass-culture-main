@@ -16,7 +16,7 @@ export const SetPasswordConfirm = props => {
   const { error } = parse(location.search)
   const displayErrorMessage = error === 'unvalid-link'
 
-  redirectLoggedUser(history, currentUser)
+  redirectLoggedUser(history, location, currentUser)
 
   return (
     <Fragment>

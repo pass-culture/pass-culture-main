@@ -25,6 +25,9 @@ describe('src | components | pages | Signin | Signin', () => {
       history: {
         push: jest.fn(),
       },
+      location: {
+        search: '?redirect=true',
+      },
       isAccountCreationAvailable: true,
       showErrorNotification: jest.fn(),
     }
@@ -178,7 +181,9 @@ describe('src | components | pages | Signin | Signin', () => {
         wrapper.instance().onHandleSuccessRedirect()
 
         // then
-        expect(props.history.push).toHaveBeenCalledWith('/structures')
+        expect(props.history.push).toHaveBeenCalledWith(
+          '/structures?redirect=true'
+        )
       })
 
       it('should redirect to homepage if user is not admin', () => {
@@ -190,7 +195,9 @@ describe('src | components | pages | Signin | Signin', () => {
         wrapper.instance().onHandleSuccessRedirect()
 
         // then
-        expect(props.history.push).toHaveBeenCalledWith('/accueil')
+        expect(props.history.push).toHaveBeenCalledWith(
+          '/accueil?redirect=true'
+        )
       })
     })
 
