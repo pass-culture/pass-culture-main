@@ -4,9 +4,9 @@
  */
 
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useHistory } from 'react-router-dom'
 import { reinitializeData } from 'redux-saga-data'
 
 import { signout } from 'repository/pcapi/pcapi'
@@ -23,12 +23,14 @@ import { ReactComponent as StyleguideSvg } from './assets/styleguide.svg'
 
 const Header = ({ isStyleguideActive, isUserAdmin }) => {
   const dispatch = useDispatch()
+  const history = useHistory()
 
-  function onSignoutClick() {
+  const onSignoutClick = useCallback(() => {
     signout().then(() => {
       dispatch(reinitializeData())
+      history.push('/connexion')
     })
-  }
+  }, [dispatch, history])
 
   return (
     <header className="menu-v2">

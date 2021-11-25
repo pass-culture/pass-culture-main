@@ -25,9 +25,9 @@ import { initReCaptchaScript } from '../../../utils/recaptcha'
 class LostPassword extends PureComponent {
   constructor(props) {
     super(props)
-    const { currentUser, history } = props
+    const { currentUser, history, location } = props
 
-    redirectLoggedUser(history, currentUser)
+    redirectLoggedUser(history, location, currentUser)
 
     this.state = {
       emailValue: '',
@@ -251,6 +251,7 @@ LostPassword.propTypes = {
   currentUser: PropTypes.shape(),
   envoye: PropTypes.bool.isRequired,
   history: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submitResetPassword: PropTypes.func.isRequired,
   submitResetPasswordRequest: PropTypes.func.isRequired,
