@@ -206,7 +206,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
     def get_query(self) -> query:
         return (
             User.query.filter(User.has_pro_role.is_(False))
-            .filter(User.has_beneficiary_role.is_(True))
+            .filter(User.is_beneficiary.is_(True))
             .options(joinedload(User.deposits))
         )
 
