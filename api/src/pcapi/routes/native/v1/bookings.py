@@ -67,6 +67,13 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
         logger.info("Could not book offer: stock is not bookable", extra={"stock_id": body.stock_id})
         raise ApiErrors({"code": "STOCK_NOT_BOOKABLE"})
 
+    except exceptions.OfferCategoryNotBookableByUser:
+        logger.info(
+            "Could not book offer: category is not bookable by user",
+            extra={"stock_id": body.stock_id, "subcategory_id": stock.offer.subcategoryId, "user_roles": user.roles},
+        )
+        raise ApiErrors({"code": "OFFER_CATEGORY_NOT_BOOKABLE_BY_USER"})
+
     return BookOfferResponse(bookingId=booking.id)
 
 
