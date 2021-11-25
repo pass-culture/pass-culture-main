@@ -84,6 +84,17 @@ class PostBookingTest:
         assert response.status_code == 400
         assert response.json["code"] == "ALREADY_BOOKED"
 
+    def test_category_forbidden(self, client):
+        stock = StockFactory(offer__subcategoryId=subcategories.VISITE_VIRTUELLE.id, offer__url="affreuse-offer.com")
+        users_factories.UnderageBeneficiaryFactory(email=self.identifier)
+
+        client.with_token(self.identifier)
+
+        response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
+
+        assert response.status_code == 400
+        assert response.json == {"code": "OFFER_CATEGORY_NOT_BOOKABLE_BY_USER"}
+
 
 class GetBookingsTest:
     identifier = "pascal.ture@example.com"

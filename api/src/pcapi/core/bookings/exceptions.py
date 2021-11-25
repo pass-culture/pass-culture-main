@@ -54,6 +54,11 @@ class EducationalOfferCannotBeBooked(ClientError):
         super().__init__("offerId", "Cette offre est réservée aux rédacteurs de projets")
 
 
+class OfferCategoryNotBookableByUser(ClientError):
+    def __init__(self) -> None:
+        super().__init__("offerCategory", "Vous n'êtes pas autorisé à réserver cette catégorie d'offre")
+
+
 class UserHasInsufficientFunds(ClientError):
     def __init__(self) -> None:
         super().__init__("insufficientFunds", "Le solde de votre pass est insuffisant pour réserver cette offre.")

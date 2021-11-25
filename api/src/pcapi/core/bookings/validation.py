@@ -21,6 +21,7 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 from ..educational.models import EducationalBookingStatus
 from .exceptions import EducationalOfferCannotBeBooked
 from .exceptions import NoActivationCodeAvailable
+from .exceptions import OfferCategoryNotBookableByUser
 
 
 def check_can_book_free_offer(user: User, stock: Stock) -> None:
@@ -211,3 +212,13 @@ def check_activation_code_available(stock: Stock) -> None:
 def check_offer_is_not_educational(stock: Stock) -> None:
     if stock.offer.isEducational:
         raise EducationalOfferCannotBeBooked()
+
+
+def check_offer_category_is_bookable_by_user(user: User, stock: Stock) -> None:
+    if user.has_beneficiary_role:
+        return
+
+    if (stock.price > 0 and not stock.offer.subcategory.is_bookable_by_underage_when_not_free) or (
+        stock.price == 0 and not stock.offer.subcategory.is_bookable_by_underage_when_free
+    ):
+        raise OfferCategoryNotBookableByUser()
