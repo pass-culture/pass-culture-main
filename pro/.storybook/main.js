@@ -6,6 +6,7 @@ function resolve(dir) {
 }
 
 const aliases = {
+  core: resolve('../src/core'),
   components: resolve('../src/components'),
   new_components: resolve('../src/new_components'),
   'ui-kit': resolve('../src/ui-kit'),
