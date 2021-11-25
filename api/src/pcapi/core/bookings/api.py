@@ -65,6 +65,7 @@ def book_offer(
     with transaction():
         stock = offers_repository.get_and_lock_stock(stock_id=stock_id)
         validation.check_offer_is_not_educational(stock)
+        validation.check_offer_category_is_bookable_by_user(beneficiary, stock)
         validation.check_can_book_free_offer(beneficiary, stock)
         validation.check_offer_already_booked(beneficiary, stock.offer)
         validation.check_quantity(stock.offer, quantity)

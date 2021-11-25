@@ -526,3 +526,51 @@ class CheckCanBeMarkAsUnusedTest:
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_can_be_mark_as_unused(booking)
         assert exc.value.errors["payment"] == ["Le remboursement est en cours de traitement"]
+
+
+@pytest.mark.usefixtures("db_session")
+class CheckOfferCategoryIsBookableByUserTest:
+    def test_should_raise_video_game_free(self):
+        user = users_factories.UnderageBeneficiaryFactory()
+        stock = offers_factories.StockFactory(offer__subcategoryId=subcategories.ABO_JEU_VIDEO.id, price=10)
+
+        with pytest.raises(exceptions.OfferCategoryNotBookableByUser):
+            validation.check_offer_category_is_bookable_by_user(user, stock)
+
+    def test_should_raise_video_game_not_free(self):
+        user = users_factories.UnderageBeneficiaryFactory()
+        stock = offers_factories.StockFactory(offer__subcategoryId=subcategories.ABO_JEU_VIDEO.id, price=0)
+
+        with pytest.raises(exceptions.OfferCategoryNotBookableByUser):
+            validation.check_offer_category_is_bookable_by_user(user, stock)
+
+    def test_should_not_raise_video_game_bene_18(self):
+        user = users_factories.BeneficiaryGrant18Factory()
+        stock = offers_factories.StockFactory(offer__subcategoryId=subcategories.ABO_JEU_VIDEO.id)
+
+        validation.check_offer_category_is_bookable_by_user(user, stock)
+
+    def test_should_raise_digital(self):
+        user = users_factories.UnderageBeneficiaryFactory()
+        stock = offers_factories.StockFactory(offer__subcategoryId=subcategories.VISITE_VIRTUELLE.id)
+
+        with pytest.raises(exceptions.OfferCategoryNotBookableByUser):
+            validation.check_offer_category_is_bookable_by_user(user, stock)
+
+    def test_should_not_raise_digital_free(self):
+        user = users_factories.UnderageBeneficiaryFactory()
+        stock = offers_factories.StockFactory(offer__subcategoryId=subcategories.VISITE_VIRTUELLE.id, price=0)
+
+        validation.check_offer_category_is_bookable_by_user(user, stock)
+
+    def test_should_not_raise_digital_press(self):
+        user = users_factories.UnderageBeneficiaryFactory()
+        stock = offers_factories.StockFactory(offer__subcategoryId=subcategories.ABO_PRESSE_EN_LIGNE.id)
+
+        validation.check_offer_category_is_bookable_by_user(user, stock)
+
+    def test_should_not_raise_digital_audio_book(self):
+        user = users_factories.UnderageBeneficiaryFactory()
+        stock = offers_factories.StockFactory(offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id)
+
+        validation.check_offer_category_is_bookable_by_user(user, stock)

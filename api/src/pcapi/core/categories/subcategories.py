@@ -70,6 +70,8 @@ class Subcategory:
     can_be_educational: bool
     # used by pc pro to build dropdown of subcategories during offer creation
     is_selectable: bool = True
+    is_bookable_by_underage_when_free: bool = True
+    is_bookable_by_underage_when_not_free: bool = True
 
     def __post_init__(self):
         if self.search_group_name not in [s.name for s in SearchGroups]:
@@ -137,6 +139,7 @@ VOD = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_bookable_by_underage_when_not_free=False,
 )
 ABO_PLATEFORME_VIDEO = Subcategory(
     id="ABO_PLATEFORME_VIDEO",
@@ -155,6 +158,7 @@ ABO_PLATEFORME_VIDEO = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_bookable_by_underage_when_not_free=False,
 )
 AUTRE_SUPPORT_NUMERIQUE = Subcategory(
     id="AUTRE_SUPPORT_NUMERIQUE",
@@ -173,6 +177,7 @@ AUTRE_SUPPORT_NUMERIQUE = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_bookable_by_underage_when_not_free=False,
 )
 # endregion
 # region CINEMA
@@ -283,6 +288,7 @@ CINE_VENTE_DISTANCE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    is_bookable_by_underage_when_not_free=False,
 )
 
 CINE_PLEIN_AIR = Subcategory(
@@ -397,6 +403,7 @@ RENCONTRE_EN_LIGNE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_bookable_by_underage_when_not_free=False,
 )
 # endregion
 # region JEU
@@ -489,6 +496,8 @@ JEU_EN_LIGNE = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_bookable_by_underage_when_free=False,
+    is_bookable_by_underage_when_not_free=False,
 )
 ABO_JEU_VIDEO = Subcategory(
     id="ABO_JEU_VIDEO",
@@ -507,6 +516,8 @@ ABO_JEU_VIDEO = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_bookable_by_underage_when_free=False,
+    is_bookable_by_underage_when_not_free=False,
 )
 ABO_LUDOTHEQUE = Subcategory(
     id="ABO_LUDOTHEQUE",
@@ -526,6 +537,8 @@ ABO_LUDOTHEQUE = Subcategory(
     is_physical_deposit=True,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
     is_selectable=False,
+    is_bookable_by_underage_when_free=False,
+    is_bookable_by_underage_when_not_free=False,
 )
 # endregion
 # region LIVRE
@@ -565,6 +578,7 @@ LIVRE_NUMERIQUE = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.BOOK.value,
+    is_bookable_by_underage_when_not_free=True,
 )
 TELECHARGEMENT_LIVRE_AUDIO = Subcategory(
     id="TELECHARGEMENT_LIVRE_AUDIO",
@@ -583,6 +597,7 @@ TELECHARGEMENT_LIVRE_AUDIO = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_bookable_by_underage_when_not_free=False,
 )
 LIVRE_AUDIO_PHYSIQUE = Subcategory(
     id="LIVRE_AUDIO_PHYSIQUE",
@@ -601,6 +616,7 @@ LIVRE_AUDIO_PHYSIQUE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=True,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    is_bookable_by_underage_when_not_free=True,
 )
 ABO_BIBLIOTHEQUE = Subcategory(
     id="ABO_BIBLIOTHEQUE",
@@ -637,6 +653,7 @@ ABO_LIVRE_NUMERIQUE = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.BOOK.value,
+    is_bookable_by_underage_when_not_free=False,
 )
 FESTIVAL_LIVRE = Subcategory(
     id="FESTIVAL_LIVRE",
@@ -766,6 +783,7 @@ VISITE_VIRTUELLE = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_bookable_by_underage_when_not_free=False,
 )
 MUSEE_VENTE_DISTANCE = Subcategory(
     id="MUSEE_VENTE_DISTANCE",
@@ -784,6 +802,7 @@ MUSEE_VENTE_DISTANCE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+    is_bookable_by_underage_when_not_free=False,
 )
 # endregion
 # region MUSIQUE_LIVE
@@ -842,6 +861,7 @@ LIVESTREAM_MUSIQUE = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
     is_selectable=False,
+    is_bookable_by_underage_when_not_free=False,
 )
 ABO_CONCERT = Subcategory(
     id="ABO_CONCERT",
@@ -916,6 +936,7 @@ TELECHARGEMENT_MUSIQUE = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_bookable_by_underage_when_not_free=False,
 )
 ABO_PLATEFORME_MUSIQUE = Subcategory(
     id="ABO_PLATEFORME_MUSIQUE",
@@ -934,6 +955,7 @@ ABO_PLATEFORME_MUSIQUE = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_bookable_by_underage_when_not_free=False,
 )
 CAPTATION_MUSIQUE = Subcategory(
     id="CAPTATION_MUSIQUE",
@@ -1029,6 +1051,7 @@ ABO_PRESSE_EN_LIGNE = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_bookable_by_underage_when_not_free=True,
 )
 PODCAST = Subcategory(
     id="PODCAST",
@@ -1047,6 +1070,7 @@ PODCAST = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_bookable_by_underage_when_not_free=True,
 )
 APP_CULTURELLE = Subcategory(
     id="APP_CULTURELLE",
@@ -1065,6 +1089,7 @@ APP_CULTURELLE = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_bookable_by_underage_when_not_free=True,
 )
 # endregion
 # region SPECTACLE
@@ -1122,6 +1147,7 @@ LIVESTREAM_EVENEMENT = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
     is_selectable=False,
+    is_bookable_by_underage_when_not_free=False,
 )
 FESTIVAL_SPECTACLE = Subcategory(
     id="FESTIVAL_SPECTACLE",
@@ -1273,6 +1299,7 @@ ACTIVATION_EVENT = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
     is_selectable=False,
+    is_bookable_by_underage_when_not_free=False,
 )
 ACTIVATION_THING = Subcategory(
     id="ACTIVATION_THING",
@@ -1292,6 +1319,7 @@ ACTIVATION_THING = Subcategory(
     is_physical_deposit=True,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
     is_selectable=False,
+    is_bookable_by_underage_when_not_free=False,
 )
 JEU_SUPPORT_PHYSIQUE = Subcategory(
     id="JEU_SUPPORT_PHYSIQUE",
@@ -1311,6 +1339,8 @@ JEU_SUPPORT_PHYSIQUE = Subcategory(
     is_physical_deposit=True,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
     is_selectable=False,
+    is_bookable_by_underage_when_free=False,
+    is_bookable_by_underage_when_not_free=False,
 )
 OEUVRE_ART = Subcategory(
     id="OEUVRE_ART",
@@ -1330,6 +1360,7 @@ OEUVRE_ART = Subcategory(
     is_physical_deposit=True,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
     is_selectable=False,
+    is_bookable_by_underage_when_not_free=False,
 )
 # endregion
 # endregion
