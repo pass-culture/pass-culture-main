@@ -11,7 +11,7 @@ def main():
     else:
         report_path = sys.argv[1]
 
-    with open(report_path) as json_file:
+    with open(report_path) ss json_file:
         data = json.load(json_file)
 
     endpoints_latency = _get_endpoint_latencies(data)
