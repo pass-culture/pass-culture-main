@@ -1,6 +1,6 @@
 {
   "name": "pass-culture-pro",
-  "version": "161.0.0",
+  "version": "163.0.0",
   "private": true,
   "homepage": "/",
   "scripts": {
@@ -110,8 +110,8 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^13.1.9",
     "@types/jest": "^26.0.23",
-    "@types/node": "^16.7.10",
     "@types/lodash.isequal": "^4.5.5",
+    "@types/node": "^16.7.10",
     "@types/react": "^17.0.19",
     "@types/react-dom": "^17.0.9",
     "@types/react-redux": "^7.1.18",
