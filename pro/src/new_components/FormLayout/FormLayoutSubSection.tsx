@@ -17,7 +17,7 @@ const SubSection = ({
   className,
 }: IFormLayoutSubSectionProps): JSX.Element => (
   <div className={cn(style['form-layout-sub-section'], className)}>
-    <Title className={style['form-layout-sub-section-title']} level={4}>
+    <Title as="h3" className={style['form-layout-sub-section-title']} level={4}>
       {title}
     </Title>
     {children}
