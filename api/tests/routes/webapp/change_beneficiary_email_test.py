@@ -22,8 +22,9 @@ class Returns204Test:
     def when_account_is_known(self, app):
         # given
 
+        new_email = "new@email.com"
         user = users_factories.BeneficiaryGrant18Factory(email="test@mail.com")
-        data = {"new_email": "new@email.com", "password": users_factories.DEFAULT_PASSWORD}
+        data = {"new_email": new_email, "password": users_factories.DEFAULT_PASSWORD}
 
         # when
         client = TestClient(app.test_client()).with_session_auth(user.email)
@@ -51,7 +52,9 @@ class Returns204Test:
 
         app_link = (
             f"{settings.WEBAPP_FOR_NATIVE_REDIRECTION}/changement-email?"
-            f"token={confirmation_data_token}&expiration_timestamp=1602838800"
+            f"token={confirmation_data_token}"
+            f"&expiration_timestamp=1602838800"
+            f"&new_email={quote_plus(new_email)}"
         )
 
         confirmation_link = f"{settings.FIREBASE_DYNAMIC_LINKS_URL}/?link={quote_plus(app_link)}"
@@ -60,7 +63,7 @@ class Returns204Test:
             "FromEmail": "support@example.com",
             "MJ-TemplateID": 2066065,
             "MJ-TemplateLanguage": True,
-            "To": "new@email.com",
+            "To": new_email,
             "Vars": {
                 "beneficiary_name": "Jeanne",
                 "confirmation_link": confirmation_link,

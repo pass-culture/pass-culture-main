@@ -13,7 +13,11 @@ def _build_link_for_email_change(current_email: str, new_email: str, expiration_
     expiration = int(expiration_date.timestamp())
 
     path = "changement-email"
-    params = {"token": token, "expiration_timestamp": expiration}
+    params = {
+        "token": token,
+        "expiration_timestamp": expiration,
+        "new_email": new_email,
+    }
 
     return generate_firebase_dynamic_link(path, params)
 
