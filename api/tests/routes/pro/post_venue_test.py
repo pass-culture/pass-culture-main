@@ -7,6 +7,7 @@ import pytest
 
 from pcapi import settings
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_settings
@@ -83,6 +84,43 @@ def test_should_register_new_venue(app):
     assert not venue.isPermanent
     assert not venue.contact.phone_number
     assert not venue.contact.social_medias
+
+
+@pytest.mark.usefixtures("db_session")
+def test_should_register_new_venue_with_a_business_unit(app):
+    # given
+    user = ProFactory()
+    auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+    venue_data = create_valid_venue_data(user)
+    offerer = offerers_models.Offerer.query.all()[0]
+    existing_venue = offers_factories.VenueFactory(managingOfferer=offerer)
+    venue_data["businessUnitId"] = existing_venue.businessUnit.id
+
+    # when
+    response = auth_request.post("/venues", json=venue_data)
+
+    # then
+    assert response.status_code == 201
+    idx = response.json["id"]
+
+    venue = Venue.query.filter_by(id=dehumanize(idx)).one()
+    assert venue.businessUnitId == venue_data["businessUnitId"]
+
+
+@pytest.mark.usefixtures("db_session")
+def test_should_return_401_when_business_unit_not_exist(app):
+    # given
+    user = ProFactory()
+    auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+    venue_data = create_valid_venue_data(user)
+    venue_data["businessUnitId"] = "777"
+
+    # when
+    response = auth_request.post("/venues", json=venue_data)
+
+    # then
+    assert response.status_code == 400
+    assert response.json["businessUnitId"] == ["Ce point de facturation n'existe pas."]
 
 
 @pytest.mark.usefixtures("db_session")

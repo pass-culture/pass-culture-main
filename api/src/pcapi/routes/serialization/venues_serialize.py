@@ -77,6 +77,7 @@ class PostVenueBodyModel(BaseModel):
     motorDisabilityCompliant: Optional[bool]
     visualDisabilityCompliant: Optional[bool]
     contact: Optional[VenueContactModel]
+    businessUnitId: Optional[int]
 
     class Config:
         extra = "forbid"
@@ -215,6 +216,7 @@ class EditVenueBodyModel(BaseModel):
     motorDisabilityCompliant: Optional[bool]
     visualDisabilityCompliant: Optional[bool]
     contact: Optional[VenueContactModel]
+    businessUnitId: Optional[int]
 
     _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
     _dehumanize_venue_type_id = dehumanize_field("venueTypeId")
