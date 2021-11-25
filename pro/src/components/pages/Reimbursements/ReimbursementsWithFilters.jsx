@@ -120,7 +120,7 @@ const Reimbursements = ({ currentUser }) => {
                 <button
                   aria-controls="refund-proof"
                   aria-selected={isRefundProofActive}
-                  className={`section-nav ${
+                  className={`refund-section-nav ${
                     isRefundProofActive ? 'is-active' : ''
                   }`}
                   id="refund-proof-nav"
@@ -133,7 +133,7 @@ const Reimbursements = ({ currentUser }) => {
                 <button
                   aria-controls="refund-details"
                   aria-selected={isRefundDetailsActive}
-                  className={`section-nav ${
+                  className={`refund-section-nav ${
                     isRefundDetailsActive ? 'is-active' : ''
                   }`}
                   id="refund-details-nav"
@@ -147,7 +147,9 @@ const Reimbursements = ({ currentUser }) => {
               <div
                 aria-hidden={!isRefundProofActive}
                 aria-labelledby="refund-proof"
-                className={`section ${isRefundProofActive ? 'is-active' : ''}`}
+                className={`refund-section ${
+                  isRefundProofActive ? 'is-active' : ''
+                }`}
                 id="refund-proof"
                 role="tabpanel"
               >
@@ -159,7 +161,7 @@ const Reimbursements = ({ currentUser }) => {
               </div>
               <div
                 aria-hidden={!isRefundDetailsActive}
-                className={`section ${
+                className={`refund-section ${
                   isRefundDetailsActive ? 'is-active' : ''
                 }`}
                 id="refund-details"
