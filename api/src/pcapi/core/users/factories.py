@@ -364,7 +364,7 @@ class EduconnectUserFactory(factory.Factory):
     last_name = factory.Faker("last_name")
     first_name = factory.Faker("first_name")
     logout_url = "https://educonnect.education.gouv.fr/Logout"
-    person_affiliation = None
+    user_type = None
     saml_request_id = factory.Faker("lexify", text="id-?????????????????")
     ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
     student_level = "2212"
