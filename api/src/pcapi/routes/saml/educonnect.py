@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 from urllib.parse import urlencode
 
 from flask import current_app as app
@@ -22,6 +23,8 @@ from . import blueprint
 
 
 logger = logging.getLogger(__name__)
+
+ERROR_PAGE_URL = f"{settings.WEBAPP_V2_URL}/idcheck/educonnect/erreur?"
 
 
 @blueprint.saml_blueprint.route("educonnect/login", methods=["GET"])
@@ -48,15 +51,25 @@ def login_educonnect(user: user_models.User) -> Response:
 def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-many-return-statements
     try:
         educonnect_user = educonnect_api.get_educonnect_user(request.form["SAMLResponse"])
+
     except educonnect_exceptions.ResponseTooOld:
         logger.warning("Educonnect saml_response too old")
         return redirect(f"{settings.WEBAPP_V2_URL}/idcheck/erreur", code=302)
+
+    except educonnect_exceptions.UserTypeNotStudent as exc:
+        logger.info(
+            "Wrong user type of educonnect user",
+            extra={"user_id": _user_id_from_saml_request_id(exc.request_id), "saml_request_id": exc.request_id},
+        )
+        error_query_param = {"code": "UserTypeNotStudent"}
+        return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
+
     except educonnect_exceptions.EduconnectAuthenticationException:
         logger.warning("Educonnect authentication Error")
         return redirect(f"{settings.WEBAPP_V2_URL}/idcheck/erreur", code=302)
 
-    key = educonnect_api.build_saml_request_id_key(educonnect_user.saml_request_id)
-    user_id = app.redis_client.get(key)
+    user_id = _user_id_from_saml_request_id(educonnect_user.saml_request_id)
+
     if user_id is None:
         raise ApiErrors({"saml_request_id": "user associated to saml_request_id not found"})
 
@@ -88,12 +101,10 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         last_name=educonnect_user.last_name,
     )
 
-    error_page_base_url = f"{settings.WEBAPP_V2_URL}/idcheck/educonnect/erreur?"
-
     try:
         fraud_api.on_educonnect_result(user, educonnect_content)
     except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
-        return redirect(error_page_base_url, code=302)
+        return redirect(ERROR_PAGE_URL, code=302)
 
     try:
         subscription_api.create_beneficiary_import(user, user_models.EligibilityType.UNDERAGE)
@@ -102,16 +113,16 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
             "User age not valid",
             extra={"userId": user.id, "educonnectId": educonnect_user.educonnect_id, "age": user.age},
         )
-        if user_models.get_age_from_birth_date(educonnect_content.birth_date) == ELIGIBILITY_AGE_18:
-            error_query_param = {"code": "UserAgeNotValid18YearsOld"}
-        else:
-            error_query_param = {"code": "UserAgeNotValid"}
-
-        return redirect(error_page_base_url + urlencode(error_query_param), code=302)
+        error_query_param = {
+            "code": "UserAgeNotValid18YearsOld"
+            if user_models.get_age_from_birth_date(educonnect_content.birth_date) == ELIGIBILITY_AGE_18
+            else "UserAgeNotValid"
+        }
+        return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
 
     except fraud_exceptions.NotWhitelistedINE:
         error_query_param = {"code": "UserNotWhitelisted"}
-        return redirect(error_page_base_url + urlencode(error_query_param), code=302)
+        return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
 
     except fraud_exceptions.UserAlreadyBeneficiary:
         logger.warning(
@@ -119,7 +130,7 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
             extra={"userId": user.id, "educonnectId": educonnect_user.educonnect_id},
         )
         error_query_param = {"code": "UserAlreadyBeneficiary"}
-        return redirect(error_page_base_url + urlencode(error_query_param), code=302)
+        return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
 
     except fraud_exceptions.FraudException as e:
         logger.warning(
@@ -130,7 +141,7 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
 
     except Exception as e:  # pylint: disable=broad-except
         logger.error("Error while creating BeneficiaryImport from Educonnect: %s", e, extra={"user_id": user.id})
-        return redirect(error_page_base_url, code=302)
+        return redirect(ERROR_PAGE_URL, code=302)
 
     user_information_validation_base_url = f"{settings.WEBAPP_V2_URL}/idcheck/validation?"
     query_params = {
@@ -141,3 +152,8 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
     }
 
     return redirect(user_information_validation_base_url + urlencode(query_params), code=302)
+
+
+def _user_id_from_saml_request_id(saml_request_id: str) -> Optional[int]:
+    key = educonnect_api.build_saml_request_id_key(saml_request_id)
+    return app.redis_client.get(key)

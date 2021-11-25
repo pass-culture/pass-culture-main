@@ -100,6 +100,14 @@ def get_educonnect_user(saml_response: str) -> models.EduconnectUser:
 
     saml_request_id = authn_response.in_response_to
 
+    user_type = educonnect_identity.get(_get_field_oid("7"), [None])[0]
+
+    if user_type in ["resp1d", "resp2d"]:
+        raise exceptions.UserTypeNotStudent(saml_request_id, user_type)
+
+    if user_type not in ["eleve1d", "eleve2d"]:
+        logger.error("Unknwon user type %s", user_type, extra={"saml_request_id": saml_request_id})
+
     try:
         return models.EduconnectUser(
             birth_date=datetime.strptime(educonnect_identity[_get_field_oid("67")][0], "%Y-%m-%d").date(),
@@ -109,7 +117,7 @@ def get_educonnect_user(saml_response: str) -> models.EduconnectUser:
             ine_hash=educonnect_identity[_get_field_oid("64")][0],
             last_name=educonnect_identity["sn"][0],
             logout_url=educonnect_identity[_get_field_oid("5")][0],
-            user_type=educonnect_identity.get(_get_field_oid("7"), [None])[0],
+            user_type=user_type,
             saml_request_id=saml_request_id,
             school=educonnect_identity.get(_get_field_oid("72"), [None])[0],
             student_level=educonnect_identity.get(_get_field_oid("73"), [None])[0],

@@ -89,13 +89,15 @@ class EduconnectTest:
         mock_saml_response.get_identity.return_value = {
             "givenName": ["Max"],
             "sn": ["SENS"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.5": ["https://educonnect.education.gouv.fr/Logout"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.6": ["2021-10-08 11:51:33.437"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.7": ["eleve1d"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.57": [
                 "e6759833fb379e0340322889f2a367a5a5150f1533f80dfe963d21e43e33f7164b76cc802766cdd33c6645e1abfd1875"
             ],
-            "urn:oid:1.3.6.1.4.1.20326.10.999.1.5": ["https://educonnect.education.gouv.fr/Logout"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.67": ["2006-08-18"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.72": ["school_uai"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.73": ["2212"],
-            "urn:oid:1.3.6.1.4.1.20326.10.999.1.6": ["2021-10-08 11:51:33.437"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.64": [ine_hash],
         }
         mock_saml_response.in_response_to = self.request_id
@@ -117,9 +119,9 @@ class EduconnectTest:
             "first_name": "Max",
             "last_name": "SENS",
             "logout_url": "https://educonnect.education.gouv.fr/Logout",
-            "user_type": None,
+            "user_type": "eleve1d",
             "saml_request_id": self.request_id,
-            "school": None,
+            "school": "school_uai",
             "student_level": "2212",
             "user_email": self.email,
         }
@@ -143,6 +145,32 @@ class EduconnectTest:
         assert user.lastName == "SENS"
         assert user.dateOfBirth == datetime.datetime(2006, 8, 18, 0, 0)
         assert user.ineHash == ine_hash
+
+    @patch("pcapi.core.users.external.educonnect.api.get_saml_client")
+    def test_user_type_not_student(self, mock_get_educonnect_saml_client, client, caplog, app):
+        # set user_id in redis as if /saml/educonnect/login was called
+        user = users_factories.UserFactory(email=self.email)
+        app.redis_client.set(f"{self.request_id_key_prefix}{self.request_id}", user.id)
+
+        mock_saml_client = MagicMock()
+        mock_saml_response = MagicMock()
+        mock_get_educonnect_saml_client.return_value = mock_saml_client
+        mock_saml_client.parse_authn_request_response.return_value = mock_saml_response
+        mock_saml_response.get_identity.return_value = {
+            "givenName": ["Sugar"],
+            "sn": ["Daddy"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.5": ["https://educonnect.education.gouv.fr/Logout"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.7": ["resp1d"],
+        }
+        mock_saml_response.in_response_to = self.request_id
+
+        with caplog.at_level(logging.INFO):
+            response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+
+        assert response.status_code == 302
+        assert response.location == "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserTypeNotStudent"
+        assert caplog.records[0].extra == {"saml_request_id": self.request_id, "user_id": str(user.id)}
+        assert caplog.records[0].message == "Wrong user type of educonnect user"
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
     def test_educonnect_redirects_to_success_page_with_warning_log(self, mock_get_educonnect_user, client, app, caplog):
