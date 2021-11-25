@@ -12,6 +12,7 @@ from pcapi.core.fraud import exceptions as fraud_exceptions
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import models as user_models
+from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.external.educonnect import api as educonnect_api
 from pcapi.core.users.external.educonnect import exceptions as educonnect_exceptions
 from pcapi.models.api_errors import ApiErrors
@@ -99,9 +100,13 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
     except fraud_exceptions.UserAgeNotValid:
         logger.warning(
             "User age not valid",
-            extra={"userId": user.id, "educonnectId": educonnect_user.educonnect_id},
+            extra={"userId": user.id, "educonnectId": educonnect_user.educonnect_id, "age": user.age},
         )
-        error_query_param = {"code": "UserAgeNotValid"}
+        if user_models.get_age_from_birth_date(educonnect_content.birth_date) == ELIGIBILITY_AGE_18:
+            error_query_param = {"code": "UserAgeNotValid18YearsOld"}
+        else:
+            error_query_param = {"code": "UserAgeNotValid"}
+
         return redirect(error_page_base_url + urlencode(error_query_param), code=302)
 
     except fraud_exceptions.NotWhitelistedINE:
