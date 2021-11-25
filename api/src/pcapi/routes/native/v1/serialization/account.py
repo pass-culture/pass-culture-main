@@ -34,8 +34,6 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
-from pcapi.core.users.models import get_age_from_birth_date
-from pcapi.core.users.models import get_eligibility
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.serialization.utils import to_camel
@@ -60,8 +58,6 @@ class AccountRequest(BaseModel):
     email: str
     password: str
     birthdate: datetime.date
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
     marketing_email_subscription: Optional[bool] = False
     token: str
     postal_code: Optional[str] = None
@@ -70,16 +66,6 @@ class AccountRequest(BaseModel):
 
     class Config:
         alias_generator = to_camel
-
-    @validator("first_name", "last_name", always=True)
-    def first_and_last_name_mandatory(  # pylint: disable=no-self-argument
-        cls, name: Optional[str], values: dict[str, Any]
-    ) -> str:
-        if FeatureToggle.ENABLE_UBBLE.is_active() and get_eligibility(get_age_from_birth_date(values["birthdate"])):
-            if not name or name.isspace():
-                raise ValueError("Le prénom et le nom sont obligatoires pour tout jeune éligible")
-            name = name.strip()
-        return name
 
 
 class InstitutionalProjectRedactorAccountRequest(BaseModel):
@@ -288,6 +274,8 @@ class UpdateEmailTokenExpiration(BaseModel):
 
 class BeneficiaryInformationUpdateRequest(BaseModel):
     activity: ActivityEnum
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     address: Optional[str]
     city: str
     phone: Optional[str]
@@ -296,6 +284,14 @@ class BeneficiaryInformationUpdateRequest(BaseModel):
     class Config:
         use_enum_values = True
         alias_generator = to_camel
+
+    @validator("first_name", "last_name", always=True)
+    def first_and_last_name_mandatory(cls, name: Optional[str]) -> str:  # pylint: disable=no-self-argument
+        if FeatureToggle.ENABLE_UBBLE.is_active():
+            if not name or name.isspace():
+                raise ValueError("Le prénom et le nom sont obligatoires pour tout jeune éligible")
+            name = name.strip()
+        return name
 
 
 class ResendEmailValidationRequest(BaseModel):

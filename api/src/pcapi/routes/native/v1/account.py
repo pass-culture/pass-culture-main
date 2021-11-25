@@ -142,6 +142,8 @@ def get_email_update_token_expiration_date(user: User) -> serializers.UpdateEmai
 def update_beneficiary_mandatory_information(user: User, body: serializers.BeneficiaryInformationUpdateRequest) -> None:
     api.update_beneficiary_mandatory_information(
         user=user,
+        first_name=body.first_name,
+        last_name=body.last_name,
         address=body.address,
         city=body.city,
         postal_code=body.postal_code,
@@ -182,8 +184,6 @@ def create_account(body: serializers.AccountRequest) -> None:
             email=body.email,
             password=body.password,
             birthdate=body.birthdate,
-            first_name=body.first_name,
-            last_name=body.last_name,
             marketing_email_subscription=body.marketing_email_subscription,
             is_email_validated=False,
             postal_code=body.postal_code,
