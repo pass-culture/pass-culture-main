@@ -29,6 +29,9 @@ export const createOffer = offer => {
   return client.post(`/offers`, offer)
 }
 
+export const createEducationalOffer = offer =>
+  client.post('/offers/educational', offer)
+
 export const updateOffer = (offerId, offer) => {
   return client.patch(`/offers/${offerId}`, offer)
 }

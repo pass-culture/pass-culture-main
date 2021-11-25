@@ -97,7 +97,7 @@ describe('screens | OfferEducational', () => {
 
     participantsOptions.forEach(participantsOption => {
       const participantsCheckbox = screen.getByLabelText(
-        participantsOption.label
+        participantsOption
       ) as HTMLInputElement
       expect(participantsCheckbox.checked).toBe(false)
     })
