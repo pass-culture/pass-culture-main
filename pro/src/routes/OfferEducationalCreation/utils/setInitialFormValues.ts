@@ -1,6 +1,4 @@
 import {
-  IEducationalCategory,
-  IEducationalSubCategory,
   INITIAL_EDUCATIONAL_FORM_VALUES,
   IOfferEducationalFormValues,
   IUserOfferer,
@@ -10,11 +8,7 @@ const setInitialFormValues = (
   values: IOfferEducationalFormValues,
   offerers: IUserOfferer[],
   structure: string | null,
-  lieu: string | null,
-  categories: {
-    educationalCategories: IEducationalCategory[]
-    educationalSubCategories: IEducationalSubCategory[]
-  }
+  lieu: string | null
 ): IOfferEducationalFormValues => {
   const setOffererId = () => {
     if (offerers.length === 1) {

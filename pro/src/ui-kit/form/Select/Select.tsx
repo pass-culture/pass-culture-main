@@ -21,13 +21,13 @@ const Select = ({
   disabled,
   label,
 }: ISelectProps): JSX.Element => {
-  const [field, meta] = useField({ name })
+  const [field, meta] = useField(name)
 
   return (
     <>
-      <label>
+      <label className={className}>
         {label}
-        <select {...field} className={className} disabled={disabled}>
+        <select disabled={disabled} {...field}>
           {options.map(option => (
             <option key={option.value} value={option.value}>
               {option.label}

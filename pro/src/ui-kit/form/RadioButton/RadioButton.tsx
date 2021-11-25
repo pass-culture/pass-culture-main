@@ -6,6 +6,7 @@ interface IRadioButtonProps {
   label: string
   value: string
   className?: string
+  checked?: boolean
 }
 
 const RadioButton = ({
@@ -14,18 +15,18 @@ const RadioButton = ({
   value,
   className,
 }: IRadioButtonProps): JSX.Element => {
-  const [field, meta] = useField({ name })
+  const [field, meta] = useField({ name, value })
 
   return (
-    <>
+    <div className={className}>
       <label>
-        <input {...field} className={className} type="radio" value={value} />
+        <input {...field} type="radio" value={value} />
         {label}
       </label>
       {meta.touched && meta.error ? (
         <div className="error">{meta.error}</div>
       ) : null}
-    </>
+    </div>
   )
 }
 
