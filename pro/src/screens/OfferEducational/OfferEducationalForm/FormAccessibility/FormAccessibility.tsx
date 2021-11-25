@@ -14,12 +14,7 @@ const FormAccessibility = (): JSX.Element => {
     >
       <FormLayout.Row className={styles['checkbox-group']}>
         {accessibilityOptions.map(({ label, value }) => (
-          <Checkbox
-            key={value}
-            label={label}
-            name="accessibility"
-            value={value}
-          />
+          <Checkbox key={value} label={label} name={value} value={value} />
         ))}
       </FormLayout.Row>
     </FormLayout.Section>
