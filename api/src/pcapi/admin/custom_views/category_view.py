@@ -35,6 +35,8 @@ class SubcategoryView(BaseCustomAdminView):
         column_labels = {
             "id": "Nom tech de la sous-catégorie",
             "category_id": "Nom tech de la catégorie",
+            "is_bookable_by_underage_when_free": "Réservable par les 15-17 si gratuite",
+            "is_bookable_by_underage_when_not_free": "Réservable par les 15-17 si payante",
         }
         return self.render(
             "admin/subcategories_list.html",
