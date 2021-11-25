@@ -6,7 +6,7 @@ import {
 } from 'screens/OfferEducational/constants/labels'
 
 export const getCategoriesSelect = (): HTMLSelectElement =>
-  screen.getByLabelText(CATEGORY_LABEL) as HTMLSelectElement
+  screen.queryByLabelText(CATEGORY_LABEL) as HTMLSelectElement
 
 export const getSubcategoriesSelect = (): HTMLSelectElement =>
-  screen.getByLabelText(SUBCATEGORY_LABEL) as HTMLSelectElement
+  screen.queryByLabelText(SUBCATEGORY_LABEL) as HTMLSelectElement

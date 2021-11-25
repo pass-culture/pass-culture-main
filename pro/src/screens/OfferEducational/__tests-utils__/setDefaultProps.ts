@@ -1,16 +1,19 @@
-import { categoriesFactory } from 'screens/OfferEducational/__tests-utils__/categoryFactory'
-import { subCategoriesFactory } from 'screens/OfferEducational/__tests-utils__/subCategoryFactory'
+import { INITIAL_EDUCATIONAL_FORM_VALUES } from 'core/OfferEducational'
 
 import { IOfferEducationalProps } from '../OfferEducational'
+
+import { categoriesFactory } from './categoryFactory'
+import { subCategoriesFactory } from './subCategoryFactory'
+import { userOfferersFactory } from './userOfferersFactory'
 
 const mockEducationalCategories = categoriesFactory([
   {
     id: 'MUSEE',
-    proLabel: 'Musée, patrimoine, architecture, arts visuels',
+    label: 'Musée, patrimoine, architecture, arts visuels',
   },
   {
     id: 'CINEMA',
-    proLabel: 'Cinéma',
+    label: 'Cinéma',
   },
 ])
 
@@ -18,40 +21,28 @@ const mockEducationalSubcategories = subCategoriesFactory([
   {
     id: 'CINE_PLEIN_AIR',
     categoryId: 'CINEMA',
-    proLabel: 'Cinéma plein air',
+    label: 'Cinéma plein air',
   },
   {
     id: 'EVENEMENT_CINE',
     categoryId: 'CINEMA',
-    proLabel: 'Événement cinématographique',
+    label: 'Événement cinématographique',
   },
   {
     id: 'VISITE_GUIDEE',
     categoryId: 'MUSEE',
-    proLabel: 'Visite guidée',
+    label: 'Visite guidée',
   },
 ])
 
+const mockUserOfferers = userOfferersFactory([{}])
+
 const defaultProps = (): IOfferEducationalProps => ({
-  initialValues: {
-    category: '',
-    subCategory: '',
-    title: '',
-    description: '',
-    duration: 0,
-    offererId: '',
-    venueId: '',
-    offererVenueId: '',
-    participants: [],
-    accessibility: '',
-    phone: '',
-    email: '',
-    notifications: false,
-    notificationEmail: '',
-  },
+  userOfferers: mockUserOfferers,
+  initialValues: INITIAL_EDUCATIONAL_FORM_VALUES,
   onSubmit: jest.fn(),
   educationalCategories: mockEducationalCategories,
-  educationalSubcategories: mockEducationalSubcategories,
+  educationalSubCategories: mockEducationalSubcategories,
 })
 
 export default defaultProps

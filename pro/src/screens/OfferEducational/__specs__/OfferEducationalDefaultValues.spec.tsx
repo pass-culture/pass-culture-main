@@ -16,9 +16,9 @@ import {
   NOTIFICATIONS_EMAIL_LABEL,
   NOTIFICATIONS_LABEL,
   OFFERER_LABEL,
-  OFFER_VENUE_OFFERER_LABEL,
-  OFFER_VENUE_OTHER_LABEL,
-  OFFER_VENUE_SCHOOL_LABEL,
+  EVENT_ADDRESS_OFFERER_LABEL,
+  EVENT_ADDRESS_OTHER_LABEL,
+  EVENT_ADDRESS_SCHOOL_LABEL,
   PHONE_LABEL,
   TITLE_LABEL,
   VENUE_LABEL,
@@ -49,14 +49,14 @@ describe('screens | OfferEducational', () => {
   it('should have no initial values', () => {
     renderEACOfferCreation(props, {
       educationalCategories: [],
-      educationalSubcategories: [],
+      educationalSubCategories: [],
     })
 
     const categoriesSelect = getCategoriesSelect()
     expect(categoriesSelect.value).toBe('')
 
     const subCategoriesSelect = getSubcategoriesSelect()
-    expect(subCategoriesSelect.value).toBe('')
+    expect(subCategoriesSelect).not.toBeInTheDocument()
 
     const titleInput = screen.getByLabelText(TITLE_LABEL) as HTMLInputElement
     expect(titleInput.value).toBe('')
@@ -69,24 +69,24 @@ describe('screens | OfferEducational', () => {
     const durationInput = screen.getByLabelText(
       DURATION_LABEL
     ) as HTMLTextAreaElement
-    expect(durationInput.value).toBe('')
+    expect(durationInput.value).toBe('0:00')
 
     const offererSelect = screen.getByLabelText(
       OFFERER_LABEL
     ) as HTMLSelectElement
-    expect(offererSelect.value).toBe('')
+    expect(offererSelect.value).toBe('OFFERER_ID')
 
     const venueSelect = screen.getByLabelText(VENUE_LABEL) as HTMLSelectElement
     expect(venueSelect.value).toBe('')
 
     const offerVenueRadio1 = screen.getByLabelText(
-      OFFER_VENUE_OFFERER_LABEL
+      EVENT_ADDRESS_OFFERER_LABEL
     ) as HTMLInputElement
     const offerVenueRadio2 = screen.getByLabelText(
-      OFFER_VENUE_SCHOOL_LABEL
+      EVENT_ADDRESS_SCHOOL_LABEL
     ) as HTMLInputElement
     const offerVenueRadio3 = screen.getByLabelText(
-      OFFER_VENUE_OTHER_LABEL
+      EVENT_ADDRESS_OTHER_LABEL
     ) as HTMLInputElement
     ;[offerVenueRadio1, offerVenueRadio2, offerVenueRadio3].forEach(radio => {
       expect(radio.checked).toBe(false)
