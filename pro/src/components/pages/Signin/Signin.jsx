@@ -22,8 +22,8 @@ import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 class Signin extends PureComponent {
   constructor(props) {
     super(props)
-    const { currentUser, history } = props
-    redirectLoggedUser(history, currentUser)
+    const { currentUser, history, location } = props
+    redirectLoggedUser(history, location, currentUser)
 
     this.state = {
       emailValue: '',
@@ -168,6 +168,7 @@ Signin.propTypes = {
   currentUser: PropTypes.shape(),
   history: PropTypes.shape().isRequired,
   isAccountCreationAvailable: PropTypes.bool.isRequired,
+  location: PropTypes.shape().isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submit: PropTypes.func.isRequired,
 }

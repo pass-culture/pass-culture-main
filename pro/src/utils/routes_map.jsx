@@ -1,5 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router'
+import { useLocation } from 'react-router-dom'
 
 import CsvDetailViewContainer from 'components/layout/CsvTable/CsvTableContainer'
 import BookingsRecapContainer from 'components/pages/Bookings/BookingsRecapContainer'
@@ -21,7 +22,10 @@ import OfferEducationalCreation from 'routes/OfferEducationalCreation'
 import OfferType from 'routes/OfferType'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
-const RedirectToConnexionComponent = () => <Redirect to="/connexion" />
+const RedirectToConnexionComponent = () => {
+  const location = useLocation()
+  return <Redirect to={`/connexion${location.search}`} />
+}
 
 // NOTE: routes are sorted by PATH alphabetical order
 // DEPRECATED: Pages are currently be rework to not use <Main> component
