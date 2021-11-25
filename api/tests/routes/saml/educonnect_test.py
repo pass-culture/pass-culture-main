@@ -181,6 +181,21 @@ class EduconnectTest:
         )
 
     @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
+    def test_educonnect_redirects_to_error_page_18_years_old(self, mock_get_educonnect_user, client, app):
+        _, request_id = self.connect_to_educonnect(client, app)
+        age = 18
+        mock_get_educonnect_user.return_value = users_factories.EduconnectUserFactory(
+            saml_request_id=request_id, age=age
+        )
+
+        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+
+        assert response.status_code == 302
+        assert response.location.startswith(
+            "https://webapp-v2.example.com/idcheck/educonnect/erreur?code=UserAgeNotValid18YearsOld"
+        )
+
+    @patch("pcapi.core.users.external.educonnect.api.get_educonnect_user")
     def test_educonnect_redirects_to_error_page_too_old(self, mock_get_educonnect_user, client, app):
         _, request_id = self.connect_to_educonnect(client, app)
         age = 18
