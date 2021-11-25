@@ -442,8 +442,6 @@ class AccountCreationTest:
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
             "birthdate": "1960-12-31",
-            "firstName": "John",
-            "lastName": "Doe",
             "notifications": True,
             "token": "gnagna",
             "marketingEmailSubscription": True,
@@ -455,8 +453,6 @@ class AccountCreationTest:
         user = User.query.first()
         assert user is not None
         assert user.email == "john.doe@example.com"
-        assert user.firstName == "John"
-        assert user.lastName == "Doe"
         assert user.get_notification_subscriptions().marketing_email
         assert user.isEmailValidated is False
         mocked_check_recaptcha_token_is_valid.assert_called()
@@ -533,55 +529,6 @@ class AccountCreationTest:
         response = test_client.post("/native/v1/account", json=data)
         assert response.status_code == 400
         assert push_testing.requests == []
-
-    @override_features(**{FeatureToggle.ENABLE_UBBLE.name: True})
-    @pytest.mark.parametrize("age", [15, 16, 17, 18])
-    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation_enable_ubble_eligible(self, mocked_check_recaptcha_token_is_valid, age, app):
-        date_of_birth = date.today() - relativedelta(years=age, months=6)
-        assert FeatureToggle.ENABLE_UBBLE.is_active()
-        test_client = TestClient(app.test_client())
-        assert User.query.first() is None
-        data = {
-            "email": "John.doe@example.com",
-            "password": "Aazflrifaoi6@",
-            "birthdate": date_of_birth.isoformat(),
-            "firstName": "John",
-            "lastName": "Doe",
-            "notifications": True,
-            "token": "gnagna",
-            "marketingEmailSubscription": True,
-        }
-
-        response = test_client.post("/native/v1/account", json=data)
-        assert response.status_code == 204
-
-    @override_features(**{FeatureToggle.ENABLE_UBBLE.name: True})
-    @pytest.mark.parametrize("age,expected", [(15, 400), (16, 400), (17, 400), (18, 400), (19, 204), (20, 204)])
-    @pytest.mark.parametrize("missing_value", [None, ""])
-    @pytest.mark.parametrize("missing_key", ["firstName", "lastName"])
-    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation_enable_ubble_name_missing(
-        self, mocked_check_recaptcha_token_is_valid, missing_key, missing_value, age, expected, app
-    ):
-        date_of_birth = date.today() - relativedelta(years=age, months=6)
-        assert FeatureToggle.ENABLE_UBBLE.is_active()
-        test_client = TestClient(app.test_client())
-        assert User.query.first() is None
-        data = {
-            "email": "John.doe@example.com",
-            "password": "Aazflrifaoi6@",
-            "birthdate": date_of_birth.isoformat(),
-            "firstName": "John",
-            "lastName": "Doe",
-            "notifications": True,
-            "token": "gnagna",
-            "marketingEmailSubscription": True,
-        }
-        data[missing_key] = missing_value
-
-        response = test_client.post("/native/v1/account", json=data)
-        assert response.status_code == expected
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     @override_settings(IS_PERFORMANCE_TESTS=True)
@@ -1700,6 +1647,8 @@ class UpdateBeneficiaryInformationTest:
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
         profile_data = {
+            "firstName": "John",
+            "lastName": "Doe",
             "address": "1 rue des rues",
             "city": "Uneville",
             "postalCode": "77000",
@@ -1711,6 +1660,8 @@ class UpdateBeneficiaryInformationTest:
         assert response.status_code == 204
 
         user = User.query.get(user.id)
+        assert user.firstName == "John"
+        assert user.lastName == "Doe"
         assert user.address == "1 rue des rues"
         assert user.city == "Uneville"
         assert user.postalCode == "77000"
@@ -1878,6 +1829,88 @@ class UpdateBeneficiaryInformationTest:
         assert user.deposit.amount == 20
 
         assert len(push_testing.requests) == 1
+
+    @override_features(ENABLE_UBBLE=True)
+    @pytest.mark.parametrize("age", [15, 16, 17, 18])
+    def test_update_beneficiary_underage_ubble_eligible(self, age, client, app):
+        """
+        Test that valid request:
+            * updates the user's id check profile information;
+            * sets the user to beneficiary;
+            * send a request to Batch to update the user's information
+        """
+        assert FeatureToggle.ENABLE_UBBLE.is_active()
+
+        user = users_factories.UserFactory(
+            address=None,
+            city=None,
+            postalCode=None,
+            activity=None,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneNumber="+33609080706",
+            dateOfBirth=date.today() - relativedelta(years=age, months=6),
+        )
+
+        profile_data = {
+            "firstName": "John",
+            "lastName": "Doe",
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "postalCode": "77000",
+            "activity": "Lycéen",
+        }
+
+        client.with_token(user.email)
+        response = client.patch("/native/v1/beneficiary_information", profile_data)
+
+        assert response.status_code == 204
+
+        user = User.query.get(user.id)
+        assert user.firstName == "John"
+        assert user.lastName == "Doe"
+        assert user.address == "1 rue des rues"
+        assert user.city == "Uneville"
+        assert user.postalCode == "77000"
+        assert user.activity == "Lycéen"
+        assert user.phoneNumber == "+33609080706"
+
+    @override_features(ENABLE_UBBLE=True)
+    @pytest.mark.parametrize("age", [15, 16, 17, 18])
+    @pytest.mark.parametrize("missing_value", [None, ""])
+    @pytest.mark.parametrize("missing_key", ["firstName", "lastName"])
+    def test_update_beneficiary_underage_ubble_name_missing(self, missing_key, missing_value, age, client, app):
+        """
+        Test that valid request:
+            * updates the user's id check profile information;
+            * sets the user to beneficiary;
+            * send a request to Batch to update the user's information
+        """
+        assert FeatureToggle.ENABLE_UBBLE.is_active()
+
+        user = users_factories.UserFactory(
+            address=None,
+            city=None,
+            postalCode=None,
+            activity=None,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneNumber="+33609080706",
+            dateOfBirth=date.today() - relativedelta(years=age, months=6),
+        )
+
+        profile_data = {
+            "firstName": "John",
+            "lastName": "Doe",
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "postalCode": "77000",
+            "activity": "Lycéen",
+        }
+        profile_data[missing_key] = missing_value
+
+        client.with_token(user.email)
+        response = client.patch("/native/v1/beneficiary_information", profile_data)
+
+        assert response.status_code == 400
 
 
 class ProfilingFraudScoreTest:
