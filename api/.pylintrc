@@ -16,6 +16,7 @@ extension-pkg-whitelist=lxml,posix_ipc,spidev,netifaces,pydantic,math,binascii,u
 # List of plugins (as comma separated values of python module names) to load,
 # usually to register additional checkers.
 load-plugins=
+    pcapi.utils.pylint,
     pylint_strict_informational
 
 
