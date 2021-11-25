@@ -158,7 +158,7 @@
       </tr>
       <tr>
         <th scope="row">Téléphone validé</th>
-        <td>{{ model.phoneValidationStatus.value|default("Non") }}</td>
+        <td>{{ model.phoneValidationStatus.value|yesno }}</td>
       </tr>
       <tr>
         <th scope="row">Compte actif</th>
