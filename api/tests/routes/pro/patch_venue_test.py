@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.finance.factories import BusinessUnitFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Venue
@@ -196,6 +197,60 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert response.json["siret"] == venue.siret
+
+    @pytest.mark.usefixtures("db_session")
+    def test_add_business_unit_id(self, app) -> None:
+        user_offerer = offers_factories.UserOffererFactory()
+        venue = offers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            businessUnit=None,
+        )
+
+        new_business_unit = BusinessUnitFactory(siret=f"{venue.managingOfferer.siren}11111")
+        venue_data = populate_missing_data_from_venue(
+            {"businessUnitId": new_business_unit.id},
+            venue,
+        )
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
+
+        assert response.status_code == 200
+        assert venue.businessUnit.id == new_business_unit.id
+
+    @pytest.mark.usefixtures("db_session")
+    def test_remove_business_unit_id(self, app) -> None:
+        user_offerer = offers_factories.UserOffererFactory()
+        venue = offers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+        )
+        venue_data = populate_missing_data_from_venue(
+            {"businessUnitId": None},
+            venue,
+        )
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
+
+        assert response.status_code == 200
+        assert venue.businessUnitId == None
+
+    @pytest.mark.usefixtures("db_session")
+    def test_error_add_business_unit_id(self, app) -> None:
+        user_offerer = offers_factories.UserOffererFactory()
+        venue = offers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            businessUnit=None,
+        )
+
+        new_business_unit = BusinessUnitFactory()
+        venue_data = populate_missing_data_from_venue(
+            {"businessUnitId": new_business_unit.id},
+            venue,
+        )
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
+        response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_data)
+
+        assert response.status_code == 400
+        assert response.json["businessUnitId"] == ["Ce point de facturation n'est pas un choix valide pour ce lieu."]
 
 
 @pytest.mark.usefixtures("db_session")

@@ -111,7 +111,7 @@ def edit_venue(venue_id: str, body: EditVenueBodyModel) -> GetVenueResponseModel
         for field in accessibility_fields
     )
     have_withdrawal_details_changes = body.withdrawalDetails != venue.withdrawalDetails
-    venue = offerers_api.update_venue(venue, body.contact, **update_venue_attrs)
+    venue = offerers_api.update_venue(venue, contact_data=body.contact, **update_venue_attrs)
     venue_attrs = as_dict(venue)
 
     if have_accessibility_changes and body.isAccessibilityAppliedOnAllOffers:

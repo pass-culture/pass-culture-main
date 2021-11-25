@@ -1,14 +1,30 @@
 from decimal import Decimal
 from decimal import InvalidOperation
 
+from pcapi.core.finance.models import BusinessUnit
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.models.api_errors import ApiErrors
+from pcapi.utils.human_ids import dehumanize
 
 
 MAX_LONGITUDE = 180
 MAX_LATITUDE = 90
 
 VENUE_BANNER_MAX_SIZE = 200_000
+
+
+def check_existing_business_unit(business_unit_id: int, offerer: Offerer):
+    business_unit = BusinessUnit.query.filter_by(id=business_unit_id).one_or_none()
+    if not business_unit:
+        errors = ApiErrors()
+        errors.add_error("businessUnitId", "Ce point de facturation n'existe pas.")
+        raise errors
+
+    if business_unit.siret[:9] != offerer.siren:
+        errors = ApiErrors()
+        errors.add_error("businessUnitId", "Ce point de facturation n'est pas un choix valide pour ce lieu.")
+        raise errors
 
 
 def check_existing_venue(venue: Venue):
@@ -33,6 +49,17 @@ def validate_coordinates(raw_latitude, raw_longitude):
 
 
 def check_venue_creation(data):
+    offerer_id = dehumanize(data.get("managingOffererId"))
+    if not offerer_id:
+        errors = ApiErrors()
+        errors.add_error("managingOffererId", "Vous devez choisir une structure pour votre lieu.")
+        raise errors
+    offerer = Offerer.query.filter(Offerer.id == offerer_id).one_or_none()
+    if not offerer:
+        errors = ApiErrors()
+        errors.add_error("managingOffererId", "La structure que vous avez choisie n'existe pas.")
+        raise errors
+
     if None in [
         data.get("audioDisabilityCompliant"),
         data.get("mentalDisabilityCompliant"),
@@ -43,10 +70,15 @@ def check_venue_creation(data):
         errors.add_error("global", "L'accessibilité du lieu doit être définie.")
         raise errors
 
+    business_unit_id = data.get("businessUnitId")
+    if business_unit_id:
+        check_existing_business_unit(business_unit_id, offerer)
+
 
 def check_venue_edition(modifications, venue):
     managing_offerer_id = modifications.get("managingOffererId")
     siret = modifications.get("siret")
+    business_unit_id = modifications.get("businessUnitId")
 
     venue_disability_compliance = [
         venue.audioDisabilityCompliant,
@@ -79,6 +111,9 @@ def check_venue_edition(modifications, venue):
         errors = ApiErrors()
         errors.add_error("global", "L'accessibilité du lieu doit etre définie.")
         raise errors
+
+    if business_unit_id:
+        check_existing_business_unit(business_unit_id, offerer=venue.managingOfferer)
 
 
 def _validate_longitude(api_errors, raw_longitude):
