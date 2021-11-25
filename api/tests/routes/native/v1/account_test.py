@@ -7,6 +7,8 @@ import logging
 from pathlib import Path
 import re
 from unittest.mock import patch
+from urllib.parse import parse_qs
+from urllib.parse import urlparse
 import uuid
 
 from dateutil.relativedelta import relativedelta
@@ -696,6 +698,7 @@ class UpdateUserEmailTest:
     identifier = "email@example.com"
 
     def test_update_user_email(self, app, client):
+        new_email = "updated_" + self.identifier
         password = "some_random_string"
         user = users_factories.UserFactory(email=self.identifier, password=password)
 
@@ -703,7 +706,7 @@ class UpdateUserEmailTest:
         response = client.post(
             "/native/v1/profile/update_email",
             json={
-                "email": "updated_" + self.identifier,
+                "email": new_email,
                 "password": password,
             },
         )
@@ -713,6 +716,17 @@ class UpdateUserEmailTest:
         user = User.query.filter_by(email=self.identifier).first()
         assert user.email == self.identifier  # email not updated until validation link is used
         assert len(mails_testing.outbox) == 2  # one email to the current address, another to the new
+
+        # extract new email from activation link, which is a firebase
+        # dynamic link meaning that the real url needs to be extracted
+        # from it.
+        activation_email = mails_testing.outbox[-1]
+        confirmation_link = urlparse(activation_email.sent_data["Vars"]["confirmation_link"])
+        base_url = parse_qs(confirmation_link.query)["link"][0]
+        base_url_params = parse_qs(urlparse(base_url).query)
+
+        assert {"new_email", "token", "expiration_timestamp"} <= base_url_params.keys()
+        assert base_url_params["new_email"] == [new_email]
 
     def test_update_email_missing_password(self, app, client):
         user = users_factories.UserFactory(email=self.identifier)
