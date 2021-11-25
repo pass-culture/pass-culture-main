@@ -16,7 +16,6 @@ from pcapi.core.users import models as user_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.external.educonnect import api as educonnect_api
 from pcapi.core.users.external.educonnect import exceptions as educonnect_exceptions
-from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.native.security import authenticated_user_required
 
 from . import blueprint
@@ -54,7 +53,7 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
 
     except educonnect_exceptions.ResponseTooOld:
         logger.warning("Educonnect saml_response too old")
-        return redirect(f"{settings.WEBAPP_V2_URL}/idcheck/erreur", code=302)
+        return redirect(ERROR_PAGE_URL, code=302)
 
     except educonnect_exceptions.UserTypeNotStudent as exc:
         logger.info(
@@ -66,12 +65,12 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
 
     except educonnect_exceptions.EduconnectAuthenticationException:
         logger.warning("Educonnect authentication Error")
-        return redirect(f"{settings.WEBAPP_V2_URL}/idcheck/erreur", code=302)
+        return redirect(ERROR_PAGE_URL, code=302)
 
     user_id = _user_id_from_saml_request_id(educonnect_user.saml_request_id)
 
     if user_id is None:
-        raise ApiErrors({"saml_request_id": "user associated to saml_request_id not found"})
+        return redirect(ERROR_PAGE_URL, code=302)
 
     user = user_models.User.query.get(user_id)
 
