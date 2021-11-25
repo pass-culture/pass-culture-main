@@ -18,6 +18,7 @@ import SignupContainer from 'components/pages/Signup/SignupContainer'
 import SignupValidationContainer from 'components/pages/Signup/SignupValidation/SignupValidationContainer'
 import StyleguideContainer from 'components/pages/Styleguide/StyleguideContainer'
 import OfferEducationalCreation from 'routes/OfferEducationalCreation'
+import OfferEducationalStockCreation from 'routes/OfferEducationalStockCreation'
 import OfferType from 'routes/OfferType'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
@@ -179,6 +180,13 @@ const routes = [
     exact: true,
     path: '/offres',
     title: 'Offres',
+  },
+  {
+    component: OfferEducationalStockCreation,
+    exact: true,
+    featureName: 'ENABLE_NEW_EDUCATIONAL_OFFER_CREATION_FORM',
+    path: '/offre/:offerId([A-Z0-9]+)/scolaire/stocks',
+    title: 'Stock lié à une offre Scolaire',
   },
 ]
 
