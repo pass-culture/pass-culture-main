@@ -394,7 +394,7 @@ module.exports = function (webpackEnv) {
 
                 plugins: [
                   [
-                    require.resolve('babel-plugin-typescript-to-proptypes'), 
+                    require.resolve('babel-plugin-typescript-to-proptypes'),
                     { implicitChildren: true }
                   ],
                   [
@@ -680,6 +680,8 @@ module.exports = function (webpackEnv) {
         eslintPath: require.resolve('eslint'),
         context: paths.appSrc,
         cache: true,
+        failOnError: !isEnvDevelopment,
+        failOnWarning: !isEnvDevelopment,
         cacheLocation: path.resolve(paths.appNodeModules, '.cache', '.eslintcache'),
         // ESLint class options
         cwd: paths.appPath,
