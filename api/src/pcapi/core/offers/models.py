@@ -354,6 +354,8 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
     Index("venueId_idAtProvider_index", venueId, idAtProvider, unique=True)
 
+    Index("offer_expr_idx", ExtraDataMixin.extraData["isbn"].astext)
+
     @hybrid_property
     def isSoldOut(self):
         for stock in self.stocks:
