@@ -18,12 +18,9 @@ def _format_is_email_validated(view, context, model, name):
     if model.isEmailValidated:
         return True
     url = url_for(".resend_validation_email_view")
-    _html = """
-     <a href="{url}?user_id={model_id}" title="Réenvoyer l'email de validation">Réenvoyer...</a>
-    """.format(
-        url=url, model_id=model.id
-    )
-    return Markup(_html)
+    return Markup(
+        """<a href="{url}?user_id={model_id}" title="Réenvoyer l'email de validation">Réenvoyer...</a>"""
+    ).format(url=url, model_id=model.id)
 
 
 class ResendValidationEmailMixin:

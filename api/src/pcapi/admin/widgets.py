@@ -19,6 +19,17 @@ class AutocompleteSelectWidget(wtf_widgets.Select):
         else:
             selected_ids = ""
             selected_data = []
+        # `id` and `text` will be enclosed in quotes below. If any of
+        # them includes a quote, we'll get a JavaScript syntax error
+        # (or, worst, unwanted code execution if values are specially
+        # crafted).
+        selected_data = [
+            {
+                "id": item["id"].replace('"', '\\"'),
+                "text": item["text"].replace('"', '\\"'),
+            }
+            for item in selected_data
+        ]
         if self.multiple:
             selected_data_js = "[%s]" % ",".join('{id: "%(id)s", text: "%(text)s"}' % item for item in selected_data)
         elif selected_data:
@@ -61,7 +72,7 @@ class AutocompleteSelectWidget(wtf_widgets.Select):
             "selected_data": selected_data_js,
             "url": self.endpoint,
         }
-        return markupsafe.Markup(html)
+        return markupsafe.Markup(html)  # pylint: disable=markupsafe-uncontrolled-string
 
 
 class DateInputWithConstraint(wtf_html5_widgets.DateInput):
@@ -88,15 +99,18 @@ class SelectWithOptgroups(wtf_widgets.Select):
             kwargs["required"] = True
         if field.size:
             kwargs.setdefault("size", field.size)
-        html = ["<select %s>" % wtf_widgets.html_params(name=field.name, **kwargs)]
+        select_attrs = wtf_widgets.html_params(name=field.name, **kwargs)
+        html = markupsafe.Markup(f"<select {select_attrs}>")  # pylint: disable=markupsafe-uncontrolled-string
         for group_label, group_options in field.choices:
-            html.append("<optgroup %s>" % wtf_widgets.html_params(label=group_label))
+            optgroup_attrs = wtf_widgets.html_params(label=markupsafe.escape(group_label))
+            html += markupsafe.Markup(f"<optgroup {optgroup_attrs}>")  # pylint: disable=markupsafe-uncontrolled-string
             for value, label in group_options:
                 if self.multiple:
                     selected = field.coerce(value) in (field.data or [])
                 else:
                     selected = field.coerce(value) == field.data
-                html.append(self.render_option(value, label, selected))
-            html.append("</optgroup>")
-        html.append("</select>")
-        return markupsafe.Markup("".join(html))
+                option_html = self.render_option(value, markupsafe.escape(label), selected)
+                html += markupsafe.Markup(option_html)  # pylint: disable=markupsafe-uncontrolled-string
+            html += markupsafe.Markup("</optgroup>")
+        html += markupsafe.Markup("</select>")
+        return html

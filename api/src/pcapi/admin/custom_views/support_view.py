@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 
 def beneficiary_fraud_results_formatter(view, context, model, name) -> Markup:
-    result_mapping_class = {
+    css_classes = {
         fraud_models.FraudStatus.OK: "badge-success",
         fraud_models.FraudStatus.KO: "badge-danger",
         fraud_models.FraudStatus.SUSPICIOUS: "badge-warning",
@@ -44,11 +44,15 @@ def beneficiary_fraud_results_formatter(view, context, model, name) -> Markup:
     if not model.beneficiaryFraudResults:
         return Markup("""<span class="badge badge-secondary">Inconnu</span>""")
 
-    statuses = ""
+    statuses = Markup("<div>")
     for (index, fraud_result) in enumerate(model.beneficiaryFraudResults):
-        statuses += f"""<span class="badge {result_mapping_class[fraud_result.status]}" {"style='margin-left: 8px;'" if index > 0 else ""}>{fraud_result.status.value}</span>"""
-
-    return Markup(f"""<div>{statuses}</div>""")
+        statuses += Markup("""<span class="badge {css_class}" style="{extra_style}">{value}</span>""").format(
+            css_class=css_classes[fraud_result.status],
+            extra_style="margin-left: 8px" if index > 0 else "",
+            value=fraud_result.status.value,
+        )
+    statuses += Markup("</div>")
+    return statuses
 
 
 def beneficiary_fraud_review_formatter(view, context, model, name) -> Markup:
@@ -73,11 +77,11 @@ def beneficiary_fraud_review_formatter(view, context, model, name) -> Markup:
 
 
 def beneficiary_fraud_checks_formatter(view, context, model, name) -> Markup:
-    values = []
+    html = Markup("<ul>")
     for instance in model.beneficiaryFraudChecks:
-        values.append(f"<li>{instance.type.value}</li>")
-
-    return Markup(f"""<ul>{"".join(values)}</ul>""")
+        html += Markup("<li>{instance.type.value}</li>").format(instance=instance)
+    html += Markup("</ul>")
+    return html
 
 
 class FraudReviewForm(wtforms.Form):
@@ -245,8 +249,10 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             return flask.redirect(flask.url_for(".details_view", id=user_id))
         form = FraudReviewForm(flask.request.form)
         if not form.validate():
-            errors = "<br>".join(f"{field}: {error[0]}" for field, error in form.errors.items())
-            flask.flash(Markup(f"Erreurs lors de la validation du formulaire: <br> {errors}"), "error")
+            errors_html = Markup("Erreurs lors de la validation du formulaire: <br>")
+            for field, error in form.errors.items():
+                errors_html += Markup("{field}: {error[0]}").format(field=field, error=error)
+            flask.flash(errors_html, "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
         user = users_models.User.query.get(user_id)
         if not user:
@@ -291,8 +297,10 @@ class BeneficiaryView(base_configuration.BaseAdminView):
 
         form = IDPieceNumberForm(flask.request.form)
         if not form.validate():
-            errors = "<br>".join(f"{field}: {error[0]}" for field, error in form.errors.items())
-            flask.flash(Markup(f"Erreurs lors de la validation du formulaire: <br> {errors}"), "error")
+            errors_html = Markup("Erreurs lors de la validation du formulaire: <br>")
+            for field, error in form.errors.items():
+                errors_html += Markup("{field}: {error[0]}").format(field=field, error=error)
+            flask.flash(errors_html, "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
 
         user = users_models.User.query.get(user_id)

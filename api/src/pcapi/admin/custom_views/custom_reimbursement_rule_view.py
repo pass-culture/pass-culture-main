@@ -127,7 +127,7 @@ def format_timespan(view, context, model, name):
         )
     else:
         end = "∞"
-    return markupsafe.Markup(f"{start} → {end}")
+    return markupsafe.Markup("{start} → {end}").format(start=start, end=end)
 
 
 def format_subcategories(view, context, model, name):
@@ -137,9 +137,11 @@ def format_subcategories(view, context, model, name):
     if len(labels) > 5:
         summary = ", ".join(labels)
         labels = ", ".join(labels[:5])
-        return markupsafe.Markup(f'<span title="{summary}">{labels}, &hellip;</span>')
+        return markupsafe.Markup('<span title="{summary}">{labels}, &hellip;</span>').format(
+            summary=summary, labels=labels
+        )
     labels = ", ".join(labels)
-    return markupsafe.Markup(labels)
+    return markupsafe.Markup(labels)  # pylint: disable=markupsafe-uncontrolled-string
 
 
 def format_siren(view, context, model, name):
@@ -163,7 +165,7 @@ def get_error_message(exception: payments_exceptions.ReimbursementRuleValidation
             for rule_id in exception.conflicts
         )
         msg += "."
-        return markupsafe.Markup(msg)
+        return markupsafe.Markup(msg)  # pylint: disable=markupsafe-uncontrolled-string
     return str(exception)
 
 
