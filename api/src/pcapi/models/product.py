@@ -4,6 +4,7 @@ from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
+from sqlalchemy import Index
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import Text
@@ -61,6 +62,8 @@ class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
     subcategoryId = Column(Text, nullable=False, index=True)
 
     thumb_path_component = "products"
+
+    Index("product_expr_idx", ExtraDataMixin.extraData["isbn"].astext)
 
     @property
     def subcategory(self) -> subcategories.Subcategory:
