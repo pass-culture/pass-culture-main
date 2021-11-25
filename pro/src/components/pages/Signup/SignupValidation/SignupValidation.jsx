@@ -18,8 +18,8 @@ import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 class SignupValidation extends PureComponent {
   constructor(props) {
     super(props)
-    const { currentUser, history } = props
-    redirectLoggedUser(history, currentUser)
+    const { currentUser, location, history } = props
+    redirectLoggedUser(history, location, currentUser)
   }
 
   componentDidMount() {
@@ -77,6 +77,7 @@ SignupValidation.propTypes = {
   currentUser: PropTypes.shape(),
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.func.isRequired,
+  location: PropTypes.shape().isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
       token: PropTypes.string.isRequired,

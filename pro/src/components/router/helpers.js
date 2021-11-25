@@ -1,9 +1,15 @@
-export const redirectLoggedUser = (history, currentUser) => {
+export const redirectLoggedUser = (history, location, currentUser) => {
   if (currentUser) {
-    if (currentUser.isAdmin) {
-      history.push('/structures')
+    let redirectUrl = null
+
+    const queryParams = new URLSearchParams(location.search)
+    if (queryParams.has('de')) {
+      redirectUrl = queryParams.get('de')
+    } else if (currentUser.isAdmin) {
+      redirectUrl = `/structures${location.search}`
     } else {
-      history.push('/accueil')
+      redirectUrl = `/accueil${location.search}`
     }
+    history.push(redirectUrl)
   }
 }
