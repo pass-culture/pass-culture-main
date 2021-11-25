@@ -63,7 +63,11 @@ def _get_digital_venue_type_id() -> int:
     return VenueType.query.filter_by(label="Offre numérique").one().id
 
 
-def update_venue(venue: Venue, contact_data: venues_serialize.VenueContactModel = None, **attrs: typing.Any) -> Venue:
+def update_venue(
+    venue: Venue,
+    contact_data: venues_serialize.VenueContactModel = None,
+    **attrs: typing.Any,
+) -> Venue:
     validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
 
