@@ -13,12 +13,12 @@ const FormParticipants = (): JSX.Element => {
       title="Informations participants"
     >
       <div className={styles['checkbox-group']}>
-        {participantsOptions.map(({ label, value }) => (
+        {participantsOptions.map(option => (
           <Checkbox
-            key={value}
-            label={label}
+            key={option}
+            label={option}
             name="participants"
-            value={value}
+            value={option}
           />
         ))}
       </div>

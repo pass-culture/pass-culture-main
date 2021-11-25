@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router'
+import { useHistory, useLocation } from 'react-router'
 
+import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
+// @debt deprecated "Mathilde: should not import utility from legacy page"
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 import {
   INITIAL_EDUCATIONAL_FORM_VALUES,
@@ -11,6 +13,7 @@ import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 
 import { getCategoriesAdapter, getOfferersAdapter } from './adapters'
+import postOfferAdapter from './adapters/postOfferAdapter'
 import setInitialFormValues from './utils/setInitialFormValues'
 
 type AsyncScreenProps = Pick<
@@ -19,16 +22,32 @@ type AsyncScreenProps = Pick<
 >
 
 const OfferEducationalCreation = (): JSX.Element => {
+  const history = useHistory()
+  const location = useLocation()
+
   const [isReady, setIsReady] = useState<boolean>(false)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
   const [initialValues, setInitialValues] =
     useState<IOfferEducationalFormValues>(INITIAL_EDUCATIONAL_FORM_VALUES)
-  const location = useLocation()
+
   const { structure: offererId, lieu: venueId } = queryParamsFromOfferer(
     location
   ) as {
     structure?: string
     lieu?: string
+  }
+
+  const notify = useNotification()
+
+  const createOffer = async (offer: IOfferEducationalFormValues) => {
+    const { payload, isOk, message } = await postOfferAdapter(offer)
+
+    if (!isOk) {
+      return notify.error(message)
+    }
+
+    const queryString = `?structure=${offer.offererId}&lieu=${offer.venueId}`
+    history.push(`/offres/${payload.offerId}/scolaire/stocks${queryString}`)
   }
 
   useEffect(() => {
@@ -67,9 +86,7 @@ const OfferEducationalCreation = (): JSX.Element => {
     <OfferEducationalScreen
       {...screenProps}
       initialValues={initialValues}
-      onSubmit={(values: IOfferEducationalFormValues) => {
-        console.log(JSON.stringify(values, null, 2))
-      }}
+      onSubmit={createOffer}
     />
   ) : (
     <Spinner />

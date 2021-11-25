@@ -1,6 +1,7 @@
-import { IOfferEducationalFormValues } from "core/OfferEducational"
+import { IOfferEducationalFormValues } from 'core/OfferEducational'
 
 type CreateEducationalOfferPayload = {
+  offererId: string
   venueId: string
   subcategoryId: string
   name: string
@@ -17,6 +18,7 @@ type CreateEducationalOfferPayload = {
 export const createOfferPayload = (
   offer: IOfferEducationalFormValues
 ): CreateEducationalOfferPayload => ({
+  offererId: offer.offererId,
   venueId: offer.venueId,
   subcategoryId: offer.subCategory,
   name: offer.title,
