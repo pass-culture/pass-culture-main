@@ -48,13 +48,7 @@ const OfferEducationalCreation = (): JSX.Element => {
         })
 
         setInitialValues(values =>
-          setInitialFormValues(
-            values,
-            offerers.payload,
-            structure,
-            lieu,
-            categories.payload
-          )
+          setInitialFormValues(values, offerers.payload, structure, lieu)
         )
 
         setIsReady(true)
