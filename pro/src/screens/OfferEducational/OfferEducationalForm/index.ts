@@ -1,7 +1,1 @@
-export { default as FormType } from './FormType'
-export { default as FormVenue } from './FormVenue'
-export { default as FormOfferVenue } from './FormOfferVenue'
-export { default as FormParticipants } from './FormParticipants'
-export { default as FormAccessibility } from './FormAccessibility'
-export { default as FormContact } from './FormContact'
-export { default as FormNotifications } from './FormNotifications'
+export { default } from './OfferEducationalForm'

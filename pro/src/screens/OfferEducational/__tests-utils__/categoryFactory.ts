@@ -1,15 +1,15 @@
-import { Category } from 'custom_types/categories'
+import { IEducationalCategory } from 'core/OfferEducational'
 
-type CategoryExtend = Partial<Category> & { id: string }
-
-const categoryFactory = (categoryExtend: CategoryExtend): Category => {
+const categoryFactory = (
+  categoryExtend: Partial<IEducationalCategory>
+): IEducationalCategory => {
   return {
-    proLabel: 'categoryLabel',
-    isSelectable: true,
+    id: 'CATEGORY_ID',
+    label: 'categoryLabel',
     ...categoryExtend,
   }
 }
 
 export const categoriesFactory = (
-  categoriesExtend: CategoryExtend[]
-): Category[] => categoriesExtend.map(categoryFactory)
+  categoriesExtend: Partial<IEducationalCategory>[]
+): IEducationalCategory[] => categoriesExtend.map(categoryFactory)

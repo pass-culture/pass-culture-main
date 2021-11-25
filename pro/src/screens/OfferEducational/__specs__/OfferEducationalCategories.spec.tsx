@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createBrowserHistory } from 'history'
 import React from 'react'
@@ -28,20 +28,17 @@ describe('screens | OfferEducational', () => {
     props = setDefaultProps()
   })
 
-  it('should display first category and associated subcategories', () => {
+  it('should display empty category', () => {
     renderEACOfferCreation(props)
 
     const categoriesSelect = getCategoriesSelect()
-    expect(categoriesSelect.value).toBe('MUSEE')
+    expect(categoriesSelect.value).toBe('')
 
     const subCategoriesSelect = getSubcategoriesSelect()
-    expect(subCategoriesSelect.value).toBe('VISITE_GUIDEE')
-
-    expect(subCategoriesSelect.options).toHaveLength(1)
-    expect(subCategoriesSelect.options[0].value).toBe('VISITE_GUIDEE')
+    expect(subCategoriesSelect).not.toBeInTheDocument()
   })
 
-  it('should update subcategories when category changes', () => {
+  it('should update subcategories when category changes', async () => {
     renderEACOfferCreation(props)
 
     const categoriesSelect = getCategoriesSelect()
@@ -49,10 +46,12 @@ describe('screens | OfferEducational', () => {
     expect(categoriesSelect.value).toBe('CINEMA')
 
     const subCategoriesSelect = getSubcategoriesSelect()
-    expect(subCategoriesSelect.value).toBe('CINE_PLEIN_AIR')
 
-    expect(subCategoriesSelect.options).toHaveLength(2)
-    expect(subCategoriesSelect.options[0].value).toBe('CINE_PLEIN_AIR')
-    expect(subCategoriesSelect.options[1].value).toBe('EVENEMENT_CINE')
+    await waitFor(() => expect(subCategoriesSelect.options).toHaveLength(3))
+
+    expect(subCategoriesSelect.value).toBe('')
+    expect(subCategoriesSelect.options[0].value).toBe('')
+    expect(subCategoriesSelect.options[1].value).toBe('CINE_PLEIN_AIR')
+    expect(subCategoriesSelect.options[2].value).toBe('EVENEMENT_CINE')
   })
 })
