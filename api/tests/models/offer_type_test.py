@@ -65,6 +65,7 @@ def test_category_enum_content():
             "Live stream d'événement",
             "Spectacle enregistré",
             "Spectacle, représentation",
+            "Spectacle vivant - vente à distance",
         ],
         "VISITE": [
             "Entrée libre ou abonnement musée",
