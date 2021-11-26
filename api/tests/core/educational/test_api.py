@@ -266,6 +266,9 @@ class BookEducationalOfferTest:
         assert saved_educational_booking.booking.stock.id == stock.id
         assert saved_educational_booking.booking.stock.dnBookedQuantity == 1
         assert saved_educational_booking.confirmationLimitDate == stock.bookingLimitDatetime
+        assert saved_educational_booking.booking.cancellationLimitDate == stock.beginningDatetime - datetime.timedelta(
+            days=15
+        )
         assert saved_educational_booking.educationalInstitution.institutionId == educational_institution.institutionId
         assert saved_educational_booking.educationalYear.adageId == educational_year.adageId
         assert saved_educational_booking.booking.status == BookingStatus.PENDING
@@ -573,6 +576,36 @@ class BookEducationalOfferTest:
 
         saved_bookings = EducationalBooking.query.join(Booking).filter(Booking.stockId == stock.id).all()
         assert len(saved_bookings) == 0
+
+    def test_should_create_educational_booking_with_cancellation_limit_date_at_booking_date_when_less_than_15_days_to_event(
+        self,
+    ):
+        # Given
+        stock = offers_factories.EducationalEventStockFactory(beginningDatetime=datetime.datetime(2020, 11, 27))
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_factories.EducationalYearFactory(
+            beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
+        )
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
+        redactor_informations = AuthenticatedInformation(
+            email=educational_redactor.email,
+            civility=educational_redactor.civility,
+            firstname=educational_redactor.firstName,
+            lastname=educational_redactor.lastName,
+            uai=educational_institution.institutionId,
+        )
+
+        # When
+        returned_booking = educational_api.book_educational_offer(
+            redactor_informations=redactor_informations,
+            stock_id=stock.id,
+        )
+
+        # Then
+        saved_educational_booking = EducationalBooking.query.join(Booking).filter(Booking.stockId == stock.id).first()
+
+        assert saved_educational_booking.booking.id == returned_booking.id
+        assert saved_educational_booking.booking.cancellationLimitDate == returned_booking.dateCreated
 
 
 class RefuseEducationalBookingTest:
