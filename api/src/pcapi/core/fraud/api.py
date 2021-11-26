@@ -4,6 +4,7 @@ import re
 from typing import Optional
 from typing import Union
 
+from dateutil.relativedelta import relativedelta
 import sqlalchemy
 
 from pcapi.connectors.beneficiaries import jouve_backend
@@ -15,6 +16,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
 
+from . import exceptions
 from . import models
 from . import repository as fraud_repository
 
@@ -196,6 +198,28 @@ def start_ubble_fraud_check(user: user_models.User, ubble_content: models.UbbleI
     )
     db.session.add(fraud_check)
     db.session.commit()
+
+
+def get_eligibility_type(
+    data: Union[models.EduconnectContent, models.JouveContent, models.DMSContent]
+) -> Optional[user_models.EligibilityType]:
+    if isinstance(data, models.EduconnectContent):
+        registration_datetime = data.registration_datetime
+        birth_date = data.birth_date
+    elif isinstance(data, models.JouveContent):
+        registration_datetime = data.registrationDate
+        birth_date = data.birthDateTxt.date() if data.birthDateTxt else None
+    elif isinstance(data, models.DMSContent):
+        registration_datetime = data.registration_datetime
+        birth_date = data.birth_date
+    else:
+        raise exceptions.InvalidContentTypeException()
+
+    if registration_datetime is None or birth_date is None:
+        return None
+
+    age_at_registration_date = relativedelta(registration_datetime.date(), birth_date).years
+    return user_models.get_eligibility(age_at_registration_date)
 
 
 def on_identity_fraud_check_result(

@@ -214,7 +214,7 @@ class UserTest:
             assert user.has_beneficiary_role
             assert not user.has_pro_role
 
-    class UserTest:
+    class UserAgeTest:
         @pytest.mark.parametrize(
             "birth_date,today,latest_birthday",
             [
@@ -230,9 +230,23 @@ class UserTest:
                 (date(2000, 2, 29), date(2021, 3, 1), date(2021, 2, 28)),
             ],
         )
-        def test_with_leap_year(self, birth_date, today, latest_birthday):
+        def test_get_birthday_with_leap_year(self, birth_date, today, latest_birthday):
             with freeze_time(today):
                 assert user_models._get_latest_birthday(birth_date) == latest_birthday
+
+        @pytest.mark.parametrize(
+            "age,eligibility_type",
+            [
+                (19, None),
+                (18, user_models.EligibilityType.AGE18),
+                (17, user_models.EligibilityType.UNDERAGE),
+                (16, user_models.EligibilityType.UNDERAGE),
+                (15, user_models.EligibilityType.UNDERAGE),
+                (14, None),
+            ],
+        )
+        def test_get_eligibility(self, age, eligibility_type):
+            assert user_models.get_eligibility(age) == eligibility_type
 
 
 @pytest.mark.usefixtures("db_session")
