@@ -496,8 +496,8 @@ class UserFraudsterTest:
 class EduconnectFraudTest:
     def test_on_educonnect_result(self):
         fraud_factories.IneHashWhitelistFactory(ine_hash="5ba682c0fc6a05edf07cd8ed0219258f")
-        user = users_factories.UserFactory()
         birth_date = (datetime.datetime.today() - relativedelta(years=15)).date()
+        user = users_factories.UserFactory(dateOfBirth=birth_date)
         fraud_api.on_educonnect_result(
             user,
             fraud_models.EduconnectContent(

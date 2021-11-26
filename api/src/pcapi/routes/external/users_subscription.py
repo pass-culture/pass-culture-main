@@ -2,9 +2,9 @@ import logging
 
 from pcapi import settings
 from pcapi.connectors import api_demarches_simplifiees
+from pcapi.core.fraud import api as fraud_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
-from pcapi.core.users.models import EligibilityType
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository import repository
@@ -58,7 +58,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
         )
         return
     try:
-        remote_import.parse_beneficiary_information_graphql(raw_data["dossier"], form.procedure_id)
+        application = remote_import.parse_beneficiary_information_graphql(raw_data["dossier"], form.procedure_id)
     except remote_import.DMSParsingError as parsing_error:
         if raw_data["dossier"]["state"] == api_demarches_simplifiees.GraphQLApplicationStates.draft.value:
             remote_import.notify_parsing_exception(parsing_error.errors, raw_data["dossier"]["id"], client)
@@ -82,9 +82,9 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
             form.dossier_id,
             form.procedure_id,
             BeneficiaryImportSources.demarches_simplifiees,
-            "Webhook status update",
-            import_status,
-            eligibilityType=EligibilityType.AGE18,
+            eligibility_type=fraud_api.get_eligibility_type(application),
+            details="Webhook status update",
+            status=import_status,
         )
 
     if form.state == api_demarches_simplifiees.GraphQLApplicationStates.draft:

@@ -5,6 +5,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.models import EligibilityType
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
@@ -76,6 +77,7 @@ class SaveBeneficiaryImportWithStatusTest:
             source=BeneficiaryImportSources.demarches_simplifiees,
             source_id=14562,
             user=None,
+            eligibility_type=None,
         )
 
         # then
@@ -91,6 +93,7 @@ class SaveBeneficiaryImportWithStatusTest:
             source=BeneficiaryImportSources.demarches_simplifiees,
             source_id=145236,
             user=None,
+            eligibility_type=EligibilityType.AGE18,
         )
 
         # then
@@ -98,6 +101,7 @@ class SaveBeneficiaryImportWithStatusTest:
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.sourceId == 145236
         assert beneficiary_import.source == "demarches_simplifiees"
+        assert beneficiary_import.eligibilityType == EligibilityType.AGE18
 
     @pytest.mark.usefixtures("db_session")
     def test_a_status_is_set_on_an_existing_import(self, app):
@@ -110,6 +114,7 @@ class SaveBeneficiaryImportWithStatusTest:
                 source=BeneficiaryImportSources.demarches_simplifiees,
                 source_id=14562,
                 user=None,
+                eligibility_type=None,
             )
         beneficiary = users_factories.BeneficiaryGrant18Factory()
 
@@ -120,6 +125,7 @@ class SaveBeneficiaryImportWithStatusTest:
             source=BeneficiaryImportSources.demarches_simplifiees,
             source_id=14562,
             user=beneficiary,
+            eligibility_type=None,
         )
 
         # then
@@ -140,6 +146,7 @@ class SaveBeneficiaryImportWithStatusTest:
                 source=BeneficiaryImportSources.demarches_simplifiees,
                 source_id=14562,
                 user=beneficiary,
+                eligibility_type=None,
             )
 
         # When
@@ -149,6 +156,7 @@ class SaveBeneficiaryImportWithStatusTest:
             source=BeneficiaryImportSources.demarches_simplifiees,
             source_id=14562,
             user=None,
+            eligibility_type=None,
         )
 
         # Then

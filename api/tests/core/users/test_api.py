@@ -384,6 +384,8 @@ class CreateBeneficiaryTest:
 
     def test_with_eligible_user(self):
         user = users_factories.UserFactory(roles=[], dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
+        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
+        beneficiary_import.setStatus(ImportStatus.CREATED)
         user = subscription_api.activate_beneficiary(user, "test")
         assert user.has_beneficiary_role
         assert len(user.deposits) == 1
@@ -391,6 +393,8 @@ class CreateBeneficiaryTest:
     def test_apps_flyer_called(self):
         apps_flyer_data = {"apps_flyer": {"user": "some-user-id", "platform": "ANDROID"}}
         user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, externalIds=apps_flyer_data)
+        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
+        beneficiary_import.setStatus(ImportStatus.CREATED)
 
         expected = {
             "customer_user_id": str(user.id),
@@ -410,6 +414,8 @@ class CreateBeneficiaryTest:
 
     def test_external_users_updated(self):
         user = users_factories.UserFactory(roles=[], dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
+        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
+        beneficiary_import.setStatus(ImportStatus.CREATED)
         subscription_api.activate_beneficiary(user, "test")
 
         assert len(batch_testing.requests) == 1
