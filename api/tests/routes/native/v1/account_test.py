@@ -10,7 +10,6 @@ from unittest.mock import patch
 import uuid
 
 from dateutil.relativedelta import relativedelta
-from flask_jwt_extended.utils import create_access_token
 from freezegun.api import freeze_time
 from google.cloud import tasks_v2
 import jwt
@@ -53,7 +52,6 @@ from pcapi.routes.native.v1.serialization import account as account_serializers
 from pcapi.scripts.payment.user_recredit import recredit_underage_users
 
 import tests
-from tests.conftest import TestClient
 from tests.connectors import user_profiling_fixtures
 
 from .utils import create_user_and_test_client
@@ -65,33 +63,27 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class AccountTest:
     identifier = "email@example.com"
 
-    def test_get_user_profile_without_authentication(self, app):
+    def test_get_user_profile_without_authentication(self, client, app):
         users_factories.UserFactory(email=self.identifier)
 
-        response = TestClient(app.test_client()).get("/native/v1/me")
+        response = client.get("/native/v1/me")
 
         assert response.status_code == 401
 
-    def test_get_user_profile_not_found(self, app):
+    def test_get_user_profile_not_found(self, client, app):
         users_factories.UserFactory(email=self.identifier)
 
-        access_token = create_access_token(identity="other-email@example.com")
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.get("/native/v1/me")
+        client.with_token(email="other-email@example.com")
+        response = client.get("/native/v1/me")
 
         assert response.status_code == 403
         assert response.json["email"] == ["Utilisateur introuvable"]
 
-    def test_get_user_profile_not_active(self, app):
+    def test_get_user_profile_not_active(self, client, app):
         users_factories.UserFactory(email=self.identifier, isActive=False)
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.get("/native/v1/me")
+        client.with_token(email=self.identifier)
+        response = client.get("/native/v1/me")
 
         assert response.status_code == 403
         assert response.json["email"] == ["Utilisateur introuvable"]
@@ -168,26 +160,20 @@ class AccountTest:
         assert response.status_code == 200
         assert response.json == EXPECTED_DATA
 
-    def test_get_user_not_beneficiary(self, app):
+    def test_get_user_not_beneficiary(self, client, app):
         users_factories.UserFactory(email=self.identifier)
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.get("/native/v1/me")
+        client.with_token(email=self.identifier)
+        response = client.get("/native/v1/me")
 
         assert response.status_code == 200
         assert not response.json["domainsCredit"]
 
-    def test_get_user_profile_empty_first_name(self, app):
+    def test_get_user_profile_empty_first_name(self, client, app):
         users_factories.UserFactory(email=self.identifier, firstName="", publicName=VOID_PUBLIC_NAME)
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.get("/native/v1/me")
+        client.with_token(email=self.identifier)
+        response = client.get("/native/v1/me")
 
         assert response.status_code == 200
         assert response.json["email"] == self.identifier
@@ -196,18 +182,15 @@ class AccountTest:
         assert not response.json["isBeneficiary"]
         assert response.json["roles"] == []
 
-    def test_get_user_profile_recredit_amount_to_show(self, app):
+    def test_get_user_profile_recredit_amount_to_show(self, client, app):
         with freeze_time("2020-01-01"):
             users_factories.UnderageBeneficiaryFactory(email=self.identifier)
 
         with freeze_time("2021-01-02"):
             recredit_underage_users()
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        me_response = test_client.get("/native/v1/me")
+        client.with_token(email=self.identifier)
+        me_response = client.get("/native/v1/me")
         assert me_response.json["recreditAmountToShow"] == 3000
 
     def test_has_completed_id_check(self, client):
@@ -319,14 +302,11 @@ class AccountTest:
         assert response.json["nextBeneficiaryValidationStep"] == "id-check"
 
     @freeze_time("2021-06-01")
-    def test_next_beneficiary_validation_step_not_eligible(self, app):
+    def test_next_beneficiary_validation_step_not_eligible(self, client, app):
         users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2000, 1, 1))
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.get("/native/v1/me")
+        client.with_token(email=self.identifier)
+        response = client.get("/native/v1/me")
 
         assert response.status_code == 200
         assert not response.json["nextBeneficiaryValidationStep"]
@@ -335,8 +315,7 @@ class AccountTest:
     def test_next_beneficiary_validation_step_underage(self, client):
         users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2006, 1, 1))
 
-        access_token = create_access_token(identity=self.identifier)
-        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        client.with_token(email=self.identifier)
 
         with override_features(ALLOW_IDCHECK_UNDERAGE_REGISTRATION=True, ENABLE_EDUCONNECT_AUTHENTICATION=False):
             response = client.get("/native/v1/me")
@@ -365,8 +344,7 @@ class AccountTest:
     def test_next_beneficiary_validation_step_underage_not_eligible(self, client):
         users_factories.UserFactory(email=self.identifier, dateOfBirth=datetime(2006, 1, 1))
 
-        access_token = create_access_token(identity=self.identifier)
-        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        client.with_token(email=self.identifier)
 
         response = client.get("/native/v1/me")
         assert response.status_code == 200
@@ -422,19 +400,11 @@ class AccountTest:
         assert response.status_code == 200
 
 
-def build_test_client(app, identity):
-    access_token = create_access_token(identity=identity)
-    test_client = TestClient(app.test_client())
-    test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-    return test_client
-
-
 class AccountCreationTest:
     identifier = "email@example.com"
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation(self, mocked_check_recaptcha_token_is_valid, app):
-        test_client = TestClient(app.test_client())
+    def test_account_creation(self, mocked_check_recaptcha_token_is_valid, client, app):
         assert User.query.first() is None
         data = {
             "email": "John.doe@example.com",
@@ -445,7 +415,7 @@ class AccountCreationTest:
             "marketingEmailSubscription": True,
         }
 
-        response = test_client.post("/native/v1/account", json=data)
+        response = client.post("/native/v1/account", json=data)
         assert response.status_code == 204, response.json
 
         user = User.query.first()
@@ -464,8 +434,7 @@ class AccountCreationTest:
         assert "performance-tests" not in email_validation_token.value
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation_with_existing_email_sends_email(self, mocked_check_recaptcha_token_is_valid, app):
-        test_client = TestClient(app.test_client())
+    def test_account_creation_with_existing_email_sends_email(self, mocked_check_recaptcha_token_is_valid, client, app):
         users_factories.UserFactory(email=self.identifier)
         mocked_check_recaptcha_token_is_valid.return_value = None
 
@@ -478,15 +447,16 @@ class AccountCreationTest:
             "marketingEmailSubscription": True,
         }
 
-        response = test_client.post("/native/v1/account", json=data)
+        response = client.post("/native/v1/account", json=data)
         assert response.status_code == 204, response.json
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1838526
         assert push_testing.requests == []
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation_with_unvalidated_email_sends_email(self, mocked_check_recaptcha_token_is_valid, app):
-        test_client = TestClient(app.test_client())
+    def test_account_creation_with_unvalidated_email_sends_email(
+        self, mocked_check_recaptcha_token_is_valid, client, app
+    ):
         subscriber = users_factories.UserFactory(email=self.identifier, isEmailValidated=False)
         previous_token = users_factories.EmailValidationToken(user=subscriber).value
         mocked_check_recaptcha_token_is_valid.return_value = None
@@ -500,7 +470,7 @@ class AccountCreationTest:
             "marketingEmailSubscription": True,
         }
 
-        response = test_client.post("/native/v1/account", json=data)
+        response = client.post("/native/v1/account", json=data)
         assert response.status_code == 204, response.json
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
@@ -512,8 +482,7 @@ class AccountCreationTest:
         assert previous_token != tokens[0].value
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, app):
-        test_client = TestClient(app.test_client())
+    def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, client, app):
         assert User.query.first() is None
         data = {
             "email": "John.doe@example.com",
@@ -524,7 +493,7 @@ class AccountCreationTest:
             "marketingEmailSubscription": True,
         }
 
-        response = test_client.post("/native/v1/account", json=data)
+        response = client.post("/native/v1/account", json=data)
         assert response.status_code == 400
         assert push_testing.requests == []
 
@@ -573,14 +542,11 @@ class UserProfileUpdateTest:
         assert not user.get_notification_subscriptions().marketing_email
         assert len(push_testing.requests) == 1
 
-    def test_unsubscribe_push_notifications(self, app):
+    def test_unsubscribe_push_notifications(self, client, app):
         user = users_factories.UserFactory(email=self.identifier)
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post(
+        client.with_token(email=self.identifier)
+        response = client.post(
             "/native/v1/profile", json={"subscriptions": {"marketingPush": False, "marketingEmail": False}}
         )
 
@@ -597,14 +563,11 @@ class UserProfileUpdateTest:
 
     @override_settings(BATCH_SECRET_API_KEY="coucou-la-cle")
     @override_settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")
-    def test_unsubscribe_push_notifications_with_batch(self, app, cloud_task_client):
+    def test_unsubscribe_push_notifications_with_batch(self, client, app, cloud_task_client):
         user = users_factories.UserFactory(email=self.identifier)
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post(
+        client.with_token(email=self.identifier)
+        response = client.post(
             "/native/v1/profile", json={"subscriptions": {"marketingPush": False, "marketingEmail": False}}
         )
 
@@ -626,14 +589,11 @@ class UserProfileUpdateTest:
             "url": f"https://api.example.com/1.0/fake_android_api_key/data/users/{user.id}",
         }
 
-    def test_update_user_profile_reset_recredit_amount_to_show(self, app):
+    def test_update_user_profile_reset_recredit_amount_to_show(self, client, app):
         user = users_factories.UnderageBeneficiaryFactory(email=self.identifier, recreditAmountToShow=30)
 
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/reset_recredit_amount_to_show")
+        client.with_token(email=self.identifier)
+        response = client.post("/native/v1/reset_recredit_amount_to_show")
 
         assert response.status_code == 200
         assert user.recreditAmountToShow is None
@@ -686,7 +646,7 @@ class UpdateUserEmailTest:
             ("not_an_email", "some_random_string"),
         ],
     )
-    def test_update_email_errors(self, app, client, email, password):
+    def test_update_email_errors(self, client, app, email, password):
         user = users_factories.UserFactory(email=self.identifier)
 
         client.with_token(user.email)
@@ -955,38 +915,34 @@ class CulturalSurveyTest:
 
 
 class ResendEmailValidationTest:
-    def test_resend_email_validation(self, app):
+    def test_resend_email_validation(self, client, app):
         user = users_factories.UserFactory(isEmailValidated=False)
 
-        test_client = TestClient(app.test_client())
-        response = test_client.post("/native/v1/resend_email_validation", json={"email": user.email})
+        response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
 
         assert response.status_code == 204
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
 
-    def test_for_already_validated_email_does_sent_passsword_reset(self, app):
+    def test_for_already_validated_email_does_sent_passsword_reset(self, client, app):
         user = users_factories.UserFactory(isEmailValidated=True)
 
-        test_client = TestClient(app.test_client())
-        response = test_client.post("/native/v1/resend_email_validation", json={"email": user.email})
+        response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
 
         assert response.status_code == 204
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1838526
 
-    def test_for_unknown_mail_does_nothing(self, app):
-        test_client = TestClient(app.test_client())
-        response = test_client.post("/native/v1/resend_email_validation", json={"email": "aijfioern@mlks.com"})
+    def test_for_unknown_mail_does_nothing(self, client, app):
+        response = client.post("/native/v1/resend_email_validation", json={"email": "aijfioern@mlks.com"})
 
         assert response.status_code == 204
         assert not mails_testing.outbox
 
-    def test_for_deactivated_account_does_nothhing(self, app):
+    def test_for_deactivated_account_does_nothhing(self, client, app):
         user = users_factories.UserFactory(isEmailValidated=True, isActive=False)
 
-        test_client = TestClient(app.test_client())
-        response = test_client.post("/native/v1/resend_email_validation", json={"email": user.email})
+        response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
 
         assert response.status_code == 204
         assert not mails_testing.outbox
@@ -994,29 +950,25 @@ class ResendEmailValidationTest:
 
 @freeze_time("2018-06-01")
 class GetIdCheckTokenTest:
-    def test_get_id_check_token_eligible(self, app):
+    def test_get_id_check_token_eligible(self, client, app):
         user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-        response = test_client.get("/native/v1/id_check_token")
+        response = client.get("/native/v1/id_check_token")
 
         assert response.status_code == 200
         assert get_id_check_token(response.json["token"])
 
-    def test_get_id_check_token_not_eligible(self, app):
+    def test_get_id_check_token_not_eligible(self, client, app):
         user = users_factories.UserFactory(dateOfBirth=datetime(2001, 1, 1), departementCode="984")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-        response = test_client.get("/native/v1/id_check_token")
+        response = client.get("/native/v1/id_check_token")
 
         assert response.status_code == 400
         assert response.json == {"code": "USER_NOT_ELIGIBLE"}
 
-    def test_get_id_check_token_limit_reached(self, app):
+    def test_get_id_check_token_limit_reached(self, client, app):
         user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
 
         expiration_date = datetime.now() + timedelta(hours=2)
@@ -1024,10 +976,8 @@ class GetIdCheckTokenTest:
             settings.ID_CHECK_MAX_ALIVE_TOKEN, user=user, expirationDate=expiration_date, isUsed=False
         )
 
-        access_token = create_access_token(identity=user.email)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-        response = test_client.get("/native/v1/id_check_token")
+        client.with_token(email=user.email)
+        response = client.get("/native/v1/id_check_token")
 
         assert response.status_code == 400
         assert response.json["code"] == "TOO_MANY_ID_CHECK_TOKEN"
@@ -1045,11 +995,12 @@ class UploadIdentityDocumentTest:
         mocked_random_token,
         mocked_store_object,
         mocked_verify_identity_document,
+        client,
         app,
     ):
         user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
         token = TokenFactory(user=user, type=TokenType.ID_CHECK)
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
         mocked_random_token.return_value = "a_very_random_secret"
 
         identity_document = (self.IMAGES_DIR / "mouette_small.jpg").read_bytes()
@@ -1058,9 +1009,7 @@ class UploadIdentityDocumentTest:
             "token": token.value,
         }
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-        response = test_client.post("/native/v1/identity_document", form=data)
+        response = client.post("/native/v1/identity_document", form=data)
 
         assert response.status_code == 204
         mocked_store_object.assert_called_once_with(
@@ -1074,37 +1023,33 @@ class UploadIdentityDocumentTest:
             {"image_storage_path": "identity_documents/a_very_random_secret.jpg"}
         )
 
-    def test_ineligible_user(self, app):
+    def test_ineligible_user(self, client, app):
         user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="984")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
         token = TokenFactory(user=user, type=TokenType.ID_CHECK)
 
         thumb = (self.IMAGES_DIR / "pixel.png").read_bytes()
         data = {"identityDocumentFile": (BytesIO(thumb), "image.jpg"), "token": token.value}
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-        response = test_client.post("/native/v1/identity_document", form=data)
+        response = client.post("/native/v1/identity_document", form=data)
 
         assert response.status_code == 400
         assert response.json == {"code": "USER_NOT_ELIGIBLE"}
 
-    def test_token_expired(self, app):
+    def test_token_expired(self, client, app):
         user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
         token = TokenFactory(user=user, type=TokenType.ID_CHECK, expirationDate=datetime(2000, 1, 1))
 
         thumb = (self.IMAGES_DIR / "pixel.png").read_bytes()
         data = {"identityDocumentFile": (BytesIO(thumb), "image.jpg"), "token": token.value}
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-        response = test_client.post("/native/v1/identity_document", form=data)
+        response = client.post("/native/v1/identity_document", form=data)
 
         assert response.status_code == 400
         assert response.json == {"code": "EXPIRED_TOKEN", "message": "Token expiré"}
 
-    def test_token_used(self, app):
+    def test_token_used(self, client, app):
         user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
         token = TokenFactory(user=user, type=TokenType.ID_CHECK, isUsed=True)
 
@@ -1114,15 +1059,13 @@ class UploadIdentityDocumentTest:
             "token": token.value,
         }
 
-        access_token = create_access_token(identity=user.email)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-        response = test_client.post("/native/v1/identity_document", form=data)
+        client.with_token(email=user.email)
+        response = client.post("/native/v1/identity_document", form=data)
 
         assert response.status_code == 400
         assert response.json["code"] == "EXPIRED_TOKEN"
 
-    def test_no_token_found(self, app):
+    def test_no_token_found(self, client, app):
         user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
         token = TokenFactory(user=user, type=TokenType.ID_CHECK, isUsed=True)
 
@@ -1132,10 +1075,8 @@ class UploadIdentityDocumentTest:
             "token": f"{token.value}wrongsuffix",
         }
 
-        access_token = create_access_token(identity=user.email)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-        response = test_client.post("/native/v1/identity_document", form=data)
+        client.with_token(email=user.email)
+        response = client.post("/native/v1/identity_document", form=data)
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_TOKEN"
@@ -1172,14 +1113,11 @@ class ShowEligibleCardTest:
 
 
 class SendPhoneValidationCodeTest:
-    def test_send_phone_validation_code(self, app):
+    def test_send_phone_validation_code(self, client, app):
         user = users_factories.UserFactory(departementCode="93", phoneNumber="+33601020304")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/send_phone_validation_code")
+        response = client.post("/native/v1/send_phone_validation_code")
 
         assert response.status_code == 204
 
@@ -1197,24 +1135,21 @@ class SendPhoneValidationCodeTest:
         assert 0 <= int(token.value) < 1000000
 
         # validate phone number with generated code
-        response = test_client.post("/native/v1/validate_phone_number", json={"code": token.value})
+        response = client.post("/native/v1/validate_phone_number", json={"code": token.value})
 
         assert response.status_code == 204
         user = User.query.get(user.id)
         assert user.is_phone_validated
 
     @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
-    def test_send_phone_validation_code_too_many_attempts(self, app):
+    def test_send_phone_validation_code_too_many_attempts(self, client, app):
         user = users_factories.UserFactory(departementCode="93", phoneNumber="+33601020304")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/send_phone_validation_code")
+        response = client.post("/native/v1/send_phone_validation_code")
         assert response.status_code == 204
 
-        response = test_client.post("/native/v1/send_phone_validation_code")
+        response = client.post("/native/v1/send_phone_validation_code")
         assert response.status_code == 400
         assert response.json["code"] == "TOO_MANY_SMS_SENT"
 
@@ -1236,31 +1171,25 @@ class SendPhoneValidationCodeTest:
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
         assert user.beneficiaryFraudResults[0].reason == expected_reason
 
-    def test_send_phone_validation_code_already_beneficiary(self, app):
+    def test_send_phone_validation_code_already_beneficiary(self, client, app):
         user = users_factories.BeneficiaryGrant18Factory(
             isEmailValidated=True, phoneNumber="+33601020304", roles=[UserRole.BENEFICIARY]
         )
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/send_phone_validation_code")
+        response = client.post("/native/v1/send_phone_validation_code")
 
         assert response.status_code == 400
 
         assert not Token.query.filter_by(userId=user.id).first()
 
-    def test_send_phone_validation_code_for_new_phone_with_already_beneficiary(self, app):
+    def test_send_phone_validation_code_for_new_phone_with_already_beneficiary(self, client, app):
         user = users_factories.BeneficiaryGrant18Factory(
             isEmailValidated=True, phoneNumber="+33601020304", roles=[UserRole.BENEFICIARY]
         )
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33102030405"})
+        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33102030405"})
 
         assert response.status_code == 400
 
@@ -1268,14 +1197,11 @@ class SendPhoneValidationCodeTest:
         db.session.refresh(user)
         assert user.phoneNumber == "+33601020304"
 
-    def test_send_phone_validation_code_for_new_phone_updates_phone(self, app):
+    def test_send_phone_validation_code_for_new_phone_updates_phone(self, client, app):
         user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33601020304")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33102030405"})
+        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33102030405"})
 
         assert response.status_code == 204
 
@@ -1283,34 +1209,28 @@ class SendPhoneValidationCodeTest:
         db.session.refresh(user)
         assert user.phoneNumber == "+33102030405"
 
-    def test_send_phone_validation_code_for_new_unvalidated_duplicated_phone_number(self, app):
+    def test_send_phone_validation_code_for_new_unvalidated_duplicated_phone_number(self, client, app):
         users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33102030405")
         user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33601020304")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33102030405"})
+        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33102030405"})
 
         assert response.status_code == 204
 
         db.session.refresh(user)
         assert user.phoneNumber == "+33102030405"
 
-    def test_send_phone_validation_code_for_new_validated_duplicated_phone_number(self, app):
+    def test_send_phone_validation_code_for_new_validated_duplicated_phone_number(self, client, app):
         orig_user = users_factories.UserFactory(
             isEmailValidated=True,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
             phoneNumber="+33102030405",
         )
         user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33601020304")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33102030405"})
+        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33102030405"})
 
         assert response.status_code == 400
 
@@ -1332,14 +1252,11 @@ class SendPhoneValidationCodeTest:
         assert content["phone_number"] == "+33102030405"
 
     @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33607080900"})
-    def test_update_phone_number_with_blocked_phone_number(self, app):
+    def test_update_phone_number_with_blocked_phone_number(self, client, app):
         user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33601020304")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33607080900"})
+        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33607080900"})
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
@@ -1348,41 +1265,32 @@ class SendPhoneValidationCodeTest:
         db.session.refresh(user)
         assert user.phoneNumber == "+33601020304"
 
-    def test_send_phone_validation_code_with_malformed_number(self, app):
+    def test_send_phone_validation_code_with_malformed_number(self, client, app):
         # user's phone number should be in international format (E.164): +33601020304
         user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="0601020304")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/send_phone_validation_code")
+        response = client.post("/native/v1/send_phone_validation_code")
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
         assert not Token.query.filter_by(userId=user.id).first()
 
-    def test_send_phone_validation_code_with_non_french_number(self, app):
+    def test_send_phone_validation_code_with_non_french_number(self, client, app):
         user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+46766123456")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/send_phone_validation_code")
+        response = client.post("/native/v1/send_phone_validation_code")
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
         assert not Token.query.filter_by(userId=user.id).first()
 
-    def test_update_phone_number_with_non_french_number(self, app):
+    def test_update_phone_number_with_non_french_number(self, client, app):
         user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+46766123456")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+46766987654"})
+        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+46766987654"})
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
@@ -1392,14 +1300,11 @@ class SendPhoneValidationCodeTest:
         assert user.phoneNumber == "+46766123456"
 
     @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33601020304"})
-    def test_blocked_phone_number(self, app):
+    def test_blocked_phone_number(self, client, app):
         user = users_factories.UserFactory(departementCode="93", phoneNumber="+33601020304")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/send_phone_validation_code")
+        response = client.post("/native/v1/send_phone_validation_code")
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
@@ -1422,17 +1327,14 @@ class SendPhoneValidationCodeTest:
 
 
 class ValidatePhoneNumberTest:
-    def test_validate_phone_number(self, app):
+    def test_validate_phone_number(self, client, app):
         user = users_factories.UserFactory(phoneNumber="+33607080900")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
         token = create_phone_validation_token(user)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
         # try one attempt with wrong code
-        test_client.post("/native/v1/validate_phone_number", {"code": "wrong code"})
-        response = test_client.post("/native/v1/validate_phone_number", {"code": token.value})
+        client.post("/native/v1/validate_phone_number", {"code": "wrong code"})
+        response = client.post("/native/v1/validate_phone_number", {"code": token.value})
 
         assert response.status_code == 204
         user = User.query.get(user.id)
@@ -1445,19 +1347,16 @@ class ValidatePhoneNumberTest:
 
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 2
 
-    def test_validate_phone_number_and_become_beneficiary(self, app):
+    def test_validate_phone_number_and_become_beneficiary(self, client, app):
         user = users_factories.UserFactory(phoneNumber="+33607080900", hasCompletedIdCheck=True)
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.CREATED)
 
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
         token = create_phone_validation_token(user)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/validate_phone_number", {"code": token.value})
+        response = client.post("/native/v1/validate_phone_number", {"code": token.value})
 
         assert response.status_code == 204
         user = User.query.get(user.id)
@@ -1465,16 +1364,13 @@ class ValidatePhoneNumberTest:
         assert user.has_beneficiary_role
 
     @override_settings(MAX_PHONE_VALIDATION_ATTEMPTS=1)
-    def test_validate_phone_number_too_many_attempts(self, app):
+    def test_validate_phone_number_too_many_attempts(self, client, app):
         user = users_factories.UserFactory(phoneNumber="+33607080900")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
         token = create_phone_validation_token(user)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/validate_phone_number", {"code": "wrong code"})
-        response = test_client.post("/native/v1/validate_phone_number", {"code": token.value})
+        response = client.post("/native/v1/validate_phone_number", {"code": "wrong code"})
+        response = client.post("/native/v1/validate_phone_number", {"code": token.value})
 
         assert response.status_code == 400
         assert response.json["message"] == "Le nombre de tentatives maximal est dépassé"
@@ -1504,15 +1400,12 @@ class ValidatePhoneNumberTest:
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
         assert user.beneficiaryFraudResults[0].reason == expected_reason
 
-    def test_wrong_code(self, app):
+    def test_wrong_code(self, client, app):
         user = users_factories.UserFactory(phoneNumber="+33607080900")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
         create_phone_validation_token(user)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.post("/native/v1/validate_phone_number", {"code": "mauvais-code"})
+        response = client.post("/native/v1/validate_phone_number", {"code": "mauvais-code"})
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_VALIDATION_CODE"
@@ -1520,15 +1413,13 @@ class ValidatePhoneNumberTest:
         assert not User.query.get(user.id).is_phone_validated
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
-    def test_expired_code(self, app):
+    def test_expired_code(self, client, app):
         user = users_factories.UserFactory(phoneNumber="+33607080900")
         token = create_phone_validation_token(user)
 
         with freeze_time(datetime.now() + timedelta(minutes=20)):
-            access_token = create_access_token(identity=user.email)
-            test_client = TestClient(app.test_client())
-            test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-            response = test_client.post("/native/v1/validate_phone_number", {"code": token.value})
+            client.with_token(email=user.email)
+            response = client.post("/native/v1/validate_phone_number", {"code": token.value})
 
         assert response.status_code == 400
         assert response.json["code"] == "EXPIRED_VALIDATION_CODE"
@@ -1537,14 +1428,12 @@ class ValidatePhoneNumberTest:
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
     @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33607080900"})
-    def test_blocked_phone_number(self, app):
+    def test_blocked_phone_number(self, client, app):
         user = users_factories.UserFactory(phoneNumber="+33607080900")
         token = create_phone_validation_token(user)
 
-        access_token = create_access_token(identity=user.email)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-        response = test_client.post("/native/v1/validate_phone_number", {"code": token.value})
+        client.with_token(email=user.email)
+        response = client.post("/native/v1/validate_phone_number", {"code": token.value})
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
@@ -1552,14 +1441,12 @@ class ValidatePhoneNumberTest:
         assert not User.query.get(user.id).is_phone_validated
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
-    def test_validate_phone_number_with_non_french_number(self, app):
+    def test_validate_phone_number_with_non_french_number(self, client, app):
         user = users_factories.UserFactory(phoneNumber="+46766123456")
         token = create_phone_validation_token(user)
 
-        access_token = create_access_token(identity=user.email)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-        response = test_client.post("/native/v1/validate_phone_number", {"code": token.value})
+        client.with_token(email=user.email)
+        response = client.post("/native/v1/validate_phone_number", {"code": token.value})
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
@@ -1567,19 +1454,16 @@ class ValidatePhoneNumberTest:
         assert not User.query.get(user.id).is_phone_validated
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
-    def test_validate_phone_number_with_already_validated_phone(self, app):
+    def test_validate_phone_number_with_already_validated_phone(self, client, app):
         users_factories.UserFactory(
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED, phoneNumber="+33607080900"
         )
         user = users_factories.UserFactory(phoneNumber="+33607080900")
-        access_token = create_access_token(identity=user.email)
+        client.with_token(email=user.email)
         token = create_phone_validation_token(user)
 
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
         # try one attempt with wrong code
-        response = test_client.post("/native/v1/validate_phone_number", {"code": token.value})
+        response = client.post("/native/v1/validate_phone_number", {"code": token.value})
 
         assert response.status_code == 400
         user = User.query.get(user.id)
@@ -1591,14 +1475,12 @@ class ValidatePhoneNumberTest:
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 1
 
 
-def test_suspend_account(app):
+def test_suspend_account(client, app):
     booking = booking_factories.IndividualBookingFactory()
     user = booking.individualBooking.user
 
-    access_token = create_access_token(identity=user.email)
-    test_client = TestClient(app.test_client())
-    test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-    response = test_client.post("/native/v1/account/suspend")
+    client.with_token(email=user.email)
+    response = client.post("/native/v1/account/suspend")
 
     assert response.status_code == 204
     assert booking.isCancelled
@@ -1607,7 +1489,7 @@ def test_suspend_account(app):
 
 
 class UpdateBeneficiaryInformationTest:
-    def test_update_beneficiary_information(self, app):
+    def test_update_beneficiary_information(self, client, app):
         """
         Test that valid request:
             * updates the user's id check profile information;
@@ -1628,10 +1510,6 @@ class UpdateBeneficiaryInformationTest:
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.CREATED)
 
-        access_token = create_access_token(identity=user.email)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
         profile_data = {
             "firstName": "John",
             "lastName": "Doe",
@@ -1641,7 +1519,8 @@ class UpdateBeneficiaryInformationTest:
             "activity": "Lycéen",
         }
 
-        response = test_client.patch("/native/v1/beneficiary_information", profile_data)
+        client.with_token(email=user.email)
+        response = client.patch("/native/v1/beneficiary_information", profile_data)
 
         assert response.status_code == 204
 
@@ -1665,7 +1544,7 @@ class UpdateBeneficiaryInformationTest:
         assert notification["attribute_values"]["u.postal_code"] == "77000"
 
     @override_features(ENABLE_PHONE_VALIDATION=False)
-    def test_update_beneficiary_information_without_address(self, app):
+    def test_update_beneficiary_information_without_address(self, client, app):
         """
         Test that valid request:
             * updates the user's id check profile information;
@@ -1685,10 +1564,6 @@ class UpdateBeneficiaryInformationTest:
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.CREATED)
 
-        access_token = create_access_token(identity=user.email)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
         profile_data = {
             "address": None,
             "city": "Uneville",
@@ -1697,7 +1572,8 @@ class UpdateBeneficiaryInformationTest:
             "phone": "0601020304",
         }
 
-        response = test_client.patch("/native/v1/beneficiary_information", profile_data)
+        client.with_token(email=user.email)
+        response = client.patch("/native/v1/beneficiary_information", profile_data)
 
         assert response.status_code == 204
 
@@ -1719,7 +1595,7 @@ class UpdateBeneficiaryInformationTest:
         assert notification["attribute_values"]["u.postal_code"] == "77000"
 
     @override_features(ENABLE_PHONE_VALIDATION=True)
-    def test_update_beneficiary_phone_number_not_updated(self, app):
+    def test_update_beneficiary_phone_number_not_updated(self, client, app):
         """
         Test that valid request:
             * updates the user's id check profile information;
@@ -1739,10 +1615,6 @@ class UpdateBeneficiaryInformationTest:
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.CREATED)
 
-        access_token = create_access_token(identity=user.email)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
         profile_data = {
             "address": None,
             "city": "Uneville",
@@ -1751,7 +1623,8 @@ class UpdateBeneficiaryInformationTest:
             "phone": "0601020304",
         }
 
-        response = test_client.patch("/native/v1/beneficiary_information", profile_data)
+        client.with_token(email=user.email)
+        response = client.patch("/native/v1/beneficiary_information", profile_data)
 
         assert response.status_code == 204
 
@@ -1768,7 +1641,7 @@ class UpdateBeneficiaryInformationTest:
         assert len(push_testing.requests) == 1
 
     @override_features(ENABLE_PHONE_VALIDATION=True)
-    def test_update_beneficiary_underage(self, app):
+    def test_update_beneficiary_underage(self, client, app):
         """
         Test that valid request:
             * updates the user's id check profile information;
@@ -1788,10 +1661,6 @@ class UpdateBeneficiaryInformationTest:
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user, eligibilityType=EligibilityType.UNDERAGE)
         beneficiary_import.setStatus(ImportStatus.CREATED)
 
-        access_token = create_access_token(identity=user.email)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
         profile_data = {
             "address": None,
             "city": "Uneville",
@@ -1800,7 +1669,8 @@ class UpdateBeneficiaryInformationTest:
             "phone": "0601020304",
         }
 
-        response = test_client.patch("/native/v1/beneficiary_information", profile_data)
+        client.with_token(email=user.email)
+        response = client.patch("/native/v1/beneficiary_information", profile_data)
 
         assert response.status_code == 204
 
