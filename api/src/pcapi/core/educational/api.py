@@ -9,7 +9,6 @@ from pcapi.core import mails
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
-from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
@@ -19,6 +18,7 @@ from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
+from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -84,7 +84,9 @@ def book_educational_offer(redactor_informations: RedactorInformation, stock_id:
         )
 
         booking.dateCreated = datetime.utcnow()
-        booking.cancellationLimitDate = compute_cancellation_limit_date(stock.beginningDatetime, booking.dateCreated)
+        booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(
+            stock.beginningDatetime, booking.dateCreated
+        )
         stock.dnBookedQuantity += EAC_DEFAULT_BOOKED_QUANTITY
 
         repository.save(booking)
