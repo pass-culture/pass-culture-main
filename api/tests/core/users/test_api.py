@@ -1069,7 +1069,7 @@ class VerifyIdentityDocumentInformationsTest:
         assert not mails_testing.outbox
 
 
-class BeneficairyInformationUpdateTest:
+class BeneficiaryInformationUpdateTest:
     def test_update_user_information_from_dms(self):
         user = UserFactory(
             activity=None,
@@ -1081,14 +1081,40 @@ class BeneficairyInformationUpdateTest:
             postalCode=None,
             publicName="UNSET",
         )
-        dms_data = fraud_factories.DMSContentFactory()
-        new_user = users_api.update_user_information_from_external_source(user, dms_data)
-        assert new_user.activity == dms_data.activity
-        assert new_user.address == dms_data.address
-        assert new_user.departementCode == dms_data.department
-        assert new_user.postalCode == dms_data.postal_code
-        assert new_user.firstName == dms_data.first_name
-        assert new_user.lastName == dms_data.last_name
+        beneficiary_information = fraud_models.DMSContent(
+            department="67",
+            last_name="Doe",
+            first_name="Jane",
+            activity="Lycéen",
+            civility="Mme",
+            birth_date=date(2000, 5, 1),
+            email="jane.doe@test.com",
+            phone="0612345678",
+            postal_code="67200",
+            address="11 Rue du Test",
+            application_id=123,
+            procedure_id=98012,
+        )
+
+        # when
+        beneficiary = users_api.update_user_information_from_external_source(user, beneficiary_information, commit=True)
+
+        # Then
+        assert beneficiary.lastName == "Doe"
+        assert beneficiary.firstName == "Jane"
+        assert beneficiary.publicName == "Jane Doe"
+        assert beneficiary.phoneNumber == "0612345678"
+        assert beneficiary.departementCode == "67"
+        assert beneficiary.postalCode == "67200"
+        assert beneficiary.address == "11 Rue du Test"
+        assert beneficiary.dateOfBirth == datetime(2000, 5, 1, 0, 0)
+        assert not beneficiary.has_beneficiary_role
+        assert not beneficiary.isAdmin
+        assert beneficiary.password is not None
+        assert beneficiary.activity == "Lycéen"
+        assert beneficiary.civility == "Mme"
+        assert beneficiary.hasSeenTutorials == False
+        assert not beneficiary.deposits
 
     def test_update_user_information_from_jouve(self):
         user = UserFactory(

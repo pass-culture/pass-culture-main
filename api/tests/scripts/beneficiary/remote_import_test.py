@@ -272,7 +272,7 @@ class RunTest:
                 postal_code="67200",
             ),
             procedure_id=6712558,
-            preexisting_account=applicant,
+            user=applicant,
         )
 
 
@@ -295,9 +295,9 @@ class ProcessBeneficiaryApplicationTest:
             civility="Mme",
             activity="Étudiant",
         )
-
+        applicant = users_factories.UserFactory(email=information.email)
         # when
-        remote_import.process_beneficiary_application(information=information, procedure_id=123456)
+        remote_import.process_beneficiary_application(information=information, procedure_id=123456, user=applicant)
 
         # then
         first = users_models.User.query.first()
@@ -326,9 +326,9 @@ class ProcessBeneficiaryApplicationTest:
             civility="Mme",
             activity="Étudiant",
         )
-
+        applicant = users_factories.UserFactory(email=information.email)
         # when
-        remote_import.process_beneficiary_application(information=information, procedure_id=123456)
+        remote_import.process_beneficiary_application(information=information, procedure_id=123456, user=applicant)
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()
@@ -336,20 +336,18 @@ class ProcessBeneficiaryApplicationTest:
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert beneficiary_import.applicationId == 123
 
-    @patch("pcapi.scripts.beneficiary.remote_import.create_beneficiary_from_application")
     @patch("pcapi.scripts.beneficiary.remote_import.repository")
     @patch("pcapi.scripts.beneficiary.remote_import.user_emails.send_activation_email")
     @pytest.mark.usefixtures("db_session")
-    def test_error_is_collected_if_beneficiary_could_not_be_saved(
-        self, send_activation_email, mock_repository, create_beneficiary_from_application, app
-    ):
+    def test_error_is_collected_if_beneficiary_could_not_be_saved(self, send_activation_email, mock_repository, app):
         # given
         information = fraud_factories.DMSContentFactory(application_id=123)
-        create_beneficiary_from_application.side_effect = [users_models.User()]
+        applicant = users_factories.UserFactory(email=information.email)
+
         mock_repository.save.side_effect = [ApiErrors({"postalCode": ["baaaaad value"]})]
 
         # when
-        remote_import.process_beneficiary_application(information, procedure_id=123456)
+        remote_import.process_beneficiary_application(information, procedure_id=123456, user=applicant)
 
         # then
         send_activation_email.assert_not_called()
