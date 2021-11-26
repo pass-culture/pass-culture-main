@@ -1,8 +1,10 @@
 import pytest
+import requests_mock
 
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
+from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
@@ -124,6 +126,9 @@ class Returns200Test:
         offer = Offer.query.get(offer_id)
         assert offer.isEducational
 
+    @override_settings(ADAGE_API_URL="https://adage-api-url")
+    @override_settings(ADAGE_API_KEY="adage-api-key")
+    @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
     def test_create_valid_educational_offer_with_new_route(self, app):
         # Given
         venue = offers_factories.VenueFactory()
@@ -132,6 +137,7 @@ class Returns200Test:
 
         # When
         data = {
+            "offererId": humanize(offerer.id),
             "venueId": humanize(venue.id),
             "bookingEmail": "offer@example.com",
             "durationMinutes": 60,
@@ -144,7 +150,41 @@ class Returns200Test:
             "visualDisabilityCompliant": False,
         }
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
-        response = client.post("/offers/educational", json=data)
+        with requests_mock.Mocker() as request_mock:
+            request_mock.get(
+                f"https://adage-api-url/v1/partenaire-culturel/{offerer.siren}",
+                request_headers={
+                    "X-omogen-api-key": "adage-api-key",
+                },
+                status_code=200,
+                json=[
+                    {
+                        "id": "125334",
+                        "siret": "18004623700012",
+                        "regionId": "1",
+                        "academieId": "25",
+                        "statutId": "2",
+                        "labelId": "4",
+                        "typeId": "4",
+                        "communeId": "75101",
+                        "libelle": "Musée du Louvre",
+                        "adresse": "Rue de Rivoli",
+                        "siteWeb": "https://www.louvre.fr/",
+                        "latitude": "48.861863",
+                        "longitude": "2.338081",
+                        "actif": "1",
+                        "dateModification": "2021-09-01 00:00:00",
+                        "statutLibelle": "Établissement public",
+                        "labelLibelle": "Musée de France",
+                        "typeIcone": "museum",
+                        "typeLibelle": "Musée, domaine ou monument",
+                        "communeLibelle": "PARIS  1ER ARRONDISSEMENT",
+                        "domaines": "Architecture|Arts visuels, arts plastiques, arts appliqués|Patrimoine et archéologie|Photographie",
+                    }
+                ],
+            )
+
+            response = client.post("/offers/educational", json=data)
 
         # Then
         assert response.status_code == 201
@@ -418,3 +458,43 @@ class Returns403Test:
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
         ]
+
+    @override_settings(ADAGE_API_URL="https://adage-api-url")
+    @override_settings(ADAGE_API_KEY="adage-api-key")
+    @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
+    def when_offerer_cannot_create_educational_offer(self, app):
+        # Given
+        venue = offers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "offererId": humanize(offerer.id),
+            "venueId": humanize(venue.id),
+            "bookingEmail": "offer@example.com",
+            "durationMinutes": 60,
+            "name": "La pièce de théâtre",
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "extraData": {"toto": "text"},
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+        }
+        client = TestClient(app.test_client()).with_session_auth("user@example.com")
+        with requests_mock.Mocker() as request_mock:
+            request_mock.get(
+                f"https://adage-api-url/v1/partenaire-culturel/{offerer.siren}",
+                request_headers={
+                    "X-omogen-api-key": "adage-api-key",
+                },
+                status_code=404,
+            )
+
+            response = client.post("/offers/educational", json=data)
+
+        # Then
+        assert response.status_code == 403
+        offers = Offer.query.all()
+        assert len(offers) == 0
