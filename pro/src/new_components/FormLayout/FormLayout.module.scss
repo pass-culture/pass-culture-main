@@ -27,7 +27,6 @@
       display: flex;
 
       > *:not(:last-child) {
-        flex: 1;
         margin-right: rem(24px);
       }
     }
