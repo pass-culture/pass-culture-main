@@ -9,6 +9,10 @@ import pytest
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.factories import AllocineVenueProviderFactory
 from pcapi.core.offerers.factories import AllocineVenueProviderPriceRuleFactory
+from pcapi.core.offers.factories import OfferFactory
+from pcapi.core.offers.factories import OffererFactory
+from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.local_providers import AllocineStocks
@@ -16,10 +20,6 @@ from pcapi.models.product import Product
 from pcapi.repository import repository
 import pcapi.sandboxes
 from pcapi.utils.human_ids import humanize
-from src.pcapi.core.offers.factories import OfferFactory
-from src.pcapi.core.offers.factories import OffererFactory
-from src.pcapi.core.offers.factories import ProductFactory
-from src.pcapi.core.offers.factories import VenueFactory
 
 
 MOVIE_INFO = {
