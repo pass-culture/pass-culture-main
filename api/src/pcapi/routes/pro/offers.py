@@ -5,6 +5,8 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi.connectors.api_adage import AdageException
+from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import exceptions
@@ -115,6 +117,14 @@ def create_educational_offer(
 ) -> offers_serialize.OfferResponseIdModel:
     try:
         offer = offers_api.create_educational_offer(offer_data=body, user=current_user)
+    except CulturalPartnerNotFoundException:
+        logger.info(
+            "Could not create offer: This offerer has not been found in Adage", extra={"offerer_id": body.offerer_id}
+        )
+        raise ApiErrors({"offerer: not found in adage"}, 403)
+    except AdageException:
+        logger.info("Could not create offer: Adage api call failed", extra={"offerer_id": body.offerer_id})
+        raise ApiErrors({"adage_api: error"}, 500)
     except exceptions.UnknownOfferSubCategory as error:
         logger.info(
             "Could not create offer: selected subcategory is unknown.",

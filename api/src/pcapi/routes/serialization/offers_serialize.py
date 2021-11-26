@@ -122,6 +122,7 @@ class PostOfferBodyModel(BaseModel):
 
 
 class PostEducationalOfferBodyModel(BaseModel):
+    offerer_id: str
     venue_id: str
     subcategory_id: str
     name: str

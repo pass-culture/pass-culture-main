@@ -22,6 +22,7 @@ from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.conf import can_create_from_isbn
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.exceptions import OfferAlreadyReportedError
 from pcapi.core.offers.exceptions import ReportMalformed
@@ -61,6 +62,7 @@ from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
 from pcapi.utils import mailing
+from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
@@ -111,6 +113,7 @@ def list_offers_for_pro_user(
 
 
 def create_educational_offer(offer_data: PostEducationalOfferBodyModel, user: User) -> Offer:
+    offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
     completed_data = CompletedEducationalOfferModel(**offer_data.dict(by_alias=True))
     return create_offer(completed_data, user)
 
