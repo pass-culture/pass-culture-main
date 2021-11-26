@@ -64,7 +64,7 @@ Banner.propTypes = {
   href: requiredIfComponentHasProp('linkTitle', 'string'),
   icon: PropTypes.string,
   linkTitle: requiredIfComponentHasProp('href', 'string'),
-  type: PropTypes.oneOf(['notification-info', 'attention']),
+  type: PropTypes.oneOf(['notification-info', 'attention', 'light']),
 }
 
 export default Banner

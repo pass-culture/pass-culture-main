@@ -11,6 +11,11 @@
     background: $notification-info;
   }
 
+  &.light {
+    background: $grey-light;
+    color: $grey-dark;
+  }
+
   border-radius: 6px;
   margin: rem(16px) 0;
   padding: rem(7px) rem(15px);

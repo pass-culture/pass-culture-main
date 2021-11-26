@@ -24,7 +24,12 @@ const OfferEducationalCreation = (): JSX.Element => {
   const [initialValues, setInitialValues] =
     useState<IOfferEducationalFormValues>(INITIAL_EDUCATIONAL_FORM_VALUES)
   const location = useLocation()
-  const { structure, lieu } = queryParamsFromOfferer(location)
+  const { structure: offererId, lieu: venueId } = queryParamsFromOfferer(
+    location
+  ) as {
+    structure?: string
+    lieu?: string
+  }
 
   useEffect(() => {
     if (!isReady) {
@@ -48,7 +53,7 @@ const OfferEducationalCreation = (): JSX.Element => {
         })
 
         setInitialValues(values =>
-          setInitialFormValues(values, offerers.payload, structure, lieu)
+          setInitialFormValues(values, offerers.payload, offererId, venueId)
         )
 
         setIsReady(true)
@@ -56,7 +61,7 @@ const OfferEducationalCreation = (): JSX.Element => {
 
       loadData()
     }
-  }, [isReady, lieu, structure])
+  }, [isReady, venueId, offererId])
 
   return isReady && screenProps ? (
     <OfferEducationalScreen

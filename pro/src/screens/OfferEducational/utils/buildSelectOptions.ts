@@ -1,4 +1,4 @@
-export default <T extends { [key: string]: string }>(
+export default <T extends { [key: string]: unknown }>(
   sourceArray: T[],
   sourceLabelKey: keyof T,
   sourceValueKey: keyof T,
@@ -6,7 +6,7 @@ export default <T extends { [key: string]: string }>(
 ): SelectOptions => [
   { value: '', label: defaultOptionLabel },
   ...sourceArray.map(item => ({
-    value: item[sourceValueKey],
-    label: item[sourceLabelKey],
+    value: item[sourceValueKey] as string,
+    label: item[sourceLabelKey] as string,
   })),
 ]

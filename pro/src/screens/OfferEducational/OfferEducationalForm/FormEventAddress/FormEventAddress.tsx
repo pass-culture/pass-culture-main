@@ -1,9 +1,13 @@
 import { useFormikContext } from 'formik'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
+import Banner from 'components/layout/Banner/Banner'
 import {
   INITIAL_EDUCATIONAL_FORM_VALUES,
+  ADRESS_TYPE,
   IOfferEducationalFormValues,
+  IUserOfferer,
+  IUserVenue,
 } from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
 import { RadioButton, Select, TextArea } from 'ui-kit'
@@ -17,62 +21,96 @@ import {
 } from '../../constants/labels'
 
 interface IFormEventAddressProps {
-  venuesOptions: { value: string; label: string }[]
+  venuesOptions: SelectOptions
+  currentOfferer: IUserOfferer | null
 }
 
 const FormEventAddress = ({
   venuesOptions,
+  currentOfferer,
 }: IFormEventAddressProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<IOfferEducationalFormValues>()
+  const [currentVenue, setCurrentVenue] = useState<IUserVenue | null>(null)
 
   useEffect(() => {
-    setFieldValue(
-      'eventAddress.offererVenueId',
-      INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.offererVenueId,
-      false
-    )
     setFieldValue(
       'eventAddress.otherAddress',
       INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.otherAddress,
       false
     )
+
+    setFieldValue(
+      'eventAddress.venueId',
+      INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.venueId,
+      false
+    )
+
+    setCurrentVenue(null)
   }, [values.eventAddress.addressType, setFieldValue])
+
+  useEffect(() => {
+    if (
+      values.eventAddress.addressType === ADRESS_TYPE.OFFERER_VENUE &&
+      !!values.eventAddress.venueId
+    ) {
+      if (currentOfferer) {
+        const selectedVenue = currentOfferer.managedVenues.find(
+          venue => venue.id === values.eventAddress.venueId
+        )
+        return setCurrentVenue(selectedVenue ?? null)
+      }
+
+      return setCurrentVenue(null)
+    }
+  }, [currentOfferer, values.eventAddress])
 
   return (
     <FormLayout.Section
       description="Ces informations seront visibles par les établissements scolaires"
       title="Informations pratiques"
     >
-      <FormLayout.SubSection title="Addresse où aura lieu l’événement">
+      <FormLayout.SubSection title="Adresse où aura lieu l’événement">
         <FormLayout.Row>
           <RadioButton
+            checked
             label={EVENT_ADDRESS_OFFERER_LABEL}
             name="eventAddress.addressType"
-            value="offererVenue"
+            value={ADRESS_TYPE.OFFERER_VENUE}
           />
           <RadioButton
             label={EVENT_ADDRESS_SCHOOL_LABEL}
             name="eventAddress.addressType"
-            value="school"
+            value={ADRESS_TYPE.SCHOOL}
           />
           <RadioButton
             label={EVENT_ADDRESS_OTHER_LABEL}
             name="eventAddress.addressType"
-            value="other"
+            value={ADRESS_TYPE.OTHER}
           />
         </FormLayout.Row>
-        {values.eventAddress.addressType === 'offererVenue' && (
-          <FormLayout.Row>
-            <Select
-              disabled={venuesOptions.length === 1}
-              label={EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL}
-              name="eventAddress.offererVenueId"
-              options={venuesOptions}
-            />
-          </FormLayout.Row>
+
+        {values.eventAddress.addressType === ADRESS_TYPE.OFFERER_VENUE && (
+          <>
+            <FormLayout.Row>
+              <Select
+                label={EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL}
+                name="eventAddress.venueId"
+                options={venuesOptions}
+              />
+            </FormLayout.Row>
+            {currentVenue && (
+              <Banner type="light">
+                {currentVenue.name}
+                <br />
+                {currentVenue.address.street}, {currentVenue.address.postalCode}{' '}
+                {currentVenue.address.city}
+              </Banner>
+            )}
+          </>
         )}
-        {values.eventAddress.addressType === 'other' && (
+
+        {values.eventAddress.addressType === ADRESS_TYPE.OTHER && (
           <FormLayout.Row>
             <TextArea
               label={EVENT_ADDRESS_OTHER_ADDRESS_LABEL}

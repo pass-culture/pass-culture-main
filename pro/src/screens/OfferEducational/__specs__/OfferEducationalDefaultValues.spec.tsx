@@ -88,9 +88,12 @@ describe('screens | OfferEducational', () => {
     const offerVenueRadio3 = screen.getByLabelText(
       EVENT_ADDRESS_OTHER_LABEL
     ) as HTMLInputElement
-    ;[offerVenueRadio1, offerVenueRadio2, offerVenueRadio3].forEach(radio => {
-      expect(radio.checked).toBe(false)
+
+    ;[offerVenueRadio2, offerVenueRadio3].forEach(radio => {
+      expect(radio).not.toBeChecked()
     })
+
+    expect(offerVenueRadio1).toBeChecked()
 
     participantsOptions.forEach(participantsOption => {
       const participantsCheckbox = screen.getByLabelText(

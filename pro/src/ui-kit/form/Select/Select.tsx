@@ -21,7 +21,7 @@ const Select = ({
   disabled,
   label,
 }: ISelectProps): JSX.Element => {
-  const [field, meta] = useField(name)
+  const [field, meta] = useField({ name, type: 'select' })
 
   return (
     <>
