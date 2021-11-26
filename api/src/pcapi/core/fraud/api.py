@@ -82,10 +82,10 @@ def on_ubble_result(fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
     on_identity_fraud_check_result(fraud_check.user, fraud_check)
 
 
-def on_dms_fraud_check(
+def on_dms_fraud_result(
     user: user_models.User,
     dms_content: models.DMSContent,
-) -> None:
+) -> models.BeneficiaryFraudResult:
 
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
@@ -96,7 +96,7 @@ def on_dms_fraud_check(
 
     db.session.add(fraud_check)
     db.session.commit()
-    on_identity_fraud_check_result(user, fraud_check)
+    return on_identity_fraud_check_result(user, fraud_check)
 
 
 def admin_update_identity_fraud_check_result(
