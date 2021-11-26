@@ -9,6 +9,7 @@ import {
 } from 'core/OfferEducational'
 
 import OfferEducationalForm from './OfferEducationalForm'
+import { validationSchema } from './validationSchema'
 
 export interface IOfferEducationalProps {
   educationalCategories: IEducationalCategory[]
@@ -28,6 +29,7 @@ const OfferEducational = ({
   const formik = useFormik({
     initialValues,
     onSubmit,
+    validationSchema,
   })
 
   return (
