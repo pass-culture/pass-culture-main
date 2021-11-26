@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
+import freezegun
 import pytest
 
 from pcapi.core.fraud import factories as fraud_factories
@@ -103,7 +104,8 @@ class EduconnectTest:
         mock_saml_response.in_response_to = self.request_id
 
         with caplog.at_level(logging.INFO):
-            response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+            with freezegun.freeze_time("2021-10-10"):
+                response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
         assert (
@@ -136,6 +138,7 @@ class EduconnectTest:
             "first_name": "Max",
             "ine_hash": ine_hash,
             "last_name": "SENS",
+            "registration_datetime": "2021-10-10T00:00:00",
         }
         assert len(user.beneficiaryFraudResults) == 1
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK

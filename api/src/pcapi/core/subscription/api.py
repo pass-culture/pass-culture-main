@@ -41,16 +41,16 @@ def attach_beneficiary_import_details(
     application_id: int,
     source_id: int,
     source: BeneficiaryImportSources,
+    eligibility_type: Optional[users_models.EligibilityType],
     details: Optional[str] = None,
     status: ImportStatus = ImportStatus.CREATED,
-    eligibilityType: users_models.EligibilityType = users_models.EligibilityType.AGE18,
 ) -> None:
     beneficiary_import = BeneficiaryImport.query.filter_by(
         applicationId=application_id,
         sourceId=source_id,
         source=source.value,
         beneficiary=beneficiary,
-        eligibilityType=eligibilityType,
+        eligibilityType=eligibility_type,
     ).one_or_none()
     if not beneficiary_import:
         beneficiary_import = BeneficiaryImport(
@@ -58,7 +58,7 @@ def attach_beneficiary_import_details(
             sourceId=source_id,
             source=source.value,
             beneficiary=beneficiary,
-            eligibilityType=eligibilityType,
+            eligibilityType=eligibility_type,
         )
 
     beneficiary_import.setStatus(status=status, detail=details)
@@ -83,7 +83,6 @@ def activate_beneficiary(
         deposit_source = beneficiary_import.get_detailed_source()
     else:
         eligibility = users_models.EligibilityType.AGE18
-
     if not user.is_eligible_for_beneficiary_upgrade:
         raise exceptions.CannotUpgradeBeneficiaryRole()
 
@@ -133,7 +132,9 @@ def check_and_activate_beneficiary(
 
 def create_beneficiary_import(user: users_models.User, eligibilityType: users_models.EligibilityType) -> None:
     fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(
-        user=user, eligibilityType=eligibilityType
+        user=user,
+        # find fraud result by eligibility. If eligibilityType is None, the FraudResult has the default value AGE18
+        eligibilityType=eligibilityType or users_models.EligibilityType.AGE18,
     ).one_or_none()
     if not fraud_result:
         raise exceptions.BeneficiaryFraudResultMissing()

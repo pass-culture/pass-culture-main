@@ -108,7 +108,7 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         return redirect(ERROR_PAGE_URL, code=302)
 
     try:
-        subscription_api.create_beneficiary_import(user, user_models.EligibilityType.UNDERAGE)
+        subscription_api.create_beneficiary_import(user, fraud_api.get_eligibility_type(educonnect_content))
     except fraud_exceptions.UserAgeNotValid:
         logger.warning(
             "User age not valid",

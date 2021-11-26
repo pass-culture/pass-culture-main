@@ -31,7 +31,13 @@ class AttachBenerificaryImportDetailsTest:
     def test_user_application(self, import_status):
         user = users_factories.UserFactory()
         subscription_api.attach_beneficiary_import_details(
-            user, 42, 21, BeneficiaryImportSources.demarches_simplifiees, "random_details", import_status
+            user,
+            42,
+            21,
+            BeneficiaryImportSources.demarches_simplifiees,
+            users_models.EligibilityType.AGE18,
+            "random_details",
+            import_status,
         )
 
         beneficiary_import = BeneficiaryImport.query.one()
@@ -49,14 +55,20 @@ class AttachBenerificaryImportDetailsTest:
         users_factories.BeneficiaryImportFactory(beneficiary=user, source=BeneficiaryImportSources.jouve.value)
 
         subscription_api.attach_beneficiary_import_details(
-            user, 42, 21, BeneficiaryImportSources.demarches_simplifiees, "random_details", import_status
+            user,
+            42,
+            21,
+            BeneficiaryImportSources.demarches_simplifiees,
+            users_models.EligibilityType.AGE18,
+            "random_details",
+            import_status,
         )
 
         beneficiary_import = BeneficiaryImport.query.all()
         assert len(beneficiary_import) == 2
 
     def test_user_application_already_have_dms_statuses(self, import_status):
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(dateOfBirth=datetime.now() - relativedelta(years=18))
         application_id = 42
         procedure_id = 21
         beneficiary_import = users_factories.BeneficiaryImportFactory(
@@ -72,10 +84,11 @@ class AttachBenerificaryImportDetailsTest:
             application_id,
             procedure_id,
             BeneficiaryImportSources.demarches_simplifiees,
+            users_models.EligibilityType.AGE18,
             "random details",
             import_status,
         )
-        beneficiary_import = BeneficiaryImport.query.one()
+        beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.beneficiaryId == user.id).one()
         assert len(beneficiary_import.statuses) == 2
 
     def test_user_application_already_have_another_dms_application(self, import_status):
@@ -95,6 +108,7 @@ class AttachBenerificaryImportDetailsTest:
             application_id,
             procedure_id,
             BeneficiaryImportSources.demarches_simplifiees,
+            users_models.EligibilityType.AGE18,
             "random details",
             import_status,
         )
@@ -108,7 +122,7 @@ class EduconnectFlowTest:
     def test_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
         ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
         fraud_factories.IneHashWhitelistFactory(ine_hash=ine_hash)
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(dateOfBirth=datetime(2004, 1, 1))
         access_token = create_access_token(identity=user.email)
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
         mock_saml_client = MagicMock()
@@ -194,7 +208,7 @@ class UbbleWorkflowTest:
 @pytest.mark.usefixtures("db_session")
 class NextSubscriptionStepTest:
     eighteen_years_ago = datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=1)
-    fiveteen_years_ago = datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=15, months=1)
+    fifteen_years_ago = datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=15, months=1)
 
     def test_next_subscription_step_beneficiary(self):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -208,7 +222,7 @@ class NextSubscriptionStepTest:
 
     def test_next_subscription_step_underage(self):
         user = users_factories.UserFactory(
-            dateOfBirth=self.fiveteen_years_ago,
+            dateOfBirth=self.fifteen_years_ago,
             address=None,
         )
         assert (

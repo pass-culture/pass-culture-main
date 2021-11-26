@@ -1,7 +1,9 @@
+from typing import Optional
+
 from sqlalchemy import asc
 from sqlalchemy.orm import load_only
 
-from pcapi.core.users.models import User
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
@@ -47,8 +49,9 @@ def save_beneficiary_import_with_status(
     application_id: int,
     source_id: int,
     source: BeneficiaryImportSources,
+    eligibility_type: Optional[users_models.EligibilityType],
     detail: str = None,
-    user: User = None,
+    user: users_models.User = None,
 ) -> BeneficiaryImport:
     # FIXME (dbaty, 2021-04-22): see comment above about the non-uniqueness of application_id
     existing_beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=application_id).first()
@@ -60,6 +63,9 @@ def save_beneficiary_import_with_status(
     beneficiary_import.applicationId = application_id
     beneficiary_import.sourceId = source_id
     beneficiary_import.source = source.value
+
+    if eligibility_type is not None:
+        beneficiary_import.eligibilityType = eligibility_type
     beneficiary_import.setStatus(status=status, detail=detail, author=None)
 
     repository.save(beneficiary_import)

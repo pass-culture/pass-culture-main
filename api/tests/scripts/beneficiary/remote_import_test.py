@@ -1,6 +1,7 @@
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 from unittest.mock import ANY
 from unittest.mock import patch
 
@@ -270,6 +271,7 @@ class RunTest:
                 activity="Étudiant",
                 address="35 Rue Saint Denis 93130 Noisy-le-Sec",
                 postal_code="67200",
+                registration_datetime=datetime(2020, 4, 17, 7, 18, 22, 534000, tzinfo=timezone.utc),
             ),
             procedure_id=6712558,
             preexisting_account=applicant,
@@ -294,6 +296,7 @@ class ProcessBeneficiaryApplicationTest:
             procedure_id=123456,
             civility="Mme",
             activity="Étudiant",
+            registration_datetime=datetime.utcnow(),
         )
 
         # when
@@ -325,6 +328,7 @@ class ProcessBeneficiaryApplicationTest:
             procedure_id=123456,
             civility="Mme",
             activity="Étudiant",
+            registration_datetime=datetime.utcnow(),
         )
 
         # when
@@ -615,6 +619,7 @@ class RunIntegrationTest:
                         "value": "1234123412",
                     },
                 ],
+                "created_at": datetime.utcnow().isoformat(),
             }
         }
 
@@ -656,7 +661,6 @@ class RunIntegrationTest:
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert len(push_testing.requests) == 1
 
-    @override_features(FORCE_PHONE_VALIDATION=False)
     @patch(
         "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
     )
@@ -665,7 +669,7 @@ class RunIntegrationTest:
         self, get_application_details, get_closed_application_ids_for_demarche_simplifiee
     ):
 
-        with freezegun.freeze_time(datetime.utcnow() - relativedelta(years=3)):
+        with freezegun.freeze_time(datetime.utcnow() - relativedelta(years=2, month=1)):
             users_factories.UnderageBeneficiaryFactory(
                 email="john.doe@example.com",
                 firstName="john",
@@ -675,7 +679,9 @@ class RunIntegrationTest:
             )
 
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
-        get_application_details.side_effect = self._get_details
+        details = self._get_details(application_id=123, procedure_id=6712558, token="token")
+        details["dossier"]["created_at"] = datetime.utcnow()
+        get_application_details.return_value = details
 
         remote_import.run(procedure_id=6712558)
 

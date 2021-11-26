@@ -4,7 +4,6 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users import api as users_api
 from pcapi.core.users.external import update_external_user
-from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
 from pcapi.infrastructure.repository.beneficiary import beneficiary_pre_subscription_sql_converter
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
@@ -23,15 +22,15 @@ class BeneficiarySQLRepository:
             source=next(
                 source for source in BeneficiaryImportSources if source.value == beneficiary_pre_subscription.source
             ),
+            eligibility_type=beneficiary_pre_subscription.eligibility_type,
             details=None,
             status=ImportStatus.CREATED,
-            eligibilityType=EligibilityType.AGE18,
         )
         repository.save(user_sql_entity)
 
         if not users_api.steps_to_become_beneficiary(user_sql_entity):
             user_sql_entity = subscription_api.check_and_activate_beneficiary(
-                user_sql_entity.id, beneficiary_pre_subscription.deposit_source, has_activated_account=user is not None
+                user_sql_entity.id, has_activated_account=user is not None
             )
         else:
             update_external_user(user_sql_entity)
