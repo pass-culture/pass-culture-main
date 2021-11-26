@@ -1,17 +1,21 @@
 from datetime import datetime
 from enum import Enum
+import typing
 
 import sqlalchemy as sa
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from pcapi.core.users.models import EligibilityType
-from pcapi.core.users.models import User
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.pc_object import PcObject
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.users.models import User
 
 
 class BeneficiaryImportSources(Enum):
@@ -39,7 +43,7 @@ class BeneficiaryImport(PcObject, Model):
     )
     beneficiary = relationship("User", foreign_keys=[beneficiaryId], backref="beneficiaryImports")
 
-    def setStatus(self, status: ImportStatus, detail: str = None, author: User = None):
+    def setStatus(self, status: ImportStatus, detail: str = None, author: "User" = None):
         new_status = BeneficiaryImportStatus()
         new_status.status = status
         new_status.detail = detail

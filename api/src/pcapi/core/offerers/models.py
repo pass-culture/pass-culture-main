@@ -33,8 +33,6 @@ from sqlalchemy.sql.sqltypes import LargeBinary
 from werkzeug.utils import cached_property
 
 from pcapi.connectors.api_entreprises import get_offerer_legal_category
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.domain.postal_code.postal_code import OVERSEAS_DEPARTEMENT_CODE_START
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.ts_vector import create_ts_vector_and_table_args
@@ -47,7 +45,6 @@ from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils import crypto
 from pcapi.utils.date import CUSTOM_TIMEZONES
 from pcapi.utils.date import METROPOLE_TIMEZONE
@@ -246,6 +243,9 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     @property
     def nOffers(self) -> int:
+        from pcapi.core.offers.models import Offer
+        from pcapi.core.offers.models import OfferValidationStatus
+
         return (
             Offer.query.filter(and_(Offer.venueId == self.id, Offer.validation != OfferValidationStatus.DRAFT))
             .with_entities(Offer.id)
@@ -254,6 +254,8 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     @property
     def nApprovedOffers(self) -> int:
+        from pcapi.core.offers.models import OfferValidationStatus
+
         n_approved_offers = 0
         n_approved_offers += len([offer for offer in self.offers if offer.validation == OfferValidationStatus.APPROVED])
         return n_approved_offers
@@ -397,6 +399,11 @@ class Offerer(
     thumb_path_component = "offerers"
 
     def grant_access(self, user):
+        # FIXME (dbaty, 2021-11-26): consider moving this code to a
+        # function in `core.offerers.api`. It should not be in the
+        # model!
+        from pcapi.models.user_offerer import UserOfferer
+
         if not user:
             return None
         user_offerer = UserOfferer()

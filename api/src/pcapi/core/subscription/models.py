@@ -1,15 +1,18 @@
 import dataclasses
 import datetime
 import enum
+import typing
 from typing import Optional
 
 import sqlalchemy
 
-import pcapi.core.fraud.models as fraud_models
 from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
+
+
+if typing.TYPE_CHECKING:
+    import pcapi.core.fraud.models as fraud_models
 
 
 class SubscriptionStep(enum.Enum):
@@ -52,7 +55,9 @@ class BeneficiaryPreSubscription:
         return f"{self.first_name} {self.last_name}"
 
     @classmethod
-    def from_dms_source(cls, source_data: fraud_models.DMSContent) -> "BeneficiaryPreSubscription":
+    def from_dms_source(cls, source_data: "fraud_models.DMSContent") -> "BeneficiaryPreSubscription":
+        from pcapi.models.beneficiary_import import BeneficiaryImportSources
+
         return BeneficiaryPreSubscription(
             activity=source_data.activity,
             address=source_data.address,

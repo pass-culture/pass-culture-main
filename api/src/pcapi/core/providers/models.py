@@ -22,7 +22,6 @@ from sqlalchemy.orm import column_property
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
-from pcapi.core.offers.models import Offer
 from pcapi.domain.price_rule import PriceRule
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
 from pcapi.models.db import Model
@@ -117,6 +116,8 @@ class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):
 
     @property
     def nOffers(self):
+        from pcapi.core.offers.models import Offer
+
         # pylint: disable=comparison-with-callable
         return (
             Offer.query.filter(Offer.venueId == self.venueId, Offer.isActive == True)

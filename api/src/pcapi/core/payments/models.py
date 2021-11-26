@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import datetime
 from decimal import Decimal
 import enum
+import typing
 
 import psycopg2.extras
 import pytz
@@ -10,9 +11,12 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import SmallInteger
 
-from pcapi.core.bookings.models import Booking
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.bookings.models import Booking
 
 
 MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
@@ -25,22 +29,22 @@ class ReimbursementRule:
     # It's not defined in this abstract class because SQLAlchemy would
     # then miss the `rate` column in `CustomReimbursementRule`.
 
-    def is_active(self, booking: Booking) -> bool:
+    def is_active(self, booking: "Booking") -> bool:
         valid_from = self.valid_from or MIN_DATETIME
         valid_until = self.valid_until or MAX_DATETIME
         return valid_from <= booking.dateUsed < valid_until
 
-    def is_relevant(self, booking: Booking, cumulative_revenue: Decimal) -> bool:
+    def is_relevant(self, booking: "Booking", cumulative_revenue: Decimal) -> bool:
         raise NotImplementedError()
 
     @property
     def description(self) -> str:
         raise NotImplementedError()
 
-    def matches(self, booking: Booking, cumulative_revenue="ignored") -> bool:
+    def matches(self, booking: "Booking", cumulative_revenue="ignored") -> bool:
         return self.is_active(booking) and self.is_relevant(booking, cumulative_revenue)
 
-    def apply(self, booking: Booking) -> Decimal:
+    def apply(self, booking: "Booking") -> Decimal:
         return Decimal(booking.total_amount * self.rate)
 
 
@@ -96,12 +100,12 @@ class CustomReimbursementRule(ReimbursementRule, Model):
         end = end.astimezone(pytz.utc).isoformat() if end else None
         return psycopg2.extras.DateTimeRange(start, end, bounds="[)")
 
-    def is_active(self, booking: Booking):
+    def is_active(self, booking: "Booking"):
         if booking.dateUsed < self.timespan.lower:
             return False
         return self.timespan.upper is None or booking.dateUsed < self.timespan.upper
 
-    def is_relevant(self, booking: Booking, cumulative_revenue="ignored"):
+    def is_relevant(self, booking: "Booking", cumulative_revenue="ignored"):
         if booking.stock.offerId == self.offerId:
             return True
         if self.subcategories:
@@ -111,7 +115,7 @@ class CustomReimbursementRule(ReimbursementRule, Model):
             return True
         return False
 
-    def apply(self, booking: Booking):
+    def apply(self, booking: "Booking"):
         if self.amount is not None:
             return booking.quantity * self.amount
         return booking.total_amount * self.rate
