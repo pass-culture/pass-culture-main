@@ -71,6 +71,31 @@ def get_latest_subscription_message(user: users_models.User) -> Optional[models.
     return models.SubscriptionMessage.query.filter_by(user=user).order_by(models.SubscriptionMessage.id.desc()).first()
 
 
+def create_successfull_beneficiary_import(
+    user: users_models.User,
+    source: BeneficiaryImportSources,
+    source_id: str,
+    application_id: str,
+    eligibility_type: Optional[users_models.EligibilityType] = None,
+) -> None:
+    existing_beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=application_id).first()
+
+    beneficiary_import = existing_beneficiary_import or BeneficiaryImport()
+    if not beneficiary_import.beneficiary:
+        beneficiary_import.beneficiary = user
+    if eligibility_type is not None:
+        beneficiary_import.eligibilityType = eligibility_type
+
+    beneficiary_import.applicationId = application_id
+    beneficiary_import.sourceId = source_id
+    beneficiary_import.source = source.value
+    beneficiary_import.setStatus(status=ImportStatus.CREATED, author=None)
+
+    pcapi_repository.repository.save(beneficiary_import)
+
+    return beneficiary_import
+
+
 def activate_beneficiary(
     user: users_models.User, deposit_source: str = None, has_activated_account: Optional[bool] = True
 ) -> users_models.User:

@@ -24,9 +24,7 @@ from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository import repository
 from pcapi.repository.beneficiary_import_queries import find_applications_ids_to_retry
 from pcapi.repository.beneficiary_import_queries import get_already_processed_applications_ids
-from pcapi.repository.beneficiary_import_queries import is_already_imported
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
-from pcapi.repository.user_queries import beneficiary_by_civility_query
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.utils.date import FrenchParserInfo
 
@@ -187,47 +185,46 @@ def process_application(
         )
         return
     try:
-        fraud_api.on_dms_fraud_check(user, information)
+        fraud_result = fraud_api.on_dms_fraud_result(user, information)
     except fraud_exceptions.BeneficiaryFraudResultCannotBeDowngraded:
         logger.warning("Trying to downgrade a BeneficiaryFraudResult status already OK", extra={"user_id": user.id})
+        _process_rejection(information, procedure_id, "Compte existant avec cet email", user)
+
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception("Error on dms fraud check result: %s", exc)
-    if user.has_beneficiary_role:
-        _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
-        return
 
-    if information.id_piece_number:
-        _duplicated_user = users_models.User.query.filter(
-            users_models.User.idPieceNumber == information.id_piece_number,
-            users_models.User.id != user.id,
-        ).first()
-        if _duplicated_user:
-            subscription_messages.on_duplicate_user(user)
-            _process_rejection(
-                information,
-                procedure_id=procedure_id,
-                reason=f"Nr de piece déjà utilisé par {_duplicated_user.id}",
-                user=user,
-            )
-            return
-
-    if not is_already_imported(information.application_id):
-        duplicate_users = beneficiary_by_civility_query(
-            first_name=information.first_name,
-            last_name=information.last_name,
-            date_of_birth=information.birth_date,
-            exclude_email=information.email,
-        ).all()
-        if duplicate_users and information.application_id not in retry_ids:
-            _process_duplication(duplicate_users, information, procedure_id)
-            subscription_messages.on_duplicate_user(user)
+    else:
+        if fraud_result.status != fraud_models.FraudStatus.OK:
+            handle_validation_errors(user, fraud_result, information, procedure_id)
 
         else:
-            process_beneficiary_application(
-                information=information,
-                procedure_id=procedure_id,
-                user=user,
-            )
+            process_beneficiary_application(information=information, procedure_id=procedure_id, user=user)
+
+
+def handle_validation_errors(
+    user: users_models.User,
+    fraud_result: fraud_models.BeneficiaryFraudResult,
+    information: fraud_models.DMSContent,
+    procedure_id: int,
+):
+    for error_code in fraud_result.reason_codes:
+        if error_code == fraud_models.FraudReasonCode.ALREADY_BENEFICIARY:
+            _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
+        if error_code == fraud_models.FraudReasonCode.DUPLICATE_USER:
+            subscription_messages.on_duplicate_user(user)
+        if error_code == fraud_models.FraudReasonCode.DUPLICATE_ID_NUMBER:
+            subscription_messages.on_duplicate_user(user)
+
+    # keeps the creation of a beneficiaryImport to avoid reprocess the same application
+    # forever, it's mandatory to make get_already_processed_applications_ids work
+    save_beneficiary_import_with_status(
+        ImportStatus.REJECTED,
+        information.application_id,
+        source=BeneficiaryImportSources.demarches_simplifiees,
+        source_id=procedure_id,
+        user=user,
+        detail="Voir les details dans la page support",
+    )
 
 
 def parse_beneficiary_information(application_detail: dict, procedure_id: int) -> fraud_models.DMSContent:
@@ -368,12 +365,11 @@ def process_beneficiary_application(
         procedure_id,
     )
 
-    save_beneficiary_import_with_status(
-        ImportStatus.CREATED,
-        information.application_id,
+    subscription_api.create_successfull_beneficiary_import(
+        user=user,
         source=BeneficiaryImportSources.demarches_simplifiees,
         source_id=procedure_id,
-        user=user,
+        application_id=information.application_id,
         eligibility_type=fraud_api.get_eligibility_type(information),
     )
 
@@ -381,23 +377,6 @@ def process_beneficiary_application(
         subscription_api.activate_beneficiary(user)
     else:
         users_external.update_external_user(user)
-
-
-def _process_duplication(
-    duplicate_users: list[users_models.User], information: fraud_models.DMSContent, procedure_id: int
-) -> None:
-    number_of_beneficiaries = len(duplicate_users)
-    duplicate_ids = ", ".join([str(u.id) for u in duplicate_users])
-    message = f"{number_of_beneficiaries} utilisateur(s) en doublon {duplicate_ids} pour le dossier {information.application_id} - Procedure {procedure_id}"
-    logger.warning("[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : %s", message)
-    save_beneficiary_import_with_status(
-        ImportStatus.DUPLICATE,
-        information.application_id,
-        source=BeneficiaryImportSources.demarches_simplifiees,
-        source_id=procedure_id,
-        detail=f"Utilisateur en doublon : {duplicate_ids}",
-        eligibility_type=fraud_api.get_eligibility_type(information),
-    )
 
 
 def _process_rejection(
