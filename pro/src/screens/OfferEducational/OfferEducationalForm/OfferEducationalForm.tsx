@@ -4,7 +4,10 @@ import { Link } from 'react-router-dom'
 
 import Banner from 'components/layout/Banner/Banner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import {
+  IOfferEducationalFormValues,
+  IUserOfferer,
+} from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
 import { CGU_URL } from 'utils/config'
@@ -32,6 +35,9 @@ const OfferEducationalForm = ({
   userOfferers,
 }: IOfferEducationalFormProps): JSX.Element => {
   const [venuesOptions, setVenuesOptions] = useState<SelectOptions>([])
+  const [currentOfferer, setCurrentOfferer] = useState<IUserOfferer | null>(
+    null
+  )
   const { values } = useFormikContext<IOfferEducationalFormValues>()
 
   useEffect(() => {
@@ -39,6 +45,7 @@ const OfferEducationalForm = ({
       offerer => offerer.id === values.offererId
     )
     if (selectedOfferer) {
+      setCurrentOfferer(selectedOfferer)
       setVenuesOptions(
         buildSelectOptions(
           selectedOfferer.managedVenues,
@@ -60,7 +67,10 @@ const OfferEducationalForm = ({
         subCategories={educationalSubCategories}
       />
       <FormVenue userOfferers={userOfferers} venuesOptions={venuesOptions} />
-      <FormEventAddress venuesOptions={venuesOptions} />
+      <FormEventAddress
+        currentOfferer={currentOfferer}
+        venuesOptions={venuesOptions}
+      />
       <FormParticipants />
       <FormAccessibility />
       <FormContact />

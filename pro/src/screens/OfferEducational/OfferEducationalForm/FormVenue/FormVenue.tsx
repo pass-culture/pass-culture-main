@@ -13,7 +13,7 @@ import { OFFERER_LABEL, VENUE_LABEL } from '../../constants/labels'
 
 interface IFormVenueProps {
   userOfferers: IUserOfferer[]
-  venuesOptions: { value: string; label: string }[]
+  venuesOptions: SelectOptions
 }
 
 const FormVenue = ({
@@ -31,8 +31,8 @@ const FormVenue = ({
   useEffect(() => {
     setFieldValue('venueId', INITIAL_EDUCATIONAL_FORM_VALUES.venueId, false)
     setFieldValue(
-      'eventAddress.offererVenueId',
-      INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.offererVenueId,
+      'eventAddress.venueId',
+      INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.venueId,
       false
     )
   }, [values.offererId, setFieldValue])

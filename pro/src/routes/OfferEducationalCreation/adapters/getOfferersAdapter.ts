@@ -81,6 +81,11 @@ const serializeVenues = (venues: IAPIOfferer['managedVenues']): IUserVenue[] =>
     .map(venue => ({
       id: venue.id,
       name: venue.publicName,
+      address: {
+        street: venue.address,
+        city: venue.city,
+        postalCode: venue.postalCode,
+      },
     }))
 
 const serializeOfferers = (offerers: IAPIOfferer[]): IUserOfferer[] =>

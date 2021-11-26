@@ -1,4 +1,4 @@
-import { IOfferEducationalFormValues } from './types'
+import { IOfferEducationalFormValues, ADRESS_TYPE } from './types'
 
 export const INITIAL_EDUCATIONAL_FORM_VALUES: IOfferEducationalFormValues = {
   category: '',
@@ -9,9 +9,9 @@ export const INITIAL_EDUCATIONAL_FORM_VALUES: IOfferEducationalFormValues = {
   offererId: '',
   venueId: '',
   eventAddress: {
-    addressType: '',
-    offererVenueId: '',
+    addressType: ADRESS_TYPE.OFFERER_VENUE,
     otherAddress: '',
+    venueId: '',
   },
   participants: [],
   accessibility: '',
