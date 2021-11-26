@@ -166,6 +166,12 @@ class JouveFraudCheckTest:
         [
             "321070751234",
             "090435303687",
+            "Y808952",  # Tunisie
+            "U 13884935",  # Turquie
+            "AZ 1461290",  # Ancienne id italienne
+            "595-0103264-74",  # ID Belge
+            "1277367",  # ID Congolaise, Camerounaise, Mauricienne
+            "100030595009080004",  # ID Algerienne
             "00000000 0 ZU4",  # portugal format
             "03146310",  # andora CNI format
         ],

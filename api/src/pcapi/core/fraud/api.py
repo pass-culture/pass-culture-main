@@ -261,7 +261,23 @@ def validate_id_piece_number_format_fraud_item(id_piece_number) -> models.FraudI
         return models.FraudItem(
             status=models.FraudStatus.SUSPICIOUS, detail="Le numéro de la pièce d'identité est vide"
         )
-    if not re.fullmatch(r"^[\w]{8,12}|[\s\w]{14}$", id_piece_number):
+
+    regexp = "|".join(
+        (
+            r"(^\d{18}$)",  # ID Algérienne
+            r"(^[\w]{8,12}|[\s\w]{14}$)",  # ID Europeene ID Française
+            r"(^\w{1}\d{6}$)",  # ID Tunisienne
+            r"(^\w{1}\ *\d{8}$)",  # ID Turque
+            r"(^\w{2}\ *\d{7}$)",  # Ancienne ID Italienne
+            r"(^\d{3}\-\d{7}\-\d{2}$)",  # ID Belge
+            r"(^\d{7}$)",  # ID Congolaise, Camerounaise, Mauricienne
+        )
+    )
+
+    if not re.fullmatch(
+        regexp,
+        id_piece_number,
+    ):
         return models.FraudItem(
             status=models.FraudStatus.SUSPICIOUS, detail="Le format du numéro de la pièce d'identité n'est pas valide"
         )
