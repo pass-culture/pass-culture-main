@@ -51,7 +51,6 @@ from pcapi.core.users.utils import store_object
 from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.domain.user_activation import create_beneficiary_from_application
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
@@ -271,8 +270,21 @@ def update_user_information_from_external_source(
     commit=False,
 ) -> User:
     if isinstance(data, fraud_models.DMSContent):
-        # FIXME: the following function does not override user.dateOfBirth, we should do it
-        user = create_beneficiary_from_application(data, user)
+        user.lastName = data.last_name
+        user.firstName = data.first_name
+        user.publicName = "%s %s" % (data.first_name, data.last_name)
+        user.departementCode = data.department
+        user.postalCode = data.postal_code
+        user.address = data.address
+        user.civility = data.civility
+        user.activity = data.activity
+        user.remove_admin_role()
+        user.hasSeenTutorials = False
+        user.idPieceNumber = data.id_piece_number
+        if data.birth_date:
+            user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0))
+        if not user.phoneNumber:
+            user.phoneNumber = data.phone
 
     elif isinstance(data, fraud_models.JouveContent):
         if data.activity:
