@@ -3,7 +3,7 @@ import re
 import string
 
 from pcapi.core.users.models import User
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import crypto
 from pcapi.utils.token import random_token
 

@@ -4,7 +4,7 @@ from pcapi.core.offerers.factories import AllocineVenueProviderFactory
 from pcapi.core.offerers.factories import AllocineVenueProviderPriceRuleFactory
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.domain.price_rule import PriceRule
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 
 

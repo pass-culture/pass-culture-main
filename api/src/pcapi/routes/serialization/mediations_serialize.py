@@ -6,7 +6,7 @@ from typing import Optional
 from pydantic import BaseModel
 from pydantic import Field
 
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel

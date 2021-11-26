@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core.users import factories as users_factories
-from pcapi.models import UserSession
+from pcapi.models.user_session import UserSession
 
 from tests.conftest import TestClient
 

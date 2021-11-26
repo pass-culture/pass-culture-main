@@ -3,9 +3,9 @@ from typing import Optional
 
 from pcapi.core.bookings.api import compute_cancellation_limit_date
 from pcapi.core.offers.models import Mediation
+from pcapi.core.offers.models import Offer
 from pcapi.domain.booking_recap.booking_recap import BookingRecapLegacy
 from pcapi.domain.favorite.favorite import FavoriteDomain
-from pcapi.models import Offer
 
 
 def create_domain_booking_recap(

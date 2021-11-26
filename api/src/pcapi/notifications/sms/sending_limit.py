@@ -1,7 +1,7 @@
 from redis import Redis
 
 from pcapi import settings
-from pcapi.models import User
+from pcapi.core.users.models import User
 
 
 def _sent_SMS_counter_key_name(user: User):

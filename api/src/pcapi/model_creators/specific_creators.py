@@ -8,13 +8,13 @@ from typing import Optional
 
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.offers.models import Stock
 from pcapi.core.providers.models import Provider
-from pcapi.models import Criterion
-from pcapi.models import Offer
-from pcapi.models import Product
-from pcapi.models import Stock
-from pcapi.models import Venue
+from pcapi.models.criterion import Criterion
+from pcapi.models.product import Product
 
 
 def create_offer_with_event_product(

@@ -2,7 +2,7 @@ import csv
 import logging
 from typing import Iterable
 
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id_and_offerer_id
 

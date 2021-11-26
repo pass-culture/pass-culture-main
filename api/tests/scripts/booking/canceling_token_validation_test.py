@@ -1,9 +1,9 @@
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.payments.factories as payments_factories
-from pcapi.models import Booking
 from pcapi.models.api_errors import ResourceGoneError
 from pcapi.scripts.booking.canceling_token_validation import canceling_token_validation
 

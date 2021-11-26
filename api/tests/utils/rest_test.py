@@ -1,10 +1,10 @@
 import pytest
 
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
-from pcapi.models import ApiErrors
-from pcapi.models import Venue
+from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error

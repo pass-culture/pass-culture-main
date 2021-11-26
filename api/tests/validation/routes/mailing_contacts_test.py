@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.validation.routes.mailing_contacts import validate_save_mailing_contact_request
 
 

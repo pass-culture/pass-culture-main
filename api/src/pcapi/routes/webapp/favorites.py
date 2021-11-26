@@ -4,12 +4,12 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.offers.models import Mediation
+from pcapi.core.offers.models import Offer
 from pcapi.core.users.external import update_external_user
+from pcapi.core.users.models import Favorite
 from pcapi.core.users.repository import find_favorite_for_offer_and_user
 from pcapi.core.users.repository import find_favorites_domain_by_beneficiary
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
-from pcapi.models import Favorite
-from pcapi.models import Offer
 from pcapi.repository import repository
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict

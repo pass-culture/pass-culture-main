@@ -14,8 +14,8 @@ from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_wi
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
-from pcapi.models import ApiErrors
-from pcapi.models import BankInformation
+from pcapi.models.api_errors import ApiErrors
+from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.repository import repository
 from pcapi.use_cases.save_venue_bank_informations import SaveVenueBankInformations

@@ -5,7 +5,7 @@ from sqlalchemy.sql import text
 import pcapi.core.users.api as users_api
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
-from pcapi.models import ImportStatus
+from pcapi.models.beneficiary_import_status import ImportStatus
 
 from tests.conftest import clean_database
 

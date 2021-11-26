@@ -8,7 +8,7 @@ from pcapi.domain.password import _ensure_new_password_is_strong_enough
 from pcapi.domain.password import check_password_validity
 from pcapi.domain.password import random_password
 from pcapi.domain.password import validate_change_password_request
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 
 
 class RandomPasswordTest:

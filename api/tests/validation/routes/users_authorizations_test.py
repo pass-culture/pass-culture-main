@@ -6,7 +6,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.utils.token import random_token
 from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_validate_booking

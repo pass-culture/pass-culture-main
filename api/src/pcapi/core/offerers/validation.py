@@ -1,8 +1,8 @@
 from decimal import Decimal
 from decimal import InvalidOperation
 
-from pcapi.models import ApiErrors
-from pcapi.models import Venue
+from pcapi.core.offerers.models import Venue
+from pcapi.models.api_errors import ApiErrors
 
 
 MAX_LONGITUDE = 180

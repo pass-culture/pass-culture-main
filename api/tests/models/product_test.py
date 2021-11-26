@@ -3,7 +3,7 @@ from sqlalchemy import not_
 
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
-from pcapi.models import Product
+from pcapi.models.product import Product
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 

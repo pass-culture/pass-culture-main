@@ -18,10 +18,10 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.external import update_external_user
 from pcapi.domain import user_emails as old_user_emails
-from pcapi.models import BeneficiaryImport
-from pcapi.models import BeneficiaryImportSources
-from pcapi.models import ImportStatus
 from pcapi.models import db
+from pcapi.models.beneficiary_import import BeneficiaryImport
+from pcapi.models.beneficiary_import import BeneficiaryImportSources
+from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.feature import FeatureToggle
 import pcapi.repository as pcapi_repository
 from pcapi.workers import apps_flyer_job

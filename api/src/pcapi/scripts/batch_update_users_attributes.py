@@ -11,7 +11,7 @@ from pcapi.core.users.external import get_user_attributes
 from pcapi.core.users.external import sendinblue
 from pcapi.core.users.external.sendinblue import SendinblueUserUpdateData
 from pcapi.core.users.external.sendinblue import import_contacts_in_sendinblue
-from pcapi.models import User
+from pcapi.core.users.models import User
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.backends.batch import UserUpdateData
 

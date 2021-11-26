@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from spectree.spec import SpecTree
 from werkzeug.exceptions import BadRequest
 
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import api as default_api
 
 from .spec_tree import ExtendedResponse as SpectreeResponse

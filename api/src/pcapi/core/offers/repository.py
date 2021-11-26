@@ -15,22 +15,22 @@ from sqlalchemy.sql.functions import coalesce
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
+from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.infrastructure.repository.pro_offers.offers_recap_domain_converter import to_domain
-from pcapi.models import Offer
-from pcapi.models import OfferCriterion
-from pcapi.models import Product
-from pcapi.models import Stock
-from pcapi.models import UserOfferer
-from pcapi.models import Venue
 from pcapi.models import db
+from pcapi.models.offer_criterion import OfferCriterion
+from pcapi.models.product import Product
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.custom_keys import compute_venue_reference
 
 

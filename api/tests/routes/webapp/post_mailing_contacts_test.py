@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.workers.mailing_contacts_job import mailing_contacts_job
 
 from tests.conftest import TestClient

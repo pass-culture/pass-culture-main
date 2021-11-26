@@ -7,13 +7,13 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers.models import AllocineVenueProvider
+from pcapi.core.providers.models import AllocineVenueProviderPriceRule
+from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import Favorite
-from pcapi.models import AllocineVenueProvider
-from pcapi.models import AllocineVenueProviderPriceRule
-from pcapi.models import BankInformation
-from pcapi.models import OfferCriterion
-from pcapi.models import VenueProvider
 from pcapi.models import db
+from pcapi.models.bank_information import BankInformation
+from pcapi.models.offer_criterion import OfferCriterion
 
 
 logger = logging.getLogger(__name__)

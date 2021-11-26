@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pcapi.models import Stock
+from pcapi.core.offers.models import Stock
 from pcapi.repository.providable_queries import get_last_update_for_provider
 
 

@@ -9,7 +9,7 @@ from pydantic import MissingError
 from pydantic import ValidationError
 from pydantic import validator
 
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import dehumanize_ids_list
 from pcapi.utils.human_ids import humanize

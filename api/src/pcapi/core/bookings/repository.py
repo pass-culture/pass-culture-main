@@ -24,6 +24,7 @@ from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.util._collections import AbstractKeyedTuple
 
 from pcapi.core.bookings import constants
+from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
@@ -31,22 +32,21 @@ from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecapLegacy
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.models import Booking
-from pcapi.models import Offer
-from pcapi.models import Stock
-from pcapi.models import UserOfferer
-from pcapi.models import Venue
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.token import random_token
 

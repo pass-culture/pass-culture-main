@@ -4,9 +4,9 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_features
-from pcapi.models import Venue
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient

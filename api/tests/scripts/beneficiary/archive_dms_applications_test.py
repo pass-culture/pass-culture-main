@@ -6,7 +6,7 @@ import pytest
 from pcapi.connectors.api_demarches_simplifiees import DMSGraphQLClient
 from pcapi.core import testing
 from pcapi.core.users import factories as users_factories
-from pcapi.models import ImportStatus
+from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.scripts.beneficiary import archive_dms_applications
 
 from tests.scripts.beneficiary.fixture import make_graphql_application

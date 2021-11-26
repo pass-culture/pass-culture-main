@@ -4,7 +4,7 @@ from typing import Optional
 from pcapi.core.object_storage import BACKENDS_MAPPING
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
-from pcapi.models import Favorite
+from pcapi.core.users.models import Favorite
 from pcapi.models import db
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize

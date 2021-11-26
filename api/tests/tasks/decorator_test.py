@@ -9,7 +9,7 @@ import pytest
 
 from pcapi import settings
 from pcapi.core.testing import override_settings
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.tasks.decorator import task
 
 from tests.conftest import TestClient

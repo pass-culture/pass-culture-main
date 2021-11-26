@@ -3,7 +3,7 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.offerers.models import Offerer
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from pcapi.routes.apis import private_api

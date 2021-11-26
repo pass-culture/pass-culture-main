@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationConfig
-from pcapi.models import PcObject
+from pcapi.models.pc_object import PcObject
 from pcapi.utils.custom_logic import OPERATIONS
 
 

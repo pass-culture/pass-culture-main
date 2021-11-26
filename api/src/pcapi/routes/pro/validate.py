@@ -4,8 +4,8 @@ from pcapi.core.offerers import api
 from pcapi.core.offerers.exceptions import ValidationTokenNotFoundError
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
-from pcapi.models import UserOfferer
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
 from pcapi.repository import user_offerer_queries
 from pcapi.repository import user_queries

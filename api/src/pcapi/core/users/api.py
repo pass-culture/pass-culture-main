@@ -55,7 +55,7 @@ from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.user_activation import create_beneficiary_from_application
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_offerer import UserOfferer

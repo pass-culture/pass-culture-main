@@ -1,8 +1,8 @@
 from schwifty import BIC
 from schwifty import IBAN
 
-from pcapi.models import ApiErrors
-from pcapi.models import BankInformation
+from pcapi.models.api_errors import ApiErrors
+from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 
 

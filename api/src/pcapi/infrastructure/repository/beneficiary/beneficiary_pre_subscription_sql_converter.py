@@ -4,8 +4,8 @@ from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
-from pcapi.models import BeneficiaryImport
-from pcapi.models import ImportStatus
+from pcapi.models.beneficiary_import import BeneficiaryImport
+from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.feature import FeatureToggle
 
 

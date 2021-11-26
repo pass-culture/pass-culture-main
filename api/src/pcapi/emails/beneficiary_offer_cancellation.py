@@ -1,8 +1,8 @@
 from sqlalchemy.orm import joinedload
 
+from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import IndividualBooking
-from pcapi.models import Booking
-from pcapi.models import Stock
+from pcapi.core.offers.models import Stock
 from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import extract_users_information_from_bookings
 from pcapi.utils.mailing import format_booking_date_for_email

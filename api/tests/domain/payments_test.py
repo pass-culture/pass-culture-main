@@ -6,6 +6,7 @@ from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import Booking
 from pcapi.core.offerers.models import Offerer
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
@@ -28,7 +29,6 @@ from pcapi.model_creators.generic_creators import create_payment
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.models import Booking
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import payment_queries

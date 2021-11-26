@@ -9,10 +9,10 @@ import pytest
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.factories import AllocineVenueProviderFactory
 from pcapi.core.offerers.factories import AllocineVenueProviderPriceRuleFactory
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.local_providers import AllocineStocks
-from pcapi.models import Offer
-from pcapi.models import Product
-from pcapi.models import Stock
+from pcapi.models.product import Product
 from pcapi.repository import repository
 import pcapi.sandboxes
 from pcapi.utils.human_ids import humanize

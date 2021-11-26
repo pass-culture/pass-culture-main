@@ -7,7 +7,7 @@ from typing import Iterable
 from typing import Optional
 from typing import Union
 
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository.reimbursement_queries import find_all_offerers_payments
 from pcapi.repository.reimbursement_queries import legacy_find_all_offerers_payments

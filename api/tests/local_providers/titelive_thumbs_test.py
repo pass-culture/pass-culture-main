@@ -10,7 +10,7 @@ from pcapi.local_providers import TiteLiveThingThumbs
 from pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs import extract_thumb_index
 from pcapi.model_creators.provider_creators import provider_test
 from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
-from pcapi.models import Product
+from pcapi.models.product import Product
 from pcapi.repository import repository
 import pcapi.sandboxes
 

@@ -1,4 +1,4 @@
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 
 
 def check_valid_signin(identifier: str, password: str) -> None:

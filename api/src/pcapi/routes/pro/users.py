@@ -4,7 +4,7 @@ from flask_login import login_required
 
 from pcapi.core.users import api as users_api
 from pcapi.core.users.models import User
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.users import PatchProUserBodyModel
 from pcapi.routes.serialization.users import PatchProUserResponseModel

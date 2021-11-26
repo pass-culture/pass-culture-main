@@ -7,17 +7,17 @@ from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.query import Query
 
+from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
+from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.domain.beneficiary_pre_subscription.validator import _is_postal_code_eligible
 from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
-from pcapi.models import Booking
-from pcapi.models import Offer
-from pcapi.models import Offerer
-from pcapi.models import Stock
-from pcapi.models import UserOfferer
-from pcapi.models import Venue
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.utils import crypto

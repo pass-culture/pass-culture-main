@@ -1,7 +1,7 @@
 import logging
 
 from pcapi.core.offerers import repository as offerers_repository
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation

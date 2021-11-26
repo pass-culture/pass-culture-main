@@ -7,8 +7,8 @@ from pcapi.domain.titelive import get_date_from_filename
 from pcapi.domain.titelive import read_description_date
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models import Product
 from pcapi.models.local_provider_event import LocalProviderEventType
+from pcapi.models.product import Product
 from pcapi.repository import local_provider_event_queries
 
 

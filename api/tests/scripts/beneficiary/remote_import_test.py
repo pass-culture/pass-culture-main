@@ -20,9 +20,9 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
-from pcapi.models import ApiErrors
-from pcapi.models import BeneficiaryImport
-from pcapi.models import ImportStatus
+from pcapi.models.api_errors import ApiErrors
+from pcapi.models.beneficiary_import import BeneficiaryImport
+from pcapi.models.beneficiary_import_status import ImportStatus
 import pcapi.notifications.push.testing as push_testing
 from pcapi.scripts.beneficiary import remote_import
 

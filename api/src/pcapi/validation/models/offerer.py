@@ -1,5 +1,5 @@
 from pcapi.core.offerers.models import Offerer
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 
 
 def validate(offerer: Offerer, api_errors: ApiErrors) -> ApiErrors:

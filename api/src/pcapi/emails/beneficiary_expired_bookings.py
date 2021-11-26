@@ -1,5 +1,5 @@
+from pcapi.core.bookings.models import Booking
 from pcapi.core.users.models import User
-from pcapi.models import Booking
 
 
 def build_expired_bookings_recap_email_data_for_beneficiary(

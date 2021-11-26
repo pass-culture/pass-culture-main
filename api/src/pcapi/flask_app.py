@@ -21,6 +21,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from pcapi import settings
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.logging import install_logging
+from pcapi.models import install_models
 from pcapi.models.db import db
 from pcapi.scripts.install import install_commands
 from pcapi.utils.json_encoder import EnumJSONEncoder
@@ -150,6 +151,7 @@ def remove_db_session(
         pass
 
 
+install_models()
 admin.init_app(app)
 db.init_app(app)
 orm.configure_mappers()

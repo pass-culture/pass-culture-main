@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 
-from pcapi.models import UserSession
+from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
 from pcapi.repository.user_session_queries import delete_user_session
 

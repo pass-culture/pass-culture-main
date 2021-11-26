@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core.testing import override_features
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils.feature import feature_required
 

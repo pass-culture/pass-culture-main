@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.validation.models.user import validate
 
 

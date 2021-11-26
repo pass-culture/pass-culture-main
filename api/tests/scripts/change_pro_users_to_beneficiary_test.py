@@ -6,7 +6,7 @@ import pytest
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.models import UserOfferer
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
 from pcapi.scripts.change_some_pro_users_to_beneficiary import change_pro_users_to_beneficiary
 

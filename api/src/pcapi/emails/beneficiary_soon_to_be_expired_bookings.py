@@ -1,9 +1,9 @@
 from typing import List
 from typing import Tuple
 
+from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
 from pcapi.core.users.models import User
-from pcapi.models import Booking
 
 
 def filter_books_bookings(bookings: list[Booking]) -> Tuple[List[Booking], List[Booking]]:

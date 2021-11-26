@@ -4,7 +4,7 @@ import pytest
 
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 
 from tests.conftest import TestClient
 

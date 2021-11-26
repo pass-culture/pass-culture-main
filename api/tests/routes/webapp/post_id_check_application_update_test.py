@@ -10,7 +10,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import User
-from pcapi.models import BeneficiaryImport
+from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.notifications.push import testing as push_testing
 

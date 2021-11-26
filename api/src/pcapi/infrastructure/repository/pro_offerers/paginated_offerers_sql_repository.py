@@ -3,11 +3,11 @@ from typing import Optional
 from sqlalchemy import not_
 
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import filter_offerers_with_keywords_string
 from pcapi.domain.pro_offerers.paginated_offerers import PaginatedOfferers
 from pcapi.domain.pro_offerers.paginated_offerers_repository import PaginatedOfferersRepository
-from pcapi.models import UserOfferer
-from pcapi.models import Venue
+from pcapi.models.user_offerer import UserOfferer
 
 
 class PaginatedOfferersSQLRepository(PaginatedOfferersRepository):

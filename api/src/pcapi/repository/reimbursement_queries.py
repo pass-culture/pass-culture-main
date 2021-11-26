@@ -8,16 +8,16 @@ from sqlalchemy import subquery
 from sqlalchemy.orm import aliased
 
 from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import EducationalBooking
 from pcapi.core.bookings.models import IndividualBooking
+from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
-from pcapi.models import PaymentStatus
-from pcapi.models import Venue
 from pcapi.models.payment import Payment
+from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
 
 

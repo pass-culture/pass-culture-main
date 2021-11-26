@@ -15,6 +15,7 @@ from pcapi.core.mails.transactional.users.email_duplicate_pre_subscription_rejec
 )
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import find_new_offerer_user_email
+from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
 from pcapi.core.users import api as users_api
@@ -52,7 +53,6 @@ from pcapi.emails.user_notification_after_stock_update import (
 from pcapi.emails.user_warning_after_pro_booking_cancellation import (
     retrieve_data_to_warn_user_after_pro_booking_cancellation,
 )
-from pcapi.models import Offer
 from pcapi.utils.mailing import make_admin_user_validation_email
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 from pcapi.utils.mailing import make_pro_user_validation_email

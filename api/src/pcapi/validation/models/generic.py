@@ -5,7 +5,7 @@ from sqlalchemy import Float
 from sqlalchemy import Integer
 from sqlalchemy import String
 
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.db import Model
 
 

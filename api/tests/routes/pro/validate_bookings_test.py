@@ -7,9 +7,9 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.bookings.models import Booking
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.models import Booking
 from pcapi.models import api_errors
 from pcapi.utils.human_ids import humanize
 

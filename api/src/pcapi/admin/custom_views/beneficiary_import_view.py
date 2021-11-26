@@ -8,8 +8,8 @@ from wtforms import TextAreaField
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.domain.user_activation import IMPORT_STATUS_MODIFICATION_RULE
 from pcapi.domain.user_activation import is_import_status_change_allowed
-from pcapi.models import BeneficiaryImport
-from pcapi.models import ImportStatus
+from pcapi.models.beneficiary_import import BeneficiaryImport
+from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository import repository
 
 

@@ -5,9 +5,9 @@ from typing import Iterable
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
-from pcapi.models import ApiErrors
-from pcapi.models import Offer
-from pcapi.models import Stock
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
+from pcapi.models.api_errors import ApiErrors
 
 
 logger = logging.getLogger(__name__)

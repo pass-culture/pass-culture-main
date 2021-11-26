@@ -1,5 +1,5 @@
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.validation.models.offerer import validate
 
 

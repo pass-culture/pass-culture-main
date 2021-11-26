@@ -1,12 +1,12 @@
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models import Booking
 import pcapi.notifications.push.testing as push_testing
 
 

@@ -10,8 +10,8 @@ from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_rep
 from pcapi.infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.models import ApiErrors
-from pcapi.models import BankInformation
+from pcapi.models.api_errors import ApiErrors
+from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.repository import repository
 from pcapi.use_cases.save_offerer_bank_informations import SaveOffererBankInformations

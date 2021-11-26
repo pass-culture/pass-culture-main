@@ -20,7 +20,7 @@ from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository import transaction

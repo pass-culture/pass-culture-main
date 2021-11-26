@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.validation.routes.offers import check_offer_isbn_is_valid
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 

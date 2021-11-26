@@ -1,4 +1,4 @@
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 
 
 def validate_save_mailing_contact_request(json: dict):

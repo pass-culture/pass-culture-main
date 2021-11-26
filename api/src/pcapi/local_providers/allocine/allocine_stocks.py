@@ -9,19 +9,19 @@ from sqlalchemy import Sequence
 
 from pcapi import settings
 from pcapi.core.categories import subcategories
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
 from pcapi.domain.price_rule import AllocineStocksPriceRule
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models import Offer
-from pcapi.models import Product
-from pcapi.models import Stock
-from pcapi.models import Venue
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.local_provider_event import LocalProviderEventType
+from pcapi.models.product import Product
 from pcapi.utils.date import DEFAULT_STORED_TIMEZONE
 from pcapi.utils.date import get_department_timezone
 

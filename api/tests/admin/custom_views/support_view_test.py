@@ -14,7 +14,8 @@ from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
-import pcapi.models
+from pcapi.models.beneficiary_import import BeneficiaryImportSources
+from pcapi.models.beneficiary_import_status import ImportStatus
 
 
 AGE18_ELIGIBLE_BIRTH_DATE = datetime.now() - relativedelta(years=18, months=4)
@@ -334,7 +335,7 @@ class UpdateIDPieceNumberTest:
         assert user.idPieceNumber == id_piece_number
         assert user.has_beneficiary_role
         assert len(user.beneficiaryImports) == 1
-        assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
+        assert user.beneficiaryImports[0].currentStatus == ImportStatus.CREATED
         assert user.beneficiaryImports[0].eligibilityType == users_models.EligibilityType.AGE18
 
     def test_update_beneficiary_id_piece_number_from_dms_data(self, client):
@@ -355,7 +356,7 @@ class UpdateIDPieceNumberTest:
         assert user.idPieceNumber == id_piece_number
         assert user.has_beneficiary_role
         assert len(user.beneficiaryImports) == 1
-        assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
+        assert user.beneficiaryImports[0].currentStatus == ImportStatus.CREATED
 
     def test_update_beneficiary_id_piece_number_from_dms_data_with_existing_beneficiary_import(self, client):
         user = users_factories.UserFactory()
@@ -366,7 +367,7 @@ class UpdateIDPieceNumberTest:
             beneficiary=user,
             applicationId=dms_data.application_id,
             sourceId=dms_data.procedure_id,
-            source=pcapi.models.BeneficiaryImportSources.demarches_simplifiees.value,
+            source=BeneficiaryImportSources.demarches_simplifiees.value,
         )
         users_factories.BeneficiaryImportStatusFactory(beneficiaryImport=beneficiary_import)
         client.with_session_auth(self.jouve_admin.email)
@@ -383,7 +384,7 @@ class UpdateIDPieceNumberTest:
         assert user.idPieceNumber == id_piece_number
         assert user.has_beneficiary_role
         assert len(user.beneficiaryImports) == 1
-        assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
+        assert user.beneficiaryImports[0].currentStatus == ImportStatus.CREATED
 
     def test_jouve_specific_query_filter(self, client):
         client.with_session_auth(self.jouve_admin.email)
@@ -425,7 +426,7 @@ class UpdateIDPieceNumberTest:
         assert fraud_check.resultContent["bodyPieceNumber"] == "123123123123"
         assert user.has_beneficiary_role
         assert len(user.beneficiaryImports) == 1
-        assert user.beneficiaryImports[0].currentStatus == pcapi.models.ImportStatus.CREATED
+        assert user.beneficiaryImports[0].currentStatus == ImportStatus.CREATED
 
 
 @pytest.mark.usefixtures("db_session")

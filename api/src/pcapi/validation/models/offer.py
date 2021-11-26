@@ -1,6 +1,6 @@
 from pcapi.core.offerers.repository import find_venue_by_id
-from pcapi.models import ApiErrors
-from pcapi.models import Offer
+from pcapi.core.offers.models import Offer
+from pcapi.models.api_errors import ApiErrors
 
 
 def validate(offer: Offer, api_errors: ApiErrors) -> ApiErrors:

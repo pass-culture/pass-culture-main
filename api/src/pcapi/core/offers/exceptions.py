@@ -1,7 +1,7 @@
 import humanize
 
 from pcapi.domain.client_exceptions import ClientError
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 
 
 class TooLateToDeleteStock(ClientError):

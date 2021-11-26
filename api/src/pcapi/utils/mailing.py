@@ -8,15 +8,15 @@ from flask import render_template
 
 from pcapi import settings
 from pcapi.connectors import api_entreprises
+from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.repository import find_ongoing_bookings_by_stock
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import offer_webapp_link
 from pcapi.core.users.models import User
 from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.models import Booking
-from pcapi.models import Offer
-from pcapi.models import Stock
-from pcapi.models import UserOfferer
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.date import format_datetime
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize

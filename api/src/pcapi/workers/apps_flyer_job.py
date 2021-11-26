@@ -4,7 +4,7 @@ import logging
 from requests.exceptions import RequestException
 
 from pcapi import settings
-from pcapi.models import User
+from pcapi.core.users.models import User
 from pcapi.utils import requests
 from pcapi.workers import worker
 from pcapi.workers.decorators import job

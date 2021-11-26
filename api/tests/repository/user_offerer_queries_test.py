@@ -2,6 +2,8 @@ import pytest
 from sqlalchemy.orm.exc import MultipleResultsFound
 
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import Offer
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
@@ -10,9 +12,7 @@ from pcapi.model_creators.specific_creators import create_offer_with_event_produ
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
 from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
-from pcapi.models import Offer
-from pcapi.models import UserOfferer
-from pcapi.models import Venue
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
 from pcapi.repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id

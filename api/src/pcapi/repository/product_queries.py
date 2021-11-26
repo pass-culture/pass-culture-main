@@ -1,13 +1,13 @@
 from typing import Optional
 
+from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.users.repository import get_favorites_for_offers
 from pcapi.domain.offers import update_is_active_status
-from pcapi.models import Booking
-from pcapi.models import Offer
-from pcapi.models import Product
-from pcapi.models import Stock
+from pcapi.models.product import Product
 from pcapi.repository import repository
 from pcapi.repository.mediation_queries import get_mediations_for_offers
 from pcapi.repository.offer_queries import get_offers_by_product_id

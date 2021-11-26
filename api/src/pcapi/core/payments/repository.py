@@ -1,6 +1,6 @@
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
-from pcapi.models import User
+from pcapi.core.users.models import User
 from pcapi.models import db
 
 

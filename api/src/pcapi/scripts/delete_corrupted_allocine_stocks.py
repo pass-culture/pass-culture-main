@@ -1,5 +1,5 @@
+from pcapi.core.offers.models import Stock
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.models import Stock
 from pcapi.repository import repository
 
 

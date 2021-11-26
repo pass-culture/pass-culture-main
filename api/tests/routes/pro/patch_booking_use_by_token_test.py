@@ -3,13 +3,13 @@ import datetime
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.models import Booking
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
