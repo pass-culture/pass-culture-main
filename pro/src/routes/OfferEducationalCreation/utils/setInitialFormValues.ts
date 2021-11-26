@@ -7,16 +7,16 @@ import {
 const setInitialFormValues = (
   values: IOfferEducationalFormValues,
   offerers: IUserOfferer[],
-  structure: string | null,
-  lieu: string | null
+  offererId: string | undefined,
+  venueId: string | undefined
 ): IOfferEducationalFormValues => {
   const setOffererId = () => {
     if (offerers.length === 1) {
       return offerers[0].id as IOfferEducationalFormValues['offererId']
     }
 
-    if (structure) {
-      return structure as IOfferEducationalFormValues['offererId']
+    if (offererId) {
+      return offererId as IOfferEducationalFormValues['offererId']
     }
 
     return INITIAL_EDUCATIONAL_FORM_VALUES.offererId
@@ -28,8 +28,8 @@ const setInitialFormValues = (
         .id as IOfferEducationalFormValues['venueId']
     }
 
-    if (structure) {
-      const currentOfferer = offerers.find(offerer => offerer.id === structure)
+    if (offererId) {
+      const currentOfferer = offerers.find(offerer => offerer.id === offererId)
 
       if (currentOfferer?.managedVenues.length === 1) {
         return currentOfferer.managedVenues[0]
@@ -37,8 +37,8 @@ const setInitialFormValues = (
       }
     }
 
-    if (lieu) {
-      return lieu as IOfferEducationalFormValues['venueId']
+    if (venueId) {
+      return venueId as IOfferEducationalFormValues['venueId']
     }
 
     return INITIAL_EDUCATIONAL_FORM_VALUES.venueId

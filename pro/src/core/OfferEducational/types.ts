@@ -1,6 +1,11 @@
 export type IUserVenue = {
   id: string
   name: string
+  address: {
+    street: string
+    city: string
+    postalCode: string
+  }
 }
 
 export type IUserOfferer = {
@@ -8,6 +13,12 @@ export type IUserOfferer = {
   name: string
   siren: string
   managedVenues: IUserVenue[]
+}
+
+export enum ADRESS_TYPE {
+  OFFERER_VENUE = 'offererVenue',
+  SCHOOL = 'school',
+  OTHER = 'other',
 }
 
 export type IEducationalCategory = {
@@ -30,9 +41,9 @@ export type IOfferEducationalFormValues = {
   offererId: string
   venueId: string
   eventAddress: {
-    addressType: 'school' | 'offererVenue' | 'other' | ''
-    offererVenueId: string
+    addressType: ADRESS_TYPE
     otherAddress: string
+    venueId: string
   }
   participants: string[]
   accessibility: string

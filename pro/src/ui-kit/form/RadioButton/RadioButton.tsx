@@ -15,7 +15,7 @@ const RadioButton = ({
   value,
   className,
 }: IRadioButtonProps): JSX.Element => {
-  const [field, meta] = useField({ name, value })
+  const [field, meta] = useField({ name, value, type: 'radio' })
 
   return (
     <div className={className}>

@@ -25,7 +25,7 @@ interface IFormTypeProps {
   subCategories: IEducationalSubCategory[]
 }
 
-const EACOfferCreationType = ({
+const FormCategory = ({
   categories,
   subCategories,
 }: IFormTypeProps): JSX.Element => {
@@ -97,4 +97,4 @@ const EACOfferCreationType = ({
   )
 }
 
-export default EACOfferCreationType
+export default FormCategory

@@ -1,14 +1,23 @@
+import merge from 'lodash/merge'
+
 import { IUserOfferer, IUserVenue } from 'core/OfferEducational'
 
 export const managedVenueFactory = (
   userVenueExtends: Partial<IUserVenue>
-): IUserVenue => {
-  return {
-    id: 'VENUE_ID',
-    name: 'Venue name',
-    ...userVenueExtends,
-  }
-}
+): IUserVenue =>
+  merge(
+    {},
+    {
+      id: 'VENUE_ID',
+      name: 'Venue name',
+      address: {
+        street: '2 bis Street Name',
+        postalCode: '93100',
+        city: 'Montreuil',
+      },
+    },
+    userVenueExtends
+  )
 
 const userOffererFactory = (
   userOffererExtends: Partial<IUserOfferer>
