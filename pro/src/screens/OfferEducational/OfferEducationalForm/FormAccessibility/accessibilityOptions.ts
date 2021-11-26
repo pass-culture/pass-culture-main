@@ -3,5 +3,5 @@ export const accessibilityOptions = [
   { label: 'Pshychique ou cognitif', value: 'mentalDisabilityCompliant' },
   { label: 'Moteur', value: 'motorDisabilityCompliant' },
   { label: 'Auditif', value: 'audioDisabilityCompliant' },
-  { label: 'Non accessible', value: 'notAccessible' },
+  { label: 'Non accessible', value: 'noDisabilityCompliant' },
 ]
