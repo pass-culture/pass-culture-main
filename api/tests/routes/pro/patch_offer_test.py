@@ -4,9 +4,9 @@ import pytest
 
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.users.factories as users_factories
-from pcapi.models import Offer
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import humanize
 

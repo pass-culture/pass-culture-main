@@ -1,5 +1,5 @@
 from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.validation.models.product import validate
 
 

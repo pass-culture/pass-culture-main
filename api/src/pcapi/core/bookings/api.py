@@ -28,9 +28,9 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.domain import user_emails
-from pcapi.models import Payment
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.payment import Payment
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils.mailing import MailServiceException

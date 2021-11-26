@@ -7,7 +7,7 @@ from sqlalchemy import not_
 from sqlalchemy import or_
 
 from pcapi.core.offerers.models import Offerer
-from pcapi.models import Venue
+from pcapi.core.offerers.models import Venue
 from pcapi.utils.human_ids import humanize
 
 

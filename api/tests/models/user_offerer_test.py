@@ -3,7 +3,7 @@ import pytest
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 
 

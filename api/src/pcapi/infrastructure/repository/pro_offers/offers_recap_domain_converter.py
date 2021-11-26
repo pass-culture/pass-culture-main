@@ -1,7 +1,7 @@
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.domain.pro_offers.offers_recap import OfferRecap
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
-from pcapi.models import Offer
-from pcapi.models import Stock
 
 
 def to_domain(offers: list[Offer]) -> OffersRecap:

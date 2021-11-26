@@ -11,9 +11,9 @@ from pcapi.domain.titelive import get_date_from_filename
 from pcapi.domain.titelive import read_things_date
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models import BookFormat
-from pcapi.models import Product
 from pcapi.models.local_provider_event import LocalProviderEventType
+from pcapi.models.product import BookFormat
+from pcapi.models.product import Product
 from pcapi.repository import local_provider_event_queries
 from pcapi.repository import product_queries
 from pcapi.repository.product_queries import ProductWithBookingsException

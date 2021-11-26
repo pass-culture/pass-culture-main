@@ -21,7 +21,7 @@ from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
-from pcapi.models import UserOfferer
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.mailing import build_pc_webapp_reset_password_link
 
 

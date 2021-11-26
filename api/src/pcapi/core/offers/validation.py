@@ -7,9 +7,9 @@ from typing import Union
 from PIL import Image
 
 from pcapi import settings
-from pcapi.models import Offer
-from pcapi.models import Stock
-from pcapi.models import User
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
+from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.utils import requests as pcapi_requests

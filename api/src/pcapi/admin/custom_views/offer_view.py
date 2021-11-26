@@ -42,6 +42,7 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers.api import import_offer_validation_config
+from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.offer_validation import compute_offer_validation_score
@@ -50,7 +51,6 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_user_can_load_config
 from pcapi.domain.admin_emails import send_offer_validation_notification_to_administration
 from pcapi.domain.user_emails import send_offer_validation_status_update_email
-from pcapi.models import Offer
 from pcapi.models import db
 from pcapi.models.criterion import Criterion
 from pcapi.models.offer_criterion import OfferCriterion

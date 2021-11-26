@@ -10,7 +10,7 @@ from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import ProFactory
-from pcapi.models import UserOfferer
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient

@@ -1,18 +1,18 @@
+from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.categories import subcategories
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_repository import BeneficiaryBookingsRepository
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from pcapi.infrastructure.repository.beneficiary_bookings import active_mediation_domain_converter
 from pcapi.infrastructure.repository.beneficiary_bookings import stock_domain_converter
-from pcapi.models import ActivationCode
-from pcapi.models import Booking
-from pcapi.models import Offer
-from pcapi.models import Product
-from pcapi.models import Stock
-from pcapi.models import Venue
+from pcapi.models.product import Product
 
 
 class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):

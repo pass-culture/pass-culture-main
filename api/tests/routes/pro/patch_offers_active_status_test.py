@@ -2,8 +2,8 @@ import pytest
 
 from pcapi.core import testing
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.models import Offer
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient

@@ -9,11 +9,11 @@ from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import exceptions
 import pcapi.core.offers.api as offers_api
+from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_image
 from pcapi.core.offers.validation import get_distant_image
-from pcapi.models import ApiErrors
-from pcapi.models import Offer
+from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize

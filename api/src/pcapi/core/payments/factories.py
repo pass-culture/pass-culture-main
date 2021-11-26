@@ -4,16 +4,18 @@ import hashlib
 
 import factory
 
-from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.payments import conf as deposit_conf
 from pcapi.core.testing import BaseFactory
 from pcapi.core.users.factories import DepositGrantFactory
 from pcapi.domain import reimbursement
-from pcapi.models import payment_status
+from pcapi.models.payment import Payment
+from pcapi.models.payment_message import PaymentMessage
+from pcapi.models.payment_status import PaymentStatus
+from pcapi.models.payment_status import TransactionStatus
 
-from . import models as payments_models
+from . import models
 
 
 REIMBURSEMENT_RULE_DESCRIPTIONS = {t.description for t in reimbursement.REGULAR_RULES}
@@ -21,7 +23,7 @@ REIMBURSEMENT_RULE_DESCRIPTIONS = {t.description for t in reimbursement.REGULAR_
 
 class PaymentFactory(BaseFactory):
     class Meta:
-        model = models.Payment
+        model = Payment
 
     author = "batch"
     booking = factory.SubFactory(bookings_factories.UsedIndividualBookingFactory)
@@ -45,20 +47,20 @@ class PaymentFactory(BaseFactory):
             return None
         if extracted is not None:
             return extracted
-        status = PaymentStatusFactory(payment=obj, status=payment_status.TransactionStatus.PENDING)
+        status = PaymentStatusFactory(payment=obj, status=TransactionStatus.PENDING)
         return [status]
 
 
 class PaymentStatusFactory(BaseFactory):
     class Meta:
-        model = models.PaymentStatus
+        model = PaymentStatus
 
     payment = factory.SubFactory(PaymentFactory, statuses=[])
 
 
 class PaymentMessageFactory(BaseFactory):
     class Meta:
-        model = models.PaymentMessage
+        model = PaymentMessage
 
     name = factory.Sequence("payment message {0}".format)
     checksum = factory.LazyFunction(lambda: hashlib.sha1(datetime.datetime.now().isoformat().encode("utf-8")).digest())
@@ -66,7 +68,7 @@ class PaymentMessageFactory(BaseFactory):
 
 class CustomReimbursementRuleFactory(BaseFactory):
     class Meta:
-        model = payments_models.CustomReimbursementRule
+        model = models.CustomReimbursementRule
 
     offer = factory.SubFactory(offers_factories.OfferFactory)
     timespan = factory.LazyFunction(
@@ -95,8 +97,8 @@ class PaymentWithCustomRuleFactory(PaymentFactory):
 
 class RecreditFactory(BaseFactory):
     class Meta:
-        model = payments_models.Recredit
+        model = models.Recredit
 
     deposit = factory.SubFactory(DepositGrantFactory)
     amount = factory.LazyAttribute(lambda recredit: deposit_conf.RECREDIT_TYPE_AMOUNT_MAPPING[recredit.recreditType])
-    recreditType = payments_models.RecreditType.RECREDIT_16
+    recreditType = models.RecreditType.RECREDIT_16

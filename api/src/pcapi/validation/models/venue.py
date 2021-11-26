@@ -1,7 +1,7 @@
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import find_virtual_venue_by_offerer_id
-from pcapi.models import ApiErrors
-from pcapi.models import Venue
+from pcapi.models.api_errors import ApiErrors
 
 
 def validate(venue: Venue, api_errors: ApiErrors) -> ApiErrors:

@@ -1,6 +1,6 @@
 from functools import wraps
 
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 
 

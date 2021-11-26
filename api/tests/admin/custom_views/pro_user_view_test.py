@@ -12,7 +12,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
-from pcapi.models import UserOfferer
+from pcapi.models.user_offerer import UserOfferer
 
 from tests.conftest import TestClient
 from tests.conftest import clean_database

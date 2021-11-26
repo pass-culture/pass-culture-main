@@ -1,11 +1,11 @@
 import pytest
 
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import Offer
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.models import Offer
-from pcapi.models import Venue
 from pcapi.repository import repository
 from pcapi.scripts.delete_venue_and_offers_for_venue_id import delete_venue_and_offers_for_venue_id
 from pcapi.utils.human_ids import humanize

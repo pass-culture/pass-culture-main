@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
-from pcapi.models import Booking
+from pcapi.core.bookings.models import Booking
 from pcapi.repository import repository
 from pcapi.scripts.booking import correct_bookings_cancel_dates
 

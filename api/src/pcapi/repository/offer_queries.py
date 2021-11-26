@@ -4,9 +4,9 @@ from sqlalchemy import func
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import joinedload
 
-from pcapi.models import Booking
-from pcapi.models import Offer
-from pcapi.models import Stock
+from pcapi.core.bookings.models import Booking
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 
 
 def _build_bookings_quantity_subquery():

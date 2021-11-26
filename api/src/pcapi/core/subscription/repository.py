@@ -1,9 +1,9 @@
 from typing import Optional
 
 from pcapi.core.users import models as users_models
-from pcapi.models import BeneficiaryImport
-from pcapi.models import BeneficiaryImportStatus
-from pcapi.models import ImportStatus
+from pcapi.models.beneficiary_import import BeneficiaryImport
+from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
+from pcapi.models.beneficiary_import_status import ImportStatus
 
 
 def get_beneficiary_import_for_beneficiary(user: users_models.User) -> Optional[BeneficiaryImport]:

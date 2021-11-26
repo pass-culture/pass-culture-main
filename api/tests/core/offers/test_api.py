@@ -7,7 +7,6 @@ from unittest import mock
 from freezegun import freeze_time
 import pytest
 
-from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
@@ -33,6 +32,7 @@ from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
@@ -44,7 +44,6 @@ from pcapi.core.offers.offer_validation import parse_offer_validation_config
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
-from pcapi.models import ApiErrors
 from pcapi.models import api_errors
 from pcapi.models.product import Product
 from pcapi.notifications.push import testing as push_testing
@@ -144,7 +143,7 @@ class UpsertStocksTest:
         api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
 
         # Then
-        stock = models.Stock.query.one()
+        stock = Stock.query.one()
         assert stock.beginningDatetime == beginning
         notified_bookings = mocked_send_email.call_args_list[0][0][0]
         assert notified_bookings == [booking]
@@ -647,7 +646,7 @@ class DeleteStockTest:
 
         api.delete_stock(stock)
 
-        stock = models.Stock.query.one()
+        stock = Stock.query.one()
         assert stock.isSoftDeleted
         mocked_async_index_offer_ids.assert_called_once_with([stock.offerId])
 
@@ -664,15 +663,15 @@ class DeleteStockTest:
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
 
-        stock = models.Stock.query.one()
+        stock = Stock.query.one()
         assert stock.isSoftDeleted
-        booking1 = models.Booking.query.get(booking1.id)
+        booking1 = Booking.query.get(booking1.id)
         assert booking1.isCancelled
         assert booking1.cancellationReason == BookingCancellationReasons.OFFERER
-        booking2 = models.Booking.query.get(booking2.id)
+        booking2 = Booking.query.get(booking2.id)
         assert booking2.isCancelled  # unchanged
         assert booking2.cancellationReason == BookingCancellationReasons.BENEFICIARY
-        booking3 = models.Booking.query.get(booking3.id)
+        booking3 = Booking.query.get(booking3.id)
         assert not booking3.isCancelled  # unchanged
         assert not booking3.cancellationReason
 
@@ -695,7 +694,7 @@ class DeleteStockTest:
 
         api.delete_stock(stock)
 
-        stock = models.Stock.query.one()
+        stock = Stock.query.one()
         assert stock.isSoftDeleted
 
     def test_cannot_delete_if_stock_from_titelive(self):
@@ -708,7 +707,7 @@ class DeleteStockTest:
         msg = "Les offres importées ne sont pas modifiables"
         assert error.value.errors["global"][0] == msg
 
-        stock = models.Stock.query.one()
+        stock = Stock.query.one()
         assert not stock.isSoftDeleted
 
     def test_can_delete_if_event_ended_recently(self):
@@ -716,7 +715,7 @@ class DeleteStockTest:
         stock = factories.EventStockFactory(beginningDatetime=recently)
 
         api.delete_stock(stock)
-        stock = models.Stock.query.one()
+        stock = Stock.query.one()
         assert stock.isSoftDeleted
 
     def test_cannot_delete_if_too_late(self):
@@ -725,7 +724,7 @@ class DeleteStockTest:
 
         with pytest.raises(exceptions.TooLateToDeleteStock):
             api.delete_stock(stock)
-        stock = models.Stock.query.one()
+        stock = Stock.query.one()
         assert not stock.isSoftDeleted
 
 
@@ -745,12 +744,12 @@ class CreateMediationV2Test:
         api.create_mediation(user, offer, "©Photographe", image_as_bytes)
 
         # Then
-        mediation = models.Mediation.query.one()
+        mediation = Mediation.query.one()
         assert mediation.author == user
         assert mediation.offer == offer
         assert mediation.credit == "©Photographe"
         assert mediation.thumbCount == 1
-        assert models.Mediation.query.filter(models.Mediation.offerId == offer.id).count() == 1
+        assert Mediation.query.filter(Mediation.offerId == offer.id).count() == 1
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
@@ -770,7 +769,7 @@ class CreateMediationV2Test:
         api.create_mediation(user, offer, "©moi", image_as_bytes)
 
         # Then
-        mediation_3 = models.Mediation.query.one()
+        mediation_3 = Mediation.query.one()
         assert mediation_3.credit == "©moi"
         thumb_3_id = humanize(mediation_3.id)
 
@@ -797,7 +796,7 @@ class CreateMediationV2Test:
             api.create_mediation(user, offer, "©Photographe", image_as_bytes)
 
         # Then
-        assert models.Mediation.query.count() == 0
+        assert Mediation.query.count() == 0
         assert len(os.listdir(self.THUMBS_DIR)) == existing_number_of_files
 
 
@@ -893,7 +892,7 @@ class CreateOfferTest:
             visualDisabilityCompliant=False,
         )
 
-        with pytest.raises(ApiErrors) as error:
+        with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(data, user)
 
         assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
@@ -916,7 +915,7 @@ class CreateOfferTest:
             visualDisabilityCompliant=False,
         )
 
-        with pytest.raises(ApiErrors) as error:
+        with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(data, user)
 
         assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
@@ -1096,11 +1095,11 @@ class UpdateOfferTest:
     def test_cannot_update_with_name_too_long(self):
         offer = factories.OfferFactory(name="Old name")
 
-        with pytest.raises(models.ApiErrors) as error:
+        with pytest.raises(api_errors.ApiErrors) as error:
             api.update_offer(offer, name="Luftballons" * 99)
 
         assert error.value.errors == {"name": ["Vous devez saisir moins de 140 caractères"]}
-        assert models.Offer.query.one().name == "Old name"
+        assert Offer.query.one().name == "Old name"
 
     def test_success_on_allocine_offer(self):
         provider = offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
@@ -1108,7 +1107,7 @@ class UpdateOfferTest:
 
         api.update_offer(offer, name="Old name", isDuo=True)
 
-        offer = models.Offer.query.one()
+        offer = Offer.query.one()
         assert offer.name == "Old name"
         assert offer.isDuo
 
@@ -1116,11 +1115,11 @@ class UpdateOfferTest:
         provider = offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         offer = factories.OfferFactory(lastProvider=provider, name="Old name")
 
-        with pytest.raises(models.ApiErrors) as error:
+        with pytest.raises(api_errors.ApiErrors) as error:
             api.update_offer(offer, name="New name", isDuo=True)
 
         assert error.value.errors == {"name": ["Vous ne pouvez pas modifier ce champ"]}
-        offer = models.Offer.query.one()
+        offer = Offer.query.one()
         assert offer.name == "Old name"
         assert not offer.isDuo
 
@@ -1137,7 +1136,7 @@ class UpdateOfferTest:
             externalTicketOfficeUrl="https://example.com",
         )
 
-        offer = models.Offer.query.one()
+        offer = Offer.query.one()
         assert offer.name == "Old name"
         assert offer.externalTicketOfficeUrl == "https://example.com"
 
@@ -1161,7 +1160,7 @@ class UpdateOfferTest:
             mentalDisabilityCompliant=False,
         )
 
-        offer = models.Offer.query.one()
+        offer = Offer.query.one()
         assert offer.name == "Old name"
         assert offer.audioDisabilityCompliant == False
         assert offer.visualDisabilityCompliant == True
@@ -1174,14 +1173,14 @@ class UpdateOfferTest:
             lastProvider=provider, name="Old name", isDuo=False, audioDisabilityCompliant=True
         )
 
-        with pytest.raises(models.ApiErrors) as error:
+        with pytest.raises(api_errors.ApiErrors) as error:
             api.update_offer(offer, name="New name", isDuo=True, audioDisabilityCompliant=False)
 
         assert error.value.errors == {
             "name": ["Vous ne pouvez pas modifier ce champ"],
             "isDuo": ["Vous ne pouvez pas modifier ce champ"],
         }
-        offer = models.Offer.query.one()
+        offer = Offer.query.one()
         assert offer.name == "Old name"
         assert offer.isDuo == False
         assert offer.audioDisabilityCompliant == True
@@ -1189,13 +1188,13 @@ class UpdateOfferTest:
     def test_update_non_approved_offer_fails(self):
         pending_offer = factories.OfferFactory(name="Soliloquy", validation=OfferValidationStatus.PENDING)
 
-        with pytest.raises(models.ApiErrors) as error:
+        with pytest.raises(api_errors.ApiErrors) as error:
             api.update_offer(pending_offer, name="Monologue")
 
         assert error.value.errors == {
             "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
         }
-        pending_offer = models.Offer.query.one()
+        pending_offer = Offer.query.one()
         assert pending_offer.name == "Soliloquy"
 
 
@@ -1208,16 +1207,14 @@ class BatchUpdateOffersTest:
         rejected_offer = factories.OfferFactory(isActive=False, validation=OfferValidationStatus.REJECTED)
         pending_offer = factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
-        query = models.Offer.query.filter(
-            models.Offer.id.in_({offer1.id, offer2.id, rejected_offer.id, pending_offer.id})
-        )
+        query = Offer.query.filter(Offer.id.in_({offer1.id, offer2.id, rejected_offer.id, pending_offer.id}))
         api.batch_update_offers(query, {"isActive": True})
 
-        assert models.Offer.query.get(offer1.id).isActive
-        assert models.Offer.query.get(offer2.id).isActive
-        assert not models.Offer.query.get(offer3.id).isActive
-        assert not models.Offer.query.get(rejected_offer.id).isActive
-        assert not models.Offer.query.get(pending_offer.id).isActive
+        assert Offer.query.get(offer1.id).isActive
+        assert Offer.query.get(offer2.id).isActive
+        assert not Offer.query.get(offer3.id).isActive
+        assert not Offer.query.get(rejected_offer.id).isActive
+        assert not Offer.query.get(pending_offer.id).isActive
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer1.id, offer2.id])
 
@@ -1226,12 +1223,12 @@ class BatchUpdateOffersTest:
         offer2 = factories.OfferFactory()
         offer3 = factories.OfferFactory()
 
-        query = models.Offer.query.filter(models.Offer.id.in_({offer1.id, offer2.id}))
+        query = Offer.query.filter(Offer.id.in_({offer1.id, offer2.id}))
         api.batch_update_offers(query, {"isActive": False})
 
-        assert not models.Offer.query.get(offer1.id).isActive
-        assert not models.Offer.query.get(offer2.id).isActive
-        assert models.Offer.query.get(offer3.id).isActive
+        assert not Offer.query.get(offer1.id).isActive
+        assert not Offer.query.get(offer2.id).isActive
+        assert Offer.query.get(offer3.id).isActive
 
 
 class UpdateOfferAndStockIdAtProvidersTest:
@@ -1799,7 +1796,7 @@ class LoadProductByIsbnAndCheckIsGCUCompatibleOrRaiseErrorTest:
     def test_raise_api_error_if_no_product(self):
         ProductFactory(isGcuCompatible=True)
 
-        with pytest.raises(ApiErrors) as error:
+        with pytest.raises(api_errors.ApiErrors) as error:
             _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error("2221001649")
 
         assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
@@ -1808,7 +1805,7 @@ class LoadProductByIsbnAndCheckIsGCUCompatibleOrRaiseErrorTest:
         isbn = "2221001648"
         ProductFactory(extraData={"isbn": isbn}, isGcuCompatible=False)
 
-        with pytest.raises(ApiErrors) as error:
+        with pytest.raises(api_errors.ApiErrors) as error:
             _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(isbn)
 
         assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]

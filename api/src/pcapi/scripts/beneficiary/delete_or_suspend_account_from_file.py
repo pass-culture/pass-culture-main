@@ -2,7 +2,6 @@ import logging
 from typing import Iterable
 
 import pcapi.core.fraud.models as fraud_models
-from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.payments.models import Deposit
 from pcapi.core.users import constants
 from pcapi.core.users.api import suspend_account
@@ -11,6 +10,7 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
+from pcapi.models.user_offerer import UserOfferer
 
 
 logger = logging.getLogger(__name__)

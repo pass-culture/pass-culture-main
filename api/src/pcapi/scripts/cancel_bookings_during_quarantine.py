@@ -3,9 +3,9 @@ from datetime import datetime
 from sqlalchemy import and_
 
 import pcapi.core.bookings.api as bookings_api
-from pcapi.models import Booking
-from pcapi.models import Payment
-from pcapi.models import Stock
+from pcapi.core.bookings.models import Booking
+from pcapi.core.offers.models import Stock
+from pcapi.models.payment import Payment
 
 
 def cancel_booking_status_for_events_happening_during_quarantine() -> None:

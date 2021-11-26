@@ -2,9 +2,9 @@ import logging
 
 import pytest
 
+from pcapi.core.offers.models import Stock
 from pcapi.model_creators.provider_creators import assert_created_counts
 from pcapi.model_creators.provider_creators import save_counts
-from pcapi.models import Stock
 from pcapi.sandboxes.scripts.save_sandbox import save_sandbox
 
 

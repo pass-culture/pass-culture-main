@@ -20,7 +20,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
-from pcapi.models import BeneficiaryImport
+from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.db import db
 from pcapi.notifications.push import testing as push_testing

@@ -1,6 +1,6 @@
 import pcapi.core.bookings.api as bookings_api
-from pcapi.models import Booking
-from pcapi.models import Stock
+from pcapi.core.bookings.models import Booking
+from pcapi.core.offers.models import Stock
 from pcapi.repository import repository
 
 

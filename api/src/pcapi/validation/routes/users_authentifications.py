@@ -14,7 +14,7 @@ from pcapi.core.offerers.models import ApiKey
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import User
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.pro.blueprints import API_KEY_AUTH
 from pcapi.serialization.spec_tree import add_security_scheme

@@ -4,6 +4,7 @@ from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsExcept
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 import pcapi.core.finance.factories as finance_factories
+from pcapi.core.finance.models import BusinessUnit
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.models import ApiKey
@@ -13,19 +14,18 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers.models import AllocineVenueProvider
+from pcapi.core.providers.models import AllocineVenueProviderPriceRule
+from pcapi.core.providers.models import Provider
+from pcapi.core.providers.models import VenueProvider
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
-from pcapi.models import AllocineVenueProvider
-from pcapi.models import AllocineVenueProviderPriceRule
-from pcapi.models import BankInformation
-from pcapi.models import BusinessUnit
-from pcapi.models import Criterion
-from pcapi.models import OfferCriterion
-from pcapi.models import Product
-from pcapi.models import Provider
-from pcapi.models import UserOfferer
-from pcapi.models import VenueProvider
+from pcapi.models.bank_information import BankInformation
+from pcapi.models.criterion import Criterion
+from pcapi.models.offer_criterion import OfferCriterion
+from pcapi.models.product import Product
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
 
 

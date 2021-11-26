@@ -14,7 +14,7 @@ from pcapi.core.offers.factories import VirtualVenueFactory
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
-from pcapi.models import UserOfferer
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.scripts.offerer.import_offerer_from_csv import create_offerer_from_csv
 from pcapi.scripts.offerer.import_offerer_from_csv import create_user_model_from_csv

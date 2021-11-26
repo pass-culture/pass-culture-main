@@ -1,5 +1,5 @@
-from pcapi.models import AllocinePivot
-from pcapi.models import Venue
+from pcapi.core.offerers.models import Venue
+from pcapi.models.allocine_pivot import AllocinePivot
 
 
 def has_allocine_pivot_for_venue(venue: Venue) -> bool:

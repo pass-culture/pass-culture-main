@@ -3,7 +3,7 @@ import datetime
 import pytest
 
 from pcapi.core.users import factories as users_factories
-from pcapi.models import UserSession
+from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize

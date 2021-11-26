@@ -2,8 +2,8 @@ import logging
 
 from sqlalchemy import and_
 
-from pcapi.models import Product
 from pcapi.models import db
+from pcapi.models.product import Product
 
 
 logger = logging.getLogger(__name__)

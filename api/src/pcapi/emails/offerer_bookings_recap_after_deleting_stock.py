@@ -1,4 +1,4 @@
-from pcapi.models import Booking
+from pcapi.core.bookings.models import Booking
 from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email

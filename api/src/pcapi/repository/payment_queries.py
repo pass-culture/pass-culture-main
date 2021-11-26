@@ -5,18 +5,18 @@ from typing import Optional
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 
+from pcapi.core.bookings.models import Booking
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.domain.payments import keep_only_not_processable_payments
-from pcapi.models import BankInformation
-from pcapi.models import Booking
-from pcapi.models import Offer
-from pcapi.models import Payment
-from pcapi.models import PaymentMessage
-from pcapi.models import PaymentStatus
-from pcapi.models import Stock
-from pcapi.models import Venue
+from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.db import db
+from pcapi.models.payment import Payment
+from pcapi.models.payment_message import PaymentMessage
+from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
 
 

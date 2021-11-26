@@ -4,9 +4,9 @@ from typing import Iterable
 from sqlalchemy.orm import joinedload
 
 from pcapi import settings
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import Offer
 from pcapi.core.search.backends import base
-from pcapi.models import Offer
-from pcapi.models import Venue
 from pcapi.repository import offer_queries
 from pcapi.utils.module_loading import import_string
 

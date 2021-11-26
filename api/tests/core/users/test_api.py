@@ -56,10 +56,10 @@ from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.models import BeneficiaryImport
-from pcapi.models import ImportStatus
 from pcapi.models import db
+from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
+from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.user_session import UserSession
 from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.serialization.users import ProUserCreationBodyModel

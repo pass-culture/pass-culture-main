@@ -3,14 +3,18 @@ import uuid
 
 import factory
 
-from pcapi import models
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.offers.models import OfferReport
-from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
+from pcapi.models.bank_information import BankInformation
+from pcapi.models.criterion import Criterion
+from pcapi.models.offer_criterion import OfferCriterion
+from pcapi.models.product import Product
+from pcapi.models.user_offerer import UserOfferer
+
+from . import models
 
 
 class OffererFactory(BaseFactory):
@@ -26,7 +30,7 @@ class OffererFactory(BaseFactory):
 
 class UserOffererFactory(BaseFactory):
     class Meta:
-        model = models.UserOfferer
+        model = UserOfferer
 
     user = factory.SubFactory(users_factories.ProFactory)
     offerer = factory.SubFactory(OffererFactory)
@@ -34,7 +38,7 @@ class UserOffererFactory(BaseFactory):
 
 class VenueFactory(BaseFactory):
     class Meta:
-        model = models.Venue
+        model = offerers_models.Venue
 
     name = factory.Sequence("Le Petit Rintintin {}".format)
     departementCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "75")
@@ -71,7 +75,7 @@ class VirtualVenueFactory(VenueFactory):
 
 class ProductFactory(BaseFactory):
     class Meta:
-        model = models.Product
+        model = Product
 
     subcategoryId = factory.Iterator(ALL_SUBCATEGORIES, getter=lambda s: s.id)
     name = factory.Sequence("Product {}".format)
@@ -122,13 +126,9 @@ class OfferFactory(BaseFactory):
             kwargs["idAtProviders"] = uuid.uuid4()
 
         if kwargs.get("isActive") is None:
-            kwargs["isActive"] = (
-                False  # pylint:disable=simplifiable-if-expression
-                if (
-                    kwargs.get("validation") == OfferValidationStatus.REJECTED
-                    or kwargs.get("validation") == OfferValidationStatus.PENDING
-                )
-                else True
+            kwargs["isActive"] = kwargs.get("validation") not in (
+                models.OfferValidationStatus.REJECTED,
+                models.OfferValidationStatus.PENDING,
             )
 
         return super()._create(model_class, *args, **kwargs)
@@ -227,14 +227,14 @@ class MediationFactory(BaseFactory):
 
 class CriterionFactory(BaseFactory):
     class Meta:
-        model = models.Criterion
+        model = Criterion
 
     name = factory.Sequence("Criterion {}".format)
 
 
 class OfferCriterionFactory(BaseFactory):
     class Meta:
-        model = models.OfferCriterion
+        model = OfferCriterion
 
     offer = factory.SubFactory(OfferFactory)
     criterion = factory.SubFactory(CriterionFactory)
@@ -242,7 +242,7 @@ class OfferCriterionFactory(BaseFactory):
 
 class BankInformationFactory(BaseFactory):
     class Meta:
-        model = models.BankInformation
+        model = BankInformation
 
     bic = factory.Sequence(lambda n: f"TESTFR2{n:04}")
     iban = factory.LazyAttributeSequence(lambda o, n: f"FR{n:016}")
@@ -252,7 +252,7 @@ class BankInformationFactory(BaseFactory):
 
 class OfferReportFactory(BaseFactory):
     class Meta:
-        model = OfferReport
+        model = models.OfferReport
 
     user = factory.SubFactory(users_factories.UserFactory)
     offer = factory.SubFactory(OfferFactory)

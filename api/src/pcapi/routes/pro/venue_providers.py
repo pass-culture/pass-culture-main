@@ -10,7 +10,7 @@ from pcapi.core.providers.api import update_allocine_venue_provider
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.core.providers.repository import get_venue_provider_by_venue_and_provider_ids
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.venue_provider_serialize import ListVenueProviderQuery
 from pcapi.routes.serialization.venue_provider_serialize import ListVenueProviderResponse

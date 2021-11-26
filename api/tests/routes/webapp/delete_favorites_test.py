@@ -1,12 +1,12 @@
 import pytest
 
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.models import Favorite
 from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.models import Favorite
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 

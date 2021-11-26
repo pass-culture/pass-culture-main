@@ -8,10 +8,10 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.local_providers.local_provider import _save_same_thumb_from_thumb_count_to_index
 from pcapi.model_creators.provider_creators import create_providable_info
-from pcapi.models import ApiErrors
-from pcapi.models import LocalProviderEvent
-from pcapi.models import Product
+from pcapi.models.api_errors import ApiErrors
+from pcapi.models.local_provider_event import LocalProviderEvent
 from pcapi.models.local_provider_event import LocalProviderEventType
+from pcapi.models.product import Product
 from pcapi.repository import repository
 
 from . import provider_test_utils

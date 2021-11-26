@@ -1,5 +1,5 @@
 from pcapi.core import search
-from pcapi.models import Venue
+from pcapi.core.offerers.models import Venue
 from pcapi.repository import repository
 
 

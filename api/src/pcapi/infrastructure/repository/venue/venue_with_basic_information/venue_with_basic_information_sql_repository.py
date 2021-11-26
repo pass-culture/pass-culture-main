@@ -1,5 +1,6 @@
 from sqlalchemy import func
 
+from pcapi.core.offerers.models import Venue
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information import VenueWithBasicInformation
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information_repository import (
     VenueWithBasicInformationRepository,
@@ -7,7 +8,6 @@ from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_informatio
 from pcapi.infrastructure.repository.venue.venue_with_basic_information import (
     venue_with_basic_information_domain_converter,
 )
-from pcapi.models import Venue
 
 
 class VenueWithBasicInformationSQLRepository(VenueWithBasicInformationRepository):

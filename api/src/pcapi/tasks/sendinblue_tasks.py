@@ -3,7 +3,7 @@ import logging
 from pcapi import settings
 from pcapi.core.mails.transactional.send_transactional_email import send_transactional_email
 from pcapi.core.users.external import sendinblue
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.tasks.decorator import task
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest

@@ -12,7 +12,7 @@ from sqlalchemy.sql.expression import or_
 from pcapi import settings
 from pcapi.core.payments.models import Deposit
 from pcapi.core.users.external.sendinblue import add_contacts_to_list
-from pcapi.models import User
+from pcapi.core.users.models import User
 
 
 YIELD_COUNT_PER_DB_QUERY = 1000

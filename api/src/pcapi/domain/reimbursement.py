@@ -4,10 +4,10 @@ import datetime
 from decimal import Decimal
 from typing import Optional
 
+from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
+from pcapi.core.offers.models import Offer
 import pcapi.core.payments.models as payments_models
-from pcapi.models import Booking
-from pcapi.models import Offer
 
 
 # A new set rules are in effect as of 1 September 2021 (i.e. 31 August 22:00 UTC)

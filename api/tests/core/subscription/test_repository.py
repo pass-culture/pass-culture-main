@@ -2,7 +2,7 @@ import pytest
 
 from pcapi.core.subscription import repository as subscription_repository
 from pcapi.core.users import factories as users_factories
-from pcapi.models import BeneficiaryImportSources
+from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 
 

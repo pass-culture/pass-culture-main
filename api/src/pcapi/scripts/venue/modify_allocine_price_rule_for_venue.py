@@ -1,9 +1,9 @@
 from decimal import Decimal
 import logging
 
+from pcapi.core.offerers.models import Venue
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
-from pcapi.models import Venue
 from pcapi.repository import repository
 
 

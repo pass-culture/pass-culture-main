@@ -24,8 +24,8 @@ from pcapi.core.users.external.user_automations import users_inactive_since_30_d
 from pcapi.core.users.external.user_automations import users_one_year_with_pass_automation
 from pcapi.core.users.external.user_automations import users_turned_eighteen_automation
 import pcapi.core.users.factories as users_factories
+from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
-from pcapi.models import User
 
 
 @pytest.mark.usefixtures("db_session")

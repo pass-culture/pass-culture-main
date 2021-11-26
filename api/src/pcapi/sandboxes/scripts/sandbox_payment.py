@@ -3,6 +3,7 @@ from datetime import timedelta
 import logging
 
 from pcapi.core.categories import subcategories
+from pcapi.core.offerers.models import Venue
 import pcapi.core.payments.api as payments_api
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
@@ -14,7 +15,6 @@ from pcapi.model_creators.specific_creators import create_event_occurrence
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
-from pcapi.models import Venue
 from pcapi.repository import repository
 
 

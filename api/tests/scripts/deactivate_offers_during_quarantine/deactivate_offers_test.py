@@ -5,12 +5,12 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.offers.models import Offer
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.models import Offer
 from pcapi.repository import repository
 from pcapi.scripts.deactivate_offers_during_quarantine.deactivate_offers import (
     build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine,

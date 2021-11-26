@@ -6,17 +6,17 @@ from sqlalchemy.orm import Load
 from sqlalchemy.orm import joinedload
 
 from pcapi import settings
+from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.core.users.external import update_external_user
+from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
-from pcapi.models import Favorite
-from pcapi.models import Mediation
-from pcapi.models import Offerer
-from pcapi.models import Product
-from pcapi.models import Stock
-from pcapi.models import Venue
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.db import db
+from pcapi.models.product import Product
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize

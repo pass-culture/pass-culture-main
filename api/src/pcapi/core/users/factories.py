@@ -11,15 +11,15 @@ from factory.declarations import LazyAttribute
 
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.payments.api as payments_api
-from pcapi.core.payments.models import DepositType
+import pcapi.core.payments.models as payments_models
 from pcapi.core.testing import BaseFactory
 from pcapi.core.users import models as users_models
 import pcapi.core.users.constants as users_constants
 from pcapi.core.users.external.educonnect import models as educonnect_models
-from pcapi.models import BeneficiaryImport
-from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import user_session
+from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
+from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.utils import crypto
 
@@ -242,7 +242,7 @@ class UnderageBeneficiaryFactory(BeneficiaryGrant18Factory):
         if "dateCreated" not in kwargs:
             kwargs["dateCreated"] = obj.dateCreated
 
-        return DepositGrantFactory(user=obj, **kwargs, type=DepositType.GRANT_15_17)
+        return DepositGrantFactory(user=obj, **kwargs, type=payments_models.DepositType.GRANT_15_17)
 
 
 class ProFactory(BaseFactory):
@@ -328,7 +328,7 @@ class FavoriteFactory(BaseFactory):
 # DepositFactory in users module to avoid import loops
 class DepositGrantFactory(BaseFactory):
     class Meta:
-        model = models.Deposit
+        model = payments_models.Deposit
 
     dateCreated = LazyAttribute(lambda _: datetime.utcnow())
     user = factory.SubFactory(BeneficiaryGrant18Factory)

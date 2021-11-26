@@ -10,6 +10,7 @@ from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.offers.models import Offer
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import factories as users_factories
 from pcapi.local_providers import TiteLiveThings
@@ -20,11 +21,10 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
-from pcapi.models import BookFormat
-from pcapi.models import LocalProviderEvent
-from pcapi.models import Offer
-from pcapi.models import Product
+from pcapi.models.local_provider_event import LocalProviderEvent
 from pcapi.models.local_provider_event import LocalProviderEventType
+from pcapi.models.product import BookFormat
+from pcapi.models.product import Product
 from pcapi.repository import repository
 
 

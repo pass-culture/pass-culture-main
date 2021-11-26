@@ -6,13 +6,13 @@ from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.payments.models as payments_models
 import pcapi.core.users.factories as users_factories
 from pcapi.domain import reimbursement
-from pcapi.models import Booking
 from pcapi.repository import repository
 
 

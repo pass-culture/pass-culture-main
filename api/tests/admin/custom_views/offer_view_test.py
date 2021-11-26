@@ -12,11 +12,11 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.api import import_offer_validation_config
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
-from pcapi.models import Offer
 
 from tests.conftest import TestClient
 from tests.conftest import clean_database

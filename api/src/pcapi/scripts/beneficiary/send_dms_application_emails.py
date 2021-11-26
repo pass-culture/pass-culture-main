@@ -1,8 +1,8 @@
 import typing
 
+from pcapi.core.users.models import User
 from pcapi.domain import user_emails
-from pcapi.models import BeneficiaryImport
-from pcapi.models import User
+from pcapi.models.beneficiary_import import BeneficiaryImport
 
 
 def get_users_from_applications(application_ids: list[int], source: str) -> typing.Iterable[User]:

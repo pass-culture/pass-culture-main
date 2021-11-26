@@ -14,8 +14,8 @@ from pcapi.domain.beneficiary_pre_subscription.exceptions import SuspiciousFraud
 from pcapi.domain.beneficiary_pre_subscription.fraud_validator import validate_fraud
 from pcapi.domain.beneficiary_pre_subscription.validator import validate
 from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
-from pcapi.models import ImportStatus
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
+from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
 from pcapi.repository.user_queries import find_user_by_email
 

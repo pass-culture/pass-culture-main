@@ -1,8 +1,8 @@
 import csv
 
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueType
-from pcapi.models import ApiErrors
-from pcapi.models import Venue
+from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 
 

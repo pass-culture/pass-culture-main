@@ -1,6 +1,6 @@
 import pcapi.core.payments.api as payments_api
 from pcapi.core.users.models import User
-from pcapi.models import UserOfferer
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
 
 

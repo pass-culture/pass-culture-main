@@ -5,9 +5,9 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.users import factories as users_factories
-from pcapi.models import BeneficiaryImport
-from pcapi.models import BeneficiaryImportSources
-from pcapi.models import ImportStatus
+from pcapi.models.beneficiary_import import BeneficiaryImport
+from pcapi.models.beneficiary_import import BeneficiaryImportSources
+from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository.beneficiary_import_queries import find_applications_ids_to_retry
 from pcapi.repository.beneficiary_import_queries import get_already_processed_applications_ids
 from pcapi.repository.beneficiary_import_queries import is_already_imported

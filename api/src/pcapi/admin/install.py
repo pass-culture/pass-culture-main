@@ -4,7 +4,6 @@ from flask import Flask
 from flask_admin.base import Admin
 from sqlalchemy.orm.session import Session
 
-from pcapi import models
 from pcapi.admin.custom_views import inapp_messages
 from pcapi.admin.custom_views import offer_view
 from pcapi.admin.custom_views import support_view
@@ -29,13 +28,18 @@ from pcapi.admin.custom_views.suspend_fraudulent_users_by_email_providers import
 from pcapi.admin.custom_views.user_offerer_view import UserOffererView
 from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
 from pcapi.admin.custom_views.venue_view import VenueView
-from pcapi.core.offerers.models import ApiKey
-from pcapi.core.offerers.models import Offerer
+import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.payments.models import CustomReimbursementRule
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users.models import User
+from pcapi.models.allocine_pivot import AllocinePivot
+from pcapi.models.beneficiary_import import BeneficiaryImport
+from pcapi.models.criterion import Criterion
+from pcapi.models.feature import Feature
+from pcapi.models.user_offerer import UserOfferer
 
 from . import templating
 from .custom_views.suspend_fraudulent_users_by_ids import SuspendFraudulentUsersByUserIdsView
@@ -53,7 +57,7 @@ class Category(Enum):
 
 def install_admin_views(admin: Admin, session: Session) -> None:
     admin.add_view(
-        offer_view.OfferView(models.Offer, session, name="Offres", category=Category.OFFRES_STRUCTURES_LIEUX)
+        offer_view.OfferView(offers_models.Offer, session, name="Offres", category=Category.OFFRES_STRUCTURES_LIEUX)
     )
     admin.add_view(
         support_view.BeneficiaryView(
@@ -62,20 +66,20 @@ def install_admin_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         offer_view.OfferForVenueSubview(
-            models.Offer,
+            offers_models.Offer,
             session,
             name="Offres pour un lieu",
             endpoint="offer_for_venue",
         )
     )
+    admin.add_view(CriteriaView(Criterion, session, name="Tags des offres", category=Category.OFFRES_STRUCTURES_LIEUX))
     admin.add_view(
-        CriteriaView(models.Criterion, session, name="Tags des offres", category=Category.OFFRES_STRUCTURES_LIEUX)
+        OffererView(offerers_models.Offerer, session, name="Structures", category=Category.OFFRES_STRUCTURES_LIEUX)
     )
-    admin.add_view(OffererView(Offerer, session, name="Structures", category=Category.OFFRES_STRUCTURES_LIEUX))
-    admin.add_view(VenueView(models.Venue, session, name="Lieux", category=Category.OFFRES_STRUCTURES_LIEUX))
+    admin.add_view(VenueView(offerers_models.Venue, session, name="Lieux", category=Category.OFFRES_STRUCTURES_LIEUX))
     admin.add_view(
         UserOffererView(
-            models.UserOfferer, session, name="Lien Utilisateurs/Structures", category=Category.OFFRES_STRUCTURES_LIEUX
+            UserOfferer, session, name="Lien Utilisateurs/Structures", category=Category.OFFRES_STRUCTURES_LIEUX
         )
     )
     admin.add_view(
@@ -117,15 +121,11 @@ def install_admin_views(admin: Admin, session: Session) -> None:
     admin.add_view(
         PartnerUserView(User, session, name="Comptes Grand Public", category=Category.USERS, endpoint="/partner_users")
     )
-    admin.add_view(FeatureView(models.Feature, session, name="Feature Flipping", category=None))
+    admin.add_view(FeatureView(Feature, session, name="Feature Flipping", category=None))
+    admin.add_view(BeneficiaryImportView(BeneficiaryImport, session, name="Imports DMS", category=Category.USERS))
+    admin.add_view(ApiKeyView(offerers_models.ApiKey, session, name="Clés API", category=Category.USERS))
     admin.add_view(
-        BeneficiaryImportView(models.BeneficiaryImport, session, name="Imports DMS", category=Category.USERS)
-    )
-    admin.add_view(ApiKeyView(ApiKey, session, name="Clés API", category=Category.USERS))
-    admin.add_view(
-        AllocinePivotView(
-            models.AllocinePivot, session, name="Pivot Allocine", category=Category.OFFRES_STRUCTURES_LIEUX
-        )
+        AllocinePivotView(AllocinePivot, session, name="Pivot Allocine", category=Category.OFFRES_STRUCTURES_LIEUX)
     )
     admin.add_view(
         ManyOffersOperationsView(
@@ -143,7 +143,7 @@ def install_admin_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         offer_view.ValidationView(
-            models.Offer,
+            offers_models.Offer,
             session,
             name="Validation",
             endpoint="/validation",

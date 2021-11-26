@@ -3,8 +3,8 @@ from typing import Iterable
 
 from pcapi.core import search
 from pcapi.core.offers.models import Offer
-from pcapi.models import Product
 from pcapi.models.db import db
+from pcapi.models.product import Product
 
 
 logger = logging.getLogger(__name__)

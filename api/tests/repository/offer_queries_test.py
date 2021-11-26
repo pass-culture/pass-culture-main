@@ -7,6 +7,8 @@ from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -18,8 +20,6 @@ from pcapi.model_creators.specific_creators import create_product_with_event_sub
 from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
 from pcapi.model_creators.specific_creators import create_stock_from_offer
-from pcapi.models import Offer
-from pcapi.models import Stock
 from pcapi.repository import repository
 from pcapi.repository.offer_queries import _build_bookings_quantity_subquery
 from pcapi.repository.offer_queries import get_offers_by_ids

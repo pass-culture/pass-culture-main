@@ -3,22 +3,22 @@ import logging
 from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 from pcapi.core.bookings.models import Booking
+from pcapi.core.finance.models import BusinessUnit
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers.models import AllocineVenueProvider
+from pcapi.core.providers.models import AllocineVenueProviderPriceRule
+from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import Favorite
-from pcapi.models import AllocineVenueProvider
-from pcapi.models import AllocineVenueProviderPriceRule
-from pcapi.models import BankInformation
-from pcapi.models import BusinessUnit
-from pcapi.models import OfferCriterion
-from pcapi.models import Product
-from pcapi.models import UserOfferer
-from pcapi.models import VenueProvider
 from pcapi.models import db
+from pcapi.models.bank_information import BankInformation
+from pcapi.models.offer_criterion import OfferCriterion
+from pcapi.models.product import Product
+from pcapi.models.user_offerer import UserOfferer
 
 
 logger = logging.getLogger(__name__)

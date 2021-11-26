@@ -1,12 +1,12 @@
 import pytest
 
 from pcapi.core.offerers.factories import ProviderFactory
+from pcapi.core.offers.models import Stock
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.models import Stock
 from pcapi.repository import repository
 from pcapi.scripts.delete_corrupted_allocine_stocks import delete_corrupted_allocine_stocks
 

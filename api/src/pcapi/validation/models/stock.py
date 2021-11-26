@@ -1,5 +1,5 @@
-from pcapi.models import ApiErrors
-from pcapi.models import Stock
+from pcapi.core.offers.models import Stock
+from pcapi.models.api_errors import ApiErrors
 
 
 def validate(stock: Stock, api_errors: ApiErrors) -> ApiErrors:

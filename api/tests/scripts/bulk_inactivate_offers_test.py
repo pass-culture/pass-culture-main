@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.models import Offer
+from pcapi.core.offers.models import Offer
 from pcapi.repository import repository
 from pcapi.scripts.bulk_inactivate_offers import bulk_inactivate_offers
 

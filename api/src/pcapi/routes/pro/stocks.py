@@ -5,13 +5,13 @@ from flask_login import login_required
 
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import Venue
 import pcapi.core.offerers.repository
 import pcapi.core.offers.api as offers_api
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import get_stocks_for_offer
-from pcapi.models import ApiErrors
-from pcapi.models import Offer
-from pcapi.models import Stock
-from pcapi.models import Venue
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
 from pcapi.routes.serialization.stock_serialize import StockIdsResponseModel

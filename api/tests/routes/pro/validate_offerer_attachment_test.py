@@ -1,7 +1,7 @@
 import pytest
 
 import pcapi.core.offers.factories as offers_factories
-from pcapi.models import UserOfferer
+from pcapi.models.user_offerer import UserOfferer
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

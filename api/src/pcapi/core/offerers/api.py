@@ -13,7 +13,6 @@ from pcapi.core import search
 from pcapi.core.mails import MailServiceException
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueContact
 from pcapi.core.offerers.models import VenueType
@@ -27,6 +26,7 @@ from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.pro_emails import send_attachment_validation_email_to_pro_offerer
 from pcapi.domain.pro_emails import send_validation_confirmation_email_to_pro
 from pcapi.models.db import db
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
 from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel

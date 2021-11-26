@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Optional
 
 from pcapi import settings
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import requests
 
 

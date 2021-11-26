@@ -13,9 +13,9 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-from pcapi.models import BeneficiaryImport
-from pcapi.models import BeneficiaryImportSources
-from pcapi.models import ImportStatus
+from pcapi.models.beneficiary_import import BeneficiaryImport
+from pcapi.models.beneficiary_import import BeneficiaryImportSources
+from pcapi.models.beneficiary_import_status import ImportStatus
 
 
 @pytest.mark.usefixtures("db_session")

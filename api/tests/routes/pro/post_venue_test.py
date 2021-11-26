@@ -7,10 +7,10 @@ import pytest
 
 from pcapi import settings
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_settings
 from pcapi.core.users.factories import ProFactory
-from pcapi.models import Venue
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 

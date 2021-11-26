@@ -4,7 +4,7 @@ from pcapi import settings
 from pcapi.connectors.beneficiaries.id_check_middleware import IdCheckMiddlewareException
 from pcapi.core.users import api
 from pcapi.core.users import exceptions
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.tasks.decorator import task
 
 

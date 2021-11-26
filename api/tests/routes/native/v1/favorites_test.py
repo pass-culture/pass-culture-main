@@ -9,7 +9,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
-from pcapi.models import Favorite
+from pcapi.core.users.models import Favorite
 from pcapi.notifications.push import testing as push_testing
 from pcapi.utils.human_ids import humanize
 

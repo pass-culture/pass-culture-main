@@ -5,31 +5,31 @@ from typing import Optional
 from typing import Union
 
 from pcapi.core.bookings import api as bookings_api
+from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Mediation
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
+from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
 from pcapi.domain.price_rule import PriceRule
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
-from pcapi.models import BankInformation
-from pcapi.models import Booking
-from pcapi.models import Criterion
-from pcapi.models import Favorite
-from pcapi.models import Offer
-from pcapi.models import Payment
-from pcapi.models import PaymentMessage
-from pcapi.models import PaymentStatus
-from pcapi.models import Stock
-from pcapi.models import UserOfferer
-from pcapi.models import Venue
+from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
+from pcapi.models.criterion import Criterion
+from pcapi.models.payment import Payment
+from pcapi.models.payment_message import PaymentMessage
+from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
+from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils.token import random_token
 
 

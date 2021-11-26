@@ -1,4 +1,4 @@
-from pcapi.models import UserOfferer
+from pcapi.models.user_offerer import UserOfferer
 
 
 def filter_query_where_user_is_user_offerer_and_is_validated(query, user):

@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from pcapi.models import UserSession
+from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
 
 

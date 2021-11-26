@@ -9,7 +9,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Reason
 from pcapi.core.users.models import User
 from pcapi.domain.user_emails import send_user_webapp_offer_link_email
-from pcapi.models import ApiErrors
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.product import Product
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
