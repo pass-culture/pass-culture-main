@@ -452,7 +452,7 @@ class DMSFraudCheckTest:
     def test_dms_fraud_check(self):
         user = users_factories.UserFactory()
         content = fraud_factories.DMSContentFactory()
-        fraud_api.on_dms_fraud_check(user, content)
+        fraud_api.on_dms_fraud_result(user, content)
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
             user=user, type=fraud_models.FraudCheckType.DMS

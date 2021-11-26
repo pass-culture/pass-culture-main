@@ -57,9 +57,15 @@ class RunTest:
         find_applications_ids_to_retry.return_value = []
 
         get_details.side_effect = [
-            make_new_beneficiary_application_details(123, "closed"),
-            make_new_beneficiary_application_details(456, "closed"),
-            make_new_beneficiary_application_details(789, "closed"),
+            make_new_beneficiary_application_details(
+                123, "closed", email="email1@example.com", id_piece_number="123123121"
+            ),
+            make_new_beneficiary_application_details(
+                456, "closed", email="email2@example.com", id_piece_number="123123122"
+            ),
+            make_new_beneficiary_application_details(
+                789, "closed", email="email3@example.com", id_piece_number="123123123"
+            ),
         ]
 
         # when
@@ -90,9 +96,15 @@ class RunTest:
         users_factories.UserFactory(email="email2@example.com")
         users_factories.UserFactory(email="email3@example.com")
         get_details.side_effect = [
-            make_new_beneficiary_application_details(123, "closed", email="email1@example.com"),
-            make_new_beneficiary_application_details(456, "closed", email="email2@example.com"),
-            make_new_beneficiary_application_details(789, "closed", email="email3@example.com"),
+            make_new_beneficiary_application_details(
+                123, "closed", email="email1@example.com", id_piece_number="123123121"
+            ),
+            make_new_beneficiary_application_details(
+                456, "closed", email="email2@example.com", id_piece_number="123123122"
+            ),
+            make_new_beneficiary_application_details(
+                789, "closed", email="email3@example.com", id_piece_number="123123123"
+            ),
         ]
 
         # when
@@ -123,9 +135,15 @@ class RunTest:
         users_factories.UserFactory(email="email3@example.com")
 
         get_details.side_effect = [
-            make_new_beneficiary_application_details(123, "closed", email="email1@example.com"),
-            make_new_beneficiary_application_details(456, "closed", email="email2@example.com"),
-            make_new_beneficiary_application_details(789, "closed", email="email3@example.com"),
+            make_new_beneficiary_application_details(
+                123, "closed", email="email1@example.com", id_piece_number="123123121"
+            ),
+            make_new_beneficiary_application_details(
+                456, "closed", email="email2@example.com", id_piece_number="123123122"
+            ),
+            make_new_beneficiary_application_details(
+                789, "closed", email="email3@example.com", id_piece_number="123123123"
+            ),
         ]
 
         # when
@@ -227,7 +245,7 @@ class RunTest:
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.detail == "Compte existant avec cet email"
-        assert beneficiary_import.beneficiary == None
+        assert beneficiary_import.beneficiary == user
         process_beneficiary_application.assert_not_called()
 
     @override_features(FORCE_PHONE_VALIDATION=False)
@@ -246,7 +264,7 @@ class RunTest:
         get_closed_application_ids_for_demarche_simplifiee.return_value = [123]
         find_applications_ids_to_retry.return_value = []
 
-        get_details.side_effect = [make_new_beneficiary_application_details(123, "closed")]
+        get_details.side_effect = [make_new_beneficiary_application_details(123, "closed", id_piece_number="123123121")]
 
         applicant = users_factories.UserFactory(firstName="Doe", lastName="John", email="john.doe@test.com")
 
@@ -270,6 +288,7 @@ class RunTest:
                 activity="Étudiant",
                 address="35 Rue Saint Denis 93130 Noisy-le-Sec",
                 postal_code="67200",
+                id_piece_number="123123121",
             ),
             procedure_id=6712558,
             user=applicant,
@@ -746,9 +765,6 @@ class RunIntegrationTest:
         assert users_models.User.query.count() == 1
         user = users_models.User.query.first()
 
-        assert user.firstName == "john"
-        assert user.postalCode == "93450"
-        assert user.address == "11 Rue du Test"
         assert not user.has_beneficiary_role
 
         assert len(user.beneficiaryFraudChecks) == 1
@@ -768,10 +784,8 @@ class RunIntegrationTest:
         assert beneficiary_import.source == "demarches_simplifiees"
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.beneficiary == user
-        assert beneficiary_import.currentStatus == ImportStatus.CREATED
-        assert len(push_testing.requests) == 1
-
-        assert len(push_testing.requests) == 1
+        assert beneficiary_import.currentStatus == ImportStatus.REJECTED
+        assert len(push_testing.requests) == 0
 
     @patch(
         "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
@@ -897,7 +911,8 @@ class RunIntegrationTest:
 
         # then
         assert users_models.User.query.count() == 2
-        assert BeneficiaryImport.query.filter_by(beneficiary=user).count() == 0
+
+        assert BeneficiaryImport.query.filter_by(beneficiary=user).count() == 1
         user = users_models.User.query.get(user.id)
         assert len(user.beneficiaryFraudChecks) == 1
         assert user.beneficiaryFraudChecks[0].type == fraud_models.FraudCheckType.DMS
@@ -908,7 +923,7 @@ class RunIntegrationTest:
         beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.beneficiary != existing_user).first()
         assert beneficiary_import.source == "demarches_simplifiees"
         assert beneficiary_import.applicationId == 123
-        assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
+        assert beneficiary_import.currentStatus == ImportStatus.REJECTED
         sub_msg = user.subscriptionMessages[0]
         assert (
             sub_msg.userMessage
@@ -925,7 +940,7 @@ class RunIntegrationTest:
     def test_import_with_existing_user_with_the_same_id_number(
         self, get_application_details, get_closed_application_ids_for_demarche_simplifiee, mocker
     ):
-        existing_user = users_factories.BeneficiaryGrant18Factory(idPieceNumber="1234123412")
+        users_factories.BeneficiaryGrant18Factory(idPieceNumber="1234123412")
         applicant = users_factories.UserFactory(
             email=self.EMAIL,
             isEmailValidated=True,
@@ -960,7 +975,7 @@ class RunIntegrationTest:
         assert beneficiary_import.beneficiary == applicant
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
         assert beneficiary_import_status.beneficiaryImportId == beneficiary_import.id
-        assert beneficiary_import_status.detail == f"Nr de piece déjà utilisé par {existing_user.id}"
+
         sub_msg = applicant.subscriptionMessages[0]
         assert (
             sub_msg.userMessage
@@ -1106,7 +1121,7 @@ class RunIntegrationTest:
         assert len(push_testing.requests) == 0
 
         beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
-        assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
+        assert beneficiary_import.currentStatus == ImportStatus.REJECTED
 
         assert applicant.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
         assert f"Duplicat de l'utilisateur {beneficiary.id}" in applicant.beneficiaryFraudResults[0].reason

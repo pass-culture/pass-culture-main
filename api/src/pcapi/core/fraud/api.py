@@ -75,10 +75,10 @@ def on_jouve_result(user: user_models.User, jouve_content: models.JouveContent) 
     on_identity_fraud_check_result(user, fraud_check)
 
 
-def on_dms_fraud_check(
+def on_dms_fraud_result(
     user: user_models.User,
     dms_content: models.DMSContent,
-) -> None:
+) -> models.BeneficiaryFraudResult:
 
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
@@ -89,7 +89,7 @@ def on_dms_fraud_check(
 
     db.session.add(fraud_check)
     db.session.commit()
-    on_identity_fraud_check_result(user, fraud_check)
+    return on_identity_fraud_check_result(user, fraud_check)
 
 
 def admin_update_identity_fraud_check_result(
@@ -269,7 +269,8 @@ def _duplicate_id_piece_number_fraud_item(document_id_number: str) -> models.Fra
         status=models.FraudStatus.SUSPICIOUS if duplicate_user else models.FraudStatus.OK,
         detail=f"Le n° de cni {document_id_number} est déjà pris par l'utilisateur {duplicate_user.id}"
         if duplicate_user
-        else None,
+        else "Le numéro de CNI n'est pas déjà utilisé",
+        reason_code=models.FraudReasonCode.DUPLICATE_ID_NUMBER if duplicate_user else None,
     )
 
 

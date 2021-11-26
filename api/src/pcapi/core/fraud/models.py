@@ -211,10 +211,18 @@ FRAUD_CHECK_MAPPING = {
 
 class FraudReasonCode(enum.Enum):
     ALREADY_BENEFICIARY = "already_beneficiary"
+    ALREADY_HAS_ACTIVE_DEPOSIT = "already_has_active_deposit"
     AGE_NOT_VALID = "age_is_not_valid"
-    DUPLICATE_USER = "duplicate_user"
+    DUPLICATE_ID_NUMBER = "duplicate_id_number"
     DUPLICATE_INE = "duplicate_ine"
+    DUPLICATE_USER = "duplicate_user"
+    EMAIL_NOT_VALIDATED = "email_not_validated"
+    EMPTY_ID_NUMBER = "empty_id_number"
+    ID_CHECK_INVALID = "id_check_invalid"
+    ID_CHECK_UNPROCESSABLE = "id_check_unprocessable"
     INE_NOT_WHITELISTED = "ine_not_whitelisted"
+    INVALID_ID_NUMBER = "invalid_id_number"
+    PHONE_NOT_VALIDATED = "phone_not_validated"
 
 
 class FraudCheckStatus(enum.Enum):
