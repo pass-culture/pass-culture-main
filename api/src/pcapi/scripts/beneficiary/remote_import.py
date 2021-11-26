@@ -1,7 +1,6 @@
 from datetime import datetime
 import logging
 import re
-from typing import Optional
 
 from dateutil import parser as date_parser
 
@@ -19,7 +18,6 @@ import pcapi.core.users.external as users_external
 import pcapi.core.users.models as users_models
 from pcapi.domain import user_emails
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
-from pcapi.domain.user_activation import create_beneficiary_from_application
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
@@ -228,7 +226,7 @@ def process_application(
             process_beneficiary_application(
                 information=information,
                 procedure_id=procedure_id,
-                preexisting_account=user,
+                user=user,
             )
 
 
@@ -345,15 +343,13 @@ def parse_beneficiary_information_graphql(application_detail: dict, procedure_id
 
 
 def process_beneficiary_application(
-    information: fraud_models.DMSContent,
-    procedure_id: int,
-    preexisting_account: Optional[users_models.User] = None,
+    information: fraud_models.DMSContent, procedure_id: int, user: users_models.User
 ) -> None:
     """
     Create/update a user account and complete the import process.
     Note that a 'user' is not always a beneficiary.
     """
-    user = create_beneficiary_from_application(information, user=preexisting_account)
+    users_api.update_user_information_from_external_source(user, information)
     user.hasCompletedIdCheck = True
     try:
         repository.save(user)
