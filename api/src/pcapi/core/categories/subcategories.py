@@ -1177,6 +1177,24 @@ ABO_SPECTACLE = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
+SPECTACLE_VENTE_DISTANCE = Subcategory(
+    id="SPECTACLE_VENTE_DISTANCE",
+    category_id=categories.SPECTACLE.id,
+    matching_type="EventType.SPECTACLE_VIVANT",
+    pro_label="Spectacle vivant - vente à distance",
+    app_label="Spectacle vivant - vente à distance",
+    search_group_name=SearchGroups.SPECTACLE.name,
+    homepage_label_name=HomepageLabels.SPECTACLE.name,
+    is_event=True,
+    conditional_fields=["author", "showType", "stageDirector", "performer"],
+    can_expire=False,
+    can_be_duo=True,
+    can_be_educational=False,
+    online_offline_platform=OnlineOfflinePlatformChoices.ONLINE.value,
+    is_digital_deposit=False,
+    is_physical_deposit=True,
+    reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+)
 # endregion
 # region INSTRUMENT
 ACHAT_INSTRUMENT = Subcategory(
@@ -1413,6 +1431,7 @@ ALL_SUBCATEGORIES = (
     SEANCE_ESSAI_PRATIQUE_ART,
     SPECTACLE_ENREGISTRE,
     SPECTACLE_REPRESENTATION,
+    SPECTACLE_VENTE_DISTANCE,
     SUPPORT_PHYSIQUE_FILM,
     SUPPORT_PHYSIQUE_MUSIQUE,
     TELECHARGEMENT_LIVRE_AUDIO,
