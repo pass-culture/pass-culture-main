@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 import enum
+import typing
 from typing import Optional
 
 from sqlalchemy import BigInteger
@@ -23,11 +24,14 @@ from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.categories import subcategories
-from pcapi.core.educational.models import EducationalBooking
-from pcapi.core.offers.models import Mediation
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.human_ids import humanize
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.educational.models import EducationalBooking
+    from pcapi.core.offers.models import Mediation
 
 
 class BookingCancellationReasons(enum.Enum):
@@ -135,8 +139,8 @@ class Booking(PcObject, Model):
         unique=True,
         index=True,
     )
-    educationalBooking: Optional[EducationalBooking] = relationship(
-        EducationalBooking,
+    educationalBooking: Optional["EducationalBooking"] = relationship(
+        "EducationalBooking",
         back_populates="booking",
         uselist=False,
     )
@@ -245,7 +249,7 @@ class Booking(PcObject, Model):
         return self.stock.offer.product.thumbUrl
 
     @property
-    def mediation(self) -> Optional[Mediation]:
+    def mediation(self) -> Optional["Mediation"]:
         return self.stock.offer.activeMediation
 
     @property

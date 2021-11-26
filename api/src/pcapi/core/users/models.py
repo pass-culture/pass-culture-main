@@ -7,6 +7,7 @@ from datetime import time
 from decimal import Decimal
 import enum
 from operator import attrgetter
+import typing
 from typing import Optional
 
 from dateutil.relativedelta import relativedelta
@@ -19,8 +20,6 @@ from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.sql import expression
 
 from pcapi import settings
-from pcapi.core.payments.models import Deposit
-from pcapi.core.payments.models import DepositType
 from pcapi.core.users import constants
 from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models.db import Model
@@ -28,8 +27,12 @@ from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.utils import crypto
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.payments.models import Deposit
+    from pcapi.core.payments.models import DepositType
 
 
 ALGORITHM_HS_256 = "HS256"
@@ -263,6 +266,9 @@ class User(PcObject, Model, NeedsValidationMixin):
         return NotificationSubscriptions(**self.notificationSubscriptions or {})
 
     def has_access(self, offerer_id: int) -> bool:
+        # FIXME (dbaty, 2021-11-26): consider moving to a function in `core.users.api`?
+        from pcapi.models.user_offerer import UserOfferer
+
         if self.isAdmin:
             return True
         return db.session.query(
@@ -341,7 +347,7 @@ class User(PcObject, Model, NeedsValidationMixin):
         return None
 
     @property
-    def deposit(self) -> Optional[Deposit]:
+    def deposit(self) -> Optional["Deposit"]:
         if len(self.deposits) == 0:
             return None
         return sorted(self.deposits, key=attrgetter("expirationDate"), reverse=True)[0]
@@ -355,7 +361,7 @@ class User(PcObject, Model, NeedsValidationMixin):
         return self.deposit.expirationDate if self.deposit else None
 
     @property
-    def deposit_type(self) -> Optional[DepositType]:
+    def deposit_type(self) -> Optional["DepositType"]:
         return self.deposit.type if self.deposit else None
 
     @property
