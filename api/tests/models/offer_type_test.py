@@ -31,7 +31,12 @@ def test_category_enum_content():
             "Jeux en ligne",
             "Rencontres - jeux",
         ],
-        "LECON": ["Abonnement pratique artistique", "Atelier, stage de pratique artistique", "Séance d'essai"],
+        "LECON": [
+            "Abonnement pratique artistique",
+            "Atelier, stage de pratique artistique",
+            "Pratique artistique - vente à distance",
+            "Séance d'essai",
+        ],
         "LIVRE": [
             "Abonnement (bibliothèques, médiathèques...)",
             "Abonnement livres numériques",

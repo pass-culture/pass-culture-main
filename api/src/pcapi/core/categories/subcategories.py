@@ -1010,6 +1010,24 @@ ABO_PRATIQUE_ART = Subcategory(
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
+PRATIQUE_ART_VENTE_DISTANCE = Subcategory(
+    id="PRATIQUE_ART_VENTE_DISTANCE",
+    category_id=categories.PRATIQUE_ART.id,
+    matching_type="EventType.PRATIQUE_ARTISTIQUE",
+    pro_label="Pratique artistique - vente à distance",
+    app_label="Pratique artistique - vente à distance",
+    search_group_name=SearchGroups.COURS.name,
+    homepage_label_name=HomepageLabels.COURS.name,
+    is_event=True,
+    conditional_fields=["speaker"],
+    can_expire=False,
+    can_be_duo=True,
+    can_be_educational=False,
+    online_offline_platform=OnlineOfflinePlatformChoices.ONLINE.value,
+    is_digital_deposit=False,
+    is_physical_deposit=True,
+    reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
+)
 # endregion
 # region MEDIAS
 ABO_PRESSE_EN_LIGNE = Subcategory(
@@ -1385,6 +1403,7 @@ ALL_SUBCATEGORIES = (
     MUSEE_VENTE_DISTANCE,
     OEUVRE_ART,
     PARTITION,
+    PRATIQUE_ART_VENTE_DISTANCE,
     PODCAST,
     RENCONTRE_EN_LIGNE,
     RENCONTRE_JEU,
