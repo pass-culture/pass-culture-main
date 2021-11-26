@@ -4,8 +4,11 @@ import enum
 import typing
 from typing import Optional
 
+from dateutil.relativedelta import relativedelta
 import sqlalchemy
 
+from pcapi.core.users import constants as user_constants
+from pcapi.core.users.models import EligibilityType
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
@@ -31,7 +34,7 @@ class BeneficiaryPreSubscription:
     application_id: int
     city: Optional[str]
     civility: str
-    date_of_birth: datetime.datetime
+    date_of_birth: datetime.date
     email: str
     first_name: str
     fraud_fields: dict
@@ -50,6 +53,20 @@ class BeneficiaryPreSubscription:
     @property
     def deposit_source(self) -> str:
         return f"dossier {self.source} [{self.application_id}]"
+
+    @property
+    def eligibility_type(self) -> Optional[EligibilityType]:
+        """Calculates EligibilityType from date_of_birth and registration_datetime"""
+        if self.date_of_birth is None or self.registration_datetime is None:
+            return None
+
+        age_at_registration = relativedelta(self.registration_datetime.date(), self.date_of_birth).years
+        if age_at_registration == user_constants.ELIGIBILITY_AGE_18:
+            return EligibilityType.AGE18
+        if age_at_registration in user_constants.ELIGIBILITY_UNDERAGE_RANGE:
+            return EligibilityType.UNDERAGE
+
+        return None
 
     @property
     def public_name(self) -> str:
