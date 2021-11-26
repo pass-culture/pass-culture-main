@@ -73,19 +73,21 @@ class UserAutomationsTest:
             RemoveContactFromList(emails=None, ids=None, all=True),
         )
 
-        mock_import_contacts.assert_called_once_with(
-            RequestContactImport(
-                file_url=None,
-                file_body="EMAIL\nfabien+test@example.net\ngerard+test@example.net",
-                list_ids=[settings.SENDINBLUE_AUTOMATION_YOUNG_18_IN_1_MONTH_LIST_ID],
-                notify_url=None,
-                new_list=None,
-                email_blacklist=False,
-                sms_blacklist=False,
-                update_existing_contacts=True,
-                empty_contacts_attributes=False,
-            )
+        mock_import_contacts.assert_called_once()
+        assert mock_import_contacts.call_args.args[0].file_url == None
+        assert mock_import_contacts.call_args.args[0].file_body in (
+            "EMAIL\nfabien+test@example.net\ngerard+test@example.net",
+            "EMAIL\ngerard+test@example.net\nfabien+test@example.net",
         )
+        assert mock_import_contacts.call_args.args[0].list_ids == [
+            settings.SENDINBLUE_AUTOMATION_YOUNG_18_IN_1_MONTH_LIST_ID
+        ]
+        assert mock_import_contacts.call_args.args[0].notify_url == None
+        assert mock_import_contacts.call_args.args[0].new_list == None
+        assert mock_import_contacts.call_args.args[0].email_blacklist == False
+        assert mock_import_contacts.call_args.args[0].sms_blacklist == False
+        assert mock_import_contacts.call_args.args[0].update_existing_contacts == True
+        assert mock_import_contacts.call_args.args[0].empty_contacts_attributes == False
 
         mock_get_process.assert_called()
 
