@@ -1,15 +1,17 @@
 from typing import Optional
 
 from pcapi.core.subscription.models import BeneficiaryPreSubscription
+from pcapi.core.users import models as users_models
 from pcapi.core.users.api import fulfill_account_password
-from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.feature import FeatureToggle
 
 
-def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Optional[User] = None) -> User:
+def to_model(
+    beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Optional[users_models.User] = None
+) -> users_models.User:
     if user and beneficiary_pre_subscription.postal_code.strip() == "":
         dateOfBirth = beneficiary_pre_subscription.date_of_birth or user.dateOfBirth
         civility = beneficiary_pre_subscription.civility
@@ -17,7 +19,7 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Opt
         lastName = beneficiary_pre_subscription.last_name
         publicName = beneficiary_pre_subscription.public_name
         idPieceNumber = beneficiary_pre_subscription.id_piece_number
-        User.query.filter(User.id == user.id).update(
+        users_models.User.query.filter(users_models.User.id == user.id).update(
             {
                 "civility": civility,
                 "dateOfBirth": dateOfBirth,
@@ -30,7 +32,7 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Opt
         return user
 
     if not user:
-        beneficiary = User()
+        beneficiary = users_models.User()
         beneficiary.email = sanitize_email(beneficiary_pre_subscription.email)
         fulfill_account_password(beneficiary)
     else:
@@ -59,13 +61,14 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Opt
 
 
 def to_rejected_model(
-    beneficiary_pre_subscription: BeneficiaryPreSubscription, detail: str, user: Optional[User]
+    beneficiary_pre_subscription: BeneficiaryPreSubscription, detail: str, user: Optional[users_models.User]
 ) -> BeneficiaryImport:
     beneficiary_import = BeneficiaryImport()
 
     beneficiary_import.applicationId = beneficiary_pre_subscription.application_id
     beneficiary_import.sourceId = beneficiary_pre_subscription.source_id
     beneficiary_import.source = beneficiary_pre_subscription.source
+    beneficiary_import.eligibilityType = beneficiary_pre_subscription.eligibility_type
     beneficiary_import.setStatus(status=ImportStatus.REJECTED, detail=detail)
 
     if user:

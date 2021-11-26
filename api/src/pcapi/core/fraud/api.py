@@ -228,17 +228,16 @@ def on_identity_fraud_check_result(
 ) -> models.BeneficiaryFraudResult:
     fraud_items: list[models.FraudItem] = []
 
+    eligibilityType = get_eligibility_type(beneficiary_fraud_check.source_data())
+
     if beneficiary_fraud_check.type == models.FraudCheckType.JOUVE:
         fraud_items += jouve_fraud_checks(user, beneficiary_fraud_check)
-        eligibilityType = user_models.EligibilityType.AGE18
 
     elif beneficiary_fraud_check.type == models.FraudCheckType.DMS:
         fraud_items += dms_fraud_checks(user, beneficiary_fraud_check)
-        eligibilityType = user_models.EligibilityType.AGE18
 
     elif beneficiary_fraud_check.type == models.FraudCheckType.EDUCONNECT:
         fraud_items += educonnect_fraud_checks(user, beneficiary_fraud_check)
-        eligibilityType = user_models.EligibilityType.UNDERAGE
     else:
         raise Exception("The fraud_check type is not known")
 
@@ -337,7 +336,7 @@ def _check_user_not_already_beneficiary(
     if not user.is_eligible_for_beneficiary_upgrade(eligibility):
         return models.FraudItem(
             status=models.FraudStatus.KO,
-            detail=(f"L’utilisateur est déjà bénéfiaire du pass {eligibility.name}"),
+            detail=(f"L’utilisateur est déjà bénéfiaire du pass {eligibility.name if eligibility is not None else ''}"),
             reason_code=models.FraudReasonCode.ALREADY_BENEFICIARY,
         )
     return models.FraudItem(status=models.FraudStatus.OK, detail=None)

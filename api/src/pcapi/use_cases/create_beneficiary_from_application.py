@@ -65,6 +65,7 @@ class CreateBeneficiaryFromApplication:
                 source=BeneficiaryImportSources.demarches_simplifiees,
                 source_id=jouve_backend.DEFAULT_JOUVE_SOURCE_ID,
                 detail=f"Aucun utilisateur trouvé pour l'email {beneficiary_pre_subscription.email}",
+                eligibility_type=beneficiary_pre_subscription.eligibility_type,
             )
             return
 

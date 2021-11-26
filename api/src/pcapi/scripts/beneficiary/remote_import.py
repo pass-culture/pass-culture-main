@@ -132,6 +132,7 @@ def process_parsing_exception(exception: Exception, procedure_id: int, applicati
         source=BeneficiaryImportSources.demarches_simplifiees,
         source_id=procedure_id,
         detail=error,
+        eligibility_type=None,
     )
 
 
@@ -158,6 +159,7 @@ def process_parsing_error(exception: DMSParsingError, procedure_id: int, applica
         source_id=procedure_id,
         detail=error_detail,
         user=user,
+        eligibility_type=None,
     )
 
 
@@ -183,6 +185,7 @@ def process_application(
             source=BeneficiaryImportSources.demarches_simplifiees,
             source_id=procedure_id,
             detail=f"Aucun utilisateur trouvé pour l'email {information.email}",
+            eligibility_type=fraud_api.get_eligibility_type(information),
         )
         return
     try:
@@ -240,6 +243,7 @@ def parse_beneficiary_information(application_detail: dict, procedure_id: int) -
         "email": email,
         "application_id": dossier["id"],
         "procedure_id": procedure_id,
+        "registration_datetime": dossier["created_at"],
     }
     parsing_errors = {}
 
@@ -286,6 +290,9 @@ def parse_beneficiary_information_graphql(application_detail: dict, procedure_id
         "email": email,
         "application_id": application_detail["number"],
         "procedure_id": procedure_id,
+        "registration_datetime": application_detail[
+            "datePassageEnConstruction"
+        ],  # parse with format  "2021-09-15T15:19:20+02:00"
     }
     parsing_errors = {}
 
@@ -365,17 +372,17 @@ def process_beneficiary_application(
         procedure_id,
     )
 
-    beneficiary_import = save_beneficiary_import_with_status(
+    save_beneficiary_import_with_status(
         ImportStatus.CREATED,
         information.application_id,
         source=BeneficiaryImportSources.demarches_simplifiees,
         source_id=procedure_id,
         user=user,
+        eligibility_type=fraud_api.get_eligibility_type(information),
     )
 
     if not users_api.steps_to_become_beneficiary(user):
-        deposit_source = beneficiary_import.get_detailed_source()
-        subscription_api.activate_beneficiary(user, deposit_source)
+        subscription_api.activate_beneficiary(user)
     else:
         users_external.update_external_user(user)
 
@@ -393,6 +400,7 @@ def _process_duplication(
         source=BeneficiaryImportSources.demarches_simplifiees,
         source_id=procedure_id,
         detail=f"Utilisateur en doublon : {duplicate_ids}",
+        eligibility_type=fraud_api.get_eligibility_type(information),
     )
 
 
@@ -406,6 +414,7 @@ def _process_rejection(
         source_id=procedure_id,
         detail=reason,
         user=user,
+        eligibility_type=fraud_api.get_eligibility_type(information),
     )
     logger.warning(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application %s because of '%s' - Procedure %s",

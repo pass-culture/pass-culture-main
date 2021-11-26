@@ -28,3 +28,7 @@ class NotWhitelistedINE(FraudException):
 
 class BeneficiaryFraudResultCannotBeDowngraded(FraudException):
     pass
+
+
+class InvalidContentTypeException(FraudException):
+    pass
