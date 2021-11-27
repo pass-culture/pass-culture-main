@@ -18,8 +18,7 @@ from pcapi.admin.custom_views.mixins.resend_validation_email_mixin import Resend
 from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
-from pcapi.core.users.api import create_reset_password_token
-from pcapi.core.users.api import get_domains_credit
+import pcapi.core.users.api as users_api
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
@@ -85,25 +84,25 @@ def beneficiary_deposit_type_formatter(view, context, model, name) -> Markup:
 
 
 def beneficiary_total_amount_initial_formatter(view, context, model, name) -> Markup:
-    amount = get_domains_credit(model)
+    amount = users_api.get_domains_credit(model)
     all_initial = amount.all.initial if amount else "0"
     return Markup("<span>{all_initial}&nbsp;&euro;</span>").format(all_initial=all_initial)
 
 
 def beneficiary_total_amount_remaining_formatter(view, context, model, name) -> Markup:
-    amount = get_domains_credit(model)
+    amount = users_api.get_domains_credit(model)
     all_remaining = amount.all.remaining if amount else "0"
     return Markup("<span>{all_remaining}&nbsp;&euro;</span>").format(all_remaining=all_remaining)
 
 
 def beneficiary_physical_remaining_formatter(view, context, model, name) -> Markup:
-    amount = get_domains_credit(model)
+    amount = users_api.get_domains_credit(model)
     physical_remaining = amount.physical.remaining if amount and amount.physical else "Pas de plafond"
     return Markup("<span>{physical_remaining}&nbsp;&euro;</span>").format(physical_remaining=physical_remaining)
 
 
 def beneficiary_digital_remaining_formatter(view, context, model, name) -> Markup:
-    amount = get_domains_credit(model)
+    amount = users_api.get_domains_credit(model)
     digital_remaining = amount.digital.remaining if amount and amount.digital else "Pas de plafond"
     return Markup("<span>{digital_remaining}&nbsp;&euro;</span>").format(digital_remaining=digital_remaining)
 
@@ -263,18 +262,16 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
 
         if is_created:
             model.add_beneficiary_role()
-            # This is to prevent a circulary import dependency
-            from pcapi.core.users.api import fulfill_beneficiary_data
 
             deposit_version = int(form.depositVersion.data) if not settings.IS_PROD else None
-            fulfill_beneficiary_data(model, "pass-culture-admin", deposit_version)
+            users_api.fulfill_beneficiary_data(model, "pass-culture-admin", deposit_version)
 
         super().on_model_change(form, model, is_created)
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
         update_external_user(model)
         if is_created and not send_activation_email(model):
-            token = create_reset_password_token(model)
+            token = users_api.create_reset_password_token(model)
             flash(
                 f"L'envoi d'email a échoué. Le mot de passe peut être réinitialisé depuis le lien suivant : {build_pc_webapp_reset_password_link(token.value)}",
                 "error",

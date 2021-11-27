@@ -1,4 +1,3 @@
-# isort: skip_file
 from functools import wraps
 from pathlib import Path
 from pprint import pprint
@@ -15,10 +14,6 @@ from requests import Response
 from requests.auth import _basic_auth_str
 from requests.exceptions import ConnectionError as RequestConnectionError
 
-# FIXME (dbaty, 2020-02-08): avoid import loop (that occurs when
-# importing `pcapi.core.mails.testing`) when running tests. Remove
-# `isort: skip_file` above once fixed.
-import pcapi.models
 from pcapi import settings
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing

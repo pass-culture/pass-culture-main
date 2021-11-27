@@ -82,15 +82,12 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
         return self.session.query(func.count(distinct(User.id))).select_from(User).filter(User.isAdmin.is_(True))
 
     def on_model_change(self, form: Form, model, is_created: bool) -> None:
-        # This is to prevent a circulary import dependency
-        from pcapi.core.users.api import fulfill_account_password
-
         model.publicName = f"{model.firstName} {model.lastName}"
         model.add_admin_role()
         model.hasSeenProTutorials = True
         model.needsToFillCulturalSurvey = False
 
-        fulfill_account_password(model)
+        users_api.fulfill_account_password(model)
 
         super().on_model_change(form, model, is_created)
 
