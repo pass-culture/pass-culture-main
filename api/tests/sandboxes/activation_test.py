@@ -2,9 +2,11 @@ import logging
 
 import pytest
 
-from pcapi.core.offers.models import Stock
-from pcapi.model_creators.provider_creators import assert_created_counts
-from pcapi.model_creators.provider_creators import save_counts
+import pcapi.core.bookings.models as bookings_models
+import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.models as offers_models
+import pcapi.core.users.models as users_models
+from pcapi.models.product import Product
 from pcapi.sandboxes.scripts.save_sandbox import save_sandbox
 
 
@@ -13,28 +15,13 @@ logger = logging.getLogger(__name__)
 
 @pytest.mark.usefixtures("db_session")
 def test_save_activation_sandbox(app):
-    # given
-    save_counts()
-    logger_info = logger.info
-    logger.info = lambda o: None
-
-    # when
     save_sandbox("activation")
 
-    # then
-    assert_created_counts(
-        Booking=0,
-        Deposit=0,
-        Mediation=0,
-        Offer=1,
-        Offerer=1,
-        Product=1,
-        Stock=1,
-        User=0,
-        UserOfferer=0,
-    )
-
-    assert Stock.query.first().quantity == 10000
-
-    # teardown
-    logger.info = logger_info
+    assert bookings_models.Booking.query.count() == 0
+    assert offers_models.Mediation.query.count() == 0
+    assert offers_models.Offer.query.count() == 1
+    assert offerers_models.Offerer.query.count() == 1
+    assert Product.query.count() == 1
+    assert offers_models.Stock.query.count() == 1
+    assert users_models.User.query.count() == 0
+    assert offers_models.Stock.query.one().quantity == 10000

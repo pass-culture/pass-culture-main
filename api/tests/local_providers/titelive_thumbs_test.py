@@ -8,7 +8,6 @@ import pytest
 
 from pcapi.local_providers import TiteLiveThingThumbs
 from pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs import extract_thumb_index
-from pcapi.model_creators.provider_creators import provider_test
 from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
 from pcapi.models.product import Product
 from pcapi.repository import repository
@@ -52,20 +51,23 @@ class TiteliveThingThumbsTest:
         get_thumbs_zip_file_from_ftp.side_effect = [get_zip_file_from_sandbox(zip_thumb_file)]
 
         # Import thumbs for existing things
-        provider_test(
-            app,
-            TiteLiveThingThumbs,
-            None,
-            checkedObjects=2,
-            createdObjects=0,
-            updatedObjects=2,
-            erroredObjects=0,
-            checkedThumbs=2,
-            createdThumbs=5,
-            updatedThumbs=0,
-            erroredThumbs=0,
-            Product=0,
-        )
+        provider_object = TiteLiveThingThumbs()
+        provider_object.provider.isActive = True
+        repository.save(provider_object.provider)
+
+        assert Product.query.count() == 2
+
+        provider_object.updateObjects()
+
+        assert Product.query.count() == 2  # same count as before calling `updateObjects()`
+        assert provider_object.checkedObjects == 2
+        assert provider_object.createdObjects == 0
+        assert provider_object.updatedObjects == 2
+        assert provider_object.erroredObjects == 0
+        assert provider_object.checkedThumbs == 2
+        assert provider_object.createdThumbs == 5
+        assert provider_object.updatedThumbs == 0
+        assert provider_object.erroredThumbs == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp")
