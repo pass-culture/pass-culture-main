@@ -2,8 +2,6 @@ import typing
 from typing import Iterable
 
 
-# FIXME: condition imports, otherwise we get an import loop when this
-# module or pcapi.core.search is imported first.
 if typing.TYPE_CHECKING:
     import pcapi.core.offerers.models as offerers_models
     import pcapi.core.offers.models as offers_models

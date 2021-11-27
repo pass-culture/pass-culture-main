@@ -1,11 +1,9 @@
-# isort: skip_file
 import csv
 from datetime import datetime
+import logging
 import sys
 from typing import Iterable
 
-
-import pcapi.models  # pylint: disable=unused-import
 from pcapi import settings
 import pcapi.core.payments.api as payments_api
 import pcapi.core.users.api as users_api
@@ -13,7 +11,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
-import logging
+
 
 logger = logging.getLogger(__name__)
 

@@ -19,8 +19,6 @@ from flask_jwt_extended import create_access_token
 from google.cloud.storage.blob import Blob
 from redis import Redis
 
-# TODO (viconnex): fix circular import of pcapi/models/__init__.py
-from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
 from pcapi.connectors.beneficiaries.id_check_middleware import ask_for_identity_document_verification
 import pcapi.core.bookings.models as bookings_models
