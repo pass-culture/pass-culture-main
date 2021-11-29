@@ -58,7 +58,6 @@ from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
-from pcapi.notifications import push as push_notifications
 from pcapi.notifications.sms import send_transactional_sms
 from pcapi.notifications.sms.sending_limit import is_SMS_sending_allowed
 from pcapi.notifications.sms.sending_limit import update_sent_SMS_counter
@@ -67,6 +66,7 @@ from pcapi.repository import transaction
 from pcapi.repository import user_queries
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
+from pcapi.tasks import batch_tasks
 from pcapi.tasks.account import VerifyIdentityDocumentRequest
 from pcapi.tasks.account import verify_identity_document
 from pcapi.utils import phone_number as phone_number_utils
@@ -950,7 +950,8 @@ def update_notification_subscription(
     repository.save(user)
 
     if not subscriptions.marketing_push:
-        push_notifications.delete_user_attributes(user.id)
+        payload = batch_tasks.DeleteBatchUserAttributesRequest(user_id=user.id)
+        batch_tasks.delete_user_attributes_task.delay(payload)
 
 
 def reset_recredit_amount_to_show(user: User) -> None:

@@ -13,7 +13,6 @@ import uuid
 
 from dateutil.relativedelta import relativedelta
 from freezegun.api import freeze_time
-from google.cloud import tasks_v2
 import jwt
 import pytest
 
@@ -566,30 +565,18 @@ class UserProfileUpdateTest:
     @override_settings(BATCH_SECRET_API_KEY="coucou-la-cle")
     @override_settings(PUSH_NOTIFICATION_BACKEND="pcapi.notifications.push.backends.batch.BatchBackend")
     def test_unsubscribe_push_notifications_with_batch(self, client, app, cloud_task_client):
-        user = users_factories.UserFactory(email=self.identifier)
+        users_factories.UserFactory(email=self.identifier)
 
-        client.with_token(email=self.identifier)
-        response = client.post(
-            "/native/v1/profile", json={"subscriptions": {"marketingPush": False, "marketingEmail": False}}
-        )
+        with patch("pcapi.notifications.push.backends.batch.requests.delete") as mock_delete:
+            mock_delete.return_value.status_code = 200
 
-        assert response.status_code == 200
-        assert cloud_task_client.create_task.call_count == 2
+            client.with_token(email=self.identifier)
+            response = client.post(
+                "/native/v1/profile", json={"subscriptions": {"marketingPush": False, "marketingEmail": False}}
+            )
 
-        ((_, ios_call_args), (_, android_call_args)) = cloud_task_client.create_task.call_args_list
-        assert ios_call_args["request"]["task"]["http_request"] == {
-            "body": b"null",
-            "headers": {"Content-Type": "application/json", "X-Authorization": "coucou-la-cle"},
-            "http_method": tasks_v2.HttpMethod.DELETE,
-            "url": f"https://api.example.com/1.0/fake_ios_api_key/data/users/{user.id}",
-        }
-
-        assert android_call_args["request"]["task"]["http_request"] == {
-            "body": b"null",
-            "headers": {"Content-Type": "application/json", "X-Authorization": "coucou-la-cle"},
-            "http_method": tasks_v2.HttpMethod.DELETE,
-            "url": f"https://api.example.com/1.0/fake_android_api_key/data/users/{user.id}",
-        }
+            assert response.status_code == 200
+            assert mock_delete.call_count == 2  # Android + iOS
 
     def test_update_user_profile_reset_recredit_amount_to_show(self, client, app):
         user = users_factories.UnderageBeneficiaryFactory(email=self.identifier, recreditAmountToShow=30)
