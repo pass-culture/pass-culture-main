@@ -11,7 +11,6 @@ from pcapi.core.users import constants
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.validator import EXCLUDED_DEPARTMENTS
-from pcapi.domain.user_emails import send_newly_eligible_user_email
 from pcapi.models.user_offerer import UserOfferer
 
 
