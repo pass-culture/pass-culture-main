@@ -1,9 +1,9 @@
+from copy import deepcopy
 from datetime import date
 from datetime import datetime
 import logging
 from typing import Optional
 
-from copy import deepcopy
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.query import Query
