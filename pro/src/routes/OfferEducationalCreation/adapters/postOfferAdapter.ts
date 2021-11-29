@@ -3,9 +3,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import { createOfferPayload } from '../utils/createOfferPayload'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const hasStatusCode = (error: any): error is { status: number } =>
-  typeof error.status === 'number'
+import { hasStatusCode } from './utils'
 
 type Params = IOfferEducationalFormValues
 

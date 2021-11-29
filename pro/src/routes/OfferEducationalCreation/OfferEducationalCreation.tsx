@@ -12,7 +12,11 @@ import {
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 
-import { getCategoriesAdapter, getOfferersAdapter } from './adapters'
+import {
+  getIsOffererEligibleToEducationalOfferAdapter,
+  getCategoriesAdapter,
+  getOfferersAdapter,
+} from './adapters'
 import postOfferAdapter from './adapters/postOfferAdapter'
 import setInitialFormValues from './utils/setInitialFormValues'
 
@@ -85,7 +89,11 @@ const OfferEducationalCreation = (): JSX.Element => {
   return isReady && screenProps ? (
     <OfferEducationalScreen
       {...screenProps}
+      getIsOffererEligibleToEducationalOfferAdapter={
+        getIsOffererEligibleToEducationalOfferAdapter
+      }
       initialValues={initialValues}
+      notify={notify}
       onSubmit={createOffer}
     />
   ) : (
