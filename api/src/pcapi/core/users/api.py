@@ -367,7 +367,7 @@ def update_user_information_from_external_source(
         if data.bodyPieceNumber:
             items = (
                 fraud_api.validate_id_piece_number_format_fraud_item(data.bodyPieceNumber),
-                fraud_api._duplicate_id_piece_number_fraud_item(data.bodyPieceNumber),
+                fraud_api._duplicate_id_piece_number_fraud_item(user, data.bodyPieceNumber),
             )
             if all((item.status == fraud_models.FraudStatus.OK) for item in items):
                 user.idPieceNumber = data.bodyPieceNumber
