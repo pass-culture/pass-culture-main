@@ -71,6 +71,7 @@ class Returns200Test:
                 "isEventExpired": False,
                 "isSoftDeleted": False,
                 "lastProviderId": None,
+                "numberOfTickets": None,
                 "offer": {
                     "ageMax": None,
                     "ageMin": None,
@@ -114,6 +115,7 @@ class Returns200Test:
                             "isEventExpired": False,
                             "isSoftDeleted": False,
                             "lastProviderId": None,
+                            "numberOfTickets": None,
                             "offerId": humanize(offer.id),
                             "price": 0.0,
                             "quantity": None,
