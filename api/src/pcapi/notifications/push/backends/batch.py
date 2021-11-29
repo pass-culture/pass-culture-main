@@ -135,19 +135,24 @@ class BatchBackend:
         make_post_request(BatchAPI.IOS)
 
     def delete_user_attributes(self, user_id: int) -> None:
+        """
+        To be used as an internal cloud task since cloud tasks do not
+        accept DELETE http methods.
+        """
         for api in (BatchAPI.IOS, BatchAPI.ANDROID):
             url = f"{settings.BATCH_API_URL}/1.0/{api.value}/data/users/{user_id}"
             try:
-                http_request = CloudTaskHttpRequest(
-                    http_method=tasks_v2.HttpMethod.DELETE,
-                    headers=self.headers,
-                    url=url,
-                )
-                enqueue_task(BATCH_CUSTOM_DATA_QUEUE_NAME, http_request)
+                response = requests.delete(url, headers=self.headers)
             except Exception as exc:  # pylint: disable=broad-except
                 logger.exception(
-                    "Unable to enqueue Cloud Task to delete batch custom attributes: %s",
+                    "Could not delete batch user: %s",
                     exc,
                     extra={"user_id": user_id, "api": str(api)},
-                    url=url,
                 )
+            else:
+                if response.status_code != 200:
+                    logger.error(
+                        "Got %d status code from Batch Custom Data API: content=%s",
+                        response.status_code,
+                        response.content,
+                    )
