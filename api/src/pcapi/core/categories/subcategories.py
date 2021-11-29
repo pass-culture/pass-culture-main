@@ -597,7 +597,7 @@ TELECHARGEMENT_LIVRE_AUDIO = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
-    is_bookable_by_underage_when_not_free=False,
+    is_bookable_by_underage_when_not_free=True,
 )
 LIVRE_AUDIO_PHYSIQUE = Subcategory(
     id="LIVRE_AUDIO_PHYSIQUE",
@@ -653,7 +653,7 @@ ABO_LIVRE_NUMERIQUE = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.BOOK.value,
-    is_bookable_by_underage_when_not_free=False,
+    is_bookable_by_underage_when_not_free=True,
 )
 FESTIVAL_LIVRE = Subcategory(
     id="FESTIVAL_LIVRE",
