@@ -2,7 +2,6 @@ import { useFormikContext } from 'formik'
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-import Banner from 'components/layout/Banner/Banner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import {
   IOfferEducationalFormValues,
@@ -10,7 +9,6 @@ import {
 } from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
 import { SubmitButton } from 'ui-kit'
-import { CGU_URL } from 'utils/config'
 
 import { IOfferEducationalProps } from '../OfferEducational'
 import buildSelectOptions from '../utils/buildSelectOptions'
@@ -115,11 +113,6 @@ const OfferEducationalForm = ({
           <FormAccessibility />
           <FormContact />
           <FormNotifications />
-          <Banner
-            href={CGU_URL}
-            linkTitle="Consulter les Conditions Générales d’Utilisation"
-            type="notification-info"
-          />
         </>
       ) : null}
       <FormLayout.Actions>
