@@ -26,18 +26,28 @@ import styles from './OfferEducationalForm.module.scss'
 
 type IOfferEducationalFormProps = Pick<
   IOfferEducationalProps,
-  'educationalCategories' | 'educationalSubCategories' | 'userOfferers'
+  | 'educationalCategories'
+  | 'educationalSubCategories'
+  | 'userOfferers'
+  | 'getIsOffererEligibleToEducationalOfferAdapter'
+  | 'notify'
 >
 
 const OfferEducationalForm = ({
   educationalCategories,
   educationalSubCategories,
   userOfferers,
+  getIsOffererEligibleToEducationalOfferAdapter,
+  notify,
 }: IOfferEducationalFormProps): JSX.Element => {
   const [venuesOptions, setVenuesOptions] = useState<SelectOptions>([])
   const [currentOfferer, setCurrentOfferer] = useState<IUserOfferer | null>(
     null
   )
+  const [isLoading, setIsLoading] = useState(false)
+  const [canCreateEducationalOffer, setCanCreateEducationalOffer] =
+    useState<boolean>()
+
   const { values } = useFormikContext<IOfferEducationalFormValues>()
 
   useEffect(() => {
@@ -45,6 +55,25 @@ const OfferEducationalForm = ({
       offerer => offerer.id === values.offererId
     )
     if (selectedOfferer) {
+      const checkOffererEligibilityToEducationalOffer = async () => {
+        setIsLoading(true)
+        const { isOk, message, payload } =
+          await getIsOffererEligibleToEducationalOfferAdapter(
+            selectedOfferer.id
+          )
+
+        if (!isOk) {
+          notify.error(message)
+        }
+
+        setCanCreateEducationalOffer(
+          payload.isOffererEligibleToEducationalOffer
+        )
+        setIsLoading(false)
+      }
+
+      checkOffererEligibilityToEducationalOffer()
+
       setCurrentOfferer(selectedOfferer)
       setVenuesOptions(
         buildSelectOptions(
@@ -55,7 +84,12 @@ const OfferEducationalForm = ({
         )
       )
     }
-  }, [values.offererId, userOfferers])
+  }, [
+    values.offererId,
+    userOfferers,
+    notify,
+    getIsOffererEligibleToEducationalOfferAdapter,
+  ])
 
   return (
     <FormLayout className={styles['educational-form']}>
@@ -86,8 +120,8 @@ const OfferEducationalForm = ({
         </Link>
         <SubmitButton
           className="primary-button"
-          disabled={false}
-          isLoading={false}
+          disabled={!canCreateEducationalOffer}
+          isLoading={isLoading}
         >
           Étape suivante
         </SubmitButton>

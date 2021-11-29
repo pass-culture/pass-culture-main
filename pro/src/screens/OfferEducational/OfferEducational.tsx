@@ -2,6 +2,7 @@ import { useFormik, FormikProvider } from 'formik'
 import React from 'react'
 
 import {
+  GetIsOffererEligibleToEducationalOffer,
   IEducationalCategory,
   IEducationalSubCategory,
   IOfferEducationalFormValues,
@@ -16,6 +17,13 @@ export interface IOfferEducationalProps {
   initialValues: IOfferEducationalFormValues
   onSubmit(values: IOfferEducationalFormValues): void
   userOfferers: IUserOfferer[]
+  getIsOffererEligibleToEducationalOfferAdapter: GetIsOffererEligibleToEducationalOffer
+  notify: {
+    success: (msg: string | null) => void
+    error: (msg: string | null) => void
+    pending: (msg: string | null) => void
+    information: (msg: string | null) => void
+  }
 }
 
 const OfferEducational = ({
@@ -24,6 +32,8 @@ const OfferEducational = ({
   userOfferers,
   initialValues,
   onSubmit,
+  getIsOffererEligibleToEducationalOfferAdapter,
+  notify,
 }: IOfferEducationalProps): JSX.Element => {
   const formik = useFormik({
     initialValues,
@@ -36,6 +46,10 @@ const OfferEducational = ({
         <OfferEducationalForm
           educationalCategories={educationalCategories}
           educationalSubCategories={educationalSubCategories}
+          getIsOffererEligibleToEducationalOfferAdapter={
+            getIsOffererEligibleToEducationalOfferAdapter
+          }
+          notify={notify}
           userOfferers={userOfferers}
         />
       </form>
