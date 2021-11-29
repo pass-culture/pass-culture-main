@@ -3,6 +3,7 @@ from datetime import datetime
 import logging
 from typing import Optional
 
+from copy import deepcopy
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.query import Query
@@ -100,7 +101,7 @@ def get_id_check_token(token_value: str) -> models.Token:
 
 
 def _check_age_eligibility(age: int) -> bool:
-    eligibility_range = constants.ELIGIBILITY_UNDERAGE_RANGE
+    eligibility_range = deepcopy(constants.ELIGIBILITY_UNDERAGE_RANGE)
     eligibility_range.append(constants.ELIGIBILITY_AGE_18)
     if age in eligibility_range:
         return True
