@@ -81,10 +81,14 @@ const FormCategory = ({
         </FormLayout.Row>
       )}
       <FormLayout.Row>
-        <TextInput label={TITLE_LABEL} name="title" />
+        <TextInput label={TITLE_LABEL} maxLength={90} name="title" />
       </FormLayout.Row>
       <FormLayout.Row>
-        <TextArea label={DESCRIPTION_LABEL} name="description" />
+        <TextArea
+          label={DESCRIPTION_LABEL}
+          maxLength={1000}
+          name="description"
+        />
       </FormLayout.Row>
       <FormLayout.Row>
         <DurationPicker

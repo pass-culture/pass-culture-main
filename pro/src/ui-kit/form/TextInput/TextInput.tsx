@@ -8,6 +8,7 @@ interface ITextInputProps {
   label?: string
   placeholder?: string
   type?: 'text' | 'number'
+  maxLength?: number
 }
 
 const TextInput = ({
@@ -17,6 +18,7 @@ const TextInput = ({
   disabled,
   label,
   placeholder,
+  maxLength,
 }: ITextInputProps): JSX.Element => {
   const [field, meta] = useField({ name, disabled })
 
@@ -27,6 +29,7 @@ const TextInput = ({
         <input
           {...field}
           className={className}
+          maxLength={maxLength}
           placeholder={placeholder}
           type={type}
         />
