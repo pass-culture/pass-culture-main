@@ -1,3 +1,4 @@
+import { action } from '@storybook/addon-actions'
 import React from 'react'
 
 import { INITIAL_EDUCATIONAL_FORM_VALUES } from 'core/OfferEducational'
@@ -51,7 +52,21 @@ const Template = () => (
   <OfferEducational
     educationalCategories={mockEducationalCategories}
     educationalSubCategories={mockEducationalSubcategories}
+    getIsOffererEligibleToEducationalOfferAdapter={() => {
+      action('getIsOffererEligibleToEducationalOfferAdapter')
+      return Promise.resolve({
+        isOk: true,
+        message: null,
+        payload: { isOffererEligibleToEducationalOffer: true },
+      })
+    }}
     initialValues={INITIAL_EDUCATIONAL_FORM_VALUES}
+    notify={{
+      success: action('success'),
+      error: action('error'),
+      information: action('information'),
+      pending: action('pending'),
+    }}
     onSubmit={() => null}
     userOfferers={mockUserOfferers}
   />
