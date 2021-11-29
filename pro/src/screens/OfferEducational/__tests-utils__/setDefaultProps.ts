@@ -43,7 +43,11 @@ const defaultProps = (): IOfferEducationalProps => ({
   onSubmit: jest.fn(),
   educationalCategories: mockEducationalCategories,
   educationalSubCategories: mockEducationalSubcategories,
-  getIsOffererEligibleToEducationalOfferAdapter: jest.fn(),
+  getIsOffererEligibleToEducationalOfferAdapter: jest.fn().mockResolvedValue({
+    isOk: true,
+    message: null,
+    payload: { isOffererEligibleToEducationalOffer: true },
+  }),
   notify: {
     success: jest.fn(),
     pending: jest.fn(),
