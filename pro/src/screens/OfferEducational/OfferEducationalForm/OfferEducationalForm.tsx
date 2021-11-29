@@ -58,7 +58,7 @@ const OfferEducationalForm = ({
   }, [values.offererId, userOfferers])
 
   return (
-    <FormLayout className={styles['educational-form']}>
+    <FormLayout className={styles['educational-form']} small>
       <p className={styles['educational-form-information']}>
         Tous les champs sont obligatoires sauf mention contraire.
       </p>
