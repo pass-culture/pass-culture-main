@@ -111,7 +111,7 @@ def _create_bookings_for_other_beneficiaries(
                 status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
                 stock=stock,
                 dateUsed=datetime.now() - timedelta(days=2) if is_used else None,
-                amount=booking_amount,
+                amount=booking_amount if booking_amount is not None else stock.price,
                 token=str(token),
                 offerer=offer.venue.managingOfferer,
                 venue=offer.venue,
