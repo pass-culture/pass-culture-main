@@ -7,6 +7,7 @@ interface ITextAreaProps {
   disabled?: boolean
   placeholder?: string
   label?: string
+  maxLength?: number
 }
 
 const TextArea = ({
@@ -15,6 +16,7 @@ const TextArea = ({
   disabled,
   placeholder,
   label,
+  maxLength,
 }: ITextAreaProps): JSX.Element => {
   const [field, meta] = useField({ name })
 
@@ -26,6 +28,7 @@ const TextArea = ({
           {...field}
           className={className}
           disabled={disabled}
+          maxLength={maxLength}
           placeholder={placeholder}
         />
       </label>
