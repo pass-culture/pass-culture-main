@@ -97,6 +97,8 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
 
     activationCodes = relationship("ActivationCode", back_populates="stock")
 
+    numberOfTickets = Column(Integer, nullable=True)
+
     @property
     def isBookable(self):
         return not self.isExpired and self.offer.isReleased and not self.isSoldOut
