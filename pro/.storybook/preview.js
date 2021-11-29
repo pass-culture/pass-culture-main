@@ -13,4 +13,9 @@ export const parameters = {
       date: /Date$/,
     },
   },
+  options: {
+    storySort: {
+      order: ['ui-kit', 'components', 'screens'],
+    },
+  },
 }

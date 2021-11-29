@@ -5,7 +5,7 @@ import { Router } from 'react-router'
 import OfferType from './OfferType'
 
 export default {
-  title: 'scrrens/OfferType',
+  title: 'screens/OfferType',
   component: OfferType,
 }
 

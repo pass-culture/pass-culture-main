@@ -6,7 +6,7 @@ import React from 'react'
 import DatePicker from './DatePicker'
 
 export default {
-  title: 'ui-kit/DatePicker',
+  title: 'ui-kit/forms/DatePicker',
   component: DatePicker,
 }
 
