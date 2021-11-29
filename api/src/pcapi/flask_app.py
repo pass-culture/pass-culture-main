@@ -21,8 +21,8 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from pcapi import settings
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.logging import install_logging
+from pcapi.models import db
 from pcapi.models import install_models
-from pcapi.models.db import db
 from pcapi.scripts.install import install_commands
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.rate_limiting import rate_limiter

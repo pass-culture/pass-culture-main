@@ -1,6 +1,6 @@
 from pcapi import settings
 from pcapi.core import object_storage
-from pcapi.models.db import Model
+from pcapi.models import Model
 from pcapi.utils.image_conversion import standardize_image
 
 

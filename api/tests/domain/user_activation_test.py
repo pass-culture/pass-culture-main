@@ -7,8 +7,8 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.domain.user_activation import create_beneficiary_from_application
 from pcapi.domain.user_activation import is_import_status_change_allowed
+from pcapi.models import db
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.models.db import db
 
 
 class IsImportStatusChangeAllowedTest:

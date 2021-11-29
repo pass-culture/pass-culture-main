@@ -4,7 +4,7 @@ from sqlalchemy import Column
 from sqlalchemy import LargeBinary
 from sqlalchemy import String
 
-from pcapi.models.db import Model
+from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 

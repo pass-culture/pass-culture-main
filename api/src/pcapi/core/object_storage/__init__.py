@@ -1,5 +1,5 @@
 from pcapi import settings
-from pcapi.models.db import Model
+from pcapi.models import Model
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.module_loading import import_string
 

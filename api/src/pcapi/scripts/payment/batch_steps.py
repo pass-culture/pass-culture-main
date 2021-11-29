@@ -27,7 +27,7 @@ from pcapi.domain.payments import make_transaction_label
 from pcapi.domain.payments import validate_message_file_structure
 from pcapi.domain.reimbursement import CustomRuleFinder
 from pcapi.domain.reimbursement import find_all_booking_reimbursements
-from pcapi.models.db import db
+from pcapi.models import db
 from pcapi.models.payment import Payment
 from pcapi.models.payment_message import PaymentMessage
 from pcapi.models.payment_status import TransactionStatus

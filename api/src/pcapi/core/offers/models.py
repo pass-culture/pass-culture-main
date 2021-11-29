@@ -35,8 +35,8 @@ from sqlalchemy.orm import relationship
 
 import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import subcategories
-from pcapi.models.db import Model
-from pcapi.models.db import db
+from pcapi.models import Model
+from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin

@@ -15,7 +15,7 @@ from sqlalchemy.sql.expression import false
 from sqlalchemy.sql.expression import true
 
 from pcapi.core.categories import subcategories
-from pcapi.models.db import Model
+from pcapi.models import Model
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject

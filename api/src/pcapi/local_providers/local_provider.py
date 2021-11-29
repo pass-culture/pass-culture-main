@@ -11,9 +11,9 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.chunk_manager import get_existing_pc_obj
 from pcapi.local_providers.chunk_manager import save_chunks
 from pcapi.local_providers.providable_info import ProvidableInfo
+from pcapi.models import Model
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.db import Model
-from pcapi.models.db import db
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.local_provider_event import LocalProviderEvent
 from pcapi.models.local_provider_event import LocalProviderEventType

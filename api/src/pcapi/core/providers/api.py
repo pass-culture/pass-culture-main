@@ -26,7 +26,7 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.core.providers.repository import get_provider_enabled_for_pro_by_id
 from pcapi.domain.price_rule import PriceRule
-from pcapi.models.db import db
+from pcapi.models import db
 from pcapi.models.product import Product
 from pcapi.repository import repository
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody

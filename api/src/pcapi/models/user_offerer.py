@@ -5,7 +5,7 @@ from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 
-from pcapi.models.db import Model
+from pcapi.models import Model
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 

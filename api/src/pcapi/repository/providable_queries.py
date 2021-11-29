@@ -1,8 +1,8 @@
 import datetime
 from typing import Optional
 
-from pcapi.models.db import Model
-from pcapi.models.db import db
+from pcapi.models import Model
+from pcapi.models import db
 
 
 def insert_chunk(chunk_to_insert: dict):

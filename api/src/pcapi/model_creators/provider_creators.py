@@ -3,7 +3,7 @@ from datetime import datetime
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models.db import Model
+from pcapi.models import Model
 from pcapi.models.product import Product
 from pcapi.repository import repository
 

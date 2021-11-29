@@ -1,7 +1,14 @@
-from pcapi.models.db import db
+import functools
+import json
+
+from flask_sqlalchemy import SQLAlchemy
+import pydantic.json
+
+from pcapi import settings
 
 
 def install_models():
+    """Let SQLAlchemy know about our database models."""
     # pylint: disable=unused-import
     import pcapi.core.bookings.models
     import pcapi.core.educational.models
@@ -28,3 +35,24 @@ def install_models():
     import pcapi.models.product
     import pcapi.models.user_offerer
     import pcapi.models.user_session
+
+
+_engine_options = {
+    "json_serializer": functools.partial(json.dumps, default=pydantic.json.pydantic_encoder),
+    "pool_size": settings.DATABASE_POOL_SIZE,
+}
+
+_db_options = []
+if settings.DATABASE_LOCK_TIMEOUT:
+    _db_options.append("-c lock_timeout=%i" % settings.DATABASE_LOCK_TIMEOUT)
+if settings.DATABASE_STATEMENT_TIMEOUT:
+    _db_options.append("-c statement_timeout=%i" % settings.DATABASE_STATEMENT_TIMEOUT)
+if settings.DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT:
+    _db_options.append(
+        "-c idle_in_transaction_session_timeout=%i" % settings.DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT
+    )
+if _db_options:
+    _engine_options["connect_args"] = {"options": " ".join(_db_options)}
+
+db = SQLAlchemy(engine_options=_engine_options)
+Model = db.Model

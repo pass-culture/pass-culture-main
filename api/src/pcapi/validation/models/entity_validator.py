@@ -3,9 +3,9 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
+from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.bank_information import BankInformation
-from pcapi.models.db import Model
 from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.product import Product
 from pcapi.validation.models import bank_information

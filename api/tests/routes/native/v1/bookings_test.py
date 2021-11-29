@@ -17,7 +17,7 @@ from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
-from pcapi.models.db import db
+from pcapi.models import db
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient

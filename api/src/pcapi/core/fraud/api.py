@@ -10,7 +10,7 @@ from pcapi.connectors.beneficiaries import jouve_backend
 from pcapi.core.fraud.exceptions import BeneficiaryFraudResultCannotBeDowngraded
 from pcapi.core.users import constants
 from pcapi.core.users import models as user_models
-from pcapi.models.db import db
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.user_queries import matching

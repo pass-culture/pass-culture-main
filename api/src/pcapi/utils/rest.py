@@ -6,8 +6,8 @@ from flask import request
 from sqlalchemy.orm.exc import NoResultFound
 
 from pcapi.core.users.models import User
+from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.db import Model
 from pcapi.utils.human_ids import dehumanize
 
 

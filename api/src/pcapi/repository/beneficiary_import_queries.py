@@ -2,11 +2,11 @@ from sqlalchemy import asc
 from sqlalchemy.orm import load_only
 
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.models.db import db
 from pcapi.repository import repository
 
 

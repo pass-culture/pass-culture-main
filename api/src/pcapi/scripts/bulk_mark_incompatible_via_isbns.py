@@ -3,7 +3,7 @@ from typing import Iterable
 
 from pcapi.core import search
 from pcapi.core.offers.models import Offer
-from pcapi.models.db import db
+from pcapi.models import db
 from pcapi.models.product import Product
 
 

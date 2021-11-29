@@ -10,7 +10,7 @@ from sqlalchemy import String
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 
-from pcapi.models.db import Model
+from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 

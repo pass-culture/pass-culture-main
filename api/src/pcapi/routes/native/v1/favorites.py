@@ -14,8 +14,8 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.db import db
 from pcapi.models.product import Product
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_user_required

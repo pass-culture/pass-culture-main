@@ -12,7 +12,7 @@ import sqlalchemy.dialects.postgresql
 import sqlalchemy.orm
 
 from pcapi.core.users import models as users_models
-from pcapi.models.db import Model
+from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 

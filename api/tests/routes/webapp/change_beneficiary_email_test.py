@@ -11,7 +11,7 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import ALGORITHM_HS_256
-from pcapi.models.db import db
+from pcapi.models import db
 
 from tests.conftest import TestClient
 

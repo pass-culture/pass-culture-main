@@ -9,8 +9,8 @@ from sqlalchemy import Text
 from sqlalchemy.sql import text
 
 from pcapi import settings
-from pcapi.models.db import Model
-from pcapi.models.db import db
+from pcapi.models import Model
+from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 

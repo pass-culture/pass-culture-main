@@ -1,7 +1,7 @@
 from typing import Optional
 
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models.db import Model
+from pcapi.models import Model
 from pcapi.repository.providable_queries import get_existing_object
 from pcapi.repository.providable_queries import insert_chunk
 from pcapi.repository.providable_queries import update_chunk

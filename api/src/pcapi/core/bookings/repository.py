@@ -41,8 +41,8 @@ from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecapLegacy
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from pcapi.domain.postal_code.postal_code import PostalCode
+from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
