@@ -7,7 +7,7 @@ import React from 'react'
 import TextArea from './TextArea'
 
 export default {
-  title: 'ui-kit/TextArea',
+  title: 'ui-kit/forms/TextArea',
   component: TextArea,
 }
 

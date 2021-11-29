@@ -5,12 +5,15 @@ import React from 'react'
 import Checkbox from './Checkbox'
 
 export default {
-  title: 'ui-kit/Checkbox',
+  title: 'ui-kit/forms/Checkbox',
   component: Checkbox,
 }
 
 const Template = () => (
-  <Formik initialValues={{ accessibility: null }} onSubmit={action('onSubmit')}>
+  <Formik
+    initialValues={{ accessibility: false }}
+    onSubmit={action('onSubmit')}
+  >
     {({ getFieldProps }) => {
       return (
         <Checkbox

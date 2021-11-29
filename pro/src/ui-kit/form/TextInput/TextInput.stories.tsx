@@ -6,7 +6,7 @@ import React from 'react'
 import TextInput from './TextInput'
 
 export default {
-  title: 'ui-kit/TextInput',
+  title: 'ui-kit/forms/TextInput',
   component: TextInput,
 }
 
