@@ -341,14 +341,22 @@ class UpsertFraudResultTest:
 @pytest.mark.usefixtures("db_session")
 class CommonFraudCheckTest:
     def test_duplicate_id_piece_number_ok(self):
-        fraud_item = fraud_api._duplicate_id_piece_number_fraud_item("random_id")
+        user = users_factories.UserFactory()
+        fraud_item = fraud_api._duplicate_id_piece_number_fraud_item(user, "random_id")
         assert fraud_item.status == fraud_models.FraudStatus.OK
 
     def test_duplicate_id_piece_number_suspicious(self):
         user = users_factories.BeneficiaryGrant18Factory()
+        applicant = users_factories.UserFactory()
 
-        fraud_item = fraud_api._duplicate_id_piece_number_fraud_item(user.idPieceNumber)
+        fraud_item = fraud_api._duplicate_id_piece_number_fraud_item(applicant, user.idPieceNumber)
         assert fraud_item.status == fraud_models.FraudStatus.SUSPICIOUS
+
+    def test_duplicate_id_piece_number_suspicious_not_self(self):
+        applicant = users_factories.UserFactory(idPieceNumber="random_id")
+
+        fraud_item = fraud_api._duplicate_id_piece_number_fraud_item(applicant, applicant.idPieceNumber)
+        assert fraud_item.status == fraud_models.FraudStatus.OK
 
     def test_duplicate_user_fraud_ok(self):
         fraud_item = fraud_api._duplicate_user_fraud_item(
