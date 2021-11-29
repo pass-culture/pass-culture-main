@@ -11,7 +11,7 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import SmallInteger
 
-from pcapi.models.db import Model
+from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 

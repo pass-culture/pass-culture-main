@@ -7,10 +7,10 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from pcapi.core.users.models import EligibilityType
+from pcapi.models import Model
+from pcapi.models import db
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.models.db import Model
-from pcapi.models.db import db
 from pcapi.models.pc_object import PcObject
 
 

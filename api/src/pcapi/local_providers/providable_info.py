@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pcapi.models.db import Model
+from pcapi.models import Model
 
 
 class ProvidableInfo:

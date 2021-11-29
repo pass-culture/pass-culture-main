@@ -2,7 +2,7 @@ from alembic import context
 from sqlalchemy import create_engine
 
 from pcapi import settings
-from pcapi.models.db import db
+from pcapi.models import db
 
 
 target_metadata = db.metadata

@@ -6,8 +6,8 @@ import csv
 import sqlalchemy.exc
 
 from pcapi.flask_app import app
+from pcapi.models import db
 from pcapi.models.allocine_pivot import AllocinePivot
-from pcapi.models.db import db
 
 
 def read_allocine_csv(file_path: str) -> list[tuple]:

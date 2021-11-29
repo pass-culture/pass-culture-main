@@ -2,7 +2,7 @@ from pcapi import settings
 from pcapi.core import search
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.models.db import db
+from pcapi.models import db
 
 
 def deactivate_300e_thing_offers() -> None:

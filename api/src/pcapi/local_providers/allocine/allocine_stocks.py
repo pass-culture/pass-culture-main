@@ -18,8 +18,8 @@ from pcapi.domain.allocine import get_movies_showtimes
 from pcapi.domain.price_rule import AllocineStocksPriceRule
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models.db import Model
-from pcapi.models.db import db
+from pcapi.models import Model
+from pcapi.models import db
 from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.models.product import Product
 from pcapi.utils.date import DEFAULT_STORED_TIMEZONE

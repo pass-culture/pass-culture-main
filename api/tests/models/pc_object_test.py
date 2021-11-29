@@ -14,10 +14,10 @@ from sqlalchemy.dialects.postgresql import UUID
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_stock
+from pcapi.models import Model
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
 from pcapi.models.api_errors import UuidCastError
-from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import NonDehumanizableId

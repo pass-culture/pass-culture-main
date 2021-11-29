@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 
 from pcapi import settings
 from pcapi.alembic.run_migrations import include_object
-from pcapi.models.db import db
+from pcapi.models import db
 
 
 connectable = create_engine(settings.DATABASE_URL)

@@ -39,12 +39,12 @@ from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.local_providers.install import install_local_providers
+from pcapi.models import db
 from pcapi.models.allocine_pivot import AllocinePivot
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.criterion import Criterion
-from pcapi.models.db import db
 from pcapi.models.feature import install_feature_flags
 from pcapi.models.local_provider_event import LocalProviderEvent
 from pcapi.models.offer_criterion import OfferCriterion

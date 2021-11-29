@@ -13,7 +13,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
 from pcapi.models import api_errors
-from pcapi.models.db import db
+from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import payment_queries
 from pcapi.utils.date import utc_datetime_to_department_timezone

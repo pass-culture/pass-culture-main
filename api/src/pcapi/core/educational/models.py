@@ -18,7 +18,7 @@ from sqlalchemy.sql.sqltypes import Numeric
 
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
-from pcapi.models.db import Model
+from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 

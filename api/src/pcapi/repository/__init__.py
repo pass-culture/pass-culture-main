@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 
-from pcapi.models.db import db
+from pcapi.models import db
 
 
 @contextmanager

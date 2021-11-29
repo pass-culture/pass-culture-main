@@ -2,7 +2,7 @@ from pcapi import settings
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.repository import get_provider_by_local_class
 import pcapi.local_providers
-from pcapi.models.db import db
+from pcapi.models import db
 
 
 def install_local_providers():

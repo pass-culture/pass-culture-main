@@ -11,7 +11,7 @@ import sqlalchemy as sqla
 import sqlalchemy.dialects.postgresql as sqla_psql
 import sqlalchemy.orm as sqla_orm
 
-from pcapi.models.db import Model
+from pcapi.models import Model
 import pcapi.utils.db as db_utils
 
 

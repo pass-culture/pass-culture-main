@@ -7,7 +7,7 @@ from typing import Optional
 import sqlalchemy
 
 from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.models.db import Model
+from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 

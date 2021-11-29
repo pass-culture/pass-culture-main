@@ -12,7 +12,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.external.models import UserAttributes
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
-from pcapi.models.db import db
+from pcapi.models import db
 from pcapi.models.user_offerer import UserOfferer
 
 from .batch import update_user_attributes as update_batch_user

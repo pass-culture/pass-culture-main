@@ -6,7 +6,7 @@ from sqlalchemy import func
 from pcapi.core import search
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.models.db import db
+from pcapi.models import db
 from pcapi.repository import repository
 
 

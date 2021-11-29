@@ -11,11 +11,11 @@ from sqlalchemy.sql.functions import Function
 
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
+from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.models.db import db
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.wallet_balance import WalletBalance
 

@@ -1,7 +1,7 @@
 import re
 
+from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.db import Model
 
 
 POSTAL_CODE_REGEX = r"^\d[AB0-9]\d{3,4}$"

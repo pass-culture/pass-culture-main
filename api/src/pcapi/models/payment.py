@@ -15,8 +15,8 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 
-from pcapi.models.db import Model
-from pcapi.models.db import db
+from pcapi.models import Model
+from pcapi.models import db
 from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.pc_object import PcObject

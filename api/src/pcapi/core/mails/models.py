@@ -7,7 +7,7 @@ from sqlalchemy import DateTime
 from sqlalchemy import Enum
 from sqlalchemy import JSON
 
-from pcapi.models.db import Model
+from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 

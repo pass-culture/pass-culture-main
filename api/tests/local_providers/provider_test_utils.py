@@ -3,7 +3,7 @@ from pathlib import Path
 from pcapi.core.categories import subcategories
 from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.local_provider import LocalProvider
-from pcapi.models.db import Model
+from pcapi.models import Model
 import pcapi.sandboxes
 
 

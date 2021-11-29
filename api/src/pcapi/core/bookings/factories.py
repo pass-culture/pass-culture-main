@@ -8,7 +8,7 @@ from pcapi.core.educational.factories import UsedEducationalBookingFactory as Us
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
-from pcapi.models.db import db
+from pcapi.models import db
 from pcapi.utils.token import random_token
 
 from . import api

@@ -3,7 +3,7 @@ from sqlalchemy import DateTime
 from sqlalchemy import String
 from sqlalchemy import Text
 
-from pcapi.models.db import Model
+from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 

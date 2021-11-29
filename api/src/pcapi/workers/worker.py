@@ -13,7 +13,7 @@ from rq.job import Job
 import sentry_sdk
 
 from pcapi import settings
-from pcapi.models.db import db
+from pcapi.models import db
 from pcapi.utils.health_checker import check_database_connection
 from pcapi.workers.logger import job_extra_description
 

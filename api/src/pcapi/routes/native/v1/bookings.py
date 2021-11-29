@@ -12,8 +12,8 @@ from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.product import Product
 from pcapi.repository import repository

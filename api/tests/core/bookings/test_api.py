@@ -27,7 +27,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.users.external.batch import BATCH_DATETIME_FORMAT
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
-from pcapi.models.db import db
+from pcapi.models import db
 import pcapi.notifications.push.testing as push_testing
 from pcapi.utils.token import random_token
 

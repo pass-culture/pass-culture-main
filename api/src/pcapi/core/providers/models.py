@@ -24,7 +24,7 @@ from sqlalchemy.sql import expression
 
 from pcapi.domain.price_rule import PriceRule
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
-from pcapi.models.db import Model
+from pcapi.models import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
