@@ -96,24 +96,32 @@ const OfferEducationalForm = ({
       <p className={styles['educational-form-information']}>
         Tous les champs sont obligatoires sauf mention contraire.
       </p>
-      <FormVenue userOfferers={userOfferers} venuesOptions={venuesOptions} />
-      <FormCategory
-        categories={educationalCategories}
-        subCategories={educationalSubCategories}
-      />
-      <FormEventAddress
-        currentOfferer={currentOfferer}
+      <FormVenue
+        canCreateEducationalOffer={canCreateEducationalOffer}
+        userOfferers={userOfferers}
         venuesOptions={venuesOptions}
       />
-      <FormParticipants />
-      <FormAccessibility />
-      <FormContact />
-      <FormNotifications />
-      <Banner
-        href={CGU_URL}
-        linkTitle="Consulter les Conditions Générales d’Utilisation"
-        type="notification-info"
-      />
+      {canCreateEducationalOffer && values.offererId && values.venueId ? (
+        <>
+          <FormCategory
+            categories={educationalCategories}
+            subCategories={educationalSubCategories}
+          />
+          <FormEventAddress
+            currentOfferer={currentOfferer}
+            venuesOptions={venuesOptions}
+          />
+          <FormParticipants />
+          <FormAccessibility />
+          <FormContact />
+          <FormNotifications />
+          <Banner
+            href={CGU_URL}
+            linkTitle="Consulter les Conditions Générales d’Utilisation"
+            type="notification-info"
+          />
+        </>
+      ) : null}
       <FormLayout.Actions>
         <Link className="secondary-link" to={computeOffersUrl({})}>
           Annuler et quitter
