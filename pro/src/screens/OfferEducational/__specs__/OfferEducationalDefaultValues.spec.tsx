@@ -7,6 +7,7 @@ import { Router } from 'react-router'
 import {
   getCategoriesSelect,
   getSubcategoriesSelect,
+  selectOffererAndVenue,
 } from '../__tests-utils__/eacOfferCreationUtils'
 import setDefaultProps from '../__tests-utils__/setDefaultProps'
 import {
@@ -15,13 +16,11 @@ import {
   EMAIL_LABEL,
   NOTIFICATIONS_EMAIL_LABEL,
   NOTIFICATIONS_LABEL,
-  OFFERER_LABEL,
   EVENT_ADDRESS_OFFERER_LABEL,
   EVENT_ADDRESS_OTHER_LABEL,
   EVENT_ADDRESS_SCHOOL_LABEL,
   PHONE_LABEL,
   TITLE_LABEL,
-  VENUE_LABEL,
 } from '../constants/labels'
 import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
 import { accessibilityOptions } from '../OfferEducationalForm/FormAccessibility/accessibilityOptions'
@@ -46,11 +45,13 @@ describe('screens | OfferEducational', () => {
     props = setDefaultProps()
   })
 
-  it('should have no initial values', () => {
+  it('should have no initial values', async () => {
     renderEACOfferCreation(props, {
       educationalCategories: [],
       educationalSubCategories: [],
     })
+
+    await selectOffererAndVenue()
 
     const categoriesSelect = getCategoriesSelect()
     expect(categoriesSelect.value).toBe('')
@@ -70,14 +71,6 @@ describe('screens | OfferEducational', () => {
       DURATION_LABEL
     ) as HTMLTextAreaElement
     expect(durationInput.value).toBe('0:00')
-
-    const offererSelect = screen.getByLabelText(
-      OFFERER_LABEL
-    ) as HTMLSelectElement
-    expect(offererSelect.value).toBe('OFFERER_ID')
-
-    const venueSelect = screen.getByLabelText(VENUE_LABEL) as HTMLSelectElement
-    expect(venueSelect.value).toBe('')
 
     const offerVenueRadio1 = screen.getByLabelText(
       EVENT_ADDRESS_OFFERER_LABEL

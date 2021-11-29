@@ -8,6 +8,7 @@ import { Router } from 'react-router'
 import {
   getCategoriesSelect,
   getSubcategoriesSelect,
+  selectOffererAndVenue,
 } from '../__tests-utils__/eacOfferCreationUtils'
 import setDefaultProps from '../__tests-utils__/setDefaultProps'
 import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
@@ -28,8 +29,10 @@ describe('screens | OfferEducational', () => {
     props = setDefaultProps()
   })
 
-  it('should display empty category', () => {
+  it('should display empty category', async () => {
     renderEACOfferCreation(props)
+
+    await selectOffererAndVenue()
 
     const categoriesSelect = getCategoriesSelect()
     expect(categoriesSelect.value).toBe('')
@@ -40,6 +43,8 @@ describe('screens | OfferEducational', () => {
 
   it('should update subcategories when category changes', async () => {
     renderEACOfferCreation(props)
+
+    await selectOffererAndVenue()
 
     const categoriesSelect = getCategoriesSelect()
     userEvent.selectOptions(categoriesSelect, 'CINEMA')
