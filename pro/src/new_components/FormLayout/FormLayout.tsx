@@ -10,10 +10,19 @@ import SubSection from './FormLayoutSubSection'
 interface IFormLayoutProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
+  small?: boolean
 }
 
-const FormLayout = ({ children, className }: IFormLayoutProps): JSX.Element => (
-  <div className={cn(style['form-layout'], className)}>{children}</div>
+const FormLayout = ({
+  children,
+  className,
+  small,
+}: IFormLayoutProps): JSX.Element => (
+  <div
+    className={cn(style['form-layout'], { [style.small]: small }, className)}
+  >
+    {children}
+  </div>
 )
 
 FormLayout.Row = Row

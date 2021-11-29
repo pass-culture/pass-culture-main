@@ -1,4 +1,8 @@
 .form-layout {
+  &.small {
+    width: rem(468px);
+  }
+
   &-section {
     margin-bottom: rem(32px);
 
@@ -27,7 +31,6 @@
       display: flex;
 
       > *:not(:last-child) {
-        flex: 1;
         margin-right: rem(24px);
       }
     }
@@ -35,12 +38,11 @@
 
   &-actions {
     display: flex;
-    justify-content: center;
     margin-top: rem(64px);
   }
 
   &-action {
-    flex: 1;
+    width: rem(192px);
     margin-left: rem(24px);
     text-align: center;
 
