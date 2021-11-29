@@ -6,7 +6,7 @@ import React from 'react'
 import TimePicker from './TimePicker'
 
 export default {
-  title: 'ui-kit/TimePicker',
+  title: 'ui-kit/forms/TimePicker',
   component: TimePicker,
 }
 

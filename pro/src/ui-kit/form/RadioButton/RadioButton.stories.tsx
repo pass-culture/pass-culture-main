@@ -5,7 +5,7 @@ import React from 'react'
 import RadioButton from './RadioButton'
 
 export default {
-  title: 'ui-kit/RadioButton',
+  title: 'ui-kit/forms/RadioButton',
   component: RadioButton,
 }
 
