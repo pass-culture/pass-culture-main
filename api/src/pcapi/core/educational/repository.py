@@ -4,6 +4,7 @@ from operator import and_
 from typing import Optional
 from typing import Union
 
+from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import extract
 
@@ -99,23 +100,25 @@ def find_educational_bookings_for_adage(
     redactor_email: Optional[str] = None,
     status: Optional[Union[educational_models.EducationalBookingStatus, BookingStatus]] = None,
 ) -> list[educational_models.EducationalBooking]:
+
     educational_bookings_base_query = (
-        educational_models.EducationalBooking.query.join(Booking)
-        .join(educational_models.EducationalInstitution)
-        .join(educational_models.EducationalYear)
-        .options(
-            joinedload(educational_models.EducationalBooking.booking)
-            .joinedload(Booking.stock)
-            .joinedload(Stock.offer)
-            .joinedload(Offer.venue)
+        educational_models.EducationalBooking.query.options(
+            joinedload(educational_models.EducationalBooking.booking, innerjoin=True)
+            .joinedload(Booking.stock, innerjoin=True)
+            .joinedload(Stock.offer, innerjoin=True)
+            .joinedload(Offer.venue, innerjoin=True)
         )
-        .options(joinedload(educational_models.EducationalBooking.educationalInstitution))
+        .join(educational_models.EducationalInstitution)
+        .join(educational_models.EducationalRedactor)
+        .join(educational_models.EducationalYear)
+        .options(contains_eager(educational_models.EducationalBooking.educationalInstitution))
+        .options(contains_eager(educational_models.EducationalBooking.educationalRedactor))
         .filter(educational_models.EducationalInstitution.institutionId == uai_code)
         .filter(educational_models.EducationalYear.adageId == year_id)
     )
 
     if redactor_email is not None:
-        educational_bookings_base_query = educational_bookings_base_query.join(EducationalRedactor).filter(
+        educational_bookings_base_query = educational_bookings_base_query.filter(
             EducationalRedactor.email == redactor_email
         )
 
