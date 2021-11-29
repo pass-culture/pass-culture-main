@@ -8,9 +8,13 @@ interface IFormLayoutActionsProps {
   className?: string
 }
 
-const addActionClass = (element: React.ReactElement): JSX.Element =>
+const addActionClass = (
+  element: React.ReactElement,
+  index?: number
+): JSX.Element =>
   React.cloneElement(element, {
     ...element.props,
+    key: index,
     className: cn(style['form-layout-action'], element.props.className),
   })
 
