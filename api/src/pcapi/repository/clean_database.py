@@ -30,6 +30,7 @@ from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import Stock
 from pcapi.core.payments.models import CustomReimbursementRule
 from pcapi.core.payments.models import Deposit
+from pcapi.core.payments.models import Recredit
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
@@ -92,6 +93,7 @@ def clean_all_database(*args, **kwargs):
     UserOfferer.query.delete()
     ApiKey.query.delete()
     Offerer.query.delete()
+    Recredit.query.delete()
     Deposit.query.delete()
     BeneficiaryImportStatus.query.delete()
     BeneficiaryImport.query.delete()
