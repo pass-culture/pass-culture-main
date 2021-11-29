@@ -62,11 +62,11 @@ const OfferEducationalForm = ({
       <p className={styles['educational-form-information']}>
         Tous les champs sont obligatoires sauf mention contraire.
       </p>
+      <FormVenue userOfferers={userOfferers} venuesOptions={venuesOptions} />
       <FormCategory
         categories={educationalCategories}
         subCategories={educationalSubCategories}
       />
-      <FormVenue userOfferers={userOfferers} venuesOptions={venuesOptions} />
       <FormEventAddress
         currentOfferer={currentOfferer}
         venuesOptions={venuesOptions}
