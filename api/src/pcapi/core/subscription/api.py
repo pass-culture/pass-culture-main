@@ -74,15 +74,14 @@ def get_latest_subscription_message(user: users_models.User) -> Optional[models.
 def activate_beneficiary(
     user: users_models.User, deposit_source: str = None, has_activated_account: Optional[bool] = True
 ) -> users_models.User:
-    if not deposit_source:
-        beneficiary_import = subscription_repository.get_beneficiary_import_for_beneficiary(user)
-        if not beneficiary_import:
-            raise exceptions.BeneficiaryImportMissingException()
 
-        eligibility = beneficiary_import.eligibilityType
-        deposit_source = beneficiary_import.get_detailed_source()
-    else:
-        eligibility = users_models.EligibilityType.AGE18
+    beneficiary_import = subscription_repository.get_beneficiary_import_for_beneficiary(user)
+    if not beneficiary_import:
+        raise exceptions.BeneficiaryImportMissingException()
+
+    eligibility = beneficiary_import.eligibilityType
+    deposit_source = beneficiary_import.get_detailed_source()
+
     if not user.is_eligible_for_beneficiary_upgrade:
         raise exceptions.CannotUpgradeBeneficiaryRole()
 
