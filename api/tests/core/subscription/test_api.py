@@ -16,6 +16,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.scripts.beneficiary.remote_import import process_beneficiary_application
 
 
 @pytest.mark.usefixtures("db_session")
@@ -291,3 +292,36 @@ class NextSubscriptionStepTest:
         )
 
         assert subscription_api.get_next_subscription_step(user) == None
+
+
+@pytest.mark.usefixtures("db_session")
+class BeneficiaryActivationTest:
+    def test_activate_beneficiary_when_confirmation_happens_after_18_birthday(self):
+        with freeze_time("2020-01-01"):
+            user = users_factories.UserFactory()
+            eighteen_years_and_one_month_ago = datetime.today() - relativedelta(years=18, months=1)
+
+            # the user deposited their DMS application before turning 18
+            information = fraud_models.DMSContent(
+                department="93",
+                last_name="Doe",
+                first_name="Jane",
+                birth_date=eighteen_years_and_one_month_ago,
+                email="jane.doe@example.com",
+                phone="0612345678",
+                postal_code="93130",
+                address="11 Rue du Test",
+                application_id=123,
+                procedure_id=123456,
+                civility="Mme",
+                activity="Étudiant",
+                registration_datetime=datetime.today(),
+            )
+
+        assert user.has_beneficiary_role is False
+
+        with freeze_time("2020-03-01"):
+            # the DMS application is confirmed after the user turns 18
+            process_beneficiary_application(information=information, procedure_id=123456, preexisting_account=user)
+
+        assert user.has_beneficiary_role
