@@ -73,14 +73,23 @@ class StockCreationBodyModel(BaseModel):
 
 
 class EducationalStockCreationBodyModel(BaseModel):
+    offer_id: int
     beginning_datetime: datetime
-    booking_limit_datetime: datetime
+    booking_limit_datetime: Optional[datetime]
     total_price: float
     number_of_tickets: int
+
+    _dehumanize_id = dehumanize_field("offer_id")
 
     class Config:
         alias_generator = to_camel
         extra = "forbid"
+
+    @validator("number_of_tickets", pre=True)
+    def validate_number_of_tickets(cls, number_of_tickets):  # pylint: disable=no-self-argument
+        if number_of_tickets < 0:
+            raise ValueError("Le nombre de places ne peut pas être négatif.")
+        return number_of_tickets
 
 
 class StockEditionBodyModel(BaseModel):
