@@ -6,17 +6,18 @@ from pydantic import BaseModel
 import pcapi.core.finance.models as finance_models
 
 
-class BankInformationsResponseModel(BaseModel):
+class BusinessUnitResponseModel(BaseModel):
     id: int
     iban: str
-    siret: str
+    name: str
+    siret: Optional[str]
 
     class Config:
         orm_mode = True
 
 
-class ListBankInformationsResponseModel(BaseModel):
-    __root__: list[BankInformationsResponseModel]
+class ListBusinessUnitResponseModel(BaseModel):
+    __root__: list[BusinessUnitResponseModel]
 
     class Config:
         orm_mode = True

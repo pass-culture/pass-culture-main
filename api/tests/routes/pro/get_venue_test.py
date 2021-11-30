@@ -21,6 +21,7 @@ class Returns200Test:
             "audioDisabilityCompliant": venue.audioDisabilityCompliant,
             "bic": bank_information.bic,
             "bookingEmail": venue.bookingEmail,
+            "businessUnitId": venue.businessUnitId,
             "city": venue.city,
             "contact": {
                 "email": venue.contact.email,
