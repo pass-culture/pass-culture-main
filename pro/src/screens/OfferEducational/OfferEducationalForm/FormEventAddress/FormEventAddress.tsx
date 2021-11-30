@@ -34,25 +34,34 @@ const FormEventAddress = ({
   const [currentVenue, setCurrentVenue] = useState<IUserVenue | null>(null)
 
   useEffect(() => {
-    setFieldValue(
-      'eventAddress.otherAddress',
-      INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.otherAddress,
-      false
-    )
+    if (
+      values.eventAddress.addressType !== ADRESS_TYPE.OFFERER_VENUE &&
+      values.eventAddress.venueId
+    ) {
+      setFieldValue(
+        'eventAddress.venueId',
+        INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.venueId,
+        false
+      )
+      setCurrentVenue(null)
+    }
 
-    setFieldValue(
-      'eventAddress.venueId',
-      INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.venueId,
-      false
-    )
-
-    setCurrentVenue(null)
-  }, [values.eventAddress.addressType, setFieldValue])
+    if (
+      values.eventAddress.addressType !== ADRESS_TYPE.OTHER &&
+      values.eventAddress.otherAddress
+    ) {
+      setFieldValue(
+        'eventAddress.otherAddress',
+        INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.otherAddress,
+        false
+      )
+    }
+  }, [values.eventAddress, setFieldValue])
 
   useEffect(() => {
     if (
       values.eventAddress.addressType === ADRESS_TYPE.OFFERER_VENUE &&
-      !!values.eventAddress.venueId
+      values.eventAddress.venueId
     ) {
       if (currentOfferer) {
         const selectedVenue = currentOfferer.managedVenues.find(
@@ -60,7 +69,6 @@ const FormEventAddress = ({
         )
         return setCurrentVenue(selectedVenue ?? null)
       }
-
       return setCurrentVenue(null)
     }
   }, [currentOfferer, values.eventAddress])
@@ -94,6 +102,7 @@ const FormEventAddress = ({
           <>
             <FormLayout.Row>
               <Select
+                disabled={venuesOptions.length === 1}
                 label={EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL}
                 name="eventAddress.venueId"
                 options={venuesOptions}
@@ -113,7 +122,9 @@ const FormEventAddress = ({
         {values.eventAddress.addressType === ADRESS_TYPE.OTHER && (
           <FormLayout.Row>
             <TextArea
+              countCharacters
               label={EVENT_ADDRESS_OTHER_ADDRESS_LABEL}
+              maxLength={200}
               name="eventAddress.otherAddress"
             />
           </FormLayout.Row>

@@ -22,13 +22,9 @@ import FormParticipants from './FormParticipants'
 import FormVenue from './FormVenue'
 import styles from './OfferEducationalForm.module.scss'
 
-type IOfferEducationalFormProps = Pick<
+type IOfferEducationalFormProps = Omit<
   IOfferEducationalProps,
-  | 'educationalCategories'
-  | 'educationalSubCategories'
-  | 'userOfferers'
-  | 'getIsOffererEligibleToEducationalOfferAdapter'
-  | 'notify'
+  'onSubmit' | 'initialValues'
 >
 
 const OfferEducationalForm = ({

@@ -1,7 +1,6 @@
 import React from 'react'
 
-import { DatePicker, TextInput } from 'ui-kit'
-import TimePicker from 'ui-kit/form/TimePicker'
+import { DatePicker, TextInput, TimePicker } from 'ui-kit'
 
 import {
   BOOKING_LIMIT_DATETIME_LABEL,
