@@ -30,7 +30,6 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA,
         FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL,
         FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
-        FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERSION,
         FeatureToggle.ENABLE_PHONE_VALIDATION,
         FeatureToggle.ENABLE_UBBLE,
         FeatureToggle.ENABLE_UNDERAGE_GENERALISATION,
@@ -45,8 +44,6 @@ def get_settings() -> serializers.SettingsResponse:
         auto_activate_digital_bookings=features[FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS],
         deposit_amount=deposits_conf.GRANTED_DEPOSIT_AMOUNT_18_v2,
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
-        # TODO(antoinewg): enable_native_id_check_version is not used anymore, delete it
-        enable_native_id_check_version=features[FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERSION],
         enable_native_eac_individual=features[FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL],
         enable_ubble=features[FeatureToggle.ENABLE_UBBLE],
         enable_underage_generalisation=features[FeatureToggle.ENABLE_UNDERAGE_GENERALISATION],
