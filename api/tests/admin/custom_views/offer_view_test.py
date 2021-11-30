@@ -442,6 +442,99 @@ class OfferValidationViewTest:
         assert get_query_offers_list == [offer_1]
         assert get_count_query_scalar == 1
 
+    @pytest.mark.parametrize(
+        "action,expected", [("approve", OfferValidationStatus.APPROVED), ("reject", OfferValidationStatus.REJECTED)]
+    )
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
+    def test_batch_approve_offers(
+        self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, action, expected, client, app
+    ):
+        users_factories.AdminFactory(email="admin@example.com")
+        venue = VenueFactory()
+        offerer = venue.managingOfferer
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offer1 = offers_factories.OfferFactory(
+            validation=OfferValidationStatus.PENDING,
+            isActive=True,
+            venue__bookingEmail="email1@example.com",
+            venue=venue,
+        )
+        offer2 = offers_factories.OfferFactory(
+            validation=OfferValidationStatus.PENDING,
+            isActive=True,
+            venue__bookingEmail="email1@example.com",
+            venue=venue,
+        )
+
+        mocked_get_offerer_legal_category.return_value = {
+            "legal_category_code": 5202,
+            "legal_category_label": "Société en nom collectif",
+        }
+
+        data = dict(rowid=[offer1.id, offer2.id], action=action)
+        client.with_session_auth("admin@example.com")
+        response = client.post("/pc/back-office/validation/action/", form=data)
+
+        assert response.status_code == 302
+        assert response.headers["location"] == "http://localhost/pc/back-office/validation/"
+
+        assert Offer.query.get(offer1.id).validation == expected
+        assert Offer.query.get(offer2.id).validation == expected
+
+        # There is no status returned by the action, check flash message
+        get_response = client.get(response.headers["location"])
+        assert "2 offres ont été modifiées avec succès" in get_response.data.decode("utf8")
+
+    @pytest.mark.parametrize("action", ["approve", "reject"])
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
+    @patch("pcapi.core.offers.api.update_pending_offer_validation")
+    def test_batch_approve_reject_offers_not_updated(
+        self,
+        mocked_update_pending_offer_validation,
+        mocked_get_offerer_legal_category,
+        mocked_validate_csrf_token,
+        action,
+        client,
+        app,
+    ):
+        users_factories.AdminFactory(email="admin@example.com")
+        venue = VenueFactory()
+        offerer = venue.managingOfferer
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offer = offers_factories.OfferFactory(
+            validation=OfferValidationStatus.PENDING,
+            isActive=True,
+            venue__bookingEmail="email1@example.com",
+            venue=venue,
+        )
+
+        mocked_get_offerer_legal_category.return_value = {
+            "legal_category_code": 5202,
+            "legal_category_label": "Société en nom collectif",
+        }
+
+        mocked_update_pending_offer_validation.return_value = False
+
+        data = dict(rowid=[offer.id], action=action)
+        client.with_session_auth("admin@example.com")
+        response = client.post("/pc/back-office/validation/action/", form=data)
+
+        assert response.status_code == 302
+        assert response.headers["location"] == "http://localhost/pc/back-office/validation/"
+
+        assert Offer.query.get(offer.id).validation == OfferValidationStatus.PENDING
+
+        # There is no status returned by the action, check flash message
+        get_response = client.get(response.headers["location"])
+        assert (
+            "Une erreur s&#39;est produite lors de la mise à jour du statut de validation des offres"
+            in get_response.data.decode("utf8")
+        )
+
 
 class GetOfferValidationViewTest:
     CONFIG_YAML = """
