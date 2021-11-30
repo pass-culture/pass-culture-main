@@ -136,7 +136,7 @@ def database_error_handler(error: DatabaseError) -> Response:
     logger.error(
         "Database error %s with the following query.\n\n🚨🚨🚨🚨🚨 BEFORE COPYING THE QUERY MAKE SURE THERE IS NO SQL INJECTION 🚨🚨🚨🚨🚨🚨\n\n%s;",
         error.__class__.__name__,
-        error.statement % format_sql_statement_params(error.params),
+        error.statement % format_sql_statement_params(error.params) if error.statement is not None else None,
     )
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
