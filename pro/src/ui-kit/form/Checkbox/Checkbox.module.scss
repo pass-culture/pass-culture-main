@@ -1,0 +1,26 @@
+.checkbox {
+  &-label {
+    display: inline-flex;
+    cursor: pointer;
+    align-items: center;
+    line-height: 1em;
+    padding: rem(3px) 0;
+  }
+
+  &-input {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: $white;
+    border: 2px solid $grey-dark;
+    border-radius: 4px;
+
+    &:hover {
+      border-color: $primary;
+
+      &:checked {
+        background-color: $primary;
+        border-color: $primary;
+      }
+    }
+  }
+}

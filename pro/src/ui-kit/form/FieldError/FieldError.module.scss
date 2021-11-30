@@ -1,0 +1,24 @@
+.field-error {
+  @include caption();
+
+  color: $red-error;
+  display: flex;
+  line-height: rem(16px);
+  margin-top: rem(8px);
+  text-align: left;
+
+  img {
+    height: rem(15px);
+    margin-right: rem(4px);
+    width: rem(15px);
+  }
+
+  &-text {
+    background: none;
+    color: $red-error;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0;
+    white-space: pre-wrap;
+  }
+}

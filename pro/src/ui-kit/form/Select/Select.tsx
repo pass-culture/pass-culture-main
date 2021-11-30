@@ -1,5 +1,10 @@
+import cn from 'classnames'
 import { useField } from 'formik'
-import React from 'react'
+import React, { useEffect } from 'react'
+
+import FieldError from '../FieldError'
+
+import styles from './Select.module.scss'
 
 type Option = {
   value: string
@@ -21,24 +26,35 @@ const Select = ({
   disabled,
   label,
 }: ISelectProps): JSX.Element => {
-  const [field, meta] = useField({ name, type: 'select' })
+  const [field, meta, helpers] = useField({ name, type: 'select' })
+
+  useEffect(() => {
+    if (options.length === 1 && field.value !== options[0].value) {
+      helpers.setValue(options[0].value)
+    }
+  }, [options, helpers, field])
 
   return (
-    <>
-      <label className={className}>
+    <div className={cn(styles['select'], className)}>
+      <label className={styles['select-label']} htmlFor={name}>
         {label}
-        <select disabled={disabled} {...field}>
-          {options.map(option => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
       </label>
-      {meta.touched && meta.error ? (
-        <div className="error">{meta.error}</div>
-      ) : null}
-    </>
+      <select
+        className={cn(styles['select-input'], {
+          error: meta.touched && !!meta.error,
+        })}
+        disabled={disabled}
+        id={name}
+        {...field}
+      >
+        {options.map(option => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      {meta.touched && meta.error && <FieldError>{meta.error}</FieldError>}
+    </div>
   )
 }
 
