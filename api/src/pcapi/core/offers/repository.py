@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+from operator import attrgetter
 from typing import Optional
 
 from sqlalchemy import and_
@@ -64,19 +65,21 @@ def get_capped_offers_for_filters(
         period_ending_date=period_ending_date,
     )
 
-    query = (
+    offers = (
         query.options(joinedload(Offer.venue).joinedload(Venue.managingOfferer))
         .options(joinedload(Offer.stocks))
         .options(joinedload(Offer.mediations))
         .options(joinedload(Offer.product))
-        .order_by(Offer.id.desc())
         .limit(offers_limit)
         .all()
     )
 
+    if len(offers) < offers_limit:
+        offers = sorted(offers, key=attrgetter("id"), reverse=True)
+
     # FIXME (cgaunet, 2020-11-03): we should not have serialization logic in the repository
     return to_domain(
-        offers=query,
+        offers=offers,
     )
 
 
@@ -162,7 +165,7 @@ def get_offers_by_filters(
                 <= period_ending_date
             )
 
-    return query.distinct(Offer.id)
+    return query
 
 
 def _filter_by_creation_mode(query: Query, creation_mode: str) -> Query:
