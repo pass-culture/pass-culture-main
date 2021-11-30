@@ -26,7 +26,6 @@ from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_admin_user_validation_email
 from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_expired_individual_bookings_recap_email_to_offerer
-from pcapi.domain.user_emails import send_individual_booking_cancellation_email
 from pcapi.domain.user_emails import send_individual_booking_confirmation_email_to_beneficiary
 from pcapi.domain.user_emails import send_individual_booking_confirmation_email_to_offerer
 from pcapi.domain.user_emails import send_newly_eligible_user_email
@@ -61,26 +60,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 #   Mailjet (e.g. make_beneficiary_booking_cancellation_email_data)
 # - check the recipients
 # - ... and that's all.
-
-
-class SendBeneficiaryBookingCancellationEmailTest:
-    @patch(
-        "pcapi.domain.user_emails.make_beneficiary_booking_cancellation_email_data",
-        return_value={"Mj-TemplateID": 1091464},
-    )
-    def test_should_called_mocked_send_email_with_valid_data(
-        self, mocked_make_beneficiary_booking_cancellation_email_data
-    ):
-        # given
-        booking = booking_factories.IndividualBookingFactory()
-
-        # when
-        send_individual_booking_cancellation_email(booking.individualBooking)
-
-        # then
-        mocked_make_beneficiary_booking_cancellation_email_data.assert_called_once_with(booking.individualBooking)
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1091464
 
 
 class SendOffererDrivenCancellationEmailToOffererTest:

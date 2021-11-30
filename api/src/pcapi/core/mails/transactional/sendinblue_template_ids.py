@@ -31,6 +31,8 @@ class TransactionalEmail(Enum):
         id_prod=225, id_not_prod=37, tags=["jeunes_offre_annulee_pros"]
     )
 
+    BOOKING_CANCELLATION_BY_BENEFICIARY = Template(id_prod=223, id_not_prod=33, tags=["jeunes_offre_annulee_jeune"])
+
 
 @dataclasses.dataclass
 class SendinblueTransactionalEmailData:

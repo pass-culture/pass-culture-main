@@ -7,6 +7,9 @@ from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import IndividualBooking
+from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary import (
+    send_booking_cancellation_by_beneficiary_email,
+)
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     send_booking_cancellation_by_pro_to_beneficiary_email,
 )
@@ -25,7 +28,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.emails import beneficiary_activation
-from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
 from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
 from pcapi.emails.beneficiary_expired_bookings import build_expired_bookings_recap_email_data_for_beneficiary
 from pcapi.emails.beneficiary_offer_cancellation import (
@@ -73,11 +75,6 @@ def send_individual_booking_confirmation_email_to_beneficiary(individual_booking
     mails.send(recipients=[individual_booking.user.email], data=data)
 
 
-def send_individual_booking_cancellation_email(individual_booking: IndividualBooking) -> None:
-    data = make_beneficiary_booking_cancellation_email_data(individual_booking)
-    mails.send(recipients=[individual_booking.user.email], data=data)
-
-
 def send_user_webapp_offer_link_email(user: User, offer: Offer) -> None:
     data = build_data_for_offer_webapp_link(user, offer)
     mails.send(recipients=[user.email], data=data)
@@ -115,7 +112,7 @@ def send_booking_cancellation_emails_to_user_and_offerer(
     reason: BookingCancellationReasons,
 ) -> None:
     if reason == BookingCancellationReasons.BENEFICIARY and booking.individualBooking is not None:
-        send_individual_booking_cancellation_email(booking.individualBooking)
+        send_booking_cancellation_by_beneficiary_email(booking.individualBooking)
         send_user_driven_cancellation_email_to_offerer(booking)
     if reason == BookingCancellationReasons.OFFERER:
         send_booking_cancellation_by_pro_to_beneficiary_email(booking)
