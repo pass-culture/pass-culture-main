@@ -11,7 +11,7 @@ export default {
 }
 
 const Template: Story<{ label?: string }> = ({ label }) => (
-  <Formik initialValues={{ time: '19:30' }} onSubmit={action('onSubmit')}>
+  <Formik initialValues={{ time: '' }} onSubmit={action('onSubmit')}>
     {({ getFieldProps }) => {
       return <TimePicker {...getFieldProps('time')} label={label} name="time" />
     }}
@@ -20,4 +20,5 @@ const Template: Story<{ label?: string }> = ({ label }) => (
 
 export const WithoutLabel = Template.bind({})
 export const WithLabel = Template.bind({})
+
 WithLabel.args = { label: 'Horaire' }

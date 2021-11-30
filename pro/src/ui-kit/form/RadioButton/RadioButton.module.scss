@@ -1,0 +1,9 @@
+.radio-button {
+  &-label {
+    display: inline-flex;
+    cursor: pointer;
+    align-items: center;
+    line-height: 1em;
+    padding: rem(3px) 0;
+  }
+}

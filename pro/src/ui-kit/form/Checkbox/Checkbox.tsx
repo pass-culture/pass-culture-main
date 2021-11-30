@@ -1,5 +1,10 @@
+import cn from 'classnames'
 import { useField } from 'formik'
 import React from 'react'
+
+import FieldError from '../FieldError'
+
+import styles from './Checkbox.module.scss'
 
 interface ICheckboxProps {
   name: string
@@ -14,18 +19,23 @@ const Checkbox = ({
   label,
   className,
 }: ICheckboxProps): JSX.Element => {
-  const [field, meta] = useField({ name })
+  const [field, meta] = useField({ name, type: 'checkbox' })
 
   return (
-    <>
-      <label>
-        <input {...field} className={className} type="checkbox" value={value} />
+    <div className={cn(styles['checkbox'], className)}>
+      <label className={styles['checkbox-label']}>
+        <input
+          {...field}
+          className={styles['checkbox-input']}
+          type="checkbox"
+          value={value}
+        />
+
         {label}
       </label>
-      {meta.touched && meta.error ? (
-        <div className="error">{meta.error}</div>
-      ) : null}
-    </>
+
+      {meta.touched && !!meta.error && <FieldError>{meta.error}</FieldError>}
+    </div>
   )
 }
 

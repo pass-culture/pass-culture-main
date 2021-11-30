@@ -1,36 +1,58 @@
+import fr from 'date-fns/locale/fr'
 import { useField } from 'formik'
 import React from 'react'
+import ReactDatePicker, { registerLocale } from 'react-datepicker'
 
-interface TimePickerProps {
+import FieldError from '../FieldError'
+
+import styles from './TimePicker.module.scss'
+registerLocale('fr', fr)
+
+interface DatePickerProps {
   name: string
   className?: string
   disabled?: boolean
   label?: string
+  dateTime?: Date
 }
 
 const TimePicker = ({
   name,
-  label,
   className,
   disabled,
-}: TimePickerProps): JSX.Element => {
-  const [field, meta] = useField({ name })
+  label,
+}: DatePickerProps): JSX.Element => {
+  const [field, meta, helpers] = useField({ name, type: 'text' })
 
   return (
-    <>
+    <div className={className}>
       <label>
         {label}
-        <input
-          {...field}
-          className={className}
+        <ReactDatePicker
+          className="datetime-input"
+          customInput={
+            <input
+              className={styles['date-picker-input']}
+              type="text"
+              {...field}
+            />
+          }
+          dateFormat="HH:mm"
           disabled={disabled}
-          type="time"
+          dropdownMode="scroll"
+          locale="fr"
+          onChange={time => helpers.setValue(time)}
+          placeholderText="HH:MM"
+          selected={field.value ?? null}
+          showTimeSelect
+          showTimeSelectOnly
+          timeCaption="Horaire"
+          timeFormat="HH:mm"
+          timeIntervals={15}
         />
       </label>
-      {meta.touched && meta.error ? (
-        <div className="error">{meta.error}</div>
-      ) : null}
-    </>
+      {meta.touched && !!meta.error && <FieldError>{meta.error}</FieldError>}
+    </div>
   )
 }
 
