@@ -57,6 +57,4 @@ def get_settings() -> serializers.SettingsResponse:
         enable_id_check_retention=features[FeatureToggle.ENABLE_ID_CHECK_RETENTION],
         enable_phone_validation=features[FeatureToggle.ENABLE_PHONE_VALIDATION],
         use_app_search=features[FeatureToggle.USE_APP_SEARCH_ON_NATIVE_APP],
-        # FIXME (agarcia, 2021-06-18): remove once the native app does not need it anmymore.
-        whole_france_opening=True,
     )
