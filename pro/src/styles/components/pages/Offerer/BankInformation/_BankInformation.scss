@@ -18,4 +18,45 @@
       margin-right: rem(5px);
     }
   }
+  .control {
+    position: relative;
+  }
+  .field-select {
+    padding: 0;
+    width: initial;
+  }
+  .select {
+    select {
+      @include body-important();
+
+      appearance: none;
+      background-color: $white;
+      border: rem(1px) solid $grey-medium;
+      border-radius: rem(18px);
+      height: rem(36px);
+      max-width: 100%;
+      outline: none;
+      padding: rem(4px) rem(40px) rem(4px) rem(16px);
+    }
+
+    &::after {
+      border: rem(3px) solid $black;
+      border-radius: rem(2px);
+      border-right: 0;
+      border-top: 0;
+      content: " ";
+      height: rem(10px);
+      margin-top: rem(-19px);
+      position: absolute;
+      right: rem(460px);
+      top: 75%;
+      transform: rotate(-45deg);
+      transform-origin: center;
+      width: rem(10px);
+    }
+  }
+
+  .banners {
+    margin-top: rem(70px);
+  }
 }

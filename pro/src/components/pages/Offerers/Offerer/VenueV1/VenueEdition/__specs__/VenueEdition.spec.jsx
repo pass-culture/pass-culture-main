@@ -26,6 +26,7 @@ jest.mock('../../fields/LocationFields/utils/fetchAddressData', () => ({
 
 jest.mock('repository/pcapi/pcapi', () => ({
   createVenueProvider: jest.fn(),
+  getBusinessUnits: jest.fn().mockResolvedValue([]),
   loadProviders: jest.fn().mockResolvedValue([]),
   loadVenueProviders: jest.fn().mockResolvedValue([]),
 }))
@@ -144,6 +145,7 @@ describe('test page : VenueEdition', () => {
         name: 'TiteLive Stocks (Epagine / Place des libraires.com)',
       },
     ])
+    pcapi.getBusinessUnits.mockResolvedValue([{}])
   })
 
   describe('render', () => {
@@ -193,7 +195,7 @@ describe('test page : VenueEdition', () => {
 
       expect(screen.getByText('Informations lieu')).toBeInTheDocument()
       expect(
-        screen.getByText('Coordonnées bancaires du lieu')
+        screen.getByText('Coordonnées bancaires du lieu (remboursement)')
       ).toBeInTheDocument()
 
       expect(screen.getByLabelText('Nom du lieu :')).toBeDisabled()

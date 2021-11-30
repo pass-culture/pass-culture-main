@@ -182,6 +182,7 @@ class GetVenueResponseModel(BaseModel):
     motorDisabilityCompliant: Optional[bool]
     visualDisabilityCompliant: Optional[bool]
     contact: Optional[VenueContactModel]
+    businessUnitId: Optional[int]
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")

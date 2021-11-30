@@ -11,14 +11,16 @@ import pcapi.utils.date as date_utils
 from . import models
 
 
-def get_business_unit_for_offerer_id(offerer_id: str) -> list:
+def get_business_units_for_offerer_id(offerer_id: str) -> list:
     return (
         models.BusinessUnit.query.join(BankInformation)
         .filter(BankInformation.status == BankInformationStatus.ACCEPTED)
         .join(offerers_models.Venue, models.BusinessUnit.id == offerers_models.Venue.businessUnitId)
         .filter(offerers_models.Venue.managingOffererId == offerer_id)
         .distinct(models.BusinessUnit.id)
-        .with_entities(models.BusinessUnit.id, models.BusinessUnit.siret, BankInformation.iban)
+        .with_entities(
+            models.BusinessUnit.id, models.BusinessUnit.siret, models.BusinessUnit.name, BankInformation.iban
+        )
         .all()
     )
 
