@@ -335,3 +335,15 @@ def check_offer_subcategory_is_valid(offer_subcategory_id):
         raise exceptions.UnknownOfferSubCategory()
     if not ALL_SUBCATEGORIES_DICT[offer_subcategory_id].is_selectable:
         raise exceptions.SubCategoryIsInactive()
+
+
+def check_booking_limit_datetime(
+    beginning_datetime: datetime, booking_limit_datetime: datetime
+) -> Union[None, ApiErrors]:
+    if booking_limit_datetime > beginning_datetime:
+        error = ApiErrors()
+        error.add_error(
+            "bookingLimitDatetime",
+            "La date limite de réservation pour cette offre est postérieure à la date de début de l'évènement",
+        )
+        raise error
