@@ -22,8 +22,10 @@ from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.conf import can_create_from_isbn
+from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import validation
 from pcapi.core.offers.exceptions import OfferAlreadyReportedError
 from pcapi.core.offers.exceptions import ReportMalformed
 from pcapi.core.offers.exceptions import WrongFormatInFraudConfigurationFile
@@ -59,6 +61,7 @@ from pcapi.repository import transaction
 from pcapi.routes.serialization.offers_serialize import CompletedEducationalOfferModel
 from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
+from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
 from pcapi.utils import mailing
@@ -67,7 +70,6 @@ from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
 
-from . import validation
 from .exceptions import ThumbnailStorageError
 from .models import ActivationCode
 from .models import Mediation
@@ -462,14 +464,7 @@ def upsert_stocks(
     logger.info("Stock has been created or updated", extra={"offer": offer_id})
 
     if offer.validation == OfferValidationStatus.DRAFT:
-        offer.validation = set_offer_status_based_on_fraud_criteria(offer)
-        offer.author = user
-        offer.lastValidationDate = datetime.datetime.utcnow()
-        if offer.validation == OfferValidationStatus.PENDING or offer.validation == OfferValidationStatus.REJECTED:
-            offer.isActive = False
-        repository.save(offer)
-        if offer.validation == OfferValidationStatus.APPROVED:
-            admin_emails.send_offer_creation_notification_to_administration(offer)
+        _update_offer_fraud_information(offer, user)
 
     for stock in edited_stocks:
         previous_beginning = edited_stocks_previous_beginnings[stock.id]
@@ -478,6 +473,52 @@ def upsert_stocks(
     search.async_index_offer_ids([offer.id])
 
     return stocks
+
+
+def _update_offer_fraud_information(offer: Offer, user: User) -> None:
+    offer.validation = set_offer_status_based_on_fraud_criteria(offer)
+    offer.author = user
+    offer.lastValidationDate = datetime.datetime.utcnow()
+    if offer.validation == OfferValidationStatus.PENDING or offer.validation == OfferValidationStatus.REJECTED:
+        offer.isActive = False
+    repository.save(offer)
+    if offer.validation == OfferValidationStatus.APPROVED:
+        admin_emails.send_offer_creation_notification_to_administration(offer)
+
+
+def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user: User) -> Stock:
+    offer_id = stock_data.offer_id
+    beginning = stock_data.beginning_datetime
+    booking_limit_datetime = stock_data.booking_limit_datetime
+    total_price = stock_data.total_price
+    number_of_tickets = stock_data.number_of_tickets
+
+    offer = Offer.query.filter_by(id=offer_id).one()
+    if not offer.isEducational:
+        raise educational_exceptions.OfferIsNotEducational(offer_id)
+    validation.check_validation_status(offer)
+    if booking_limit_datetime is not None:
+        validation.check_booking_limit_datetime(beginning, booking_limit_datetime)
+    else:
+        booking_limit_datetime = beginning
+
+    stock = Stock(
+        offer=offer,
+        beginningDatetime=beginning,
+        bookingLimitDatetime=booking_limit_datetime,
+        price=total_price,
+        numberOfTickets=number_of_tickets,
+        quantity=1,
+    )
+    repository.save(stock)
+    logger.info("Educational stock has been created", extra={"offer": offer_id})
+
+    if offer.validation == OfferValidationStatus.DRAFT:
+        _update_offer_fraud_information(offer, user)
+
+    search.async_index_offer_ids([offer.id])
+
+    return stock
 
 
 def _invalidate_bookings(bookings: list[Booking]) -> list[Booking]:

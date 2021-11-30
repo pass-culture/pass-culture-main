@@ -72,6 +72,17 @@ class StockCreationBodyModel(BaseModel):
         extra = "forbid"
 
 
+class EducationalStockCreationBodyModel(BaseModel):
+    beginning_datetime: datetime
+    booking_limit_datetime: datetime
+    total_price: float
+    number_of_tickets: int
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
 class StockEditionBodyModel(BaseModel):
     beginning_datetime: Optional[datetime]
     booking_limit_datetime: Optional[datetime]
