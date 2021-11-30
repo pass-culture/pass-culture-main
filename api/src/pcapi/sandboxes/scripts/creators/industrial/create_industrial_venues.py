@@ -6,6 +6,7 @@ from pcapi.core.offerers.factories import AllocineProviderFactory
 from pcapi.core.offerers.factories import AllocineVenueProviderFactory
 from pcapi.core.offerers.factories import AllocineVenueProviderPriceRuleFactory
 from pcapi.core.offerers.factories import VenueProviderFactory
+from pcapi.core.offerers.models import VENUE_TYPE_CODE_MAPPING
 from pcapi.core.offerers.models import VenueType
 from pcapi.core.offers.factories import BankInformationFactory
 from pcapi.core.offers.factories import VenueFactory
@@ -32,8 +33,9 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
     bic_prefix, bic_suffix = "QSDFGH8Z", 556
     application_id_prefix = "12"
 
+    label_to_code = {label: code for code, label in VENUE_TYPE_CODE_MAPPING.items()}
+
     for (offerer_index, (offerer_name, offerer)) in enumerate(offerers_by_name.items()):
-        random.shuffle(venue_types)
         geoloc_match = re.match(r"(.*)lat\:(.*) lon\:(.*)", offerer_name)
 
         venue_name = MOCK_NAMES[mock_index % len(MOCK_NAMES)]
@@ -67,6 +69,12 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
                 comment = "Pas de siret car c'est comme cela."
                 siret = None
 
+            # TODO: remove venue_type and label to code mapping when
+            # the venue_type table has been finally replaced by the
+            # VenueTypeCode enum
+            venue_type = random.choice(venue_types)
+            venue_type_code = label_to_code.get(venue_type.label, "OTHER")
+
             venue = VenueFactory(
                 managingOfferer=offerer,
                 bookingEmail="fake@example.com",
@@ -75,7 +83,8 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
                 comment=comment,
                 name=venue_name,
                 siret=siret,
-                venueTypeId=venue_types[0].id,
+                venueTypeId=venue_type.id,
+                venueTypeCode=venue_type_code,
                 isPermanent=True,
             )
             VenueProviderFactory(venue=venue)
