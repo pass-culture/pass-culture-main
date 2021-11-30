@@ -1,6 +1,8 @@
 import { useField } from 'formik'
 import React from 'react'
 
+import TextareaInput from 'components/layout/inputs/TextareaInput'
+
 interface ITextAreaProps {
   name: string
   className?: string
@@ -8,6 +10,7 @@ interface ITextAreaProps {
   placeholder?: string
   label?: string
   maxLength?: number
+  countCharacters?: boolean
 }
 
 const TextArea = ({
@@ -17,25 +20,22 @@ const TextArea = ({
   placeholder,
   label,
   maxLength,
+  countCharacters,
 }: ITextAreaProps): JSX.Element => {
   const [field, meta] = useField({ name })
 
   return (
-    <>
-      <label>
-        {label}
-        <textarea
-          {...field}
-          className={className}
-          disabled={disabled}
-          maxLength={maxLength}
-          placeholder={placeholder}
-        />
-      </label>
-      {meta.touched && meta.error ? (
-        <div className="error">{meta.error}</div>
-      ) : null}
-    </>
+    <div className={className}>
+      <TextareaInput
+        countCharacters={countCharacters}
+        disabled={disabled}
+        error={meta.touched && !!meta.error ? meta.error : null}
+        label={label}
+        maxLength={maxLength}
+        placeholder={placeholder}
+        {...field}
+      />
+    </div>
   )
 }
 

@@ -1,6 +1,8 @@
 import { useField } from 'formik'
 import React from 'react'
 
+import { default as LayoutTextInput } from 'components/layout/inputs/TextInput/TextInput'
+
 interface ITextInputProps {
   name: string
   className?: string
@@ -8,7 +10,9 @@ interface ITextInputProps {
   label?: string
   placeholder?: string
   type?: 'text' | 'number'
+  countCharacters?: boolean
   maxLength?: number
+  required?: boolean
 }
 
 const TextInput = ({
@@ -18,26 +22,23 @@ const TextInput = ({
   disabled,
   label,
   placeholder,
+  countCharacters,
   maxLength,
 }: ITextInputProps): JSX.Element => {
   const [field, meta] = useField({ name, disabled })
 
   return (
-    <>
-      <label>
-        {label}
-        <input
-          {...field}
-          className={className}
-          maxLength={maxLength}
-          placeholder={placeholder}
-          type={type}
-        />
-      </label>
-      {meta.touched && meta.error ? (
-        <div className="error">{meta.error}</div>
-      ) : null}
-    </>
+    <div className={className}>
+      <LayoutTextInput
+        countCharacters={countCharacters}
+        error={meta.touched && !!meta.error ? meta.error : null}
+        label={label ?? ''}
+        maxLength={maxLength}
+        placeholder={placeholder}
+        type={type}
+        {...field}
+      />
+    </div>
   )
 }
 

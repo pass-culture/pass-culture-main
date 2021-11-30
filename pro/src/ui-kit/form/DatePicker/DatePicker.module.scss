@@ -1,0 +1,25 @@
+.date-picker {
+  &-input {
+    @include body-important();
+    width: 100%;
+    border: 1px solid $grey-medium;
+    border-radius: 1.125em;
+    flex: 1;
+    outline: none !important;
+    padding: rem(6px) rem(18px);
+
+    &:focus {
+      border-color: $primary;
+    }
+
+    &::placeholder {
+      color: $grey-dark;
+    }
+
+    &:disabled {
+      background-color: $grey-light;
+      border-color: $grey-light;
+      opacity: 1;
+    }
+  }
+}
