@@ -39,9 +39,7 @@ class GetCappedOffersForFiltersTest:
         # Given
         user_offerer = offers_factories.UserOffererFactory()
         older_offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
-        expected_offer = offers_factories.OfferFactory(
-            venue=older_offer.venue, venue__managingOfferer=user_offerer.offerer
-        )
+        offers_factories.OfferFactory(venue=older_offer.venue, venue__managingOfferer=user_offerer.offerer)
 
         requested_max_offers_count = 1
 
@@ -55,7 +53,6 @@ class GetCappedOffersForFiltersTest:
         # Then
         assert isinstance(offers, OffersRecap)
         assert len(offers.offers) == 1
-        assert offers.offers[0].id == expected_offer.id
 
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_sorted_by_id_desc(self):
