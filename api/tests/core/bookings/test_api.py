@@ -373,6 +373,7 @@ class BookOfferTest:
 
 @pytest.mark.usefixtures("db_session")
 class CancelByBeneficiaryTest:
+    @override_features(ENABLE_SENDINBLUE_TRANSACTIONAL_EMAILS=False)
     def test_cancel_booking(self):
         stock = offers_factories.StockFactory(offer__bookingEmail="offerer@example.com")
         booking = booking_factories.IndividualBookingFactory.create_batch(20, stock=stock)[0]
@@ -383,6 +384,7 @@ class CancelByBeneficiaryTest:
         queries += 8  # (update batch attributes): select booking ; individualBooking ; user ; user_offerer ; user.bookings ;  favorites ; deposit ; stock
         queries += 1  # select booking
         queries += 1  # select offer
+        queries += 1  # select FeatureFlag Sendinblue isActive or not
         queries += 2  # insert email ; release savepoint
         queries += 3  # (TODO: optimize) select booking ; stock ; offer
         queries += 1  # select bookings of same stock with users joinedloaded to avoid N+1 requests
