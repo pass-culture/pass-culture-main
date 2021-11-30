@@ -22,10 +22,10 @@ class PricingFactory(BaseFactory):
         model = models.Pricing
 
     status = models.PricingStatus.VALIDATED
-    booking = factory.SubFactory(bookings_factories.UsedBookingFactory)
+    booking = factory.SubFactory(bookings_factories.UsedIndividualBookingFactory)
     businessUnit = factory.SelfAttribute("booking.venue.businessUnit")
     valueDate = factory.SelfAttribute("booking.dateUsed")
-    amount = LazyAttribute(lambda pricing: int(100 * pricing.booking.total_amount))
+    amount = LazyAttribute(lambda pricing: -int(100 * pricing.booking.total_amount))
     standardRule = "full reimbursement"
     revenue = LazyAttribute(lambda pricing: int(100 * pricing.booking.total_amount))
 
