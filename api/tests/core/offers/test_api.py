@@ -4,6 +4,7 @@ import os
 import pathlib
 from unittest import mock
 
+import dateutil
 from freezegun import freeze_time
 import pytest
 
@@ -11,6 +12,7 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.categories import subcategories
+from pcapi.core.educational import exceptions as educational_exceptions
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions as offer_exceptions
@@ -318,53 +320,10 @@ class UpsertStocksTest:
         # Then
         assert existing_stock.price == 301
 
-    def test_allow_price_above_300_euros_on_creation_for_educational_thing_offers(self):
-        # Given
-        user = users_factories.ProFactory()
-        offer = factories.EducationalThingOfferFactory()
-        created_stock_data = StockCreationBodyModel(price=301)
-
-        # When
-        api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
-
-        # Then
-        created_stock = Stock.query.one()
-        assert created_stock.price == 301
-
-    def test_allow_price_above_300_euros_on_edition_for_educational_thing_offers(self):
         # Given
         user = users_factories.ProFactory()
         existing_stock = offer_factories.EducationalThingStockFactory(price=10)
         edited_stock_data = stock_serialize.StockEditionBodyModel(id=existing_stock.id, price=301)
-
-        # When
-        api.upsert_stocks(offer_id=existing_stock.offer.id, stock_data_list=[edited_stock_data], user=user)
-
-        # Then
-        assert existing_stock.price == 301
-
-    def test_allow_price_above_300_euros_on_creation_for_educational_event_offers(self):
-        # Given
-        user = users_factories.ProFactory()
-        offer = factories.EducationalEventOfferFactory()
-        now = datetime.now()
-        created_stock_data = StockCreationBodyModel(price=301, beginningDatetime=now, bookingLimitDatetime=now)
-
-        # When
-        api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
-
-        # Then
-        created_stock = Stock.query.one()
-        assert created_stock.price == 301
-
-    def test_allow_price_above_300_euros_on_edition_for_educational_event_offers(self):
-        # Given
-        user = users_factories.ProFactory()
-        existing_stock = factories.EventStockFactory(price=10)
-        now = datetime.now()
-        edited_stock_data = StockEditionBodyModel(
-            id=existing_stock.id, price=301, beginningDatetime=now, bookingLimitDatetime=now
-        )
 
         # When
         api.upsert_stocks(offer_id=existing_stock.offer.id, stock_data_list=[edited_stock_data], user=user)
@@ -626,13 +585,14 @@ class UpsertStocksTest:
         assert not mocked_offer_creation_notification_to_admin.called
 
 
-@freeze_time("2021-11-15 15:00:00")
-class UpsertEducationalOfferStocksTest:
+class CreateEducationalOfferStocksTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def should_create_one_stock_on_educational_offer_stock_creation(self, mocked_async_index_offer_ids):
         # Given
+        user_pro = users_factories.ProFactory()
         offer = offer_factories.EducationalEventOfferFactory()
         new_stock = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=offer.id,
             beginningDatetime=dateutil.parser.parse("2021-12-15T20:00:00Z"),
             bookingLimitDatetime=dateutil.parser.parse("2021-12-05T00:00:00Z"),
             totalPrice=1200,
@@ -640,12 +600,10 @@ class UpsertEducationalOfferStocksTest:
         )
 
         # When
-        stocks_upserted = api.upsert_educational_stocks(offer_id=offer.id, stock_data_list=[new_stock])
+        stock_created = api.create_educational_stock(stock_data=new_stock, user=user_pro)
 
         # Then
-        assert len(stocks_upserted) == 1
-        stock_upserted = stocks_upserted[0]
-        stock = offer_models.Stock.query.filter_by(id=stock_upserted.id).one()
+        stock = offer_models.Stock.query.filter_by(id=stock_created.id).one()
         assert stock.beginningDatetime == datetime.fromisoformat("2021-12-15T20:00:00")
         assert stock.bookingLimitDatetime == datetime.fromisoformat("2021-12-05T00:00:00")
         assert stock.price == 1200
@@ -653,131 +611,182 @@ class UpsertEducationalOfferStocksTest:
         assert stock.numberOfTickets == 35
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
-    def should_upsert_multiple_stocks_for_educational_offer_creation_and_edition(self):
+    def should_set_booking_limit_datetime_to_beginning_datetime_when_not_provided(self):
         # Given
+        user_pro = users_factories.ProFactory()
         offer = offer_factories.EducationalEventOfferFactory()
         new_stock = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=offer.id,
+            beginningDatetime=dateutil.parser.parse("2021-12-15T20:00:00Z"),
+            totalPrice=1200,
+            numberOfTickets=35,
+        )
+
+        # When
+        stock_created = api.create_educational_stock(stock_data=new_stock, user=user_pro)
+
+        # Then
+        stock = offer_models.Stock.query.filter_by(id=stock_created.id).one()
+        assert stock.bookingLimitDatetime == dateutil.parser.parse("2021-12-15T20:00:00")
+
+    def should_not_allow_educational_stock_creation_when_offer_not_educational(self):
+        # Given
+        user_pro = users_factories.ProFactory()
+        offer = offer_factories.EventOfferFactory()
+        new_stock = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=offer.id,
             beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
             bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
             totalPrice=1500,
             numberOfTickets=38,
         )
-        existing_stock = offer_factories.EducationalEventStockFactory(
-            price=1100,
-            numberOfTickets=30,
-            beginningDatetime=datetime.fromisoformat("2021-12-25T20:00:00"),
-            bookingLimitDatetime=datetime.fromisoformat("2021-12-20T15:00:00"),
+
+        # When
+        with pytest.raises(educational_exceptions.OfferIsNotEducational) as error:
+            api.create_educational_stock(stock_data=new_stock, user=user_pro)
+
+        # Then
+        assert error.value.errors == {"offer": [f"L'offre {offer.id} n'est pas une offre éducationnelle"]}
+        saved_stocks = offer_models.Stock.query.all()
+        assert len(saved_stocks) == 0
+
+    @freeze_time("2020-11-17 15:00:00")
+    def test_create_stock_triggers_draft_offer_validation(self):
+        # Given
+        user_pro = users_factories.ProFactory()
+        draft_approvable_offer = offer_factories.EducationalEventOfferFactory(
+            name="a great offer", validation=offer_models.OfferValidationStatus.DRAFT
         )
-        existing_stock_modified = stock_serialize.EducationalStockEditionBodyModel(
-            id=existing_stock.id,
-            beginningDatetime=dateutil.parser.parse("2021-12-29T20:00:00Z"),
-            bookingLimitDatetime=dateutil.parser.parse("2021-12-20T15:00:00Z"),
-            numberOfTickets=32,
+        draft_suspicious_offer = offer_factories.EducationalEventOfferFactory(
+            name="An PENDING offer", validation=offer_models.OfferValidationStatus.DRAFT
+        )
+        draft_fraudulent_offer = offer_factories.EducationalEventOfferFactory(
+            name="A REJECTED offer", validation=offer_models.OfferValidationStatus.DRAFT
+        )
+        common_created_stock_data = {
+            "beginningDatetime": dateutil.parser.parse("2022-01-17T22:00:00Z"),
+            "bookingLimitDatetime": dateutil.parser.parse("2021-12-31T20:00:00Z"),
+            "totalPrice": 1500,
+            "numberOfTickets": 38,
+        }
+        created_stock_data_approvable = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=draft_approvable_offer.id, **common_created_stock_data
+        )
+        created_stock_data_suspicious = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=draft_suspicious_offer.id, **common_created_stock_data
+        )
+        created_stock_data_fraudulent = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=draft_fraudulent_offer.id, **common_created_stock_data
         )
 
         # When
-        stocks_upserted = api.upsert_educational_stocks(
-            offer_id=offer.id, stock_data_list=[new_stock, existing_stock_modified]
-        )
+        api.create_educational_stock(stock_data=created_stock_data_approvable, user=user_pro)
+        api.create_educational_stock(stock_data=created_stock_data_suspicious, user=user_pro)
+        api.create_educational_stock(stock_data=created_stock_data_fraudulent, user=user_pro)
 
         # Then
-        assert len(stocks_upserted) == 2
+        assert draft_approvable_offer.validation == offer_models.OfferValidationStatus.APPROVED
+        assert draft_approvable_offer.isActive
+        assert draft_approvable_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
+        assert draft_suspicious_offer.validation == offer_models.OfferValidationStatus.PENDING
+        assert not draft_suspicious_offer.isActive
+        assert draft_suspicious_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
+        assert draft_fraudulent_offer.validation == offer_models.OfferValidationStatus.REJECTED
+        assert not draft_fraudulent_offer.isActive
+        assert draft_fraudulent_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
 
-        stock_created = offer_models.Stock.query.filter_by(id=stocks_upserted[0].id).one()
-        assert stock_created.beginningDatetime == new_stock.beginning_datetime.astimezone(pytz.utc).replace(tzinfo=None)
-        assert stock_created.bookingLimitDatetime == new_stock.booking_limit_datetime.astimezone(pytz.utc).replace(
-            tzinfo=None
+    def test_does_not_allow_booking_limit_after_beginning_datetime(self):
+        # Given
+        user = users_factories.ProFactory()
+        offer = offer_factories.EducationalEventOfferFactory()
+        beginning_date = datetime.utcnow() + timedelta(days=4)
+        booking_limit = beginning_date + timedelta(days=4)
+        created_stock_data = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=offer.id,
+            beginningDatetime=beginning_date,
+            bookingLimitDatetime=booking_limit,
+            totalPrice=1500,
+            numberOfTickets=38,
         )
-        assert stock_created.price == 1500
-        assert stock_created.quantity == 1
-        assert stock_created.numberOfTickets == 38
 
-        stock_modified = offer_models.Stock.query.filter_by(id=stocks_upserted[1].id).one()
-        assert stock_modified.id == existing_stock.id
-        assert stock_modified.beginningDatetime == datetime.fromisoformat("2021-12-29T20:00:00")
-        assert stock_modified.bookingLimitDatetime == existing_stock_modified.booking_limit_datetime.astimezone(
-            pytz.utc
-        ).replace(tzinfo=None)
-        assert stock_modified.price == 1100
-        assert stock_modified.quantity == 1
-        assert stock_modified.numberOfTickets == 32
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_educational_stock(stock_data=created_stock_data, user=user)
 
-    # def should_not_allow_educational_stock_upsert_when_offer_not_educational(self):
-    #     # Given
-    #     offer = offer_factories.EventOfferFactory()
-    #     new_stock = stock_serialize.EducationalStockCreationBodyModel(
-    #         beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
-    #         bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
-    #         totalPrice=1500,
-    #         numberOfTickets=38,
-    #     )
-
-    #     # When
-    #     with pytest.raises(educational_exceptions.OfferIsNotEducational) as error:
-    #         stocks_upserted = api.upsert_educational_stocks(offer_id=offer.id, stock_data_list=[new_stock])
-
-    #     # Then
-    #     assert error.value.errors == {"stock": ["Cette institution est inconnue"]}
-
-    #     saved_bookings = EducationalBooking.query.join(Booking).filter(Booking.stockId == stock.id).all()
-    #     assert len(saved_bookings) == 0
-
-    def should_not_allow_number_of_tickets_to_be_negative(self):
-        pass
-
-    def should_not_allow_edition_if_already_prebooked(self):
-        pass
-
-    @mock.patch("pcapi.core.offers.api.update_cancellation_limit_dates")
-    def should_update_bookings_cancellation_limit_date_according_to_utc_event_date_if_update_of_event(
-        self, mock_update_cancellation_limit_dates
-    ):
-        pass
-
-    def should_not_update_soft_deleted_stock(self):
-        # raise error?
-        pass
-
-    def test_upsert_stocks_triggers_draft_offer_validation(self):
-        pass
-
-    def test_upsert_stocks_does_not_trigger_approved_offer_validation(self):
-        pass
-
-    def test_does_not_allow_edition_of_stock_of_another_offer_than_given(self):
-        pass
-
-    def test_validate_booking_limit_datetime_with_expiration_datetime_on_creation(self):
-        pass
-
-    def test_validate_booking_limit_datetime_with_expiration_datetime_on_edition(self):
-        pass
-
-    def test_does_not_allow_booking_limit_after_beginning_on_creation_and_edition(self):
-        pass
-
-    def test_does_not_allow_edition_of_a_past_event_stock(self):
-        pass
+        # Then
+        assert error.value.errors == {
+            "bookingLimitDatetime": [
+                "La date limite de réservation pour cette offre est postérieure à la date de début de l'évènement"
+            ]
+        }
 
     def test_create_stock_for_non_approved_offer_fails(self):
-        pass
+        # Given
+        user = users_factories.ProFactory()
+        offer = offer_factories.EducationalEventOfferFactory(validation=offer_models.OfferValidationStatus.PENDING)
+        created_stock_data = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=offer.id,
+            beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
+            bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
+            totalPrice=1500,
+            numberOfTickets=38,
+        )
 
-    def test_edit_stock_of_non_approved_offer_fails(self):
-        pass
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_educational_stock(stock_data=created_stock_data, user=user)
+
+        # Then
+        assert error.value.errors == {
+            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+        }
+        assert offer_models.Stock.query.count() == 0
 
     @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
-    @mock.patch("pcapi.core.offers.api.api.set_offer_status_based_on_fraud_criteria")
+    @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
     def test_send_email_when_offer_automatically_approved_based_on_fraud_criteria(
         self, mocked_set_offer_status_based_on_fraud_criteria, mocked_offer_creation_notification_to_admin
     ):
-        pass
+        # Given
+        user = users_factories.ProFactory()
+        offer = offer_factories.EducationalEventOfferFactory(validation=offer_models.OfferValidationStatus.DRAFT)
+        created_stock_data = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=offer.id,
+            beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
+            bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
+            totalPrice=1500,
+            numberOfTickets=38,
+        )
+        mocked_set_offer_status_based_on_fraud_criteria.return_value = offer_models.OfferValidationStatus.APPROVED
+
+        # When
+        api.create_educational_stock(stock_data=created_stock_data, user=user)
+
+        # Then
+        mocked_offer_creation_notification_to_admin.assert_called_once_with(offer)
 
     @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
-    @mock.patch("pcapi.core.offers.api.api.set_offer_status_based_on_fraud_criteria")
+    @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
     def test_not_send_email_when_offer_pass_to_pending_based_on_fraud_criteria(
         self, mocked_set_offer_status_based_on_fraud_criteria, mocked_offer_creation_notification_to_admin
     ):
-        pass
+        # Given
+        user = users_factories.ProFactory()
+        offer = offer_factories.EducationalEventOfferFactory(validation=offer_models.OfferValidationStatus.DRAFT)
+        created_stock_data = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=offer.id,
+            beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
+            bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
+            totalPrice=1500,
+            numberOfTickets=38,
+        )
+        mocked_set_offer_status_based_on_fraud_criteria.return_value = offer_models.OfferValidationStatus.PENDING
+
+        # When
+        api.create_educational_stock(stock_data=created_stock_data, user=user)
+
+        # Then
+        assert not mocked_offer_creation_notification_to_admin.called
 
 
 class DeleteStockTest:
