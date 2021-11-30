@@ -482,7 +482,7 @@ class ValidationView(BaseAdminView):
                     send_offer_validation_status_update_email(offer, validation_status, recipients)
                     send_offer_validation_notification_to_administration(validation_status, offer)
                 else:
-                    not_updated_offers += offer
+                    not_updated_offers.append(offer)
             except Exception as exc:  # pylint: disable=broad-except
                 logger.exception(
                     "Une erreur s'est produite lors de la mise à jour du statut de validation: %s",
