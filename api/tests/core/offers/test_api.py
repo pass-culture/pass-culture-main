@@ -658,7 +658,7 @@ class CreateEducationalOfferStocksTest:
             name="a great offer", validation=offer_models.OfferValidationStatus.DRAFT
         )
         draft_suspicious_offer = offer_factories.EducationalEventOfferFactory(
-            name="An PENDING offer", validation=offer_models.OfferValidationStatus.DRAFT
+            name="A PENDING offer", validation=offer_models.OfferValidationStatus.DRAFT
         )
         draft_fraudulent_offer = offer_factories.EducationalEventOfferFactory(
             name="A REJECTED offer", validation=offer_models.OfferValidationStatus.DRAFT

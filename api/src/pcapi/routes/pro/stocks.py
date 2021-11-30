@@ -13,6 +13,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import get_stocks_for_offer
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
+from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
 from pcapi.routes.serialization.stock_serialize import StockIdsResponseModel
 from pcapi.routes.serialization.stock_serialize import StockResponseModel
@@ -119,3 +120,17 @@ def _build_stock_details_from_body(raw_stocks: List[UpdateVenueStockBodyModel], 
         }
 
     return list(stock_details.values())
+
+
+@private_api.route("/stocks/educational", methods=["POST"])
+@login_required
+@spectree_serialize(on_success_status=201, response_model=StockIdResponseModel)
+def create_educational_stock(body: EducationalStockCreationBodyModel) -> StockIdResponseModel:
+    try:
+        offerer = pcapi.core.offerers.repository.get_by_offer_id(body.offer_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    check_user_has_access_to_offerer(current_user, offerer.id)
+
+    stock = offers_api.create_educational_stock(body, current_user)
+    return StockIdResponseModel.from_orm(stock)
