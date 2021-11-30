@@ -5,7 +5,7 @@ export const INITIAL_EDUCATIONAL_FORM_VALUES: IOfferEducationalFormValues = {
   subCategory: '',
   title: '',
   description: '',
-  duration: 0,
+  duration: '',
   offererId: '',
   venueId: '',
   eventAddress: {

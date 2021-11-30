@@ -1,16 +1,12 @@
-import { useFormikContext } from 'formik'
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import Banner from 'components/layout/Banner/Banner'
-import {
-  INITIAL_EDUCATIONAL_FORM_VALUES,
-  IOfferEducationalFormValues,
-  IUserOfferer,
-} from 'core/OfferEducational'
+import { IUserOfferer } from 'core/OfferEducational'
 import FormLayout from 'new_components/FormLayout'
 import { Select } from 'ui-kit'
 
 import { OFFERER_LABEL, VENUE_LABEL } from '../../constants/labels'
+import buildSelectOptions from '../../utils/buildSelectOptions'
 
 interface IFormVenueProps {
   userOfferers: IUserOfferer[]
@@ -23,22 +19,12 @@ const FormVenue = ({
   venuesOptions,
   canCreateEducationalOffer,
 }: IFormVenueProps): JSX.Element => {
-  const { values, setFieldValue } =
-    useFormikContext<IOfferEducationalFormValues>()
-
-  const offerersOptions = userOfferers.map(offerer => ({
-    value: offerer.id,
-    label: offerer.name,
-  }))
-
-  useEffect(() => {
-    setFieldValue('venueId', INITIAL_EDUCATIONAL_FORM_VALUES.venueId, false)
-    setFieldValue(
-      'eventAddress.venueId',
-      INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.venueId,
-      false
-    )
-  }, [values.offererId, setFieldValue])
+  const offerersOptions = buildSelectOptions(
+    userOfferers,
+    'name',
+    'id',
+    'Selectionner une structure'
+  )
 
   return (
     <FormLayout.Section
@@ -50,24 +36,17 @@ const FormVenue = ({
           disabled={offerersOptions.length === 1}
           label={OFFERER_LABEL}
           name="offererId"
-          options={
-            values.offererId
-              ? offerersOptions
-              : [
-                  ...offerersOptions,
-                  { value: '', label: 'Sélectionnez une structure' },
-                ]
-          }
+          options={offerersOptions}
         />
       </FormLayout.Row>
-      {canCreateEducationalOffer === false ? (
+      {canCreateEducationalOffer === false && (
         <Banner href="#" linkTitle="Faire une demande de référencement">
           Pour proposer des offres à destination d’un groupe scolaire, vous
           devez être référencé auprès du ministère de l’Éducation Nationale et
           du ministère de la Culture.
         </Banner>
-      ) : null}
-      {canCreateEducationalOffer === true ? (
+      )}
+      {canCreateEducationalOffer === true && (
         <FormLayout.Row>
           <Select
             disabled={venuesOptions.length === 1 || !canCreateEducationalOffer}
@@ -76,7 +55,7 @@ const FormVenue = ({
             options={venuesOptions}
           />
         </FormLayout.Row>
-      ) : null}
+      )}
     </FormLayout.Section>
   )
 }

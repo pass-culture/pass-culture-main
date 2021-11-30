@@ -18,7 +18,6 @@ import {
   TITLE_LABEL,
 } from '../../constants/labels'
 import buildSelectOptions from '../../utils/buildSelectOptions'
-import DurationPicker from '../DurationPicker'
 
 interface IFormTypeProps {
   categories: IEducationalCategory[]
@@ -81,21 +80,24 @@ const FormCategory = ({
         </FormLayout.Row>
       )}
       <FormLayout.Row>
-        <TextInput label={TITLE_LABEL} maxLength={90} name="title" />
+        <TextInput
+          countCharacters
+          label={TITLE_LABEL}
+          maxLength={90}
+          name="title"
+        />
       </FormLayout.Row>
       <FormLayout.Row>
         <TextArea
+          countCharacters
           label={DESCRIPTION_LABEL}
           maxLength={1000}
           name="description"
+          placeholder="Détaillez ici votre projet et son interêt pédagogique"
         />
       </FormLayout.Row>
       <FormLayout.Row>
-        <DurationPicker
-          label={DURATION_LABEL}
-          name="duration"
-          onChange={(value: number | null) => setFieldValue('duration', value)}
-        />
+        <TextInput label={DURATION_LABEL} name="duration" placeholder="HH:MM" />
       </FormLayout.Row>
     </FormLayout.Section>
   )

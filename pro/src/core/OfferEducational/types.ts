@@ -37,7 +37,7 @@ export type IOfferEducationalFormValues = {
   subCategory: string
   title: string
   description: string
-  duration: number
+  duration: string
   offererId: string
   venueId: string
   eventAddress: {
