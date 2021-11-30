@@ -34,7 +34,6 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_UBBLE,
         FeatureToggle.ENABLE_UNDERAGE_GENERALISATION,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
-        FeatureToggle.USE_APP_SEARCH_ON_NATIVE_APP,
         FeatureToggle.WEBAPP_V2_ENABLED,
     )
 
@@ -54,6 +53,4 @@ def get_settings() -> serializers.SettingsResponse:
         enable_native_id_check_verbose_debugging=features[FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING],
         enable_id_check_retention=features[FeatureToggle.ENABLE_ID_CHECK_RETENTION],
         enable_phone_validation=features[FeatureToggle.ENABLE_PHONE_VALIDATION],
-        # TODO(antoinewg): use_app_search is not used anymore, delete it
-        use_app_search=features[FeatureToggle.USE_APP_SEARCH_ON_NATIVE_APP],
     )

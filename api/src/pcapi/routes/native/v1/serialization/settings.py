@@ -30,7 +30,6 @@ class SettingsResponse(BaseModel):
     is_recaptcha_enabled: bool
     is_webapp_v2_enabled: bool
     object_storage_url: str
-    use_app_search: bool
 
     _convert_deposit_amount = validator("deposit_amount", pre=True, allow_reuse=True)(convert_to_cent)
 
