@@ -1,0 +1,22 @@
+name: Add annotated tag
+on:
+  push:
+    branches:
+      - master
+jobs:
+  add-annotated-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.4
+        with:
+          persist-credentials: false
+      - name: Annotate 🚀
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          create_annotated_tag: true
+          tag_prefix: RC-
+          default_bump: major
+          fetch_all_tags: true
