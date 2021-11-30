@@ -30,7 +30,7 @@ function tag_hotfix {
     echo --- Tagging $TAG_VERSION ---
     cd "$ROOT_PATH"
     git commit -m "🚀 $TAG_VERSION"
-    git tag "$TAG_VERSION"
+    git tag -a "$TAG_VERSION" -m "🚀 $TAG_VERSION"
     git push origin "$BRANCH_NAME"
     git push origin "$TAG_VERSION"
 
