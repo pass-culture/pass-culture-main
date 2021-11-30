@@ -18,7 +18,6 @@ class SettingsTest:
         WEBAPP_V2_ENABLED=False,
         ENABLE_PHONE_VALIDATION=True,
         DISPLAY_DMS_REDIRECTION=True,
-        USE_APP_SEARCH_ON_NATIVE_APP=True,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=True,
         ENABLE_NATIVE_EAC_INDIVIDUAL=False,
     )
@@ -37,7 +36,6 @@ class SettingsTest:
             "enableUnderageGeneralisation": False,
             "objectStorageUrl": "http://localhost/storage",
             "displayDmsRedirection": True,
-            "useAppSearch": True,
             "idCheckAddressAutocompletion": True,
             "isWebappV2Enabled": False,
             "enableNativeEacIndividual": False,
@@ -72,7 +70,6 @@ class SettingsTest:
             "enableIdCheckRetention": True,
             "objectStorageUrl": "http://localhost/storage",
             "displayDmsRedirection": False,
-            "useAppSearch": False,
             "idCheckAddressAutocompletion": False,
             "isWebappV2Enabled": True,
             "enableNativeEacIndividual": True,
