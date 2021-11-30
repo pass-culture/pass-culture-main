@@ -367,3 +367,11 @@ export const validateBooking = code => {
 export const invalidateBooking = code => {
   return client.patch(`/v2/bookings/keep/token/${code}`)
 }
+
+//
+// Business Unit
+//
+
+export const getBusinessUnits = offererId => {
+  return client.get(`/offerers/${offererId}/business_units`)
+}

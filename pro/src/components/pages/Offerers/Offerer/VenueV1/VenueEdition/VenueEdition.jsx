@@ -24,6 +24,7 @@ import AccessibilityFields, {
   autoFillNoDisabilityCompliantDecorator,
 } from '../fields/AccessibilityFields'
 import BankInformation from '../fields/BankInformationFields/BankInformationFields'
+import BusinessUnitFields from '../fields/BankInformationFields/BusinessUnitFields'
 import ContactInfosFields from '../fields/ContactInfosFields'
 import IdentifierFields from '../fields/IdentifierFields/IdentifierFields'
 import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
@@ -152,7 +153,15 @@ const VenueEdition = ({
             readOnly={readOnly}
           />
         )}
-        <BankInformation offerer={offerer} venue={venue} />
+        {isBankInformationWithSiretActive ? (
+          <BusinessUnitFields
+            offerer={offerer}
+            readOnly={readOnly}
+            venue={venue}
+          />
+        ) : (
+          <BankInformation offerer={offerer} venue={venue} />
+        )}
         {!initialIsVirtual && (
           <>
             <LocationFields

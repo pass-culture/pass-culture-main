@@ -5,6 +5,7 @@ from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VenueFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models.bank_information import BankInformationStatus
+from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
@@ -31,7 +32,7 @@ class Returns200Test:
 
         # when
         auth_request = TestClient(app.test_client()).with_session_auth(email=pro.email)
-        response = auth_request.get(f"/offerers/{offerer.id}/business_unit_list")
+        response = auth_request.get(f"/offerers/{humanize(offerer.id)}/business_units")
 
         # then
         assert response.status_code == 200
@@ -39,6 +40,7 @@ class Returns200Test:
             {
                 "id": venue.businessUnit.id,
                 "iban": venue.businessUnit.bankAccount.iban,
+                "name": venue.businessUnit.name,
                 "siret": venue.siret,
             }
             for venue in venues
@@ -53,7 +55,7 @@ class Returns403Test:
 
         # when
         auth_request = TestClient(app.test_client()).with_session_auth(email=pro.email)
-        response = auth_request.get("/offerers/1/business_unit_list")
+        response = auth_request.get(f"/offerers/{humanize(1)}/business_units")
 
         # then
         assert response.status_code == 403
