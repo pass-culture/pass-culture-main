@@ -262,6 +262,7 @@ def update_user_profile(
     if last_name and not user.lastName:
         update_payload["lastName"] = last_name
 
+    # TODO (viconnex): remove phone number update after app native mandatory version is >= 164
     if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active() and not user.phoneNumber and phone_number:
         update_payload["phoneNumber"] = phone_number
 
