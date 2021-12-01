@@ -20,6 +20,7 @@ class BusinessUnitResponseModel(BaseModel):
     class Config:
         orm_mode = True
 
+    bic: str
     id: int
     iban: str
     name: str
