@@ -40,8 +40,7 @@ const FormEventAddress = ({
     ) {
       setFieldValue(
         'eventAddress.venueId',
-        INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.venueId,
-        false
+        INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.venueId
       )
       setCurrentVenue(null)
     }
@@ -52,8 +51,7 @@ const FormEventAddress = ({
     ) {
       setFieldValue(
         'eventAddress.otherAddress',
-        INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.otherAddress,
-        false
+        INITIAL_EDUCATIONAL_FORM_VALUES.eventAddress.otherAddress
       )
     }
   }, [values.eventAddress, setFieldValue])
@@ -69,6 +67,10 @@ const FormEventAddress = ({
         )
         return setCurrentVenue(selectedVenue ?? null)
       }
+      return setCurrentVenue(null)
+    }
+
+    if (!values.eventAddress.venueId) {
       return setCurrentVenue(null)
     }
   }, [currentOfferer, values.eventAddress])
