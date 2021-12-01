@@ -18,12 +18,14 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.external import update_external_user
 from pcapi.domain import user_emails as old_user_emails
+from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.feature import FeatureToggle
 import pcapi.repository as pcapi_repository
+from pcapi.repository import transaction
 from pcapi.workers import apps_flyer_job
 
 from . import exceptions
@@ -231,3 +233,59 @@ def get_next_subscription_step(user: users_models.User) -> Optional[models.Subsc
         return models.SubscriptionStep.IDENTITY_CHECK
 
     return None
+
+
+def update_user_profile(
+    user: users_models.User,
+    address: Optional[str],
+    city: str,
+    postal_code: str,
+    activity: str,
+    first_name: Optional[str] = None,
+    last_name: Optional[str] = None,
+    phone_number: Optional[str] = None,
+) -> None:
+    user_initial_roles = user.roles
+
+    update_payload = {
+        "address": address,
+        "city": city,
+        "postalCode": postal_code,
+        "departementCode": PostalCode(postal_code).get_departement_code(),
+        "activity": activity,
+        "hasCompletedIdCheck": True,
+    }
+
+    if first_name and not user.firstName:
+        update_payload["firstName"] = first_name
+
+    if last_name and not user.lastName:
+        update_payload["lastName"] = last_name
+
+    if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active() and not user.phoneNumber and phone_number:
+        update_payload["phoneNumber"] = phone_number
+
+    with transaction():
+        users_models.User.query.filter(users_models.User.id == user.id).update(update_payload)
+    db.session.refresh(user)
+
+    if (
+        not users_api.steps_to_become_beneficiary(user)
+        # the 2 following checks should be useless
+        and fraud_api.has_user_performed_identity_check(user)
+        and not fraud_api.is_user_fraudster(user)
+    ):
+        check_and_activate_beneficiary(user.id)
+    else:
+        update_external_user(user)
+
+    new_user_roles = user.roles
+    underage_user_has_been_activated = (
+        users_models.UserRole.UNDERAGE_BENEFICIARY in new_user_roles
+        and users_models.UserRole.UNDERAGE_BENEFICIARY not in user_initial_roles
+    )
+
+    logger.info(
+        "User id check profile updated",
+        extra={"user": user.id, "has_been_activated": user.has_beneficiary_role or underage_user_has_been_activated},
+    )
