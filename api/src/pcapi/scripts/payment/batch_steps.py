@@ -218,7 +218,7 @@ def send_wallet_balances(recipients: list[str]) -> None:
     if not recipients:
         raise Exception("[BATCH][PAYMENTS] Missing PASS_CULTURE_WALLET_BALANCES_RECIPIENTS in environment variables")
 
-    balances = get_all_users_wallet_balances()
+    balances = list(get_all_users_wallet_balances())
     csv = generate_wallet_balances_csv(balances)
     logger.info("[BATCH][PAYMENTS] Sending %s wallet balances", len(balances))
     logger.info("[BATCH][PAYMENTS] Recipients of email: %s", recipients)
