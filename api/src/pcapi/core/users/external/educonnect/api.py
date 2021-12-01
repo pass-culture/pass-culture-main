@@ -11,7 +11,7 @@ from saml2.validate import ResponseLifetimeExceed
 
 from pcapi import settings
 from pcapi.core.users import constants
-from pcapi.core.users import models as user_models
+from pcapi.core.users import models as users_models
 
 from . import exceptions
 from . import models
@@ -23,6 +23,8 @@ BASEDIR = path.dirname(path.abspath(__file__))
 FILES_DIR = "files"
 PRIVATE_KEY_FILE_PATH = path.join(BASEDIR, f"{FILES_DIR}/private.key")
 PUBLIC_CERTIFICATE_FILE_PATH = path.join(BASEDIR, f"{FILES_DIR}/public.cert")
+PASS_CULTURE_IDENTITY_ID = f"{settings.API_URL_FOR_EDUCONNECT}/saml/metadata.xml"
+PASS_CULTURE_ACS_URL = f"{settings.API_URL_FOR_EDUCONNECT}/saml/acs/"
 
 with open(PUBLIC_CERTIFICATE_FILE_PATH, "w") as certificate_file:
     certificate_file.write(settings.EDUCONNECT_SP_CERTIFICATE)
@@ -31,11 +33,8 @@ with open(PRIVATE_KEY_FILE_PATH, "w") as key_file:
 
 
 def get_saml_client() -> Saml2Client:
-    entityid = f"{settings.API_URL_FOR_EDUCONNECT}/saml/metadata.xml"
-    https_acs_url = f"{settings.API_URL_FOR_EDUCONNECT}/saml/acs/"
-
     config = {
-        "entityid": entityid,
+        "entityid": PASS_CULTURE_IDENTITY_ID,
         "metadata": {
             "local": [
                 path.join(BASEDIR, f"{FILES_DIR}/educonnect.{'production' if settings.IS_PROD else 'pr4'}.metadata.xml")
@@ -44,7 +43,7 @@ def get_saml_client() -> Saml2Client:
         "service": {
             "sp": {
                 "endpoints": {
-                    "assertion_consumer_service": [(https_acs_url, BINDING_HTTP_POST)],
+                    "assertion_consumer_service": [(PASS_CULTURE_ACS_URL, BINDING_HTTP_POST)],
                 },
                 "allow_unsolicited": True,
                 "authn_requests_signed": True,
@@ -71,7 +70,7 @@ def get_saml_client() -> Saml2Client:
     return saml2_client
 
 
-def get_login_redirect_url(user: user_models.User) -> str:
+def get_login_redirect_url(user: users_models.User) -> str:
     saml_client = get_saml_client()
     saml_request_id, info = saml_client.prepare_for_authenticate()
 
@@ -86,6 +85,8 @@ def get_login_redirect_url(user: user_models.User) -> str:
 
 
 def get_educonnect_user(saml_response: str) -> models.EduconnectUser:
+    if settings.IS_PERFORMANCE_TESTS:
+        return _get_mocked_user_for_performance_tests(saml_response)
     saml_client = get_saml_client()
     try:
         authn_response = saml_client.parse_authn_request_response(saml_response, BINDING_HTTP_POST)
@@ -144,3 +145,24 @@ def _get_field_oid(oid_key: str) -> str:
 
 def build_saml_request_id_key(saml_request_id: str) -> str:
     return f"educonnect-saml-request-{saml_request_id}"
+
+
+def _get_mocked_user_for_performance_tests(user_id: str) -> models.EduconnectUser:
+    user = users_models.User.query.get(int(user_id))
+    mocked_saml_request_id = f"saml-request-id_perf-test_{user.id}"
+    key = build_saml_request_id_key(mocked_saml_request_id)
+    app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
+
+    return models.EduconnectUser(
+        birth_date=user.dateOfBirth.date(),
+        connection_datetime=datetime.now(),
+        educonnect_id=f"educonnect-id_perf-test_{user.id}",
+        first_name=f"firstname_perf-test_{user.id}",
+        ine_hash=f"inehash_perf-test_{user.id}",
+        last_name=f"lastname_perf-test_{user.id}",
+        logout_url="example.com/logout",
+        user_type="eleve1d",
+        saml_request_id=mocked_saml_request_id,
+        school="mocked_uai",
+        student_level="2212",
+    )
