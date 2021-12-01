@@ -20,7 +20,6 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import ImportStatus
 import pcapi.notifications.push.testing as push_testing
@@ -44,10 +43,10 @@ class RunTest:
     @patch("pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee")
     @patch("pcapi.scripts.beneficiary.import_dms_users.find_applications_ids_to_retry")
     @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
-    @patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
+    @patch("pcapi.core.subscription.api.on_successful_application")
     def test_should_retrieve_applications_from_new_procedure_id(
         self,
-        process_beneficiary_application,
+        on_sucessful_application,
         get_details,
         find_applications_ids_to_retry,
         get_closed_application_ids_for_demarche_simplifiee,
@@ -80,10 +79,10 @@ class RunTest:
     @patch("pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee")
     @patch("pcapi.scripts.beneficiary.import_dms_users.find_applications_ids_to_retry")
     @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
-    @patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
+    @patch("pcapi.core.subscription.api.on_successful_application")
     def test_all_applications_are_processed_once(
         self,
-        process_beneficiary_application,
+        on_sucessful_application,
         get_details,
         find_applications_ids_to_retry,
         get_closed_application_ids_for_demarche_simplifiee,
@@ -113,15 +112,15 @@ class RunTest:
         )
 
         # then
-        assert process_beneficiary_application.call_count == 3
+        assert on_sucessful_application.call_count == 3
 
     @patch("pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee")
     @patch("pcapi.scripts.beneficiary.import_dms_users.find_applications_ids_to_retry")
     @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
-    @patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
+    @patch("pcapi.core.subscription.api.on_successful_application")
     def test_applications_to_retry_are_processed(
         self,
-        process_beneficiary_application,
+        on_sucessful_application,
         get_details,
         find_applications_ids_to_retry,
         get_closed_application_ids_for_demarche_simplifiee,
@@ -152,7 +151,7 @@ class RunTest:
         )
 
         # then
-        assert process_beneficiary_application.call_count == 3
+        assert on_sucessful_application.call_count == 3
 
     @patch("pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee")
     @patch("pcapi.scripts.beneficiary.import_dms_users.find_applications_ids_to_retry")
@@ -186,10 +185,10 @@ class RunTest:
     @patch("pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee")
     @patch("pcapi.scripts.beneficiary.import_dms_users.find_applications_ids_to_retry")
     @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
-    @patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
+    @patch("pcapi.core.subscription.api.on_successful_application")
     def test_application_with_known_application_id_are_not_processed(
         self,
-        process_beneficiary_application,
+        on_sucessful_application,
         get_details,
         find_applications_ids_to_retry,
         get_closed_application_ids_for_demarche_simplifiee,
@@ -211,15 +210,15 @@ class RunTest:
         )
 
         # then
-        process_beneficiary_application.assert_not_called()
+        on_sucessful_application.assert_not_called()
 
     @patch("pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee")
     @patch("pcapi.scripts.beneficiary.import_dms_users.find_applications_ids_to_retry")
     @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
-    @patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
+    @patch("pcapi.core.subscription.api.on_successful_application")
     def test_application_with_known_email_and_already_beneficiary_are_saved_as_rejected(
         self,
-        process_beneficiary_application,
+        on_sucessful_application,
         get_details,
         find_applications_ids_to_retry,
         get_closed_application_ids_for_demarche_simplifiee,
@@ -246,16 +245,16 @@ class RunTest:
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.detail == "Compte existant avec cet email"
         assert beneficiary_import.beneficiary == user
-        process_beneficiary_application.assert_not_called()
+        on_sucessful_application.assert_not_called()
 
     @override_features(FORCE_PHONE_VALIDATION=False)
     @patch("pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee")
     @patch("pcapi.scripts.beneficiary.import_dms_users.find_applications_ids_to_retry")
     @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
-    @patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
+    @patch("pcapi.core.subscription.api.on_successful_application")
     def test_beneficiary_is_created_with_procedure_id(
         self,
-        process_beneficiary_application,
+        on_sucessful_application,
         get_details,
         find_applications_ids_to_retry,
         get_closed_application_ids_for_demarche_simplifiee,
@@ -274,8 +273,9 @@ class RunTest:
         )
 
         # then
-        process_beneficiary_application.assert_called_with(
-            information=fraud_models.DMSContent(
+        on_sucessful_application.assert_called_with(
+            user=applicant,
+            source_data=fraud_models.DMSContent(
                 last_name="Doe",
                 first_name="John",
                 civility="Mme",
@@ -290,87 +290,9 @@ class RunTest:
                 postal_code="67200",
                 id_piece_number="123123121",
             ),
-            procedure_id=6712558,
-            user=applicant,
-        )
-
-
-class ProcessBeneficiaryApplicationTest:
-    @override_features(FORCE_PHONE_VALIDATION=False)
-    @pytest.mark.usefixtures("db_session")
-    def test_new_beneficiaries_are_recorded_with_deposit(self, app):
-        # given
-        information = fraud_models.DMSContent(
-            department="93",
-            last_name="Doe",
-            first_name="Jane",
-            birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
-            email="jane.doe@example.com",
-            phone="0612345678",
-            postal_code="93130",
-            address="11 Rue du Test",
             application_id=123,
-            procedure_id=123456,
-            civility="Mme",
-            activity="Étudiant",
+            source_id=6712558,
         )
-        applicant = users_factories.UserFactory(email=information.email)
-        # when
-        import_dms_users.process_beneficiary_application(information=information, procedure_id=123456, user=applicant)
-
-        # then
-        first = users_models.User.query.first()
-        assert first.email == "jane.doe@example.com"
-        assert first.wallet_balance == 300
-        assert first.civility == "Mme"
-        assert first.activity == "Étudiant"
-
-        assert len(push_testing.requests) == 1
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
-
-    @pytest.mark.usefixtures("db_session")
-    def test_an_import_status_is_saved_if_beneficiary_is_created(self, app):
-        # given
-        information = fraud_models.DMSContent(
-            department="93",
-            last_name="Doe",
-            first_name="Jane",
-            birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
-            email="jane.doe@example.com",
-            phone="0612345678",
-            postal_code="93130",
-            address="11 Rue du Test",
-            application_id=123,
-            procedure_id=123456,
-            civility="Mme",
-            activity="Étudiant",
-        )
-        applicant = users_factories.UserFactory(email=information.email)
-        # when
-        import_dms_users.process_beneficiary_application(information=information, procedure_id=123456, user=applicant)
-
-        # then
-        beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.beneficiary.email == "jane.doe@example.com"
-        assert beneficiary_import.currentStatus == ImportStatus.CREATED
-        assert beneficiary_import.applicationId == 123
-
-    @patch("pcapi.scripts.beneficiary.import_dms_users.repository")
-    @patch("pcapi.scripts.beneficiary.import_dms_users.user_emails.send_activation_email")
-    @pytest.mark.usefixtures("db_session")
-    def test_error_is_collected_if_beneficiary_could_not_be_saved(self, send_activation_email, mock_repository, app):
-        # given
-        information = fraud_factories.DMSContentFactory(application_id=123)
-        applicant = users_factories.UserFactory(email=information.email)
-
-        mock_repository.save.side_effect = [ApiErrors({"postalCode": ["baaaaad value"]})]
-
-        # when
-        import_dms_users.process_beneficiary_application(information, procedure_id=123456, user=applicant)
-
-        # then
-        send_activation_email.assert_not_called()
-        assert len(push_testing.requests) == 0
 
 
 class ParseBeneficiaryInformationTest:
@@ -953,7 +875,7 @@ class RunIntegrationTest:
         get_application_details.side_effect = self._get_details
 
         # when
-        process_mock = mocker.patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
+        process_mock = mocker.patch("pcapi.core.subscription.api.on_successful_application")
         import_dms_users.run(
             procedure_id=6712558,
         )
@@ -1004,7 +926,7 @@ class RunIntegrationTest:
         get_application_details.side_effect = self._get_details
 
         # when
-        process_mock = mocker.patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
+        process_mock = mocker.patch("pcapi.core.subscription.api.on_successful_application")
         import_dms_users.run(
             procedure_id=6712558,
         )

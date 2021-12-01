@@ -14,9 +14,9 @@ from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exception
+from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
-from pcapi.core.users.external import update_external_user
 from pcapi.domain import user_emails as old_user_emails
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
@@ -125,7 +125,7 @@ def activate_beneficiary(
 
     db.session.refresh(user)
 
-    update_external_user(user)
+    users_external.update_external_user(user)
     _send_beneficiary_activation_email(user, has_activated_account)
 
     return user
@@ -250,3 +250,24 @@ def get_next_subscription_step(user: users_models.User) -> Optional[models.Subsc
         return models.SubscriptionStep.IDENTITY_CHECK
 
     return None
+
+
+def on_successful_application(
+    user: users_models.User, source_data: fraud_models.DMSContent, application_id: int, source_id: int
+):
+    users_api.update_user_information_from_external_source(user, source_data)
+    # unsure ?
+    user.hasCompletedIdCheck = True
+    pcapi_repository.repository.save(user)
+
+    create_successfull_beneficiary_import(
+        user=user,
+        source=BeneficiaryImportSources.demarches_simplifiees,
+        source_id=source_id,
+        application_id=application_id,
+    )
+
+    if not users_api.steps_to_become_beneficiary(user):
+        activate_beneficiary(user)
+    else:
+        users_external.update_external_user(user)
