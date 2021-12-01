@@ -269,7 +269,7 @@ def validate_phone_number_and_activate_user(user: User, code: str) -> User:
 
 def update_beneficiary_mandatory_information(
     user: User,
-    address: str,
+    address: Optional[str],
     city: str,
     postal_code: str,
     activity: str,
