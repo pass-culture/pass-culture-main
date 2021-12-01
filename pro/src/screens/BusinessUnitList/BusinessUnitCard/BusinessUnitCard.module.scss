@@ -1,0 +1,77 @@
+.venue-list {
+  margin-top: rem(16px);
+}
+
+.business-unit-form {
+  align-items: flex-end;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: rem(32px);
+  margin-top: rem(24px);
+
+  div {
+    width: 70%;
+  }
+
+  button {
+    width: 28%;
+  }
+}
+
+.business-unit-card {
+  border: 1px solid #c7c8cb;
+  border-radius: 6px;
+  padding: rem(16px);
+}
+
+.business-unit-title {
+  display: flex;
+
+  img {
+    width: rem(30px);
+  }
+}
+
+.business-unit-informations {
+  display: flex;
+  justify-content: space-between;
+  margin: rem(24px) 0;
+}
+
+.business-unit-bank-informations {
+  background-color: $grey-light;
+  border-radius: 6px;
+  padding: rem(16px);
+  width: 50%;
+
+  li {
+    margin-bottom: rem(8px);
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.bank-information-label {
+  color: $grey-dark;
+}
+
+.business-unit-reference-siret {
+  border: 1px solid $light-purple;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: rem(16px);
+}
+
+.business-unit-siret-label {
+  color: $grey-dark;
+  margin-bottom: rem(8px);
+}
+
+.reference-siret-title {
+  margin-bottom: rem(8px);
+  margin-top: rem(24px);
+}

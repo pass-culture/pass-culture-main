@@ -46,6 +46,7 @@ def test_get_business_units_by_pro(client):
     assert business_units[0] == {
         "id": business_unit1.id,
         "iban": "FR1234",
+        "bic": "BDFEFRPP",
         "name": "La business unit",
         "siret": "123456",
     }

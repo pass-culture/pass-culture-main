@@ -20,9 +20,9 @@ class BusinessUnitResponseModel(BaseModel):
     class Config:
         orm_mode = True
 
-    bic: str
     id: int
     iban: str
+    bic: str
     name: str
     # FIXME (dbaty, 2021-12-15): SIRET may be NULL while we initialize
     # business units. In a few months, all business units should have
@@ -32,6 +32,7 @@ class BusinessUnitResponseModel(BaseModel):
     @classmethod
     def from_orm(cls, business_unit: finance_models.BusinessUnit):
         business_unit.iban = business_unit.bankAccount.iban
+        business_unit.bic = business_unit.bankAccount.bic
         res = super().from_orm(business_unit)
         return res
 
