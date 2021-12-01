@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import fr from 'date-fns/locale/fr'
 import { useField } from 'formik'
 import React from 'react'
@@ -32,30 +33,35 @@ const DatePicker = ({
   const [field, meta, helpers] = useField({ name, type: 'date' })
 
   return (
-    <div className={className}>
-      <label>
+    <div className={cn(styles['date-picker'], className)}>
+      <label
+        className={styles['date-picker-label']}
+        htmlFor={`datepicker-${name}`}
+      >
         {label}
-        <ReactDatePicker
-          className="datetime-input"
-          customInput={
-            <input
-              className={styles['date-picker-input']}
-              type="date"
-              {...field}
-            />
-          }
-          dateFormat="dd/MM/yyyy"
-          disabled={disabled}
-          dropdownMode="scroll"
-          locale="fr"
-          maxDate={maxDateTime}
-          minDate={minDateTime}
-          onChange={date => helpers.setValue(date)}
-          openToDate={field.value ? field.value : openingDateTime}
-          placeholderText="JJ/MM/AAAA"
-          selected={field.value ?? new Date()}
-        />
       </label>
+      <ReactDatePicker
+        className="datetime-input"
+        customInput={
+          <input
+            className={styles['date-picker-input']}
+            id={`datepicker-${name}`}
+            type="date"
+            {...field}
+          />
+        }
+        dateFormat="dd/MM/yyyy"
+        disabled={disabled}
+        dropdownMode="scroll"
+        locale="fr"
+        maxDate={maxDateTime}
+        minDate={minDateTime}
+        onChange={date => helpers.setValue(date)}
+        openToDate={field.value ? field.value : openingDateTime}
+        placeholderText="JJ/MM/AAAA"
+        selected={field.value ?? new Date()}
+      />
+
       {meta.touched && !!meta.error && <FieldError>{meta.error}</FieldError>}
     </div>
   )

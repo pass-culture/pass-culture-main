@@ -12,11 +12,7 @@ interface IFieldErrorProps {
 
 const FieldError = ({ children, className }: IFieldErrorProps): JSX.Element => (
   <div className={cn(styles['field-error'], className)}>
-    <Icon
-      alt="Une erreur est survenue"
-      png={null}
-      svg="ico-notification-error-red"
-    />
+    <Icon alt={null} png={null} svg="ico-notification-error-red" />
     <span>{children}</span>
   </div>
 )
