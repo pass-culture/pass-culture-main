@@ -2,6 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi import settings
+
 from tests.conftest import TestClient
 
 
@@ -10,7 +12,7 @@ class Returns202Test:
     @pytest.mark.usefixtures("db_session")
     def when_has_valid_provider_name_and_dossier_id(self, mock_bank_information_job, app):
         # Given
-        data = {"dossier_id": "666"}
+        data = {"dossier_id": "666", "procedure_id": settings.DMS_VENUE_PROCEDURE_ID}
 
         # When
         response = TestClient(app.test_client()).post(
@@ -19,7 +21,7 @@ class Returns202Test:
 
         # Then
         assert response.status_code == 202
-        mock_bank_information_job.assert_called_once_with("666", "offerer")
+        mock_bank_information_job.assert_called_once_with("666", "offerer", settings.DMS_VENUE_PROCEDURE_ID)
 
 
 class Returns400Test:
@@ -27,7 +29,7 @@ class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def when_has_not_dossier_in_request_form_data(self, mock_bank_information_job, app):
         # Given
-        data = {"fake_key": "666"}
+        data = {"fake_key": "666", "procedure_id": settings.DMS_VENUE_PROCEDURE_ID}
 
         # When
         response = TestClient(app.test_client()).post(
@@ -43,7 +45,7 @@ class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_has_not_a_token_in_url_params(self, mock_bank_information_job, app):
         # Given
-        data = {"dossier_id": "666"}
+        data = {"dossier_id": "666", "procedure_id": settings.DMS_VENUE_PROCEDURE_ID}
 
         # When
         response = TestClient(app.test_client()).post("/bank_informations/offerer/application_update", form=data)
@@ -55,7 +57,7 @@ class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_token_in_url_params_is_not_good(self, mock_bank_information_job, app):
         # Given
-        data = {"dossier_id": "666"}
+        data = {"dossier_id": "666", "procedure_id": settings.DMS_VENUE_PROCEDURE_ID}
 
         # When
         response = TestClient(app.test_client()).post(
