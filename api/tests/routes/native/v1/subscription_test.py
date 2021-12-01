@@ -68,8 +68,8 @@ class UpdateProfileTest:
         assert response.status_code == 204
 
         user = users_models.User.query.get(user.id)
-        assert user.firstName == "John"
-        assert user.lastName == "Doe"
+        assert user.firstName != "John"
+        assert user.lastName != "Doe"
         assert user.address == "1 rue des rues"
         assert user.city == "Uneville"
         assert user.postalCode == "77000"
@@ -150,6 +150,8 @@ class UpdateProfileTest:
             city=None,
             postalCode=None,
             activity=None,
+            firstName=None,
+            lastName=None,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             phoneNumber="+33609080706",
             dateOfBirth=datetime.date.today() - relativedelta(years=age, months=6),
