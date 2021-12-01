@@ -7,6 +7,7 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
@@ -16,6 +17,7 @@ import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
 import { ReactComponent as ClosedEyeSvg } from './assets/ico-eye-close.svg'
 import { ReactComponent as OpenedEyeSvg } from './assets/ico-eye-open.svg'
 import BankInformations from './BankInformations'
+import BusinessUnits from './BusinessUnits'
 
 const hasRejectedOrDraftBankInformation = offerer =>
   Boolean(
@@ -30,6 +32,10 @@ const OffererDetails = ({
   selectedOfferer,
 }) => {
   const [isExpanded, setIsExpanded] = useState(!hasPhysicalVenues)
+
+  const isBankInformationWithSiretActive = useActiveFeature('ENFORCE_BANK_INFORMATION_WITH_SIRET')
+
+
   useEffect(() => setIsExpanded(!hasPhysicalVenues), [hasPhysicalVenues])
 
   const toggleVisibility = useCallback(
@@ -137,19 +143,30 @@ const OffererDetails = ({
                     </ul>
                   </div>
                 </div>
-                {(selectedOfferer.hasMissingBankInformation ||
-                  hasRejectedOrDraftOffererBankInformations) && (
-                  <div className="h-card-col">
-                    <BankInformations
-                      hasMissingBankInformation={
-                        selectedOfferer.hasMissingBankInformation
-                      }
-                      hasRejectedOrDraftOffererBankInformations={
-                        hasRejectedOrDraftOffererBankInformations
-                      }
-                      offerer={selectedOfferer}
-                    />
-                  </div>
+                {(
+                  isBankInformationWithSiretActive ? (
+                    <div className="h-card-col">
+                      <BusinessUnits
+                        offererId={selectedOfferer.id}
+                      />
+                    </div>
+                  ) : (
+                    true ||
+                    selectedOfferer.hasMissingBankInformation ||
+                    hasRejectedOrDraftOffererBankInformations
+                  ) && (
+                    <div className="h-card-col">
+                      <BankInformations
+                        hasMissingBankInformation={
+                          selectedOfferer.hasMissingBankInformation
+                        }
+                        hasRejectedOrDraftOffererBankInformations={
+                          hasRejectedOrDraftOffererBankInformations
+                        }
+                        offerer={selectedOfferer}
+                      />
+                    </div>
+                  )
                 )}
               </div>
             )}

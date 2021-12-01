@@ -1,131 +1,131 @@
 .card {
-    border: rem(1px) solid $grey-medium;
-    border-radius: rem(8px);
-    box-shadow: 0 rem(2px) rem(6px) 0 rgba($black, 0.15);
-    overflow: hidden;
+  border: rem(1px) solid $grey-medium;
+  border-radius: rem(8px);
+  box-shadow: 0 rem(2px) rem(6px) 0 rgba($black, 0.15);
+  overflow: hidden;
 
-    &.card-placeholder {
-      min-height: rem(205px);
-
-      .card-inner {
-        align-items: center;
-        display: flex;
-        justify-content: center;
-        min-height: rem(205px);
-      }
-    }
+  &.card-placeholder {
+    min-height: rem(205px);
 
     .card-inner {
-      border-left: rem(8px) solid $grey-medium;
-      height: 100%;
-      padding: rem(16px) rem(16px) rem(24px);
-      width: 100%;
-
-      &.h-no-bottom {
-        padding-bottom: 0;
-      }
-    }
-
-    .card-header-row {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-
-      .tertiary-link {
-        align-self: center;
-        display: flex;
-      }
-    }
-
-    &.card-primary {
-      .card-inner {
-        border-color: $primary;
-      }
-    }
-
-    &.card-secondary {
-      .card-inner {
-        border-color: $secondary;
-      }
-    }
-
-    &.card-secondary-hover {
-      &:focus,
-      &:hover {
-        border-color: $secondary;
-
-        .card-inner {
-          border-color: $secondary;
-        }
-      }
-    }
-
-    .card-title {
-      @include title4();
-
       align-items: center;
       display: flex;
-      flex-direction: row;
-
-      .card-title-ico {
-        margin-left: rem(-8px);
-        margin-right: rem(3px);
-      }
+      justify-content: center;
+      min-height: rem(205px);
     }
+  }
 
-    .card-secondary-title {
-      @include body();
+  .card-inner {
+    border-left: rem(8px) solid $grey-medium;
+    height: 100%;
+    padding: rem(16px) rem(16px) rem(24px);
+    width: 100%;
 
-      .ico-bank-warning {
-        margin-left: rem(8px);
-        vertical-align: middle;
-      }
+    &.h-no-bottom {
+      padding-bottom: 0;
     }
+  }
 
-    .card-content {
-      margin-top: rem(16px);
+  .card-header-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 
-      p {
-        color: $grey-dark;
-      }
-
-      .bi-banner {
-        p {
-          color: $black;
-        }
-
-        .bi-link {
-          display: flex;
-          margin-top: rem(8px);
-
-          img {
-            display: block;
-            flex: 0 1 rem(25px);
-          }
-        }
-      }
-    }
-
-    .card-cols {
+    .tertiary-link {
+      align-self: center;
       display: flex;
-      flex-direction: row;
-      margin-top: rem(16px);
+    }
+  }
 
-      .card-col {
-        border-left: rem(1px) solid $grey-medium;
-        flex: 1 1;
-        overflow: hidden;
-        padding-left: rem(24px);
-        padding-right: rem(24px);
+  &.card-primary {
+    .card-inner {
+      border-color: $primary;
+    }
+  }
 
-        &:first-child {
-          border: 0;
-          padding-left: 0;
-        }
+  &.card-secondary {
+    .card-inner {
+      border-color: $secondary;
+    }
+  }
 
-        &:last-child {
-          padding-right: 0;
+  &.card-secondary-hover {
+    &:focus,
+    &:hover {
+      border-color: $secondary;
+
+      .card-inner {
+        border-color: $secondary;
+      }
+    }
+  }
+
+  .card-title {
+    @include title4();
+
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+
+    .card-title-ico {
+      margin-left: rem(-8px);
+      margin-right: rem(3px);
+    }
+  }
+
+  .card-secondary-title {
+    @include body();
+
+    .ico-bank-warning {
+      margin-left: rem(8px);
+      vertical-align: middle;
+    }
+  }
+
+  .card-content {
+    margin-top: rem(16px);
+
+    p {
+      color: $grey-dark;
+    }
+
+    .bi-banner {
+      p {
+        color: $black;
+      }
+
+      .bi-link {
+        display: flex;
+        margin-top: rem(8px);
+
+        img {
+          display: block;
+          flex: 0 1 rem(25px);
         }
       }
     }
   }
+
+  .card-cols {
+    display: flex;
+    flex-direction: row;
+    margin-top: rem(16px);
+
+    .card-col {
+      border-left: rem(1px) solid $grey-medium;
+      flex: 1 1;
+      overflow: hidden;
+      padding-left: rem(24px);
+      padding-right: rem(24px);
+
+      &:first-child {
+        border: 0;
+        padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+  }
+}

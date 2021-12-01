@@ -10,44 +10,41 @@ interface ICardProps {
   children: JSX.Element[] | JSX.Element
   className?: string
 
-  cardStyle?: CardStyle,
-  title?: string | JSX.Element | null,
-  titleAction?: JSX.Element[] | JSX.Element | null,
-  titleIcon?: string | null,
-  secondaryTitle?: string | JSX.Element | null,
+  cardStyle?: CardStyle
+  secondaryTitle?: string | JSX.Element | null
+  title?: string | JSX.Element | null
+  titleAction?: JSX.Element[] | JSX.Element | null
+  titleIcon?: string | null
 }
 
 const Card = ({
   cardStyle = 'primary',
   children,
   className = '',
+  secondaryTitle = null,
   title = null,
   titleAction = null,
   titleIcon = null,
-  secondaryTitle = null,
 }: ICardProps): JSX.Element => {
   const classnames = cn(styles['card'], styles[`card-${cardStyle}`], className)
-
 
   return (
     <div className={classnames}>
       <div className={styles['card-inner']}>
         {(title || secondaryTitle) && (
           <HeaderRow
+            secondaryTitle={secondaryTitle}
             title={title}
             titleAction={titleAction}
             titleIcon={titleIcon}
-            secondaryTitle={secondaryTitle}
           />
         )}
         <div className={styles['card-content']}>
-          { secondaryTitle && (
-            <h3 className={styles['card-secondary-title']}>
-              {secondaryTitle}
-            </h3>
+          {secondaryTitle && (
+            <h3 className={styles['card-secondary-title']}>{secondaryTitle}</h3>
           )}
 
-          { children }
+          {children}
         </div>
       </div>
     </div>
