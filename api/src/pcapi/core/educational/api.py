@@ -19,6 +19,7 @@ from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -257,6 +258,11 @@ def create_educational_deposit(
     repository.save(educational_deposit)
 
     return educational_deposit
+
+
+def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
+    venue = offerers_models.Venue.query.filter_by(siret=siret).one()
+    return [venue]
 
 
 def _build_prebooking_mail_data(booking: bookings_models.Booking) -> dict:
