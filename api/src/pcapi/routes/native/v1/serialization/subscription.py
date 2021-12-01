@@ -1,6 +1,7 @@
 from typing import Optional
 
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.users import models as users_models
 from pcapi.serialization.utils import to_camel
 
 from . import BaseModel
@@ -12,3 +13,16 @@ class NextSubscriptionStepResponse(BaseModel):
     class Config:
         alias_generator = to_camel
         allow_population_by_field_name = True
+
+
+class ProfileUpdateRequest(BaseModel):
+    activity: users_models.ActivityEnum
+    address: Optional[str]
+    city: str
+    first_name: str
+    last_name: str
+    postal_code: str
+
+    class Config:
+        use_enum_values = True
+        alias_generator = to_camel
