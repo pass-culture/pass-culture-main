@@ -107,13 +107,13 @@ class PartnerUserViewTest:
 
         # Super admin suspends partner
         url = f"/pc/back-office/partner_users/suspend?user_id={partner.id}"
-        suspend_response = client.post(url, form={"reason": "fraud", "csrf_token": "token"})
+        suspend_response = client.post(url, form={"reason": "fraud suspicion", "csrf_token": "token"})
         assert suspend_response.status_code == 302
         assert not partner.isActive
 
         # Super admin unsuspends partner
         url = f"/pc/back-office/partner_users/unsuspend?user_id={partner.id}"
-        unsuspend_response = client.post(url, form={"reason": "fraud", "csrf_token": "token"})
+        unsuspend_response = client.post(url, form={"reason": "fraud suspicion", "csrf_token": "token"})
         assert unsuspend_response.status_code == 302
         assert partner.isActive
 
