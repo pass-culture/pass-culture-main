@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from pcapi import settings
 from pcapi.workers.bank_information_job import bank_information_job
 
 
@@ -11,7 +12,7 @@ class synchronizeBankInformationsTest:
         provider_name = "offerer"
 
         # When
-        bank_information_job(application_id, provider_name)
+        bank_information_job(application_id, provider_name, settings.DMS_VENUE_PROCEDURE_ID)
 
         # Then
         mock_save_offerer_bank_informations.assert_called_once_with("id")
@@ -23,10 +24,10 @@ class synchronizeBankInformationsTest:
         provider_name = "venue"
 
         # When
-        bank_information_job(application_id, provider_name)
+        bank_information_job(application_id, provider_name, settings.DMS_VENUE_PROCEDURE_ID)
 
         # Then
-        mock_save_venue_bank_informations.assert_called_once_with("id", None)
+        mock_save_venue_bank_informations.assert_called_once_with("id", settings.DMS_VENUE_PROCEDURE_ID)
 
     @patch("pcapi.workers.bank_information_job.save_venue_bank_informations.execute")
     @patch("pcapi.workers.bank_information_job.save_offerer_bank_informations.execute")
@@ -38,7 +39,7 @@ class synchronizeBankInformationsTest:
         provider_name = ""
 
         # When
-        bank_information_job(application_id, provider_name)
+        bank_information_job(application_id, provider_name, settings.DMS_VENUE_PROCEDURE_ID)
 
         # Then
         mock_save_offerer_bank_informations.assert_not_called()
