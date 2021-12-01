@@ -11,7 +11,6 @@ export type IUserVenue = {
 export type IUserOfferer = {
   id: string
   name: string
-  siren: string
   managedVenues: IUserVenue[]
 }
 
