@@ -2,7 +2,7 @@ import pytest
 import sqlalchemy
 from sqlalchemy.sql import text
 
-import pcapi.core.users.api as users_api
+import pcapi.core.subscription.api as subscription_api
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models.beneficiary_import_status import ImportStatus
@@ -32,7 +32,7 @@ class ConcurrencyUpdateBeneficiaryMandatoryInformationTest:
             connection.execute(text("""SELECT * FROM "user" WHERE "user".id = :user_id FOR UPDATE"""), user_id=user.id)
 
             with pytest.raises(sqlalchemy.exc.OperationalError):
-                users_api.update_beneficiary_mandatory_information(
+                subscription_api.update_user_profile(
                     user=user,
                     address=new_address,
                     city=new_city,

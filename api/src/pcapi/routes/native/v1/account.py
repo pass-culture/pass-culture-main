@@ -141,7 +141,7 @@ def get_email_update_token_expiration_date(user: User) -> serializers.UpdateEmai
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_user_required
 def update_beneficiary_mandatory_information(user: User, body: serializers.BeneficiaryInformationUpdateRequest) -> None:
-    api.update_beneficiary_mandatory_information(
+    subscription_api.update_user_profile(
         user=user,
         first_name=body.first_name,
         last_name=body.last_name,
