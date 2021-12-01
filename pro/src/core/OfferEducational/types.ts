@@ -46,10 +46,7 @@ export type IOfferEducationalFormValues = {
     venueId: string
   }
   participants: string[]
-  visualDisabilityCompliant: boolean
-  mentalDisabilityCompliant: boolean
-  motorDisabilityCompliant: boolean
-  audioDisabilityCompliant: boolean
+  accessibility: string[]
   phone: string
   email: string
   notifications: boolean

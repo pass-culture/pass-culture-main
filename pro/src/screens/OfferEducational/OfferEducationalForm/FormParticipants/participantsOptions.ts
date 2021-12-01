@@ -7,4 +7,7 @@ export const participantsOptions = [
   'Lycée - Première',
   'Lycée - Terminale',
   'Tous les niveaux',
-]
+].map(item => ({
+  label: item,
+  value: item,
+}))
