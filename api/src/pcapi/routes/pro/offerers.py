@@ -214,10 +214,11 @@ def can_offerer_create_educational_offer(humanized_offerer_id: str):
         raise ApiErrors({"adage_api": "error"}, 500)
 
 
-@private_api.route("/offerers/<offerer_id>/business_unit_list", methods=["GET"])
+@private_api.route("/offerers/<humanized_offerer_id>/business_unit_list", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=ListBankInformationsResponseModel)
-def get_offerer_business_unit_list(offerer_id: str) -> ListBankInformationsResponseModel:
+def get_offerer_business_unit_list(humanized_offerer_id: str) -> ListBankInformationsResponseModel:
+    offerer_id = dehumanize(humanized_offerer_id)
     check_user_has_access_to_offerer(current_user, offerer_id)
 
     business_units = get_business_unit_for_offerer_id(offerer_id)

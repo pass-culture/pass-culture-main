@@ -12,6 +12,12 @@ def get_business_unit_for_offerer_id(offerer_id: str) -> list:
         .join(Venue, models.BusinessUnit.id == Venue.businessUnitId)
         .filter(Venue.managingOffererId == offerer_id)
         .distinct(models.BusinessUnit.id)
-        .with_entities(models.BusinessUnit.id, models.BusinessUnit.siret, BankInformation.iban)
+        .with_entities(
+            models.BusinessUnit.id,
+            models.BusinessUnit.siret,
+            models.BusinessUnit.name,
+            BankInformation.iban,
+            BankInformation.bic,
+        )
         .all()
     )

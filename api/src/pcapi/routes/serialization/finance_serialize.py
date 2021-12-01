@@ -2,8 +2,10 @@ from pydantic import BaseModel
 
 
 class BankInformationsResponseModel(BaseModel):
+    bic: str
     id: int
     iban: str
+    name: str
     siret: str
 
     class Config:
