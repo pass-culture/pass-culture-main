@@ -27,6 +27,7 @@ const Offerers = () => {
   const [offererOptions, setOffererOptions] = useState([])
   const [selectedOffererId, setSelectedOffererId] = useState(null)
   const [selectedOfferer, setSelectedOfferer] = useState(null)
+  const [businessUnitList, setBusinessUnitList] = useState([])
   const [physicalVenues, setPhysicalVenues] = useState(INITIAL_PHYSICAL_VENUES)
   const [virtualVenue, setVirtualVenue] = useState(INITIAL_VIRTUAL_VENUE)
   const [isLoading, setIsLoading] = useState(true)
@@ -62,10 +63,9 @@ const Offerers = () => {
   )
 
   useEffect(() => {
-    if (!selectedOffererId) return
-    pcapi
-      .getOfferer(selectedOffererId)
-      .then(receivedOfferer => {
+    async function loadOfferer (offererId) {
+      try {
+        const receivedOfferer = await pcapi.getOfferer(offererId)
         setSelectedOfferer(receivedOfferer)
         setPhysicalVenues(
           receivedOfferer.managedVenues.filter(venue => !venue.isVirtual)
@@ -75,18 +75,23 @@ const Offerers = () => {
         )
         setVirtualVenue(virtualVenue)
         setIsUserOffererValidated(true)
-      })
-      .catch(error => {
+
+        const receivedBusinessUnitList = await pcapi.getBusinessUnitList(offererId)
+        setBusinessUnitList(receivedBusinessUnitList)
+
+      } catch (error) {
         if (error.status === HTTP_STATUS.FORBIDDEN) {
-          setSelectedOfferer({ id: selectedOffererId, managedVenues: [] })
+          setSelectedOfferer({ id: offererId, managedVenues: [] })
+          setBusinessUnitList([])
           setPhysicalVenues(INITIAL_PHYSICAL_VENUES)
           setVirtualVenue(INITIAL_VIRTUAL_VENUE)
           setIsUserOffererValidated(false)
         }
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
+      }
+
+      setIsLoading(false)
+    }
+    selectedOffererId && loadOfferer(selectedOffererId)
   }, [selectedOffererId])
 
   const handleChangeOfferer = useCallback(
@@ -118,6 +123,7 @@ const Offerers = () => {
       {userHasOfferers && selectedOfferer && (
         <>
           <OffererDetails
+            businessUnitList={businessUnitList}
             handleChangeOfferer={handleChangeOfferer}
             hasPhysicalVenues={physicalVenues.length > 0}
             isUserOffererValidated={isUserOffererValidated}
