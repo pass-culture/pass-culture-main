@@ -42,7 +42,6 @@ from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import set_pro_tuto_as_seen
 from pcapi.core.users.api import steps_to_become_beneficiary
-from pcapi.core.users.api import update_beneficiary_mandatory_information
 from pcapi.core.users.exceptions import CloudTaskCreationException
 from pcapi.core.users.exceptions import IdentityDocumentUploadException
 from pcapi.core.users.factories import BeneficiaryImportFactory
@@ -684,7 +683,7 @@ class UpdateBeneficiaryMandatoryInformationTest:
 
         new_address = f"{user.address}_test"
         new_city = f"{user.city}_test"
-        update_beneficiary_mandatory_information(
+        subscription_api.update_user_profile(
             user=user,
             address=new_address,
             city=new_city,
@@ -716,7 +715,7 @@ class UpdateBeneficiaryMandatoryInformationTest:
 
         new_address = f"{user.address}_test"
         new_city = f"{user.city}_test"
-        update_beneficiary_mandatory_information(
+        subscription_api.update_user_profile(
             user=user,
             address=new_address,
             city=new_city,
@@ -735,7 +734,7 @@ class UpdateBeneficiaryMandatoryInformationTest:
 
     def test_user_has_not_passed_fraud_checks(self):
         user = users_factories.UserFactory()
-        users_api.update_beneficiary_mandatory_information(
+        subscription_api.update_user_profile(
             user=user,
             address=f"{user.address}_test",
             city=f"{user.city}_test",
@@ -748,7 +747,7 @@ class UpdateBeneficiaryMandatoryInformationTest:
     def test_user_is_fraudster(self):
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudResultFactory(user=user, status=fraud_models.FraudStatus.OK)
-        users_api.update_beneficiary_mandatory_information(
+        subscription_api.update_user_profile(
             user=user,
             address=f"{user.address}_test",
             city=f"{user.city}_test",

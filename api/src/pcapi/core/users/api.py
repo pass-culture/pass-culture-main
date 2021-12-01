@@ -42,7 +42,6 @@ from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
-from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import does_validated_phone_exist
 from pcapi.core.users.utils import delete_object
@@ -62,7 +61,6 @@ from pcapi.notifications.sms import send_transactional_sms
 from pcapi.notifications.sms.sending_limit import is_SMS_sending_allowed
 from pcapi.notifications.sms.sending_limit import update_sent_SMS_counter
 from pcapi.repository import repository
-from pcapi.repository import transaction
 from pcapi.repository import user_queries
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
@@ -265,61 +263,6 @@ def validate_phone_number_and_activate_user(user: User, code: str) -> User:
         except subscription_exceptions.CannotUpgradeBeneficiaryRole:
             # TODO(viconnex): there should not be any case where we activate benficiary after phone validation
             logger.warning("Trying to activate beneficiary right after phone validation", extra={"user_id": user.id})
-
-
-def update_beneficiary_mandatory_information(
-    user: User,
-    address: Optional[str],
-    city: str,
-    postal_code: str,
-    activity: str,
-    first_name: Optional[str] = None,
-    last_name: Optional[str] = None,
-    phone_number: Optional[str] = None,
-) -> None:
-    user_initial_roles = user.roles
-
-    update_payload = {
-        "address": address,
-        "city": city,
-        "postalCode": postal_code,
-        "departementCode": PostalCode(postal_code).get_departement_code(),
-        "activity": activity,
-        "hasCompletedIdCheck": True,
-    }
-
-    if first_name and not user.firstName:
-        update_payload["firstName"] = first_name
-
-    if last_name and not user.lastName:
-        update_payload["lastName"] = last_name
-
-    if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active() and not user.phoneNumber and phone_number:
-        update_payload["phoneNumber"] = phone_number
-
-    with transaction():
-        User.query.filter(User.id == user.id).update(update_payload)
-    db.session.refresh(user)
-
-    if (
-        not steps_to_become_beneficiary(user)
-        # the 2 following checks should be useless
-        and fraud_api.has_user_performed_identity_check(user)
-        and not fraud_api.is_user_fraudster(user)
-    ):
-        subscription_api.check_and_activate_beneficiary(user.id)
-    else:
-        update_external_user(user)
-
-    new_user_roles = user.roles
-    underage_user_has_been_activated = (
-        UserRole.UNDERAGE_BENEFICIARY in new_user_roles and UserRole.UNDERAGE_BENEFICIARY not in user_initial_roles
-    )
-
-    logger.info(
-        "User id check profile updated",
-        extra={"user": user.id, "has_been_activated": user.has_beneficiary_role or underage_user_has_been_activated},
-    )
 
 
 def update_user_information_from_external_source(
