@@ -1043,11 +1043,11 @@ PRATIQUE_ART_VENTE_DISTANCE = Subcategory(
     is_event=False,
     conditional_fields=["speaker"],
     can_expire=False,
-    can_be_duo=True,
+    can_be_duo=False,
     can_be_educational=False,
     online_offline_platform=OnlineOfflinePlatformChoices.ONLINE.value,
     is_digital_deposit=False,
-    is_physical_deposit=True,
+    is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
 # endregion
@@ -1215,11 +1215,11 @@ SPECTACLE_VENTE_DISTANCE = Subcategory(
     is_event=False,
     conditional_fields=["author", "showType", "stageDirector", "performer"],
     can_expire=False,
-    can_be_duo=True,
+    can_be_duo=False,
     can_be_educational=False,
     online_offline_platform=OnlineOfflinePlatformChoices.ONLINE.value,
     is_digital_deposit=False,
-    is_physical_deposit=True,
+    is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
 # endregion
