@@ -16,6 +16,7 @@ const TextareaInput = ({
   maxLength,
   name,
   onChange,
+  onBlur,
   placeholder,
   required,
   rows,
@@ -35,6 +36,7 @@ const TextareaInput = ({
         id={name}
         maxLength={maxLength}
         name={name}
+        onBlur={onBlur}
         onChange={onChange}
         placeholder={placeholder}
         required={required}
@@ -57,6 +59,7 @@ TextareaInput.defaultProps = {
   error: null,
   label: null,
   maxLength: null,
+  onBlur: null,
   onChange: null,
   placeholder: '',
   required: false,
@@ -72,6 +75,7 @@ TextareaInput.propTypes = {
   label: PropTypes.string,
   maxLength: PropTypes.number,
   name: PropTypes.string.isRequired,
+  onBlur: PropTypes.func,
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
   required: PropTypes.bool,
