@@ -165,6 +165,18 @@ class ActivityEnum(enum.Enum):
     unemployed = "Chômeur"
 
 
+class SchoolType(enum.Enum):
+    AGRICULTURAL_HIGH_SCHOOL = "Lycée agricole"
+    APPRENTICE_FORMATION_CENTER = "Centre de formation d'apprentis"
+    MILITARY_HIGH_SCHOOL = "Lycée militaire"
+    HOME_OR_REMOTE_SCHOOLING = "À domicile ou au CNED"
+    NAVAL_HIGH_SCHOOL = "Lycée maritime"
+    PRIVATE_HIGH_SCHOOL = "Lycée privé"
+    PRIVATE_SECONDARY_SCHOOL = "Collège privé"
+    PUBLIC_HIGH_SCHOOL = "Lycée public"
+    PUBLIC_SECONDARY_SCHOOL = "Collège public"
+
+
 class User(PcObject, Model, NeedsValidationMixin):
     __tablename__ = "user"
 
@@ -229,6 +241,7 @@ class User(PcObject, Model, NeedsValidationMixin):
         nullable=False,
         server_default="{}",
     )
+    schoolType = sa.Column(sa.Enum(SchoolType, create_constraint=False), nullable=True)
     subscriptionState = sa.Column(sa.Enum(SubscriptionState, create_constraint=False), nullable=True)
     # FIXME (dbaty, 2020-12-14): once v114 has been deployed, populate
     # existing rows with the empty string and add NOT NULL constraint.
