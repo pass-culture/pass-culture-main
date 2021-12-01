@@ -1526,8 +1526,8 @@ class UpdateBeneficiaryInformationTest:
         assert response.status_code == 204
 
         user = User.query.get(user.id)
-        assert user.firstName == "John"
-        assert user.lastName == "Doe"
+        assert user.firstName != "John"
+        assert user.lastName != "Doe"
         assert user.address == "1 rue des rues"
         assert user.city == "Uneville"
         assert user.postalCode == "77000"
@@ -1723,8 +1723,8 @@ class UpdateBeneficiaryInformationTest:
         assert response.status_code == 204
 
         user = User.query.get(user.id)
-        assert user.firstName == "John"
-        assert user.lastName == "Doe"
+        assert user.firstName != "John"
+        assert user.lastName != "Doe"
         assert user.address == "1 rue des rues"
         assert user.city == "Uneville"
         assert user.postalCode == "77000"

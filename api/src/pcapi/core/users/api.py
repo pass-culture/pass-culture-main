@@ -288,10 +288,10 @@ def update_beneficiary_mandatory_information(
         "hasCompletedIdCheck": True,
     }
 
-    if first_name:
+    if first_name and not user.firstName:
         update_payload["firstName"] = first_name
 
-    if last_name:
+    if last_name and not user.lastName:
         update_payload["lastName"] = last_name
 
     if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active() and not user.phoneNumber and phone_number:
