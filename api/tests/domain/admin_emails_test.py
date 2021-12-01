@@ -15,6 +15,7 @@ from pcapi.domain.admin_emails import send_offer_rejection_notification_to_admin
 from pcapi.domain.admin_emails import send_offer_validation_notification_to_administration
 from pcapi.domain.admin_emails import send_payment_details_email
 from pcapi.domain.admin_emails import send_payments_report_emails
+from pcapi.domain.admin_emails import send_suspended_fraudulent_users_email
 from pcapi.domain.admin_emails import send_wallet_balances_email
 
 
@@ -149,3 +150,16 @@ class SendOfferNotificationToAdministrationTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
         assert mails_testing.outbox[0].sent_data["Subject"] == "[Création d’offre - 75] Test Book"
+
+
+@pytest.mark.usefixtures("db_session")
+def test_send_suspended_fraudulent_users_email(app):
+    admin = users_factories.UserFactory(email="admin@email.com")
+    fraudulent_users = [users_factories.UserFactory()]
+    nb_cancelled_bookings = 0
+
+    send_suspended_fraudulent_users_email(fraudulent_users, nb_cancelled_bookings, admin.email)
+
+    assert len(mails_testing.outbox) == 1
+    assert mails_testing.outbox[0].sent_data["To"] == "admin@email.com"
+    assert mails_testing.outbox[0].sent_data["Subject"] == "Fraude : suspension des utilisateurs frauduleux par ids"

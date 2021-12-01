@@ -15,22 +15,5 @@
             </div>
         </div>
     </form>
-
-    {% if fraudulent_users %}
-        <div class="col mb-3">
-            <div>
-                Nombre d'utilisateurs suspendus : {{ nb_fraud_users }}
-            </div>
-            <div>
-                ID des utilisateurs suspendus :
-            </div>
-            {% for user in fraudulent_users %}
-                <div>{{ user.id }}</div>
-            {% endfor %}
-            <div>
-                Nombre de réservations annulées : {{ nb_cancelled_bookings }}
-            </div>
-        </div>
-    {% endif %}
   {% endif %}
 {% endblock %}
