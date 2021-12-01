@@ -161,14 +161,20 @@ class EducationalBooking(PcObject, Model):
         self.status = EducationalBookingStatus.USED_BY_INSTITUTE
 
     def mark_as_refused(self) -> None:
-        from pcapi.core.bookings.models import BookingCancellationReasons
+        from pcapi.core.bookings import models as bookings_models
 
         if self.status == EducationalBookingStatus.USED_BY_INSTITUTE:
             raise exceptions.EducationalBookingNotRefusable()
 
+        if (
+            self.booking.status != bookings_models.BookingStatus.PENDING
+            and self.booking.cancellationLimitDate <= datetime.utcnow()
+        ):
+            raise exceptions.EducationalBookingNotRefusable()
+
         try:
             self.booking.cancel_booking()
-            self.booking.cancellationReason = BookingCancellationReasons.REFUSED_BY_INSTITUTE
+            self.booking.cancellationReason = bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE
         except booking_exceptions.BookingIsAlreadyUsed:
             raise exceptions.EducationalBookingNotRefusable()
         except booking_exceptions.BookingIsAlreadyCancelled:

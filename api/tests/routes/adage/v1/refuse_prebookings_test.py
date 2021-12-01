@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from freezegun import freeze_time
 import pytest
 
@@ -18,7 +20,7 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     @freeze_time("2022-11-17 15:00:00")
-    def test_refuse_prebooking(self, app) -> None:
+    def test_refuse_educational_booking(self, app) -> None:
         redactor = EducationalRedactorFactory(
             civility="M.",
             firstName="Jean",
@@ -31,6 +33,7 @@ class Returns200Test:
             status=BookingStatus.CONFIRMED,
             stock=stock,
             quantity=20,
+            cancellation_limit_date=datetime(2023, 1, 1),
         )
 
         client = TestClient(app.test_client()).with_eac_token()
@@ -87,6 +90,17 @@ class Returns200Test:
         assert booking.status == BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.REFUSED_BY_INSTITUTE
 
+    def test_refuse_educational_booking_when_pending(self, client) -> None:
+        booking = EducationalBookingFactory(
+            status=BookingStatus.PENDING,
+            cancellationLimitDate=datetime(2020, 1, 1),
+        )
+
+        client.with_eac_token()
+        response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/refuse")
+
+        assert response.status_code == 200
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
@@ -121,3 +135,16 @@ class Returns400Test:
         assert response.status_code == 404
 
         assert response.json == {"code": "EDUCATIONAL_BOOKING_NOT_FOUND"}
+
+    def test_returns_error_when_cancellation_limit_date_is_passed(self, client) -> None:
+        booking = EducationalBookingFactory(
+            status=BookingStatus.CONFIRMED,
+            cancellation_limit_date=datetime(2020, 1, 1),
+        )
+
+        client.with_eac_token()
+        response = client.post(f"/adage/v1/prebookings/{booking.educationalBookingId}/refuse")
+
+        assert response.status_code == 422
+
+        assert response.json == {"code": "EDUCATIONAL_BOOKING_NOT_REFUSABLE"}
