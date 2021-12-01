@@ -38,5 +38,6 @@ def update_profile(user: users_models.User, body: serializers.ProfileUpdateReque
         address=body.address,
         city=body.city,
         postal_code=body.postal_code,
-        activity=body.activity,
+        activity=body.activity.value,
+        school_type=body.school_type,
     )

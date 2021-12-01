@@ -243,6 +243,7 @@ def update_user_profile(
     activity: str,
     first_name: Optional[str] = None,
     last_name: Optional[str] = None,
+    school_type: Optional[users_models.SchoolType] = None,
     phone_number: Optional[str] = None,
 ) -> None:
     user_initial_roles = user.roles
@@ -254,6 +255,7 @@ def update_user_profile(
         "departementCode": PostalCode(postal_code).get_departement_code(),
         "activity": activity,
         "hasCompletedIdCheck": True,
+        "schoolType": school_type,
     }
 
     if first_name and not user.firstName:
