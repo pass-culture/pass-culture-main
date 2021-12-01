@@ -27,7 +27,7 @@ class GetAllUsersWalletBalancesTest:
         balances = get_all_users_wallet_balances()
 
         # then
-        assert len(balances) == 2
+        assert balances.count() == 2
         assert [b.user_id for b in balances] == [user1.id, user2.id]
 
     @pytest.mark.usefixtures("db_session")
@@ -41,7 +41,7 @@ class GetAllUsersWalletBalancesTest:
         balances = get_all_users_wallet_balances()
 
         # then
-        assert len(balances) == 1
+        assert balances.count() == 1
         assert balances[0].user_id == user1.id
 
     @pytest.mark.usefixtures("db_session")

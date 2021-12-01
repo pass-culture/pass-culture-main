@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 from decimal import Decimal
 
@@ -12,7 +13,6 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.domain.payments import generate_payment_details_csv
 from pcapi.domain.payments import generate_wallet_balances_csv
 from pcapi.models.payment import Payment
-from pcapi.models.wallet_balance import WalletBalance
 from pcapi.utils.human_ids import humanize
 
 
@@ -178,12 +178,18 @@ class GeneratePaymentDetailsCsvTest:
 
 
 class WalletBalancesCSVTest:
+    @dataclasses.dataclass
+    class RowResult:
+        user_id: int
+        current_balance: Decimal
+        real_balance: Decimal
+
     def test_generate_wallet_balances_csv_has_human_readable_header(self):
         # Given
         balances = [
-            WalletBalance(123, Decimal(100), Decimal(50)),
-            WalletBalance(456, Decimal(120), Decimal(60)),
-            WalletBalance(789, Decimal(80), Decimal(40)),
+            self.RowResult(123, Decimal(100), Decimal(50)),
+            self.RowResult(456, Decimal(120), Decimal(60)),
+            self.RowResult(789, Decimal(80), Decimal(40)),
         ]
         # When
         csv = generate_wallet_balances_csv(balances)
@@ -194,9 +200,9 @@ class WalletBalancesCSVTest:
     def test_generate_wallet_balances_csv_with_headers_and_three_user_wallet_balances_lines(self):
         # Given
         balances = [
-            WalletBalance(123, Decimal(100), Decimal(50)),
-            WalletBalance(456, Decimal(120), Decimal(60)),
-            WalletBalance(789, Decimal(80), Decimal(40)),
+            self.RowResult(123, Decimal(100), Decimal(50)),
+            self.RowResult(456, Decimal(120), Decimal(60)),
+            self.RowResult(789, Decimal(80), Decimal(40)),
         ]
 
         # When

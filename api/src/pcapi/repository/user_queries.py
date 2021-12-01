@@ -17,7 +17,6 @@ from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.user_offerer import UserOfferer
-from pcapi.models.wallet_balance import WalletBalance
 
 
 def _find_user_by_email_query(email: str):
@@ -78,26 +77,20 @@ def find_by_validation_token(token: str) -> User:
     return User.query.filter_by(validationToken=token).one_or_none()
 
 
-def get_all_users_wallet_balances() -> list[WalletBalance]:
+def get_all_users_wallet_balances():
     """Return wallet balances.
 
     WARNING: it ignores the expiration date of the deposits.
     """
-    wallet_balances = (
+    return (
         db.session.query(
-            User.id,
-            func.get_wallet_balance(User.id, False),
-            func.get_wallet_balance(User.id, True),
+            User.id.label("user_id"),
+            func.get_wallet_balance(User.id, False).label("current_balance"),
+            func.get_wallet_balance(User.id, True).label("real_balance"),
         )
         .filter(User.deposits != None)
         .order_by(User.id)
-        .all()
     )
-
-    return [
-        WalletBalance(user_id, current_balance, real_balance)
-        for user_id, current_balance, real_balance in wallet_balances
-    ]
 
 
 def keep_only_webapp_users(query: Query) -> Query:
