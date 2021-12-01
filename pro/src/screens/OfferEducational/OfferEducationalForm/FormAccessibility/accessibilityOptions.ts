@@ -1,7 +1,9 @@
+import { ACCESSIBILITY } from 'core/OfferEducational'
+
 export const accessibilityOptions = [
-  { label: 'Visuel', value: 'visualDisabilityCompliant' },
-  { label: 'Psychique ou cognitif', value: 'mentalDisabilityCompliant' },
-  { label: 'Moteur', value: 'motorDisabilityCompliant' },
-  { label: 'Auditif', value: 'audioDisabilityCompliant' },
-  { label: 'Non accessible', value: 'noDisabilityCompliant' },
+  { label: 'Visuel', value: ACCESSIBILITY.VISUAL },
+  { label: 'Psychique ou cognitif', value: ACCESSIBILITY.MENTAL },
+  { label: 'Moteur', value: ACCESSIBILITY.MOTOR },
+  { label: 'Auditif', value: ACCESSIBILITY.AUDIO },
+  { label: 'Non accessible', value: ACCESSIBILITY.NONE },
 ]

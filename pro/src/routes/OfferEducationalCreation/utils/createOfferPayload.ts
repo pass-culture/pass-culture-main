@@ -1,4 +1,7 @@
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import {
+  IOfferEducationalFormValues,
+  ACCESSIBILITY,
+} from 'core/OfferEducational'
 
 type CreateEducationalOfferPayload = {
   offererId: string
@@ -15,6 +18,33 @@ type CreateEducationalOfferPayload = {
   extraData: Record<string, unknown>
 }
 
+const parseDuration = (duration: string): number | undefined => {
+  if (!duration) {
+    return undefined
+  }
+
+  const [hours, minutes] = duration
+    .split(':')
+    .map(numberString => parseInt(numberString))
+
+  return hours / 60 + minutes
+}
+
+const disabilityCompliances = (
+  accessibility: string[]
+): Pick<
+  CreateEducationalOfferPayload,
+  | 'audioDisabilityCompliant'
+  | 'mentalDisabilityCompliant'
+  | 'motorDisabilityCompliant'
+  | 'visualDisabilityCompliant'
+> => ({
+  audioDisabilityCompliant: accessibility.includes(ACCESSIBILITY.AUDIO),
+  mentalDisabilityCompliant: accessibility.includes(ACCESSIBILITY.MENTAL),
+  motorDisabilityCompliant: accessibility.includes(ACCESSIBILITY.MOTOR),
+  visualDisabilityCompliant: accessibility.includes(ACCESSIBILITY.VISUAL),
+})
+
 export const createOfferPayload = (
   offer: IOfferEducationalFormValues
 ): CreateEducationalOfferPayload => ({
@@ -24,11 +54,8 @@ export const createOfferPayload = (
   name: offer.title,
   bookingEmail: offer.notifications ? offer.notificationEmail : undefined,
   description: offer.description,
-  durationMinutes: offer.duration || undefined,
-  audioDisabilityCompliant: offer.audioDisabilityCompliant,
-  mentalDisabilityCompliant: offer.mentalDisabilityCompliant,
-  motorDisabilityCompliant: offer.motorDisabilityCompliant,
-  visualDisabilityCompliant: offer.visualDisabilityCompliant,
+  durationMinutes: parseDuration(offer.duration),
+  ...disabilityCompliances(offer.accessibility),
   extraData: {
     students: offer.participants,
     offerVenue: offer.eventAddress,
