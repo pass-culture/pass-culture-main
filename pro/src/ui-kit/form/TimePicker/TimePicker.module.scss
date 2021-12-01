@@ -1,11 +1,17 @@
-.date-picker {
+.time-picker {
   &-input {
-    @include body-important();
     width: 100%;
+    font-size: rem(16px);
+    font-weight: 400;
+    border-radius: 22px;
+    box-shadow: 0 2px 6px 0 rgba(21, 21, 21, 0.2);
+    color: #151515;
+    display: block;
+    height: rem(40px);
+    margin-top: rem(8px);
     border: 1px solid $grey-medium;
-    border-radius: 1.125em;
     flex: 1;
-    outline: none !important;
+    outline: none;
     padding: rem(6px) rem(18px);
 
     &:focus {
