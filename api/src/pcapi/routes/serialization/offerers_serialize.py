@@ -120,6 +120,48 @@ class GetOfferersNamesQueryModel(BaseModel):
         extra = "forbid"
 
 
+class GetEducationalOffererVenueResponseModel(BaseModel):
+    address: Optional[str]
+    city: Optional[str]
+    id: str
+    isVirtual: bool
+    publicName: str
+    postalCode: Optional[str]
+    audioDisabilityCompliant: Optional[bool]
+    mentalDisabilityCompliant: Optional[bool]
+    motorDisabilityCompliant: Optional[bool]
+    visualDisabilityCompliant: Optional[bool]
+    _humanize_id = humanize_field("id")
+
+    class Config:
+        orm_mode = True
+
+
+class GetEducationalOffererResponseModel(BaseModel):
+    id: str
+    name: str
+    managedVenues: list[GetEducationalOffererVenueResponseModel]
+
+    _humanize_id = humanize_field("id")
+
+    class Config:
+        orm_mode = True
+
+
+class GetEducationalOfferersResponseModel(BaseModel):
+    educationalOfferers: list[GetEducationalOffererResponseModel]
+
+    class Config:
+        orm_mode = True
+
+
+class GetEducationalOfferersQueryModel(BaseModel):
+    offerer_id: Optional[str]
+
+    class Config:
+        extra = "forbid"
+
+
 class GenerateOffererApiKeyResponse(BaseModel):
     apiKey: str
 

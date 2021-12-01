@@ -27,6 +27,9 @@ from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.finance_serialize import ListBankInformationsResponseModel
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
 from pcapi.routes.serialization.offerers_serialize import GenerateOffererApiKeyResponse
+from pcapi.routes.serialization.offerers_serialize import GetEducationalOffererResponseModel
+from pcapi.routes.serialization.offerers_serialize import GetEducationalOfferersQueryModel
+from pcapi.routes.serialization.offerers_serialize import GetEducationalOfferersResponseModel
 from pcapi.routes.serialization.offerers_serialize import GetOffererNameResponseModel
 from pcapi.routes.serialization.offerers_serialize import GetOffererResponseModel
 from pcapi.routes.serialization.offerers_serialize import GetOfferersNamesQueryModel
@@ -103,6 +106,32 @@ def list_offerers_names(query: GetOfferersNamesQueryModel) -> GetOfferersNamesRe
 
     return GetOfferersNamesResponseModel(
         offerersNames=[GetOffererNameResponseModel.from_orm(offerer) for offerer in offerers]
+    )
+
+
+@private_api.route("/offerers/educational", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=GetEducationalOfferersResponseModel)
+def list_educational_offerers(query: GetEducationalOfferersQueryModel) -> GetEducationalOfferersResponseModel:
+    offerer_id = query.offerer_id
+
+    if current_user.isAdmin and offerer_id is None:
+        logger.info("Admin user must provide offerer_id as a query parameter")
+        raise ApiErrors({"offerer_id": "Missing query param"})
+
+    if offerer_id and current_user.isAdmin:
+        offerer = Offerer.query.filter(Offerer.validationToken.is_(None), Offerer.isActive.is_(True)).first()
+        offerers = [offerer]
+
+    else:
+        filters = {"validated": True, "validated_for_user": True, "is_active": True}
+        offerers = get_all_offerers_for_user(
+            user=current_user,
+            filters=filters,
+        )
+
+    return GetEducationalOfferersResponseModel(
+        educationalOfferers=[GetEducationalOffererResponseModel.from_orm(offerer) for offerer in offerers]
     )
 
 
