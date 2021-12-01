@@ -22,7 +22,7 @@ class ProfileUpdateRequest(BaseModel):
     first_name: str
     last_name: str
     postal_code: str
+    school_type: Optional[users_models.SchoolType]
 
     class Config:
-        use_enum_values = True
         alias_generator = to_camel
