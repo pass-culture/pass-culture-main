@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { screen, render } from '@testing-library/react'
+import { screen, render, waitFor } from '@testing-library/react'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router'
@@ -38,6 +38,8 @@ const renderEACOfferCreation = (
   )
 }
 
+const contains = (str: string): RegExp => new RegExp(`^.*${str}.*$`)
+
 describe('screens | OfferEducational', () => {
   let props: IOfferEducationalProps
 
@@ -46,38 +48,40 @@ describe('screens | OfferEducational', () => {
   })
 
   it('should have no initial values', async () => {
-    renderEACOfferCreation(props, {
-      educationalCategories: [],
-      educationalSubCategories: [],
-    })
+    renderEACOfferCreation(props)
 
     await selectOffererAndVenue()
 
     const categoriesSelect = getCategoriesSelect()
-    expect(categoriesSelect.value).toBe('')
+    expect(categoriesSelect).toBeInTheDocument()
+    expect(categoriesSelect).toHaveValue('')
 
     const subCategoriesSelect = getSubcategoriesSelect()
     expect(subCategoriesSelect).not.toBeInTheDocument()
 
-    const titleInput = screen.getByLabelText(TITLE_LABEL) as HTMLInputElement
-    expect(titleInput.value).toBe('')
+    const titleInput = screen.getByLabelText(
+      contains(TITLE_LABEL)
+    ) as HTMLInputElement
+    expect(titleInput).toHaveValue('')
 
     const descriptionTextArea = screen.getByLabelText(
-      DESCRIPTION_LABEL
+      contains(DESCRIPTION_LABEL)
     ) as HTMLTextAreaElement
-    expect(descriptionTextArea.value).toBe('')
+    expect(descriptionTextArea).toHaveValue('')
 
     const durationInput = screen.getByLabelText(
       DURATION_LABEL
     ) as HTMLTextAreaElement
-    expect(durationInput.value).toBe('0:00')
+    expect(durationInput).toHaveValue('')
 
     const offerVenueRadio1 = screen.getByLabelText(
       EVENT_ADDRESS_OFFERER_LABEL
     ) as HTMLInputElement
+
     const offerVenueRadio2 = screen.getByLabelText(
       EVENT_ADDRESS_SCHOOL_LABEL
     ) as HTMLInputElement
+
     const offerVenueRadio3 = screen.getByLabelText(
       EVENT_ADDRESS_OTHER_LABEL
     ) as HTMLInputElement
@@ -90,7 +94,7 @@ describe('screens | OfferEducational', () => {
 
     participantsOptions.forEach(participantsOption => {
       const participantsCheckbox = screen.getByLabelText(
-        participantsOption
+        participantsOption.label
       ) as HTMLInputElement
       expect(participantsCheckbox.checked).toBe(false)
     })
@@ -103,10 +107,10 @@ describe('screens | OfferEducational', () => {
     })
 
     const phoneInput = screen.getByLabelText(PHONE_LABEL) as HTMLInputElement
-    expect(phoneInput.value).toBe('')
+    expect(phoneInput).toHaveValue('')
 
     const emailInput = screen.getByLabelText(EMAIL_LABEL) as HTMLInputElement
-    expect(emailInput.value).toBe('')
+    expect(emailInput).toHaveValue('')
 
     const notificationsCheckbox = screen.getByLabelText(
       NOTIFICATIONS_LABEL
@@ -116,6 +120,6 @@ describe('screens | OfferEducational', () => {
     const notificationEmailInput = screen.getByLabelText(
       NOTIFICATIONS_EMAIL_LABEL
     ) as HTMLInputElement
-    expect(notificationEmailInput.value).toBe('')
+    expect(notificationEmailInput).toHaveValue('')
   })
 })
