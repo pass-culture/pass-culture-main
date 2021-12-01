@@ -288,7 +288,7 @@ CINE_VENTE_DISTANCE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
-    is_bookable_by_underage_when_not_free=False,
+    is_bookable_by_underage_when_not_free=True,
 )
 
 CINE_PLEIN_AIR = Subcategory(
@@ -802,7 +802,7 @@ MUSEE_VENTE_DISTANCE = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
-    is_bookable_by_underage_when_not_free=False,
+    is_bookable_by_underage_when_not_free=True,
 )
 # endregion
 # region MUSIQUE_LIVE
@@ -1146,6 +1146,7 @@ SPECTACLE_ENREGISTRE = Subcategory(
     is_digital_deposit=True,
     is_physical_deposit=False,
     reimbursement_rule=ReimbursementRuleChoices.NOT_REIMBURSED.value,
+    is_bookable_by_underage_when_not_free=False,
 )
 LIVESTREAM_EVENEMENT = Subcategory(
     id="LIVESTREAM_EVENEMENT",
