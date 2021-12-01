@@ -153,6 +153,18 @@ class SubscriptionState(enum.Enum):
     USER_PROFILING_OK = "user_profiling_ok"
 
 
+class ActivityEnum(enum.Enum):
+    middle_school_student = "Collégien"
+    high_school_student = "Lycéen"
+    student = "Étudiant"
+    employee = "Employé"
+    apprentice = "Apprenti"
+    apprentice_student = "Alternant"
+    volunteer = "Volontaire"
+    inactive = "Inactif"
+    unemployed = "Chômeur"
+
+
 class User(PcObject, Model, NeedsValidationMixin):
     __tablename__ = "user"
 

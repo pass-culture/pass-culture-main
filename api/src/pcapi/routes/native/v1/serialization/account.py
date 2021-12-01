@@ -1,5 +1,4 @@
 import datetime
-from enum import Enum
 import re
 from typing import Any
 from typing import Optional
@@ -27,6 +26,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users.api import BeneficiaryValidationStep
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import get_next_beneficiary_validation_step
+from pcapi.core.users.models import ActivityEnum
 from pcapi.core.users.models import EligibilityCheckMethods
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import ExpenseDomain
@@ -40,18 +40,6 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
 from . import BaseModel
-
-
-class ActivityEnum(str, Enum):
-    middle_school_student = "Collégien"
-    high_school_student = "Lycéen"
-    student = "Étudiant"
-    employee = "Employé"
-    apprentice = "Apprenti"
-    apprentice_student = "Alternant"
-    volunteer = "Volontaire"
-    inactive = "Inactif"
-    unemployed = "Chômeur"
 
 
 class AccountRequest(BaseModel):
