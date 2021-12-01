@@ -34,7 +34,6 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -272,14 +271,6 @@ class BeneficiaryInformationUpdateRequest(BaseModel):
     class Config:
         use_enum_values = True
         alias_generator = to_camel
-
-    @validator("first_name", "last_name", always=True)
-    def first_and_last_name_mandatory(cls, name: Optional[str]) -> str:  # pylint: disable=no-self-argument
-        if FeatureToggle.ENABLE_UBBLE.is_active():
-            if not name or name.isspace():
-                raise ValueError("Le prénom et le nom sont obligatoires pour tout jeune éligible")
-            name = name.strip()
-        return name
 
 
 class ResendEmailValidationRequest(BaseModel):
