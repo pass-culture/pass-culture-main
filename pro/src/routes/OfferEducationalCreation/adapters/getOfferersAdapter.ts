@@ -1,7 +1,7 @@
 import { IUserOfferer, IUserVenue } from 'core/OfferEducational'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-type Params = null
+type Params = string | null
 
 type IPayload = IUserOfferer[]
 
@@ -90,23 +90,24 @@ const serializeVenues = (venues: IAPIOfferer['managedVenues']): IUserVenue[] =>
 
 const serializeOfferers = (offerers: IAPIOfferer[]): IUserOfferer[] =>
   offerers
-    .filter(offerer => offerer.isActive && offerer.isValidated)
     .map(offerer => ({
       id: offerer.id,
       name: offerer.name,
-      siren: offerer.siren,
       managedVenues: serializeVenues(offerer.managedVenues),
     }))
     .filter(offerer => offerer.managedVenues.length > 0)
 
-const getOfferersAdapter: GetOfferersAdapter = async () => {
+const getOfferersAdapter: GetOfferersAdapter = async (
+  offererId: string | null
+) => {
   try {
-    const result: IAPIOfferer[] = await pcapi.getOfferers()
+    const { educationalOfferers }: { educationalOfferers: IAPIOfferer[] } =
+      await pcapi.getEducationalOfferers(offererId)
 
     return {
       isOk: true,
       message: null,
-      payload: serializeOfferers(result),
+      payload: serializeOfferers(educationalOfferers),
     }
   } catch (e) {
     return FAILING_RESPONSE

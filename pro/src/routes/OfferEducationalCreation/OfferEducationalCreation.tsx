@@ -36,12 +36,8 @@ const OfferEducationalCreation = (): JSX.Element => {
   const [initialValues, setInitialValues] =
     useState<IOfferEducationalFormValues>(INITIAL_EDUCATIONAL_FORM_VALUES)
 
-  const { structure: offererId, lieu: venueId } = queryParamsFromOfferer(
-    location
-  ) as {
-    structure?: string
-    lieu?: string
-  }
+  const { structure: offererId, lieu: venueId } =
+    queryParamsFromOfferer(location)
 
   const notify = useNotification()
 
@@ -61,7 +57,7 @@ const OfferEducationalCreation = (): JSX.Element => {
       const loadData = async () => {
         const results = await Promise.all([
           getCategoriesAdapter(null),
-          getOfferersAdapter(null),
+          getOfferersAdapter(offererId),
         ])
 
         if (results.some(res => !res.isOk)) {
