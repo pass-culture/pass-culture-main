@@ -239,6 +239,7 @@ class VenueListItemResponseModel(BaseModel):
     visualDisabilityCompliant: Optional[bool]
     businessUnitId: Optional[int]
     siret: Optional[str]
+    isBusinessUnitMainVenue: Optional[bool]
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")

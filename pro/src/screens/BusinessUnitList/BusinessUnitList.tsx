@@ -3,13 +3,117 @@ import React from 'react'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
+import Banner from '../../components/layout/Banner/Banner'
+
+import BusinessUnitCard from './BusinessUnitCard'
 import styles from './BusinessUnitList.module.scss'
 
-const BusinessUnitList = (): JSX.Element => {
+export interface IBusinessUnitVenue {
+  id: string
+  name: string
+  siret: string | null
+  businessUnitId: number | null
+  managingOffererId: string
+  isBusinessUnitMainVenue: boolean | null
+  isVirtual: boolean
+}
+
+export interface IBusinessUnit {
+  id: number
+  name: string
+  bic: string
+  iban: string
+  siret: string | null
+}
+
+export interface IOfferer {
+  id: string
+  name: string
+}
+
+interface IBusinessUnitListProps {
+  offerer: IOfferer
+  businessUnitList: IBusinessUnit[]
+  saveBusinessUnit: (businessUnitId: number, siret: string) => void
+  venues: IBusinessUnitVenue[]
+}
+
+const BusinessUnitList = ({
+  offerer,
+  businessUnitList,
+  saveBusinessUnit,
+  venues,
+}: IBusinessUnitListProps): JSX.Element => {
+  const getBusinessUnitVenues = (
+    businessUnit: IBusinessUnit
+  ): IBusinessUnitVenue[] =>
+    venues.filter(
+      (venue: IBusinessUnitVenue) => venue.businessUnitId === businessUnit.id
+    )
+  const invalidBusinessUnits = businessUnitList.filter(
+    businessUnit => !businessUnit.siret
+  )
+  const validBusinessUnits = businessUnitList.filter(
+    businessUnit => businessUnit.siret
+  )
+
   return (
     <div className={styles['business-unit-page']}>
-      <PageTitle title="Points de facturations" />
-      <Titles title="Points de facturations" />
+      <PageTitle title="Points de remboursement" />
+      <Titles subtitle={offerer.name} title="Points de remboursement" />
+
+      <Banner
+        className={styles['business-unit-info-banner']}
+        type="notification-info"
+      >
+        À partir de janvier 2022, vous recevrez un justificatif et un virement
+        unique pour les lieux d’un même point de remboursement. Pour chaque
+        point de remboursement, il vous faut renseigner un SIRET de référence
+        qui figurera sur vos justificatifs.
+      </Banner>
+
+      <div>
+        {invalidBusinessUnits.length > 0 && (
+          <div className={styles['business-unit-list-section']}>
+            <h3>Points de remboursement invalides</h3>
+            <p className={styles['description']}>
+              Les points de remboursement suivants ne seront plus valides à
+              partir de janvier 2022. Pour continuer à percevoir vos
+              remboursements vous devez renseigner un SIRET de référence pour
+              chacun d’entre eux.
+            </p>
+
+            {invalidBusinessUnits.map((bu: IBusinessUnit) => (
+              <BusinessUnitCard
+                businessUnit={bu}
+                className={styles['business-unit-list-item']}
+                key={bu.id}
+                saveBusinessUnit={saveBusinessUnit}
+                venues={getBusinessUnitVenues(bu)}
+              />
+            ))}
+          </div>
+        )}
+
+        {validBusinessUnits.length > 0 && (
+          <div className={styles['business-unit-list-section']}>
+            <h3>Points de remboursement valides</h3>
+            <p className={styles['description']}>
+              Ci-dessous les points de remboursement valides utilisés par votre
+              structure.
+            </p>
+            {validBusinessUnits.map((bu: IBusinessUnit) => (
+              <BusinessUnitCard
+                businessUnit={bu}
+                className={styles['business-unit-list-item']}
+                key={bu.id}
+                saveBusinessUnit={saveBusinessUnit}
+                venues={getBusinessUnitVenues(bu)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

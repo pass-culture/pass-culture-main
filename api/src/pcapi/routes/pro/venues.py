@@ -70,6 +70,7 @@ def get_venues(query: VenueListQueryModel) -> GetVenueListResponseModel:
                 visualDisabilityCompliant=venue.visualDisabilityCompliant,
                 businessUnitId=venue.businessUnitId,
                 siret=venue.siret,
+                isBusinessUnitMainVenue=venue.isBusinessUnitMainVenue,
             )
             for venue in venue_list
         ]
