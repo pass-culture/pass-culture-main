@@ -21,6 +21,14 @@ export enum ADRESS_TYPE {
   OTHER = 'other',
 }
 
+export enum ACCESSIBILITY {
+  VISUAL = 'VISUAL',
+  MENTAL = 'MENTAL',
+  AUDIO = 'AUDIO',
+  MOTOR = 'MOTOR',
+  NONE = 'NONE',
+}
+
 export type IEducationalCategory = {
   id: string
   label: string
