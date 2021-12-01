@@ -9,6 +9,7 @@ from pcapi.utils.mailing import make_offer_rejection_notification_email
 from pcapi.utils.mailing import make_payment_details_email
 from pcapi.utils.mailing import make_payment_message_email
 from pcapi.utils.mailing import make_payments_report_email
+from pcapi.utils.mailing import make_suspended_fraudulent_beneficiary_by_ids_notification_email
 from pcapi.utils.mailing import make_validation_email_object
 from pcapi.utils.mailing import make_wallet_balances_email
 
@@ -66,3 +67,8 @@ def send_offer_validation_notification_to_administration(
     if validation_status is OfferValidationStatus.REJECTED:
         return send_offer_rejection_notification_to_administration(offer)
     return False
+
+
+def send_suspended_fraudulent_users_email(fraudulent_users: dict, nb_cancelled_bookings: int, recipient: str) -> bool:
+    email = make_suspended_fraudulent_beneficiary_by_ids_notification_email(fraudulent_users, nb_cancelled_bookings)
+    return mails.send(recipients=[recipient], data=email)

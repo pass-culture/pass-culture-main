@@ -13,7 +13,9 @@ from werkzeug import Response
 from wtforms import FileField
 
 from pcapi.admin.base_configuration import BaseCustomAdminView
-from pcapi.scripts.suspend_fraudulent_beneficiary_users import suspend_fraudulent_beneficiary_users_by_ids
+from pcapi.workers.suspend_fraudulent_beneficiary_users_by_ids_job import (
+    suspend_fraudulent_beneficiary_users_by_ids_job,
+)
 
 
 ALLOWED_EXTENSIONS = {".csv"}
@@ -31,8 +33,6 @@ class SuspendFraudulentUsersByUserIdsView(BaseCustomAdminView):
     @expose("/", methods=["GET", "POST"])
     def search(self) -> Response:
         form = SuspendFraudulentUsersByIdsForm()
-        fraudulent_users = []
-        nb_cancelled_bookings = 0
         is_user_super_admin = self.check_super_admins()
 
         if request.method == "POST":
@@ -45,12 +45,13 @@ class SuspendFraudulentUsersByUserIdsView(BaseCustomAdminView):
             if user_ids_csv_file and allowed_file(user_ids_csv_file.filename):
                 user_ids_csv_file = TextIOWrapper(user_ids_csv_file, encoding="ascii")
                 csv_rows = csv.reader(user_ids_csv_file)
-                user_ids = [int(row[0]) for row in csv_rows if row[0].isdigit()]
-                result = suspend_fraudulent_beneficiary_users_by_ids(user_ids, current_user, dry_run=False)
-                fraudulent_users = result["fraudulent_users"]
-                nb_cancelled_bookings = result["nb_cancelled_bookings"]
-                if not fraudulent_users:
-                    flash("Aucun utilisateur n'a été suspendu", "error")
+                user_ids = [int(row[0]) for row in csv_rows if row and row[0].isdigit()]
+                suspend_fraudulent_beneficiary_users_by_ids_job.delay(user_ids, current_user)
+                flash(
+                    "La suspension des utilisateurs via ids a bien été lancée, l'opération peut prendre plusieurs "
+                    "minutes. Vous recevrez un mail récapitulatif à la fin de l'opération",
+                    "info",
+                )
             else:
                 flash(
                     "Veuillez renseigner un fichier csv contenant les identifiants des utilisateurs à suspendre",
@@ -61,7 +62,4 @@ class SuspendFraudulentUsersByUserIdsView(BaseCustomAdminView):
             "admin/suspend_fraudulent_users_by_user_ids.html",
             form=form,
             is_user_super_admin=is_user_super_admin,
-            fraudulent_users=fraudulent_users,
-            nb_fraud_users=len(fraudulent_users),
-            nb_cancelled_bookings=nb_cancelled_bookings,
         )
