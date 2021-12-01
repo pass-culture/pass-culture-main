@@ -7,8 +7,8 @@ import {
 const setInitialFormValues = (
   values: IOfferEducationalFormValues,
   offerers: IUserOfferer[],
-  offererId: string | undefined,
-  venueId: string | undefined
+  offererId: string | null,
+  venueId: string | null
 ): IOfferEducationalFormValues => {
   const setOffererId = () => {
     if (offerers.length === 1) {

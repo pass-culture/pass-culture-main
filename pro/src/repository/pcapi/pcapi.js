@@ -169,6 +169,11 @@ export const getOfferer = offererId => {
 export const canOffererCreateEducationalOffer = offererId =>
   client.get(`/offerers/${offererId}/eac-eligibility`)
 
+export const getEducationalOfferers = offererId => {
+  const queryParams = `${offererId ? `?offerer_id=${offererId}` : ''}`
+  return client.get(`/offerers/educational${queryParams}`)
+}
+
 //
 // venues
 //

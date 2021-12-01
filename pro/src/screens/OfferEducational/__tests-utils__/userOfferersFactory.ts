@@ -25,7 +25,6 @@ const userOffererFactory = (
   return {
     id: 'OFFERER_ID',
     name: 'offerer name',
-    siren: '111111',
     managedVenues: [
       managedVenueFactory({}),
       managedVenueFactory({ id: 'VENUE_ID_2', name: 'Venue name 2' }),
