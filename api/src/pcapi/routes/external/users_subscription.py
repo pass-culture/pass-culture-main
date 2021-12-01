@@ -10,7 +10,7 @@ from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.apis import public_api
-from pcapi.scripts.beneficiary import remote_import
+from pcapi.scripts.beneficiary import import_dms_users
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.validation.routes import dms as dms_validation
 from pcapi.validation.routes import ubble as ubble_validation
@@ -22,7 +22,7 @@ DMS_APPLICATION_MAP = {
     api_demarches_simplifiees.GraphQLApplicationStates.draft: ImportStatus.DRAFT,
     api_demarches_simplifiees.GraphQLApplicationStates.on_going: ImportStatus.ONGOING,
     # api_demarches_simplifiees.GraphQLApplicationStates.accepted: ImportStatus what to do with it ?
-    # for now it will be done in the remote_import script
+    # for now it will be done in the import_dms_users script
     # later we might want to run the user validation and then archive the application
     api_demarches_simplifiees.GraphQLApplicationStates.refused: ImportStatus.REJECTED,
     api_demarches_simplifiees.GraphQLApplicationStates.without_continuation: ImportStatus.WITHOUT_CONTINUATION,
@@ -58,13 +58,13 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
         )
         return
     try:
-        remote_import.parse_beneficiary_information_graphql(raw_data["dossier"], form.procedure_id)
-    except remote_import.DMSParsingError as parsing_error:
+        import_dms_users.parse_beneficiary_information_graphql(raw_data["dossier"], form.procedure_id)
+    except import_dms_users.DMSParsingError as parsing_error:
         if raw_data["dossier"]["state"] == api_demarches_simplifiees.GraphQLApplicationStates.draft.value:
-            remote_import.notify_parsing_exception(parsing_error.errors, raw_data["dossier"]["id"], client)
+            import_dms_users.notify_parsing_exception(parsing_error.errors, raw_data["dossier"]["id"], client)
 
         logger.info(
-            "Cannot parse DMS application %d in webhook. Errors will be handled in the remote_import cron",
+            "Cannot parse DMS application %d in webhook. Errors will be handled in the import_dms_users cron",
             form.dossier_id,
             extra={
                 "application_id": raw_data["dossier"]["number"],
