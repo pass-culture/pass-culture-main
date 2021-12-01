@@ -51,7 +51,7 @@ const OfferEducationalCreation = (): JSX.Element => {
     }
 
     const queryString = `?structure=${offer.offererId}&lieu=${offer.venueId}`
-    history.push(`/offres/${payload.offerId}/scolaire/stocks${queryString}`)
+    history.push(`/offre/${payload.offerId}/scolaire/stocks${queryString}`)
   }
 
   useEffect(() => {
