@@ -262,7 +262,9 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     @property
     def isBusinessUnitMainVenue(self) -> bool:
-        return self.businessUnit and self.siret == self.businessUnit.siret
+        if self.businessUnit and self.businessUnit.siret:
+            return self.siret == self.businessUnit.siret
+        return False
 
     @hybrid_property
     def timezone(self) -> str:

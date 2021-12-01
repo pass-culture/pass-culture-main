@@ -1,3 +1,42 @@
-.business-unit-page {
-  padding-top: rem(50px);
+.business-unit-page .business-unit-info-banner {
+  margin-bottom: rem(32px);
+  margin-top: 0;
+  padding: rem(16px);
+}
+
+.business-unit-learn-more {
+  @include bold();
+
+  align-items: center;
+  display: flex;
+  margin-top: rem(16px);
+
+  img {
+    margin-right: rem(8px);
+  }
+}
+
+h3 {
+  @include title3();
+}
+
+.business-unit-list-item {
+  margin-top: rem(16px);
+
+  &:first-child {
+    margin-top: rem(0);
+  }
+}
+
+.description {
+  margin-bottom: rem(32px);
+  margin-top: rem(8px);
+}
+
+.business-unit-list-section {
+  margin-top: rem(32px);
+
+  &:first-child {
+    margin-top: rem(0);
+  }
 }

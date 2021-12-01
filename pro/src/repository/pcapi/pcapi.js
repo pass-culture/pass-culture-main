@@ -379,3 +379,9 @@ export const invalidateBooking = code => {
 export const getBusinessUnits = offererId => {
   return client.get(`/finance/business-units?offererId=${offererId}`)
 }
+
+export const editBusinessUnit = (businessUnitId, siret) => {
+  return client.patch(`/finance/business-units/${businessUnitId}`, {
+    siret: siret,
+  })
+}
