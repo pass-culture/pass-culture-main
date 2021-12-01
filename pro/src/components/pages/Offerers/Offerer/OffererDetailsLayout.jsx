@@ -32,7 +32,6 @@ const OffererDetailsLayout = () => {
       >
         <BusinessUnitList />
       </FeaturedRoute>
-
       <Route>
         <NotFound />
       </Route>

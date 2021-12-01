@@ -39,6 +39,9 @@ def test_response_serialization(app):
         "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
         "motorDisabilityCompliant": venue.motorDisabilityCompliant,
         "visualDisabilityCompliant": venue.visualDisabilityCompliant,
+        "isBusinessUnitMainVenue": venue.isBusinessUnitMainVenue,
+        "siret": venue.siret,
+        "businessUnitId": venue.businessUnitId,
     }
 
 
