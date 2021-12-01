@@ -209,3 +209,14 @@ def can_offerer_create_educational_offer(humanized_offerer_id: str):
     except AdageException:
         logger.info("Api call failed", extra={"offerer_id": humanized_offerer_id})
         raise ApiErrors({"adage_api": "error"}, 500)
+
+
+@private_api.route("/offerers/<humanized_offerer_id>/business_units", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=ListBusinessUnitResponseModel)
+def get_offerer_business_unit_list(humanized_offerer_id: str) -> ListBusinessUnitResponseModel:
+    offerer_id = dehumanize(humanized_offerer_id)
+    check_user_has_access_to_offerer(current_user, offerer_id)
+
+    business_units = get_business_units_for_offerer_id(offerer_id)
+    return ListBusinessUnitResponseModel(__root__=business_units)
