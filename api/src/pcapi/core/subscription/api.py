@@ -14,9 +14,9 @@ from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exception
+from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
-from pcapi.core.users.external import update_external_user
 from pcapi.domain import user_emails as old_user_emails
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
@@ -131,7 +131,7 @@ def activate_beneficiary(
 
     db.session.refresh(user)
 
-    update_external_user(user)
+    users_external.update_external_user(user)
     _send_beneficiary_activation_email(user, has_activated_account)
 
     return user
@@ -327,7 +327,7 @@ def update_user_profile(
     ):
         check_and_activate_beneficiary(user.id)
     else:
-        update_external_user(user)
+        users_api.update_external_user(user)
 
     new_user_roles = user.roles
     underage_user_has_been_activated = (
@@ -399,3 +399,25 @@ def get_maintenance_page_type(user: users_models.User) -> Optional[models.Mainte
         return models.MaintenancePageType.WITH_DMS
 
     return models.MaintenancePageType.WITHOUT_DMS
+
+
+def on_successful_application(
+    user: users_models.User, source_data: fraud_models.DMSContent, application_id: int, source_id: int
+):
+    users_api.update_user_information_from_external_source(user, source_data)
+    # unsure ?
+    user.hasCompletedIdCheck = True
+    pcapi_repository.repository.save(user)
+
+    create_successfull_beneficiary_import(
+        user=user,
+        source=BeneficiaryImportSources.demarches_simplifiees,
+        source_id=source_id,
+        application_id=application_id,
+        eligibility_type=fraud_api.get_eligibility_type(source_data),
+    )
+
+    if not users_api.steps_to_become_beneficiary(user):
+        activate_beneficiary(user)
+    else:
+        users_external.update_external_user(user)

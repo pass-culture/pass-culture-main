@@ -10,15 +10,18 @@ import pytest
 
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.models import api_errors
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.scripts.beneficiary.remote_import import process_beneficiary_application
+import pcapi.notifications.push.testing as push_testing
 
 from tests.core.subscription.test_factories import IdentificationState
 from tests.core.subscription.test_factories import UbbleIdentificationResponseFactory
@@ -515,10 +518,96 @@ class NextSubscriptionStepTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class BeneficiaryActivationTest:
+class OnSucessfulDMSApplicationTest:
+    @override_features(FORCE_PHONE_VALIDATION=False)
+    def test_new_beneficiaries_are_recorded_with_deposit(self):
+        # given
+        information = fraud_models.DMSContent(
+            department="93",
+            last_name="Doe",
+            first_name="Jane",
+            birth_date=datetime.utcnow() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18),
+            email="jane.doe@example.com",
+            phone="0612345678",
+            postal_code="93130",
+            address="11 Rue du Test",
+            application_id=123,
+            procedure_id=123456,
+            civility="Mme",
+            activity="Étudiant",
+            registration_datetime=datetime.today(),
+        )
+        applicant = users_factories.UserFactory(email=information.email)
+        # when
+
+        subscription_api.on_successful_application(
+            user=applicant, source_data=information, application_id=123, source_id=123456
+        )
+
+        # then
+        first = users_models.User.query.first()
+        assert first.email == "jane.doe@example.com"
+        assert first.wallet_balance == 300
+        assert first.civility == "Mme"
+        assert first.activity == "Étudiant"
+        assert first.has_beneficiary_role
+        assert len(push_testing.requests) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
+
+    def test_an_import_status_is_saved_if_beneficiary_is_created(self):
+        # given
+        information = fraud_models.DMSContent(
+            department="93",
+            last_name="Doe",
+            first_name="Jane",
+            birth_date=datetime.utcnow() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18),
+            email="jane.doe@example.com",
+            phone="0612345678",
+            postal_code="93130",
+            address="11 Rue du Test",
+            application_id=123,
+            procedure_id=123456,
+            civility="Mme",
+            activity="Étudiant",
+            registration_datetime=datetime.today(),
+        )
+        applicant = users_factories.UserFactory(email=information.email)
+        # when
+        subscription_api.on_successful_application(
+            user=applicant, source_data=information, application_id=123, source_id=123456
+        )
+
+        # then
+        beneficiary_import = BeneficiaryImport.query.first()
+        assert beneficiary_import.beneficiary.email == "jane.doe@example.com"
+        assert beneficiary_import.currentStatus == ImportStatus.CREATED
+        assert beneficiary_import.applicationId == 123
+
+    @patch("pcapi.repository.repository")
+    @patch("pcapi.domain.user_emails.send_activation_email")
+    def test_error_is_collected_if_beneficiary_could_not_be_saved(self, send_activation_email, mock_repository):
+        # given
+        information = fraud_factories.DMSContentFactory(application_id=123)
+        applicant = users_factories.UserFactory(email=information.email)
+
+        mock_repository.save.side_effect = [api_errors.ApiErrors({"postalCode": ["baaaaad value"]})]
+
+        # when
+        with pytest.raises(api_errors.ApiErrors):
+            subscription_api.on_successful_application(
+                user=applicant,
+                source_data=information,
+                application_id=123,
+                source_id=123456,
+            )
+
+        # then
+        send_activation_email.assert_not_called()
+        assert len(push_testing.requests) == 0
+
     def test_activate_beneficiary_when_confirmation_happens_after_18_birthday(self):
         with freeze_time("2020-01-01"):
-            user = users_factories.UserFactory()
+            applicant = users_factories.UserFactory()
             eighteen_years_and_one_month_ago = datetime.today() - relativedelta(years=18, months=1)
 
             # the user deposited their DMS application before turning 18
@@ -538,10 +627,14 @@ class BeneficiaryActivationTest:
                 registration_datetime=datetime.today(),
             )
 
-        assert user.has_beneficiary_role is False
+        assert applicant.has_beneficiary_role is False
 
         with freeze_time("2020-03-01"):
             # the DMS application is confirmed after the user turns 18
-            process_beneficiary_application(information=information, procedure_id=123456, preexisting_account=user)
-
-        assert user.has_beneficiary_role
+            subscription_api.on_successful_application(
+                user=applicant,
+                source_data=information,
+                application_id=123,
+                source_id=123456,
+            )
+        assert applicant.has_beneficiary_role

@@ -13,15 +13,12 @@ import pcapi.core.fraud.exceptions as fraud_exceptions
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.messages as subscription_messages
-import pcapi.core.users.api as users_api
-import pcapi.core.users.external as users_external
 import pcapi.core.users.models as users_models
 from pcapi.domain import user_emails
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.repository import repository
 from pcapi.repository.beneficiary_import_queries import find_applications_ids_to_retry
 from pcapi.repository.beneficiary_import_queries import get_already_processed_applications_ids
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
@@ -196,9 +193,28 @@ def process_application(
     else:
         if fraud_result.status != fraud_models.FraudStatus.OK:
             handle_validation_errors(user, fraud_result, information, procedure_id)
+            return
 
+        try:
+            subscription_api.on_successful_application(
+                user=user,
+                source_data=information,
+                application_id=application_id,
+                source_id=procedure_id,
+            )
+        except ApiErrors as api_errors:
+            logger.warning(
+                "[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application %s, because of error: %s - Procedure %s",
+                application_id,
+                api_errors,
+                procedure_id,
+            )
         else:
-            process_beneficiary_application(information=information, procedure_id=procedure_id, user=user)
+            logger.info(
+                "[BATCH][REMOTE IMPORT BENEFICIARIES] Successfully created user for application %s - Procedure %s",
+                information.application_id,
+                procedure_id,
+            )
 
 
 def handle_validation_errors(
@@ -224,6 +240,7 @@ def handle_validation_errors(
         source_id=procedure_id,
         user=user,
         detail="Voir les details dans la page support",
+        eligibility_type=fraud_api.get_eligibility_type(information),
     )
 
 
@@ -337,46 +354,6 @@ def parse_beneficiary_information_graphql(application_detail: dict, procedure_id
     if parsing_errors:
         raise DMSParsingError(email, parsing_errors, "Error validating")
     return fraud_models.DMSContent(**information)
-
-
-def process_beneficiary_application(
-    information: fraud_models.DMSContent, procedure_id: int, user: users_models.User
-) -> None:
-    """
-    Create/update a user account and complete the import process.
-    Note that a 'user' is not always a beneficiary.
-    """
-    users_api.update_user_information_from_external_source(user, information)
-    user.hasCompletedIdCheck = True
-    try:
-        repository.save(user)
-    except ApiErrors as api_errors:
-        logger.warning(
-            "[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application %s, because of error: %s - Procedure %s",
-            information.application_id,
-            api_errors,
-            procedure_id,
-        )
-        return
-
-    logger.info(
-        "[BATCH][REMOTE IMPORT BENEFICIARIES] Successfully created user for application %s - Procedure %s",
-        information.application_id,
-        procedure_id,
-    )
-
-    subscription_api.create_successfull_beneficiary_import(
-        user=user,
-        source=BeneficiaryImportSources.demarches_simplifiees,
-        source_id=procedure_id,
-        application_id=information.application_id,
-        eligibility_type=fraud_api.get_eligibility_type(information),
-    )
-
-    if not users_api.steps_to_become_beneficiary(user):
-        subscription_api.activate_beneficiary(user)
-    else:
-        users_external.update_external_user(user)
 
 
 def _process_rejection(
