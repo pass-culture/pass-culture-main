@@ -1,3 +1,9 @@
+.checkbox-group {
+  &-item {
+    margin-bottom: rem(8px);
+  }
+}
+
 .checkbox {
   &-label {
     display: inline-flex;
