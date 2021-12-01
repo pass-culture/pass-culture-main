@@ -374,7 +374,7 @@ def suspend_account(user: User, reason: constants.SuspensionReason, actor: User)
 
     # Cancel all bookings of the related offerer if the suspended
     # account was the last active offerer's account.
-    if reason == constants.SuspensionReason.FRAUD:
+    if reason == constants.SuspensionReason.FRAUD_SUSPICION:
         for offerer in user.offerers:
             if any(u.isActive and u != user for u in offerer.users):
                 continue
@@ -386,7 +386,7 @@ def suspend_account(user: User, reason: constants.SuspensionReason, actor: User)
     # Cancel all bookings of the user (the following works even if the
     # user is not a beneficiary).
     cancel_booking_callback = {
-        constants.SuspensionReason.FRAUD: bookings_api.cancel_booking_for_fraud,
+        constants.SuspensionReason.FRAUD_SUSPICION: bookings_api.cancel_booking_for_fraud,
         constants.SuspensionReason.UPON_USER_REQUEST: bookings_api.cancel_booking_on_user_requested_account_suspension,
     }.get(reason)
     if cancel_booking_callback:

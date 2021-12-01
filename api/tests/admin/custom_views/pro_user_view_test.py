@@ -133,7 +133,7 @@ class ProUserViewTest:
         client = TestClient(app.test_client()).with_session_auth(admin.email)
         url = f"/pc/back-office/pro_users/suspend?user_id={pro.id}"
         data = {
-            "reason": "fraud",
+            "reason": "fraud suspicion",
             "csrf_token": "token",
         }
         response = client.post(url, form=data)

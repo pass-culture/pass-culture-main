@@ -32,4 +32,4 @@ def suspend_fraudulent_pro_by_email_providers(
 
 def _suspend_fraudulent_pro_users(users: list[User], admin_user: User) -> None:
     for fraudulent_user in users:
-        suspend_account(fraudulent_user, SuspensionReason.FRAUD, admin_user)
+        suspend_account(fraudulent_user, SuspensionReason.FRAUD_SUSPICION, admin_user)

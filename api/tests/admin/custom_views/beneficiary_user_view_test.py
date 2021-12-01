@@ -200,7 +200,7 @@ class BeneficiaryUserViewTest:
         client = TestClient(app.test_client()).with_session_auth(admin.email)
         url = f"/pc/back-office/beneficiary_users/suspend?user_id={beneficiary.id}"
         data = {
-            "reason": "fraud",
+            "reason": "fraud suspicion",
             "csrf_token": "token",
         }
         response = client.post(url, form=data)
