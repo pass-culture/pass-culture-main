@@ -10,7 +10,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.factories import BeneficiaryImportFactory
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.push import testing as push_testing
 
 
@@ -33,7 +32,50 @@ class NextStepTest:
 
 
 class UpdateProfileTest:
+    @override_features(ENABLE_UBBLE=True)
     def test_update_profile(self, client):
+        """
+        Test that valid request:
+            * updates the user's profile information;
+            * send a request to Batch to update the user's information
+        """
+
+        user = users_factories.UserFactory(
+            address=None,
+            city=None,
+            postalCode=None,
+            activity=None,
+            firstName=None,
+            lastName=None,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            phoneNumber="+33609080706",
+            dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
+        )
+
+        profile_data = {
+            "firstName": "John",
+            "lastName": "Doe",
+            "address": "1 rue des rues",
+            "city": "Uneville",
+            "postalCode": "77000",
+            "activity": "Lycéen",
+        }
+
+        client.with_token(user.email)
+        response = client.post("/native/v1/subscription/profile", profile_data)
+
+        assert response.status_code == 204
+
+        user = users_models.User.query.get(user.id)
+        assert user.firstName == "John"
+        assert user.lastName == "Doe"
+        assert user.address == "1 rue des rues"
+        assert user.city == "Uneville"
+        assert user.postalCode == "77000"
+        assert user.activity == "Lycéen"
+        assert user.phoneNumber == "+33609080706"
+
+    def test_update_profile_when_fraud_check_done(self, client):
         """
         Test that valid request:
             * updates the user's profile information;
@@ -137,49 +179,3 @@ class UpdateProfileTest:
         assert user.deposit.amount == 20
 
         assert len(push_testing.requests) == 1
-
-    @override_features(ENABLE_UBBLE=True)
-    @pytest.mark.parametrize("age", [15, 16, 17, 18])
-    def test_update_profile_underage_ubble_eligible(self, age, client, app):
-        """
-        Test that valid request:
-            * updates the user's id check profile information;
-            * sets the user to beneficiary;
-            * send a request to Batch to update the user's information
-        """
-        assert FeatureToggle.ENABLE_UBBLE.is_active()
-
-        user = users_factories.UserFactory(
-            address=None,
-            city=None,
-            postalCode=None,
-            activity=None,
-            firstName=None,
-            lastName=None,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-            phoneNumber="+33609080706",
-            dateOfBirth=datetime.date.today() - relativedelta(years=age, months=6),
-        )
-
-        profile_data = {
-            "firstName": "John",
-            "lastName": "Doe",
-            "address": "1 rue des rues",
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activity": "Lycéen",
-        }
-
-        client.with_token(user.email)
-        response = client.post("/native/v1/subscription/profile", profile_data)
-
-        assert response.status_code == 204
-
-        user = users_models.User.query.get(user.id)
-        assert user.firstName == "John"
-        assert user.lastName == "Doe"
-        assert user.address == "1 rue des rues"
-        assert user.city == "Uneville"
-        assert user.postalCode == "77000"
-        assert user.activity == "Lycéen"
-        assert user.phoneNumber == "+33609080706"
