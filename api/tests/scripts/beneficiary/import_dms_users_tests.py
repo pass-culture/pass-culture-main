@@ -25,7 +25,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import ImportStatus
 import pcapi.notifications.push.testing as push_testing
-from pcapi.scripts.beneficiary import remote_import
+from pcapi.scripts.beneficiary import import_dms_users
 
 from tests.scripts.beneficiary.fixture import APPLICATION_DETAIL_STANDARD_RESPONSE
 from tests.scripts.beneficiary.fixture import make_graphql_application
@@ -42,10 +42,10 @@ AGE18_ELIGIBLE_BIRTH_DATE = dateOfBirth = datetime.utcnow() - relativedelta(year
 
 @pytest.mark.usefixtures("db_session")
 class RunTest:
-    @patch("pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee")
-    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
-    @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
     def test_should_retrieve_applications_from_new_procedure_id(
         self,
         process_beneficiary_application,
@@ -70,7 +70,7 @@ class RunTest:
         ]
 
         # when
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
@@ -78,10 +78,10 @@ class RunTest:
         assert get_closed_application_ids_for_demarche_simplifiee.call_count == 1
         get_closed_application_ids_for_demarche_simplifiee.assert_called_with(6712558, ANY)
 
-    @patch("pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee")
-    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
-    @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
     def test_all_applications_are_processed_once(
         self,
         process_beneficiary_application,
@@ -109,17 +109,17 @@ class RunTest:
         ]
 
         # when
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
         # then
         assert process_beneficiary_application.call_count == 3
 
-    @patch("pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee")
-    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
-    @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
     def test_applications_to_retry_are_processed(
         self,
         process_beneficiary_application,
@@ -148,17 +148,17 @@ class RunTest:
         ]
 
         # when
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
         # then
         assert process_beneficiary_application.call_count == 3
 
-    @patch("pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee")
-    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
-    @patch("pcapi.scripts.beneficiary.remote_import.parse_beneficiary_information")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.parse_beneficiary_information")
     def test_an_error_status_is_saved_when_an_application_is_not_parsable(
         self,
         mocked_parse_beneficiary_information,
@@ -174,7 +174,7 @@ class RunTest:
         mocked_parse_beneficiary_information.side_effect = [Exception()]
 
         # when
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
@@ -184,10 +184,10 @@ class RunTest:
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.detail == "Le dossier 123 contient des erreurs et a été ignoré - Procedure 6712558"
 
-    @patch("pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee")
-    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
-    @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
     def test_application_with_known_application_id_are_not_processed(
         self,
         process_beneficiary_application,
@@ -207,17 +207,17 @@ class RunTest:
         get_details.return_value = make_new_beneficiary_application_details(123, "closed")
 
         # when
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
         # then
         process_beneficiary_application.assert_not_called()
 
-    @patch("pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee")
-    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
-    @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
     def test_application_with_known_email_and_already_beneficiary_are_saved_as_rejected(
         self,
         process_beneficiary_application,
@@ -235,7 +235,7 @@ class RunTest:
         initial_beneficiary_import_id = user.beneficiaryImports[0].id
 
         # when
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
@@ -250,10 +250,10 @@ class RunTest:
         process_beneficiary_application.assert_not_called()
 
     @override_features(FORCE_PHONE_VALIDATION=False)
-    @patch("pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee")
-    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
-    @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
     def test_beneficiary_is_created_with_procedure_id(
         self,
         process_beneficiary_application,
@@ -270,7 +270,7 @@ class RunTest:
         applicant = users_factories.UserFactory(firstName="Doe", lastName="John", email="john.doe@test.com")
 
         # when
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
@@ -319,7 +319,7 @@ class ProcessBeneficiaryApplicationTest:
         )
         applicant = users_factories.UserFactory(email=information.email)
         # when
-        remote_import.process_beneficiary_application(information=information, procedure_id=123456, user=applicant)
+        import_dms_users.process_beneficiary_application(information=information, procedure_id=123456, user=applicant)
 
         # then
         first = users_models.User.query.first()
@@ -351,7 +351,7 @@ class ProcessBeneficiaryApplicationTest:
         )
         applicant = users_factories.UserFactory(email=information.email)
         # when
-        remote_import.process_beneficiary_application(information=information, procedure_id=123456, user=applicant)
+        import_dms_users.process_beneficiary_application(information=information, procedure_id=123456, user=applicant)
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()
@@ -359,8 +359,8 @@ class ProcessBeneficiaryApplicationTest:
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert beneficiary_import.applicationId == 123
 
-    @patch("pcapi.scripts.beneficiary.remote_import.repository")
-    @patch("pcapi.scripts.beneficiary.remote_import.user_emails.send_activation_email")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.repository")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.user_emails.send_activation_email")
     @pytest.mark.usefixtures("db_session")
     def test_error_is_collected_if_beneficiary_could_not_be_saved(self, send_activation_email, mock_repository, app):
         # given
@@ -370,7 +370,7 @@ class ProcessBeneficiaryApplicationTest:
         mock_repository.save.side_effect = [ApiErrors({"postalCode": ["baaaaad value"]})]
 
         # when
-        remote_import.process_beneficiary_application(information, procedure_id=123456, user=applicant)
+        import_dms_users.process_beneficiary_application(information, procedure_id=123456, user=applicant)
 
         # then
         send_activation_email.assert_not_called()
@@ -381,7 +381,7 @@ class ParseBeneficiaryInformationTest:
     class BeforeGeneralOpenningTest:
         def test_personal_information_of_beneficiary_are_parsed_from_application_detail(self):
             # when
-            information = remote_import.parse_beneficiary_information(
+            information = import_dms_users.parse_beneficiary_information(
                 APPLICATION_DETAIL_STANDARD_RESPONSE, procedure_id=201201
             )
 
@@ -400,7 +400,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", department_code="67 - Bas-Rhin")
 
             # when
-            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = import_dms_users.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.department == "67"
@@ -410,7 +410,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", department_code="973 - Guyane")
 
             # when
-            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = import_dms_users.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.department == "973"
@@ -422,7 +422,7 @@ class ParseBeneficiaryInformationTest:
             )
 
             # when
-            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = import_dms_users.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.department == "2B"
@@ -434,7 +434,7 @@ class ParseBeneficiaryInformationTest:
             )
 
             # when
-            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = import_dms_users.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.department == "2a"
@@ -448,7 +448,7 @@ class ParseBeneficiaryInformationTest:
                     field["type_de_champ"]["libelle"] = "Veuillez indiquer votre département de résidence"
 
             # when
-            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = import_dms_users.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.department == "67"
@@ -458,7 +458,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="  93130  ")
 
             # when
-            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = import_dms_users.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.postal_code == "93130"
@@ -468,7 +468,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="67 200")
 
             # when
-            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = import_dms_users.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.postal_code == "67200"
@@ -478,7 +478,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="67 200 Strasbourg ")
 
             # when
-            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = import_dms_users.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.postal_code == "67200"
@@ -488,7 +488,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", civility="M.")
 
             # when
-            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = import_dms_users.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.civility == "M."
@@ -498,7 +498,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed")
 
             # when
-            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = import_dms_users.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.activity == "Étudiant"
@@ -508,7 +508,7 @@ class ParseBeneficiaryInformationTest:
             application_detail = make_new_beneficiary_application_details(1, "closed", activity=None)
 
             # when
-            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=201201)
+            information = import_dms_users.parse_beneficiary_information(application_detail, procedure_id=201201)
 
             # then
             assert information.activity is None
@@ -516,7 +516,7 @@ class ParseBeneficiaryInformationTest:
     class AfterGeneralOpenningTest:
         def test_personal_information_of_beneficiary_are_parsed_from_application_detail(self):
             # when
-            information = remote_import.parse_beneficiary_information(
+            information = import_dms_users.parse_beneficiary_information(
                 APPLICATION_DETAIL_STANDARD_RESPONSE_AFTER_GENERALISATION, procedure_id=201201
             )
 
@@ -534,20 +534,22 @@ class ParseBeneficiaryInformationTest:
         @pytest.mark.parametrize("possible_value", ["0123456789", " 0123456789", "0123456789 ", " 0123456789 "])
         def test_beneficiary_information_id_piece_number_with_spaces(self, possible_value):
             application_detail = make_new_beneficiary_application_details(1, "closed", id_piece_number=possible_value)
-            information = remote_import.parse_beneficiary_information(application_detail, procedure_id=123123)
+            information = import_dms_users.parse_beneficiary_information(application_detail, procedure_id=123123)
             assert information.id_piece_number == "0123456789"
 
         @pytest.mark.parametrize("possible_value", ["0123456789", " 0123456789", "0123456789 ", " 0123456789 "])
         def test_beneficiary_information_id_piece_number_with_spaces_graphql(self, possible_value):
             application_detail = make_graphql_application(1, "closed", id_piece_number=possible_value)
-            information = remote_import.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
+            information = import_dms_users.parse_beneficiary_information_graphql(
+                application_detail, procedure_id=123123
+            )
 
             assert information.id_piece_number == "0123456789"
 
         @patch.object(DMSGraphQLClient, "get_applications_with_details")
         def test_new_procedure(self, get_applications_with_details):
             raw_data = make_new_application()
-            content = remote_import.parse_beneficiary_information_graphql(raw_data, 32)
+            content = import_dms_users.parse_beneficiary_information_graphql(raw_data, 32)
             assert content.last_name == "VALGEAN"
             assert content.first_name == "Jean"
             assert content.civility == "M"
@@ -565,7 +567,7 @@ class ParseBeneficiaryInformationTest:
         @patch.object(DMSGraphQLClient, "get_applications_with_details")
         def test_new_procedure_for_stranger_residents(self, get_applications_with_details):
             raw_data = make_new_stranger_application()
-            content = remote_import.parse_beneficiary_information_graphql(raw_data, 32)
+            content = import_dms_users.parse_beneficiary_information_graphql(raw_data, 32)
             assert content.last_name == "VALGEAN"
             assert content.first_name == "Jean"
             assert content.civility == "M"
@@ -584,7 +586,7 @@ class ParseBeneficiaryInformationTest:
         def test_beneficiary_information_postalcode_error(self):
             application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="Strasbourg")
             with pytest.raises(ValueError) as exc_info:
-                remote_import.parse_beneficiary_information(application_detail, procedure_id=123123)
+                import_dms_users.parse_beneficiary_information(application_detail, procedure_id=123123)
 
             assert exc_info.value.errors["postal_code"] == "Strasbourg"
 
@@ -592,7 +594,7 @@ class ParseBeneficiaryInformationTest:
         def test_beneficiary_information_id_piece_number_error(self, possible_value):
             application_detail = make_new_beneficiary_application_details(1, "closed", id_piece_number=possible_value)
             with pytest.raises(ValueError) as exc_info:
-                remote_import.parse_beneficiary_information(application_detail, procedure_id=123123)
+                import_dms_users.parse_beneficiary_information(application_detail, procedure_id=123123)
 
             assert exc_info.value.errors["id_piece_number"] == possible_value
 
@@ -645,9 +647,9 @@ class RunIntegrationTest:
 
     @override_features(FORCE_PHONE_VALIDATION=False)
     @patch(
-        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+        "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
     )
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
     def test_import_user(self, get_application_details, get_closed_application_ids_for_demarche_simplifiee):
         # when
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
@@ -659,7 +661,7 @@ class RunIntegrationTest:
             dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
         )
 
-        remote_import.run(procedure_id=6712558)
+        import_dms_users.run(procedure_id=6712558)
 
         # then
         assert users_models.User.query.count() == 1
@@ -679,9 +681,9 @@ class RunIntegrationTest:
         assert len(push_testing.requests) == 1
 
     @patch(
-        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+        "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
     )
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
     def test_import_exunderage_beneficiary(
         self, get_application_details, get_closed_application_ids_for_demarche_simplifiee
     ):
@@ -700,7 +702,7 @@ class RunIntegrationTest:
         details["dossier"]["created_at"] = datetime.utcnow()
         get_application_details.return_value = details
 
-        remote_import.run(procedure_id=6712558)
+        import_dms_users.run(procedure_id=6712558)
 
         # then
         assert users_models.User.query.count() == 1
@@ -717,9 +719,9 @@ class RunIntegrationTest:
         assert BeneficiaryImport.query.count() == 2
 
     @patch(
-        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+        "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
     )
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
     def test_import_user_requires_pre_creation(
         self, get_application_details, get_closed_application_ids_for_demarche_simplifiee
     ):
@@ -727,7 +729,7 @@ class RunIntegrationTest:
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
         get_application_details.side_effect = self._get_details
 
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
         beneficiary_import = BeneficiaryImport.query.first()
@@ -738,9 +740,9 @@ class RunIntegrationTest:
 
     @override_features(FORCE_PHONE_VALIDATION=True)
     @patch(
-        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+        "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
     )
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
     def test_import_does_not_make_user_beneficiary(
         self, get_application_details, get_closed_application_ids_for_demarche_simplifiee
     ):
@@ -763,7 +765,7 @@ class RunIntegrationTest:
         get_application_details.side_effect = self._get_details
 
         # when
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
@@ -794,9 +796,9 @@ class RunIntegrationTest:
         assert len(push_testing.requests) == 0
 
     @patch(
-        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+        "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
     )
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
     def test_import_makes_user_beneficiary(
         self, get_application_details, get_closed_application_ids_for_demarche_simplifiee
     ):
@@ -818,7 +820,7 @@ class RunIntegrationTest:
         get_application_details.side_effect = self._get_details
 
         # when
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
@@ -852,9 +854,9 @@ class RunIntegrationTest:
         assert len(push_testing.requests) == 1
 
     @patch(
-        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+        "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
     )
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
     def test_import_makes_user_beneficiary_after_19_birthday(
         self, get_application_details, get_closed_application_ids_for_demarche_simplifiee
     ):
@@ -872,7 +874,7 @@ class RunIntegrationTest:
         get_application_details.side_effect = self._get_details
 
         # when
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
@@ -884,9 +886,9 @@ class RunIntegrationTest:
     @override_features(FORCE_PHONE_VALIDATION=False)
     @freezegun.freeze_time("2021-10-30 09:00:00")
     @patch(
-        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+        "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
     )
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
     def test_import_duplicated_user(self, get_application_details, get_closed_application_ids_for_demarche_simplifiee):
         # given
         existing_user = users_factories.BeneficiaryGrant18Factory(
@@ -911,7 +913,7 @@ class RunIntegrationTest:
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
         get_application_details.side_effect = self._get_details
         # when
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
@@ -940,9 +942,9 @@ class RunIntegrationTest:
     @override_features(FORCE_PHONE_VALIDATION=False)
     @freezegun.freeze_time("2021-10-30 09:00:00")
     @patch(
-        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+        "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
     )
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
     def test_import_with_existing_user_with_the_same_id_number(
         self, get_application_details, get_closed_application_ids_for_demarche_simplifiee, mocker
     ):
@@ -957,8 +959,8 @@ class RunIntegrationTest:
         get_application_details.side_effect = self._get_details
 
         # when
-        process_mock = mocker.patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
-        remote_import.run(
+        process_mock = mocker.patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
@@ -991,9 +993,9 @@ class RunIntegrationTest:
 
     @override_features(FORCE_PHONE_VALIDATION=False)
     @patch(
-        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+        "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
     )
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
     def test_import_with_existing_id_card_with_existing_applicant(
         self, get_application_details, get_closed_application_ids_for_demarche_simplifiee, mocker
     ):
@@ -1008,8 +1010,8 @@ class RunIntegrationTest:
         get_application_details.side_effect = self._get_details
 
         # when
-        process_mock = mocker.patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
-        remote_import.run(
+        process_mock = mocker.patch("pcapi.scripts.beneficiary.import_dms_users.process_beneficiary_application")
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
@@ -1033,9 +1035,9 @@ class RunIntegrationTest:
 
     @override_features(FORCE_PHONE_VALIDATION=False)
     @patch(
-        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+        "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
     )
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
     def test_import_native_app_user(self, get_application_details, get_closed_application_ids_for_demarche_simplifiee):
         # given
         user = users_api.create_account(
@@ -1051,7 +1053,7 @@ class RunIntegrationTest:
         get_application_details.side_effect = self._get_details
 
         # when
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
@@ -1080,12 +1082,12 @@ class RunIntegrationTest:
         assert len(push_testing.requests) == 1
         assert push_testing.requests[0]["attribute_values"]["u.is_beneficiary"]
 
-    @patch("pcapi.scripts.beneficiary.remote_import.user_emails.send_activation_email")
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.user_emails.send_activation_email")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
     @patch(
-        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+        "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
     )
-    @patch("pcapi.scripts.beneficiary.remote_import.parse_beneficiary_information")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.parse_beneficiary_information")
     def test_beneficiary_is_not_created_if_duplicates_are_found(
         self,
         parse_beneficiary_info,
@@ -1119,7 +1121,7 @@ class RunIntegrationTest:
             lastName=information.last_name,
         )
 
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
@@ -1132,12 +1134,12 @@ class RunIntegrationTest:
         assert applicant.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.SUSPICIOUS
         assert f"Duplicat de l'utilisateur {beneficiary.id}" in applicant.beneficiaryFraudResults[0].reason
 
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
     @patch(
-        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+        "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
     )
-    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
-    @patch("pcapi.scripts.beneficiary.remote_import.parse_beneficiary_information")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.parse_beneficiary_information")
     def test_beneficiary_is_created_if_duplicates_are_found_but_id_is_in_retry_list(
         self,
         parse_beneficiary_info,
@@ -1171,7 +1173,7 @@ class RunIntegrationTest:
         get_closed_application_ids_for_dms.return_value = []
 
         # when
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
@@ -1184,16 +1186,16 @@ class RunIntegrationTest:
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
 
     @patch(
-        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+        "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
     )
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
     def test_dms_application_value_error(self, application_details, get_closed_application_ids_for_demarche_simplifiee):
         get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
 
         application_details.return_value = make_new_beneficiary_application_details(
             application_id=1, state="closed", postal_code="Strasbourg", id_piece_number="121314"
         )
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
@@ -1208,9 +1210,9 @@ class RunIntegrationTest:
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 3124925
 
     @patch(
-        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+        "pcapi.scripts.beneficiary.import_dms_users.get_closed_application_ids_for_demarche_simplifiee",
     )
-    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.import_dms_users.get_application_details")
     def test_dms_application_value_error_known_user(
         self, application_details, get_closed_application_ids_for_demarche_simplifiee
     ):
@@ -1219,7 +1221,7 @@ class RunIntegrationTest:
         application_details.return_value = make_new_beneficiary_application_details(
             application_id=1, state="closed", postal_code="Strasbourg", id_piece_number="121314", email=user.email
         )
-        remote_import.run(
+        import_dms_users.run(
             procedure_id=6712558,
         )
 
@@ -1241,7 +1243,7 @@ class GraphQLSourceProcessApplicationTest:
         application_id = 123123
         application_details = make_graphql_application(application_id, "closed")
 
-        beneficiary_information = remote_import.parse_beneficiary_information_graphql(
+        beneficiary_information = import_dms_users.parse_beneficiary_information_graphql(
             application_details,
             procedure_id=123,
         )
@@ -1264,8 +1266,12 @@ class GraphQLSourceProcessApplicationTest:
         application_id = 123123
         application_details = make_graphql_application(application_id, "closed", email=user.email)
         # fixture
-        remote_import.process_application(
-            123123, 4234, application_details, [], parsing_function=remote_import.parse_beneficiary_information_graphql
+        import_dms_users.process_application(
+            123123,
+            4234,
+            application_details,
+            [],
+            parsing_function=import_dms_users.parse_beneficiary_information_graphql,
         )
         assert BeneficiaryImport.query.count() == 1
         import_status = BeneficiaryImport.query.one_or_none()
@@ -1280,7 +1286,7 @@ class GraphQLSourceProcessApplicationTest:
         get_applications_with_details.return_value = [
             make_graphql_application(application_id, "closed", email=user.email)
         ]
-        remote_import.run(123123, use_graphql_api=True)
+        import_dms_users.run(123123, use_graphql_api=True)
 
         import_status = BeneficiaryImport.query.one_or_none()
 
@@ -1296,7 +1302,7 @@ class GraphQLSourceProcessApplicationTest:
             )
         ]
 
-        remote_import.run(procedure_id=6712558, use_graphql_api=True)
+        import_dms_users.run(procedure_id=6712558, use_graphql_api=True)
 
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.currentStatus == ImportStatus.ERROR
@@ -1334,7 +1340,7 @@ class GraphQLSourceProcessApplicationTest:
             ),
         ]
 
-        remote_import.run(procedure_id=procedure_id, use_graphql_api=True)
+        import_dms_users.run(procedure_id=procedure_id, use_graphql_api=True)
 
         imports = BeneficiaryImport.query.all()
         assert len(imports) == 2

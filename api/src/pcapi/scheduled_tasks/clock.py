@@ -36,7 +36,7 @@ from pcapi.scheduled_tasks.decorators import cron_context
 from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.scripts.beneficiary import archive_dms_applications
-from pcapi.scripts.beneficiary import remote_import
+from pcapi.scripts.beneficiary import import_dms_users
 from pcapi.scripts.beneficiary import remote_tag_has_completed
 from pcapi.scripts.booking.handle_expired_bookings import handle_expired_bookings
 from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_individual_bookings
@@ -73,12 +73,12 @@ def synchronize_provider_api() -> None:
 #  defined in DMS_NEW_ENROLLMENT_PROCEDURE_ID has been treated
 @cron_context
 @log_cron_with_transaction
-def pc_remote_import_beneficiaries() -> None:
+def pc_import_dms_users_beneficiaries() -> None:
     procedure_id = settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
         BeneficiaryImportSources.demarches_simplifiees, procedure_id
     )
-    remote_import.run(procedure_id)
+    import_dms_users.run(procedure_id)
     remote_tag_has_completed.run(import_from_date, procedure_id)
     archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
@@ -87,14 +87,14 @@ def pc_remote_import_beneficiaries() -> None:
 #  defined in 44623 has been treated
 @cron_context
 @log_cron_with_transaction
-def pc_remote_import_beneficiaries_from_old_dms() -> None:
+def pc_import_dms_users_beneficiaries_from_old_dms() -> None:
     if not settings.IS_PROD:
         return
     procedure_id = 44623
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
         BeneficiaryImportSources.demarches_simplifiees, procedure_id
     )
-    remote_import.run(procedure_id)
+    import_dms_users.run(procedure_id)
     remote_tag_has_completed.run(import_from_date, procedure_id)
     archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
@@ -106,7 +106,7 @@ def pc_import_beneficiaries_from_dms_v3() -> None:
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
         BeneficiaryImportSources.demarches_simplifiees, procedure_id
     )
-    remote_import.run(procedure_id, use_graphql_api=FeatureToggle.ENABLE_DMS_GRAPHQL_API.is_active())
+    import_dms_users.run(procedure_id, use_graphql_api=FeatureToggle.ENABLE_DMS_GRAPHQL_API.is_active())
     remote_tag_has_completed.run(import_from_date, procedure_id)
     archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
@@ -124,7 +124,7 @@ def pc_import_beneficiaries_from_dms_v4() -> None:
         import_from_date = find_most_recent_beneficiary_creation_date_for_source(
             BeneficiaryImportSources.demarches_simplifiees, procedure_id
         )
-        remote_import.run(procedure_id, use_graphql_api=FeatureToggle.ENABLE_DMS_GRAPHQL_API.is_active())
+        import_dms_users.run(procedure_id, use_graphql_api=FeatureToggle.ENABLE_DMS_GRAPHQL_API.is_active())
         remote_tag_has_completed.run(import_from_date, procedure_id)
         archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
@@ -255,9 +255,9 @@ def clock() -> None:
 
     scheduler.add_job(synchronize_provider_api, "cron", day="*", hour="1")
 
-    scheduler.add_job(pc_remote_import_beneficiaries, "cron", day="*", hour="21", minute="50")
+    scheduler.add_job(pc_import_dms_users_beneficiaries, "cron", day="*", hour="21", minute="50")
 
-    scheduler.add_job(pc_remote_import_beneficiaries_from_old_dms, "cron", day="*", hour="20", minute="50")
+    scheduler.add_job(pc_import_dms_users_beneficiaries_from_old_dms, "cron", day="*", hour="20", minute="50")
 
     scheduler.add_job(pc_import_beneficiaries_from_dms_v3, "cron", hour="*")
 
