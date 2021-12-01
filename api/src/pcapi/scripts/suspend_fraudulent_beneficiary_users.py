@@ -36,7 +36,7 @@ def suspend_fraudulent_beneficiary_users(fraudulent_users: list[User], admin_use
     if not dry_run:
         n_bookings = 0
         for fraudulent_user in fraudulent_users:
-            result = suspend_account(fraudulent_user, SuspensionReason.FRAUD, admin_user)
+            result = suspend_account(fraudulent_user, SuspensionReason.FRAUD_SUSPICION, admin_user)
             n_bookings += result["cancelled_bookings"]
         logger.info(
             "Fraudulent beneficiaries accounts suspended",

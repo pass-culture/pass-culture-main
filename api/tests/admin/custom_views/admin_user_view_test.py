@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_settings
+import pcapi.core.users.constants as users_constants
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
@@ -117,13 +118,17 @@ class AdminUserViewTest:
 
         # Suspend
         url = f"/pc/back-office/admin_users/suspend?user_id={admin.id}"
-        suspend_response = client.post(url, form={"reason": "fraud", "csrf_token": "token"})
+        suspend_response = client.post(
+            url, form={"reason": users_constants.SuspensionReason.FRAUD_SUSPICION.value, "csrf_token": "token"}
+        )
         assert suspend_response.status_code == 302
         assert not admin.isActive
 
         # Unsuspend
         url = f"/pc/back-office/admin_users/unsuspend?user_id={admin.id}"
-        unsuspend_response = client.post(url, form={"reason": "fraud", "csrf_token": "token"})
+        unsuspend_response = client.post(
+            url, form={"reason": users_constants.SuspensionReason.FRAUD_SUSPICION.value, "csrf_token": "token"}
+        )
         assert unsuspend_response.status_code == 302
         assert admin.isActive
 
@@ -154,7 +159,9 @@ class AdminUserViewTest:
 
         # super_admin suspends admin_2
         url = f"/pc/back-office/admin_users/suspend?user_id={admin_2.id}"
-        suspend_response = super_admin_client.post(url, form={"reason": "fraud", "csrf_token": "token"})
+        suspend_response = super_admin_client.post(
+            url, form={"reason": users_constants.SuspensionReason.FRAUD_SUSPICION.value, "csrf_token": "token"}
+        )
         assert suspend_response.status_code == 302
         assert not admin_2.isActive
 

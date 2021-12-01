@@ -43,7 +43,9 @@ def _action_links(view, context, model, name):
         text = "Suspendre…"
     else:
         url = url_for(".unsuspend_user_view")
-        text = "Réactiver…"
+        text = "Réactiver…({})".format(
+            dict(users_constants.SUSPENSION_REASON_CHOICES)[users_constants.SuspensionReason(model.suspensionReason)]
+        )
 
     return Markup('<a href="{url}?user_id={model_id}">{text}</a>').format(
         url=url,

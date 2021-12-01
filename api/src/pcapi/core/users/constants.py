@@ -40,17 +40,39 @@ class SuspensionReason(Enum):
 
     # If you add a new reason, update `suspend_account()` to cancel
     # bookings if applicable.
+    CLOSED_STRUCTURE_DEFINITIVE = "definitively closed structure"
+    CLOSED_STRUCTURE_TEMP = "temporarly closed structure"
     END_OF_CONTRACT = "end of contract"
     END_OF_ELIGIBILITY = "end of eligibility"
-    FRAUD = "fraud"
+    FRAUD_BOOKING_CANCEL = "booking cancel fraud"
+    FRAUD_CREATION_PRO = "creation PRO fraud"
+    FRAUD_DUPLICATE = "duplicate fraud"
+    FRAUD_FAKE_DOCUMENT = "fake document fraud"
+    FRAUD_HACK = "hacking fraud"
+    FRAUD_RESELL_PASS = "pass resell fraud"
+    FRAUD_RESELL_PRODUCT = "product resell fraud"
+    FRAUD_SUSPICION = "fraud suspicion"
+    FRAUD_USURPATION = "usurpating fraud"
+    FRAUD_USURPATION_PRO = "usurpating PRO fraud"
     UPON_USER_REQUEST = "upon user request"
 
 
 SUSPENSION_REASON_CHOICES = (
-    (SuspensionReason.END_OF_ELIGIBILITY, "fin d'éligibilité"),
-    (SuspensionReason.END_OF_CONTRACT, "fin de contrat"),
-    (SuspensionReason.FRAUD, "fraude"),
-    (SuspensionReason.UPON_USER_REQUEST, "demande de l'utilisateur"),
+    (SuspensionReason.CLOSED_STRUCTURE_DEFINITIVE, "Structure définitivement fermée"),
+    (SuspensionReason.CLOSED_STRUCTURE_TEMP, "Structure fermée provisoirement"),
+    (SuspensionReason.END_OF_CONTRACT, "Fin de contrat"),
+    (SuspensionReason.END_OF_ELIGIBILITY, "Fin d'éligibilité"),
+    (SuspensionReason.FRAUD_BOOKING_CANCEL, "Fraude annulation réservation"),
+    (SuspensionReason.FRAUD_CREATION_PRO, "Fraude PRO création"),
+    (SuspensionReason.FRAUD_DUPLICATE, "Fraude doublon"),
+    (SuspensionReason.FRAUD_FAKE_DOCUMENT, "Fraude faux document"),
+    (SuspensionReason.FRAUD_HACK, "Fraude hacking"),
+    (SuspensionReason.FRAUD_RESELL_PASS, "Fraude revente pass"),
+    (SuspensionReason.FRAUD_RESELL_PRODUCT, "Fraude revente produit"),
+    (SuspensionReason.FRAUD_SUSPICION, "Fraude suspicion"),
+    (SuspensionReason.UPON_USER_REQUEST, "Demande de l'utilisateur"),
+    (SuspensionReason.FRAUD_USURPATION, "Fraude usurpation"),
+    (SuspensionReason.FRAUD_USURPATION_PRO, "Fraude PRO usurpation"),
 )
 
 assert set(_t[0] for _t in SUSPENSION_REASON_CHOICES) == set(SuspensionReason)

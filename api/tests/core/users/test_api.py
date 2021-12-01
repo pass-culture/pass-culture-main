@@ -254,7 +254,7 @@ class SuspendAccountTest:
     def test_suspend_admin(self):
         user = users_factories.AdminFactory()
         users_factories.UserSessionFactory(user=user)
-        reason = users_constants.SuspensionReason.FRAUD
+        reason = users_constants.SuspensionReason.FRAUD_SUSPICION
         actor = users_factories.AdminFactory()
 
         users_api.suspend_account(user, reason, actor)
@@ -276,7 +276,7 @@ class SuspendAccountTest:
         used_booking = bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user)
         actor = users_factories.AdminFactory()
 
-        users_api.suspend_account(user, users_constants.SuspensionReason.FRAUD, actor)
+        users_api.suspend_account(user, users_constants.SuspensionReason.FRAUD_SUSPICION, actor)
 
         assert not user.isActive
         assert cancellable_booking.isCancelled
@@ -291,7 +291,7 @@ class SuspendAccountTest:
         pro = offers_factories.UserOffererFactory(offerer=booking.offerer).user
         actor = users_factories.AdminFactory()
 
-        users_api.suspend_account(pro, users_constants.SuspensionReason.FRAUD, actor)
+        users_api.suspend_account(pro, users_constants.SuspensionReason.FRAUD_SUSPICION, actor)
 
         assert not pro.isActive
         assert booking.isCancelled
@@ -303,7 +303,7 @@ class SuspendAccountTest:
         offers_factories.UserOffererFactory(offerer=booking.offerer)
         actor = users_factories.AdminFactory()
 
-        users_api.suspend_account(pro, users_constants.SuspensionReason.FRAUD, actor)
+        users_api.suspend_account(pro, users_constants.SuspensionReason.FRAUD_SUSPICION, actor)
 
         assert not pro.isActive
         assert not booking.isCancelled
