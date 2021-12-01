@@ -1731,44 +1731,6 @@ class UpdateBeneficiaryInformationTest:
         assert user.activity == "Lycéen"
         assert user.phoneNumber == "+33609080706"
 
-    @override_features(ENABLE_UBBLE=True)
-    @pytest.mark.parametrize("age", [15, 16, 17, 18])
-    @pytest.mark.parametrize("missing_value", [None, ""])
-    @pytest.mark.parametrize("missing_key", ["firstName", "lastName"])
-    def test_update_beneficiary_underage_ubble_name_missing(self, missing_key, missing_value, age, client, app):
-        """
-        Test that valid request:
-            * updates the user's id check profile information;
-            * sets the user to beneficiary;
-            * send a request to Batch to update the user's information
-        """
-        assert FeatureToggle.ENABLE_UBBLE.is_active()
-
-        user = users_factories.UserFactory(
-            address=None,
-            city=None,
-            postalCode=None,
-            activity=None,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-            phoneNumber="+33609080706",
-            dateOfBirth=date.today() - relativedelta(years=age, months=6),
-        )
-
-        profile_data = {
-            "firstName": "John",
-            "lastName": "Doe",
-            "address": "1 rue des rues",
-            "city": "Uneville",
-            "postalCode": "77000",
-            "activity": "Lycéen",
-        }
-        profile_data[missing_key] = missing_value
-
-        client.with_token(user.email)
-        response = client.patch("/native/v1/beneficiary_information", profile_data)
-
-        assert response.status_code == 400
-
 
 class ProfilingFraudScoreTest:
 
