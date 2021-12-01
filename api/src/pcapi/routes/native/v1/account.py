@@ -136,7 +136,7 @@ def get_email_update_token_expiration_date(user: User) -> serializers.UpdateEmai
     return serializers.UpdateEmailTokenExpiration(expiration=email_api.get_active_token_expiration(user))
 
 
-# TODO (vionnex) remove this route after app native mandatory version is > 164
+# TODO (vionnex) remove this route after app native mandatory version is >= 164
 @blueprint.native_v1.route("/beneficiary_information", methods=["PATCH"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_user_required
