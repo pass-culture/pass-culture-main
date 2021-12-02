@@ -858,7 +858,7 @@ def _serialize_csv_report(query: Query) -> str:
     return output.getvalue()
 
 
-def get_unretrieved_booking_ids() -> typing.Generator[int, None, None]:
+def get_unretrieved_booking_ids() -> list[int]:
     three_days_ago = datetime.combine(date.today() - timedelta(days=3), time(0, 0))
 
     bookings = (
@@ -870,7 +870,7 @@ def get_unretrieved_booking_ids() -> typing.Generator[int, None, None]:
         .options(load_only(Booking.id))
     )
 
-    return (booking.id for booking in bookings)
+    return [booking.id for booking in bookings]
 
 
 def get_bookings_with_offers(booking_ids: list[int]) -> typing.Iterator[Booking]:
