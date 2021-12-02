@@ -710,7 +710,7 @@ class CreateEducationalOfferStocksTest:
         )
 
         # When
-        with pytest.raises(api_errors.ApiErrors) as error:
+        with pytest.raises(offer_exceptions.BookingLimitDatetimeTooLate) as error:
             api.create_educational_stock(stock_data=created_stock_data, user=user)
 
         # Then

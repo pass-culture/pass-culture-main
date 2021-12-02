@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-1ab309876ab0 (head)
-=======
 503904c2cab7 (head)
->>>>>>> c35307394... (PC-11973)[api]: add numberOfTickets column to stock model
