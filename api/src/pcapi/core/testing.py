@@ -1,6 +1,10 @@
 import contextlib
 import functools
 import math
+import pathlib
+import shutil
+import tempfile
+from unittest import mock
 
 import factory.alchemy
 import flask
@@ -271,3 +275,48 @@ class override_features(TestContextDecorator):
         if flask.has_request_context():
             if hasattr(flask.request, "_cached_features"):
                 flask.request._cached_features = {}
+
+
+def clean_temporary_files(test_function):
+    """A decorator to be used around tests that use `tempfile.mkdtemp()`
+    and `mkstemp()`. It deletes temporary directories and files upon test
+    completion.
+    """
+    paths = []
+
+    original_mkdtemp = tempfile.mkdtemp
+    original_mkstemp = tempfile.mkstemp
+
+    def patched_mkdtemp(*args, **kwargs):
+        path = original_mkdtemp(*args, **kwargs)
+        paths.append(pathlib.Path(path))
+        return path
+
+    def patched_mkstemp(*args, **kwargs):
+        res = original_mkstemp(*args, **kwargs)
+        paths.append(pathlib.Path(res[1]))
+        return res
+
+    def cleanup():
+        tempdir = pathlib.Path(tempfile.gettempdir())
+        for path in paths:
+            if not path.exists():
+                continue
+            if tempdir not in path.parents:
+                # I doubt it's intended, let's raise an error.
+                raise ValueError(f"Temporary file at '{path}' does not belong in {tempdir}")
+            if path == pathlib.Path("/"):
+                raise ValueError("I'm sorry, Dave. I'm afraid I can't do that")
+            if path.is_dir():
+                shutil.rmtree(path)
+            else:
+                path.unlink()
+
+    def wrapper():
+        try:
+            with mock.patch.multiple(tempfile, mkdtemp=patched_mkdtemp, mkstemp=patched_mkstemp):
+                test_function()
+        finally:
+            cleanup()
+
+    return wrapper
