@@ -29,6 +29,7 @@ const CheckboxGroup = ({
         <div className={styles['checkbox-group-item']} key={item.value}>
           <CheckboxGroupItem
             formikFieldValue={field.value}
+            hasError={meta.touched && !!meta.error}
             label={item.label}
             setValue={helpers.setValue}
             value={item.value}
