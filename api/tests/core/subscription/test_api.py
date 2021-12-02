@@ -443,9 +443,41 @@ class NextSubscriptionStepTest:
     )
     def test_get_allowed_identity_check_methods(self, feature_flags, user_age, user_school_type, expected_result):
         dateOfBirth = datetime.today() - relativedelta(years=user_age, months=1)
-        user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
+        user = users_factories.UserFactory(dateOfBirth=dateOfBirth, schoolType=user_school_type)
         with override_features(**feature_flags):
             assert subscription_api.get_allowed_identity_check_methods(user) == expected_result
+
+    @pytest.mark.parametrize(
+        "feature_flags,user_age,expected_result",
+        [
+            (
+                {"ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18": True},
+                18,
+                subscription_models.MaintenancePageType.WITH_DMS,
+            ),
+            (
+                {"ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18": False},
+                18,
+                subscription_models.MaintenancePageType.WITHOUT_DMS,
+            ),
+            (
+                {"ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE": True},
+                15,
+                subscription_models.MaintenancePageType.WITH_DMS,
+            ),
+            (
+                {"ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE": False},
+                15,
+                subscription_models.MaintenancePageType.WITHOUT_DMS,
+            ),
+        ],
+    )
+    @patch("pcapi.core.subscription.api.get_allowed_identity_check_methods", return_value=[])
+    def test_get_maintenance_page_type(self, _, feature_flags, user_age, expected_result):
+        dateOfBirth = datetime.today() - relativedelta(years=user_age, months=1)
+        user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
+        with override_features(**feature_flags):
+            assert subscription_api.get_maintenance_page_type(user) == expected_result
 
 
 @pytest.mark.usefixtures("db_session")

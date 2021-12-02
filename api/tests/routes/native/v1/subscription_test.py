@@ -31,6 +31,29 @@ class NextStepTest:
         assert response.json == {
             "nextSubscriptionStep": "phone-validation",
             "allowedIdentityCheckMethods": ["jouve"],
+            "maintenancePageType": None,
+        }
+
+    @override_features(
+        ENABLE_EDUCONNECT_AUTHENTICATION=False,
+        ALLOW_IDCHECK_UNDERAGE_REGISTRATION=False,
+        ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=True,
+    )
+    def test_next_subscription_maintenance_page_test(self, client):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=15, months=5),
+        )
+
+        client.with_token(user.email)
+
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": "maintenance",
+            "allowedIdentityCheckMethods": [],
+            "maintenancePageType": "with-dms",
         }
 
 

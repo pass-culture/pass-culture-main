@@ -33,6 +33,11 @@ class IdentityCheckMethod(enum.Enum):
     UBBLE = "ubble"
 
 
+class MaintenancePageType(enum.Enum):
+    WITH_DMS = "with-dms"
+    WITHOUT_DMS = "without-dms"
+
+
 @dataclasses.dataclass
 class BeneficiaryPreSubscription:
     activity: str
