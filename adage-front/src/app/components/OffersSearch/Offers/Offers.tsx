@@ -67,7 +67,6 @@ export const OffersComponent = ({
             offer={offer}
             thumbUrl={offersThumbById[offer.id]}
           />
-          {index < offers.length - 1 && <hr className="separator" />}
         </div>
       ))}
     </ul>
