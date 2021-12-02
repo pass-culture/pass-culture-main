@@ -23,7 +23,7 @@ from pcapi.core.payments.factories import PaymentStatusFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
-from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
+from pcapi.domain.booking_recap import booking_recap_history
 from pcapi.model_creators.generic_creators import create_payment
 from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
@@ -489,7 +489,72 @@ class FindByProUserLegacyTest:
             tz.gettz("Europe/Paris")
         )
         assert expected_booking_recap.venue_identifier == venue.id
-        assert isinstance(expected_booking_recap.booking_status_history, BookingRecapHistory)
+        assert isinstance(expected_booking_recap.booking_status_history, booking_recap_history.BookingRecapHistory)
+
+    @override_features(IMPROVE_BOOKINGS_PERF=False)
+    def test_should_set_educational_booking_confirmation_date_in_history(self, app: fixture) -> None:
+        # Given
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(
+            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+        )
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        bookings_factories.EducationalBookingFactory(
+            educationalBooking__confirmationDate=datetime(2022, 1, 1),
+            stock=stock,
+            dateCreated=yesterday,
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert isinstance(expected_booking_recap.booking_status_history, booking_recap_history.BookingRecapHistory)
+        assert expected_booking_recap.booking_status_history.confirmation_date == datetime(2022, 1, 1)
+
+    @override_features(IMPROVE_BOOKINGS_PERF=False)
+    def test_should_set_booking_recap_pending_in_history(self, app: fixture) -> None:
+        # Given
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(
+            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+        )
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        bookings_factories.EducationalBookingFactory(
+            status=BookingStatus.PENDING,
+            stock=stock,
+            dateCreated=yesterday,
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert isinstance(
+            expected_booking_recap.booking_status_history,
+            booking_recap_history.BookingRecapPendingHistory,
+        )
+        assert expected_booking_recap.booking_status_history.booking_date == yesterday.astimezone(
+            tz.gettz("Europe/Paris")
+        )
 
     @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     def test_should_return_event_confirmed_booking_when_booking_is_on_an_event_in_confirmation_period(
@@ -522,7 +587,7 @@ class FindByProUserLegacyTest:
         # Then
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_is_confirmed is True
-        assert isinstance(expected_booking_recap.booking_status_history, BookingRecapHistory)
+        assert isinstance(expected_booking_recap.booking_status_history, booking_recap_history.BookingRecapHistory)
 
     @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     def test_should_return_payment_date_when_booking_has_been_reimbursed(self, app: fixture):
@@ -1305,7 +1370,7 @@ class FindByProUserTest:
         assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime.astimezone(
             tz.gettz("Europe/Paris")
         )
-        assert isinstance(expected_booking_recap.booking_status_history, BookingRecapHistory)
+        assert isinstance(expected_booking_recap.booking_status_history, booking_recap_history.BookingRecapHistory)
 
     @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
     def test_should_return_event_confirmed_booking_when_booking_is_on_an_event_in_confirmation_period(
@@ -1338,7 +1403,7 @@ class FindByProUserTest:
         # Then
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_is_confirmed is True
-        assert isinstance(expected_booking_recap.booking_status_history, BookingRecapHistory)
+        assert isinstance(expected_booking_recap.booking_status_history, booking_recap_history.BookingRecapHistory)
 
     @override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: True})
     def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app: fixture):
@@ -1776,6 +1841,71 @@ class FindByProUserTest:
         assert cayenne_booking.token in bookings_tokens
         assert mayotte_booking.token in bookings_tokens
 
+    @override_features(IMPROVE_BOOKINGS_PERF=True)
+    def test_should_set_educational_booking_confirmation_date_in_history(self, app: fixture) -> None:
+        # Given
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(
+            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+        )
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        bookings_factories.EducationalBookingFactory(
+            educationalBooking__confirmationDate=datetime(2022, 1, 1),
+            stock=stock,
+            dateCreated=yesterday,
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert isinstance(expected_booking_recap.booking_status_history, booking_recap_history.BookingRecapHistory)
+        assert expected_booking_recap.booking_status_history.confirmation_date == datetime(2022, 1, 1)
+
+    @override_features(IMPROVE_BOOKINGS_PERF=True)
+    def test_should_set_booking_recap_pending_in_history(self, app: fixture) -> None:
+        # Given
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(
+            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+        )
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        bookings_factories.EducationalBookingFactory(
+            status=BookingStatus.PENDING,
+            stock=stock,
+            dateCreated=yesterday,
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert isinstance(
+            expected_booking_recap.booking_status_history,
+            booking_recap_history.BookingRecapPendingHistory,
+        )
+        assert expected_booking_recap.booking_status_history.booking_date == yesterday.astimezone(
+            tz.gettz("Europe/Paris")
+        )
+
 
 class GetCsvReportTest:
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
@@ -1976,9 +2106,7 @@ class GetCsvReportTest:
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
-        assert (
-            data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[BookingStatus.CONFIRMED]
-        )
+        assert data_dict["Statut de la contremarque"] == "confirmé"
 
     def test_should_return_cancelled_status_when_booking_has_been_cancelled(self, app: fixture):
         # Given

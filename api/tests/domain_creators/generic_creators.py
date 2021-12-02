@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from pcapi.core.bookings.api import compute_cancellation_limit_date
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.domain.booking_recap.booking_recap import BookingRecapLegacy
@@ -26,6 +27,8 @@ def create_domain_booking_recap(
     booking_is_cancelled: bool = False,
     booking_is_reimbursed: bool = False,
     booking_is_confirmed: bool = False,
+    booking_status: BookingStatus = BookingStatus.CONFIRMED,
+    booking_confirmation_date: Optional[datetime] = None,
     payment_date: Optional[datetime] = None,
     cancellation_date: Optional[datetime] = None,
     date_used: Optional[datetime] = None,
@@ -55,6 +58,8 @@ def create_domain_booking_recap(
         booking_is_cancelled=booking_is_cancelled,
         booking_is_reimbursed=booking_is_reimbursed,
         booking_is_confirmed=booking_is_confirmed,
+        booking_status=booking_status,
+        booking_confirmation_date=booking_confirmation_date,
         payment_date=payment_date,
         cancellation_date=cancellation_date,
         cancellation_limit_date=compute_cancellation_limit_date(event_beginning_datetime, booking_date),

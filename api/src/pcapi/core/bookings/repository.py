@@ -55,11 +55,12 @@ DUO_QUANTITY = 2
 
 
 BOOKING_STATUS_LABELS = {
-    BookingStatus.PENDING: "réservé",
-    BookingStatus.CONFIRMED: "confirmé",
+    BookingStatus.PENDING: "préréservé",
+    BookingStatus.CONFIRMED: "réservé",
     BookingStatus.CANCELLED: "annulé",
     BookingStatus.USED: "validé",
     BookingStatus.REIMBURSED: "remboursé",
+    "confirmed": "confirmé",
 }
 
 
@@ -484,7 +485,6 @@ def _get_filtered_booking_report(
             venue_id,
             extra_joins=(Stock.offer, Booking.user),
         )
-        .outerjoin(Payment, Payment.bookingId == Booking.id)
         .with_entities(
             func.coalesce(Venue.publicName, Venue.name).label("venueName"),
             Venue.departementCode.label("venueDepartmentCode"),
@@ -506,15 +506,11 @@ def _get_filtered_booking_report(
             Booking.dateUsed.label("usedAt"),
             Booking.reimbursementDate.label("reimbursedAt"),
             Booking.cancellationDate.label("cancelledAt"),
+            Booking.isConfirmed,
             # `get_batch` function needs a field called exactly `id` to work,
             # the label prevents SA from using a bad (prefixed) label for this field
             Booking.id.label("id"),
             Booking.userId,
-            # TODO: the lines hereunder should be removed once we can use IMPROVE_BOOKINGS_PERF
-            Payment.currentStatus.label("paymentStatus"),
-            Booking.isUsed,
-            Booking.isCancelled,
-            Booking.cancellationLimitDate,
         )
         .distinct(Booking.id)
     )
@@ -551,6 +547,7 @@ def _get_filtered_booking_pro(
             Booking.reimbursementDate.label("reimbursedAt"),
             Booking.educationalBookingId,
             Booking.isConfirmed,
+            EducationalBooking.confirmationDate,
             EducationalRedactor.firstName.label("redactorFirstname"),
             EducationalRedactor.lastName.label("redactorLastname"),
             EducationalRedactor.email.label("redactorEmail"),
@@ -596,6 +593,7 @@ def _filter_bookings_recap_subquery(
             Booking.cancellationLimitDate.label("cancellationLimitDate"),
             Booking.reimbursementDate.label("reimbursementDate"),
             Booking.isConfirmed.label("isConfirmed"),
+            Booking.status,
         )
         .select_from(Booking)
         .join(Venue, Venue.id == Booking.venueId)
@@ -663,6 +661,7 @@ def _build_bookings_recap_query(bookings_recap_subquery: Query) -> Query:
             bookings_recap_subquery.c.cancellationLimitDate.label("cancellationLimitDate"),
             bookings_recap_subquery.c.isConfirmed.label("isConfirmed"),
             bookings_recap_subquery.c.educationalBookingId,
+            bookings_recap_subquery.c.status,
             Offer.name.label("offerName"),
             Offer.id.label("offerId"),
             Offer.extraData.label("offerExtraData"),
@@ -672,6 +671,7 @@ def _build_bookings_recap_query(bookings_recap_subquery: Query) -> Query:
             User.lastName.label("beneficiaryLastname"),
             User.email.label("beneficiaryEmail"),
             User.phoneNumber.label("beneficiaryPhoneNumber"),
+            EducationalBooking.confirmationDate,
             EducationalRedactor.firstName.label("redactorFirstname"),
             EducationalRedactor.lastName.label("redactorLastname"),
             EducationalRedactor.email.label("redactorEmail"),
@@ -704,6 +704,8 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
         booking_is_confirmed=booking.isConfirmed,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
         booking_is_educational=booking.educationalBookingId is not None,
+        booking_raw_status=booking.status,
+        booking_confirmation_date=booking.confirmationDate,
         redactor_email=booking.redactorEmail,
         redactor_firstname=booking.redactorFirstname,
         redactor_lastname=booking.redactorLastname,
@@ -773,6 +775,8 @@ def _serialize_booking_recap_legacy(booking: AbstractKeyedTuple) -> BookingRecap
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
         booking_is_educational=booking.educationalBookingId is not None,
+        booking_status=booking.status,
+        booking_confirmation_date=booking.confirmationDate,
         redactor_email=booking.redactorEmail,
         redactor_firstname=booking.redactorFirstname,
         redactor_lastname=booking.redactorLastname,
@@ -794,19 +798,11 @@ def _serialize_booking_recap_legacy(booking: AbstractKeyedTuple) -> BookingRecap
     )
 
 
-# TODO: the lines hereunder should be removed once we can use IMPROVE_BOOKINGS_PERF and use booking.status instead
-def compute_booking_status(booking: Booking) -> BookingStatus:
-    if booking.paymentStatus == TransactionStatus.SENT:
-        return BookingStatus.REIMBURSED
-    if booking.isUsed:
-        return BookingStatus.USED
-    if booking.isCancelled:
-        return BookingStatus.CANCELLED
-    # booking.isConfirmed is a property and we have raw data here, not a SQLA ORM object
-    # We have to duplicate Booking's isConfirmed unless we have a better option
-    if booking.cancellationLimitDate is not None and booking.cancellationLimitDate <= datetime.utcnow():
-        return BookingStatus.CONFIRMED
-    return BookingStatus.PENDING
+def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
+    if is_confirmed:
+        return BOOKING_STATUS_LABELS["confirmed"]
+
+    return BOOKING_STATUS_LABELS[status]
 
 
 def _serialize_csv_report(query: Query) -> str:
@@ -843,7 +839,7 @@ def _serialize_csv_report(query: Query) -> str:
                 _serialize_date_with_timezone(booking.usedAt, booking),
                 booking.token,
                 booking.amount,
-                BOOKING_STATUS_LABELS[compute_booking_status(booking)],
+                _get_booking_status(booking.status, booking.isConfirmed),
                 _serialize_date_with_timezone(booking.reimbursedAt, booking),
             )
         )
