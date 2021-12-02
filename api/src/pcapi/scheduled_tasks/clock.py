@@ -251,7 +251,7 @@ def pc_users_one_year_with_pass_automation() -> None:
 @cron_context
 def pc_notify_users_bookings_not_retrieved() -> None:
     booking_ids = bookings_api.get_unretrieved_booking_ids()
-    for chunk in generic_utils.get_chunks(settings.UNRETRIEVED_BOOKINGS_CHUNK_SIZE, booking_ids):
+    for chunk in generic_utils.get_chunks(booking_ids, settings.UNRETRIEVED_BOOKINGS_CHUNK_SIZE):
         send_unretrieved_bookings_from_offer_notification_job.delay(chunk)
 
 

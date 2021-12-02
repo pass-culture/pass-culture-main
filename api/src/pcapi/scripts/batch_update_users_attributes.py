@@ -59,7 +59,7 @@ def run(chunk_size: int, synchronize_batch: bool = True, synchronize_sendinblue:
     print("%s started" % message)
 
     users = get_users(chunk_size)
-    for chunk in get_chunks(chunk_size, users):
+    for chunk in get_chunks(users, chunk_size):
         if synchronize_batch:
             batch_users_data = format_batch_users(chunk)
             update_users_attributes(batch_users_data)

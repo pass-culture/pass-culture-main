@@ -9,7 +9,7 @@ BaseGenerator = typing.Generator[T, None, None]
 IterableOrGenerator = typing.Union[typing.Iterable[T], BaseGenerator]
 
 
-def get_chunks(chunk_size: int, src: IterableOrGenerator) -> Chunks:
+def get_chunks(src: IterableOrGenerator, chunk_size: int) -> Chunks:
     """
     Build a generator that yields `chunk_size` sized chunks from an
     iterable.
