@@ -1,4 +1,3 @@
-from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
@@ -43,7 +42,11 @@ class BulkUpdateIsGcuCompatibleViaIsbnsTest:
         assert not offer_1.isActive
         assert offer_2.isActive
         assert not offer_3.isActive
-        mocked_unindex_offer_ids.assert_has_calls([call([1, 2]), call([4])])
+        assert mocked_unindex_offer_ids.call_count == 2
+        first_call_args = mocked_unindex_offer_ids.mock_calls[0].args
+        second_call_args = mocked_unindex_offer_ids.mock_calls[1].args
+        assert set(first_call_args[0]) == {1, 2}
+        assert second_call_args[0] == [4]
 
     @pytest.mark.usefixtures("db_session")
     def test_should_mark_products_as_compatible_via_isbn(self):
