@@ -15,6 +15,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
 
+from . import exceptions
 from . import models
 from . import repository as fraud_repository
 
@@ -617,3 +618,61 @@ def is_user_fraudster(user: users_models.User) -> bool:
         beneficiary_fraud_result.status != models.FraudStatus.OK
         for beneficiary_fraud_result in user.beneficiaryFraudResults
     )
+
+
+def start_fraudcheck(
+    user: users_models.User,
+    application_id: str,
+    source_data: Union[models.DMSContent, models.UbbleIdentificationResponse] = None,
+) -> models.BeneficiaryFraudCheck:
+
+    source_type = models.FRAUD_CONTENT_MAPPING[type(source_data)]
+
+    fraud_check = models.BeneficiaryFraudCheck.query.filter(
+        models.BeneficiaryFraudCheck.user == user,
+        models.BeneficiaryFraudCheck.type == source_type,
+        models.BeneficiaryFraudCheck.thirdPartyId == application_id,
+    ).one_or_none()
+    if fraud_check:
+        raise exceptions.ApplicationValidationAlreadyStarted()
+
+    fraud_check = models.BeneficiaryFraudCheck(
+        user=user,
+        type=source_type,
+        thirdPartyId=application_id,
+        resultContent=source_data.dict(),
+        status=models.FraudCheckStatus.PENDING,
+    )
+
+    repository.save(fraud_check)
+
+    return fraud_check
+
+
+def mark_fraudcheck_failed(
+    user: users_models.User,
+    application_id: str,
+    source_data: Union[models.DMSContent, models.UbbleIdentificationResponse],
+    reasons: list[models.FraudItem],
+):
+    source_type = models.FRAUD_CONTENT_MAPPING[type(source_data)]
+    fraud_check = models.BeneficiaryFraudCheck.query.filter(
+        models.BeneficiaryFraudCheck.user == user,
+        models.BeneficiaryFraudCheck.type == source_type,
+        models.BeneficiaryFraudCheck.thirdPartyId == application_id,
+        ~models.BeneficiaryFraudCheck.status.in_([models.FraudCheckStatus.OK, models.FraudCheckStatus.KO]),
+    ).one_or_none()
+
+    if not fraud_check:
+        fraud_check = models.BeneficiaryFraudCheck(
+            user=user,
+            type=source_type,
+            thirdPartyId=application_id,
+            resultContent=source_data.dict(),
+            status=models.FraudCheckStatus.PENDING,
+        )
+
+    fraud_check.status = models.FraudCheckStatus.KO
+    fraud_check.reasonCodes = reasons
+
+    repository.save(fraud_check)

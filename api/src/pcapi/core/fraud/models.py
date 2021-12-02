@@ -208,6 +208,8 @@ FRAUD_CHECK_MAPPING = {
     FraudCheckType.UBBLE: UbbleIdentificationResponse,
 }
 
+FRAUD_CONTENT_MAPPING = {type: cls for cls, type in FRAUD_CHECK_MAPPING.items()}
+
 
 class FraudReasonCode(enum.Enum):
     ALREADY_BENEFICIARY = "already_beneficiary"
