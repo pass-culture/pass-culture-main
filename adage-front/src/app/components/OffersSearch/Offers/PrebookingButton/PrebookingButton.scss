@@ -1,0 +1,15 @@
+@import "sass-rem";
+
+.prebooking-button {
+  text-align: center;
+  padding: rem(11px) rem(24px);
+  margin: auto;
+  background: linear-gradient(98.84deg, #eb0055 0%, #320096 120.92%);
+  box-shadow: 0px 2px 6px rgba(37, 2, 108, 0.2);
+  border-radius: 30px;
+  border: none;
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}
