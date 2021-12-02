@@ -101,18 +101,18 @@ def run(procedure_id: int, use_graphql_api: bool = False) -> None:
 def notify_parsing_exception(parsing_error: DMSParsingError, application_techid: str, client):
     if "postal_code" in parsing_error and "id_piece_number" in parsing_error:
         client.send_user_message(
-            application_techid, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSAGE_DOUBLE_ERROR
+            application_techid, settings.DMS_INSTRUCTOR_EMAIL, subscription_messages.DMS_ERROR_MESSAGE_DOUBLE_ERROR
         )
     elif "postal_code" in parsing_error and "id_piece_number" not in parsing_error:
         client.send_user_message(
             application_techid,
-            settings.DMS_INSTRUCTOR_ID,
+            settings.DMS_INSTRUCTOR_EMAIL,
             subscription_messages.DMS_ERROR_MESSAGE_ERROR_POSTAL_CODE,
         )
     elif "id_piece_number" in parsing_error and "postal_code" not in parsing_error:
         client.send_user_message(
             application_techid,
-            settings.DMS_INSTRUCTOR_ID,
+            settings.DMS_INSTRUCTOR_EMAIL,
             subscription_messages.DMS_ERROR_MESSAGE_ERROR_ID_PIECE,
         )
 
