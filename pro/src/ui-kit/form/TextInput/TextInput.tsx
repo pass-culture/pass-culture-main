@@ -24,6 +24,7 @@ const TextInput = ({
   placeholder,
   countCharacters,
   maxLength,
+  required,
 }: ITextInputProps): JSX.Element => {
   const [field, meta] = useField({ name, disabled })
 
@@ -35,6 +36,7 @@ const TextInput = ({
         label={label ?? ''}
         maxLength={maxLength}
         placeholder={placeholder}
+        required={required}
         type={type}
         {...field}
       />

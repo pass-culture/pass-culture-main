@@ -10,7 +10,7 @@ import styles from './DatePicker.module.scss'
 
 registerLocale('fr', fr)
 
-interface DatePickerProps {
+interface IDatePickerProps {
   name: string
   className?: string
   disabled?: boolean
@@ -18,7 +18,6 @@ interface DatePickerProps {
   maxDateTime?: Date
   minDateTime?: Date
   openingDateTime?: Date
-  dateTime?: Date
 }
 
 const DatePicker = ({
@@ -29,11 +28,15 @@ const DatePicker = ({
   className,
   disabled,
   label,
-}: DatePickerProps): JSX.Element => {
+}: IDatePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'date' })
 
   return (
-    <div className={cn(styles['date-picker'], className)}>
+    <div
+      className={cn(styles['date-picker'], className, {
+        [styles['has-error']]: meta.touched && !!meta.error,
+      })}
+    >
       <label
         className={styles['date-picker-label']}
         htmlFor={`datepicker-${name}`}
@@ -41,7 +44,6 @@ const DatePicker = ({
         {label}
       </label>
       <ReactDatePicker
-        className="datetime-input"
         customInput={
           <input
             className={styles['date-picker-input']}

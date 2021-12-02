@@ -35,14 +35,16 @@ const Select = ({
   }, [options, helpers, field])
 
   return (
-    <div className={cn(styles['select'], className)}>
+    <div
+      className={cn(styles['select'], className, {
+        [styles['has-error']]: meta.touched && !!meta.error,
+      })}
+    >
       <label className={styles['select-label']} htmlFor={name}>
         {label}
       </label>
       <select
-        className={cn(styles['select-input'], {
-          error: meta.touched && !!meta.error,
-        })}
+        className={styles['select-input']}
         disabled={disabled}
         id={name}
         {...field}

@@ -11,6 +11,7 @@ import {
 } from 'core/OfferEducational'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
+import { Title } from 'ui-kit'
 
 import {
   getIsOffererEligibleToEducationalOfferAdapter,
@@ -18,6 +19,7 @@ import {
   getOfferersAdapter,
 } from './adapters'
 import postOfferAdapter from './adapters/postOfferAdapter'
+import style from './OfferEductaionalCreation.module.scss'
 import setInitialFormValues from './utils/setInitialFormValues'
 
 type AsyncScreenProps = Pick<
@@ -87,15 +89,20 @@ const OfferEducationalCreation = (): JSX.Element => {
   }, [isReady, venueId, offererId])
 
   return isReady && screenProps ? (
-    <OfferEducationalScreen
-      {...screenProps}
-      getIsOffererEligibleToEducationalOfferAdapter={
-        getIsOffererEligibleToEducationalOfferAdapter
-      }
-      initialValues={initialValues}
-      notify={notify}
-      onSubmit={createOffer}
-    />
+    <>
+      <Title className={style.heading} level={1}>
+        Nouvelle offre de groupe
+      </Title>
+      <OfferEducationalScreen
+        {...screenProps}
+        getIsOffererEligibleToEducationalOfferAdapter={
+          getIsOffererEligibleToEducationalOfferAdapter
+        }
+        initialValues={initialValues}
+        notify={notify}
+        onSubmit={createOffer}
+      />
+    </>
   ) : (
     <Spinner />
   )

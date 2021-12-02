@@ -4,6 +4,10 @@
     cursor: pointer;
     align-items: center;
     line-height: 1em;
+
+    &.has-error {
+      color: $primary;
+    }
   }
 
   &-input {
@@ -12,6 +16,10 @@
     background-color: $white;
     border: 2px solid $grey-dark;
     border-radius: 4px;
+
+    .has-error & {
+      border-color: $primary;
+    }
 
     &:hover {
       border-color: $primary;
