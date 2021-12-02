@@ -10,6 +10,12 @@ export interface VenueType {
   publicName?: string;
 }
 
+export enum ADRESS_TYPE {
+  OFFERER_VENUE = 'offererVenue',
+  SCHOOL = 'school',
+  OTHER = 'other',
+}
+
 export interface OfferType {
   id: number;
   name: string;
@@ -19,6 +25,16 @@ export interface OfferType {
   stocks: StockType[];
   isSoldOut: boolean;
   isExpired: boolean;
+  extraData?: {
+    contactEmail?: string;
+    contactPhone?: string;
+    offerVenue?: {
+      addressType: ADRESS_TYPE,
+      otherAddress: string,
+      venueId: string,
+    }
+    students?: string[];
+  }
 }
 
 export interface VenueFilterType {
@@ -32,6 +48,7 @@ export interface StockType {
   beginningDatetime: Date;
   isBookable: boolean;
   price: number;
+  numberOfTickets?: number;
 }
 
 // See attributesToRetrieve
