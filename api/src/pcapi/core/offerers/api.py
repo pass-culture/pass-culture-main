@@ -4,6 +4,7 @@ import pathlib
 import secrets
 import typing
 from typing import Optional
+from typing import Union
 
 from pcapi import settings
 from pcapi.connectors.api_adage import AdageException
@@ -11,6 +12,7 @@ from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core import object_storage
 from pcapi.core import search
 from pcapi.core.mails import MailServiceException
+from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -20,6 +22,7 @@ from pcapi.core.offerers.repository import find_offerer_by_siren
 from pcapi.core.offerers.repository import find_offerer_by_validation_token
 from pcapi.core.offerers.repository import find_siren_by_offerer_id
 from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
+from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
@@ -284,3 +287,22 @@ def can_offerer_create_educational_offer(offerer_id: str) -> bool:
             raise CulturalPartnerNotFoundException("No venue has been found for the selected siren")
     except (CulturalPartnerNotFoundException, AdageException) as exception:
         raise exception
+
+
+def get_educational_offerers(offerer_id: Union[None, str], current_user: User) -> list[Offerer]:
+    if current_user.isAdmin and offerer_id is None:
+        logger.info("Admin user must provide offerer_id as a query parameter")
+        raise MissingOffererIdQueryParameter
+
+    if offerer_id and current_user.isAdmin:
+        offerer = Offerer.query.filter(Offerer.validationToken.is_(None), Offerer.isActive.is_(True)).first()
+        offerers = [offerer]
+
+    else:
+        filters = {"validated": True, "validated_for_user": True, "is_active": True}
+        offerers = get_all_offerers_for_user(
+            user=current_user,
+            filters=filters,
+        )
+
+    return offerers
