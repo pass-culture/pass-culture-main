@@ -2,9 +2,11 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
+from pcapi.core.bookings import models as bookings_models
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapCancelledHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapPendingHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapReimbursedHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapValidatedHistory
 
@@ -15,6 +17,7 @@ class BookingRecapStatus(Enum):
     cancelled = "cancelled"
     reimbursed = "reimbursed"
     confirmed = "confirmed"
+    pending = "pending"
 
 
 class BookingRecap:
@@ -31,6 +34,8 @@ class BookingRecap:
         booking_is_cancelled: bool,
         booking_is_reimbursed: bool,
         booking_is_confirmed: bool,
+        booking_raw_status: bookings_models.BookingStatus,
+        booking_confirmation_date: Optional[datetime],
         booking_is_educational: bool,
         booking_amount: float,
         cancellation_date: Optional[datetime],
@@ -57,6 +62,8 @@ class BookingRecap:
         self.booking_is_cancelled = booking_is_cancelled
         self.booking_is_reimbursed = booking_is_reimbursed
         self.booking_is_confirmed = booking_is_confirmed
+        self.booking_raw_status = booking_raw_status
+        self.booking_confirmation_date = booking_confirmation_date
         self.booking_is_educational = booking_is_educational
         self.offer_identifier = offer_identifier
         self.offer_name = offer_name
@@ -70,6 +77,7 @@ class BookingRecap:
             cancellation_limit_date=cancellation_limit_date,
             payment_date=payment_date,
             date_used=date_used,
+            confirmation_date=booking_confirmation_date,
         )
         self.event_beginning_datetime = event_beginning_datetime
 
@@ -99,6 +107,8 @@ class BookingRecap:
             return BookingRecapStatus.validated
         if self.booking_is_confirmed:
             return BookingRecapStatus.confirmed
+        if self.booking_raw_status == bookings_models.BookingStatus.PENDING:
+            return BookingRecapStatus.pending
         return BookingRecapStatus.booked
 
     def build_status_history(
@@ -108,6 +118,7 @@ class BookingRecap:
         cancellation_limit_date: Optional[datetime],
         payment_date: Optional[datetime],
         date_used: Optional[datetime],
+        confirmation_date: Optional[datetime],
     ) -> BookingRecapHistory:
         if self.booking_is_reimbursed:
             return BookingRecapReimbursedHistory(
@@ -115,19 +126,30 @@ class BookingRecap:
                 cancellation_limit_date=cancellation_limit_date,
                 payment_date=payment_date,
                 date_used=date_used,
+                confirmation_date=confirmation_date,
             )
         if self.booking_is_cancelled:
-            return BookingRecapCancelledHistory(booking_date=booking_date, cancellation_date=cancellation_date)
+            return BookingRecapCancelledHistory(
+                booking_date=booking_date,
+                cancellation_date=cancellation_date,
+                confirmation_date=confirmation_date,
+            )
         if self.booking_is_used:
             return BookingRecapValidatedHistory(
-                booking_date=booking_date, cancellation_limit_date=cancellation_limit_date, date_used=date_used
+                booking_date=booking_date,
+                cancellation_limit_date=cancellation_limit_date,
+                date_used=date_used,
+                confirmation_date=confirmation_date,
             )
         if self.booking_is_confirmed:
             return BookingRecapConfirmedHistory(
                 booking_date=booking_date,
                 cancellation_limit_date=cancellation_limit_date,
+                confirmation_date=confirmation_date,
             )
-        return BookingRecapHistory(booking_date)
+        if self.booking_status == BookingRecapStatus.pending:
+            return BookingRecapPendingHistory(booking_date=booking_date)
+        return BookingRecapHistory(booking_date, confirmation_date)
 
 
 # TODO: to be removed when IMPROVE_BOOKINGS_PERF feature flag is definitely adopted
@@ -147,6 +169,8 @@ class BookingRecapLegacy(BookingRecap):
         booking_is_confirmed: bool,
         booking_is_educational: bool,
         booking_amount: float,
+        booking_status: bookings_models.BookingStatus,
+        booking_confirmation_date: Optional[datetime],
         cancellation_date: Optional[datetime],
         cancellation_limit_date: Optional[datetime],
         payment_date: Optional[datetime],
@@ -176,6 +200,8 @@ class BookingRecapLegacy(BookingRecap):
             booking_is_cancelled=booking_is_cancelled,
             booking_is_reimbursed=booking_is_reimbursed,
             booking_is_confirmed=booking_is_confirmed,
+            booking_raw_status=booking_status,
+            booking_confirmation_date=booking_confirmation_date,
             offer_identifier=offer_identifier,
             offer_name=offer_name,
             offer_isbn=offer_isbn,

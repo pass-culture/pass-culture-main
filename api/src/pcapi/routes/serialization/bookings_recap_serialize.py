@@ -11,6 +11,7 @@ from pcapi.domain.booking_recap.booking_recap import BookingRecapStatus
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapCancelledHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapConfirmedHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
+from pcapi.domain.booking_recap.booking_recap_history import BookingRecapPendingHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapReimbursedHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapValidatedHistory
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
@@ -44,8 +45,17 @@ def _serialize_booking_status_info(
 
 
 def _serialize_booking_status_history(booking_status_history: BookingRecapHistory) -> list[dict[str, str]]:
+    if isinstance(booking_status_history, BookingRecapPendingHistory):
+        serialized_booking_status_history = [
+            _serialize_booking_status_info(BookingRecapStatus.pending, booking_status_history.booking_date)
+        ]
+        return serialized_booking_status_history
+
     serialized_booking_status_history = [
-        _serialize_booking_status_info(BookingRecapStatus.booked, booking_status_history.booking_date)
+        _serialize_booking_status_info(
+            BookingRecapStatus.booked,
+            booking_status_history.confirmation_date or booking_status_history.booking_date,
+        )
     ]
     if (
         isinstance(booking_status_history, BookingRecapConfirmedHistory)
