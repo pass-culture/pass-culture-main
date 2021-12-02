@@ -1,12 +1,12 @@
 from pydantic import BaseModel
-
+from typing import Optional
 
 class BankInformationsResponseModel(BaseModel):
     bic: str
     id: int
     iban: str
     name: str
-    siret: str
+    siret: Optional[str]
 
     class Config:
         orm_mode = True

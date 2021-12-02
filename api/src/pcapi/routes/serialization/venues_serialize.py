@@ -233,6 +233,8 @@ class VenueListItemResponseModel(BaseModel):
     mentalDisabilityCompliant: Optional[bool]
     motorDisabilityCompliant: Optional[bool]
     visualDisabilityCompliant: Optional[bool]
+    businessUnitId: Optional[int]
+    siret: Optional[str]
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
