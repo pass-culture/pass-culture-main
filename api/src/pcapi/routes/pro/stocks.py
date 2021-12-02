@@ -7,6 +7,7 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offerers.repository
+from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -132,5 +133,8 @@ def create_educational_stock(body: EducationalStockCreationBodyModel) -> StockId
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
-    stock = offers_api.create_educational_stock(body, current_user)
+    try:
+        stock = offers_api.create_educational_stock(body, current_user)
+    except offers_exceptions.BookingLimitDatetimeTooLate as error:
+        raise ApiErrors(error.errors, status_code=404)
     return StockIdResponseModel.from_orm(stock)
