@@ -45,5 +45,5 @@ def send_unretrieved_bookings_from_offer_notification_job(booking_ids: list[int]
             send_transactional_notification_delayed(notification_data)
         except TypeError:
             logger.error(
-                "booking without an expiration date: could build notification data", extra={"booking": booking.id}
+                "booking without an expiration date: could not build notification data", extra={"booking": booking.id}
             )
