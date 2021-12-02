@@ -1,27 +1,24 @@
-import random
 import re
+import secrets
 import string
 
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import crypto
-from pcapi.utils.token import random_token
 
 
 def random_hashed_password() -> bytes:
-    return crypto.hash_password(random_token(length=12))
+    return crypto.hash_password(random_password())
 
 
 def random_password() -> str:
-    uppercase = random.choices(string.ascii_uppercase, k=12)
-    lowercase = random.choices(string.ascii_lowercase, k=12)
-    number = random.choices(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], k=12)
-    special_chars = random.choices(
-        ["#", "~", "|", "=", ";", ":", ",", "+", ">", "<", "?", "!", "@", "$", "%", "^", "&", "*", "_", ".", "-"]
-    )
+    uppercase = [secrets.choice(string.ascii_uppercase) for i in range(12)]
+    lowercase = [secrets.choice(string.ascii_lowercase) for i in range(12)]
+    number = [secrets.choice("0123456789") for i in range(12)]
+    special_chars = [secrets.choice("#~|=;:,+><?!@$%^&*_.-")]
 
     password_chars = uppercase + lowercase + special_chars + number
-    random.shuffle(password_chars)
+    secrets._sysrand.shuffle(password_chars)
 
     return "".join(password_chars)
 
