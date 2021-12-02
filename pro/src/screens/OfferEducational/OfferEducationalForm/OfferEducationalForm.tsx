@@ -78,7 +78,7 @@ const OfferEducationalForm = ({
           selectedOfferer.managedVenues,
           'name',
           'id',
-          'Séléctionner un lieu'
+          'Sélectionner un lieu'
         )
       )
     }
