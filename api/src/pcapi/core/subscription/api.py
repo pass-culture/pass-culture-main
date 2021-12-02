@@ -336,3 +336,22 @@ def get_allowed_identity_check_methods(user: users_models.User) -> list[models.I
             )
 
     return allowed_methods
+
+
+def get_maintenance_page_type(user: users_models.User) -> Optional[models.MaintenancePageType]:
+    allowed_identity_check_methods = get_allowed_identity_check_methods(user)
+    if allowed_identity_check_methods:
+        return None
+
+    if (
+        user.eligibility == users_models.EligibilityType.AGE18
+        and FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18.is_active()
+    ):
+        return models.MaintenancePageType.WITH_DMS
+    if (
+        user.eligibility == users_models.EligibilityType.UNDERAGE
+        and FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE.is_active()
+    ):
+        return models.MaintenancePageType.WITH_DMS
+
+    return models.MaintenancePageType.WITHOUT_DMS

@@ -9,6 +9,7 @@ from . import BaseModel
 
 class NextSubscriptionStepResponse(BaseModel):
     next_subscription_step: Optional[subscription_models.SubscriptionStep]
+    maintenance_page_type: Optional[subscription_models.MaintenancePageType]
     allowed_identity_check_methods: list[subscription_models.IdentityCheckMethod]
 
     class Config:
