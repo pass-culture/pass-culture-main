@@ -3,8 +3,9 @@ from typing import Optional
 
 
 class BookingRecapHistory:
-    def __init__(self, booking_date: datetime):
+    def __init__(self, booking_date: datetime, confirmation_date: Optional[datetime] = None):
         self.booking_date = booking_date
+        self.confirmation_date = confirmation_date
 
 
 class BookingRecapConfirmedHistory(BookingRecapHistory):
@@ -29,3 +30,8 @@ class BookingRecapCancelledHistory(BookingRecapHistory):
     def __init__(self, cancellation_date: datetime, **kwargs):
         super().__init__(**kwargs)
         self.cancellation_date = cancellation_date
+
+
+class BookingRecapPendingHistory(BookingRecapHistory):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)

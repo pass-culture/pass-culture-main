@@ -3,10 +3,12 @@ from datetime import timezone
 from unittest.mock import patch
 
 from dateutil.tz import tz
+from freezegun.api import freeze_time
 import pytest
 
 from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.testing import assert_num_queries
@@ -192,6 +194,51 @@ class Returns200LegacyTest:
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
+
+    @testing.override_features(IMPROVE_BOOKINGS_PERF=False)
+    @freeze_time("2020-08-11 13:00")
+    def test_should_return_booking_confirmation_date_in_status_history(self, app, client):
+        booking = bookings_factories.EducationalBookingFactory(
+            dateCreated=datetime(2020, 8, 11, 12, 0, 0),
+            educationalBooking__confirmationDate=datetime(2021, 1, 1),
+        )
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
+
+        response = client.with_session_auth(pro_user.email).get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+
+        expected_bookings_recap_status_history = [
+            {
+                "status": "booked",
+                "date": format_into_timezoned_date(
+                    booking.educationalBooking.confirmationDate,
+                ),
+            },
+        ]
+        assert response.status_code == 200
+        assert response.json["bookings_recap"][0]["booking_status_history"] == expected_bookings_recap_status_history
+
+    @testing.override_features(IMPROVE_BOOKINGS_PERF=False)
+    @freeze_time("2020-08-11 13:00")
+    def test_should_return_booking_pending_status_in_history(self, app, client):
+        booking = bookings_factories.EducationalBookingFactory(
+            dateCreated=datetime(2020, 8, 11, 12, 0, 0), status=bookings_models.BookingStatus.PENDING
+        )
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
+
+        response = client.with_session_auth(pro_user.email).get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+
+        expected_bookings_recap = [
+            {
+                "status": "pending",
+                "date": format_into_timezoned_date(
+                    booking.dateCreated.astimezone(tz.gettz("Europe/Paris")),
+                ),
+            },
+        ]
+        assert response.status_code == 200
+        assert response.json["bookings_recap"][0]["booking_status_history"] == expected_bookings_recap
 
     @testing.override_features(**{FeatureToggle.IMPROVE_BOOKINGS_PERF.name: False})
     def when_requested_event_date_is_iso_format(self, app):
@@ -412,6 +459,51 @@ class Returns200Test:
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
+
+    @testing.override_features(IMPROVE_BOOKINGS_PERF=True)
+    @freeze_time("2020-08-11 13:00")
+    def test_should_return_booking_confirmation_date_in_status_history(self, app, client):
+        booking = bookings_factories.EducationalBookingFactory(
+            dateCreated=datetime(2020, 8, 11, 12, 0, 0),
+            educationalBooking__confirmationDate=datetime(2021, 1, 1),
+        )
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
+
+        response = client.with_session_auth(pro_user.email).get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+
+        expected_bookings_recap_status_history = [
+            {
+                "status": "booked",
+                "date": format_into_timezoned_date(
+                    booking.educationalBooking.confirmationDate,
+                ),
+            },
+        ]
+        assert response.status_code == 200
+        assert response.json["bookings_recap"][0]["booking_status_history"] == expected_bookings_recap_status_history
+
+    @testing.override_features(IMPROVE_BOOKINGS_PERF=True)
+    @freeze_time("2020-08-11 13:00")
+    def test_should_return_booking_pending_status_in_history(self, app, client):
+        booking = bookings_factories.EducationalBookingFactory(
+            dateCreated=datetime(2020, 8, 11, 12, 0, 0), status=bookings_models.BookingStatus.PENDING
+        )
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
+
+        response = client.with_session_auth(pro_user.email).get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+
+        expected_bookings_recap = [
+            {
+                "status": "pending",
+                "date": format_into_timezoned_date(
+                    booking.dateCreated.astimezone(tz.gettz("Europe/Paris")),
+                ),
+            },
+        ]
+        assert response.status_code == 200
+        assert response.json["bookings_recap"][0]["booking_status_history"] == expected_bookings_recap
 
 
 @pytest.mark.usefixtures("db_session")
