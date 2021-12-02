@@ -2816,17 +2816,11 @@ def test_get_deposit_booking():
 @pytest.mark.usefixtures("db_session")
 class UnretrievedGoodsTest:
     def test_find_unretrieved_bookings(self):
-        cannot_expire_product = offers_factories.DigitalProductFactory()
-        cannot_expire_offer = offers_factories.OfferFactory(product=cannot_expire_product)
-        cannot_expire_stock = offers_factories.StockFactory(offer=cannot_expire_offer)
-
+        cannot_expire_stock = offers_factories.StockFactory(offer=offers_factories.DigitalOfferFactory())
         bookings_factories.BookingFactory.create_batch(2, stock=cannot_expire_stock)
 
-        can_expire_product = offers_factories.ThingProductFactory()
-        can_expire_offer = offers_factories.OfferFactory(product=can_expire_product)
-        can_expire_stock = offers_factories.StockFactory(offer=can_expire_offer)
-
-        bookings_factories.BookingFactory.create_batch(2, stock=can_expire_stock, isUsed=True)
+        can_expire_stock = offers_factories.ThingStockFactory()
+        bookings_factories.UsedBookingFactory.create_batch(2, stock=can_expire_stock)
 
         create_date = datetime.utcnow() - timedelta(days=1)
         can_retrieve_booking = bookings_factories.BookingFactory(
@@ -2835,13 +2829,3 @@ class UnretrievedGoodsTest:
 
         booking_ids = set(booking_repository.get_unretrieved_booking_ids())
         assert booking_ids == {can_retrieve_booking.id}
-
-    def test_no_unretrieved_bookings(self):
-        cannot_expire_product = offers_factories.DigitalProductFactory()
-        cannot_expire_offer = offers_factories.OfferFactory(product=cannot_expire_product)
-        cannot_expire_stock = offers_factories.StockFactory(offer=cannot_expire_offer)
-
-        bookings_factories.BookingFactory.create_batch(2, stock=cannot_expire_stock)
-
-        bookings_with_offers = list(booking_repository.get_unretrieved_booking_ids())
-        assert not bookings_with_offers
