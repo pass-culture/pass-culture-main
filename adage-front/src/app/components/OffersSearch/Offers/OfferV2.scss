@@ -1,0 +1,43 @@
+@import "sass-rem";
+
+.offer-v2 {
+  display: flex;
+  flex: 1;
+  border: 1px solid #c7c8cb;
+  border-radius: 8px;
+
+  .image-placeholder {
+    width: rem(64px);
+    background-color: #7b1e82;
+    border-radius: rem(8px) 0 0 rem(8px);
+  }
+
+  .offer-container {
+    padding: rem(18px);
+    position: relative;
+    width: 100%;
+  }
+
+  .offer-prebooking-button {
+    position: absolute;
+    right: rem(18px);
+    top: rem(18px);
+  }
+
+  .header {
+    margin-bottom: rem(40px);
+
+    &-title {
+      margin: 0;
+      font-size: rem(20px);
+      font-weight: 700;
+      margin-bottom: rem(6px);
+    }
+
+    .venue-name {
+      font-size: rem(15px);
+      font-weight: 400;
+      margin: 0;
+    }
+  }
+}
