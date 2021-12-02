@@ -28,7 +28,10 @@ class NextStepTest:
         response = client.get("/native/v1/subscription/next_step")
 
         assert response.status_code == 200
-        assert response.json == {"nextSubscriptionStep": "phone-validation"}
+        assert response.json == {
+            "nextSubscriptionStep": "phone-validation",
+            "allowedIdentityCheckMethods": ["jouve"],
+        }
 
 
 class UpdateProfileTest:

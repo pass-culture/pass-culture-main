@@ -11,6 +11,7 @@ from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models.beneficiary_import import BeneficiaryImport
@@ -221,6 +222,7 @@ class NextSubscriptionStepTest:
             subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PHONE_VALIDATION
         )
 
+    @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
     def test_next_subscription_step_underage(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.fifteen_years_ago,
@@ -292,6 +294,158 @@ class NextSubscriptionStepTest:
         )
 
         assert subscription_api.get_next_subscription_step(user) == None
+
+    @pytest.mark.parametrize(
+        "feature_flags,user_age,user_school_type,expected_result",
+        [
+            # User 18
+            (
+                {"ALLOW_IDCHECK_REGISTRATION": True, "ENABLE_UBBLE": False},
+                18,
+                None,
+                [subscription_models.IdentityCheckMethod.JOUVE],
+            ),
+            (
+                {"ALLOW_IDCHECK_REGISTRATION": True, "ENABLE_UBBLE": True},
+                18,
+                None,
+                [subscription_models.IdentityCheckMethod.UBBLE],
+            ),
+            (
+                {"ALLOW_IDCHECK_REGISTRATION": False},
+                18,
+                None,
+                [],
+            ),
+            # User 15 - 17
+            # Public schools -> force EDUCONNECT when possible
+            (
+                {
+                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
+                    "ENABLE_EDUCONNECT_AUTHENTICATION": True,
+                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
+                    "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
+                },
+                15,
+                users_models.SchoolType.PUBLIC_HIGH_SCHOOL,
+                [subscription_models.IdentityCheckMethod.EDUCONNECT],
+            ),
+            (
+                {
+                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
+                    "ENABLE_EDUCONNECT_AUTHENTICATION": True,
+                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
+                    "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
+                },
+                15,
+                users_models.SchoolType.PUBLIC_SECONDARY_SCHOOL,
+                [subscription_models.IdentityCheckMethod.EDUCONNECT],
+            ),
+            (
+                {
+                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
+                    "ENABLE_EDUCONNECT_AUTHENTICATION": False,
+                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
+                    "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": True,
+                    "ENABLE_UBBLE": True,
+                },
+                15,
+                users_models.SchoolType.PUBLIC_SECONDARY_SCHOOL,
+                [subscription_models.IdentityCheckMethod.UBBLE],
+            ),
+            (
+                {
+                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
+                    "ENABLE_EDUCONNECT_AUTHENTICATION": False,
+                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
+                    "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
+                },
+                15,
+                users_models.SchoolType.PUBLIC_SECONDARY_SCHOOL,
+                [],
+            ),
+            # Other schools
+            (
+                {
+                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
+                    "ENABLE_EDUCONNECT_AUTHENTICATION": False,
+                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
+                    "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
+                    "ENABLE_UBBLE": False,
+                },
+                15,
+                users_models.SchoolType.PRIVATE_HIGH_SCHOOL,
+                [subscription_models.IdentityCheckMethod.JOUVE],
+            ),
+            (
+                {
+                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
+                    "ENABLE_EDUCONNECT_AUTHENTICATION": True,
+                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
+                    "ENABLE_UBBLE": False,
+                },
+                15,
+                users_models.SchoolType.PRIVATE_HIGH_SCHOOL,
+                [subscription_models.IdentityCheckMethod.EDUCONNECT, subscription_models.IdentityCheckMethod.JOUVE],
+            ),
+            (
+                {
+                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
+                    "ENABLE_EDUCONNECT_AUTHENTICATION": True,
+                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
+                    "ENABLE_UBBLE": True,
+                },
+                15,
+                None,
+                [subscription_models.IdentityCheckMethod.EDUCONNECT, subscription_models.IdentityCheckMethod.UBBLE],
+            ),
+            (
+                {
+                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
+                    "ENABLE_EDUCONNECT_AUTHENTICATION": True,
+                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": False,
+                    "ENABLE_UBBLE": True,
+                },
+                15,
+                None,
+                [subscription_models.IdentityCheckMethod.EDUCONNECT],
+            ),
+            (
+                {
+                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
+                    "ENABLE_EDUCONNECT_AUTHENTICATION": False,
+                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
+                    "ENABLE_UBBLE": True,
+                },
+                15,
+                None,
+                [subscription_models.IdentityCheckMethod.UBBLE],
+            ),
+            (
+                {
+                    "ENABLE_NATIVE_EAC_INDIVIDUAL": True,
+                    "ENABLE_EDUCONNECT_AUTHENTICATION": True,
+                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": False,
+                },
+                15,
+                None,
+                [subscription_models.IdentityCheckMethod.EDUCONNECT],
+            ),
+            (
+                {
+                    "ENABLE_NATIVE_EAC_INDIVIDUAL": False,
+                },
+                15,
+                None,
+                [],
+            ),
+        ],
+    )
+    def test_get_allowed_identity_check_methods(self, feature_flags, user_age, user_school_type, expected_result):
+        dateOfBirth = datetime.today() - relativedelta(years=user_age, months=1)
+        user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
+        with override_features(**feature_flags):
+            assert subscription_api.get_allowed_identity_check_methods(user) == expected_result
 
 
 @pytest.mark.usefixtures("db_session")

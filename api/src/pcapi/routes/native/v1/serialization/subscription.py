@@ -9,6 +9,7 @@ from . import BaseModel
 
 class NextSubscriptionStepResponse(BaseModel):
     next_subscription_step: Optional[subscription_models.SubscriptionStep]
+    allowed_identity_check_methods: list[subscription_models.IdentityCheckMethod]
 
     class Config:
         alias_generator = to_camel
