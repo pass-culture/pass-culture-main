@@ -86,7 +86,7 @@ def get_offer_notification_data(user_id: int, offer: Offer) -> TransactionalNoti
 
 
 def get_unretrieved_bookings_with_offers_notification_data(booking: Booking) -> TransactionalNotificationData:
-    remaining_time = datetime.now() - booking.expirationDate
+    remaining_time = datetime.utcnow() - booking.expirationDate
     remaining_days = remaining_time.days
 
     return TransactionalNotificationData(
