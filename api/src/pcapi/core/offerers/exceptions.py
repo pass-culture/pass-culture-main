@@ -24,3 +24,7 @@ class CannotFindOffererUserEmail(Exception):
 
 class CannotFindOffererSiren(Exception):
     pass
+
+
+class MissingOffererIdQueryParameter(Exception):
+    pass

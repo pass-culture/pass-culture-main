@@ -15,6 +15,7 @@ from pcapi.core.offerers import api
 from pcapi.core.offerers.exceptions import ApiKeyCountMaxReached
 from pcapi.core.offerers.exceptions import ApiKeyDeletionDenied
 from pcapi.core.offerers.exceptions import ApiKeyPrefixGenerationError
+from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
@@ -115,24 +116,15 @@ def list_offerers_names(query: GetOfferersNamesQueryModel) -> GetOfferersNamesRe
 def list_educational_offerers(query: GetEducationalOfferersQueryModel) -> GetEducationalOfferersResponseModel:
     offerer_id = query.offerer_id
 
-    if current_user.isAdmin and offerer_id is None:
-        logger.info("Admin user must provide offerer_id as a query parameter")
-        raise ApiErrors({"offerer_id": "Missing query param"})
+    try:
+        offerers = api.get_educational_offerers(offerer_id, current_user)
 
-    if offerer_id and current_user.isAdmin:
-        offerer = Offerer.query.filter(Offerer.validationToken.is_(None), Offerer.isActive.is_(True)).first()
-        offerers = [offerer]
-
-    else:
-        filters = {"validated": True, "validated_for_user": True, "is_active": True}
-        offerers = get_all_offerers_for_user(
-            user=current_user,
-            filters=filters,
+        return GetEducationalOfferersResponseModel(
+            educationalOfferers=[GetEducationalOffererResponseModel.from_orm(offerer) for offerer in offerers]
         )
 
-    return GetEducationalOfferersResponseModel(
-        educationalOfferers=[GetEducationalOffererResponseModel.from_orm(offerer) for offerer in offerers]
-    )
+    except MissingOffererIdQueryParameter:
+        raise ApiErrors({"offerer_id": "Missing query parameter"})
 
 
 @private_api.route("/offerers/<offerer_id>", methods=["GET"])
