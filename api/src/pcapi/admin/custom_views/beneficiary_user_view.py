@@ -190,7 +190,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         isEmailValidated="Email validé ?",
         has_active_deposit="Dépôt valable ?",
         total_remaining="Crédit global restant",
-        total_initial="Crédit global disponible",
+        total_initial="Crédit initial",
         digital_remaining="Crédit digital restant",
         physical_remaining="Crédit physique restant",
         deposit_type="Type du portefeuille",
