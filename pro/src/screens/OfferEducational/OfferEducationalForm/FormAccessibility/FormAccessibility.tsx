@@ -9,7 +9,7 @@ import styles from './FormAccessibility.module.scss'
 const FormAccessibility = (): JSX.Element => {
   return (
     <FormLayout.Section
-      description="Cette offre est accessibles aux publics en situation de handicap :"
+      description="Cette offre est accessible aux publics en situation de handicap :"
       title="Accessibilité"
     >
       <FormLayout.Row className={styles['checkbox-group']}>

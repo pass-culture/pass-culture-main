@@ -62,7 +62,7 @@ const FormCategory = ({
             categories,
             'label',
             'id',
-            'Selectionner une catégorie'
+            'Sélectionner une catégorie'
           )}
         />
       </FormLayout.Row>
@@ -75,7 +75,7 @@ const FormCategory = ({
               availableSubCategories,
               'label',
               'id',
-              'Selectionner une sous catégorie'
+              'Sélectionner une sous catégorie'
             )}
           />
         </FormLayout.Row>
