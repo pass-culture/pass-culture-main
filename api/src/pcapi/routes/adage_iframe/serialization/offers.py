@@ -68,6 +68,7 @@ class OfferResponse(BaseModel):
     name: str
     stocks: list[OfferStockResponse]
     venue: OfferVenueResponse
+    extraData: Any
 
     class Config:
         orm_mode = True

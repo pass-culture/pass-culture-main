@@ -56,6 +56,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "description": "offer description",
+            "extraData": None,
             "id": offer_id,
             "isExpired": False,
             "isSoldOut": False,
