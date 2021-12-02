@@ -200,6 +200,9 @@ def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
 # pylint: disable=too-many-return-statements
 def get_next_subscription_step(user: users_models.User) -> Optional[models.SubscriptionStep]:
     # TODO(viconnex): base the next step on the user.subscriptionState that will be added later on
+    allowed_identity_check_methods = get_allowed_identity_check_methods(user)
+    if not allowed_identity_check_methods:
+        return models.SubscriptionStep.MAINTENANCE
     if not user.isEmailValidated:
         return models.SubscriptionStep.EMAIL_VALIDATION
 
