@@ -7,7 +7,6 @@ from datetime import timedelta
 from decimal import Decimal
 from enum import Enum
 import logging
-import random
 import secrets
 import typing
 from typing import Optional
@@ -32,7 +31,6 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
 import pcapi.core.subscription.repository as subscription_repository
-from pcapi.core.users import exceptions
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -67,7 +65,6 @@ from pcapi.tasks import batch_tasks
 from pcapi.tasks.account import VerifyIdentityDocumentRequest
 from pcapi.tasks.account import verify_identity_document
 from pcapi.utils import phone_number as phone_number_utils
-from pcapi.utils.token import random_token
 
 
 logger = logging.getLogger(__name__)
@@ -130,10 +127,12 @@ def create_id_check_token(user: User) -> Optional[Token]:
 
 
 def create_phone_validation_token(user: User) -> Optional[Token]:
-    random_code = "".join([str(random.randint(0, 9)) for _ in range(0, 6)])
-
+    secret_code = "{:06}".format(secrets.randbelow(1_000_000))  # 6 digits
     return generate_and_save_token(
-        user, TokenType.PHONE_VALIDATION, constants.PHONE_VALIDATION_TOKEN_LIFE_TIME, token_value=random_code
+        user,
+        token_type=TokenType.PHONE_VALIDATION,
+        life_time=constants.PHONE_VALIDATION_TOKEN_LIFE_TIME,
+        token_value=secret_code,
     )
 
 
@@ -791,7 +790,7 @@ def validate_token(userId: int, token_value: str) -> Token:
 
 
 def asynchronous_identity_document_verification(image: bytes, email: str) -> None:
-    image_name = f"{random_token(64)}.jpg"
+    image_name = secrets.token_urlsafe(64) + ".jpg"
     image_storage_path = f"identity_documents/{image_name}"
     try:
         store_object(

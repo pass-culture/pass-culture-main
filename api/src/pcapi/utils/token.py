@@ -1,4 +1,4 @@
-import random
+import secrets
 import string
 
 
@@ -9,4 +9,9 @@ ALPHABET = ALPHABET.translate(str.maketrans("", "", "0189IO"))
 
 
 def random_token(length=6):
-    return "".join(random.choices(ALPHABET, k=length))
+    """Generate a token.
+
+    This function uses a limited set of characters. If you want to
+    generate a secret, you should rather use the ``secrets`` module.
+    """
+    return "".join([secrets.choice(ALPHABET) for i in range(length)])

@@ -61,13 +61,11 @@ class Returns200Test:
 
     @patch("pcapi.core.mails.transactional.users.accepted_as_beneficiary_email.send_accepted_as_beneficiary_email")
     @patch("pcapi.domain.user_emails.send_activation_email")
-    @patch("pcapi.domain.password.random_token")
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     @pytest.mark.usefixtures("db_session")
     def test_user_becomes_beneficiary(
         self,
         _get_raw_content,
-        stubed_random_token,
         mocked_send_activation_email,
         mocked_send_accepted_as_beneficiary_email,
         app,
@@ -79,7 +77,6 @@ class Returns200Test:
         """
         # Given
         application_id = 35
-        stubed_random_token.return_value = "token"
         _get_raw_content.return_value = JOUVE_CONTENT
 
         users_factories.UserFactory(
@@ -135,13 +132,11 @@ class Returns200Test:
     @override_features(FORCE_PHONE_VALIDATION=True)
     @patch("pcapi.core.mails.transactional.users.accepted_as_beneficiary_email.send_accepted_as_beneficiary_email")
     @patch("pcapi.domain.user_emails.send_activation_email")
-    @patch("pcapi.domain.password.random_token")
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     @pytest.mark.usefixtures("db_session")
     def test_user_does_not_become_beneficiary(
         self,
         _get_raw_content,
-        stubed_random_token,
         mocked_send_activation_email,
         mocked_send_accepted_as_beneficiary_email,
         app,
@@ -153,7 +148,6 @@ class Returns200Test:
         """
         # Given
         application_id = 35
-        stubed_random_token.return_value = "token"
         _get_raw_content.return_value = JOUVE_CONTENT
         users_factories.UserFactory(
             firstName=JOUVE_CONTENT["firstName"], lastName=JOUVE_CONTENT["lastName"], email=JOUVE_CONTENT["email"]

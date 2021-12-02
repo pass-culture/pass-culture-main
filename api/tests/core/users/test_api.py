@@ -801,18 +801,18 @@ class AsynchronousIdentityDocumentVerificationTest:
     IMAGES_DIR = Path(tests.__path__[0]) / "files"
 
     @patch("pcapi.core.users.api.store_object")
-    @patch("pcapi.core.users.api.random_token")
+    @patch("secrets.token_urlsafe")
     @patch("pcapi.core.users.api.verify_identity_document")
     def test_upload_identity_document_successful(
         self,
         mocked_verify_identity_document,
-        mocked_random_token,
+        mocked_token_urlsafe,
         mocked_store_object,
         app,
     ):
         # Given
         identity_document = (self.IMAGES_DIR / "pixel.png").read_bytes()
-        mocked_random_token.return_value = "a_very_random_secret"
+        mocked_token_urlsafe.return_value = "a_very_random_secret"
 
         # When
         asynchronous_identity_document_verification(identity_document, "toto@example.com")
@@ -845,19 +845,19 @@ class AsynchronousIdentityDocumentVerificationTest:
 
     @patch("pcapi.core.users.api.delete_object")
     @patch("pcapi.core.users.api.store_object")
-    @patch("pcapi.core.users.api.random_token")
+    @patch("secrets.token_urlsafe")
     @patch("pcapi.core.users.api.verify_identity_document")
     def test_cloud_task_creation_fails(
         self,
         mocked_verify_identity_document,
-        mocked_random_token,
+        mocked_token_urlsafe,
         mocked_store_object,
         mocked_delete_object,
         app,
     ):
         # Given
         identity_document = (self.IMAGES_DIR / "pixel.png").read_bytes()
-        mocked_random_token.return_value = "a_very_random_secret"
+        mocked_token_urlsafe.return_value = "a_very_random_secret"
         mocked_verify_identity_document.delay.side_effect = Exception
 
         # When

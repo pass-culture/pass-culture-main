@@ -62,10 +62,8 @@ JOUVE_CONTENT = {
 
 @override_features(FORCE_PHONE_VALIDATION=False)
 @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content", return_value=JOUVE_CONTENT)
-@patch("pcapi.domain.password.random_token")
-def test_saved_a_beneficiary_from_application(stubed_random_token, app):
+def test_saved_a_beneficiary_from_application(app):
     # Given
-    stubed_random_token.return_value = "token"
     users_factories.UserFactory(
         firstName=JOUVE_CONTENT["firstName"], lastName=JOUVE_CONTENT["lastName"], email=JOUVE_CONTENT["email"]
     )

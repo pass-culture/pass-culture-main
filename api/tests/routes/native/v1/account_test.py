@@ -990,10 +990,10 @@ class UploadIdentityDocumentTest:
 
     @patch("pcapi.core.users.api.verify_identity_document")
     @patch("pcapi.core.users.api.store_object")
-    @patch("pcapi.core.users.api.random_token")
+    @patch("secrets.token_urlsafe")
     def test_upload_identity_document_successful(
         self,
-        mocked_random_token,
+        mocked_token_urlsafe,
         mocked_store_object,
         mocked_verify_identity_document,
         client,
@@ -1002,7 +1002,7 @@ class UploadIdentityDocumentTest:
         user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
         token = TokenFactory(user=user, type=TokenType.ID_CHECK)
         client.with_token(email=user.email)
-        mocked_random_token.return_value = "a_very_random_secret"
+        mocked_token_urlsafe.return_value = "a_very_random_secret"
 
         identity_document = (self.IMAGES_DIR / "mouette_small.jpg").read_bytes()
         data = {
