@@ -1,0 +1,19 @@
+.description-list {
+  .dl-row {
+    display: flex;
+    flex-direction: row;
+    margin-top: rem(8px);
+  }
+
+  .dl-title {
+    color: $grey-dark;
+    flex-shrink: 0;
+  }
+
+  .dl-description {
+    margin-left: rem(8px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
