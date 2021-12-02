@@ -27,6 +27,12 @@ class SubscriptionStep(enum.Enum):
     USER_PROFILING = "user-profiling"
 
 
+class IdentityCheckMethod(enum.Enum):
+    EDUCONNECT = "educonnect"
+    JOUVE = "jouve"
+    UBBLE = "ubble"
+
+
 @dataclasses.dataclass
 class BeneficiaryPreSubscription:
     activity: str
