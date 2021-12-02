@@ -292,3 +292,44 @@ def update_user_profile(
         "User id check profile updated",
         extra={"user": user.id, "has_been_activated": user.has_beneficiary_role or underage_user_has_been_activated},
     )
+
+
+def is_identity_check_with_document_method_allowed_for_underage(user: users_models.User) -> bool:
+
+    if not FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION.is_active():
+        return False
+
+    if (
+        user.schoolType == users_models.SchoolType.PUBLIC_HIGH_SCHOOL
+        or user.schoolType == users_models.SchoolType.PUBLIC_SECONDARY_SCHOOL
+    ):
+        return FeatureToggle.ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE.is_active()
+    return True
+
+
+def get_allowed_identity_check_methods(user: users_models.User) -> list[models.IdentityCheckMethod]:
+    allowed_methods = []
+
+    if (
+        user.eligibility == users_models.EligibilityType.UNDERAGE
+        and FeatureToggle.ENABLE_NATIVE_EAC_INDIVIDUAL.is_active()
+    ):
+        if FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION.is_active():
+            allowed_methods.append(models.IdentityCheckMethod.EDUCONNECT)
+
+        if is_identity_check_with_document_method_allowed_for_underage(user):
+            allowed_methods.append(
+                models.IdentityCheckMethod.UBBLE
+                if FeatureToggle.ENABLE_UBBLE.is_active()
+                else models.IdentityCheckMethod.JOUVE
+            )
+
+    elif user.eligibility == users_models.EligibilityType.AGE18:
+        if FeatureToggle.ALLOW_IDCHECK_REGISTRATION.is_active():
+            allowed_methods.append(
+                models.IdentityCheckMethod.UBBLE
+                if FeatureToggle.ENABLE_UBBLE.is_active()
+                else models.IdentityCheckMethod.JOUVE
+            )
+
+    return allowed_methods

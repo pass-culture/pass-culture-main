@@ -21,6 +21,9 @@ logger = logging.getLogger(__name__)
 class FeatureToggle(enum.Enum):
     ALLOW_EMPTY_USER_PROFILING = "Autorise les inscriptions de bénéficiaires sans profile Threat Metrix"
     ALLOW_IDCHECK_REGISTRATION = "Autoriser les utilisateurs de 18 ans à suivre le parcours d inscription ID Check"
+    ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE = (
+        "Autoriser la redirection vers Jouve/Ubble (en backup) pour les utilisateurs éligibles à éduconnect"
+    )
     ALLOW_IDCHECK_UNDERAGE_REGISTRATION = (
         "Autoriser les utilisateurs de moins de 15 à 17 ans à suivre le parcours d inscription ID Check"
     )
@@ -113,6 +116,7 @@ class Feature(PcObject, Model, DeactivableMixin):
 FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ALLOW_EMPTY_USER_PROFILING,
     FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION,
+    FeatureToggle.ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE,
     FeatureToggle.ENABLE_DMS_GRAPHQL_API,
     FeatureToggle.ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE,
     FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION,
