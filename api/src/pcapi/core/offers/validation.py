@@ -341,9 +341,4 @@ def check_booking_limit_datetime(
     beginning_datetime: datetime, booking_limit_datetime: datetime
 ) -> Union[None, ApiErrors]:
     if booking_limit_datetime > beginning_datetime:
-        error = ApiErrors()
-        error.add_error(
-            "bookingLimitDatetime",
-            "La date limite de réservation pour cette offre est postérieure à la date de début de l'évènement",
-        )
-        raise error
+        raise exceptions.BookingLimitDatetimeTooLate()
