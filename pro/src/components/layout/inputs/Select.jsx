@@ -60,7 +60,7 @@ const Select = ({
       onBlur={handleSelection}
       onChange={handleSelection}
       required={required}
-      value={selectedValue || defaultOption.id}
+      value={selectedValue || defaultOption && defaultOption.id || null}
     >
       {defaultOption && (
         <option value={defaultOption.id}>{defaultOption.displayName}</option>
