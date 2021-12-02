@@ -858,7 +858,12 @@ def _serialize_csv_report(query: Query) -> str:
     return output.getvalue()
 
 
-def get_unretrieved_booking_ids() -> list[int]:
+def get_unretrieved_booking_ids() -> typing.Generator[int, None, None]:
+    """
+    Filter unretrieved bookings: not used, not cancelled, created at
+    least three days ago and with an expiration date superior (>) to
+    today.
+    """
     three_days_ago = datetime.combine(date.today() - timedelta(days=3), time(0, 0))
 
     bookings = (
@@ -866,11 +871,14 @@ def get_unretrieved_booking_ids() -> list[int]:
         .filter_by(canExpire=True)
         .filter(Booking.isUsed.is_(False))
         .filter(Booking.isCancelled.is_(False))
-        .filter(Booking.dateCreated >= three_days_ago)
+        .filter(Booking.dateCreated < three_days_ago)
         .options(load_only(Booking.id))
+        .yield_per(1_000)
     )
 
-    return [booking.id for booking in bookings]
+    for booking in bookings:
+        if booking.expirationDate.date() > date.today():
+            yield booking.id
 
 
 def get_bookings_with_offers(booking_ids: list[int]) -> typing.Iterator[Booking]:
