@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React from 'react'
 
 import styles from './CheckboxGroup.module.scss'
@@ -7,9 +8,11 @@ interface ICheckboxProps {
   label: string
   formikFieldValue: string[]
   setValue(value: string[]): void
+  hasError: boolean
 }
 
 const CheckboxGroupItem = ({
+  hasError,
   value,
   label,
   formikFieldValue,
@@ -29,7 +32,12 @@ const CheckboxGroupItem = ({
   }
 
   return (
-    <label className={styles['checkbox-label']} key={value}>
+    <label
+      className={cn(styles['checkbox-label'], {
+        [styles['has-error']]: hasError,
+      })}
+      key={value}
+    >
       <input
         checked={formikFieldValue.includes(value)}
         className={styles['checkbox-input']}

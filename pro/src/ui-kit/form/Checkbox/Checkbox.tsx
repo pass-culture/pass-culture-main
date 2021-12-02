@@ -23,7 +23,11 @@ const Checkbox = ({
 
   return (
     <div className={cn(styles['checkbox'], className)}>
-      <label className={styles['checkbox-label']}>
+      <label
+        className={cn(styles['checkbox-label'], {
+          [styles['has-error']]: meta.touched && !!meta.error,
+        })}
+      >
         <input
           {...field}
           className={styles['checkbox-input']}

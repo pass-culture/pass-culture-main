@@ -27,7 +27,7 @@ const parseDuration = (duration: string): number | undefined => {
     .split(':')
     .map(numberString => parseInt(numberString))
 
-  return hours / 60 + minutes
+  return hours * 60 + minutes
 }
 
 const disabilityCompliances = (

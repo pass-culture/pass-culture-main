@@ -9,7 +9,7 @@ import FieldError from '../FieldError'
 import styles from './TimePicker.module.scss'
 registerLocale('fr', fr)
 
-interface DatePickerProps {
+interface ITimePickerProps {
   name: string
   className?: string
   disabled?: boolean
@@ -22,11 +22,15 @@ const TimePicker = ({
   className,
   disabled,
   label,
-}: DatePickerProps): JSX.Element => {
+}: ITimePickerProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name, type: 'text' })
 
   return (
-    <div className={cn(styles['time-picker'], className)}>
+    <div
+      className={cn(styles['time-picker'], className, {
+        [styles['has-error']]: meta.touched && !!meta.error,
+      })}
+    >
       <label
         className={styles['time-picker-label']}
         htmlFor={`time-picker-${name}`}
@@ -34,7 +38,6 @@ const TimePicker = ({
         {label}
       </label>
       <ReactDatePicker
-        className="datetime-input"
         customInput={
           <input
             className={styles['time-picker-input']}

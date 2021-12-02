@@ -67,7 +67,9 @@ const Template = () => (
       information: action('information'),
       pending: action('pending'),
     }}
-    onSubmit={() => null}
+    onSubmit={values => {
+      console.log(JSON.stringify(values, null, 2))
+    }}
     userOfferers={mockUserOfferers}
   />
 )

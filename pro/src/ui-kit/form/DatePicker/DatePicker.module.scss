@@ -5,7 +5,7 @@
     font-weight: 400;
     border-radius: 22px;
     box-shadow: 0 2px 6px 0 rgba(21, 21, 21, 0.2);
-    color: #151515;
+    color: $black;
     display: block;
     height: rem(40px);
     margin-top: rem(8px);
@@ -14,8 +14,12 @@
     outline: none;
     padding: rem(6px) rem(18px);
 
+    .has-error & {
+      border: 2px solid $primary;
+    }
+
     &:focus {
-      border-color: $primary;
+      border: 2px solid $primary;
     }
 
     &::placeholder {

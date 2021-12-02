@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { screen, render, waitFor } from '@testing-library/react'
+import { screen, render } from '@testing-library/react'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router'

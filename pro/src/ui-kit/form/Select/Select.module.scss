@@ -1,10 +1,4 @@
 .select {
-  .it-sub-label {
-    @include caption();
-    color: $grey-dark;
-    float: right;
-    margin-left: rem(5px);
-  }
 
   &-input {
     @include body();
@@ -21,6 +15,10 @@
     padding-right: rem(30px);
     text-overflow: ellipsis;
 
+    .has-error & {
+      border: 2px solid $primary;
+    }
+
     &:focus {
       border-color: $primary;
       box-shadow: 0 0 0 1px $primary inset;
@@ -33,10 +31,6 @@
       color: $grey-dark;
       cursor: initial;
       opacity: 1;
-    }
-
-    &.error:not(:focus-within) {
-      border: 2px solid $red-error;
     }
   }
 }
