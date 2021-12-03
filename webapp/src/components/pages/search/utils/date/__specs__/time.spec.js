@@ -1,6 +1,5 @@
 import { computeTimeRangeFromHoursToSeconds, TIMESTAMP } from '../time'
 
-// TODO(antoinewg) remove these functions once the migration to AppSearch is complete.
 describe('time', () => {
   let dateSpyOffset
   let dateSpyNow
