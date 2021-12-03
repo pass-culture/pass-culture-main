@@ -15,7 +15,14 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import VenueStat from './VenueStat'
 
-const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
+const Venue = ({
+  hasBusinessUnit,
+  id,
+  isVirtual,
+  name,
+  offererId,
+  publicName,
+}) => {
   const [isStatOpen, setIsStatOpen] = useState(false)
   const [isStatLoaded, setIsStatLoaded] = useState(false)
   const [stats, setStats] = useState({
@@ -132,6 +139,18 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
               </span>
             </h3>
             <div className="button-group">
+              {isBankInformationWithSiretActive && !hasBusinessUnit && (
+                <>
+                  <Link
+                    className="add-rib-link tertiary-link"
+                    to={editVenueLink}
+                  >
+                    <IcoPlus />
+                    Ajouter un RIB
+                  </Link>
+                  <span className="button-group-separator" />
+                </>
+              )}
               {(!isVirtual || isBankInformationWithSiretActive) && (
                 <Link className="tertiary-link" to={editVenueLink}>
                   <Icon svg="ico-outer-pen" />
@@ -172,6 +191,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
 }
 
 Venue.defaultProps = {
+  hasBusinessUnit: false,
   id: '',
   isVirtual: false,
   offererId: '',
@@ -179,6 +199,7 @@ Venue.defaultProps = {
 }
 
 Venue.propTypes = {
+  hasBusinessUnit: PropTypes.bool,
   id: PropTypes.string,
   isVirtual: PropTypes.bool,
   name: PropTypes.string.isRequired,
