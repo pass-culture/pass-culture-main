@@ -20,7 +20,9 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
-from pcapi.infrastructure.container import list_offerers_for_pro_user
+from pcapi.infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import (
+    PaginatedOfferersSQLRepository,
+)
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
@@ -37,7 +39,6 @@ from pcapi.routes.serialization.offerers_serialize import GetOfferersNamesQueryM
 from pcapi.routes.serialization.offerers_serialize import GetOfferersNamesResponseModel
 from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.use_cases.list_offerers_for_pro_user import OfferersRequestParameters
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import OFFERER_INCLUDES
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -74,17 +75,15 @@ def get_offerers():
 
         only_validated_offerers = only_validated_offerers.lower() == "true"
 
-    offerers_request_parameters = OfferersRequestParameters(
+    paginated_offerers = PaginatedOfferersSQLRepository().with_status_and_keywords(
         user_id=current_user.id,
         user_is_admin=current_user.isAdmin,
         is_filtered_by_offerer_status=is_filtered_by_offerer_status,
         only_validated_offerers=only_validated_offerers,
         keywords=keywords,
-        pagination_limit=request.args.get("paginate", "10"),
-        page=request.args.get("page", "0"),
+        pagination_limit=int(request.args.get("paginate", "10")),
+        page=int(request.args.get("page", "0")),
     )
-
-    paginated_offerers = list_offerers_for_pro_user.execute(offerers_request_parameters=offerers_request_parameters)
 
     response = jsonify(get_dict_offerers(paginated_offerers.offerers))
     response.headers["Total-Data-Count"] = paginated_offerers.total
