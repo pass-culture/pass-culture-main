@@ -6,7 +6,8 @@
     "plugin:jsx-a11y/strict",
     "plugin:import/errors",
     "plugin:jest/all",
-    "plugin:react-hooks/recommended"
+    "plugin:react-hooks/recommended",
+    "plugin:prettier/recommended"
   ],
   "env": {
     "browser": true,
@@ -73,6 +74,7 @@
     "react/require-optimization": "off",
     "react/static-property-placement": "off",
     "react/jsx-no-literals": "off",
+    "react/require-default-props": "off",
     "semi": [
       "warn",
       "never"
