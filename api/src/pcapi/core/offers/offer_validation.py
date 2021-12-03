@@ -33,8 +33,8 @@ class OfferValidationRuleItem:
 def parse_offer_validation_config(
     offer: Offer, config: OfferValidationConfig
 ) -> tuple[float, list[OfferValidationRuleItem]]:
-    minimum_score = float(config.specs.pop("minimum_score"))
-    rules = config.specs.pop("rules")
+    minimum_score = float(config.specs["minimum_score"])
+    rules = config.specs["rules"]
 
     rule_items = []
     for rule in rules:
