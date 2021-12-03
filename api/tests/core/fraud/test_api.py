@@ -252,8 +252,12 @@ class JouveFraudCheckTest:
 class CommonTest:
     def test_validator_data(self):
         user = users_factories.UserFactory()
-        fraud_data = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
+        fraud_data = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.JOUVE,
+            dateCreated=datetime.datetime.utcnow() + datetime.timedelta(seconds=2),
+        )
 
         expected = fraud_api.get_source_data(user)
 
