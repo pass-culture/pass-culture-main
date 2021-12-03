@@ -154,6 +154,8 @@ class EduconnectFlowTest:
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.73": ["2212"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.6": ["2021-10-08 11:51:33.437"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.64": [ine_hash],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.7": ["eleve1d"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.72": ["school_uai"],
         }
         mock_saml_response.in_response_to = request_id
 

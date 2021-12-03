@@ -88,7 +88,7 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
             "logout_url": educonnect_user.logout_url,
             "user_type": educonnect_user.user_type,
             "saml_request_id": educonnect_user.saml_request_id,
-            "school": educonnect_user.school,
+            "school_uai": educonnect_user.school_uai,
             "student_level": educonnect_user.student_level,
         },
     )
@@ -100,6 +100,8 @@ def on_educonnect_authentication_response() -> Response:  # pylint: disable=too-
         ine_hash=educonnect_user.ine_hash,
         last_name=educonnect_user.last_name,
         registration_datetime=datetime.datetime.now(),
+        school_uai=educonnect_user.school_uai,
+        student_level=educonnect_user.student_level,
     )
 
     try:
