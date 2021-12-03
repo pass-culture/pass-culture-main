@@ -17,6 +17,14 @@
       align-items: center;
     }
 
+    .tertiary-link.add-rib-link {
+      color: $primary;
+
+      & .ico-plus {
+        fill: $primary;
+      }
+    }
+
     &-separator {
       height: rem(20px);
       border-left: solid 1px $grey-medium;

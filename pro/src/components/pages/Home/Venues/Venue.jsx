@@ -14,7 +14,15 @@ import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
 
 import VenueStat from './VenueStat'
 
-const Venue = ({ id, isVirtual, name, offererId, publicName, venueStats }) => {
+const Venue = ({
+  hasBusinessUnit,
+  id,
+  isVirtual,
+  name,
+  offererId,
+  publicName,
+  venueStats,
+}) => {
   const venueStatData = [
     {
       count: venueStats.activeOffersCount.toString(),
@@ -84,6 +92,15 @@ const Venue = ({ id, isVirtual, name, offererId, publicName, venueStats }) => {
                 </span>
               </Link>
             </h3>
+            {isBankInformationWithSiretActive && !hasBusinessUnit && (
+              <>
+                <span className="button-group-separator" />
+                <Link className="tertiary-link" to={editVenueLink}>
+                  <IcoPlus />
+                  Ajouter un RIB
+                </Link>
+              </>
+            )}
             {(!isVirtual || isBankInformationWithSiretActive) && (
               <Link className="tertiary-link" to={editVenueLink}>
                 <Icon svg="ico-outer-pen" />
@@ -120,6 +137,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName, venueStats }) => {
 }
 
 Venue.defaultProps = {
+  hasBusinessUnit: false,
   id: '',
   isVirtual: false,
   offererId: '',
@@ -127,6 +145,7 @@ Venue.defaultProps = {
 }
 
 Venue.propTypes = {
+  hasBusinessUnit: PropTypes.bool,
   id: PropTypes.string,
   isVirtual: PropTypes.bool,
   name: PropTypes.string.isRequired,
