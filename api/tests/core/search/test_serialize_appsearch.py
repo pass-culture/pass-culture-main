@@ -39,7 +39,6 @@ def test_serialize_offer():
     serialized = appsearch.AppSearchBackend().serialize_offer(offer)
     assert serialized == {
         "artist": "Author Performer Speaker Stage Director",
-        "category": "LIVRE",
         "date_created": offer.dateCreated,
         "description": "livre bien lire",
         "group": "2221001648",

@@ -48,7 +48,6 @@ EDUCATIONAL_OFFERS_ENGINE_NAME = "offers-educational"
 OFFERS_SEARCH_PRECISION = 3
 OFFERS_SCHEMA = {
     "artist": "text",
-    "category": "text",
     "date_created": "date",
     "dates": "date",
     "description": "text",
@@ -78,7 +77,6 @@ OFFERS_SCHEMA = {
 }
 
 OFFERS_FIELD_WEIGHTS = {
-    "category": 0,
     "label": 0,
     "search_group_name": 0,
     "subcategory_id": 0,
@@ -421,7 +419,6 @@ class AppSearchBackend(base.SearchBackend):
         return omit_empty_values(
             {
                 "artist": artist.strip() or None,
-                "category": offer.offer_category_name_for_app,
                 "date_created": offer.dateCreated,  # used only to rank results
                 "dates": dates,
                 "description": remove_stopwords(offer.description or ""),

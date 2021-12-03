@@ -98,7 +98,6 @@ class BuildObjectTest:
             "objectID": 3,
             "offer": {
                 "artist": None,
-                "category": "MUSIQUE",
                 "dateCreated": 1577872800.0,
                 "dates": [1603098000.0, 1603098000.0, 1603098000.0],
                 "description": "lit sous rivière",
@@ -403,7 +402,6 @@ class BuildObjectTest:
             "objectID": 3,
             "offer": {
                 "artist": None,
-                "category": "MUSIQUE",
                 "dateCreated": 1577872800.0,
                 "dates": [1603098000.0],
                 "description": "lit sous rivière",
@@ -487,7 +485,6 @@ class BuildObjectTest:
             "objectID": 3,
             "offer": {
                 "artist": None,
-                "category": "MUSIQUE",
                 "dateCreated": 1577872800.0,
                 "dates": [1603098000.0],
                 "description": "lit sous rivière",
