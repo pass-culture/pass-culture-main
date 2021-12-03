@@ -351,3 +351,7 @@ def get_available_activation_code(stock: Stock) -> Optional[ActivationCode]:
         ActivationCode.bookingId.is_(None),
         or_(ActivationCode.expirationDate.is_(None), ActivationCode.expirationDate > func.now()),
     ).first()
+
+
+def get_educational_offer_by_id(offer_id: str) -> Offer:
+    return Offer.query.filter(Offer.isEducational == True, Offer.id == offer_id).one()

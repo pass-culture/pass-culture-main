@@ -1,3 +1,4 @@
+import copy
 import datetime
 import logging
 from typing import Optional
@@ -271,6 +272,30 @@ def update_offer(
     if product_has_been_updated:
         repository.save(offer.product)
         logger.info("Product has been updated", extra={"product": offer.product.id})
+
+    search.async_index_offer_ids([offer.id])
+
+    return offer
+
+
+def update_educational_offer(
+    offer: Offer,
+    offer_as_dict: dict,
+) -> Offer:
+    validation.check_validation_status(offer)
+    for key, value in offer_as_dict.items():
+        if key == "extraData":
+            extra_data = copy.deepcopy(offer.extraData)
+
+            for extra_data_key, extra_data_value in value.items():
+                extra_data[extra_data_key] = extra_data_value
+
+            offer.extraData = extra_data
+            continue
+
+        setattr(offer, key, value)
+
+    repository.save(offer)
 
     search.async_index_offer_ids([offer.id])
 

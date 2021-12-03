@@ -174,10 +174,32 @@ class PatchOfferBodyModel(BaseModel):
     motorDisabilityCompliant: Optional[bool]
     visualDisabilityCompliant: Optional[bool]
 
-    @validator("name", pre=True)
+    @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name):  # pylint: disable=no-self-argument
         if name:
             check_offer_name_length_is_valid(name)
+        return name
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class PatchEducationalOfferBodyModel(BaseModel):
+    bookingEmail: Optional[str]
+    description: Optional[str]
+    name: Optional[str]
+    extraData: Any
+    durationMinutes: Optional[int]
+    audioDisabilityCompliant: Optional[bool]
+    mentalDisabilityCompliant: Optional[bool]
+    motorDisabilityCompliant: Optional[bool]
+    visualDisabilityCompliant: Optional[bool]
+
+    @validator("name", allow_reuse=True)
+    def validate_name(cls, name):  # pylint: disable=no-self-argument
+        assert name is not None and name.strip() != ""
+        check_offer_name_length_is_valid(name)
         return name
 
     class Config:
