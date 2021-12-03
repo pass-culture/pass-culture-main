@@ -123,7 +123,7 @@ class EduconnectTest:
             "logout_url": "https://educonnect.education.gouv.fr/Logout",
             "user_type": "eleve1d",
             "saml_request_id": self.request_id,
-            "school": "school_uai",
+            "school_uai": "school_uai",
             "student_level": "2212",
             "user_email": self.email,
         }
@@ -139,6 +139,8 @@ class EduconnectTest:
             "ine_hash": ine_hash,
             "last_name": "SENS",
             "registration_datetime": "2021-10-10T00:00:00",
+            "school_uai": "school_uai",
+            "student_level": "2212",
         }
         assert len(user.beneficiaryFraudResults) == 1
         assert user.beneficiaryFraudResults[0].status == fraud_models.FraudStatus.OK
