@@ -73,6 +73,7 @@ class Returns200Test:
                     "audioDisabilityCompliant": False,
                     "address": offererVenue.address,
                     "bookingEmail": offererVenue.bookingEmail,
+                    "businessUnitId": offererVenue.businessUnitId,
                     "city": offererVenue.city,
                     "comment": offererVenue.comment,
                     "departementCode": offererVenue.departementCode,

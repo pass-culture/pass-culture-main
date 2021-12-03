@@ -17,6 +17,7 @@ from pcapi.utils.date import format_into_utc_date
 class GetOffererVenueResponseModel(BaseModel):
     address: Optional[str]
     bookingEmail: Optional[str]
+    businessUnitId: Optional[int]
     city: Optional[str]
     comment: Optional[str]
     departementCode: Optional[str]

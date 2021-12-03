@@ -15,6 +15,7 @@ export const VenueList = ({
   <div className="h-venue-list">
     {virtualVenue && (
       <Venue
+        hasBusinessUnit={!!virtualVenue.businessUnitId}
         id={virtualVenue.id}
         isVirtual
         name="Offres numériques"
@@ -24,6 +25,7 @@ export const VenueList = ({
 
     {physicalVenues?.map(venue => (
       <Venue
+        hasBusinessUnit={!!venue.businessUnitId}
         id={venue.id}
         key={venue.id}
         name={venue.name}
