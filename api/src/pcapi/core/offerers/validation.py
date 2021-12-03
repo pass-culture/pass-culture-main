@@ -17,14 +17,10 @@ VENUE_BANNER_MAX_SIZE = 200_000
 def check_existing_business_unit(business_unit_id: int, offerer: Offerer):
     business_unit = BusinessUnit.query.filter_by(id=business_unit_id).one_or_none()
     if not business_unit:
-        errors = ApiErrors()
-        errors.add_error("businessUnitId", "Ce point de facturation n'existe pas.")
-        raise errors
+        raise ApiErrors(errors={"businessUnitId": ["Ce point de facturation n'existe pas."]})
 
     if business_unit.siret[:9] != offerer.siren:
-        errors = ApiErrors()
-        errors.add_error("businessUnitId", "Ce point de facturation n'est pas un choix valide pour ce lieu.")
-        raise errors
+        raise ApiErrors(errors={"businessUnitId": ["Ce point de facturation n'est pas un choix valide pour ce lieu."]})
 
 
 def check_existing_venue(venue: Venue):
@@ -51,14 +47,10 @@ def validate_coordinates(raw_latitude, raw_longitude):
 def check_venue_creation(data):
     offerer_id = dehumanize(data.get("managingOffererId"))
     if not offerer_id:
-        errors = ApiErrors()
-        errors.add_error("managingOffererId", "Vous devez choisir une structure pour votre lieu.")
-        raise errors
+        raise ApiErrors(errors={"managingOffererId": ["Vous devez choisir une structure pour votre lieu."]})
     offerer = Offerer.query.filter(Offerer.id == offerer_id).one_or_none()
     if not offerer:
-        errors = ApiErrors()
-        errors.add_error("managingOffererId", "La structure que vous avez choisie n'existe pas.")
-        raise errors
+        raise ApiErrors(errors={"managingOffererId": ["La structure que vous avez choisie n'existe pas."]})
 
     if None in [
         data.get("audioDisabilityCompliant"),
@@ -66,9 +58,7 @@ def check_venue_creation(data):
         data.get("motorDisabilityCompliant"),
         data.get("visualDisabilityCompliant"),
     ]:
-        errors = ApiErrors()
-        errors.add_error("global", "L'accessibilité du lieu doit être définie.")
-        raise errors
+        raise ApiErrors(errors={"global": ["L'accessibilité du lieu doit être définie."]})
 
     business_unit_id = data.get("businessUnitId")
     if business_unit_id:
@@ -94,23 +84,15 @@ def check_venue_edition(modifications, venue):
     ]
 
     if managing_offerer_id:
-        errors = ApiErrors()
-        errors.add_error("managingOffererId", "Vous ne pouvez pas changer la structure d'un lieu")
-        raise errors
+        raise ApiErrors(errors={"managingOffererId": ["Vous ne pouvez pas changer la structure d'un lieu"]})
     if siret and venue.siret and siret != venue.siret:
-        errors = ApiErrors()
-        errors.add_error("siret", "Vous ne pouvez pas modifier le siret d'un lieu")
-        raise errors
+        raise ApiErrors(errors={"siret": ["Vous ne pouvez pas modifier le siret d'un lieu"]})
     if siret:
         venue_with_same_siret = Venue.query.filter_by(siret=siret).one_or_none()
         if venue_with_same_siret:
-            errors = ApiErrors()
-            errors.add_error("siret", "Un lieu avec le même siret existe déjà")
-            raise errors
+            raise ApiErrors(errors={"siret": ["Un lieu avec le même siret existe déjà"]})
     if None in venue_disability_compliance and None in modifications_disability_compliance:
-        errors = ApiErrors()
-        errors.add_error("global", "L'accessibilité du lieu doit etre définie.")
-        raise errors
+        raise ApiErrors(errors={"global": ["L'accessibilité du lieu doit etre définie."]})
 
     if business_unit_id:
         check_existing_business_unit(business_unit_id, offerer=venue.managingOfferer)
