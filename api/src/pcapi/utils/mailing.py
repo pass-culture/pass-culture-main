@@ -23,10 +23,6 @@ from pcapi.utils.human_ids import humanize
 from pcapi.utils.urls import get_webapp_url
 
 
-class MailServiceException(Exception):
-    pass
-
-
 def build_pc_pro_offer_link(offer: Offer) -> str:
     return f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition"
 

@@ -2,17 +2,14 @@ import logging
 
 from pcapi.core.offerers import api
 from pcapi.core.offerers.exceptions import ValidationTokenNotFoundError
-from pcapi.core.offerers.models import Offerer
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
 from pcapi.repository import user_offerer_queries
 from pcapi.repository import user_queries
 from pcapi.routes.apis import private_api
 from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.mailing import MailServiceException
 from pcapi.validation.routes.validate import check_valid_token_for_user_validation
 
 
@@ -62,16 +59,8 @@ def validate_user(token) -> None:
 
     if user_offerer:
         offerer = user_offerer.offerer
-        _ask_for_validation(offerer, user_offerer)
-
-    return None
-
-
-def _ask_for_validation(offerer: Offerer, user_offerer: UserOfferer):
-    try:
-        maybe_send_offerer_validation_email(offerer, user_offerer)
-
-    except MailServiceException as mail_service_exception:
-        logger.exception(
-            "Could not send offerer validation email to offerer", extra={"exc": str(mail_service_exception)}
-        )
+        if not maybe_send_offerer_validation_email(offerer, user_offerer):
+            logger.warning(
+                "Could not send offerer validation email to offerer",
+                extra={"user_offerer": user_offerer.id},
+            )

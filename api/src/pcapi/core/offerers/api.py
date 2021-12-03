@@ -11,7 +11,6 @@ from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core import object_storage
 from pcapi.core import search
-from pcapi.core.mails import MailServiceException
 from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
@@ -219,10 +218,11 @@ def create_offerer(user: User, offerer_informations: CreateOffererQueryModel):
 
 
 def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: UserOfferer) -> None:
-    try:
-        maybe_send_offerer_validation_email(offerer, user_offerer)
-    except MailServiceException as mail_service_exception:
-        logger.exception("Could not send validation email to offerer", extra={"exc": str(mail_service_exception)})
+    if not maybe_send_offerer_validation_email(offerer, user_offerer):
+        logger.warning(
+            "Could not send validation email to offerer",
+            extra={"user_offerer": user_offerer.id},
+        )
 
 
 def validate_offerer_attachment(token: str) -> None:
@@ -234,11 +234,10 @@ def validate_offerer_attachment(token: str) -> None:
     user_offerer.user.add_pro_role()
     repository.save(user_offerer)
 
-    try:
-        send_attachment_validation_email_to_pro_offerer(user_offerer)
-    except MailServiceException as mail_service_exception:
-        logger.exception(
-            "Could not send attachment validation email to offerer", extra={"exc": str(mail_service_exception)}
+    if not send_attachment_validation_email_to_pro_offerer(user_offerer):
+        logger.warning(
+            "Could not send attachment validation email to offerer",
+            extra={"user_offerer": user_offerer.id},
         )
 
 
@@ -257,11 +256,10 @@ def validate_offerer(token: str) -> None:
     repository.save(offerer, *applicants)
     search.async_index_offers_of_venue_ids([venue.id for venue in managed_venues])
 
-    try:
-        send_validation_confirmation_email_to_pro(offerer)
-    except MailServiceException as mail_service_exception:
-        logger.exception(
-            "Could not send validation confirmation email to offerer", extra={"exc": str(mail_service_exception)}
+    if not send_validation_confirmation_email_to_pro(offerer):
+        logger.warning(
+            "Could not send validation confirmation email to offerer",
+            extra={"offerer": offerer.id},
         )
 
 
