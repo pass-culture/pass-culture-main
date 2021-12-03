@@ -80,7 +80,6 @@ class OffersTest:
                 "motorDisability": False,
                 "visualDisability": True,
             },
-            "category": {"categoryType": "Event", "label": "Séance de cinéma", "name": "CINEMA"},
             "stocks": [
                 {
                     "id": bookableStock.id,

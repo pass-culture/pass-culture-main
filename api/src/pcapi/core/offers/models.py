@@ -263,11 +263,6 @@ class OfferValidationStatus(enum.Enum):
     REJECTED = "REJECTED"
 
 
-class CategoryType(enum.Enum):
-    EVENT = "Event"
-    THING = "Thing"
-
-
 class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
     __tablename__ = "offer"
 
@@ -490,12 +485,6 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
         if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for offer {self.id}")
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
-
-    @property
-    def category_type(self) -> str:
-        if self.isEvent:
-            return CategoryType.EVENT.value
-        return CategoryType.THING.value
 
     @property
     def image(self) -> Optional[OfferImage]:

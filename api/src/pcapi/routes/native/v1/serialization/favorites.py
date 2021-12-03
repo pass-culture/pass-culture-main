@@ -6,28 +6,16 @@ from pydantic.class_validators import validator
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers.api import get_expense_domains
-from pcapi.core.offers.models import CategoryType
 from pcapi.core.users.models import ExpenseDomain
-from pcapi.models.offer_type import CategoryNameEnum
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.utils.date import format_into_utc_date
 
 from . import BaseModel
 
-# TODO(xordoquy): move common models with offers API
-from .offers import get_serialized_offer_category
-
 
 class Coordinates(BaseModel):
     latitude: Optional[Decimal]
     longitude: Optional[Decimal]
-
-
-# TODO(fseguin): cleanup when native app has been force-updated
-class FavoriteCategoryResponse(BaseModel):
-    categoryType: CategoryType
-    label: str
-    name: Optional[CategoryNameEnum]
 
 
 class FavoriteMediationResponse(BaseModel):
@@ -41,7 +29,6 @@ class FavoriteMediationResponse(BaseModel):
 class FavoriteOfferResponse(BaseModel):
     id: int
     name: str
-    category: FavoriteCategoryResponse
     subcategoryId: SubcategoryIdEnum
     externalTicketOfficeUrl: Optional[str]
     image: Optional[FavoriteMediationResponse]
@@ -63,7 +50,6 @@ class FavoriteOfferResponse(BaseModel):
 
     @classmethod
     def from_orm(cls, offer):  # type: ignore
-        offer.category = get_serialized_offer_category(offer)
         offer.coordinates = {"latitude": offer.venue.latitude, "longitude": offer.venue.longitude}
         offer.expenseDomains = get_expense_domains(offer)
         return super().from_orm(offer)
