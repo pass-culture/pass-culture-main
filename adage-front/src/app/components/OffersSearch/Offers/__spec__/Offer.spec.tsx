@@ -1,25 +1,23 @@
-import { render, screen, within } from "@testing-library/react"
-import React from "react"
-import { QueryCache, QueryClient, QueryClientProvider } from "react-query"
+import { render, screen, within } from "@testing-library/react";
+import React from "react";
+import { QueryCache, QueryClient, QueryClientProvider } from "react-query";
 
-import * as pcapi from "repository/pcapi/pcapi"
-import { OfferType, ResultType, Role } from "utils/types"
+import * as pcapi from "repository/pcapi/pcapi";
+import { OfferType, ResultType, Role } from "utils/types";
 
-import { OffersComponent as Offers } from "../Offers"
+import { OffersComponent as Offers } from "../Offers";
 
 jest.mock("repository/pcapi/pcapi", () => ({
   getOffer: jest.fn(),
-}))
+}));
 
-const queryCache = new QueryCache()
-const queryClient = new QueryClient({ queryCache })
+const queryCache = new QueryCache();
+const queryClient = new QueryClient({ queryCache });
 const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    {children}
-  </QueryClientProvider>
-)
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+);
 
-const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
+const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>;
 
 const searchFakeResult: ResultType = {
   objectID: "479",
@@ -32,14 +30,14 @@ const searchFakeResult: ResultType = {
     name: "Le Petit Rintintin 25",
     publicName: "Le Petit Rintintin 25",
   },
-}
+};
 
 describe("offer", () => {
-  let offerInParis: OfferType
-  let offerInCayenne: OfferType
+  let offerInParis: OfferType;
+  let offerInCayenne: OfferType;
 
   beforeEach(() => {
-    queryCache.clear()
+    queryCache.clear();
     offerInParis = {
       id: 479,
       description: "Une offre vraiment chouette",
@@ -66,7 +64,7 @@ describe("offer", () => {
       },
       isSoldOut: false,
       isExpired: false,
-    }
+    };
 
     offerInCayenne = {
       id: 479,
@@ -94,47 +92,45 @@ describe("offer", () => {
       },
       isSoldOut: false,
       isExpired: false,
-    }
-  })
+    };
+  });
 
   describe("when offer has one stock", () => {
     it("should show offer informations, including one stock with the Europe/Paris timezone date when venue is located in Paris", async () => {
       // Given
-      mockedPcapi.getOffer.mockResolvedValue(offerInParis)
+      mockedPcapi.getOffer.mockResolvedValue(offerInParis);
 
       // When
-      render(<Offers
-        hits={[searchFakeResult]}
-        userRole={Role.redactor}
-             />, { wrapper })
+      render(<Offers hits={[searchFakeResult]} userRole={Role.redactor} />, {
+        wrapper,
+      });
 
       // Then
-      const offerName = await screen.findByText(offerInParis.name)
-      expect(offerName).toBeInTheDocument()
-      const listItemsInOffer = screen.getAllByRole("listitem")
-      const stockList = within(listItemsInOffer[0]).getAllByRole("listitem")
-      expect(stockList).toHaveLength(1)
-      const stockInformation = screen.getByText("16/09/2022 02:00, 1 400,00 €")
-      expect(stockInformation).toBeInTheDocument()
-    })
+      const offerName = await screen.findByText(offerInParis.name);
+      expect(offerName).toBeInTheDocument();
+      const listItemsInOffer = screen.getAllByRole("listitem");
+      const stockList = within(listItemsInOffer[0]).getAllByRole("listitem");
+      expect(stockList).toHaveLength(1);
+      const stockInformation = screen.getByText("16/09/2022 02:00, 1 400,00 €");
+      expect(stockInformation).toBeInTheDocument();
+    });
 
     it("should show offer informations, including one stock with the America/Cayenne timezone date when venue is located in Cayenne", async () => {
       // Given
-      mockedPcapi.getOffer.mockResolvedValue(offerInCayenne)
+      mockedPcapi.getOffer.mockResolvedValue(offerInCayenne);
 
       // When
-      render(<Offers
-        hits={[searchFakeResult]}
-        userRole={Role.redactor}
-             />, { wrapper })
+      render(<Offers hits={[searchFakeResult]} userRole={Role.redactor} />, {
+        wrapper,
+      });
 
       // Then
       const stockInformation = await screen.findByText(
         "25/09/2021 19:00, 800,00 €"
-      )
-      expect(stockInformation).toBeInTheDocument()
-    })
-  })
+      );
+      expect(stockInformation).toBeInTheDocument();
+    });
+  });
 
   describe("when offer has two stocks", () => {
     beforeEach(() => {
@@ -143,70 +139,67 @@ describe("offer", () => {
         beginningDatetime: new Date("2021-10-16T00:00:00Z"),
         isBookable: true,
         price: 60000,
-      })
-    })
+      });
+    });
 
     it("should show offer informations, including two line corresponding to both stocks correctly formatted", async () => {
       // Given
-      mockedPcapi.getOffer.mockResolvedValue(offerInParis)
+      mockedPcapi.getOffer.mockResolvedValue(offerInParis);
 
       // When
-      render(<Offers
-        hits={[searchFakeResult]}
-        userRole={Role.redactor}
-             />, { wrapper })
+      render(<Offers hits={[searchFakeResult]} userRole={Role.redactor} />, {
+        wrapper,
+      });
 
       // Then
-      const listItemsInOffer = await screen.findAllByRole("listitem")
-      const stockList = within(listItemsInOffer[0]).getAllByRole("listitem")
-      expect(stockList).toHaveLength(2)
+      const listItemsInOffer = await screen.findAllByRole("listitem");
+      const stockList = within(listItemsInOffer[0]).getAllByRole("listitem");
+      expect(stockList).toHaveLength(2);
       const firstStockInformation = screen.getByText(
         "16/09/2022 02:00, 1 400,00 €"
-      )
-      expect(firstStockInformation).toBeInTheDocument()
+      );
+      expect(firstStockInformation).toBeInTheDocument();
       const secondStockInformation = screen.getByText(
         "16/10/2021 02:00, 600,00 €"
-      )
-      expect(secondStockInformation).toBeInTheDocument()
-    })
+      );
+      expect(secondStockInformation).toBeInTheDocument();
+    });
 
     it("should show only one stock information when the other one is not bookable", async () => {
       // Given
-      offerInParis.stocks[1].isBookable = false
-      mockedPcapi.getOffer.mockResolvedValue(offerInParis)
+      offerInParis.stocks[1].isBookable = false;
+      mockedPcapi.getOffer.mockResolvedValue(offerInParis);
 
       // When
-      render(<Offers
-        hits={[searchFakeResult]}
-        userRole={Role.redactor}
-             />, { wrapper })
+      render(<Offers hits={[searchFakeResult]} userRole={Role.redactor} />, {
+        wrapper,
+      });
 
       // Then
-      const listItemsInOffer = await screen.findAllByRole("listitem")
-      const stockList = within(listItemsInOffer[0]).getAllByRole("listitem")
-      expect(stockList).toHaveLength(1)
-      const stockInformation = screen.getByText("16/09/2022 02:00, 1 400,00 €")
-      expect(stockInformation).toBeInTheDocument()
-    })
-  })
+      const listItemsInOffer = await screen.findAllByRole("listitem");
+      const stockList = within(listItemsInOffer[0]).getAllByRole("listitem");
+      expect(stockList).toHaveLength(1);
+      const stockInformation = screen.getByText("16/09/2022 02:00, 1 400,00 €");
+      expect(stockInformation).toBeInTheDocument();
+    });
+  });
 
   it("should show offer thumb when it exists", async () => {
     // Given
-    mockedPcapi.getOffer.mockResolvedValue(offerInParis)
+    mockedPcapi.getOffer.mockResolvedValue(offerInParis);
 
     // When
-    render(<Offers
-      hits={[searchFakeResult]}
-      userRole={Role.redactor}
-           />, { wrapper })
+    render(<Offers hits={[searchFakeResult]} userRole={Role.redactor} />, {
+      wrapper,
+    });
 
     // Then
-    const offerThumb = await screen.findByRole("img")
+    const offerThumb = await screen.findByRole("img");
     expect(offerThumb).toHaveAttribute(
       "src",
       expect.stringContaining(searchFakeResult.offer.thumbUrl as string)
-    )
-  })
+    );
+  });
 
   it.each`
     name                 | thumbUrl
@@ -215,8 +208,8 @@ describe("offer", () => {
     ${"is undefined"}    | ${undefined}
   `("should show thumb placeholder when thumb $name", async ({ thumbUrl }) => {
     // Given
-    mockedPcapi.getOffer.mockResolvedValue(offerInParis)
-    const appSearchResult: ResultType = {
+    mockedPcapi.getOffer.mockResolvedValue(offerInParis);
+    const searchResult: ResultType = {
       objectID: "479",
       offer: {
         dates: [new Date("2021-09-29T13:54:30+00:00").valueOf()],
@@ -227,16 +220,15 @@ describe("offer", () => {
         name: "Le Petit Rintintin 25",
         publicName: "Le Petit Rintintin 25",
       },
-    }
+    };
 
     // When
-    render(<Offers
-      hits={[appSearchResult]}
-      userRole={Role.redactor}
-           />, { wrapper })
+    render(<Offers hits={[searchResult]} userRole={Role.redactor} />, {
+      wrapper,
+    });
 
     // Then
-    const thumbPlaceholder = await screen.findByTestId("thumb-placeholder")
-    expect(thumbPlaceholder).toBeInTheDocument()
-  })
-})
+    const thumbPlaceholder = await screen.findByTestId("thumb-placeholder");
+    expect(thumbPlaceholder).toBeInTheDocument();
+  });
+});
