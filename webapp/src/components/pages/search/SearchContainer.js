@@ -3,8 +3,6 @@ import { compose } from 'redux'
 import { selectUserGeolocation } from '../../../redux/selectors/geolocationSelectors'
 
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
-import { FEATURES } from '../../router/selectors/features'
-import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'
 import Search from './Search'
 
 export const mapStateToProps = (state, ownProps) => {
@@ -17,7 +15,6 @@ export const mapStateToProps = (state, ownProps) => {
   return {
     geolocation,
     redirectToSearchMainPage,
-    useAppSearch: !selectIsFeatureDisabled(state, FEATURES.USE_APP_SEARCH_ON_WEBAPP),
   }
 }
 

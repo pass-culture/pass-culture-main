@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
-import { fetchHomeSearch as fetchAppSearch } from '../../../../vendor/search/search'
 import { parseAlgoliaParameters } from './domain/parseAlgoliaParameters'
 import Offers from './domain/ValueObjects/Offers'
 import OffersWithCover from './domain/ValueObjects/OffersWithCover'
 
-const useHomeSearchModules = (offerModules, geolocation, useAppSearch) => {
+const useHomeSearchModules = (offerModules, geolocation) => {
   const [algoliaMapping, setAlgoliaMapping] = useState({})
   const [isError, setIsError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -21,8 +20,7 @@ const useHomeSearchModules = (offerModules, geolocation, useAppSearch) => {
               const parsedParameters = parseAlgoliaParameters({ geolocation, parameters })
               if (!parsedParameters) return
 
-              const fetchHits = useAppSearch ? fetchAppSearch : fetchAlgolia
-              const { nbHits, hits } = await fetchHits(parsedParameters)
+              const { nbHits, hits } = await fetchAlgolia(parsedParameters)
               return { moduleId, parsedParameters, nbHits, hits }
             })
         )
@@ -41,7 +39,7 @@ const useHomeSearchModules = (offerModules, geolocation, useAppSearch) => {
         setIsLoading(false)
       }
     }
-  }, [offerModules, geolocation, useAppSearch])
+  }, [offerModules, geolocation])
 
   return {
     isError,

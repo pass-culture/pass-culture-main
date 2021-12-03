@@ -16,7 +16,6 @@ import Header from '../Header/Header'
 import { EmptyResult } from './EmptyResult/EmptyResult'
 import ResultDetailContainer from './ResultsList/ResultDetail/ResultDetailContainer'
 import { ResultsList } from './ResultsList/ResultsList'
-import { fetchSearch as fetchAppSearch } from '../../../../vendor/search/search'
 
 const SEARCH_RESULTS_URI = '/recherche/resultats'
 
@@ -337,8 +336,7 @@ class Results extends PureComponent {
     if (offerIsFilteredByTime) {
       options.timeRange = timeRange
     }
-    const fetchHits = this.props.useAppSearch ? fetchAppSearch : fetchAlgolia
-    fetchHits(options)
+    fetchAlgolia(options)
       .then(offers => {
         const { results } = this.state
         const { hits, nbHits, nbPages } = offers
@@ -462,13 +460,8 @@ class Results extends PureComponent {
             ref={this.inputRef}
             value={keywordsToSearch}
           />
-          <div
-            className="sr-items-wrapper"
-            onScroll={this.handleOnScroll}
-          >
-            <div className="sr-spinner">
-              {isLoading && <Spinner label="Recherche en cours" />}
-            </div>
+          <div className="sr-items-wrapper" onScroll={this.handleOnScroll}>
+            <div className="sr-spinner">{isLoading && <Spinner label="Recherche en cours" />}</div>
             {isSearchEmpty && (
               <EmptyResult
                 onNewSearchAroundMe={this.handleNewSearchAroundMe}
@@ -495,18 +488,10 @@ class Results extends PureComponent {
                 onClick={this.handleGoTo('filtres')}
                 type="button"
               >
-                <Icon
-                  alt="Filtrer les résultats"
-                  svg="filtrer"
-                />
-                <span className="sr-filter-button-text">
-                  {'Filtrer'}
-                </span>
+                <Icon alt="Filtrer les résultats" svg="filtrer" />
+                <span className="sr-filter-button-text">{'Filtrer'}</span>
                 {numberOfActiveFilters > 0 && (
-                  <span
-                    className="sr-filter-button-counter"
-                    data-test="sr-filter-button-counter"
-                  >
+                  <span className="sr-filter-button-counter" data-test="sr-filter-button-counter">
                     {numberOfActiveFilters}
                   </span>
                 )}
@@ -519,10 +504,7 @@ class Results extends PureComponent {
             path={`${SEARCH_RESULTS_URI}/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
           >
             <div className="offer-details">
-              <HeaderContainer
-                shouldBackFromDetails
-                title="Recherche"
-              />
+              <HeaderContainer shouldBackFromDetails title="Recherche" />
               <ResultDetailContainer />
             </div>
           </Route>
@@ -540,7 +522,6 @@ class Results extends PureComponent {
                 updateFilters={this.updateFilters}
                 updateNumberOfActiveFilters={this.updateNumberOfActiveFilters}
                 updatePlace={this.updatePlace}
-                useAppSearch={this.props.useAppSearch}
                 userGeolocation={userGeolocation}
               />
             </div>
@@ -585,7 +566,6 @@ Results.propTypes = {
     name: PropTypes.string,
   }),
   redirectToSearchMainPage: PropTypes.func.isRequired,
-  useAppSearch: PropTypes.bool.isRequired,
   userGeolocation: PropTypes.shape({
     latitude: PropTypes.number,
     longitude: PropTypes.number,
