@@ -7,6 +7,7 @@ import pytest
 from pcapi.admin.custom_views.offer_view import OfferView
 from pcapi.admin.custom_views.offer_view import ValidationView
 from pcapi.connectors.api_entreprises import ApiEntrepriseException
+from pcapi.core import testing
 import pcapi.core.bookings.factories as booking_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.api import import_offer_validation_config
@@ -15,7 +16,6 @@ from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
-from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 
 from tests.conftest import TestClient
@@ -180,7 +180,7 @@ class OfferValidationViewTest:
         )
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
     def test_import_validation_config(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.AdminFactory(email="super_admin@example.com")
@@ -245,7 +245,7 @@ class OfferValidationViewTest:
         }
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
     def test_import_validation_config_fail_with_wrong_value(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.AdminFactory(email="super_admin@example.com")
@@ -278,7 +278,7 @@ class OfferValidationViewTest:
         assert response.status_code == 400
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
     def test_import_validation_config_fail_when_user_is_not_super_admin(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.AdminFactory(email="not_super_admin@example.com")
@@ -404,7 +404,7 @@ class OfferValidationViewTest:
         assert offer.isActive is False
         assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
 
-    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
     def test_access_to_validation_page_with_super_admin_user_on_prod_env(self, app):
         users_factories.AdminFactory(email="super_admin@example.com")
         client = TestClient(app.test_client()).with_session_auth("super_admin@example.com")
@@ -413,7 +413,7 @@ class OfferValidationViewTest:
 
         assert response.status_code == 200
 
-    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
     def test_access_to_validation_page_with_none_super_admin_user_on_prod_env(self, app):
         users_factories.AdminFactory(email="simple_admin@example.com")
         client = TestClient(app.test_client()).with_session_auth("simple_admin@example.com")
@@ -441,6 +441,43 @@ class OfferValidationViewTest:
 
         assert get_query_offers_list == [offer_1]
         assert get_count_query_scalar == 1
+
+    @clean_database
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
+    def test_number_of_queries_for_offer_list(self, app):
+        admin = users_factories.AdminFactory(email="superadmin@example.com")
+        client = TestClient(app.test_client()).with_session_auth(admin.email)
+
+        offers_factories.OfferValidationConfigFactory(
+            specs={
+                "minimum_score": 0.1,
+                "rules": [
+                    {
+                        "conditions": [
+                            {
+                                "attribute": "max_price",
+                                "condition": {"comparated": 1, "operator": ">"},
+                                "model": "Offer",
+                            },
+                        ],
+                        "factor": 0.8,
+                        "name": "Vérification",
+                    },
+                ],
+            }
+        )
+        for _ in range(5):
+            offers_factories.StockFactory(offer__validation=OfferValidationStatus.PENDING)
+
+        n_queries = testing.AUTHENTICATION_QUERIES
+        n_queries += 1  # count
+        n_queries += 1  # select offers
+        n_queries += 1  # select latest offer validation configuration
+        with testing.assert_num_queries(n_queries):
+            response = client.get("/pc/back-office/validation/")
+
+        assert response.status_code == 200
+        assert b"<h2>Validation des offres</h2>" in response.data
 
     @pytest.mark.parametrize(
         "action,expected", [("approve", OfferValidationStatus.APPROVED), ("reject", OfferValidationStatus.REJECTED)]
@@ -511,6 +548,7 @@ class OfferValidationViewTest:
             venue__bookingEmail="email1@example.com",
             venue=venue,
         )
+        offers_factories.OfferValidationConfigFactory()
 
         mocked_get_offerer_legal_category.return_value = {
             "legal_category_code": 5202,

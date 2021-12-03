@@ -21,6 +21,7 @@ from flask_login import current_user
 from markupsafe import Markup
 from markupsafe import escape
 from sqlalchemy import func
+import sqlalchemy.orm as sqla_orm
 from sqlalchemy.orm import query
 from werkzeug import Response
 import wtforms
@@ -383,7 +384,13 @@ def _venue_link(view, context, model, name) -> Markup:
 
 
 def _compute_score(view, context, model, name) -> float:
-    current_config = offers_repository.get_current_offer_validation_config()
+    # Cache the current offer validation config on the request.
+    # Otherwise we fetch it for *each* offer that is displayed...
+    try:
+        current_config = request._cached_offer_validation_config
+    except AttributeError:
+        current_config = offers_repository.get_current_offer_validation_config()
+        request._cached_offer_validation_config = current_config
     validation_items = parse_offer_validation_config(model, current_config)[1]
     return compute_offer_validation_score(validation_items)
 
@@ -449,9 +456,11 @@ class ValidationView(BaseAdminView):
 
     def get_query(self):
         return (
-            self.session.query(Offer)
-            .join(Venue)
+            Offer.query.join(Venue)
             .join(Offerer)
+            .options(sqla_orm.contains_eager(Offer.venue).contains_eager(Venue.managingOfferer))
+            # Load stocks because our offer validation config may look at them.
+            .options(sqla_orm.joinedload(Offer.stocks))
             .filter(Offerer.validationToken.is_(None))
             .filter(Offer.validation == OfferValidationStatus.PENDING)
         )
