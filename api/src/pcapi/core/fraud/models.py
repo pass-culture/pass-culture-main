@@ -72,6 +72,8 @@ class EduconnectContent(pydantic.BaseModel):
     ine_hash: str
     last_name: str
     registration_datetime: datetime.datetime
+    school_uai: typing.Optional[str]
+    student_level: typing.Optional[str]
 
 
 class JouveContent(pydantic.BaseModel):

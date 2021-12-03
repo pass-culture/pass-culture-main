@@ -368,4 +368,4 @@ class EduconnectUserFactory(factory.Factory):
     saml_request_id = factory.Faker("lexify", text="id-?????????????????")
     ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
     student_level = "2212"
-    school = None
+    school_uai = "0910620E"
